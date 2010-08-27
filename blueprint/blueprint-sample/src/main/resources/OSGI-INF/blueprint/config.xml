@@ -118,8 +118,38 @@
 		<reference-listener bind-method="bind"
 			unbind-method="unbind" ref="listBindingListener" />
 	</reference-list>
-
+	
 	<bean id="listBindingListener" class="org.apache.aries.blueprint.sample.BindingListener" />
+	
+	
+	
+	<!-- Deadlock setup 
+	  We have a lazily activated service (i.e. register the service but don't create it yet)
+	  Then we have a reference-listener (or some other piece of client code that is called while instantiating blueprint components)
+	  
+	  This then tries to obtain the initial service twice:
+	  - first from a new thread
+	  - second from the current thread (that is creating blueprint components)
+	  
+	  This is of course contrived. However, any other piece of code may be substituted for the first thread and with unlucky
+	  timing we get into the same deadlock situation.
+	-->
+	
+	<service interface="java.util.List" activation="lazy">
+	  <bean class="java.util.ArrayList" />
+	</service>
+	
+	<bean id="dodgyListener" class="org.apache.aries.blueprint.sample.DodgyListener">
+	  <property name="bundleContext" ref="blueprintBundleContext" />
+	</bean>
+	
+	<reference-list interface="java.util.Set" availability="optional">
+	  <reference-listener bind-method="bind" ref="dodgyListener" />
+	</reference-list>
+
+
+
+
 
 	<bean id="circularReference" class="org.apache.aries.blueprint.sample.BindingListener"
 		init-method="init">

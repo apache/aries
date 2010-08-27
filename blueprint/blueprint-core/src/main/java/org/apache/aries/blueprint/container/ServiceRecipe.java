@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
@@ -65,7 +66,7 @@ public class ServiceRecipe extends AbstractRecipe {
 
     private Map properties;
     private final AtomicBoolean registered = new AtomicBoolean();
-    private volatile ServiceRegistration registration;
+    private final AtomicReference<ServiceRegistration> registration = new AtomicReference<ServiceRegistration>();
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private volatile Object service;
@@ -162,7 +163,7 @@ public class ServiceRecipe extends AbstractRecipe {
             LOGGER.debug("Registering service {} with interfaces {} and properties {}",
                          new Object[] { name, classes, props });
 
-            registration = blueprintContainer.registerService(classArray, new TriggerServiceFactory(), props);            
+            registration.set(blueprintContainer.registerService(classArray, new TriggerServiceFactory(), props));            
         }
     }
 
@@ -171,7 +172,7 @@ public class ServiceRecipe extends AbstractRecipe {
             LOGGER.debug("Unregistering service {}", name);
             // This method needs to allow reentrance, so if we need to make sure the registration is
             // set to null before actually unregistering the service
-            ServiceRegistration reg = registration;
+            ServiceRegistration reg = registration.get();
             if (listeners != null) {
                 LOGGER.debug("Calling listeners for service unregistration");
                 for (ServiceListener listener : listeners) {
@@ -181,26 +182,26 @@ public class ServiceRecipe extends AbstractRecipe {
             if (reg != null) {
                 reg.unregister();
             }
-            // We need to do this hack in order to support reantrancy
-            if (registration == reg) {
-                registration = null;
-            }
+            
+            registration.compareAndSet(reg, null);
         }
     }
 
     protected ServiceReference getReference() {
-        if (registration == null) {
+    	ServiceRegistration reg = registration.get();
+        if (reg == null) {
             throw new IllegalStateException("Service is not registered");
         } else {
-            return registration.getReference();
+            return reg.getReference();
         }
     }
 
     protected void setProperties(Dictionary props) {
-        if (registration == null) {
+    	ServiceRegistration reg = registration.get();
+        if (reg == null) {
             throw new IllegalStateException("Service is not registered");
         } else {
-            registration.setProperties(props);
+            reg.setProperties(props);
             // TODO: set serviceProperties? convert somehow? should listeners be notified of this?
         }
     }
@@ -230,24 +231,26 @@ public class ServiceRecipe extends AbstractRecipe {
                 }
             }
         }
+        
         Object service = this.service;
         // We need the real service ...
         if (bundle != null) {
-            if (service instanceof ServiceFactory) {
-                service = ((ServiceFactory) service).getService(bundle, registration);
-            }
-            if (service == null) {
-                throw new IllegalStateException("service is null");
-            }
-            // Check if the service actually implement all the requested interfaces
-            validateClasses(service);
-        // We're not really interested in the service, but perform some sanity checks nonetheless
+        	if (service instanceof ServiceFactory) {
+        		service = ((ServiceFactory) service).getService(bundle, registration);
+        	}
+        	if (service == null) {
+        		throw new IllegalStateException("service is null");
+        	}
+        	// Check if the service actually implement all the requested interfaces
+        	validateClasses(service);
+        	// We're not really interested in the service, but perform some sanity checks nonetheless
         } else {
-             if (!(service instanceof ServiceFactory)) {
-                 // Check if the service actually implement all the requested interfaces
-                 validateClasses(service);
-             }
+        	if (!(service instanceof ServiceFactory)) {
+        		// Check if the service actually implement all the requested interfaces
+        		validateClasses(service);
+        	}
         }
+        
         return service;
     }
 
@@ -297,18 +300,16 @@ public class ServiceRecipe extends AbstractRecipe {
         }
     }
 
-    public synchronized Object getService(Bundle bundle, ServiceRegistration registration) {
+    public Object getService(Bundle bundle, ServiceRegistration registration) {
         /** getService() can get called before registerService() returns with the registration object.
          *  So we need to set the registration object in case registration listeners call 
          *  getServiceReference(). 
          */
-        if (this.registration == null) {
-            this.registration = registration;
-        }
+    	this.registration.compareAndSet(null, registration);
         return internalGetService(bundle, registration);
     }
 
-    public synchronized void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+    public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
         if (this.service instanceof ServiceFactory) {
             ((ServiceFactory) this.service).ungetService(bundle, registration, service);
         }
