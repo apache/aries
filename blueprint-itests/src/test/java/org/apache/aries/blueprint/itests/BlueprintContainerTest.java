@@ -31,6 +31,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Hashtable;
+import java.util.HashSet;
 
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
@@ -62,6 +63,20 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
         
         // do the test
         testBlueprintContainer(bundle);
+    }
+    
+    @Test
+    public void testDeadlock() throws Exception {
+      bundleContext.registerService("java.util.Set",new HashSet<Object>(), null);
+      
+      Bundle bundle = getInstalledBundle("org.apache.aries.blueprint.sample");
+      assertNotNull(bundle);
+
+      bundle.start();
+      
+      getBlueprintContainerForBundle(bundleContext, "org.apache.aries.blueprint.sample",5000);
+      
+      // no actual assertions, we just don't want to deadlock
     }
 
     @org.ops4j.pax.exam.junit.Configuration
