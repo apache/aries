@@ -73,6 +73,17 @@ public class AggregateConverter implements Converter {
         Object convert(ReifiedType type) throws Exception;
     }
 
+    private static class ConversionResult {
+
+        public final Converter converter;
+        public final Object value;
+
+        public ConversionResult(Converter converter, Object value) {
+            this.converter = converter;
+            this.value = value;
+        }
+    }
+
     private ExtendedBlueprintContainer blueprintContainer;
     private List<Converter> converters = new ArrayList<Converter>();
 
@@ -133,18 +144,18 @@ public class AggregateConverter implements Converter {
         if (isAssignable(fromValue, type)) {
             return fromValue;
         }
-        Object value = null;
+        ConversionResult result = null;
         AccessControlContext acc = blueprintContainer.getAccessControlContext();
         if (acc == null) {
-            value = convertWithConverters(fromValue, type);
+            result = convertWithConverters(fromValue, type);
         } else {
-            value = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-                public Object run() throws Exception {
+            result = AccessController.doPrivileged(new PrivilegedExceptionAction<ConversionResult>() {
+                public ConversionResult run() throws Exception {
                     return convertWithConverters(fromValue, type);
                 }            
             }, acc);
         }
-        if (value == null) {
+        if (result == null) {
             if (fromValue instanceof Number && Number.class.isAssignableFrom(unwrap(toClass(type)))) {
                 return convertToNumber((Number) fromValue, toClass(type));
             } else if (fromValue instanceof String) {
@@ -161,31 +172,32 @@ public class AggregateConverter implements Converter {
                 throw new Exception("Unable to convert value " + fromValue + " to type " + type);
             }
         }
-        return value;
+        return result.value;
+    }
+
+    private Converter selectMatchingConverter(Object source, ReifiedType type) {
+        for (Converter converter : converters) {
+            if (converter.canConvert(source, type)) {
+                return converter;
+            }
+        }
+        return null;
     }
 
     private boolean canConvertWithConverters(Object source, ReifiedType type) {
-        for (Converter converter : converters) {
-            if (converter.canConvert(source, type)) {
-                return true;
-            }
-        }
-        return false;
+        return selectMatchingConverter(source,type) != null;
     }
     
-    private Object convertWithConverters(Object source, ReifiedType type) throws Exception {
-        Object value = null;
-        for (Converter converter : converters) {
-            if (converter.canConvert(source, type)) {
-                value = converter.convert(source, type);
-                if (value != null) {
-                    return value;
-                }
-            }
-        }
-        return value;
-    }
+    private ConversionResult convertWithConverters(Object source, ReifiedType type) throws Exception {
 
+        Converter converter = selectMatchingConverter(source,type);
+
+        if (converter == null)  return null;
+
+        Object value = converter.convert(source, type);
+        return new ConversionResult(converter,value);
+    }
+    
     public Object convertToNumber(Number value, Class toType) throws Exception {
         toType = unwrap(toType);
         if (AtomicInteger.class == toType) {
