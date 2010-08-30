@@ -180,10 +180,13 @@ public class AggregateConverterTest extends TestCase {
         s = new AggregateConverter(new TestBlueprintContainer(null));
         s.registerConverter(new AsianRegionConverter());
         s.registerConverter(new EuRegionConverter());
+        s.registerConverter(new NullMarkerConverter());
         
         result = s.convert(new Object(), Region.class);
         // TODO: check with the spec about the result
         //assertTrue(result instanceof AsianRegion || result instanceof EuRegion);
+        result = s.convert(new Object(), NullMarker.class);
+        assertNull(result);
     }
     
     private interface Region {} 
@@ -191,6 +194,8 @@ public class AggregateConverterTest extends TestCase {
     private interface EuRegion extends Region {}
     
     private interface AsianRegion extends Region {}
+
+    private interface NullMarker {}
     
     private static class RegionConverter implements Converter {
         public boolean canConvert(Object fromValue, ReifiedType toType) {
@@ -216,6 +221,15 @@ public class AggregateConverterTest extends TestCase {
         }
         public Object convert(Object source, ReifiedType toType) throws Exception {
             return new AsianRegion() {} ;
+        }
+    }
+
+    private static class NullMarkerConverter implements Converter {
+        public boolean canConvert(Object fromValue, ReifiedType toType) {
+            return toType.getRawClass().isAssignableFrom(NullMarker.class);
+        }
+        public Object convert(Object source, ReifiedType toType) throws Exception {
+            return null;
         }
     }
 
