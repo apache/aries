@@ -17,7 +17,7 @@
  * under the License.
  * */
 
-package org.apache.aries.application.deployment.management.impl;
+package org.apache.aries.application.modelling.impl;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
@@ -39,7 +39,7 @@ import java.util.jar.Attributes;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.aries.application.deployment.management.internal.BundleBlueprintParser;
+import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.InvalidAttributeException;
@@ -52,6 +52,8 @@ import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.utils.ModellingManager;
 import org.apache.aries.application.utils.manifest.BundleManifest;
+import org.apache.aries.blueprint.ParserService;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,14 +64,24 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
 
   private ParserProxy parserProxy;
 
+  private ParserService _parserService;
+  private BundleContext _bundleContext;
+  
+  public void setParserService (ParserService p) { 
+    _parserService = p;
+  }
+  
+  public void setBundleContext (BundleContext b) { 
+    _bundleContext = b;
+  }
   public ParserProxy getParserProxy()
   {
-    return parserProxy;
+	  if (parserProxy == null) {
+		  parserProxy= new ParserProxyImpl(_parserService, _bundleContext);
+	  }
+	  return parserProxy;
   }
-  public void setParserProxy(ParserProxy parserProxy)
-  {
-    this.parserProxy = parserProxy;
-  }
+  
 
 
   /**
@@ -94,9 +106,9 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
         URL url = bpFile.toURL();
         URLConnection conn = url.openConnection();
         is = conn.getInputStream();
-        //is = this.getClass().getResourceAsStream(bpFile.getName());
+        
         try {
-          ParsedServiceElements pse = parserProxy.parseAllServiceElements(is);
+          ParsedServiceElements pse = getParserProxy().parseAllServiceElements(is);
           services.addAll(pse.getServices());
           references.addAll(pse.getReferences());
 

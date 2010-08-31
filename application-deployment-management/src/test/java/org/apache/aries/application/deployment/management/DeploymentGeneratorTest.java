@@ -92,12 +92,12 @@ public class DeploymentGeneratorTest
       res.add(CAPABILITY_E.getBundle());
       boolean addD = false;
       for(Content ib : inputs) {
-        if(ib.getContentName().equals("com.ibm.test.d"))
+        if(ib.getContentName().equals("aries.test.d"))
           addD = true;
       }
       if(addD) {
         try {
-          res.add(createModelledResource("com.ibm.test.d", "1.0.0", new ArrayList<String>(), new ArrayList<String>()));
+          res.add(createModelledResource("aries.test.d", "1.0.0", new ArrayList<String>(), new ArrayList<String>()));
         } catch (InvalidAttributeException e) {
           fail("Cannot resolve import for d");
         }
@@ -168,7 +168,7 @@ public class DeploymentGeneratorTest
   {
     appMetadata = Skeleton.newMock(ApplicationMetadata.class);
     Skeleton.getSkeleton(appMetadata).setReturnValue(
-        new MethodCall(ApplicationMetadata.class, "getApplicationSymbolicName"), "com.ibm.test");
+        new MethodCall(ApplicationMetadata.class, "getApplicationSymbolicName"), "aries.test");
     Skeleton.getSkeleton(appMetadata).setReturnValue(
         new MethodCall(ApplicationMetadata.class, "getApplicationVersion"), new Version("1.0.0"));
     
@@ -202,20 +202,20 @@ public class DeploymentGeneratorTest
   }
   static {
     try {
-      CAPABILITY_A = createExportedPackage ("com.ibm.test.a", "1.0.0", new String[] {"com.ibm.test.a"}, 
-          new String[] {"com.ibm.test.c"});
+      CAPABILITY_A = createExportedPackage ("aries.test.a", "1.0.0", new String[] {"aries.test.a"}, 
+          new String[] {"aries.test.c"});
  
-      CAPABILITY_B = createExportedPackage("com.ibm.test.b", "1.1.0", new String[] {"com.ibm.test.b"}, new String[] {"com.ibm.test.e"});
+      CAPABILITY_B = createExportedPackage("aries.test.b", "1.1.0", new String[] {"aries.test.b"}, new String[] {"aries.test.e"});
       
-      BUNDLE_C = ManifestHeaderProcessor.parseContent("com.ibm.test.c","[1.0.0,1.1.0)");
+      BUNDLE_C = ManifestHeaderProcessor.parseContent("aries.test.c","[1.0.0,1.1.0)");
       
-      CAPABILITY_C = createExportedPackage("com.ibm.test.c", "1.0.5", new String[] {"com.ibm.test.c"}, new String[] {});
+      CAPABILITY_C = createExportedPackage("aries.test.c", "1.0.5", new String[] {"aries.test.c"}, new String[] {});
       
-      BUNDLE_D = ManifestHeaderProcessor.parseContent("com.ibm.test.d","1.0.0");
+      BUNDLE_D = ManifestHeaderProcessor.parseContent("aries.test.d","1.0.0");
       
-     // = new ImportedBundleImpl("com.ibm.test.e", "1.0.0");
+     // = new ImportedBundleImpl("aries.test.e", "1.0.0");
       
-      CAPABILITY_E = createExportedPackage("com.ibm.test.e", "1.0.0", new String[] {"com.ibm.test.e"}, new String[] {});
+      CAPABILITY_E = createExportedPackage("aries.test.e", "1.0.0", new String[] {"aries.test.e"}, new String[] {});
       
     } catch (InvalidAttributeException iae) {
       throw new RuntimeException(iae);
@@ -227,7 +227,7 @@ public class DeploymentGeneratorTest
   public void testResolve() throws Exception
   {
     
-    Skeleton.getSkeleton(appMetadata).setReturnValue(new MethodCall(ApplicationMetadata.class, "getApplicationContents"), Arrays.asList(mockContent("com.ibm.test.a", "1.0.0"), mockContent("com.ibm.test.b", "[1.0.0, 2.0.0)" )));
+    Skeleton.getSkeleton(appMetadata).setReturnValue(new MethodCall(ApplicationMetadata.class, "getApplicationContents"), Arrays.asList(mockContent("aries.test.a", "1.0.0"), mockContent("aries.test.b", "[1.0.0, 2.0.0)" )));
     
     app = Skeleton.newMock(AriesApplication.class);
     Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
@@ -236,20 +236,20 @@ public class DeploymentGeneratorTest
     
     Attributes attrs = man.getMainAttributes();
     
-    assertEquals("com.ibm.test", attrs.getValue(AppConstants.APPLICATION_SYMBOLIC_NAME));
+    assertEquals("aries.test", attrs.getValue(AppConstants.APPLICATION_SYMBOLIC_NAME));
     assertEquals("1.0.0", (String)attrs.getValue(AppConstants.APPLICATION_VERSION));
     
     String content = (String)attrs.getValue(AppConstants.DEPLOYMENT_CONTENT);
     String useBundle = (String) attrs.getValue(AppConstants.DEPLOYMENT_USE_BUNDLE);
     String provisioned =(String)attrs.getValue(AppConstants.DEPLOYMENT_PROVISION_BUNDLE);
     
-    assertTrue(content.contains("com.ibm.test.a;deployed-version=1.0.0"));
-    assertTrue(content.contains("com.ibm.test.b;deployed-version=1.1.0"));
+    assertTrue(content.contains("aries.test.a;deployed-version=1.0.0"));
+    assertTrue(content.contains("aries.test.b;deployed-version=1.1.0"));
     
-    assertTrue(useBundle.contains("com.ibm.test.c;deployed-version=1.0.5"));
-    assertFalse(useBundle.contains("com.ibm.test.d"));
+    assertTrue(useBundle.contains("aries.test.c;deployed-version=1.0.5"));
+    assertFalse(useBundle.contains("aries.test.d"));
     
-    assertTrue(provisioned.contains("com.ibm.test.e;deployed-version=1.0.0"));
+    assertTrue(provisioned.contains("aries.test.e;deployed-version=1.0.0"));
   }
   
   @Test

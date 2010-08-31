@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.deployment.management.internal;
+package org.apache.aries.application.modelling.internal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;

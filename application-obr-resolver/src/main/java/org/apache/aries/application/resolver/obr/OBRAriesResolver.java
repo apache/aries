@@ -57,6 +57,7 @@ import org.apache.aries.application.resolver.internal.MessageUtil;
 import org.apache.aries.application.resolver.obr.impl.ApplicationResourceImpl;
 import org.apache.aries.application.resolver.obr.impl.ModelledBundleResource;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
+import org.apache.aries.application.resolver.obr.impl.RepositoryGeneratorImpl;
 import org.apache.aries.application.resolver.obr.impl.ResourceWrapper;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
@@ -90,15 +91,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     return platformRepository;
   }
 
-  private RepositoryGenerator repositoryGenerator;
-  
-  public void setRepositoryGenerator(RepositoryGenerator rg) {
-    this.repositoryGenerator=rg;
-  }
-  
-  public RepositoryGenerator getRepositoryGenerator() {
-    return this.repositoryGenerator;
-  }
+ 
   
   public  RepositoryAdmin getRepositoryAdmin() {
     return this.repositoryAdmin;
@@ -151,7 +144,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     try {
       
       ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-      repositoryGenerator.generateRepository(appName + "_" + appVersion, toModelledResource(app.getBundleInfo()), bytesOut);
+      RepositoryGeneratorImpl.generateRepository(repositoryAdmin, appName + "_" + appVersion, toModelledResource(app.getBundleInfo()), bytesOut);
       
       appRepo = helper.readRepository(new InputStreamReader(new ByteArrayInputStream(bytesOut.toByteArray())));
     } catch (Exception e) {
@@ -548,7 +541,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     Repository appRepo;
     try {      
       ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-      repositoryGenerator.generateRepository(appName + "_" + appVersion, byValueBundles, bytesOut);
+      RepositoryGeneratorImpl.generateRepository(repositoryAdmin, appName + "_" + appVersion, byValueBundles, bytesOut);
       appRepo = helper.readRepository(new InputStreamReader(new ByteArrayInputStream(bytesOut.toByteArray())));
     } catch (Exception e) {
       throw new ResolverException(e);

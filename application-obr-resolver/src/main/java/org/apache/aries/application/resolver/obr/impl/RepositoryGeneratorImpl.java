@@ -76,7 +76,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
    *          buffer writer
    * @throws IOException
    */
-  private  void writeResource(Resource r, String uri, Document doc, Element root) throws IOException
+  private  static void writeResource(Resource r, String uri, Document doc, Element root) throws IOException
   {
     logger.debug(LOG_ENTRY, "writeResource", new Object[]{r, uri, doc, root});
     Element resource = doc.createElement("resource");
@@ -106,7 +106,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
    * @param writer buffer writer
    * @throws IOException
    */
-  private  void writeCapability(Capability c, Document doc, Element resource) throws IOException
+  private  static void writeCapability(Capability c, Document doc, Element resource) throws IOException
   {
     logger.debug(LOG_ENTRY, "writeCapability", new Object[]{c, doc, resource});
     Element capability = doc.createElement("capability");
@@ -158,7 +158,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
    *          buffer writer
    * @throws IOException
    */
-  private void writeRequirement(Requirement req, Document doc, Element resource) throws IOException
+  private static void  writeRequirement(Requirement req, Document doc, Element resource) throws IOException
   {
     logger.debug(LOG_ENTRY, "writeRequirement", new Object[]{req, doc, resource});
     Element requirement = doc.createElement("require");
@@ -178,34 +178,41 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
   throws ResolverException, IOException
   {
     logger.debug(LOG_ENTRY, "generateRepository", new Object[]{repositoryName, byValueBundles, os});
-    Document doc;
-    try {
-      doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-
-    } catch (ParserConfigurationException pce) {
-      throw new ResolverException(pce);
-    }
-    Element root = doc.createElement("repository");
-
-    root.setAttribute("name", repositoryName);
-    doc.appendChild(root);
-    for (ModelledResource mr : byValueBundles) {
-      writeResource(new BundleResource(mr, repositoryAdmin), mr.getLocation(), doc, root);
-
-    }
-
-    try {
-      Transformer trans = TransformerFactory.newInstance().newTransformer();
-      trans.setOutputProperty(OutputKeys.INDENT, "yes");
-      trans.transform(new DOMSource(doc), new StreamResult(os));
-    } catch (TransformerException te) {
-      logger.debug(LOG_EXIT, "generateRepository", te);
-      throw new ResolverException(te);
-    }
+    generateRepository(repositoryAdmin, repositoryName, byValueBundles, os);
     logger.debug(LOG_EXIT, "generateRepository");
   }
 
-  private String getType(String name) {
+  public static void generateRepository (RepositoryAdmin repositoryAdmin, String repositoryName,
+      Collection<? extends ModelledResource> byValueBundles, OutputStream os)
+  throws ResolverException, IOException {
+	  logger.debug(LOG_ENTRY, "generateRepository", new Object[]{repositoryAdmin, repositoryName, byValueBundles, os});
+	    Document doc;
+	    try {
+	      doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+
+	    } catch (ParserConfigurationException pce) {
+	      throw new ResolverException(pce);
+	    }
+	    Element root = doc.createElement("repository");
+
+	    root.setAttribute("name", repositoryName);
+	    doc.appendChild(root);
+	    for (ModelledResource mr : byValueBundles) {
+	      writeResource(new BundleResource(mr, repositoryAdmin), mr.getLocation(), doc, root);
+
+	    }
+
+	    try {
+	      Transformer trans = TransformerFactory.newInstance().newTransformer();
+	      trans.setOutputProperty(OutputKeys.INDENT, "yes");
+	      trans.transform(new DOMSource(doc), new StreamResult(os));
+	    } catch (TransformerException te) {
+	      logger.debug(LOG_EXIT, "generateRepository", te);
+	      throw new ResolverException(te);
+	    }
+	    logger.debug(LOG_EXIT, "generateRepository");
+  }
+  private static String getType(String name) {
     logger.debug(LOG_ENTRY, "getType", new Object[]{name});
     String type = null;
     if (Constants.VERSION_ATTRIBUTE.equals(name) || (Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name))) {
