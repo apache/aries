@@ -170,6 +170,14 @@
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.utils</artifactId>
 		</dependency>
+                <dependency>
+                        <groupId>org.apache.aries.application</groupId>
+                        <artifactId>org.apache.aries.application.modeller</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>org.apache.aries.application</groupId>
+                        <artifactId>org.apache.aries.application.deployment.management</artifactId>
+                </dependency>
 
 		<!-- Additional (JPA persistence layer) Aries dependencies -->
 
