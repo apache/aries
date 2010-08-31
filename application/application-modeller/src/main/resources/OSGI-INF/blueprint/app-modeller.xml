@@ -18,19 +18,11 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-  
-  <bean id="deploymentManifestManager" class="org.apache.aries.application.deployment.management.impl.DeploymentManifestManagerImpl">
-    <property name="resolver" ref="resolver"/>
-    <property name="postResolveTransformers" ref="post-resolver-transformers"/>
-    <property name="modelledResourceManager" ref = "modelledResourceManager"/>
-    <property name="localPlatform" ref="localPlatform"/>
+   <bean id="modelledResourceManager" class="org.apache.aries.application.modelling.impl.ModelledResourceManagerImpl">
+    <property name= "parserService" ref="parser-service"/>
+    <property name="bundleContext" ref="blueprintBundleContext"/>
   </bean>
+  <reference id="parser-service" interface="org.apache.aries.blueprint.ParserService"/>
+  <service id = "modelledResourceManagerService" ref="modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
   
-  <reference id = "modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
-  <reference id="localPlatform" interface="org.apache.aries.application.management.LocalPlatform"/>
-  <reference id="resolver" interface="org.apache.aries.application.management.AriesApplicationResolver"/>
-  <reference-list id="post-resolver-transformers" interface="org.apache.aries.application.PostResolveTransformer" availability="optional"/>
-  
-  <service id ="deploymentManifestManager-Service" ref="deploymentManifestManager" interface="org.apache.aries.application.management.DeploymentManifestManager"/>
-    
 </blueprint>

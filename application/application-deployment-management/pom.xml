@@ -82,16 +82,7 @@
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.modeller</artifactId>
         </dependency>
-        <dependency>
-        	<groupId>org.apache.aries.blueprint</groupId>
-        	<artifactId>org.apache.aries.blueprint.api</artifactId>
-        	<version>0.3-incubating-SNAPSHOT</version> 
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>0.3-incubating-SNAPSHOT</version> 
-        </dependency>
+        
         
     </dependencies>
 

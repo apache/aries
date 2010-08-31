@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.deployment.management.impl;
+package org.apache.aries.application.modelling.impl;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 import java.io.InputStream;
@@ -67,6 +67,10 @@ public class ParserProxyImpl implements ParserProxy {
     _bundleContext = b;
   }
   
+  public ParserProxyImpl(ParserService p, BundleContext b) {
+	  _parserService = p;
+	  _bundleContext = b;
+  }
 
   public List<? extends WrappedServiceMetadata> parse(List<URL> blueprintsToParse) throws Exception {
     _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintsToParse});

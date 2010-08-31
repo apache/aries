@@ -142,8 +142,7 @@ public class FileSystemTest
   @AfterClass
   public static void destroyZip()
   {
-    new File("fileSystemTest/app2.zip").delete();
-    new File("fileSystemTest").delete();
+	  IOUtils.deleteRecursive(new File("fileSystemTest/"));
   }
   
   /**
@@ -250,7 +249,16 @@ public class FileSystemTest
     }
     
     assertEquals(1, files.size());
+    List<IFile> allFiles = dir.listAllFiles();
+    Iterator<IFile> its = allFiles.iterator();
+    while (its.hasNext()) { 
+      IFile f = its.next();
+      if (f.getName().toLowerCase().contains(".svn")) { 
+        its.remove();
+      }
+    }
     
+    assertEquals(3, allFiles.size());
     IFile metaInf = files.get(0);
     
     assertTrue(metaInf.isDirectory());
