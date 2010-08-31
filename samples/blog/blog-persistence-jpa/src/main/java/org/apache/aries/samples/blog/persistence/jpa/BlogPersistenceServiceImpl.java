@@ -25,9 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.sql.DataSource;
 
 import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
 import org.apache.aries.samples.blog.api.persistence.Entry;
@@ -40,21 +38,15 @@ import org.apache.aries.samples.blog.persistence.jpa.entity.EntryImpl;
 public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	private EntityManager em;
-	private DataSource dataSource;
 	
 	public BlogPersistenceServiceImpl() {
 	}
 
 	
-	//@PersistenceContext(unitName = "blogExample")
 	public void setEntityManager(EntityManager e) {
 		em = e;
 	}
 	
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-
 
 	public void createAuthor(String email, Date dob, String name,
 			String displayName, String bio) {
@@ -85,9 +77,6 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 		a.updateEntries(b);
 		em.persist(b);		
 		em.merge(b.getAuthor());
-		//Uncomment this line to verify that datasources have been enlisted.
-		//The data base should not contain the blog post even though it has been persisted.
-		//throw new RuntimeException();
 	}
 
 	public Entry findBlogEntryByTitle(String title) {
