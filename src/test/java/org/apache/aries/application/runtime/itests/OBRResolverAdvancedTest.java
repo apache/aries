@@ -28,12 +28,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
@@ -56,14 +57,16 @@ import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 @RunWith(JUnit4TestRunner.class)
 public class OBRResolverAdvancedTest extends AbstractIntegrationTest 
 {
@@ -317,38 +320,51 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     
   }
 
-  /* MN: This test generates a new repository.xml and compares it with one we made earlier. 
-   * The problem is, the one we made earlier used an IBM JRE, which results in the elements
-   * of the repository.xml coming out in a completely different order to those seen on a Sun
-   * JRE. The test needs rework if it is going to work correctly on both JREs. 
+  /**
+   * This test just verifies whether every entry in the MANIFEST.MF was fed into the repository generator. 
+   * Since the IBM JRE generates a slightly different repository file from the Sun JRE as far as the order of xml elements is concerned. It is not feasible
+   * to perform a file comparison. 
+   * @throws Exception
    */
-  @Ignore
   @Test
   public void testRepo() throws Exception {
     startApplicationRuntimeBundle();
-
     generateOBRRepoXML(true, REPO_BUNDLE+".jar");
-    
-    // compare the generated with the expected file
-    BufferedReader expectedFileReader = new BufferedReader(new InputStreamReader(OBRResolverAdvancedTest.class.getClassLoader().getResourceAsStream("/obr/aries.bundle1/expectedRepository.xml")));
-
-    // read out the temp file
+    //print out the repository.xml
     BufferedReader reader = new BufferedReader(new FileReader(new File("repository.xml")));
-
-    try {
-      String tempFileline, expectedFileLine;
-      
-      while (((tempFileline = reader.readLine()) != null)
-          && ((expectedFileLine = expectedFileReader.readLine()) != null)) {
-        if (!(tempFileline.contains("lastmodified"))) {
-          assertEquals("The result is not expected.", expectedFileLine, tempFileline);
-        }
-      }
-    } finally {
-      expectedFileReader.close();
-      reader.close();
+    String line;
+    while (( line = reader.readLine()) != null) {
+    	System.out.println(line);
     }
-  
+    // compare the generated with the expected file
+    Document real_doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File("repository.xml"));    
+    Document expected_doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(OBRResolverAdvancedTest.class.getClassLoader().getResourceAsStream("/obr/aries.bundle1/expectedRepository.xml"));
+    // parse two documents to make sure they have the same number of elements
+    Element element_real = real_doc.getDocumentElement();
+    Element element_expected = expected_doc.getDocumentElement();    
+    NodeList nodes_real = element_real.getElementsByTagName("capability");
+    NodeList nodes_expected = element_expected.getElementsByTagName("capability");
+    assertEquals("The number of capability is not expected. ", nodes_expected.getLength(), nodes_real.getLength());    
+    nodes_real = element_real.getElementsByTagName("require");
+    nodes_expected = element_expected.getElementsByTagName("require");    
+    assertEquals("The number of require elements is not expected. ", nodes_expected.getLength(), nodes_real.getLength());
+    nodes_real = element_real.getElementsByTagName("p");
+    nodes_expected = element_expected.getElementsByTagName("p");    
+    assertEquals("The number of properties is not expected. ", nodes_expected.getLength(), nodes_real.getLength());
+    // Let's verify all p elements are shown as expected.
+    for (int index=0; index < nodes_expected.getLength(); index++) {
+    	Node node = nodes_expected.item(index);
+    	boolean contains = false;
+    	// make sure the node exists in the real generated repository
+    	for (int i=0; i<nodes_real.getLength(); i++) {
+    		Node real_node = nodes_real.item(i);
+    		if (node.isEqualNode(real_node)) {
+    			contains = true;
+    			break;
+    		}
+    	}
+    	assertTrue("The node " + node.toString() + "should exist.", contains);
+    }
   }
   
   @Test
@@ -454,9 +470,9 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
-        /* For debugging, uncomment the next two lines  
-        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5010"),
-        waitForFrameworkStartup(), */ 
+        /* For debugging, uncomment the next two lines  */
+        /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5010"),
+        waitForFrameworkStartup(),  */
 
         /* For debugging, add these imports:
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
