@@ -67,7 +67,7 @@ public class BundleManifestTest
   @AfterClass
   public static void cleanup()
   {
-    _testfile.delete();
+	  IOUtils.deleteRecursive(new File("bundleManifestTest/"));
   }
   
   @Test

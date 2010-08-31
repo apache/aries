@@ -25,7 +25,7 @@
             <reference interface="org.apache.felix.bundlerepository.RepositoryAdmin"/>
         </argument>
         <property name="platformRepository" ref="platformRepository"/>
-        <property name="repositoryGenerator" ref="repository-generator"/>
+        
     </bean>
     <reference id="platformRepository" interface="org.apache.aries.application.management.PlatformRepository" availability="optional"/>        
     
