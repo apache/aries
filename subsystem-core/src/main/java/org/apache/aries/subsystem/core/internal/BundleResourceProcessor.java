@@ -78,7 +78,8 @@ public class BundleResourceProcessor implements ResourceProcessor {
             } catch (SubsystemException e) {
                 throw e;
             } catch (Exception e) {
-                throw new SubsystemException("Unable to process bundle resource", e);
+//                throw new SubsystemException("Unable to process bundle resource", e);
+            	e.printStackTrace();
             }
         }
 
