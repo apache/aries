@@ -40,28 +40,29 @@ public class BundleInfoImpl implements BundleInfo {
 
     private Map<String, String> attributeMap = new HashMap<String, String>();
     private String path;
+    private Attributes attributes;
 
     public BundleInfoImpl(String pathToJar) {
-        this.path = pathToJar;
         Manifest manifest = null;
         try {
+        	File jarFile = new File(pathToJar);
+            this.path = jarFile.toURI().toURL().toString();
             JarFile f = new JarFile(new File(pathToJar));
             manifest = f.getManifest();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
         process(manifest);
     }
 
     private void process(Manifest manifest) {
         if (manifest != null) {
-            Attributes attributes = manifest.getMainAttributes();
-            Set<Object> set = attributes.keySet();
+            this.attributes = manifest.getMainAttributes();
+            Set<Object> set = this.attributes.keySet();
             for (Object entry : set) {
                 String key = entry.toString();
-                attributeMap.put(key, attributes.getValue(key));
+                attributeMap.put(key, this.attributes.getValue(key));
             }
         }
     }
@@ -133,5 +134,9 @@ public class BundleInfoImpl implements BundleInfo {
     public Version getVersion() {
         return Version.parseVersion(attributeMap.get(Constants.BUNDLE_VERSION));
     }
+
+	public Attributes getRawAttributes() {
+        return this.attributes;
+	}
 
 }

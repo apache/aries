@@ -115,7 +115,7 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
         subsystem.start();
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
+	@org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
         Option[] options = options(
             // Log

@@ -23,7 +23,7 @@ import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.obr.RepositoryAdmin;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
 
 public class ResourceResolverTest {
 

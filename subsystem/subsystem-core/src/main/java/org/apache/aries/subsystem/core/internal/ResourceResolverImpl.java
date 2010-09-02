@@ -42,10 +42,11 @@ import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.osgi.service.obr.Repository;
-import org.osgi.service.obr.RepositoryAdmin;
-import org.osgi.service.obr.Requirement;
-import org.osgi.service.obr.Resolver;
+import org.apache.felix.bundlerepository.Repository;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
+import org.apache.felix.bundlerepository.Requirement;
+import org.apache.felix.bundlerepository.Reason;
+import org.apache.felix.bundlerepository.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -163,11 +164,11 @@ public class ResourceResolverImpl implements ResourceResolver {
         filterString.append("(&(name" + "=" + symbolicName + "))");
         filterString.append("(version" + "=" + version + "))");
 
-        //org.osgi.service.obr.Resource[] res = this.repositoryAdmin.discoverResources(filterString.toString());
+        //org.apache.felix.bundlerepository.Resource[] res = this.repositoryAdmin.discoverResources(filterString.toString());
         Repository[] repos = this.repositoryAdmin.listRepositories();
-        org.osgi.service.obr.Resource res = null;
+        org.apache.felix.bundlerepository.Resource res = null;
         for (Repository repo : repos) {
-            org.osgi.service.obr.Resource[] resources = repo.getResources();
+            org.apache.felix.bundlerepository.Resource[] resources = repo.getResources();
             for (int i = 0; i < resources.length; i++) {
                 if (resources[i].getSymbolicName().equals(symbolicName)) {
                     if (resources[i].getVersion().compareTo(new Version(version)) == 0) {
@@ -185,22 +186,22 @@ public class ResourceResolverImpl implements ResourceResolver {
 
         Object type = props.get(SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE);
 
-        return new ResourceImpl(symbolicName, res.getVersion(), type == null ? SubsystemConstants.RESOURCE_TYPE_BUNDLE : (String)type, res.getURL().toExternalForm() , props);
+        return new ResourceImpl(symbolicName, res.getVersion(), type == null ? SubsystemConstants.RESOURCE_TYPE_BUNDLE : (String)type, res.getURI() , props);
     }
     
     /**
      * the format of resource is like bundlesymbolicname;version=1.0.0, for example com.ibm.ws.eba.example.blog.api;version=1.0.0,
      */
-    private org.osgi.service.obr.Resource findOBRResource(Resource resource) throws SubsystemException {
+    private org.apache.felix.bundlerepository.Resource findOBRResource(Resource resource) throws SubsystemException {
         String symbolicName = resource.getSymbolicName();
         // this version could possibly be a range
         Version version = resource.getVersion();
 
-        //org.osgi.service.obr.Resource[] res = this.repositoryAdmin.discoverResources(filterString.toString());
+        //org.apache.felix.bundlerepository.Resource[] res = this.repositoryAdmin.discoverResources(filterString.toString());
         Repository[] repos = this.repositoryAdmin.listRepositories();
-        org.osgi.service.obr.Resource res = null;
+        org.apache.felix.bundlerepository.Resource res = null;
         for (Repository repo : repos) {
-            org.osgi.service.obr.Resource[] resources = repo.getResources();
+            org.apache.felix.bundlerepository.Resource[] resources = repo.getResources();
             for (int i = 0; i < resources.length; i++) {
                 if (resources[i].getSymbolicName().equals(symbolicName)) {
                     if (resources[i].getVersion().compareTo(version) == 0) {
@@ -215,7 +216,7 @@ public class ResourceResolverImpl implements ResourceResolver {
     /**
      * convert to the resource from the obr resource
      */
-    private Resource toResource(org.osgi.service.obr.Resource resource) throws SubsystemException {
+    private Resource toResource(org.apache.felix.bundlerepository.Resource resource) throws SubsystemException {
         if (resource == null) {
             throw new SubsystemException("unable to find the resource " + resource);
         }
@@ -225,7 +226,7 @@ public class ResourceResolverImpl implements ResourceResolver {
 
         Object type = props.get(SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE);
 
-        return new ResourceImpl(resource.getSymbolicName(), resource.getVersion(), type == null ? SubsystemConstants.RESOURCE_TYPE_BUNDLE : (String)type, resource.getURL().toExternalForm() , props);
+        return new ResourceImpl(resource.getSymbolicName(), resource.getVersion(), type == null ? SubsystemConstants.RESOURCE_TYPE_BUNDLE : (String)type, resource.getURI() , props);
     }
     
     public List<Resource> resolve(List<Resource> subsystemContent,
@@ -238,33 +239,33 @@ public class ResourceResolverImpl implements ResourceResolver {
         
         // add subsystem content to the resolver
         for (Resource res : subsystemContent) {
-            org.osgi.service.obr.Resource obrRes = findOBRResource(res);
+            org.apache.felix.bundlerepository.Resource obrRes = findOBRResource(res);
             obrResolver.add(obrRes);
         }
         
         // add subsystem resource to the resolver
         for (Resource res : subsystemResources) {
-            org.osgi.service.obr.Resource obrRes = findOBRResource(res);
+            org.apache.felix.bundlerepository.Resource obrRes = findOBRResource(res);
             obrResolver.add(obrRes);
         }
         
         // Question: do we need to create the repository.xml for the subsystem and add the repo to RepoAdmin?
         List<Resource> resources = new ArrayList<Resource>();
         if (obrResolver.resolve()) {
-            for (org.osgi.service.obr.Resource res : obrResolver.getRequiredResources()) {
+            for (org.apache.felix.bundlerepository.Resource res : obrResolver.getRequiredResources()) {
                 resources.add(toResource(res));
             }
             
             // Question: should we handle optional resource differently?
-            for (org.osgi.service.obr.Resource res : obrResolver.getOptionalResources()) {
+            for (org.apache.felix.bundlerepository.Resource res : obrResolver.getOptionalResources()) {
                 resources.add(toResource(res));
             }
         } else {
             // log the unsatisfied requirement
-            Requirement[] reqs = obrResolver.getUnsatisfiedRequirements();
-            for (Requirement req : reqs) {
+            Reason[] reasons = obrResolver.getUnsatisfiedRequirements();
+            for (Reason reason : reasons) {
                 LOGGER.warn("Unable to resolve subsystem content {} subsystem resource {} because of unsatisfied requirement {}", 
-                        new Object[] {subsystemContent.toString(), subsystemResources.toString(), req.getName()});
+                        new Object[] {subsystemContent.toString(), subsystemResources.toString(), reason.getRequirement().getName()});
             }
 
         }

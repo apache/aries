@@ -85,8 +85,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.service.obr</artifactId>
-            <optional>true</optional>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <version>1.6.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
