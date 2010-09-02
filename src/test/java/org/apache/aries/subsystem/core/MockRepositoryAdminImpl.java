@@ -18,44 +18,60 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osgi.service.obr.Repository;
-import org.osgi.service.obr.RepositoryAdmin;
-import org.osgi.service.obr.Resolver;
-import org.osgi.service.obr.Resource;
+import org.apache.felix.bundlerepository.DataModelHelper;
+import org.apache.felix.bundlerepository.Repository;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
+import org.apache.felix.bundlerepository.Requirement;
+import org.apache.felix.bundlerepository.Resolver;
+import org.apache.felix.bundlerepository.Resource;
+import org.osgi.framework.InvalidSyntaxException;
 
 public class MockRepositoryAdminImpl implements RepositoryAdmin {
 
     List<Repository> repos = new ArrayList<Repository>();
-    public MockRepositoryAdminImpl() {
-        
-    }
-    public Repository addRepository(URL arg0) throws Exception {
-        return null;
-        
-    }
 
-    public Resource[] discoverResources(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public Repository addRepository(String arg0) throws Exception {
+		return null;
+	}
 
-    public Resource getResource(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public Repository addRepository(URL arg0) throws Exception {
+		return null;
+	}
 
-    public Repository[] listRepositories() {
-        return (Repository[]) repos.toArray();
-    }
+	public Resource[] discoverResources(String arg0)
+			throws InvalidSyntaxException {
+		return null;
+	}
 
-    public boolean removeRepository(URL arg0) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	public Resource[] discoverResources(Requirement[] arg0) {
+		return null;
+	}
 
-    public Resolver resolver() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public DataModelHelper getHelper() {
+		return null;
+	}
 
+	public Repository getLocalRepository() {
+		return null;
+	}
+
+	public Repository getSystemRepository() {
+		return null;
+	}
+
+	public Repository[] listRepositories() {
+		return (Repository[])repos.toArray();
+	}
+
+	public boolean removeRepository(String arg0) {
+		return false;
+	}
+
+	public Resolver resolver() {
+		return null;
+	}
+
+	public Resolver resolver(Repository[] arg0) {
+		return null;
+	}
 }
