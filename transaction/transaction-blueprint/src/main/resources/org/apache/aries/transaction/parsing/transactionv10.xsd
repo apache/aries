@@ -17,7 +17,7 @@
     <xsd:annotation>
         <xsd:documentation>
       <![CDATA[
-        This is the XML Schema for the OSGi Blueprint declarative transaction 1.0.0 development descriptor.  Blueprint declarative transaction is a custom namespace for OSGi Blueprint service 1.0.0 development descriptor.  It is designed to decorate transaction attribute of the bean components, which can be done at the bean level.  Blueprint configuration files using this schema must indicate the schema using the transactions/v1.1.0 namespace.  For example,        
+        This is the XML Schema for the OSGi Blueprint declarative transaction 1.0.0 development descriptor.  Blueprint declarative transaction is a custom namespace for OSGi Blueprint service 1.0.0 development descriptor.  It is designed to decorate transaction attribute of the bean components, which can be done at the bean level.  Blueprint configuration files using this schema must indicate the schema using the transactions/v1.0.0 namespace.  For example,        
         <transaction xmlns="http://aries.apache.org/xmlns/transactions/v1.0.0">
         if used as a qualified namespace, "tx" is the recommended namespace prefix.
       ]]>
