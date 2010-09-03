@@ -59,7 +59,7 @@ public class BundleFrameworkImpl implements BundleFramework
     {
       _compositeBundle.start(Bundle.START_ACTIVATION_POLICY);
   
-      _packageAdminTracker = new ServiceTracker(_compositeBundle.getBundleContext(),
+      _packageAdminTracker = new ServiceTracker(_compositeBundle.getCompositeFramework().getBundleContext(),
           PackageAdmin.class.getName(), null);
       _packageAdminTracker.open();
     }
