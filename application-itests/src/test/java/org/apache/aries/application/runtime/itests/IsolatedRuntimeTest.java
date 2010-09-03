@@ -97,61 +97,13 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     try
     {
       ctx.start();
-      
-      BundleContext appContext = null;
-      for (Bundle sharedBundle : bundleContext.getBundles())
-      {
-        if (sharedBundle.getSymbolicName().equals("shared.bundle.framework"))
-        {
-          BundleContext sharedContext = ((CompositeBundle)sharedBundle).getCompositeFramework().getBundleContext();
-          for (Bundle appBundle : sharedContext.getBundles())
-          {
-            if (appBundle.getSymbolicName().equals("test.eba"))
-            {
-              appContext = ((CompositeBundle)appBundle).getCompositeFramework().getBundleContext();
-              break;
-            }
-          }
-          break;
-        }
-      }
-      
-      if (appContext != null) {  
-        // Dive into the context and pull out the composite bundle for the app
-        Filter osgiFilter = FrameworkUtil.createFilter("(" + Constants.OBJECTCLASS + "=" + HelloWorld.class.getName() + ")");
-        ServiceTracker tracker = new ServiceTracker(appContext, 
-            osgiFilter,
-            null);
-        tracker.open();
-        
-        Object hw = tracker.waitForService(DEFAULT_TIMEOUT);
-        
-        tracker.close();
-        
-        // We can cast to our version of HelloWorld as it is in a different classloader
-        // so reflect into it to get the single method
-        Class returnClass = hw.getClass();
-        Method method = returnClass.getDeclaredMethod("getMessage",null);
-        result = (String)method.invoke(hw);      
-       
-      }
-      else
-        fail("No service found inside application framework");
-      
-    } catch (Exception e)
-    {
-      System.out.println("MOOP");
-      
-      e.printStackTrace();
-      
+      assertHelloWorldService("test.eba");
     } finally {
       ctx.stop();
       manager.uninstall(ctx);
     }
-    
-    assertEquals (result, "hello world");
   }
-
+  
   @Test
   public void testAppWithApplicationManifest() throws Exception {
         
@@ -163,52 +115,93 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     {
       ctx.start();
       
-      BundleContext appContext = null;
-      for (Bundle sharedBundle : bundleContext.getBundles())
-      {
-        if (sharedBundle.getSymbolicName().equals("shared.bundle.framework"))
-        {
-          BundleContext sharedContext = ((CompositeBundle)sharedBundle).getCompositeFramework().getBundleContext();
-          for (Bundle appBundle : sharedContext.getBundles())
-          {
-            if (appBundle.getSymbolicName().equals("org.apache.aries.sample2"))
-            {
-              appContext = ((CompositeBundle)appBundle).getCompositeFramework().getBundleContext();
-              break;
-            }
-          }
-          break;
-        }
-      }
-      
-      if (appContext != null) {  
-        // Dive into the context and pull out the composite bundle for the app
-        Filter osgiFilter = FrameworkUtil.createFilter("(" + Constants.OBJECTCLASS + "=" + HelloWorld.class.getName() + ")");
-        ServiceTracker tracker = new ServiceTracker(appContext, 
-            osgiFilter,
-            null);
-        tracker.open();
-        
-        Object hw = tracker.waitForService(DEFAULT_TIMEOUT);
-        
-        tracker.close();
-        
-        // We can cast to our version of HelloWorld as it is in a different classloader
-        // so reflect into it to get the single method
-        Class returnClass = hw.getClass();
-        Method method = returnClass.getDeclaredMethod("getMessage",null);
-        String result = (String)method.invoke(hw);
-        assertEquals (result, "hello world");
-        
-        
-      }
-      else
-        fail("No service found inside application framework");
+      assertHelloWorldService("org.apache.aries.sample2");
       
     } finally {
       ctx.stop();
       manager.uninstall(ctx);
     }
+  }
+  
+  @Test
+  public void testUninstallReinstall() throws Exception {
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
+    AriesApplicationContext ctx = manager.install(app);
+    
+    app = ctx.getApplication();
+    
+    try
+    {
+      ctx.start();
+      
+      assertHelloWorldService("org.apache.aries.sample2");
+      
+      ctx.stop();
+      manager.uninstall(ctx);
+      
+      ctx = manager.install(app);
+      ctx.start();
+      
+      assertHelloWorldService("org.apache.aries.sample2");
+      
+    } finally {
+      ctx.stop();
+      manager.uninstall(ctx);
+    }    
+  }
+
+  
+  
+  private void assertHelloWorldService(String appName) throws Exception
+  {
+    BundleContext appContext = getAppIsolatedBundleContext(appName);
+    
+    if (appContext != null) {  
+      // Dive into the context and pull out the composite bundle for the app
+      Filter osgiFilter = FrameworkUtil.createFilter("(" + Constants.OBJECTCLASS + "=" + HelloWorld.class.getName() + ")");
+      ServiceTracker tracker = new ServiceTracker(appContext, 
+          osgiFilter,
+          null);
+      tracker.open();
+      
+      Object hw = tracker.waitForService(DEFAULT_TIMEOUT);
+      
+      tracker.close();
+      
+      // We can cast to our version of HelloWorld as it is in a different classloader
+      // so reflect into it to get the single method
+      Class returnClass = hw.getClass();
+      Method method = returnClass.getDeclaredMethod("getMessage",null);
+      String result = (String)method.invoke(hw);      
+      
+      assertEquals("hello world", result);
+    }
+    else {
+      fail("No service found inside application framework");
+    }
+    
+  }
+  
+  private BundleContext getAppIsolatedBundleContext(String appName)
+  {
+    for (Bundle sharedBundle : bundleContext.getBundles())
+    {
+      if (sharedBundle.getSymbolicName().equals("shared.bundle.framework"))
+      {
+        BundleContext sharedContext = ((CompositeBundle)sharedBundle).getCompositeFramework().getBundleContext();
+        for (Bundle appBundle : sharedContext.getBundles())
+        {
+          if (appBundle.getSymbolicName().equals(appName))
+          {
+            return ((CompositeBundle)appBundle).getCompositeFramework().getBundleContext();
+          }
+        }
+        break;
+      }
+    }    
+    
+    return null;
   }
 
   
