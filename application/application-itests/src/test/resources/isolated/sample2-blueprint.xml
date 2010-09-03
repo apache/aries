@@ -20,7 +20,7 @@
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
   
   <bean id="hello" class="org.apache.aries.isolated.sample.HelloWorldImpl">
-  	<property name="message" value="hello world" />
+  	<property name="message" value="hello brave new world" />
   </bean>
   <service interface="org.apache.aries.isolated.sample.HelloWorld" ref="hello" />
   
