@@ -119,6 +119,29 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     sampleJar2.writeOut(fout);
     fout.close();
     
+    ZipFixture ebaWithFragment = ArchiveFixture.newZip()
+      .jar("sample.jar")
+        .manifest().symbolicName("org.apache.aries.isolated.sample")
+          .attribute("Bundle-Version", "1.0.0")
+          .end()
+      .end()
+      .jar("fragment.jar")
+        .manifest().symbolicName("org.apache.aries.isolated.fragment")
+          .attribute("Bundle-Version", "1.0.0")
+          .attribute("Fragment-Host", "org.apache.aries.isolated.sample")
+        .end()
+        .binary("org/apache/aries/isolated/sample/HelloWorld.class", 
+            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorld.class"))
+        .binary("org/apache/aries/isolated/sample/HelloWorldImpl.class", 
+            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorldImpl.class"))
+        .binary("OSGI-INF/blueprint/sample-blueprint.xml", 
+            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("isolated/sample-blueprint.xml"))
+        .end();
+    
+    fout = new FileOutputStream("withFragment.eba");
+    ebaWithFragment.writeOut(fout);
+    fout.close();
+    
     createdApplications = true;
   }
   
@@ -129,14 +152,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     AriesApplicationContext ctx = manager.install(app);
     
-    try
-    {
-      ctx.start();
-      assertHelloWorldService("test.eba");
-    } finally {
-      ctx.stop();
-      manager.uninstall(ctx);
-    }
+    ctx.start();
+    assertHelloWorldService("test.eba");
   }
   
   @Test
@@ -146,16 +163,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
     AriesApplicationContext ctx = manager.install(app);
     
-    try
-    {
-      ctx.start();
-      
-      assertHelloWorldService("org.apache.aries.sample2");
-      
-    } finally {
-      ctx.stop();
-      manager.uninstall(ctx);
-    }
+    ctx.start();
+    assertHelloWorldService("org.apache.aries.sample2");
   }
   
   @Test
@@ -165,25 +174,30 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     AriesApplicationContext ctx = manager.install(app);
     
     app = ctx.getApplication();
+
+    ctx.start();
+
+    assertHelloWorldService("org.apache.aries.sample2");
+
+    ctx.stop();
+    manager.uninstall(ctx);
+
+    ctx = manager.install(app);
+    ctx.start();
+
+    assertHelloWorldService("org.apache.aries.sample2");
+  }
+  
+  @Test
+  public void testAppWithFragment() throws Exception
+  {
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("withFragment.eba")));
+    AriesApplicationContext ctx = manager.install(app);
+
+    ctx.start();
     
-    try
-    {
-      ctx.start();
-      
-      assertHelloWorldService("org.apache.aries.sample2");
-      
-      ctx.stop();
-      manager.uninstall(ctx);
-      
-      ctx = manager.install(app);
-      ctx.start();
-      
-      assertHelloWorldService("org.apache.aries.sample2");
-      
-    } finally {
-      ctx.stop();
-      manager.uninstall(ctx);
-    }    
+    assertHelloWorldService("withFragment.eba");
   }
 
   @Test
@@ -270,6 +284,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     assertHelloWorldService("org.apache.aries.sample2", "hello brave new world");
   }  
   
+
   private void assertHelloWorldService(String appName) throws Exception
   {
     assertHelloWorldService(appName, "hello world");
