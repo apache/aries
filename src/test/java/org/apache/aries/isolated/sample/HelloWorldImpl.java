@@ -21,9 +21,14 @@ package org.apache.aries.isolated.sample;
 import org.apache.aries.isolated.sample.HelloWorld;
 
 public class HelloWorldImpl implements HelloWorld {
-
+  private String msg = "hello world";
+  
+  public void setMessage(String msg) {
+    this.msg = msg;
+  }
+  
   public String getMessage() {
-    return "hello world";
+    return msg;
   }
 
 }
