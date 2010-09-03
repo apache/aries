@@ -29,7 +29,16 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
 
 public interface BundleRepository {
-
+  /**
+   * Service property denoting the scope of the bundle repository. This can 
+   * <ul>
+   *  <li>global</li>
+   *  <li>&lt;app symbolic name&gt;_&lt;app version&gt;</li>
+   * </ul>
+   */
+  public static final String REPOSITORY_SCOPE = "repositoryScope";
+  public static final String GLOBAL_SCOPE = "global";
+  
 	/**
 	   * A suggested bundle to use.
 	   */
