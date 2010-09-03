@@ -78,6 +78,7 @@ public class BundleFrameworkImpl implements BundleFramework
     }
 
     _compositeBundle.stop();
+    _compositeBundle.uninstall();
   }
 
   public void start(Bundle b) throws BundleException
