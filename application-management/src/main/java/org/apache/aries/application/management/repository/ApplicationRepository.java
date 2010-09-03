@@ -18,7 +18,6 @@
  */
 package org.apache.aries.application.management.repository;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.apache.aries.application.Content;
@@ -35,7 +34,7 @@ import org.osgi.framework.Version;
 public class ApplicationRepository implements BundleRepository
 {
   private static final int REPOSITORY_COST = 0;
-  public static final String REPOSITORY_SCOPE = "repositoryScope";
+
   private AriesApplication app;
   AriesApplicationResolver resolver;
 
@@ -51,23 +50,30 @@ public class ApplicationRepository implements BundleRepository
 
   public BundleSuggestion suggestBundleToUse(DeploymentContent content)
   {
-    return new BundleSuggestionImpl(content);
+    BundleInfo bundleInfo = null;
+    if ((app.getBundleInfo() != null) && (!app.getBundleInfo().isEmpty())) {
+      for (BundleInfo bi : app.getBundleInfo()) {
+        if (bi.getSymbolicName().equals(content.getContentName()) && (bi.getVersion().equals(content.getVersion().getExactVersion()))) {
+          bundleInfo = bi;
+          break;
+        }
+      }
+    }
+    
+    if (bundleInfo != null) {
+      return new BundleSuggestionImpl(bundleInfo);
+    } else {
+      return null;
+    }
   }
 
   private class BundleSuggestionImpl implements BundleSuggestion
   {
-    private BundleInfo bundleInfo = null;
+    private final BundleInfo bundleInfo;
     
-    BundleSuggestionImpl(DeploymentContent content)
+    BundleSuggestionImpl(BundleInfo bundleInfo)
     {
-      if ((app.getBundleInfo() != null) && (!app.getBundleInfo().isEmpty())) {
-        for (BundleInfo bi : app.getBundleInfo()) {
-          if (bi.getSymbolicName().equals(content.getContentName()) && (bi.getVersion().equals(content.getVersion().getExactVersion()))) {
-            bundleInfo = bi;
-            break;
-          }
-        }
-      }
+      this.bundleInfo = bundleInfo;
     }
 
     public int getCost()

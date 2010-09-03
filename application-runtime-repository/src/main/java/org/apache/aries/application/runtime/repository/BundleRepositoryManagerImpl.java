@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 public class BundleRepositoryManagerImpl implements BundleRepositoryManager
 {    
   private static final Logger LOGGER = LoggerFactory.getLogger(BundleRepositoryManagerImpl.class);
-  public static final String REPOSITORY_SCOPE = "repositoryScope";
  
   private BundleContext bc;
     
@@ -94,7 +93,7 @@ public class BundleRepositoryManagerImpl implements BundleRepositoryManager
 
     String appScope = appName + "_" + appVersion;
     
-    String filter = "(|(" + REPOSITORY_SCOPE + "=global)(" + REPOSITORY_SCOPE + "="
+    String filter = "(|(" + BundleRepository.REPOSITORY_SCOPE + "=" + BundleRepository.GLOBAL_SCOPE + ")(" + BundleRepository.REPOSITORY_SCOPE + "="
         + appScope + "))";
     try {
       ServiceReference[] refs = bc.getServiceReferences(
@@ -149,14 +148,16 @@ public class BundleRepositoryManagerImpl implements BundleRepositoryManager
 
         List<BundleSuggestion> thoughts = bundlesuggestions.get(bundleToFind.getExactVersion());
 
-        Collections.sort(thoughts, new Comparator<BundleSuggestion>() {
-          public int compare(BundleSuggestion o1, BundleSuggestion o2)
-          {
-            return o1.getCost() - o2.getCost();
-          }
-        });
-
-        suggestion = thoughts.get(0);
+        if (thoughts != null) {
+          Collections.sort(thoughts, new Comparator<BundleSuggestion>() {
+            public int compare(BundleSuggestion o1, BundleSuggestion o2)
+            {
+              return o1.getCost() - o2.getCost();
+            }
+          });
+  
+          suggestion = thoughts.get(0);
+        }
       }
 
       // add the suggestion to the list
@@ -164,7 +165,7 @@ public class BundleRepositoryManagerImpl implements BundleRepositoryManager
         urlToBeInstalled.put(bundleToFind, suggestion);
         it.remove();
       } else {
-        throw new ContextException("Unable to find bundle based on bundle URL " + suggestion);
+        throw new ContextException("Unable to find bundle "+bundleToFind.getContentName() + "/" + bundleToFind.getExactVersion());
       }
     }
     
