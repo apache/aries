@@ -29,6 +29,7 @@ import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.service.jndi.JNDIConstants;
 
 public abstract class AbstractServiceRegistryContext implements Context
 {
@@ -43,17 +44,31 @@ public abstract class AbstractServiceRegistryContext implements Context
   @SuppressWarnings("unchecked")
   public AbstractServiceRegistryContext(BundleContext callerContext, Hashtable<?, ?> environment)
   {
-    this.callerContext = callerContext;
     env = new HashMap<String, Object>();
     env.putAll((Map<? extends String, ? extends Object>) environment);
+    // ARIES-397:, If the caller has provided a BundleContext
+    // in the hashtable, use this in preference to callerContext
+    BundleContext bc = (BundleContext) env.get(JNDIConstants.BUNDLE_CONTEXT);
+    if (bc != null) { 
+      this.callerContext = bc;
+    } else { 
+      this.callerContext = callerContext;    
+    }
   }
 
   @SuppressWarnings("unchecked")
   public AbstractServiceRegistryContext(BundleContext callerContext, Map<?, ?> environment)
   {
-    this.callerContext = callerContext;
     env = new HashMap<String, Object>();
     env.putAll((Map<? extends String, ? extends Object>) environment);
+    // ARIES-397: If the caller has provided a BundleContext
+    // in the hashtable, use this in preference to callerContext
+    BundleContext bc = (BundleContext) env.get(JNDIConstants.BUNDLE_CONTEXT);
+    if (bc != null) { 
+      this.callerContext = bc;
+    } else { 
+      this.callerContext = callerContext;    
+    }
   }
 
   public Object addToEnvironment(String propName, Object propVal) throws NamingException
