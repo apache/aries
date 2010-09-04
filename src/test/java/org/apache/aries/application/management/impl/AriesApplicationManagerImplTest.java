@@ -19,9 +19,7 @@
 
 package org.apache.aries.application.management.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +28,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +50,8 @@ import org.apache.aries.application.impl.ContentImpl;
 import org.apache.aries.application.impl.DeploymentContentImpl;
 import org.apache.aries.application.impl.DeploymentMetadataFactoryImpl;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
+import org.apache.aries.application.management.AriesApplicationContextManager;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleConversion;
 import org.apache.aries.application.management.BundleConverter;
@@ -61,12 +62,15 @@ import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.management.SimpleBundleInfo;
 import org.apache.aries.application.utils.manifest.BundleManifest;
+import org.apache.aries.unittest.mocks.MethodCall;
+import org.apache.aries.unittest.mocks.Skeleton;
 import org.apache.aries.unittest.utils.EbaUnitTestUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -373,6 +377,101 @@ public class AriesApplicationManagerImplTest {
     assertEquals(1, dm.getApplicationProvisionBundles().size());
     assertEquals (dm.getApplicationSymbolicName(), app.getApplicationMetadata().getApplicationSymbolicName());
     assertEquals (dm.getApplicationVersion(), app.getApplicationMetadata().getApplicationVersion());
+  }
+  
+  @Test
+  public void testUpdate() throws Exception {
+    AriesApplication app = createApplication(TEST_EBA);
+
+    DeploymentMetadata depMf = createUpdateDepMf();
+    
+    AriesApplicationContextManager ctxMgr = Skeleton.newMock(AriesApplicationContextManager.class);
+    _appMgr.setApplicationContextManager(ctxMgr);
+
+    _appMgr.update(app, depMf);
+    
+    assertTrue("Deployment.mf should have been updated", app.getDeploymentMetadata() == depMf);
+  }
+  
+  @Test(expected=IllegalArgumentException.class)
+  public void testUpdateWithIncorrectDepMf() throws Exception
+  {
+    AriesApplication app = createApplication(TEST_EBA);
+
+    DeploymentMetadata depMf = Skeleton.newMock(DeploymentMetadata.class);
+    Skeleton.getSkeleton(depMf).setReturnValue(new MethodCall(DeploymentMetadata.class, "getApplicationSymbolicName"), "random.app");
+    Skeleton.getSkeleton(depMf).setReturnValue(new MethodCall(DeploymentMetadata.class, "getApplicationVersion"), new Version("1.0.0"));
+    
+    AriesApplicationContextManager ctxMgr = Skeleton.newMock(AriesApplicationContextManager.class);
+    _appMgr.setApplicationContextManager(ctxMgr);
+
+    _appMgr.update(app, depMf);    
+  }
+  
+  @Test
+  public void testFailedUpdate() throws Exception {
+    AriesApplication app = createApplication(TEST_EBA);
+
+    DeploymentMetadata depMf = createUpdateDepMf();
+    
+    AriesApplicationContext ctx = Skeleton.newMock(AriesApplicationContext.class);
+    Skeleton.getSkeleton(ctx).setReturnValue(new MethodCall(AriesApplicationContext.class, "getApplication"), app);
+    
+    AriesApplicationContextManager ctxMgr = Skeleton.newMock(AriesApplicationContextManager.class);
+    Skeleton.getSkeleton(ctxMgr).setReturnValue(
+        new MethodCall(AriesApplicationContextManager.class, "getApplicationContexts"), 
+        Collections.singleton(ctx));    
+    
+    Skeleton.getSkeleton(ctxMgr).setThrows(
+        new MethodCall(AriesApplicationContextManager.class, "update", AriesApplication.class, DeploymentMetadata.class), 
+        new UpdateException("", null, false, null));
+    
+    _appMgr.setApplicationContextManager(ctxMgr);
+
+    try {
+      _appMgr.update(app, depMf);
+      fail("Update should have failed.");
+    } catch (UpdateException e) {
+      assertTrue("Deployment.mf should have been updated", app.getDeploymentMetadata() == depMf);
+    }
+  }
+  
+  @Test
+  public void testRolledbackUpdate() throws Exception {
+    AriesApplication app = createApplication(TEST_EBA);
+
+    DeploymentMetadata depMf = createUpdateDepMf();
+    DeploymentMetadata oldMf = app.getDeploymentMetadata();
+    
+    AriesApplicationContext ctx = Skeleton.newMock(AriesApplicationContext.class);
+    Skeleton.getSkeleton(ctx).setReturnValue(new MethodCall(AriesApplicationContext.class, "getApplication"), app);
+    
+    AriesApplicationContextManager ctxMgr = Skeleton.newMock(AriesApplicationContextManager.class);
+    Skeleton.getSkeleton(ctxMgr).setReturnValue(
+        new MethodCall(AriesApplicationContextManager.class, "getApplicationContexts"), 
+        Collections.singleton(ctx));    
+    
+    Skeleton.getSkeleton(ctxMgr).setThrows(
+        new MethodCall(AriesApplicationContextManager.class, "update", AriesApplication.class, DeploymentMetadata.class), 
+        new UpdateException("", null, true, null));
+    
+    _appMgr.setApplicationContextManager(ctxMgr);
+
+    try {
+      _appMgr.update(app, depMf);
+      fail("Update should have failed.");
+    } catch (UpdateException e) {
+      assertTrue("Deployment.mf should have been rolled back to the old", app.getDeploymentMetadata() == oldMf);
+    }
+  }
+  
+  private DeploymentMetadata createUpdateDepMf()
+  {
+    DeploymentMetadata depMf = Skeleton.newMock(DeploymentMetadata.class);
+    Skeleton.getSkeleton(depMf).setReturnValue(new MethodCall(DeploymentMetadata.class, "getApplicationSymbolicName"), "org.apache.aries.application.management.test");
+    Skeleton.getSkeleton(depMf).setReturnValue(new MethodCall(DeploymentMetadata.class, "getApplicationVersion"), new Version("1.0.0"));
+
+    return depMf;
   }
   
   private AriesApplication createApplication (String fileName) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ManagementException, ResolverException {
