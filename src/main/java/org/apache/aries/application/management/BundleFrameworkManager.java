@@ -20,9 +20,13 @@
 package org.apache.aries.application.management;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.apache.aries.application.DeploymentContent;
+import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
 
 public interface BundleFrameworkManager
@@ -65,6 +69,20 @@ public interface BundleFrameworkManager
       Collection<BundleSuggestion> bundlesToInstall, 
       AriesApplication app)
     throws BundleException;
+  
+  public boolean allowsUpdate(DeploymentMetadata newMetadata, DeploymentMetadata oldMetadata);
+  
+  public interface BundleLocator {
+    public Map<DeploymentContent, BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles) throws ContextException;    
+  }
+  
+  public void updateBundles(
+      DeploymentMetadata newMetadata, 
+      DeploymentMetadata oldMetadata, 
+      AriesApplication app, 
+      BundleLocator locator,
+      Set<Bundle> bundles,
+      boolean startBundles) throws UpdateException;
   
   /**
    * Starts a previously installed bundle 
