@@ -21,7 +21,6 @@ package org.apache.aries.application.runtime.isolated.impl;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,15 +29,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationContextManager;
-import org.apache.aries.application.management.BundleFramework;
 import org.apache.aries.application.management.BundleFrameworkManager;
 import org.apache.aries.application.management.BundleRepositoryManager;
 import org.apache.aries.application.management.ManagementException;
+import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.AriesApplicationContext.ApplicationState;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +82,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     
     return _bundleRepositoryManager;
   }
-
+  
   public synchronized AriesApplicationContext getApplicationContext(AriesApplication app)
       throws BundleException, ManagementException
   {
@@ -172,6 +171,20 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     LOGGER.debug(LOG_EXIT, "getBundleFrameworkManager", _bundleFrameworkManager);
     
     return _bundleFrameworkManager;
+  }
+
+  public AriesApplicationContext update(AriesApplication app, DeploymentMetadata oldMetadata) throws UpdateException {
+    ApplicationContextImpl ctx = _appToContextMap.get(app);
+    
+    if (ctx == null) {
+      throw new IllegalArgumentException("AriesApplication "+
+          app.getApplicationMetadata().getApplicationSymbolicName() + "/" + app.getApplicationMetadata().getApplicationVersion() + 
+          " cannot be updated because it is not installed");
+    }
+    
+    ctx.update(app.getDeploymentMetadata(), oldMetadata);
+    
+    return ctx;
   }
 
 }

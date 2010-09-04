@@ -25,19 +25,24 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.aries.application.Content;
+import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleFramework;
 import org.apache.aries.application.management.BundleFrameworkFactory;
 import org.apache.aries.application.management.BundleFrameworkManager;
 import org.apache.aries.application.management.ContextException;
+import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.provider.UpdateStrategy;
 import org.apache.aries.application.utils.runtime.InstallUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -54,6 +59,13 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   BundleFramework _sharedBundleFramework;
   BundleFrameworkFactory _bundleFrameworkFactory;
   Map<Bundle, BundleFramework> _frameworks = new HashMap<Bundle, BundleFramework>();
+  Map<AriesApplication, BundleFramework> _frameworksByApp = new HashMap<AriesApplication, BundleFramework>();
+  private List<UpdateStrategy> _updateStrategies = Collections.emptyList();
+
+  public void setUpdateStrategies(List<UpdateStrategy> updateStrategies) 
+  {
+    _updateStrategies = updateStrategies;
+  }
 
   public void setBundleContext(BundleContext ctx)
   {
@@ -89,6 +101,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     BundleFramework isolatedFramework = isolatedInstall(bundlesToInstall, app);
 
     _frameworks.put(isolatedFramework.getFrameworkBundle(), isolatedFramework);
+    _frameworksByApp.put(app, isolatedFramework);
 
     return isolatedFramework.getFrameworkBundle();
   }
@@ -226,4 +239,79 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     }
     // Do not stop shared bundles
   }
+
+  public boolean allowsUpdate(DeploymentMetadata newMetadata, DeploymentMetadata oldMetadata) 
+  {
+    for (UpdateStrategy strategy : _updateStrategies) {
+      if (strategy.allowsUpdate(newMetadata, oldMetadata)) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
+  public void updateBundles(
+      final DeploymentMetadata newMetadata, 
+      final DeploymentMetadata oldMetadata, 
+      final AriesApplication app, 
+      final BundleLocator locator,
+      final Set<Bundle> bundles,
+      final boolean startBundles) 
+    throws UpdateException 
+  {
+    UpdateStrategy strategy = null;
+    
+    for (UpdateStrategy us : _updateStrategies) {
+      if (us.allowsUpdate(newMetadata, oldMetadata)) {
+        strategy = us;
+        break;
+      }
+    }
+    
+    if (strategy == null) throw new IllegalArgumentException("No UpdateStrategy supports the supplied DeploymentMetadata changes.");
+    
+    final BundleFramework appFwk = _frameworksByApp.get(app);
+    
+    strategy.update(new UpdateStrategy.UpdateInfo() {
+      
+      public void register(Bundle bundle) {
+        bundles.add(bundle);
+      }
+      
+      public void unregister(Bundle bundle) {
+        bundles.remove(bundle);
+      }
+      
+      public Map<DeploymentContent, BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles) throws ContextException {
+        return locator.suggestBundle(bundles);
+      }
+      
+      public boolean startBundles() {
+        return startBundles;
+      }
+      
+      public BundleFramework getSharedFramework() {
+        return _sharedBundleFramework;
+      }
+      
+      public DeploymentMetadata getOldMetadata() {
+        return oldMetadata;
+      }
+      
+      public DeploymentMetadata getNewMetadata() {
+        return newMetadata;
+      }
+      
+      public AriesApplication getApplication() {
+        return app;
+      }
+      
+      public BundleFramework getAppFramework() {
+        return appFwk;
+      }
+    });
+  }
+  
+  
 }

@@ -24,6 +24,7 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,9 +40,9 @@ import org.apache.aries.application.management.BundleFrameworkManager;
 import org.apache.aries.application.management.BundleRepositoryManager;
 import org.apache.aries.application.management.ContextException;
 import org.apache.aries.application.management.ManagementException;
+import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,12 +54,11 @@ public class ApplicationContextImpl implements AriesApplicationContext
   private AriesApplication _application;
   private Set<Bundle> _bundles;
   private ApplicationState _state = ApplicationState.UNINSTALLED;
-  private BundleContext _bundleContext;
   private BundleRepositoryManager _bundleRepositoryManager;
   private BundleFrameworkManager _bundleFrameworkManager;
 
   /** deployment metadata associated with aries application */
-  private final DeploymentMetadata _deploymentMF;
+  private DeploymentMetadata _deploymentMF;
 
   public ApplicationContextImpl(AriesApplication app, ApplicationContextManagerImpl acm)
       throws BundleException, ManagementException
@@ -212,34 +212,42 @@ public class ApplicationContextImpl implements AriesApplicationContext
        */
       Map<DeploymentContent, BundleSuggestion> bundlesToBeInstalled = new HashMap<DeploymentContent, BundleSuggestion>();
       try {
-        bundlesToBeInstalled = _bundleRepositoryManager.getBundleSuggestions(_application
-            .getApplicationMetadata().getApplicationSymbolicName(), _application
-            .getApplicationMetadata().getApplicationVersion().toString(), bundlesToFind);
+        bundlesToBeInstalled = findBundleSuggestions(bundlesToFind);
       } catch (ContextException e) {
         numException++;
         LOGGER.debug(LOG_EXCEPTION, e);
       }
 
-      /**
-       * Perform the install of the bundles
-       */
-      try {
-        if (shared) 
-          _bundles.addAll(_bundleFrameworkManager.installSharedBundles(
-            new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
-        else 
-          _bundles.add(_bundleFrameworkManager.installIsolatedBundles(
-            new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
-
-      } catch (BundleException e) {
-        numException++;
-        LOGGER.debug(LOG_EXCEPTION, e);
+      if (numException == 0) {
+        /**
+         * Perform the install of the bundles
+         */
+        try {
+          if (shared) 
+            _bundles.addAll(_bundleFrameworkManager.installSharedBundles(
+              new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
+          else 
+            _bundles.add(_bundleFrameworkManager.installIsolatedBundles(
+              new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
+  
+        } catch (BundleException e) {
+          numException++;
+          LOGGER.debug(LOG_EXCEPTION, e);
+        }
       }
     }
 
     LOGGER.debug(LOG_EXIT, "install", new Object[] { Boolean.valueOf(numException == 0) });
 
     return (numException == 0);
+  }
+  
+  private Map<DeploymentContent, BundleSuggestion> findBundleSuggestions(Collection<DeploymentContent> bundlesToFind)
+    throws ContextException
+  {
+    return _bundleRepositoryManager.getBundleSuggestions(_application
+        .getApplicationMetadata().getApplicationSymbolicName(), _application
+        .getApplicationMetadata().getApplicationVersion().toString(), bundlesToFind);
   }
 
   public AriesApplication getApplication()
@@ -322,5 +330,70 @@ public class ApplicationContextImpl implements AriesApplicationContext
     _state = state;
 
     LOGGER.debug(LOG_EXIT, "setState");
+  }
+  
+  public void update(final DeploymentMetadata newMetadata, final DeploymentMetadata oldMetadata) 
+    throws UpdateException
+  {
+    final boolean toStart = getApplicationState() == ApplicationState.ACTIVE;
+    
+    if (_bundleFrameworkManager.allowsUpdate(newMetadata, oldMetadata)) {
+      _bundleFrameworkManager.updateBundles(
+          newMetadata, oldMetadata, 
+          _application, 
+          new BundleFrameworkManager.BundleLocator() {            
+            public Map<DeploymentContent, BundleSuggestion> suggestBundle(
+                Collection<DeploymentContent> bundles) throws ContextException {
+              return findBundleSuggestions(bundles);
+            }
+          },
+          _bundles, 
+          toStart);
+      
+    } else {
+      // fallback do a uninstall, followed by a reinstall
+      
+      boolean uninstallSuccess = uninstall();
+      
+      if (uninstallSuccess) {
+        _deploymentMF = newMetadata;
+        boolean reinstallSuccess = processContent();
+        Exception installException = null;
+        
+        if (reinstallSuccess) {
+          if (toStart) {
+            try {
+              start();
+            } catch (BundleException be) {
+              reinstallSuccess = false;
+              installException = be;              
+            }
+          }
+        }
+          
+        if (!!!reinstallSuccess) {
+          boolean rollbackSuccess = uninstall();
+          Exception rollbackException = null;
+          
+          if (rollbackSuccess) {
+            _deploymentMF = oldMetadata;
+            rollbackSuccess = processContent();
+            
+            if (rollbackSuccess && toStart) {
+              try {
+                start();
+              } catch (BundleException be) {
+                rollbackException = be;
+                rollbackSuccess = false;
+              }
+            }
+          }
+           
+          throw new UpdateException("Could not install updated application", installException, rollbackSuccess, rollbackException);
+        }
+      } else {
+        throw new UpdateException("Could not uninstall old bundles", null, false, null);
+      }
+    }
   }
 }
