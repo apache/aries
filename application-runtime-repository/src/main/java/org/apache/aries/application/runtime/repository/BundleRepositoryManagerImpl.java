@@ -163,7 +163,6 @@ public class BundleRepositoryManagerImpl implements BundleRepositoryManager
       // add the suggestion to the list
       if (suggestion != null) {
         urlToBeInstalled.put(bundleToFind, suggestion);
-        it.remove();
       } else {
         throw new ContextException("Unable to find bundle "+bundleToFind.getContentName() + "/" + bundleToFind.getExactVersion());
       }
