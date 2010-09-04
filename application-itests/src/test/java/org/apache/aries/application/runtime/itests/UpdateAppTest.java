@@ -25,12 +25,21 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.apache.aries.application.DeploymentContent;
+import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
+import org.apache.aries.application.management.BundleFramework;
 import org.apache.aries.application.management.RepositoryGenerator;
 import org.apache.aries.application.management.ResolveConstraint;
+import org.apache.aries.application.management.UpdateException;
+import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.provider.UpdateStrategy;
 import org.apache.aries.application.runtime.itests.util.IsolationTestUtils;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
@@ -40,13 +49,12 @@ import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
-@RunWith(JUnit4TestRunner.class)
-public class IsolatedRuntimeTest extends AbstractIntegrationTest {
-  
+public class UpdateAppTest extends AbstractIntegrationTest {
+  private static final String SAMPLE_APP_NAME = "org.apache.aries.sample2";
   /* Use @Before not @BeforeClass so as to ensure that these resources
    * are created in the paxweb temp directory, and not in the svn tree 
    */
@@ -57,31 +65,27 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     if (createdApplications) { 
       return;
     }
+    
     ZipFixture testEba = ArchiveFixture.newZip()
+      .binary("META-INF/APPLICATION.MF", 
+          UpdateAppTest.class.getClassLoader().getResourceAsStream("isolated/APPLICATION.MF"))
       .jar("sample.jar")
         .manifest().symbolicName("org.apache.aries.isolated.sample")
           .attribute("Bundle-Version", "1.0.0")
           .end()
         .binary("org/apache/aries/isolated/sample/HelloWorld.class", 
-            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorld.class"))
+            UpdateAppTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorld.class"))
         .binary("org/apache/aries/isolated/sample/HelloWorldImpl.class", 
-            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorldImpl.class"))
-        .binary("OSGI-INF/blueprint/sample-blueprint.xml", 
-            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("isolated/sample-blueprint.xml"))
+            UpdateAppTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorldImpl.class"))
+        .binary("OSGI-INF/blueprint/aries.xml", 
+            UpdateAppTest.class.getClassLoader().getResourceAsStream("isolated/sample-blueprint.xml"))
         .end();
       
     FileOutputStream fout = new FileOutputStream("test.eba");
     testEba.writeOut(fout);
     fout.close();
     
-    ZipFixture testEba2 = testEba.binary("META-INF/APPLICATION.MF", 
-        IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("isolated/APPLICATION.MF"))
-        .end();
-    fout = new FileOutputStream("test2.eba");
-    testEba2.writeOut(fout);
-    fout.close();
-    
-    ZipFixture sampleJar2 = ArchiveFixture.newJar()
+    ZipFixture sample2 = ArchiveFixture.newJar()
       .manifest().symbolicName("org.apache.aries.isolated.sample")
         .attribute("Bundle-Version", "2.0.0")
       .end()
@@ -92,102 +96,123 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
       .binary("OSGI-INF/blueprint/aries.xml", 
           IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("isolated/sample2-blueprint.xml"))
       .end();
-  
+    
     fout = new FileOutputStream("sample_2.0.0.jar");
-    sampleJar2.writeOut(fout);
-    fout.close();
-    
-    ZipFixture ebaWithFragment = ArchiveFixture.newZip()
-      .jar("sample.jar")
-        .manifest().symbolicName("org.apache.aries.isolated.sample")
-          .attribute("Bundle-Version", "1.0.0")
-          .end()
-      .end()
-      .jar("fragment.jar")
-        .manifest().symbolicName("org.apache.aries.isolated.fragment")
-          .attribute("Bundle-Version", "1.0.0")
-          .attribute("Fragment-Host", "org.apache.aries.isolated.sample")
-        .end()
-        .binary("org/apache/aries/isolated/sample/HelloWorld.class", 
-            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorld.class"))
-        .binary("org/apache/aries/isolated/sample/HelloWorldImpl.class", 
-            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorldImpl.class"))
-        .binary("OSGI-INF/blueprint/sample-blueprint.xml", 
-            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("isolated/sample-blueprint.xml"))
-        .end();
-    
-    fout = new FileOutputStream("withFragment.eba");
-    ebaWithFragment.writeOut(fout);
+    sample2.writeOut(fout);
     fout.close();
     
     createdApplications = true;
   }
   
   @Test
-  public void testAppWithoutApplicationManifest() throws Exception {
+  public void testFullUpdate() throws Exception {
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = setupApp();
     
+    updateApp(manager, app);
+
+    assertAppMessage("hello brave new world");
+  }
+  
+  @Test
+  public void testFineUpdate() throws Exception {
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = setupApp();
+    
+    BundleContext oldCtx = IsolationTestUtils.findIsolatedAppBundleContext(bundleContext, SAMPLE_APP_NAME);
+    
+    installMockUpdateStrategy();
+    updateApp(manager, app);
+    
+    BundleContext newCtx = IsolationTestUtils.findIsolatedAppBundleContext(bundleContext, SAMPLE_APP_NAME);    
+    assertAppMessage("hello brave new world");
+    
+    assertTrue("We bounced the app where the update was supposed to do an update in place", oldCtx == newCtx);
+  }
+  
+  @Test
+  public void testUpdateThenStart() throws Exception
+  {
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     AriesApplicationContext ctx = manager.install(app);
+    app = ctx.getApplication();
+
+    BundleContext oldCtx = IsolationTestUtils.findIsolatedAppBundleContext(bundleContext, SAMPLE_APP_NAME);
+    
+    installMockUpdateStrategy();
+    ctx = updateApp(manager, app);
+    
+    BundleContext newCtx = IsolationTestUtils.findIsolatedAppBundleContext(bundleContext, SAMPLE_APP_NAME);    
+    
+    assertNull("App is not started yet but HelloWorld service is already there",
+        IsolationTestUtils.findHelloWorldService(bundleContext, SAMPLE_APP_NAME));
     
     ctx.start();
-    assertHelloWorldService("test.eba");
+    
+    assertAppMessage("hello brave new world");
+    
+    assertTrue("We bounced the app where the update was supposed to do an update in place", oldCtx == newCtx);
   }
   
-  @Test
-  public void testAppWithApplicationManifest() throws Exception {
+  private void installMockUpdateStrategy()
+  {
+    bundleContext.registerService(UpdateStrategy.class.getName(), new UpdateStrategy() {
+
+      public boolean allowsUpdate(DeploymentMetadata newMetadata, DeploymentMetadata oldMetadata) {
+        return true;
+      }
+
+      public void update(UpdateInfo info) throws UpdateException {
+        BundleFramework fwk = info.getAppFramework();
         
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
-    AriesApplicationContext ctx = manager.install(app);
-    
-    ctx.start();
-    assertHelloWorldService("org.apache.aries.sample2");
+        Bundle old = null;
+        for (Bundle b : fwk.getBundles()) {
+          if (b.getSymbolicName().equals("org.apache.aries.isolated.sample")) {
+            old = b;
+            break;
+          }
+        }
+        
+        if (old == null) throw new RuntimeException("Could not find old bundle");
+        
+        try {
+          info.unregister(old);
+          fwk.uninstall(old);
+          
+          // only contains one element at most
+          Map<DeploymentContent, BundleSuggestion> suggestions = 
+            info.suggestBundle(info.getNewMetadata().getApplicationDeploymentContents());
+          
+          BundleSuggestion toInstall = suggestions.values().iterator().next();
+          
+          Bundle newBundle = fwk.install(toInstall, info.getApplication());
+          info.register(newBundle);
+          if (info.startBundles()) fwk.start(newBundle);
+          
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+      
+    }, new Hashtable<String, String>());    
   }
   
-  @Test
-  public void testUninstallReinstall() throws Exception {
+  private AriesApplication setupApp() throws Exception {
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     AriesApplicationContext ctx = manager.install(app);
-    
     app = ctx.getApplication();
 
     ctx.start();
-
-    assertHelloWorldService("org.apache.aries.sample2");
-
-    ctx.stop();
-    manager.uninstall(ctx);
+    assertAppMessage("hello world");    
     
-    assertNull(IsolationTestUtils.findIsolatedAppBundleContext(bundleContext, "org.apache.aries.sample2"));
-
-    ctx = manager.install(app);
-    ctx.start();
-
-    assertHelloWorldService("org.apache.aries.sample2");
+    return app;
   }
   
-  @Test
-  public void testAppWithFragment() throws Exception
-  {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("withFragment.eba")));
-    AriesApplicationContext ctx = manager.install(app);
-
-    ctx.start();
-    
-    assertHelloWorldService("withFragment.eba");
-  }
-
-  @Test
-  public void testAppWithGlobalRepositoryBundle() throws Exception
-  {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
-    
+  private AriesApplicationContext updateApp(AriesApplicationManager manager, AriesApplication app) throws Exception {
     IsolationTestUtils.prepareSampleBundleV2(bundleContext, getOsgiService(RepositoryGenerator.class), getOsgiService(RepositoryAdmin.class));
-
+    
     AriesApplication newApp = manager.resolve(app, new ResolveConstraint() {
       public String getBundleName() {
         return "org.apache.aries.isolated.sample";
@@ -198,25 +223,15 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
       }
     });
     
-    AriesApplicationContext ctx = manager.install(newApp);
-    ctx.start();
-    
-    assertHelloWorldService("org.apache.aries.sample2", "hello brave new world");
-  }  
-  
-
-  private void assertHelloWorldService(String appName) throws Exception
-  {
-    assertHelloWorldService(appName, "hello world");
+    return manager.update(app, newApp.getDeploymentMetadata());
   }
   
-  private void assertHelloWorldService(String appName, String message) throws Exception
-  {
-    HelloWorld hw = IsolationTestUtils.findHelloWorldService(bundleContext, appName);
+  private void assertAppMessage(String message) throws Exception {
+    HelloWorld hw = IsolationTestUtils.findHelloWorldService(bundleContext, SAMPLE_APP_NAME);
     assertNotNull(hw);
     assertEquals(message, hw.getMessage());
   }
-  
+
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
     Option[] options = options(
@@ -251,10 +266,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
-        /* For debugging, uncommenting the following two lines and add the imports */
-        /*
-         * vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5011"),
-        waitForFrameworkStartup(),*/
+        // new VMOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5011"),
 
         /*
          * and add these imports:

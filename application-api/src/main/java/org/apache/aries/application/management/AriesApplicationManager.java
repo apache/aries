@@ -22,6 +22,7 @@ package org.apache.aries.application.management;
 
 import java.net.URL;
 
+import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.osgi.framework.BundleException;
 
@@ -86,6 +87,19 @@ public interface AriesApplicationManager
    * @param l
    */
   public void removeApplicationListener(AriesApplicationListener l);
+  
+  /**
+   * Update an application's deployment and apply the changes to the runtime if the application is deployed
+   * @param app The application to change
+   * @param depMf The new deployment metadata
+   * @return {@link AriesApplicationContext} Returns a new application context if the app
+   * is currently deployed, or null if the app is not currently installed
+   * 
+   * @throws UpdateException if the deployment changes could not be effected in the runtime
+   * @throws IllegalArgumentException if the deployment metadata does not correspond to the same application
+   * (same symbolic name and same version)
+   */
+  public AriesApplicationContext update(AriesApplication app, DeploymentMetadata depMf) throws UpdateException;
   
   /**
    * Resolve an AriesApplication against a set of constraints. Each ResolveConstraint

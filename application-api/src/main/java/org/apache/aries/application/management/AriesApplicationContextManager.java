@@ -21,6 +21,7 @@ package org.apache.aries.application.management;
 
 import java.util.Set;
 
+import org.apache.aries.application.DeploymentMetadata;
 import org.osgi.framework.BundleException;
 
 /**
@@ -45,6 +46,13 @@ public interface AriesApplicationContextManager {
    */
   public Set<AriesApplicationContext> getApplicationContexts();
 
+  /**
+   * Update the AriesApplication and return an updated application context.
+   * @throws UpdateException if the update failed
+   * @throws IllegalArgumentException if the app is not currently installed
+   */
+  public AriesApplicationContext update(AriesApplication app, DeploymentMetadata oldMetadata) throws UpdateException;
+  
   /**
    * Remove the provided AriesApplicationContext from the running system.
    * 
