@@ -70,10 +70,10 @@ public class OrderDataBeanImpl implements OrderDataBean, Serializable {
 	@Column(name = "ORDERID", nullable = false)
 	private Integer orderID; /* orderID */
 
-	@Column(name = "ORDERTYPE", length = 250)
+	@Column(name = "ORDERTYPE", length = 255)
 	private String orderType; /* orderType (buy, sell, etc.) */
 
-	@Column(name = "ORDERSTATUS", length = 250)
+	@Column(name = "ORDERSTATUS", length = 255)
 	private String orderStatus; /*
 								 * orderStatus (open, processing, completed,
 								 * closed, canceled)
@@ -100,7 +100,7 @@ public class OrderDataBeanImpl implements OrderDataBean, Serializable {
     private AccountDataBeanImpl account;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "QUOTE_SYMBOL", columnDefinition="VARCHAR(250)")
+	@JoinColumn(name = "QUOTE_SYMBOL", columnDefinition="VARCHAR(255)")
     private QuoteDataBeanImpl quote;
 
 	@OneToOne(fetch = FetchType.LAZY)

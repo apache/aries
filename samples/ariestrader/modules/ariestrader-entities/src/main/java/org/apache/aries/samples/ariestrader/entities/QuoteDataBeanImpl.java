@@ -58,10 +58,10 @@ public class QuoteDataBeanImpl implements QuoteDataBean, Serializable {
 	private static final long serialVersionUID = 8476917690278143517L;
 	
 	@Id
-    @Column(name = "SYMBOL", nullable = false, length = 250)
+    @Column(name = "SYMBOL", nullable = false, length = 255)
 	private String symbol;          /* symbol */
     
-	@Column(name = "COMPANYNAME", length = 250)
+	@Column(name = "COMPANYNAME", length = 255)
     private String companyName;     /* companyName */
     
 	@Column(name = "VOLUME", nullable = false)
