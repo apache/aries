@@ -409,15 +409,13 @@ public class TradeConfigServlet extends HttpServlet {
 			else if (action.equals("buildDB"))
 			{
 				resp.setContentType("text/html");
-                new TradeBuildDB(resp.getWriter(), null);
+                new TradeBuildDB(resp.getWriter(), false);
 				result = "AriesTrader Database Built - " + TradeConfig.getMAX_USERS() + "users created";
 			}
             else if (action.equals("buildDBTables"))
             {
                 resp.setContentType("text/html");
-                String path = getServletConfig().getServletContext().getRealPath("/");
-                if (path == null) path="";  // if there is no real path assume this is Apache Aries in Equinox test harness
-                new TradeBuildDB(resp.getWriter(), path);
+                new TradeBuildDB(resp.getWriter(), true);
             }
 			doConfigDisplay(req, resp, result + "Current AriesTrader Configuration:");
 		}
