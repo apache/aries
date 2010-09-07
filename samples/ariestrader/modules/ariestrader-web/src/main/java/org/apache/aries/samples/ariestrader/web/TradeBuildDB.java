@@ -18,9 +18,10 @@ package org.apache.aries.samples.ariestrader.web;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.apache.aries.samples.ariestrader.api.TradeDBManager;
@@ -48,14 +49,14 @@ public class TradeBuildDB {
      * Populate a Trade DB using standard out as a log
      */
     public TradeBuildDB() throws Exception {
-        this(new java.io.PrintWriter(System.out), null);
+        this(new java.io.PrintWriter(System.out), false);
     }
 
     /**
      * Re-create the AriesTrader db tables and populate them OR just populate a 
      * AriesTrader DB, logging to the provided output stream
      */
-    public TradeBuildDB(java.io.PrintWriter out, String warPath)
+    public TradeBuildDB(java.io.PrintWriter out, boolean createTables)
         throws Exception {
         String symbol, companyName;
         int errorCount = 0; // Give up gracefully after 10 errors
@@ -73,10 +74,11 @@ public class TradeBuildDB {
             + "This operation will take several minutes. Please wait...</HEAD>");
         out.println("<BODY>");
 
-        if (warPath != null) {
+        if (createTables) {
             boolean success = false;
             String dbProductName = null;
-            File ddlFile = null;
+            String fileLocation = null;
+            URL ddlFile = null;
             Object[] sqlBuffer = null;
 
             // Find out the Database being used
@@ -95,37 +97,20 @@ public class TradeBuildDB {
             try {
                 out.println("<BR>TradeBuildDB: **** Database Product detected: "
                     + dbProductName + " ****</BR>");
-                if (warPath.equals("")) { // if empty warPath provided assume this is Aries under the Equinox test harness
-                    ddlFile = new File("tradeDB.sql");                    
-                } else if (dbProductName.startsWith("DB2/")) { // if db is DB2
-                    ddlFile = new File(warPath + File.separatorChar + "dbscripts"
-                        + File.separatorChar + "db2" + File.separatorChar + "Table.ddl");
+                if (dbProductName.startsWith("DB2/")) { // if db is DB2
+                    fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "db2" + File.separatorChar + "Table.ddl";
                 } else if (dbProductName.startsWith("Apache Derby")) { // if db is Derby
-                    ddlFile = new File(warPath + File.separatorChar + "dbscripts"
-                        + File.separatorChar + "derby" + File.separatorChar + "Table.ddl");
+                    fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "derby" + File.separatorChar + "Table.ddl";
                 } else if (dbProductName.startsWith("Oracle")) { // if the Db is Oracle
-                    ddlFile = new File(warPath + File.separatorChar + "dbscripts"
-                        + File.separatorChar + "oracle" + File.separatorChar + "Table.ddl");
+                    fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "oracle" + File.separatorChar + "Table.ddl";
                 } else { // Unsupported "Other" Database
-                    ddlFile = new File(warPath + File.separatorChar + "dbscripts"
-                        + File.separatorChar + "other" + File.separatorChar + "Table.ddl");
+                    fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "other" + File.separatorChar + "Table.ddl";
                     out.println("<BR>TradeBuildDB: **** This Database is "
                         + "unsupported/untested use at your own risk ****</BR>");
                 }
 
-                if (!ddlFile.exists()) {
-                    Log.error("TradeBuildDB: DDL file doesnt exist at path "
-                        + ddlFile.getCanonicalPath()
-                        + " , please provide the file and retry");
-                    out.println("<BR>TradeBuildDB: DDL file doesnt exist at path <I>"
-                        + ddlFile.getCanonicalPath() +
-                        "</I> , please provide the file and retry ****</BR></BODY>");
-                    return;
-                }
-                out.println("<BR>TradeBuildDB: **** The DDL file at path <I>"
-                    + ddlFile.getCanonicalPath()
-                    + "</I> will be used ****</BR>");
-                out.flush();
+                ddlFile = this.getClass().getResource(fileLocation);                
+
             } catch (Exception e) {
                 Log.error(e,
                     "TradeBuildDB: Unable to locate DDL file for the specified database");
@@ -259,15 +244,17 @@ public class TradeBuildDB {
         out.println("</BODY>");
     }
 
-    public Object[] parseDDLToBuffer(File ddlFile) throws Exception {
+    public Object[] parseDDLToBuffer(URL ddlFile) throws Exception {
         BufferedReader br = null;
+        InputStreamReader ir = null;
         ArrayList sqlBuffer = new ArrayList(30); // initial capacity 30 assuming we have 30 ddl-sql statements to read
 
         try {
             if (Log.doTrace())
                 Log.traceEnter("TradeBuildDB:parseDDLToBuffer - " + ddlFile);
 
-            br = new BufferedReader(new FileReader(ddlFile));
+            ir = new InputStreamReader(ddlFile.openStream());
+            br = new BufferedReader(ir);
             String s;
             String sql = new String();
             while ((s = br.readLine()) != null) {

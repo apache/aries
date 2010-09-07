@@ -74,7 +74,7 @@ public class HoldingDataBeanImpl implements HoldingDataBean, Serializable {
 	private AccountDataBeanImpl account;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "QUOTE_SYMBOL", columnDefinition="VARCHAR(250)")
+	@JoinColumn(name = "QUOTE_SYMBOL", columnDefinition="VARCHAR(255)")
 	private QuoteDataBeanImpl quote;
 
 	public HoldingDataBeanImpl() {
