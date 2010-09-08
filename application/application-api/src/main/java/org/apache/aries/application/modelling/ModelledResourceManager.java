@@ -30,4 +30,6 @@ public interface ModelledResourceManager
    */
   ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException;
 
+  ParsedServiceElements getServiceElements (IDirectory archive) throws ModellerException; 
+
 }
