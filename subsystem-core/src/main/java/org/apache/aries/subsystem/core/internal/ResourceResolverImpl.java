@@ -82,6 +82,13 @@ public class ResourceResolverImpl implements ResourceResolver {
                 }
     
             }
+            
+            // if repository.xml already exists, no need to generate it
+            if (new File(obrPath + "repository.xml").exists()) {
+                registerOBR();
+                generated = true;
+                return;
+            }
     
             File rootFile = new File(obrPath);
             if (!rootFile.exists() || !rootFile.isDirectory()) {
