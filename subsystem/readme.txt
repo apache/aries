@@ -5,3 +5,6 @@ You need to download the implementation jar at:
 You need to copy it in your local m2 repository:
   ~/.m2/repository/org/eclipse/osgi/v43prototype-3.6.0.201003231329/osgi-v43prototype-3.6.0.201003231329.jar 
 
+Also, you need to run the following command to index your local m2 repo to ~/.m2/repository/repository.xml file. 
+
+mvn org.apache.felix:maven-bundle-plugin:2.1.0:index  -DurlTemplate=maven
