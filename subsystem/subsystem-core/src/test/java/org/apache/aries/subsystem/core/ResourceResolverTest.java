@@ -40,10 +40,6 @@ public class ResourceResolverTest {
         ctx.registerService(RepositoryAdmin.class.getCanonicalName(), ra, null);
 
         
-        File file = new File(System.getProperty("user.home") + "/.m2/repository/repository.xml");
-        if (file.exists()) {
-            assertTrue(file.delete());
-        }
     }
     @Test
     public void testGenerateRepo() throws Exception {
@@ -51,6 +47,5 @@ public class ResourceResolverTest {
         rr.generateOBR();
         File file = new File(System.getProperty("user.home") + "/.m2/repository/repository.xml");
         assertTrue("file " + file.toString() + " should exist after generate OBR", file.exists());
-        file.delete();
     }
 }
