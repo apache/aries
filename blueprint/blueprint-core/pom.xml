@@ -46,6 +46,8 @@
         org.osgi.service.event*;resolution:=optional,
         org.osgi.service.framework;resolution:=optional,
         org.apache.aries.blueprint.annotation.service;resolution:=optional,
+        org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
+        org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
         *
       </aries.osgi.import>
       <aries.osgi.export.service>
@@ -100,6 +102,12 @@
           <groupId>asm</groupId>
           <artifactId>asm-all</artifactId>
           <optional>true</optional>
+      </dependency>
+      <dependency>
+      	<groupId>org.apache.aries.quiesce</groupId>
+      	<artifactId>org.apache.aries.quiesce.api</artifactId>
+      	<version>0.3-incubating-SNAPSHOT</version>
+      	<scope>provided</scope>
       </dependency>
   </dependencies>
 

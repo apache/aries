@@ -91,6 +91,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.itests</artifactId>
                 <version>${version}</version>
             </dependency>
@@ -140,6 +145,18 @@
                 <artifactId>xbean-finder</artifactId>
                 <version>3.7</version>
             </dependency>
+            <dependency>
+            	<groupId>org.apache.aries.blueprint</groupId>
+            	<artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
+            	<version>0.3-incubating-SNAPSHOT</version>
+            	<type>bundle</type>
+            	<scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.quiesce</groupId>
+                <artifactId>org.apache.aries.quiesce.api</artifactId>
+                <version>0.3-incubating-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -180,6 +197,7 @@
         <module>blueprint-annotation-itest</module>
         <module>blueprint-testbundlea</module>
         <module>blueprint-testbundleb</module>
+        <module>blueprint-testquiescebundle</module>
         <module>blueprint-itests</module>
     </modules>
 

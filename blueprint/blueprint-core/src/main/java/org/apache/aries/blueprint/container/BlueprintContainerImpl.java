@@ -648,7 +648,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
 
-    private void unregisterServices() {
+    protected void unregisterServices() {
         if (repository != null) {
             List<ServiceRecipe> recipes = this.services;
             this.services = null;
@@ -820,6 +820,23 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundleContext().getBundle(), getExtenderBundle()));
         LOGGER.debug("Blueprint container destroyed: {}", this.bundleContext);
+    }
+    
+    protected void quiesce() {
+        destroyed = true;
+        eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundleContext().getBundle(), getExtenderBundle()));
+
+        if (timeoutFuture != null) {
+            timeoutFuture.cancel(false);
+        }
+        if (registration != null) {
+            registration.unregister();
+        }
+        if (handlerSet != null) {
+            handlerSet.removeListener(this);
+            handlerSet.destroy();
+        }
+        LOGGER.debug("Blueprint container quiesced: {}", this.bundleContext);
     }
 
     public void namespaceHandlerRegistered(URI uri) {
