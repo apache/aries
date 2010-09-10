@@ -77,7 +77,7 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
 
        obj = getOsgiService(bundleContext, Foo.class, null, 5000);
         assertNotNull(obj);
-        assertSame(foo, obj);
+        assertEquals(foo.toString(), obj.toString());
     }
 
     @org.ops4j.pax.exam.junit.Configuration
