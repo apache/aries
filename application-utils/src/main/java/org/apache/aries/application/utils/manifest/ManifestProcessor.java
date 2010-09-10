@@ -26,13 +26,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
+import org.apache.aries.application.utils.AppConstants;
 
 /**
  * This class contains utilities for parsing manifests. It provides methods to
@@ -67,6 +68,20 @@ public class ManifestProcessor
     }
          
     return props;
+  }
+  
+  /**
+   * mapToManifest
+   */
+  public static Manifest mapToManifest (Map<String,String> attributes)
+  {
+    Manifest man = new Manifest();
+    Attributes att = man.getMainAttributes();
+    att.putValue(Attributes.Name.MANIFEST_VERSION.toString(), AppConstants.MANIFEST_VERSION);
+    for (Map.Entry<String, String> entry : attributes.entrySet()) {
+      att.putValue(entry.getKey(),  entry.getValue());
+    }
+    return man;
   }
   
   /**

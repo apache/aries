@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Application-ManifestVersion: 2
+Application-SymbolicName: com.ibm.ws.eba.admin.application.modeller.test1.eba
+Application-Version: 1.0
+Deployed-Content: com.ibm.ws.eba.admin.application.modeller.bundle1;deployed-version=1.0.0

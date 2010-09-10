@@ -29,6 +29,7 @@
     </description>
     <properties>
         <aries.osgi.export.pkg>
+            org.apache.aries.application.resolver.obr.ext;
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.application.resolver.obr;

@@ -33,9 +33,15 @@
         <argument>
             <reference interface="org.apache.felix.bundlerepository.RepositoryAdmin"/>
         </argument>
+        <property name="bundleResourceTransformers" ref="bundle-resource-transformers"/>
     </bean>
     <service id="repository-generator-service" ref="repository-generator" interface="org.apache.aries.application.management.RepositoryGenerator"/>
     <service interface="org.apache.aries.application.management.AriesApplicationResolver" ref="obr-resolver"/>
+    
+    <reference-list id="bundle-resource-transformers" 
+      interface="org.apache.aries.application.resolver.obr.ext.BundleResourceTransformer"
+      availability="optional"/>
+    
 
 </blueprint>
 
