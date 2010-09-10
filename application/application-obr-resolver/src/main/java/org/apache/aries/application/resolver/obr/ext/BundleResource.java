@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.application.resolver.obr.impl;
+package org.apache.aries.application.resolver.obr.ext;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
@@ -37,6 +37,8 @@ import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.utils.ModellingConstants;
+import org.apache.aries.application.resolver.obr.impl.OBRCapability;
+import org.apache.aries.application.resolver.obr.impl.RequirementImpl;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.apache.felix.bundlerepository.Requirement;
@@ -53,6 +55,22 @@ public class BundleResource implements Resource
   private final Collection<Requirement> _requirements;
   private final String _displayName;
   private Logger logger = LoggerFactory.getLogger(BundleResource.class);
+  
+  /**
+   * Build a BundleResource from another BundleResource and some optional extra capabilities and requirements
+   * @param br
+   * @param extraCapabilities can be null
+   * @param extraRequirements can be null
+   */
+  public BundleResource (BundleResource br, Collection<Capability> extraCapabilities, Collection<Requirement> extraRequirements) { 
+    _modelledBundle = br._modelledBundle;
+    _capabilities = new ArrayList<Capability> (br._capabilities);
+    _requirements = new ArrayList<Requirement> (br._requirements);
+    _displayName = new String (br._displayName);
+    if (extraCapabilities != null) _capabilities.addAll(extraCapabilities);
+    if (extraRequirements != null) _requirements.addAll(extraRequirements);
+  }
+  
   public BundleResource (ModelledResource mb, RepositoryAdmin repositoryAdmin) { 
     logger.debug(LOG_ENTRY,"BundleResource", mb);
     _modelledBundle = mb;
@@ -92,10 +110,16 @@ public class BundleResource implements Resource
       _displayName = possibleDisplayName;
     }
     
+    
+    
     logger.debug(LOG_EXIT,"BundleResource");
     
   }
 
+  public ModelledResource getModelledResource() { 
+    return _modelledBundle;
+  }
+  
   public Capability[] getCapabilities() {
    
     logger.debug(LOG_ENTRY,"getCapabilities");

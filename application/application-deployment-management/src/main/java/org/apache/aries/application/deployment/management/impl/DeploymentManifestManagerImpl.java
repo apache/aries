@@ -162,7 +162,9 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       Content content = ManifestHeaderProcessor.parseContent(constraint.getBundleName(), constraint.getVersionRange().toString());
       restrictedReqs.add(content);
     }
-    Manifest man = generateDeploymentManifest(app, byValueBundles, useBundles, restrictedReqs);
+    Manifest man = generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+        appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
+        byValueBundles, useBundles, restrictedReqs, appMetadata.getApplicationImportServices());
     _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {man});
     return man;
   }
@@ -176,26 +178,32 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
    * @throws ResolverException
    */
   public Manifest generateDeploymentManifest( 
-      AriesApplication app, Collection<ModelledResource> provideByValueBundles, Collection<Content> useBundleSet, Collection<Content> otherBundles) throws ResolverException {
-    _logger.debug(LOG_ENTRY, "generateDeploymentManifest", new Object[]{app, provideByValueBundles,useBundleSet,otherBundles });
+      String appSymbolicName, 
+      String appVersion,
+      Collection<Content> appContent, 
+      Collection<ModelledResource> provideByValueBundles, 
+      Collection<Content> useBundleSet, 
+      Collection<Content> otherBundles, 
+      Collection<ServiceDeclaration> applicationImportService) throws ResolverException {  
+    
+    _logger.debug(LOG_ENTRY, "generateDeploymentManifest", new Object[]{appSymbolicName, appVersion, 
+        appContent, provideByValueBundles,useBundleSet,otherBundles });
     Map<String, String> deploymentManifestMap = Collections.EMPTY_MAP;
 
-    ApplicationMetadata appMetadata = app.getApplicationMetadata();
     Collection<Content> bundlesToResolve = new ArrayList<Content>();
     Set<ImportedBundle> appContentIB = null;
-    Collection<Content> appContent = appMetadata.getApplicationContents();
     Set<ImportedBundle> useBundleIB = null;
     useBundleIB = new HashSet<ImportedBundle> (toImportedBundle(useBundleSet));
-    appContentIB = new HashSet<ImportedBundle>(toImportedBundle(appMetadata.getApplicationContents()));
+    appContentIB = new HashSet<ImportedBundle>(toImportedBundle(appContent));
 
     bundlesToResolve.addAll(useBundleSet);
 
-    bundlesToResolve.addAll(appMetadata.getApplicationContents());
+    bundlesToResolve.addAll(appContent);
     bundlesToResolve.addAll(otherBundles);
     Collection<ModelledResource> byValueBundles = new ArrayList<ModelledResource>(provideByValueBundles);
     ModelledResource fakeBundleResource;
     try { 
-      fakeBundleResource = createFakeBundle(appMetadata);
+      fakeBundleResource = createFakeBundle(applicationImportService);
     } catch (InvalidAttributeException iax) { 
       ResolverException rx = new ResolverException (iax);
       _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {rx});
@@ -203,10 +211,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       throw rx;
     }
     byValueBundles.add(fakeBundleResource);
-    String appSymbolicName = appMetadata.getApplicationSymbolicName();
-    String appVersion = appMetadata.getApplicationVersion().toString();
     String uniqueName = appSymbolicName + "_" + appVersion;
-    deployedBundles = new DeployedBundles(appMetadata.getApplicationName(), appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
+    deployedBundles = new DeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
     bundlesToBeProvisioned = resolver.resolve(
         appSymbolicName, appVersion, byValueBundles, bundlesToResolve);
     pruneFakeBundleFromResults (bundlesToBeProvisioned);
@@ -223,7 +229,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       if (requiredUseBundle.size() < useBundleSet.size())
       {
         // Some of the use-bundle entries were redundant so resolve again with just the good ones.
-        deployedBundles = new DeployedBundles(appMetadata.getApplicationName(), appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
+        deployedBundles = new DeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
         bundlesToResolve.clear();
         bundlesToResolve.addAll(appContent);
         Collection<ImportedBundle> slimmedDownUseBundle = narrowUseBundles(useBundleIB, requiredUseBundle);
@@ -317,7 +323,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
         // Well! if the msgs is empty, no need to throw an exception
         if (msgs.length() !=0) {
           String message = MessageUtil.getMessage(
-              "SUSPECTED_CIRCULAR_DEPENDENCIES", new Object[] {appMetadata.getApplicationSymbolicName(), msgs});
+              "SUSPECTED_CIRCULAR_DEPENDENCIES", new Object[] {appSymbolicName, msgs});
           ResolverException rx = new ResolverException (message);
           rx.setUnsatisfiedRequirements(unsatisfiedRequirements);
           _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {rx});
@@ -327,16 +333,16 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 
       requiredUseBundle = deployedBundles.getRequiredUseBundle();
       importPackages = deployedBundles.getImportPackage();
-      Collection<ModelledResource> requriedBundles = new HashSet<ModelledResource>();
-      requriedBundles.addAll(deployedBundles.getDeployedContent());
-      requriedBundles.addAll(deployedBundles.getRequiredUseBundle());
-      requriedBundles.addAll(deployedBundles.getDeployedProvisionBundle());
-      deploymentManifestMap = generateDeploymentAttributes(appMetadata);
+      Collection<ModelledResource> requiredBundles = new HashSet<ModelledResource>();
+      requiredBundles.addAll(deployedBundles.getDeployedContent());
+      requiredBundles.addAll(deployedBundles.getRequiredUseBundle());
+      requiredBundles.addAll(deployedBundles.getDeployedProvisionBundle());
+      deploymentManifestMap = generateDeploymentAttributes(appSymbolicName, appVersion);
       // Perform some post process if there are any.
       if ((postResolveTransformers != null) && (!postResolveTransformers.isEmpty())) {
         // validate the contents
         for (PostResolveTransformer prt : postResolveTransformers) {
-          prt.postResolveProcess(app, requriedBundles, deploymentManifestMap);
+          prt.postResolveProcess(requiredBundles, deploymentManifestMap);
         }
       }
     }
@@ -373,15 +379,15 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 
 
 
-  private Map<String,String> generateDeploymentAttributes(ApplicationMetadata appMetadata) throws ResolverException
+  private Map<String,String> generateDeploymentAttributes(String appSymbolicName, String version) throws ResolverException
   {
-    _logger.debug(LOG_ENTRY, "generateDeploymentAttributes", new Object[] {appMetadata});
+    _logger.debug(LOG_ENTRY, "generateDeploymentAttributes", new Object[] {appSymbolicName, version});
     Map<String,String> result = new HashMap<String, String>();
     String content = deployedBundles.getContent();
     if (!content.isEmpty()) {
       result.put(AppConstants.DEPLOYMENT_CONTENT, content);
     } else {
-      throw new ResolverException(MessageUtil.getMessage("EMPTY_DEPLOYMENT_CONTENT", appMetadata.getApplicationSymbolicName()));
+      throw new ResolverException(MessageUtil.getMessage("EMPTY_DEPLOYMENT_CONTENT", appSymbolicName));
     }
 
     String useBundle = deployedBundles.getUseBundle();
@@ -405,9 +411,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       result.put(Constants.IMPORT_PACKAGE, importPackages);
     }
 
-    result.put(AppConstants.APPLICATION_VERSION, appMetadata.getApplicationVersion().toString());
-    result.put(AppConstants.APPLICATION_SYMBOLIC_NAME, appMetadata.getApplicationSymbolicName());
-
+    result.put(AppConstants.APPLICATION_VERSION, version);
+    result.put(AppConstants.APPLICATION_SYMBOLIC_NAME, appSymbolicName);
     _logger.debug(LOG_ENTRY, "generateDeploymentAttributes", new Object[] {result});
     return result;
   }
@@ -432,16 +437,15 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 
   // create a 'mock' bundle that does nothing but export services required by 
   // Application-ImportService
-  private ModelledResource createFakeBundle (ApplicationMetadata appMetadata) throws InvalidAttributeException 
+  private ModelledResource createFakeBundle (Collection<ServiceDeclaration> appImportServices) throws InvalidAttributeException 
   {
-    _logger.debug(LOG_ENTRY, "createFakeBundle", new Object[]{appMetadata});
+    _logger.debug(LOG_ENTRY, "createFakeBundle", new Object[]{appImportServices});
     Attributes attrs = new Attributes();
     attrs.putValue(Constants.BUNDLE_SYMBOLICNAME, FAKE_BUNDLE_NAME);
     attrs.putValue(Constants.BUNDLE_VERSION_ATTRIBUTE, "1.0");
     attrs.putValue(Constants.BUNDLE_MANIFESTVERSION, "2");
 
     // Build an ExportedService for every Application-ImportService entry
-    List<ServiceDeclaration> appImportServices = appMetadata.getApplicationImportServices();
     Collection<ExportedService> exportedServices = new ArrayList<ExportedService>();
     for (ServiceDeclaration sDec : appImportServices) { 
       Collection<String> ifaces = Arrays.asList(sDec.getInterfaceName());

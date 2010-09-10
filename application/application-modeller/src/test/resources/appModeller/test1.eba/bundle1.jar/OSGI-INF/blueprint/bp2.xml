@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  IBM Confidential OCO Source Material
+  5724-J08, 5724-I63, 5724-H88, 5724-H89, 5655-N02, 5733-W70 COPYRIGHT International Business Machines Corp.  2009
+  The source code for this program is not published or otherwise divested
+  of its trade secrets, irrespective of what has been deposited with the
+  U.S. Copyright Office.
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            
+  <bean id="bean1" class="com.ibm.useful.Bean"/>
+  
+  <bean id="bean2" class="com.ibm.useful.Bean"/>
+  
+  <bean id="bean3" class="com.ibm.useful.Bean"/>
+  
+  <service id="service1.should.be.exported" ref="bean1" interface="foo.bar.MyService">
+  	<service-properties>
+  	  <entry key="volume" value="11"/>
+  	  <entry key="priority" value="7"/>
+  	</service-properties>
+  </service>
+  
+  <service id="service2.should.not.be.exported" ref="bean2" interface="com.acme.Delivery">
+  	<service-properties>
+  	  <entry key="customer" value="pig"/>
+  	</service-properties>
+  </service>
+  
+  <!-- Let's put no id on this service - it should come from the bean -->
+  <service ref="bean3" interface="com.acme.Delivery">
+  	<service-properties>
+  	  <entry key="customer" value="pig"/>
+  	  <entry key="target" value="rabbit"/>
+  	  <entry key="payload" value="excessive"/>
+  	</service-properties>
+  </service>
+  
+  <reference-list id="refList1" interface="my.logging.service" filter="(&amp;(trace=on)(debug=true))"/>
+  
+</blueprint>

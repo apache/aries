@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  IBM Confidential OCO Source Material
+  5724-J08, 5724-I63, 5724-H88, 5724-H89, 5655-N02, 5733-W70 COPYRIGHT International Business Machines Corp.  2009
+  The source code for this program is not published or otherwise divested
+  of its trade secrets, irrespective of what has been deposited with the
+  U.S. Copyright Office.
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            
+  <bean id="myBean" class="foo.bar.MyBean" activation="lazy">
+  </bean>
+  
+  <service id="greeting" ref="myBean" interface="greeting.Greeting">
+  	<service-properties>
+  	  <entry key="service.exported.interfaces" value="greeting.Greeting"/>
+      <entry key="service.intents">
+          <array>
+             <value>propagatesTransaction</value>
+             <value>confidentiality</value>
+          </array>
+      </entry>
+  	</service-properties>
+  </service>
+  
+</blueprint>

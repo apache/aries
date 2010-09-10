@@ -19,7 +19,10 @@
 
 package org.apache.aries.application.management.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,6 +46,7 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.DeploymentMetadataFactory;
+import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.impl.ApplicationMetadataFactoryImpl;
@@ -123,17 +127,6 @@ public class AriesApplicationManagerImplTest {
       return man;
     }
 
-   
-
-    public Manifest generateDeploymentManifest(AriesApplication app,
-        Collection<ModelledResource> byValueBundles, Collection<Content> useBundleSet,
-        Collection<Content> otherBundles) throws ResolverException
-    {
-      
-      return null;
-    }
-
-
     public void setResolver(AriesApplicationResolver resolver) {
       this.resolver = resolver;
     }
@@ -142,6 +135,15 @@ public class AriesApplicationManagerImplTest {
     {
       
       return resolver;
+    }
+
+    public Manifest generateDeploymentManifest(String appName,
+        String appVersion, Collection<Content> appContent,
+        Collection<ModelledResource> byValueBundles,
+        Collection<Content> useBundleSet, Collection<Content> otherBundles,
+        Collection<ServiceDeclaration> appImportServices)
+        throws ResolverException {
+      return null;
     }
     
     

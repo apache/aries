@@ -25,4 +25,11 @@
   <reference id="parser-service" interface="org.apache.aries.blueprint.ParserService"/>
   <service id = "modelledResourceManagerService" ref="modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
   
+  <bean id="parserProxy" class="org.apache.aries.application.modelling.impl.ParserProxyImpl">
+    <argument index="0" ref="parser-service"/>
+    <argument index="1" ref="blueprintBundleContext"/>
+  </bean>
+  <service id="parserProxyService" ref="parserProxy" interface="org.apache.aries.application.modelling.ParserProxy"/>
+  
+  
 </blueprint>
