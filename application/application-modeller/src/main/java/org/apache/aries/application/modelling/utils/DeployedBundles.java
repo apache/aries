@@ -402,8 +402,7 @@ public final class DeployedBundles
   {
     return AppConstants.DEPLOYMENT_CONTENT + '=' + deployedContent + ' ' +
         AppConstants.DEPLOYMENT_USE_BUNDLE + '=' + deployedUseBundle + ' ' +
-        AppConstants.DEPLOYMENT_PROVISION_BUNDLE + '=' + deployedProvisionBundle;/* + ' ' /*+
-        AppConstants.WAS_FEATURE_REQUIRED + "=" + requiredFeatures;*/
+        AppConstants.DEPLOYMENT_PROVISION_BUNDLE + '=' + deployedProvisionBundle;
   }
   
   /**

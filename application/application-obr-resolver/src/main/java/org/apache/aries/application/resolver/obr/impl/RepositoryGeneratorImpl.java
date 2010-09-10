@@ -23,7 +23,9 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,6 +39,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.aries.application.management.RepositoryGenerator;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.resolver.obr.ext.BundleResource;
+import org.apache.aries.application.resolver.obr.ext.BundleResourceTransformer;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Property;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
@@ -51,6 +55,11 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
 {
   private RepositoryAdmin repositoryAdmin;
   private static Logger logger = LoggerFactory.getLogger(RepositoryGeneratorImpl.class);
+  private static Collection<BundleResourceTransformer> bundleResourceTransformers = new ArrayList<BundleResourceTransformer>();
+  
+  public void setBundleResourceTransformers (List<BundleResourceTransformer> brts) { 
+    bundleResourceTransformers = brts;
+  }
   
   public RepositoryGeneratorImpl(RepositoryAdmin repositoryAdmin) {
     this.repositoryAdmin = repositoryAdmin;
@@ -66,6 +75,8 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
     capability.appendChild(p);
     logger.debug(LOG_ENTRY, "addProperty", new Object[]{});
   }
+  
+  
 
   /**
    * Write out the resource element
@@ -198,8 +209,13 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
 	    root.setAttribute("name", repositoryName);
 	    doc.appendChild(root);
 	    for (ModelledResource mr : byValueBundles) {
-	      writeResource(new BundleResource(mr, repositoryAdmin), mr.getLocation(), doc, root);
-
+	      BundleResource bundleResource = new BundleResource(mr, repositoryAdmin);
+	      if (bundleResourceTransformers.size() > 0) { 
+	        for (BundleResourceTransformer brt : bundleResourceTransformers) { 
+	          bundleResource = brt.transform (bundleResource);
+	        }
+	      }
+	      writeResource (bundleResource, mr.getLocation(), doc, root);
 	    }
 
 	    try {

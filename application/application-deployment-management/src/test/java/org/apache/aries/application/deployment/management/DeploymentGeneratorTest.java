@@ -228,12 +228,11 @@ public class DeploymentGeneratorTest
   {
     
     Skeleton.getSkeleton(appMetadata).setReturnValue(new MethodCall(ApplicationMetadata.class, "getApplicationContents"), Arrays.asList(mockContent("aries.test.a", "1.0.0"), mockContent("aries.test.b", "[1.0.0, 2.0.0)" )));
-    
-    app = Skeleton.newMock(AriesApplication.class);
-    Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
-    
-    Manifest man = sut.generateDeploymentManifest(app, new ArrayList<ModelledResource>(), Arrays.asList(BUNDLE_C, BUNDLE_D), Collections.<Content>emptyList());
-    
+    Manifest man = sut.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(), 
+        appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
+        new ArrayList<ModelledResource>(), 
+        Arrays.asList(BUNDLE_C, BUNDLE_D), Collections.<Content>emptyList(), 
+        appMetadata.getApplicationImportServices());
     Attributes attrs = man.getMainAttributes();
     
     assertEquals("aries.test", attrs.getValue(AppConstants.APPLICATION_SYMBOLIC_NAME));
@@ -276,8 +275,11 @@ public class DeploymentGeneratorTest
     
     try { 
       
-      sut.generateDeploymentManifest(app, new ArrayList<ModelledResource>(), new ArrayList<Content>(), 
-           Collections.<Content>emptyList());
+      sut.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(), 
+          appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
+          new ArrayList<ModelledResource>(), new ArrayList<Content>(), 
+          Collections.<Content>emptyList(), 
+          appMetadata.getApplicationImportServices());
     } catch (ResolverException rx) { 
       List<String> usr = rx.getUnsatisfiedRequirements();
       assertEquals ("One unsatisfied requirement expected, not " + usr.size(), usr.size(), 1);
@@ -325,7 +327,11 @@ public class DeploymentGeneratorTest
     Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
     
     try {
-           sut.generateDeploymentManifest(app, Arrays.asList(new ModelledResource[] {testIsolated1.getBundle(), testIsolated2.getBundle()}), new ArrayList<Content>(), Collections.<Content>emptyList());
+           sut.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(), 
+               appMetadata.getApplicationVersion().toString(), 
+               appMetadata.getApplicationContents(), 
+               Arrays.asList(new ModelledResource[] {testIsolated1.getBundle(), testIsolated2.getBundle()}), new ArrayList<Content>(), Collections.<Content>emptyList(), 
+               appMetadata.getApplicationImportServices());
 
     } catch (ResolverException rx) { 
       // Get the unsatisfied Requirements

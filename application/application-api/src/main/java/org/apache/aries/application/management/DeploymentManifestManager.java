@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.jar.Manifest;
 
 import org.apache.aries.application.Content;
+import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.modelling.ModelledResource;
 
 public interface DeploymentManifestManager
@@ -38,14 +39,22 @@ public interface DeploymentManifestManager
   
   /**
    * Generate the deployment manifest map. The method can be used for some advanced scenarios.
-   * @param app The Aries application
+   * @param appMeta The Aries application metadata
    * @param byValueBundles By value bundles
    * @param useBundleSet Use Bundle set
    * @param otherBundles Other bundles to be used to narrow the resolved bundles
+   * @param appImportServices the Application-ImportService header
    * @return the deployment manifest 
    * @throws ResolverException
    */
-  Manifest generateDeploymentManifest( AriesApplication app, Collection<ModelledResource> byValueBundles, Collection<Content> useBundleSet, Collection<Content> otherBundles) throws ResolverException;
+  Manifest generateDeploymentManifest( 
+      String appName, 
+      String appVersion, 
+      Collection<Content> appContent, 
+      Collection<ModelledResource> byValueBundles, 
+      Collection<Content> useBundleSet, 
+      Collection<Content> otherBundles, 
+      Collection<ServiceDeclaration> appImportServices) throws ResolverException;
 
   /**
    * 

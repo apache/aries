@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  IBM Confidential OCO Source Material
+  5724-J08, 5724-I63, 5724-H88, 5724-H89, 5655-N02, 5733-W70 COPYRIGHT International Business Machines Corp.  2009
+  The source code for this program is not published or otherwise divested
+  of its trade secrets, irrespective of what has been deposited with the
+  U.S. Copyright Office.
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            
+  <bean id="myBean" class="foo.bar.MyBean" activation="lazy">
+    <property name="myInjectedService" ref="fromOutside"/>
+  </bean>
+  
+  <service id="myService" ref="myBean" interface="foo.bar.MyService">
+  	<service-properties>
+  	  <entry key="priority" value="9"/>
+  	  <entry key="volume" value="11"/>
+  	</service-properties>
+  </service>
+  
+  <!-- Services for which we can generate no name should not be exposed -->
+  <service interface="foo.bar.AnonService">
+  	<bean class="an.anonymous.Bean"/>
+  </service>
+  
+  <!-- All inlined classes will be given null IDs as per 121.4.8 of the OSGi 4.2 spec  -->
+  <service interface="foo.bar.NamedInnerBeanService">
+  	<bean id="namedInnerBean" class="an.anonymous.Bean"/>
+  </service>
+  
+  
+  <reference id="fromOutside" interface="foo.bar.MyInjectedService"/>
+
+</blueprint>
