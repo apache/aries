@@ -16,6 +16,7 @@
  */
 package org.apache.aries.blueprint.container;
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -29,12 +30,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.ServiceProcessor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
+import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
+import org.apache.aries.blueprint.proxy.CgLibInterceptorWrapper;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -43,6 +47,7 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.slf4j.Logger;
@@ -70,6 +75,9 @@ public class ServiceRecipe extends AbstractRecipe {
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private volatile Object service;
+    private int activeCalls;
+    private boolean quiesce;
+    private DestroyCallback destroyCallback;
     
     public ServiceRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
@@ -163,7 +171,7 @@ public class ServiceRecipe extends AbstractRecipe {
             LOGGER.debug("Registering service {} with interfaces {} and properties {}",
                          new Object[] { name, classes, props });
 
-            registration.set(blueprintContainer.registerService(classArray, new TriggerServiceFactory(), props));            
+            registration.set(blueprintContainer.registerService(classArray, new TriggerServiceFactory(this, metadata), props));            
         }
     }
 
@@ -361,10 +369,124 @@ public class ServiceRecipe extends AbstractRecipe {
         }
     }
 
-    private class TriggerServiceFactory implements ServiceFactory {
+    protected void incrementActiveCalls()
+    {
+    	synchronized(this) 
+    	{
+    		activeCalls++;	
+		}
+    }
+    
+	protected void decrementActiveCalls() 
+	{
+		
+    	synchronized(this) 
+    	{
+    		activeCalls--;
 
-        public Object getService(Bundle bundle, ServiceRegistration registration) {
-            return ServiceRecipe.this.getService(bundle, registration);
+			if (quiesce && activeCalls == 0)
+			{
+				destroyCallback.callback(service);
+			}
+    	}
+	}
+	
+    public void quiesce(DestroyCallback destroyCallback)
+    {
+    	this.destroyCallback = destroyCallback;
+    	quiesce = true;
+    	unregister();
+    	if(activeCalls == 0)
+		{
+			destroyCallback.callback(service);
+		}
+    }
+     
+    private class TriggerServiceFactory implements ServiceFactory 
+    {
+    	private QuiesceInterceptor interceptor;
+    	private ServiceRecipe serviceRecipe;
+    	private ComponentMetadata cm;
+    	public TriggerServiceFactory(ServiceRecipe serviceRecipe, ComponentMetadata cm)
+    	{
+    		this.serviceRecipe = serviceRecipe;
+    		this.cm = cm;
+    	}
+    	
+        public Object getService(Bundle bundle, ServiceRegistration registration) 
+        {
+        	Object original = ServiceRecipe.this.getService(bundle, registration);
+        	Object intercepted = null;
+            boolean asmAvailable = false;
+            boolean cglibAvailable = false;
+            
+            if (interceptor == null)
+            {
+            	interceptor = new QuiesceInterceptor(serviceRecipe);
+            }
+            
+            List<Interceptor> interceptors = new ArrayList<Interceptor>();
+            interceptors.add(interceptor);
+            
+            try 
+            {
+                // Try load load an asm class (to make sure it's actually
+                // available)
+                getClass().getClassLoader().loadClass(
+                        "org.objectweb.asm.ClassVisitor");
+                LOGGER.debug("asm available for interceptors");
+                asmAvailable = true;
+            } 
+            catch (Throwable t) 
+            {
+                try 
+                {
+                    // Try load load a cglib class (to make sure it's actually
+                    // available)
+                    getClass().getClassLoader().loadClass(
+                            "net.sf.cglib.proxy.Enhancer");
+                    cglibAvailable = true;
+                } 
+                catch (Throwable u) 
+                {
+                	LOGGER.info("No quiesce support is available, so blueprint components will not participate in quiesce operations");
+                	return original;
+                }
+            }
+            
+            try
+            {
+	            if (asmAvailable) 
+	            {
+	                // if asm is available we can proxy the original object with the
+	                // AsmInterceptorWrapper
+	                intercepted = AsmInterceptorWrapper.createProxyObject(original
+	                        .getClass().getClassLoader(), cm, interceptors,
+	                        original, original.getClass());
+	            } 
+	            else if (cglibAvailable)
+	            {
+	                LOGGER.debug("cglib available for interceptors");
+	                // otherwise we're using cglib and need to use the interfaces
+	                // with the CgLibInterceptorWrapper
+	                intercepted = CgLibInterceptorWrapper.createProxyObject(
+	                        original.getClass().getClassLoader(), cm,
+	                        interceptors, original, original.getClass()
+	                                .getInterfaces());
+	            }
+	            else
+	            {
+	            	return original;
+	            }
+            }
+            catch (Throwable u) 
+            {
+            	LOGGER.info("No quiesce support is available, so blueprint components will not participate in quiesce operations");
+            	return original;
+            }
+            
+            return intercepted;
+
         }
 
         public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
