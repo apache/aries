@@ -131,6 +131,34 @@
             <artifactId>asm-all</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.quiesce</groupId>
+        	<artifactId>org.apache.aries.quiesce.api</artifactId>
+        	<version>0.3-incubating-SNAPSHOT</version>
+        	<type>bundle</type>
+        	<scope>provided</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.blueprint</groupId>
+        	<artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
+        	<version>0.3-incubating-SNAPSHOT</version>
+        	<type>bundle</type>
+        	<scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.blueprint</groupId>
+        	<artifactId>org.apache.aries.blueprint.core</artifactId>
+        	<version>0.3-incubating-SNAPSHOT</version>
+        	<type>bundle</type>
+        	<scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.blueprint</groupId>
+        	<artifactId>org.apache.aries.blueprint.cm</artifactId>
+        	<version>0.3-incubating-SNAPSHOT</version>
+        	<type>bundle</type>
+        	<scope>compile</scope>
+        </dependency>
 
     </dependencies>
 
