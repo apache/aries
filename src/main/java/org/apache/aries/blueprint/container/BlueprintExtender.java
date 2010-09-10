@@ -49,9 +49,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
-import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +60,8 @@ import org.slf4j.LoggerFactory;
  */
 public class BlueprintExtender implements BundleActivator, SynchronousBundleListener {
 
+	/** The QuiesceParticipant implementation class name */
+	private static final String QUIESCE_PARTICIPANT_CLASS = "org.apache.aries.quiesce.participant.QuiesceParticipant";
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintExtender.class);
 
     private BundleContext context;
@@ -71,6 +71,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private NamespaceHandlerRegistry handlers;
     private RecursiveBundleTracker bt;
     private ServiceRegistration parserServiceReg;
+    private ServiceRegistration quiesceParticipantReg;
 
     public void start(BundleContext context) {
         LOGGER.debug("Starting blueprint extender...");
@@ -90,6 +91,19 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         parserServiceReg = context.registerService(ParserService.class.getName(), 
             new ParserServiceImpl (handlers), 
             new Hashtable<Object, Object>()); 
+
+        try{
+            context.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
+            //Class was loaded, register
+
+            quiesceParticipantReg = context.registerService(QUIESCE_PARTICIPANT_CLASS, 
+              new BlueprintQuiesceParticipant(context, this), 
+              new Hashtable<Object, Object>()); 
+        } 
+        catch (ClassNotFoundException e) 
+        {
+            LOGGER.info("No quiesce support is available, so blueprint components will not participate in quiesce operations", e);
+        }
         
         LOGGER.debug("Blueprint extender started");
     }
@@ -123,6 +137,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
         
         parserServiceReg.unregister();
+        
+        if (quiesceParticipantReg != null) 
+          	quiesceParticipantReg.unregister();
 
         // Orderly shutdown of containers
         while (!containers.isEmpty()) {
@@ -390,6 +407,11 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         // called when bundle is removed from the tracker
         public void removedBundle(Bundle b, BundleEvent event, Object arg2) {
         }
+    }
+    
+    protected BlueprintContainerImpl getBlueprintContainerImpl(Bundle bundle)
+    {
+    	return (BlueprintContainerImpl) containers.get(bundle);
     }
     
 }
