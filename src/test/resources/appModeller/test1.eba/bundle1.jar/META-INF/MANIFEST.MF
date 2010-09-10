@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.ibm.ws.eba.admin.application.modeller.bundle1
+Bundle-Name: bundle1
+
+
