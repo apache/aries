@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.application.DeploymentContent;
-import org.apache.aries.application.management.BundleRepository;
-import org.apache.aries.application.management.BundleRepositoryManager;
-import org.apache.aries.application.management.ContextException;
-import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.spi.repository.BundleRepository;
+import org.apache.aries.application.management.spi.repository.BundleRepositoryManager;
+import org.apache.aries.application.management.spi.repository.ContextException;
+import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.apache.aries.application.utils.service.ArrayServiceList;
 import org.apache.aries.application.utils.service.ServiceCollection;
 import org.osgi.framework.BundleContext;
