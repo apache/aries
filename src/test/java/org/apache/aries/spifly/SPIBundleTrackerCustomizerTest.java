@@ -32,6 +32,7 @@ import java.util.jar.JarFile;
 
 import junit.framework.TestCase;
 
+import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.osgi.framework.Bundle;
@@ -67,7 +68,7 @@ public class SPIBundleTrackerCustomizerTest extends TestCase {
                     Object impl = EasyMock.getCurrentArguments()[1];
                     assertEquals("org.example.test.Test2DomBuilderFactory", impl.getClass().getName());
                     assertNotNull(((Dictionary<?, ?>) EasyMock.getCurrentArguments()[2])
-                        .get(SPIBundleTrackerCustomizer.SPI_PROVIDER_URL)); 
+                        .get(SpiFlyConstants.SPI_PROVIDER_URL)); 
                     return EasyMock.createMock(ServiceRegistration.class);
                 }
             });
@@ -124,7 +125,7 @@ public class SPIBundleTrackerCustomizerTest extends TestCase {
         SPIBundleTrackerCustomizer sbt = new SPIBundleTrackerCustomizer(new Activator(), spiBundle);
         
         Dictionary<String, Object> headers = new Hashtable<String, Object>();
-        headers.put(SPIBundleTrackerCustomizer.OPT_IN_HEADER, "somevalue");
+        headers.put(SpiFlyConstants.SPI_PROVIDER_HEADER, "somevalue");
 
         Bundle b = EasyMock.createMock(Bundle.class);
         EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z").anyTimes();
