@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
 
-import org.apache.aries.application.management.InvalidAttributeException;
+import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.internal.MessageUtil;
 import org.apache.aries.application.modelling.utils.ModellingConstants;

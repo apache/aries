@@ -24,7 +24,7 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.aries.application.management.AriesApplicationResolver;
+import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.junit.After;
 import org.junit.Before;

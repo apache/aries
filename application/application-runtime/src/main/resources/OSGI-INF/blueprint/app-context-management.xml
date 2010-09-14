@@ -23,6 +23,6 @@
     <property name="bundleContext" ref="blueprintBundleContext"/>
   </bean>
 
-  <service interface="org.apache.aries.application.management.AriesApplicationContextManager" ref="app-context-manager" />
+  <service interface="org.apache.aries.application.management.spi.runtime.AriesApplicationContextManager" ref="app-context-manager" />
     
 </blueprint>

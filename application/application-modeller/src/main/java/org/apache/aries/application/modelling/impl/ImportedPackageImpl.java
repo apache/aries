@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.aries.application.management.InvalidAttributeException;
+import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.Provider;
 import org.apache.aries.application.modelling.ResourceType;

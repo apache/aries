@@ -17,25 +17,28 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.spi.runtime;
 
-import java.util.Properties;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import java.io.File;
+import java.io.IOException;
 
-public interface BundleFrameworkFactory
-{
+/**
+ * This is a difficult interface to name properly. It holds methods that need to 
+ * be implemented on a per-application server platform basis. 
+ */
+public interface LocalPlatform {
+
   /**
-   * Creates a new isolated bundle framework with the properties provided. 
-   * @param bc The context in which to install the new framework
-   * @param frameworkId The id of the new framework
-   * @param frameworkConfig The config properties used to configure the new framework
-   * @param frameworkManifest The manifest used to install the new bundle associated with the framework
-   * @return
-   * @throws BundleException
+   * Obtain a temporary directory
+   * @return Temporary directory
+   * @throws IOException
    */
-  public BundleFramework createBundleFramework(BundleContext bc, 
-      String frameworkId,
-      Properties frameworkConfig,
-      Properties frameworkManifest) throws BundleException;
+  public File getTemporaryDirectory() throws IOException;
+
+  /**
+   * Obtain a temporary file
+   * @return Temporary directory
+   * @throws IOException
+   */
+  public File getTemporaryFile() throws IOException;
 }

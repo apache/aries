@@ -25,7 +25,7 @@
     <property name="wabConverter" value="converterService" />
   </bean>
   
-  <service interface="org.apache.aries.application.management.BundleConverter" ref="bundleConverter">
+  <service interface="org.apache.aries.application.management.spi.convert.BundleConverter" ref="bundleConverter">
       <service-properties>
           <entry key="convert-type" value="war" />
       </service-properties>
