@@ -59,7 +59,7 @@
         </xsd:annotation>
         <xsd:attribute name="method" type="xsd:string" />
         <xsd:attribute name="value" type="TtransactionAttribute"
-            use="required" />
+            use="optional" default="Required" />
         <xsd:attribute name="bean" type="xsd:string" />
     </xsd:complexType>
 
