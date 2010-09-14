@@ -41,13 +41,13 @@
         <module>eba-maven-plugin</module>
         <module>testsupport</module>
         <module>util</module>
+        <module>quiesce</module>
         <module>blueprint</module>
         <module>jndi</module>
         <module>transaction</module>
         <module>web</module>
         <module>application</module>
         <module>jmx</module>
-        <module>quiesce</module>
         <module>jpa</module>
         <module>spi-fly</module>
         <module>samples</module>
