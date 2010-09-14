@@ -17,13 +17,18 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.spi.resolve;
 
 import java.util.Collection;
 import java.util.Set;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
+import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationManager;
+import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ResolveConstraint;
+import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.osgi.framework.Version;
 

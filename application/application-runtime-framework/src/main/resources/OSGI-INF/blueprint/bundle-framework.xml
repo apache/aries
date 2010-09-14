@@ -21,7 +21,7 @@
   
   <bean id="bundle-framework-factory" class="org.apache.aries.application.runtime.framework.BundleFrameworkFactoryImpl" />
 
-  <service interface="org.apache.aries.application.management.BundleFrameworkFactory"
+  <service interface="org.apache.aries.application.management.spi.framework.BundleFrameworkFactory"
             ref="bundle-framework-factory"
             ranking="-1"/>
             

@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.jar.Attributes;
 
+import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.management.InvalidAttributeException;
 import org.apache.aries.application.modelling.ExportedBundle;
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ExportedService;

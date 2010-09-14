@@ -16,26 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.aries.application.management.spi.repository;
 
-package org.apache.aries.application.management;
+import java.net.URI;
+import java.util.Collection;
 
 /**
- * An exception thrown by various methods within this package.
+ * This interface allows one to find out information about configured bundle repositories
+ *
  */
-public class ContextException extends Exception {
+public interface PlatformRepository {
 
-  private static final long serialVersionUID = -6613842057223737125L;
-
-  public ContextException (Exception e) { 
-    super(e);
-  }
   
-  public ContextException (String s) { 
-    super(s);
-  }
-  
-  public ContextException(String s, Exception e)
-  {
-    super(s, e);
-  }
+  /**
+   * Obtain a set of URIs to bundle repositories representing the local platform's capabilities. 
+   * These repositories do not represent any bundles but only platform capabilities.   
+   * @return URLs to bundle repositories representing the local platform 
+   */
+  Collection<URI> getPlatformRepositoryURLs();
 }

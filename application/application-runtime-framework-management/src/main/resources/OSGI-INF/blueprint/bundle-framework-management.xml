@@ -25,12 +25,12 @@
       <property name="updateStrategies" ref="strategies" />
   </bean>
 
-  <service interface="org.apache.aries.application.management.BundleFrameworkManager"
+  <service interface="org.apache.aries.application.management.spi.framework.BundleFrameworkManager"
             ref="equinox-bundle-framework-manager"
             ranking="-1"/>
             
-  <reference id="bundle-framework-factory" interface="org.apache.aries.application.management.BundleFrameworkFactory"/>
+  <reference id="bundle-framework-factory" interface="org.apache.aries.application.management.spi.framework.BundleFrameworkFactory"/>
 
-  <reference-list id="strategies" interface="org.apache.aries.application.management.provider.UpdateStrategy" availability="optional" />
+  <reference-list id="strategies" interface="org.apache.aries.application.management.spi.update.UpdateStrategy" availability="optional" />
 
 </blueprint>

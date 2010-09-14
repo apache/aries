@@ -26,10 +26,10 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.DeploymentMetadataFactory;
+import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.management.InvalidAttributeException;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.spi.convert;
 
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;

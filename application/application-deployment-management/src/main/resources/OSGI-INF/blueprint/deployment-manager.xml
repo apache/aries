@@ -27,10 +27,10 @@
   </bean>
   
   <reference id = "modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
-  <reference id="localPlatform" interface="org.apache.aries.application.management.LocalPlatform"/>
-  <reference id="resolver" interface="org.apache.aries.application.management.AriesApplicationResolver"/>
+  <reference id="localPlatform" interface="org.apache.aries.application.management.spi.runtime.LocalPlatform"/>
+  <reference id="resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>
   <reference-list id="post-resolver-transformers" interface="org.apache.aries.application.PostResolveTransformer" availability="optional"/>
   
-  <service id ="deploymentManifestManager-Service" ref="deploymentManifestManager" interface="org.apache.aries.application.management.DeploymentManifestManager"/>
+  <service id ="deploymentManifestManager-Service" ref="deploymentManifestManager" interface="org.apache.aries.application.management.spi.resolve.DeploymentManifestManager"/>
     
 </blueprint>

@@ -27,9 +27,9 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.aries.application.management.BundleFramework;
-import org.apache.aries.application.management.BundleFrameworkFactory;
-import org.apache.aries.application.management.ContextException;
+import org.apache.aries.application.management.spi.framework.BundleFramework;
+import org.apache.aries.application.management.spi.framework.BundleFrameworkFactory;
+import org.apache.aries.application.management.spi.repository.ContextException;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;

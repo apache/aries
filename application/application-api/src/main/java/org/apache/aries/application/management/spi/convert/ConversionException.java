@@ -17,28 +17,20 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
-
-import java.io.File;
-import java.io.IOException;
+package org.apache.aries.application.management.spi.convert;
 
 /**
- * This is a difficult interface to name properly. It holds methods that need to 
- * be implemented on a per-application server platform basis. 
+ * An Exception thrown by a BundleConverter
  */
-public interface LocalPlatform {
+public class ConversionException extends Exception {
 
-  /**
-   * Obtain a temporary directory
-   * @return Temporary directory
-   * @throws IOException
-   */
-  public File getTemporaryDirectory() throws IOException;
+  private static final long serialVersionUID = -5921912484821992252L;
 
-  /**
-   * Obtain a temporary file
-   * @return Temporary directory
-   * @throws IOException
-   */
-  public File getTemporaryFile() throws IOException;
+  public ConversionException (Exception e) { 
+    super(e);
+  }
+  
+  public ConversionException (String s) { 
+    super(s);
+  }
 }

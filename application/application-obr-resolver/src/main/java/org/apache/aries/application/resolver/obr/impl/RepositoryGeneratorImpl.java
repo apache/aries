@@ -36,8 +36,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.aries.application.management.RepositoryGenerator;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.resolver.obr.ext.BundleResource;
 import org.apache.aries.application.resolver.obr.ext.BundleResourceTransformer;

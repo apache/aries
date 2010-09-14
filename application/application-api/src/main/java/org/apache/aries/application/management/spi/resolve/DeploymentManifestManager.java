@@ -16,13 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.spi.resolve;
 
 import java.util.Collection;
 import java.util.jar.Manifest;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.ServiceDeclaration;
+import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.ResolveConstraint;
+import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.modelling.ModelledResource;
 
 public interface DeploymentManifestManager

@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.aries.application.management.InvalidAttributeException;
 import org.osgi.framework.Filter;
 import org.osgi.framework.Version;
 

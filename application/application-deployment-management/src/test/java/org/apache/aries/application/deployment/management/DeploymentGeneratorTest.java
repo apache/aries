@@ -37,15 +37,15 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
+import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.deployment.management.impl.DeploymentManifestManagerImpl;
 import org.apache.aries.application.management.AriesApplication;
-import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.management.InvalidAttributeException;
-import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
+import org.apache.aries.application.management.spi.runtime.LocalPlatform;
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.utils.ModellingManager;
