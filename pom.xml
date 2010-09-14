@@ -47,10 +47,10 @@
         <module>web</module>
         <module>application</module>
         <module>jmx</module>
+        <module>quiesce</module>
         <module>jpa</module>
         <module>spi-fly</module>
         <module>samples</module>
-        <module>quiesce</module>
     </modules>
 
     <build>
