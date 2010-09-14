@@ -135,6 +135,14 @@ public class SPIBundleTrackerCustomizerTest extends AbstractIntegrationTest {
 
         Option[] options = options(
 
+                // This is just to satisfy the Require-Bundle header in the
+                // spifly.core bundle. This isn't sufficient to start using
+                // aspectj inside the container. The aspect defined in the core
+                // bundle will not be processed.For details how to configure
+                // aspectj see CustomizerWithAopTest.
+                mavenBundle("org.aspectj",
+                        "com.springsource.org.aspectj.runtime").startLevel(1),
+
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
                 // Felix Config Admin

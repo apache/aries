@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+    <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -16,8 +16,9 @@
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
  under the License.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries.spifly</groupId>
@@ -32,12 +33,27 @@
     <description>
         Integration tests for SPI-Fly
     </description>
-    
+
+    <properties>
+        <!-- 1.0 M7 -->
+        <equinox.aspects.url>http://www.eclipse.org/equinox/incubator/aspects/downloads/dev/org.eclipse.equinox.weaving-incubation-1.0.0.200905031323-M7a-archive.zip</equinox.aspects.url>
+    </properties>
+
     <dependencies>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>com.springsource.org.aspectj.weaver</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>com.springsource.org.aspectj.runtime</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -75,6 +91,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.ops4j.pax.swissbox</groupId>
+            <artifactId>pax-swissbox-tinybundles</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>test</scope>
@@ -90,7 +111,7 @@
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- internal -->
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
@@ -129,6 +150,113 @@
                     </includes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/BundleAspect.aj</include>
+                    </includes>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <additionalProjectnatures>
+                        <projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
+                    </additionalProjectnatures>
+                    <buildcommands>
+                        <buildcommand>org.eclipse.ajdt.core.ajbuilder</buildcommand>
+                    </buildcommands>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <!--
+                    Need to use one of the latest versions of
+                    maven-antrun-plugin, so that a quite new version of
+                    ant is employed. This is required in order to
+                    eliminate problems with parsing nested configuration
+                    elements.
+                -->
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="output.path"
+                                    location="${project.build.directory}/weaver" />
+
+                                <!-- Download Equinox Aspects feature from Eclipse Incubator. -->
+                                <get src="${equinox.aspects.url}"
+                                    dest="${project.build.directory}/equinox-aspects.zip" />
+
+                                <mkdir dir="${output.path}" />
+                                <unzip dest="${output.path}">
+                                    <fileset
+                                        dir="${project.build.directory}">
+                                        <include name="equinox-aspects.zip" />
+                                    </fileset>
+                                    <!--
+                                        Remove version suffix from all
+                                        Equinox Weaver jar files and
+                                        flatten paths for these files.
+                                    -->
+                                    <regexpmapper
+                                        from="^(.*)/([^/_]*)_([0-9.]*.jar)$$"
+                                        to="\2.jar" handledirsep="true" />
+                                </unzip>
+                                <delete includeemptydirs="true">
+                                    <fileset
+                                        dir="${project.build.directory}"
+                                        includes="equinox-aspects.zip" />
+                                    <fileset dir="${output.path}"
+                                        excludes="org.eclipse.equinox.weaving.hook.jar,org.eclipse.equinox.weaving.aspectj.jar" />
+                                </delete>
+
+                                <fail
+                                    message="Failed setting up dependencies for SPI Fly itests: Equinox Weaver jar files are missing.">
+                                    <condition>
+                                        <not>
+                                            <and>
+                                                <resourceexists>
+                                                    <file
+                                                        file="${output.path}/org.eclipse.equinox.weaving.hook.jar" />
+                                                </resourceexists>
+                                                <resourceexists>
+                                                    <file
+                                                        file="${output.path}/org.eclipse.equinox.weaving.aspectj.jar" />
+                                                </resourceexists>
+                                            </and>
+                                        </not>
+                                    </condition>
+                                </fail>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-apache-regexp</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 
@@ -147,8 +275,9 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <!--
-                                when the local repo location has been specified, we need to pass
-                                on this information to PAX mvn url
+                                when the local repo location has been
+                                specified, we need to pass on this
+                                information to PAX mvn url
                             -->
                             <argLine>-Dorg.ops4j.pax.url.mvn.localRepository=${maven.repo.local}</argLine>
                         </configuration>
