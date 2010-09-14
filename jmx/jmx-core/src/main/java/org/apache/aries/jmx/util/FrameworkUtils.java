@@ -257,6 +257,7 @@ public class FrameworkUtils {
         Dictionary<String, String> bundleHeaders = bundle.getHeaders();
         String dynamicImportHeader = bundleHeaders.get(Constants.DYNAMICIMPORT_PACKAGE);
         // if DynamicImport-Package used, then do full iteration
+        // else means no dynamic import or has dynamic import but no wildcard "*" in it.
         if (dynamicImportHeader != null && dynamicImportHeader.contains("*")) {
             Bundle[] bundles = localBundleContext.getBundles();
             for (Bundle candidate : bundles) {
@@ -277,10 +278,14 @@ public class FrameworkUtils {
             List<String> importPackages = new ArrayList<String>();
             String importPackageHeader = bundleHeaders.get(Constants.IMPORT_PACKAGE);
             if (importPackageHeader != null && importPackageHeader.length() > 0) {
-                importPackages.addAll(extractHeaderDeclaration(importPackageHeader));
+            	for (String headerDeclaration : extractHeaderDeclaration(importPackageHeader)) {
+            		importPackages.addAll(removeParameters(headerDeclaration));
+            	}
             }
             if (dynamicImportHeader != null) {
-                importPackages.addAll(extractHeaderDeclaration(dynamicImportHeader));
+            	for (String headerDeclaration : extractHeaderDeclaration(dynamicImportHeader)) {
+            		importPackages.addAll(removeParameters(headerDeclaration));
+            	}
             }
             for (String packageName : importPackages) {
                 ExportedPackage[] candidateExports = packageAdmin.getExportedPackages(packageName);
@@ -491,7 +496,10 @@ public class FrameworkUtils {
         Dictionary<String, String> bundleHeaders = bundle.getHeaders();
         String requireBundleHeader = bundleHeaders.get(Constants.REQUIRE_BUNDLE);
         if (requireBundleHeader != null) { // only check if Require-Bundle is used
-            List<String> bundleSymbolicNames = extractHeaderDeclaration(requireBundleHeader);
+            List<String> bundleSymbolicNames = new ArrayList<String>();
+            for (String headerDeclaration : extractHeaderDeclaration(requireBundleHeader)) {
+            	bundleSymbolicNames.addAll(removeParameters(headerDeclaration));
+        	}
             for (String bundleSymbolicName: bundleSymbolicNames) {
                 RequiredBundle[] candidateRequiredBundles = packageAdmin.getRequiredBundles(bundleSymbolicName);
                 if (candidateRequiredBundles != null) {
@@ -619,11 +627,60 @@ public class FrameworkUtils {
      */
     public static List<String> extractHeaderDeclaration(String headerStatement) {
         List<String> result = new ArrayList<String>();
-        for (String headerDeclaration : headerStatement.split("\\s*,\\s*")) {
-            String name = headerDeclaration.contains(";") ? headerDeclaration.substring(0, headerDeclaration
-                    .indexOf(";")) : headerDeclaration;
-            result.add(name);
+        
+        while(true){
+        	int commaPoz = headerStatement.indexOf(",");
+        	
+        	while (commaPoz!= -1){
+        		String testStr = headerStatement.substring(0, commaPoz);
+        		
+        		int quoteNum = 0;
+        		int bracketNum = 0;
+        		for(char testStrChar : testStr.toCharArray()){
+        			switch (testStrChar) {
+	        			case '"': quoteNum++; break;
+	        			case '[':
+	        			case ']':
+	        			case '(':
+	        			case ')': bracketNum++;
+        			}
+        		}
+        		
+        		// there might be odd numbered quote marks or brackets in the left part,
+        		// which indicates the comma appears in version=[1.0,3.5) or uses="xxx,yyy,zzz"
+	        	if (quoteNum % 2 == 1 || bracketNum %2 ==1){
+	        		commaPoz = headerStatement.indexOf(",", commaPoz+1);
+	        	}else {
+	        		break;
+	        	}
+        	}
+        	
+        	if (commaPoz == -1){	//to the end
+        		result.add(headerStatement.trim());
+        		break;
+        	}else{
+        		result.add(headerStatement.substring(0,commaPoz).trim());
+        		if (commaPoz+1 < headerStatement.trim().length()){ //commaPoz is not the last char
+        			headerStatement = headerStatement.substring(commaPoz+1, headerStatement.length());
+        		}else{
+        			break;
+        		}
+        	}
         }
+        
         return result;
     }
+    
+    private static List<String> removeParameters(String headerDeclaration) {
+    	List<String> result = new ArrayList<String>();
+    	
+    	for (String headerSentence : headerDeclaration.split("\\s*;\\s*")) {
+            if (headerSentence.indexOf("=") == -1){
+            	result.add(headerSentence.trim());
+            }
+        }
+    	
+    	return result;
+    }
+    
 }
