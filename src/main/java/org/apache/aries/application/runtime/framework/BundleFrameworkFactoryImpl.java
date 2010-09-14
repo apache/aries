@@ -21,8 +21,8 @@ package org.apache.aries.application.runtime.framework;
 
 import java.util.Properties;
 
-import org.apache.aries.application.management.BundleFramework;
-import org.apache.aries.application.management.BundleFrameworkFactory;
+import org.apache.aries.application.management.spi.framework.BundleFramework;
+import org.apache.aries.application.management.spi.framework.BundleFrameworkFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
