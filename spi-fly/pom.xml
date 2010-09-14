@@ -44,6 +44,15 @@
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/spi-fly</url>
     </scm>
 
+    <repositories>
+        <!-- The SpringSource bundle repository is required in order to be able to download osgified AspectJ bundles -->
+        <repository>
+            <id>com.springsource.repository.bundles.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository> 
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -74,6 +83,17 @@
             </dependency>
 
             <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>com.springsource.org.aspectj.weaver</artifactId>
+                <version>1.6.2.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>com.springsource.org.aspectj.runtime</artifactId>
+                <version>1.6.2.RELEASE</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.easymock</groupId>
                 <artifactId>easymock</artifactId>
                 <version>2.5.2</version>
@@ -83,6 +103,12 @@
                 <groupId>org.easymock</groupId>
                 <artifactId>easymockclassextension</artifactId>
                 <version>2.5.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.swissbox</groupId>
+                <artifactId>pax-swissbox-tinybundles</artifactId>
+                <version>1.2.0</version>
                 <scope>test</scope>
             </dependency>
 

@@ -150,4 +150,38 @@ public class AbstractIntegrationTest {
         }
     }
 
+    /**
+     * Retrieves project root. The same value should be returned no matter if
+     * this test is run from an IDE or using Maven from commandline.
+     * 
+     * @return
+     */
+    protected static String getProjectRoot() {
+
+        Class<?> clazz = AbstractIntegrationTest.class;
+        String resourceName = clazz.getName().replace(".", "/") + ".class";
+        String path = clazz.getClassLoader().getResource(resourceName)
+                .toExternalForm();
+        path = path.substring(0, path.lastIndexOf(resourceName));
+        if (path.endsWith("/") || path.endsWith("\\")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        if (path.endsWith("test-classes")) {
+            path = path.substring(0, path.length() - 12);
+        }
+        if (path.endsWith("classes")) {
+            path = path.substring(0, path.length() - 7);
+        }
+        if (path.endsWith("/") || path.endsWith("\\")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        if (path.endsWith("target")) {
+            path = path.substring(0, path.length() - 6);
+        }
+        if (!(path.endsWith("/") || path.endsWith("\\"))) {
+            path = path + "/";
+        }
+        return path;
+    }
+
 }
