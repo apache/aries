@@ -139,7 +139,6 @@ public class FrameworkUtilsTest {
         when(ep2.getImportingBundles()).thenReturn(new Bundle[] { bundle, b3 });
         when(ep2.getName()).thenReturn("org.apache.aries.jmx.b2");
         when(ep2.getVersion()).thenReturn(Version.parseVersion("2.0.1"));
-       
         
         PackageAdmin admin = mock(PackageAdmin.class);
         when(admin.getExportedPackages(b1)).thenReturn(new ExportedPackage[] { ep1 });
@@ -155,7 +154,7 @@ public class FrameworkUtilsTest {
         
         //check with ImportPackage statement
         headers.remove(Constants.DYNAMICIMPORT_PACKAGE);
-        String importPackageStatement = "org.apache.aries.jmx.b1;version=0.0.0;resolution:=optional,org.apache.aries.jmx.b2;attribute:=value"; 
+        String importPackageStatement = "org.apache.aries.jmx.b1;version=0.0.0;resolution:=optional,org.apache.aries.jmx.b2;attribute:=value;version=\"[2.0, 3.0)\""; 
         headers.put(Constants.IMPORT_PACKAGE, importPackageStatement);
         when(admin.getExportedPackages("org.apache.aries.jmx.b1")).thenReturn(new ExportedPackage[] { ep1 });
         when(admin.getExportedPackages("org.apache.aries.jmx.b2")).thenReturn(new ExportedPackage[] { ep2 });
