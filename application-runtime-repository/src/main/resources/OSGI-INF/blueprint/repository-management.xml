@@ -23,7 +23,7 @@
       <property name="bundleContext" ref="blueprintBundleContext"/>
   </bean>
  
-  <service interface="org.apache.aries.application.management.BundleRepositoryManager"
+  <service interface="org.apache.aries.application.management.spi.repository.BundleRepositoryManager"
             ref="equinox-bundle-repository-manager"
             ranking="-1"/>
 

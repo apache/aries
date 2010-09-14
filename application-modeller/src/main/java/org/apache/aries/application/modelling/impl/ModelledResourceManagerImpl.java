@@ -39,10 +39,10 @@ import java.util.jar.Attributes;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.application.management.InvalidAttributeException;
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;

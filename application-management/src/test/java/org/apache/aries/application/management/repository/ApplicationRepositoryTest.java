@@ -26,7 +26,7 @@ import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.impl.DeploymentContentImpl;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Test;

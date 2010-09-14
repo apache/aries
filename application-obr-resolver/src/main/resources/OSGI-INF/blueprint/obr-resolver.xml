@@ -27,7 +27,7 @@
         <property name="platformRepository" ref="platformRepository"/>
         
     </bean>
-    <reference id="platformRepository" interface="org.apache.aries.application.management.PlatformRepository" availability="optional"/>        
+    <reference id="platformRepository" interface="org.apache.aries.application.management.spi.repository.PlatformRepository" availability="optional"/>        
     
     <bean id="repository-generator" class="org.apache.aries.application.resolver.obr.impl.RepositoryGeneratorImpl" activation="lazy">
         <argument>
@@ -35,8 +35,8 @@
         </argument>
         <property name="bundleResourceTransformers" ref="bundle-resource-transformers"/>
     </bean>
-    <service id="repository-generator-service" ref="repository-generator" interface="org.apache.aries.application.management.RepositoryGenerator"/>
-    <service interface="org.apache.aries.application.management.AriesApplicationResolver" ref="obr-resolver"/>
+    <service id="repository-generator-service" ref="repository-generator" interface="org.apache.aries.application.management.spi.repository.RepositoryGenerator"/>
+    <service interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver" ref="obr-resolver"/>
     
     <reference-list id="bundle-resource-transformers" 
       interface="org.apache.aries.application.resolver.obr.ext.BundleResourceTransformer"

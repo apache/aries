@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.spi.framework;
 
 import java.util.Collection;
 import java.util.Map;
@@ -27,7 +27,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
-import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.UpdateException;
+import org.apache.aries.application.management.spi.repository.ContextException;
+import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 
 public interface BundleFrameworkManager
 {

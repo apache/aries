@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.management.InvalidAttributeException;
 import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.Provider;

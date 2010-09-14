@@ -21,7 +21,7 @@ package org.apache.aries.application.utils.runtime;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.aries.application.management.LocalPlatform;
+import org.apache.aries.application.management.spi.runtime.LocalPlatform;
 
 public class DefaultLocalPlatform implements LocalPlatform {
 

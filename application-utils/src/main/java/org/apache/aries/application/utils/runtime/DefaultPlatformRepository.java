@@ -23,7 +23,7 @@ package org.apache.aries.application.utils.runtime;
 import java.net.URI;
 import java.util.Collection;
 
-import org.apache.aries.application.management.PlatformRepository;
+import org.apache.aries.application.management.spi.repository.PlatformRepository;
 
 public class DefaultPlatformRepository implements PlatformRepository
 {
