@@ -17,11 +17,15 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.spi.runtime;
 
 import java.util.Set;
 
 import org.apache.aries.application.DeploymentMetadata;
+import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
+import org.apache.aries.application.management.ManagementException;
+import org.apache.aries.application.management.UpdateException;
 import org.osgi.framework.BundleException;
 
 /**

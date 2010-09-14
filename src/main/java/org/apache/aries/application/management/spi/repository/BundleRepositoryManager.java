@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.spi.repository;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.aries.application.DeploymentContent;
-import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 
 public interface BundleRepositoryManager
 {

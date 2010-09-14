@@ -16,22 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.management;
 
-import java.net.URI;
-import java.util.Collection;
+package org.apache.aries.application.management.spi.convert;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.aries.application.management.BundleInfo;
 
 /**
- * This interface allows one to find out information about configured bundle repositories
- *
+ * A BundleConversion represents a .JAR file which has been converted in to 
+ * an well-formed OSGi bundle, or a .WAR file which has been converted into a .WAB 
+ * file
  */
-public interface PlatformRepository {
+public interface BundleConversion {
 
-  
-  /**
-   * Obtain a set of URIs to bundle repositories representing the local platform's capabilities. 
-   * These repositories do not represent any bundles but only platform capabilities.   
-   * @return URLs to bundle repositories representing the local platform 
-   */
-  Collection<URI> getPlatformRepositoryURLs();
+	/**
+	 * @return The InputStream to the converted bundle.
+	 */
+	public InputStream getInputStream() throws IOException;
+	
+	/** 
+	 * @param The ApplicationMetadataFactory used to parse the content of 
+	 * the converted bundle into a BundleInfo object
+	 * @return The bundle information for the converted bundle.
+	 */
+	public BundleInfo getBundleInfo() throws IOException;
 }

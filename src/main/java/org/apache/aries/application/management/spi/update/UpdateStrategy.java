@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.management.provider;
+package org.apache.aries.application.management.spi.update;
 
 import java.util.Collection;
 import java.util.Map;
@@ -24,11 +24,11 @@ import java.util.Map;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
-import org.apache.aries.application.management.BundleFramework;
-import org.apache.aries.application.management.BundleRepository;
-import org.apache.aries.application.management.ContextException;
 import org.apache.aries.application.management.UpdateException;
-import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.spi.framework.BundleFramework;
+import org.apache.aries.application.management.spi.repository.BundleRepository;
+import org.apache.aries.application.management.spi.repository.ContextException;
+import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.osgi.framework.Bundle;
 
 /**

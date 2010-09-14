@@ -17,11 +17,12 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.spi.framework;
 
 import java.util.List;
 
-import org.apache.aries.application.management.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
