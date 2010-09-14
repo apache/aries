@@ -88,7 +88,7 @@ public class NameSpaceHandlerTest {
     }
     
     @Test
-    public void testMultipleElements() throws Exception
+    public void testMultipleElements_100() throws Exception
     {
       Parser p = new Parser();
       
@@ -115,7 +115,34 @@ public class NameSpaceHandlerTest {
     }
     
     @Test
-    public void testOptionalMethodAttribute() throws Exception
+    public void testMultipleElements_110() throws Exception
+    {
+      Parser p = new Parser();
+      
+      URL bpxml = this.getClass().getResource("aries4.xml");
+      List<URL> bpxmlList = new LinkedList<URL>();
+      bpxmlList.add(bpxml); 
+      
+      p.parse(bpxmlList);
+      Set<URI> nsuris = p.getNamespaces();
+      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
+      p.validate(nshandlers.getSchema());
+      
+      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
+      p.populate(nshandlers, cdr);
+      
+      BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
+      
+      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+        
+    }
+    
+    @Test
+    public void testOptionalMethodAttribute_100() throws Exception
     {
       Parser p = new Parser();
       
@@ -139,6 +166,87 @@ public class NameSpaceHandlerTest {
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
         
+    }
+    
+    @Test
+    public void testOptionalMethodAttribute_110() throws Exception
+    {
+      Parser p = new Parser();
+      
+      URL bpxml = this.getClass().getResource("aries5.xml");
+      List<URL> bpxmlList = new LinkedList<URL>();
+      bpxmlList.add(bpxml); 
+      
+      p.parse(bpxmlList);
+      Set<URI> nsuris = p.getNamespaces();
+      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
+      p.validate(nshandlers.getSchema());
+      
+      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
+      p.populate(nshandlers, cdr);
+      
+      BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
+      
+      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+        
+    }
+    
+    @Test
+    public void testOptionalValueAttribute_100() throws Exception
+    {
+      Parser p = new Parser();
+      
+      URL bpxml = this.getClass().getResource("aries3.xml");
+      List<URL> bpxmlList = new LinkedList<URL>();
+      bpxmlList.add(bpxml); 
+      
+      p.parse(bpxmlList);
+      Set<URI> nsuris = p.getNamespaces();
+      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
+      p.validate(nshandlers.getSchema());
+      
+      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
+      p.populate(nshandlers, cdr);
+      
+      BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
+      
+      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anonToo, "require")); 
+    }
+    
+    @Test
+    public void testOptionalValueAttribute_110() throws Exception
+    {
+      Parser p = new Parser();
+      
+      URL bpxml = this.getClass().getResource("aries6.xml");
+      List<URL> bpxmlList = new LinkedList<URL>();
+      bpxmlList.add(bpxml); 
+      
+      p.parse(bpxmlList);
+      Set<URI> nsuris = p.getNamespaces();
+      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
+      p.validate(nshandlers.getSchema());
+      
+      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
+      p.populate(nshandlers, cdr);
+      
+      BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
+      
+      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anonToo, "require")); 
     }
     
     @Test
