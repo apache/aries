@@ -170,6 +170,9 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
       if (method == null || method.isEmpty()) {
     	  method = "*";
       }
+      if(value == null || value.isEmpty()) {
+        value = "Required";
+      }
       
       String[] names = method.split("[, \t]");
       
