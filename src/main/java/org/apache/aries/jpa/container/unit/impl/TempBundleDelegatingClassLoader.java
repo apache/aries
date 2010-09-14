@@ -75,6 +75,8 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
   @Override
   protected URL findResource(final String resName)
   {
+    //Bundle.getResource requires privileges that the client may not have but we need
+    //use a doPriv so that only this bundle needs the privileges
     return AccessController.doPrivileged(new PrivilegedAction<URL>() {
 
       public URL run()
@@ -90,6 +92,8 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
   {
     Enumeration<URL> resources = null;
     try {
+      //Bundle.getResources requires privileges that the client may not have but we need
+      //use a doPriv so that only this bundle needs the privileges
       resources = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>() {
 
         public Enumeration<URL> run() throws IOException
@@ -98,13 +102,14 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
         }
       });
     } catch(PrivilegedActionException pae) {
+      //thrownException can never be a RuntimeException, as that would escape
+      //the doPriv normally
       Exception thrownException = pae.getException();
-      if (thrownException instanceof RuntimeException) {
-        throw (RuntimeException)thrownException;
-      } else if (thrownException instanceof IOException) {
+      if (thrownException instanceof IOException) {
         throw (IOException)thrownException;
       } else {
-        // This code should never get called.
+        // This code should never get called, but we don't
+        // want to gobble the exception if we see it.
         throw new UndeclaredThrowableException(thrownException);
       }
     }
