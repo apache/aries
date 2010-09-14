@@ -18,7 +18,7 @@
 
 -->
 <blueprint  xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.1.0">
+            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0">
 
 	
 	<bean id="top" class="org.apache.aries.transaction.TestBean">
