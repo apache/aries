@@ -21,7 +21,12 @@ package org.apache.aries.jpa.container.unit.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 
 import org.osgi.framework.Bundle;
@@ -68,13 +73,41 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
   }
 
   @Override
-  protected URL findResource(String resName) {
-    return bundle.getResource(resName);
+  protected URL findResource(final String resName)
+  {
+    return AccessController.doPrivileged(new PrivilegedAction<URL>() {
+
+      public URL run()
+      {
+        return bundle.getResource(resName);
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  protected Enumeration<URL> findResources(String resName) throws IOException {
-    return bundle.getResources(resName);
+  protected Enumeration<URL> findResources(final String resName) throws IOException
+  {
+    Enumeration<URL> resources = null;
+    try {
+      resources = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>() {
+
+        public Enumeration<URL> run() throws IOException
+        {
+          return bundle.getResources(resName);
+        }
+      });
+    } catch(PrivilegedActionException pae) {
+      Exception thrownException = pae.getException();
+      if (thrownException instanceof RuntimeException) {
+        throw (RuntimeException)thrownException;
+      } else if (thrownException instanceof IOException) {
+        throw (IOException)thrownException;
+      } else {
+        // This code should never get called.
+        throw new UndeclaredThrowableException(thrownException);
+      }
+    }
+    return resources;
   }
 }
