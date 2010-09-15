@@ -34,7 +34,7 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.spi.repository.BundleRepository;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.modelling.ModelledResource;
-import org.apache.aries.application.modelling.utils.ModellingManager;
+import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.isolated.sample.HelloWorld;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.osgi.framework.Bundle;
@@ -80,7 +80,9 @@ public class IsolationTestUtils {
    * 
    * This means setting up a global bundle repository as well as a global OBR repository
    */
-  public static void prepareSampleBundleV2(BundleContext runtimeCtx, RepositoryGenerator repoGen, RepositoryAdmin repoAdmin)
+  public static void prepareSampleBundleV2(BundleContext runtimeCtx, 
+      RepositoryGenerator repoGen, RepositoryAdmin repoAdmin, 
+      ModellingManager modellingManager)
     throws Exception
   {
     BundleRepository repo = new BundleRepository() {
@@ -134,7 +136,7 @@ public class IsolationTestUtils {
     attrs.putValue("Bundle-SymbolicName", "org.apache.aries.isolated.sample");
     attrs.putValue("Manifest-Version", "1");
 
-    ModelledResource res = ModellingManager.getModelledResource(
+    ModelledResource res = modellingManager.getModelledResource(
         new File("sample_2.0.0.jar").toURI().toString(), 
         attrs,
         Collections.EMPTY_LIST, Collections.EMPTY_LIST);

@@ -38,6 +38,7 @@
             org.apache.aries.application.management;
             org.apache.aries.application.management.spi.*;
             org.apache.aries.application.modelling;
+            org.apache.aries.application.modelling.utils;
         </aries.osgi.export.pkg>
     </properties>
 

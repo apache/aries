@@ -32,6 +32,7 @@ import java.util.jar.Attributes;
 
 import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedService;
@@ -40,6 +41,7 @@ import org.apache.aries.application.modelling.impl.ExportedServiceImpl;
 import org.apache.aries.application.modelling.impl.ImportedBundleImpl;
 import org.apache.aries.application.modelling.impl.ImportedServiceImpl;
 import org.apache.aries.application.modelling.impl.ModelledResourceImpl;
+import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValuePair;
@@ -62,7 +64,7 @@ public final class DeployedBundlesTest
     uses.add(new ImportedBundleImpl("bundle.c", "1.0.0"));
     uses.add(new ImportedBundleImpl("bundle.d", "1.0.0"));
     
-    return new DeployedBundles("test",content, uses, null);
+    return new ModellingHelperImpl().createDeployedBundles("test",content, uses, null);
   }
   
   private void basicResolve(DeployedBundles db, boolean cPersistent) throws InvalidAttributeException {
@@ -271,7 +273,8 @@ public final class DeployedBundlesTest
     else if (c == ternary.USES)
       uses.add(new ImportedBundleImpl("bundle.c", "1.0.0"));
     
-    return new DeployedBundles("test",content, uses, null);
+    // In a unit test we could go straight to the static method; choosing not to in this case. 
+    return new ModellingHelperImpl().createDeployedBundles("test",content, uses, null);
   }
   
   @Test

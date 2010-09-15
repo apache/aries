@@ -32,6 +32,7 @@ import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.junit.Before;
 import org.junit.Ignore;

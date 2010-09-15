@@ -19,6 +19,7 @@
 package org.apache.aries.application.modelling.impl;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,10 +32,10 @@ import java.util.Set;
 import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
+import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
-import org.apache.aries.application.modelling.utils.ModellingManager;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ParserService;
 import org.osgi.framework.BundleContext;
@@ -52,12 +53,11 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 public class ParserProxyImpl implements ParserProxy {
   private Logger _logger = LoggerFactory.getLogger(ParserProxyImpl.class);
   private ParserService _parserService;
   private BundleContext _bundleContext;
+  private ModellingManager _modellingManager;
   
   public void setParserService (ParserService p) { 
     _parserService = p;
@@ -67,11 +67,11 @@ public class ParserProxyImpl implements ParserProxy {
     _bundleContext = b;
   }
   
-  public ParserProxyImpl(ParserService p, BundleContext b) {
-	  _parserService = p;
-	  _bundleContext = b;
+  public void setModellingManager (ModellingManager m) { 
+    _modellingManager = m;
   }
-
+  
+  @Override
   public List<? extends WrappedServiceMetadata> parse(List<URL> blueprintsToParse) throws Exception {
     _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintsToParse});
     ComponentDefinitionRegistry cdr = _parserService.parse (blueprintsToParse, _bundleContext.getBundle());
@@ -80,8 +80,8 @@ public class ParserProxyImpl implements ParserProxy {
     return result;
   }
    
-  public List<? extends WrappedServiceMetadata> parse(URL blueprintToParse)
-      throws Exception {
+  @Override
+  public List<? extends WrappedServiceMetadata> parse(URL blueprintToParse) throws Exception {
     _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintToParse});
     List<URL> list = new ArrayList<URL>();
     list.add(blueprintToParse);
@@ -91,9 +91,8 @@ public class ParserProxyImpl implements ParserProxy {
     return result;
   }
 
-
-  public List<? extends WrappedServiceMetadata> parse(InputStream blueprintToParse)
-      throws Exception {
+  @Override
+  public List<? extends WrappedServiceMetadata> parse(InputStream blueprintToParse) throws Exception {
     _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintToParse});
     ComponentDefinitionRegistry cdr = _parserService.parse (blueprintToParse, _bundleContext.getBundle());
     List<? extends WrappedServiceMetadata> result = parseCDRForServices (cdr, true);
@@ -102,12 +101,13 @@ public class ParserProxyImpl implements ParserProxy {
   }
  
 
+  @Override
   public ParsedServiceElements parseAllServiceElements(InputStream blueprintToParse) throws Exception {
     _logger.debug(LOG_ENTRY, "parseAllServiceElements", new Object[]{blueprintToParse});
     ComponentDefinitionRegistry cdr = _parserService.parse (blueprintToParse, _bundleContext.getBundle());
     Collection<ExportedService> services = parseCDRForServices(cdr, false);
     Collection<ImportedService> references = parseCDRForReferences (cdr);
-    ParsedServiceElements result = ModellingManager.getParsedServiceElements(services, references);
+    ParsedServiceElements result = _modellingManager.getParsedServiceElements(services, references);
     _logger.debug(LOG_EXIT, "parseAllServiceElements", new Object[]{result});
     return result;
   }
@@ -186,7 +186,7 @@ public class ParserProxyImpl implements ParserProxy {
         
         // If suppressAnonymous services, do not expose services that have no name
         if (!suppressAnonymousServices || (serviceName != null)) { 
-          ExportedService wsm = ModellingManager.getExportedService(serviceName, ranking, interfaces, serviceProps);
+          ExportedService wsm = _modellingManager.getExportedService(serviceName, ranking, interfaces, serviceProps);
           result.add(wsm);
         }
       }
@@ -224,7 +224,7 @@ public class ParserProxyImpl implements ParserProxy {
         // There will be no matching service for this reference. 
         // For now we blacklist certain objectClasses and filters - this is a pretty dreadful thing to do. 
         if (isNotBlacklisted (iface, blueprintFilter)) { 
-          ImportedService ref = ModellingManager.getImportedService (optional, iface, compName, blueprintFilter, 
+          ImportedService ref = _modellingManager.getImportedService (optional, iface, compName, blueprintFilter, 
               id, isMultiple);
           result.add (ref);  
         }

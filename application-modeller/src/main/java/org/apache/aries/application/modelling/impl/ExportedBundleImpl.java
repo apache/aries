@@ -28,9 +28,9 @@ import java.util.jar.Attributes;
 
 import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.modelling.ImportedBundle;
+import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.internal.MessageUtil;
-import org.apache.aries.application.modelling.utils.ModellingConstants;
-import org.apache.aries.application.modelling.utils.ModellingUtils;
+import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Constants;
@@ -100,7 +100,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
     
     String fragmentHost = attrs.getValue(Constants.FRAGMENT_HOST);
     if (fragmentHost != null) { 
-      _fragHost = ModellingUtils.buildFragmentHost(fragmentHost);
+      _fragHost = ModellingHelperImpl.buildFragmentHost_(fragmentHost);
       _attributes.put(Constants.FRAGMENT_HOST, fragmentHost);
     } else { 
       _fragHost = null;

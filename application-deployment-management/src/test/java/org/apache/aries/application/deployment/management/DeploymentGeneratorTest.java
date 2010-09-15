@@ -48,7 +48,10 @@ import org.apache.aries.application.management.spi.resolve.AriesApplicationResol
 import org.apache.aries.application.management.spi.runtime.LocalPlatform;
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ModelledResource;
-import org.apache.aries.application.modelling.utils.ModellingManager;
+import org.apache.aries.application.modelling.ModellingManager;
+import org.apache.aries.application.modelling.impl.ModellingManagerImpl;
+import org.apache.aries.application.modelling.utils.ModellingHelper;
+import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.mocks.BundleContextMock;
@@ -151,11 +154,16 @@ public class DeploymentGeneratorTest
     }
   }
   static LocalPlatform localPlatform = new DummyLocalPlatform();
+  static ModellingManager modellingManager = new ModellingManagerImpl();
+  static ModellingHelper modellingHelper = new ModellingHelperImpl();
+  
   @BeforeClass
   public static void classSetup() throws Exception
   {
     BundleContext bc = Skeleton.newMock(BundleContext.class);
     bc.registerService(AriesApplicationResolver.class.getName(), _resolver, new Hashtable<String, String>());
+    bc.registerService(ModellingManager.class.getName(), modellingManager, new Hashtable<String, String>());
+    bc.registerService(ModellingHelper.class.getName(), modellingHelper, new Hashtable<String, String>());
   }
   
   @AfterClass
@@ -178,6 +186,8 @@ public class DeploymentGeneratorTest
     sut = new DeploymentManifestManagerImpl();
     sut.setResolver(_resolver);
     sut.setLocalPlatform(localPlatform);
+    sut.setModellingManager(modellingManager);
+    sut.setModellingHelper(modellingHelper);
   }
   
   private static ExportedPackage CAPABILITY_A;
@@ -381,7 +391,7 @@ public class DeploymentGeneratorTest
       builder.deleteCharAt(builder.length() - 1);
       att.put(new Attributes.Name(Constants.EXPORT_PACKAGE), builder.toString());
     }
-    return ModellingManager.getModelledResource(null, att, null, null);
+    return new ModellingManagerImpl().getModelledResource(null, att, null, null);
   }
   
   private Content mockContent(String symbolicName, String version) {

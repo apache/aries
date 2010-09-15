@@ -30,11 +30,11 @@ import java.util.regex.Pattern;
 
 import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.modelling.ImportedService;
+import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.Provider;
 import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.application.modelling.WrappedReferenceMetadata;
-import org.apache.aries.application.modelling.utils.ModellingConstants;
-import org.apache.aries.application.modelling.utils.ModellingUtils;
+import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.application.utils.FilterUtils;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
@@ -202,7 +202,7 @@ public class ImportedServiceImpl implements ImportedService
       logger.debug(LOG_EXIT, "isSatisfied",  true);
       return true;
     }
-    boolean allPresent = ModellingUtils.areMandatoryAttributesPresent(_attributes, capability);
+    boolean allPresent = ModellingHelperImpl.areMandatoryAttributesPresent_(_attributes, capability);
     boolean result = allPresent && _attributeFilter.match(dict);
     logger.debug(LOG_EXIT, "isSatisfied",  result);
     return result;
