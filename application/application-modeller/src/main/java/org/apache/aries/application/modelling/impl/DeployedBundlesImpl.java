@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.modelling.utils;
+package org.apache.aries.application.modelling.impl;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.DeploymentMFElement;
 import org.apache.aries.application.modelling.ExportedBundle;
 import org.apache.aries.application.modelling.ExportedPackage;
@@ -41,7 +42,6 @@ import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
-import org.apache.aries.application.modelling.impl.ImportedPackageImpl;
 import org.apache.aries.application.modelling.internal.MessageUtil;
 import org.apache.aries.application.modelling.internal.PackageRequirementMerger;
 import org.apache.aries.application.utils.AppConstants;
@@ -52,9 +52,9 @@ import org.slf4j.LoggerFactory;
  * Class to generate DEPLOYMENT.MF manifest entries for resolved bundles based on
  * corresponding APPLICATION.MF entries.
  */
-public final class DeployedBundles
+public final class DeployedBundlesImpl implements DeployedBundles
 {
-  private final Logger logger = LoggerFactory.getLogger(DeployedBundles.class);
+  private final Logger logger = LoggerFactory.getLogger(DeployedBundlesImpl.class);
   private final String assetName;
 
   /** Content from APPLICATION.MF */
@@ -80,7 +80,7 @@ public final class DeployedBundles
    *                                     These bundles are proxies for bundles provided (for example by SCA) that export
    *                                     services matching Application-ImportService. 
    */
-  public DeployedBundles(String assetName, Collection<ImportedBundle> appContentNames, 
+  public DeployedBundlesImpl(String assetName, Collection<ImportedBundle> appContentNames, 
       Collection<ImportedBundle> appUseBundleNames, Collection<ModelledResource> fakeServiceProvidingBundles)
   {
     logger.debug(LOG_ENTRY, "DeployedBundles", new Object[]{appContentNames, appUseBundleNames, fakeServiceProvidingBundles});
@@ -101,6 +101,7 @@ public final class DeployedBundles
    * @param resolvedBundle the bundle that has been provisioned.
    * @param resolvedVersion the specific version provisioned.
    */
+  @Override
   public void addBundle(ModelledResource modelledBundle)
   {
     logger.debug(LOG_ENTRY, "addBundle", new Object[]{modelledBundle});
@@ -158,6 +159,7 @@ public final class DeployedBundles
    * Get the value corresponding to the Deployed-Content header in the deployment.mf.
    * @return a manifest entry, or an empty string if there is no content.
    */
+  @Override
   public String getContent()
   {
     return createManifestString(deployedContent);
@@ -167,6 +169,7 @@ public final class DeployedBundles
    * Get the value corresponding to the Deployed-Use-Bundle header in the deployment.mf.
    * @return a manifest entry, or an empty string if there is no content.
    */
+  @Override
   public String getUseBundle()
   {
     return createManifestString(deployedUseBundle);
@@ -176,6 +179,7 @@ public final class DeployedBundles
    * Get the value corresponding to the Provision-Bundle header in the deployment.mf.
    * @return a manifest entry, or an empty string if there is no content.
    */
+  @Override
   public String getProvisionBundle()
   {
     return createManifestString(deployedProvisionBundle);
@@ -186,8 +190,8 @@ public final class DeployedBundles
    * @return a manifest entry, or an empty string if there is no content.
    * @throws ResolverException if the requirements could not be resolved.
    */
-  public String getImportPackage()
-    throws ResolverException
+  @Override
+  public String getImportPackage() throws ResolverException
   {
     logger.debug(LOG_ENTRY, "getImportPackage");
     Collection<ImportedPackage> externalReqs = new ArrayList<ImportedPackage>(getExternalPackageRequirements());
@@ -236,6 +240,7 @@ public final class DeployedBundles
    *   b) the service was not available internally when the app was first deployed
    *   
    */
+  @Override
   public String getDeployedImportService() { 
     logger.debug(LOG_ENTRY,"getDeployedImportService");
     Collection<ImportedService> deployedBundleServiceImports = new ArrayList<ImportedService>();
@@ -398,6 +403,7 @@ public final class DeployedBundles
   }
   
 
+  @Override
   public String toString()
   {
     return AppConstants.DEPLOYMENT_CONTENT + '=' + deployedContent + ' ' +
@@ -409,6 +415,7 @@ public final class DeployedBundles
    * Get the set of bundles that are going to be deployed into an isolated framework
    * @return a set of bundle metadata
    */
+  @Override
   public Collection<ModelledResource> getDeployedContent()
   {
     logger.debug(LOG_ENTRY, "getDeployedContent");
@@ -424,6 +431,7 @@ public final class DeployedBundles
    * needs to be called something else. 
    *
    */
+  @Override
   public Collection<ModelledResource> getDeployedProvisionBundle () 
   { 
     logger.debug(LOG_ENTRY,"getDeployedProvisionBundle");
@@ -437,8 +445,8 @@ public final class DeployedBundles
    * @return a set of bundle metadata.
    * @throws ResolverException if the requirements could not be resolved.
    */
-  public Collection<ModelledResource> getRequiredUseBundle()
-    throws ResolverException
+  @Override
+  public Collection<ModelledResource> getRequiredUseBundle() throws ResolverException
   {
     logger.debug(LOG_ENTRY, "getRequiredUseBundle");
     Collection<ImportedPackage> externalReqs = getExternalPackageRequirements();

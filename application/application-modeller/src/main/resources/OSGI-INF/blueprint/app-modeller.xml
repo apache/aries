@@ -18,18 +18,24 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-   <bean id="modelledResourceManager" class="org.apache.aries.application.modelling.impl.ModelledResourceManagerImpl">
-    <property name= "parserService" ref="parser-service"/>
-    <property name="bundleContext" ref="blueprintBundleContext"/>
+  <bean id="modelledResourceManager" class="org.apache.aries.application.modelling.impl.ModelledResourceManagerImpl">
+    <property name="modellingManager" ref="modellingManager"/>
+    <property name="parserProxy" ref="parserProxy"/>
   </bean>
-  <reference id="parser-service" interface="org.apache.aries.blueprint.ParserService"/>
   <service id = "modelledResourceManagerService" ref="modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
-  
+
+  <reference id="parser-service" interface="org.apache.aries.blueprint.ParserService"/>
   <bean id="parserProxy" class="org.apache.aries.application.modelling.impl.ParserProxyImpl">
-    <argument index="0" ref="parser-service"/>
-    <argument index="1" ref="blueprintBundleContext"/>
+    <property name="parserService" ref="parser-service"/>
+    <property name="bundleContext" ref="blueprintBundleContext"/>
+    <property name="modellingManager" ref="modellingManager"/>
   </bean>
   <service id="parserProxyService" ref="parserProxy" interface="org.apache.aries.application.modelling.ParserProxy"/>
   
+  <bean id="modellingManager" class="org.apache.aries.application.modelling.impl.ModellingManagerImpl"/>
+  <service id="modellingManagerService" ref="modellingManager" interface="org.apache.aries.application.modelling.ModellingManager"/>
+  
+  <bean id="modellingHelper" class="org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl"/>
+  <service id="modellingHelperService" ref="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
   
 </blueprint>

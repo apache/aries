@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.modelling.utils;
+package org.apache.aries.application.modelling;
 
 import org.osgi.framework.Constants;
 

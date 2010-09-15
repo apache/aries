@@ -38,9 +38,9 @@ import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ResourceType;
-import org.apache.aries.application.modelling.utils.ModellingManager;
-import org.apache.aries.application.modelling.utils.ModellingUtils;
+import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.application.resolver.internal.MessageUtil;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
@@ -61,12 +61,16 @@ public class ModelledBundleResource implements ModelledResource {
   private final Collection<ExportedService> serviceCapabilties;
   private final Collection<ImportedBundle> bundleRequirements;
   private final ResourceType type;
+  private final ModellingManager modellingManager;
+  private final ModellingHelper modellingHelper;
   private final Logger logger = LoggerFactory.getLogger(ModelledBundleResource.class);
 
-  public ModelledBundleResource (Resource r) throws InvalidAttributeException { 
+  public ModelledBundleResource (Resource r, ModellingManager mm, ModellingHelper mh) throws InvalidAttributeException { 
 
-    logger.debug(LOG_ENTRY, "ModelledBundleResource", r);
+    logger.debug(LOG_ENTRY, "ModelledBundleResource", new Object[]{r, mm, mh});
     resource = r;
+    modellingManager = mm;
+    modellingHelper = mh;
     List<ExportedBundle> exportedBundles = new ArrayList<ExportedBundle>();
     ResourceType thisResourceType = ResourceType.BUNDLE;
 
@@ -82,7 +86,7 @@ public class ModelledBundleResource implements ModelledResource {
         for(Property entry : props) {
           sanitizedMap.put(entry.getName(), entry.getValue());
         }
-        exportedBundles.add (ModellingManager.getExportedBundle(sanitizedMap, ModellingUtils.buildFragmentHost(
+        exportedBundles.add (modellingManager.getExportedBundle(sanitizedMap, modellingHelper.buildFragmentHost(
             sanitizedMap.get(Constants.FRAGMENT_HOST))));
       } else if (cap.getName().equals(ResourceType.COMPOSITE.toString())) { 
         thisResourceType = ResourceType.COMPOSITE;
@@ -123,7 +127,7 @@ public class ModelledBundleResource implements ModelledResource {
         if (requirement.isOptional()) { 
           filter.put(Constants.RESOLUTION_DIRECTIVE + ":", Constants.RESOLUTION_OPTIONAL);
         }
-        ImportedPackage info = ModellingManager.getImportedPackage(name, filter);
+        ImportedPackage info = modellingManager.getImportedPackage(name, filter);
         packageRequirements.add(info);
       } else if (ResourceType.SERVICE.toString().equals(requirement.getName())) {
         boolean optional = requirement.isOptional();
@@ -141,7 +145,7 @@ public class ModelledBundleResource implements ModelledResource {
         componentName = attrs.get ("osgi.service.blueprint.compname");
         blueprintFilter = requirement.getFilter();
 
-        ImportedService svc = ModellingManager.getImportedService(optional, iface, componentName,
+        ImportedService svc = modellingManager.getImportedService(optional, iface, componentName,
             blueprintFilter, id, isMultiple);
         serviceRequirements.add(svc);
       } else if (ResourceType.BUNDLE.toString().equals(requirement.getName())) {
@@ -150,7 +154,7 @@ public class ModelledBundleResource implements ModelledResource {
         if (requirement.isOptional()) { 
           atts.put(Constants.RESOLUTION_DIRECTIVE + ":", Constants.RESOLUTION_OPTIONAL);
         }
-        bundleRequirements.add(ModellingManager.getImportedBundle(filter, atts));
+        bundleRequirements.add(modellingManager.getImportedBundle(filter, atts));
       }
     }
 
@@ -167,7 +171,7 @@ public class ModelledBundleResource implements ModelledResource {
         Object pkg = props.remove(ResourceType.PACKAGE.toString());
         // bundle symbolic name and version will be in additionalProps, so do not 
         // need to be passed in separately. 
-        ExportedPackage info = ModellingManager.getExportedPackage(this, pkg.toString(), props);
+        ExportedPackage info = modellingManager.getExportedPackage(this, pkg.toString(), props);
         packageCapabilities.add(info);
       } else if (ResourceType.SERVICE.toString().equals(capability.getName())) { 
         String name = null;   // we've lost this irretrievably
@@ -183,7 +187,7 @@ public class ModelledBundleResource implements ModelledResource {
           ifaces = Arrays.asList((String)rawObjectClass);
         }
 
-        ExportedService svc = ModellingManager.getExportedService(name, ranking, ifaces, props);
+        ExportedService svc = modellingManager.getExportedService(name, ranking, ifaces, props);
         serviceCapabilties.add(svc);
 
       }

@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.application.modelling.ImportedPackage;
-import org.apache.aries.application.modelling.utils.ModellingUtils;
+import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,7 @@ public final class PackageRequirementMerger
         continue;
       }
       
-      ImportedPackage intersectReq = ModellingUtils.intersectPackage(req, existingReq);
+      ImportedPackage intersectReq = ModellingHelperImpl.intersectPackage_(req, existingReq);
       if (intersectReq != null)
       {
         reqMap.put(pkgName, intersectReq);

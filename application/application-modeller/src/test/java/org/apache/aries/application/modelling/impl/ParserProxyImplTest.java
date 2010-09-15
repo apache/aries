@@ -35,11 +35,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.WrappedReferenceMetadata;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
-import org.apache.aries.application.modelling.utils.ModellingManager;
 import org.apache.aries.blueprint.ParserService;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.ParserServiceImpl;
@@ -54,6 +54,7 @@ import org.osgi.framework.BundleContext;
 public class ParserProxyImplTest {
 
   static ParserProxy _parserProxy;
+  static ModellingManager _modellingManager;
   
   @BeforeClass
   public static void setup() { 
@@ -61,7 +62,11 @@ public class ParserProxyImplTest {
     NamespaceHandlerRegistry nhri = new NamespaceHandlerRegistryImpl (mockCtx);
     ParserService parserService = new ParserServiceImpl(nhri);
     mockCtx.registerService(ParserService.class.getName(), parserService, new Hashtable<String, String>());
-    _parserProxy = new ParserProxyImpl(parserService, mockCtx); 
+    _parserProxy = new ParserProxyImpl();
+    ((ParserProxyImpl)_parserProxy).setParserService(parserService);
+    ((ParserProxyImpl)_parserProxy).setBundleContext(mockCtx);
+    _modellingManager = new ModellingManagerImpl();
+    ((ParserProxyImpl)_parserProxy).setModellingManager(_modellingManager);
   }
   
   
@@ -166,9 +171,9 @@ public class ParserProxyImplTest {
   private Set<WrappedReferenceMetadata> getTest2ExpectedReferences() throws Exception { 
     Set<WrappedReferenceMetadata> expectedResults = new HashSet<WrappedReferenceMetadata>();
          
-    expectedResults.add(ModellingManager.getImportedService(false, "foo.bar.MyInjectedService", null, 
+    expectedResults.add(_modellingManager.getImportedService(false, "foo.bar.MyInjectedService", null, 
         null, "fromOutside", false));
-    expectedResults.add(ModellingManager.getImportedService(false, "my.logging.service", null, "(&(trace=on)(debug=true))", "refList1", true));
+    expectedResults.add(_modellingManager.getImportedService(false, "my.logging.service", null, "(&(trace=on)(debug=true))", "refList1", true));
     
     return expectedResults;
   }
@@ -177,8 +182,8 @@ public class ParserProxyImplTest {
   private Set<WrappedServiceMetadata> getTest2ExpectedServices() { 
     Set<WrappedServiceMetadata> expectedResults = getTest1ExpectedResults();
         
-    expectedResults.add(ModellingManager.getExportedService("", 0, Arrays.asList("foo.bar.AnonService"), null));
-    expectedResults.add(ModellingManager.getExportedService("", 0, Arrays.asList("foo.bar.NamedInnerBeanService"), null));
+    expectedResults.add(_modellingManager.getExportedService("", 0, Arrays.asList("foo.bar.AnonService"), null));
+    expectedResults.add(_modellingManager.getExportedService("", 0, Arrays.asList("foo.bar.NamedInnerBeanService"), null));
     return expectedResults;
   }
   
@@ -188,25 +193,25 @@ public class ParserProxyImplTest {
     props.put ("priority", "9");
     props.put("volume", "11");
     props.put("osgi.service.blueprint.compname", "myBean");
-    expectedResults.add(ModellingManager.getExportedService("myService", 0, Arrays.asList("foo.bar.MyService"), props));
+    expectedResults.add(_modellingManager.getExportedService("myService", 0, Arrays.asList("foo.bar.MyService"), props));
 
     props = new HashMap<String, Object>();
     props.put ("priority", "7");
     props.put ("volume", "11");
     props.put ("osgi.service.blueprint.compname", "bean1");
-    expectedResults.add(ModellingManager.getExportedService("service1.should.be.exported", 0, Arrays.asList("foo.bar.MyService"), props));
+    expectedResults.add(_modellingManager.getExportedService("service1.should.be.exported", 0, Arrays.asList("foo.bar.MyService"), props));
  
     props = new HashMap<String, Object>();
     props.put ("customer", "pig");
     props.put ("osgi.service.blueprint.compname", "bean2");
-    expectedResults.add(ModellingManager.getExportedService("service2.should.not.be.exported", 0, Arrays.asList("com.acme.Delivery"), props));
+    expectedResults.add(_modellingManager.getExportedService("service2.should.not.be.exported", 0, Arrays.asList("com.acme.Delivery"), props));
         
     props = new HashMap<String, Object>();
     props.put ("customer", "pig");
     props.put ("target", "rabbit");
     props.put ("payload", "excessive");
     props.put ("osgi.service.blueprint.compname", "bean3");
-    expectedResults.add(ModellingManager.getExportedService("bean3", 0, Arrays.asList("com.acme.Delivery"), props));
+    expectedResults.add(_modellingManager.getExportedService("bean3", 0, Arrays.asList("com.acme.Delivery"), props));
        
     return expectedResults;
   } 
