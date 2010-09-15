@@ -40,7 +40,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.aries.application.InvalidAttributeException;
-import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.modelling.ExportedService;
@@ -48,12 +47,11 @@ import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.ModellerException;
+import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
-import org.apache.aries.application.modelling.utils.ModellingManager;
+import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
 import org.apache.aries.application.utils.manifest.BundleManifest;
-import org.apache.aries.blueprint.ParserService;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,25 +59,19 @@ import org.slf4j.LoggerFactory;
 public class ModelledResourceManagerImpl implements ModelledResourceManager
 {
   private Logger _logger = LoggerFactory.getLogger(ModelledResourceManagerImpl.class);
-
-  private ParserProxy parserProxy;
-
-  private ParserService _parserService;
-  private BundleContext _bundleContext;
+  private ParserProxy _parserProxy;
+  private ModellingManager _modellingManager;
   
-  public void setParserService (ParserService p) { 
-    _parserService = p;
+  public void setModellingManager (ModellingManager m) { 
+    _modellingManager = m;
   }
   
-  public void setBundleContext (BundleContext b) { 
-    _bundleContext = b;
+  public void setParserProxy (ParserProxy p) { 
+    _parserProxy = p;
   }
   public ParserProxy getParserProxy()
   {
-	  if (parserProxy == null) {
-		  parserProxy= new ParserProxyImpl(_parserService, _bundleContext);
-	  }
-	  return parserProxy;
+	  return _parserProxy;
   }
   
 
@@ -93,6 +85,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
    * @return ParsedServiceElementsImpl 
    * @throws OpenFailureException 
    */
+  @Override
   public ParsedServiceElements getServiceElements (IDirectory archive) throws ModellerException { 
 
     _logger.debug(LOG_ENTRY,"getServiceElements", archive );
@@ -131,11 +124,27 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
       _logger.debug(LOG_EXIT, "getServiceElements", m);
       throw m;
     } 
-    ParsedServiceElements result = ModellingManager.getParsedServiceElements(services, references);
+    ParsedServiceElements result = _modellingManager.getParsedServiceElements(services, references);
     _logger.debug(LOG_EXIT, "getServiceElements", result);
     return result;
   }
 
+  @Override
+  public ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException{
+    _logger.debug(LOG_ENTRY, "getModelledResource", new Object[]{uri, bundle});
+    ParsedServiceElements pse = getServiceElements(bundle);
+
+    BundleManifest bm = BundleManifest.fromBundle(new File(bundle.toString()));
+    Attributes attributes = bm.getRawAttributes();
+    ModelledResource mbi;
+    try {
+      mbi = _modellingManager.getModelledResource(uri, attributes, pse.getReferences(), pse.getServices());
+    } catch (InvalidAttributeException iae) {
+      throw new ModellerException(iae);
+    }
+    _logger.debug(LOG_EXIT, "getModelledResource", mbi);
+    return mbi;
+  }
 
   /**
    * Helper method to pass a single bundle into findBlueprints 
@@ -209,21 +218,4 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
     _logger.debug(LOG_EXIT, "findBlueprints", blueprints);
     return blueprints;
   }
-
-  public ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException{
-    _logger.debug(LOG_ENTRY, "getModelledResource", new Object[]{uri, bundle});
-    ParsedServiceElements pse = getServiceElements(bundle);
-
-    BundleManifest bm = BundleManifest.fromBundle(new File(bundle.toString()));
-    Attributes attributes = bm.getRawAttributes();
-    ModelledResource mbi;
-    try {
-      mbi = ModellingManager.getModelledResource(uri, attributes, pse.getReferences(), pse.getServices());
-    } catch (InvalidAttributeException iae) {
-      throw new ModellerException(iae);
-    }
-    _logger.debug(LOG_EXIT, "getModelledResource", mbi);
-    return mbi;
-  }
-
 }

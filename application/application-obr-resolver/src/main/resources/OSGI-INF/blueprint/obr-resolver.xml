@@ -25,9 +25,15 @@
             <reference interface="org.apache.felix.bundlerepository.RepositoryAdmin"/>
         </argument>
         <property name="platformRepository" ref="platformRepository"/>
+        <property name="modellingManager" ref="modellingManager"/>
+        <property name="modellingHelper" ref="modellingHelper"/>
         
     </bean>
-    <reference id="platformRepository" interface="org.apache.aries.application.management.spi.repository.PlatformRepository" availability="optional"/>        
+    <reference id="platformRepository" interface="org.apache.aries.application.management.spi.repository.PlatformRepository" availability="optional"/>
+    <reference id="modellingManager" interface="org.apache.aries.application.modelling.ModellingManager"/>
+    <reference id="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
+    <service ref="obr-resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>
+            
     
     <bean id="repository-generator" class="org.apache.aries.application.resolver.obr.impl.RepositoryGeneratorImpl" activation="lazy">
         <argument>
@@ -36,7 +42,6 @@
         <property name="bundleResourceTransformers" ref="bundle-resource-transformers"/>
     </bean>
     <service id="repository-generator-service" ref="repository-generator" interface="org.apache.aries.application.management.spi.repository.RepositoryGenerator"/>
-    <service interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver" ref="obr-resolver"/>
     
     <reference-list id="bundle-resource-transformers" 
       interface="org.apache.aries.application.resolver.obr.ext.BundleResourceTransformer"

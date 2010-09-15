@@ -24,8 +24,12 @@
     <property name="postResolveTransformers" ref="post-resolver-transformers"/>
     <property name="modelledResourceManager" ref = "modelledResourceManager"/>
     <property name="localPlatform" ref="localPlatform"/>
+    <property name="modellingManager" ref="modellingManager"/>
+    <property name="modellingHelper" ref="modellingHelper"/>
   </bean>
   
+  <reference id="modellingManager" interface="org.apache.aries.application.modelling.ModellingManager"/>
+  <reference id="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
   <reference id = "modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
   <reference id="localPlatform" interface="org.apache.aries.application.management.spi.runtime.LocalPlatform"/>
   <reference id="resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>

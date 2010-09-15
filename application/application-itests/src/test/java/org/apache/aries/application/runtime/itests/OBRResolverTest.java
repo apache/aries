@@ -55,6 +55,8 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+
+
 @RunWith(JUnit4TestRunner.class)
 public class OBRResolverTest extends AbstractIntegrationTest 
 {
@@ -248,26 +250,25 @@ public class OBRResolverTest extends AbstractIntegrationTest
         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
         // Bundles
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+        mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").noStart(),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
         mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").noStart(),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
         /* For debugging, uncomment the next two lines */
-        /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-        waitForFrameworkStartup(),*/
+        // vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+        // waitForFrameworkStartup(),
 
-        /* For debugging, uncomment the next two lines
-        and add these imports:
+        /* For debugging, uncomment the next two lines and add these imports:
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
         */

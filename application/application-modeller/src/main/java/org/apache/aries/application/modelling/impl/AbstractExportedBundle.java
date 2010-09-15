@@ -22,8 +22,8 @@ import java.util.Map;
 
 import org.apache.aries.application.modelling.ExportedBundle;
 import org.apache.aries.application.modelling.ImportedBundle;
+import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.ResourceType;
-import org.apache.aries.application.modelling.utils.ModellingConstants;
 import org.apache.aries.application.utils.AppConstants;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;

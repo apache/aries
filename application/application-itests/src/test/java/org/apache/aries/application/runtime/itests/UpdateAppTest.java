@@ -18,7 +18,10 @@
  */
 package org.apache.aries.application.runtime.itests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
@@ -37,9 +40,10 @@ import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
-import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
+import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.management.spi.update.UpdateStrategy;
+import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.runtime.itests.util.IsolationTestUtils;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
@@ -211,7 +215,10 @@ public class UpdateAppTest extends AbstractIntegrationTest {
   }
   
   private AriesApplicationContext updateApp(AriesApplicationManager manager, AriesApplication app) throws Exception {
-    IsolationTestUtils.prepareSampleBundleV2(bundleContext, getOsgiService(RepositoryGenerator.class), getOsgiService(RepositoryAdmin.class));
+    IsolationTestUtils.prepareSampleBundleV2(bundleContext, 
+        getOsgiService(RepositoryGenerator.class), 
+        getOsgiService(RepositoryAdmin.class), 
+        getOsgiService(ModellingManager.class));
     
     AriesApplication newApp = manager.resolve(app, new ResolveConstraint() {
       public String getBundleName() {
@@ -248,20 +255,21 @@ public class UpdateAppTest extends AbstractIntegrationTest {
         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
         // Bundles
+        
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
+        mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.isolated"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
         mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.framework"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.framework.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.repository"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.isolated"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),

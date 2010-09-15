@@ -33,9 +33,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.aries.application.modelling.ExportedService;
+import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
-import org.apache.aries.application.modelling.utils.ModellingConstants;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

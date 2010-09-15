@@ -36,7 +36,7 @@ import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
-import org.apache.aries.application.modelling.utils.ModellingConstants;
+import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.resolver.obr.impl.OBRCapability;
 import org.apache.aries.application.resolver.obr.impl.RequirementImpl;
 import org.apache.felix.bundlerepository.Capability;

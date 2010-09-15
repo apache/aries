@@ -54,6 +54,7 @@ import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.management.spi.resolve.DeploymentManifestManager;
 import org.apache.aries.application.management.spi.runtime.LocalPlatform;
+import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedBundle;
@@ -61,8 +62,8 @@ import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.ModellerException;
-import org.apache.aries.application.modelling.utils.DeployedBundles;
-import org.apache.aries.application.modelling.utils.ModellingManager;
+import org.apache.aries.application.modelling.ModellingManager;
+import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
@@ -81,7 +82,16 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 
   private ModelledResourceManager modelledResourceManager;
   private LocalPlatform localPlatform;
+  private ModellingManager modellingManager;
+  private ModellingHelper modellingHelper;
 
+  public void setModellingManager (ModellingManager m) {
+    modellingManager = m; 
+  }
+  
+  public void setModellingHelper (ModellingHelper mh) { 
+    modellingHelper = mh;
+  }
 
   public LocalPlatform getLocalPlatform()
   {
@@ -212,7 +222,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     }
     byValueBundles.add(fakeBundleResource);
     String uniqueName = appSymbolicName + "_" + appVersion;
-    deployedBundles = new DeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
+    deployedBundles = modellingHelper.createDeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
     bundlesToBeProvisioned = resolver.resolve(
         appSymbolicName, appVersion, byValueBundles, bundlesToResolve);
     pruneFakeBundleFromResults (bundlesToBeProvisioned);
@@ -229,7 +239,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       if (requiredUseBundle.size() < useBundleSet.size())
       {
         // Some of the use-bundle entries were redundant so resolve again with just the good ones.
-        deployedBundles = new DeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
+        deployedBundles = modellingHelper.createDeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
         bundlesToResolve.clear();
         bundlesToResolve.addAll(appContent);
         Collection<ImportedBundle> slimmedDownUseBundle = narrowUseBundles(useBundleIB, requiredUseBundle);
@@ -457,9 +467,9 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
         serviceProperties = new HashMap<String, String>();
       }
       serviceProperties.put("service.imported", "");
-      exportedServices.add (ModellingManager.getExportedService("", 0, ifaces, new HashMap<String, Object>(serviceProperties)));
+      exportedServices.add (modellingManager.getExportedService("", 0, ifaces, new HashMap<String, Object>(serviceProperties)));
     }
-    ModelledResource fakeBundle = ModellingManager.getModelledResource(null, attrs, null, exportedServices);
+    ModelledResource fakeBundle = modellingManager.getModelledResource(null, attrs, null, exportedServices);
 
     _logger.debug(LOG_EXIT, "createFakeBundle", new Object[]{fakeBundle});
     return fakeBundle;
@@ -525,7 +535,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     List<ImportedBundle> result = new ArrayList<ImportedBundle>();
     for (Content c : content) {
       try {
-        result.add(ModellingManager.getImportedBundle(c.getContentName(), c.getVersion().toString()));
+        result.add(modellingManager.getImportedBundle(c.getContentName(), c.getVersion().toString()));
       } catch (InvalidAttributeException iax) { 
         ResolverException rx = new ResolverException (iax);
         _logger.debug(LOG_EXIT, "toImportedBundle", new Object[]{rx});
