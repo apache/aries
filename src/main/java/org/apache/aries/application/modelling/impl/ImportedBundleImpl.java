@@ -30,10 +30,10 @@ import java.util.Map;
 
 import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.modelling.ImportedBundle;
+import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.Provider;
 import org.apache.aries.application.modelling.ResourceType;
-import org.apache.aries.application.modelling.utils.ModellingConstants;
-import org.apache.aries.application.modelling.utils.ModellingUtils;
+import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.application.utils.FilterUtils;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
@@ -155,7 +155,7 @@ public class ImportedBundleImpl implements ImportedBundle
     if (version != null) { 
       dict.put(Constants.VERSION_ATTRIBUTE, Version.parseVersion(version));
     }
-    boolean allPresent = ModellingUtils.areMandatoryAttributesPresent(_attributes, capability);
+    boolean allPresent = ModellingHelperImpl.areMandatoryAttributesPresent_(_attributes, capability);
     boolean result = allPresent && _filter.match(dict);
     logger.debug(LOG_EXIT, "isSatisfied", result);
     return result;
