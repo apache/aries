@@ -16,33 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.modelling;
 
+import org.osgi.framework.Constants;
 
-import java.util.Collection;
-
-
-
-/**
- * A simple data structure containing two immutable Collections, 
- * one each of ImportedServiceImpl and ExportedServiceImpl
- */
-public interface  ParsedServiceElements 
+public class ModellingConstants
 {
- 
- 
-
-
-  /**
-   * Get the ImportedServices
-   * @return imported services
-   */
-  public Collection<ImportedService> getReferences();
-
-  /**
-   * Get the exported services
-   * @return exported services
-   */
-  public Collection<ExportedService> getServices();
+  public static final String OBR_SYMBOLIC_NAME = "symbolicname";
+  public static final String OBR_PRESENTATION_NAME = "presentationname";
+  public static final String OBR_MANIFEST_VERSION = "manifestversion";
+  public static final String OBR_BUNDLE = "bundle";
+  public static final String OBR_PACKAGE = "package";
+  public static final String OBR_SERVICE = "service";
+  public static final String OBR_COMPOSITE_BUNDLE = "composite-bundle";
+  public static final String OPTIONAL_KEY = Constants.RESOLUTION_DIRECTIVE + ":";
 }
