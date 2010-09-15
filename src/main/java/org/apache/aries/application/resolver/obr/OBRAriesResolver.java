@@ -47,12 +47,12 @@ import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.repository.PlatformRepository;
-import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ModelledResource;
-import org.apache.aries.application.modelling.utils.ModellingConstants;
-import org.apache.aries.application.modelling.utils.ModellingManager;
+import org.apache.aries.application.modelling.ModellingConstants;
+import org.apache.aries.application.modelling.ModellingManager;
+import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.application.resolver.internal.MessageUtil;
 import org.apache.aries.application.resolver.obr.impl.ApplicationResourceImpl;
 import org.apache.aries.application.resolver.obr.impl.ModelledBundleResource;
@@ -74,7 +74,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 /**
  * @version $Rev$ $Date$
@@ -86,6 +85,17 @@ public class OBRAriesResolver implements AriesApplicationResolver
   private final RepositoryAdmin repositoryAdmin;  
   private boolean returnOptionalResources = true;
   private PlatformRepository platformRepository;
+  private ModellingManager modellingManager;
+  private ModellingHelper modellingHelper;
+  
+  public void setModellingManager (ModellingManager m) { 
+    modellingManager = m;
+  }
+  
+  public void setModellingHelper (ModellingHelper mh) { 
+    modellingHelper = mh;
+  }
+  
   public PlatformRepository getPlatformRepository()
   {
     return platformRepository;
@@ -115,9 +125,125 @@ public class OBRAriesResolver implements AriesApplicationResolver
   {
     return returnOptionalResources;
   }
+  
+  /**
+   * Resolve a list of resources from the OBR bundle repositories by OBR
+   * resolver.
+   * 
+   * @param appName - application name
+   * @param appVersion - application version
+   * @param byValueBundles - by value bundles
+   * @param inputs - other constraints
+   * @return a collection of modelled resources required by this application
+   * @throws ResolverException
+   */
+  @Override
+   public Collection<ModelledResource> resolve(String appName, String appVersion,
+      Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException
+  {
+     log.debug(LOG_ENTRY, "resolve", new Object[]{appName, appVersion,byValueBundles, inputs});
+    Collection<ImportedBundle> importedBundles = toImportedBundle(inputs);
+    DataModelHelper helper = repositoryAdmin.getHelper();
+
+   
+    Collection<ModelledResource> toReturn = new ArrayList<ModelledResource>();
+    Repository appRepo;
+    try {      
+      ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+      RepositoryGeneratorImpl.generateRepository(repositoryAdmin, appName + "_" + appVersion, byValueBundles, bytesOut);
+      appRepo = helper.readRepository(new InputStreamReader(new ByteArrayInputStream(bytesOut.toByteArray())));
+    } catch (Exception e) {
+      throw new ResolverException(e);
+    } 
+        
+    List<Repository> resolveRepos = new ArrayList<Repository>();
+    // add system repository
+    resolveRepos.add(repositoryAdmin.getSystemRepository());
+    // add local repository
+    resolveRepos.add(getLocalRepository(repositoryAdmin));
+    // add application repository
+    resolveRepos.add(appRepo);
+    // add the user-defined repositories 
+    if (platformRepository != null) {
+      Collection<URI> uris = platformRepository.getPlatformRepositoryURLs();
+      if ((uris != null) && (!uris.isEmpty())) {
+        for (URI uri : uris) {
+          try {
+            resolveRepos.add(helper.readRepository(uri.toString()));
+          } catch (Exception e) {
+            // no a big problem
+            log.error(MessageUtil.getMessage("RESOLVER_UNABLE_TO_READ_REPOSITORY_EXCEPTION", new Object[]{appName, uri}) );
+          }
+        }
+      }
+    }
+   // Need to refresh the repositories added to repository admin
+    
+    // add user-defined repositories
+    Repository[] repos = repositoryAdmin.listRepositories();
+    for (Repository r : repos) {
+      resolveRepos.add(r);      
+    }     
+    Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
+    // add a resource describing the requirements of the application metadata.
+    obrResolver.add(createApplicationResource( appName, appVersion, importedBundles));
+    if (obrResolver.resolve()) {
+      
+      List<Resource> requiredResources = retrieveRequiredResources(obrResolver);
+
+      if (requiredResources == null) {
+        log.debug("resolver.getRequiredResources() returned null");
+      } else {
+
+        for (Resource r : requiredResources) {
+          NameValueMap<String, String> attribs = new NameValueMap<String, String>();
+          attribs.put(Constants.VERSION_ATTRIBUTE, "[" + r.getVersion() + ',' + r.getVersion()
+              + "]");
+          ModelledResource modelledResourceForThisMatch = null; 
+          try { 
+            modelledResourceForThisMatch = new ModelledBundleResource (r, modellingManager, modellingHelper);
+          } catch (InvalidAttributeException iax) { 
+            
+            ResolverException re = new ResolverException("Internal error occurred: " + iax.toString());
+            log.debug(LOG_EXIT, "resolve", re);
+            
+            throw re;
+          }
+          toReturn.add(modelledResourceForThisMatch);
+        }
+      }
+      log.debug(LOG_EXIT, "resolve", toReturn); 
+      return toReturn;
+    } else {
+      Reason[] reasons = obrResolver.getUnsatisfiedRequirements();
+      // let's refine the list by removing the indirect unsatisfied bundles that are caused by unsatisfied packages or other bundles
+      Map<String,Set<String>> refinedReqs = refineUnsatisfiedRequirements(obrResolver, reasons);
+      StringBuffer reqList = new StringBuffer();
+      List<String> unsatisfiedRequirements = new LinkedList<String>();
+
+      for (Map.Entry<String, Set<String>> filterEntry : refinedReqs.entrySet()) {
+        log.debug("unable to satisfied the filter , filter = " + filterEntry.getKey() + "required by "+filterEntry.getValue());
+       
+        String reason = extractConsumableMessageInfo(filterEntry.getKey(),filterEntry.getValue());
+
+        reqList.append('\n');
+        reqList.append(reason);
+        unsatisfiedRequirements.add(reason);
+      }
+
+      ResolverException re = new ResolverException(MessageUtil.getMessage("RESOLVER_UNABLE_TO_RESOLVE", 
+          new Object[] { appName, reqList }));
+      re.setUnsatisfiedRequirements(unsatisfiedRequirements);
+      log.debug(LOG_EXIT, "resolve", re);
+      
+      throw re;
+    }
+    
+  }
     
  
   @Deprecated
+  @Override
   public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
   {
     log.trace("resolving {}", app);
@@ -224,20 +350,9 @@ public class OBRAriesResolver implements AriesApplicationResolver
       
       throw re;
     }
-      
-  }
-  private Resource createApplicationResource( String appName, Version appVersion,
-      List<Content> appContent)
-  {
-    return new ApplicationResourceImpl(appName, appVersion, appContent);
   }
   
-  private Resource createApplicationResource( String appName, String appVersion,
-      Collection<ImportedBundle> inputs)
-  {
-    return new ApplicationResourceImpl(appName, Version.parseVersion(appVersion), inputs);
-  }
-
+  @Override
   public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
   {
     Map<String, String> attribs = new HashMap<String, String>();
@@ -257,6 +372,17 @@ public class OBRAriesResolver implements AriesApplicationResolver
     }
   }
 
+  private Resource createApplicationResource( String appName, Version appVersion,
+      List<Content> appContent)
+  {
+    return new ApplicationResourceImpl(appName, appVersion, appContent);
+  }
+  
+  private Resource createApplicationResource( String appName, String appVersion,
+      Collection<ImportedBundle> inputs)
+  {
+    return new ApplicationResourceImpl(appName, Version.parseVersion(appVersion), inputs);
+  }
   
   private BundleInfo toBundleInfo(Resource resource, boolean optional) 
   {
@@ -388,7 +514,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
    * @param bundlesFailing For problems with a bundle, the set of bundles that have a problem
    * @return human readable form
    */
-  public String extractConsumableMessageInfo(String filter, Set<String> bundlesFailing)
+  private String extractConsumableMessageInfo(String filter, Set<String> bundlesFailing)
   {
     log.debug(LOG_ENTRY, "extractConsumableMessageInfo", new Object[] {filter, bundlesFailing});
     
@@ -518,119 +644,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     return result;
     }
   
-  /**
-   * Resolve a list of resources from the OBR bundle repositories by OBR
-   * resolver.
-   * 
-   * @param appName - application name
-   * @param appVersion - application version
-   * @param byValueBundles - by value bundles
-   * @param inputs - other constraints
-   * @return a collection of modelled resources required by this application
-   * @throws ResolverException
-   */
-   public Collection<ModelledResource> resolve(String appName, String appVersion,
-      Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException
-  {
-     log.debug(LOG_ENTRY, "resolve", new Object[]{appName, appVersion,byValueBundles, inputs});
-    Collection<ImportedBundle> importedBundles = toImportedBundle(inputs);
-    DataModelHelper helper = repositoryAdmin.getHelper();
-
-   
-    Collection<ModelledResource> toReturn = new ArrayList<ModelledResource>();
-    Repository appRepo;
-    try {      
-      ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-      RepositoryGeneratorImpl.generateRepository(repositoryAdmin, appName + "_" + appVersion, byValueBundles, bytesOut);
-      appRepo = helper.readRepository(new InputStreamReader(new ByteArrayInputStream(bytesOut.toByteArray())));
-    } catch (Exception e) {
-      throw new ResolverException(e);
-    } 
-        
-    List<Repository> resolveRepos = new ArrayList<Repository>();
-    // add system repository
-    resolveRepos.add(repositoryAdmin.getSystemRepository());
-    // add local repository
-    resolveRepos.add(getLocalRepository(repositoryAdmin));
-    // add application repository
-    resolveRepos.add(appRepo);
-    // add the user-defined repositories 
-    if (platformRepository != null) {
-      Collection<URI> uris = platformRepository.getPlatformRepositoryURLs();
-      if ((uris != null) && (!uris.isEmpty())) {
-        for (URI uri : uris) {
-          try {
-            resolveRepos.add(helper.readRepository(uri.toString()));
-          } catch (Exception e) {
-            // no a big problem
-            log.error(MessageUtil.getMessage("RESOLVER_UNABLE_TO_READ_REPOSITORY_EXCEPTION", new Object[]{appName, uri}) );
-          }
-        }
-      }
-    }
-   // Need to refresh the repositories added to repository admin
-    
-    // add user-defined repositories
-    Repository[] repos = repositoryAdmin.listRepositories();
-    for (Repository r : repos) {
-      resolveRepos.add(r);      
-    }     
-    Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
-    // add a resource describing the requirements of the application metadata.
-    obrResolver.add(createApplicationResource( appName, appVersion, importedBundles));
-    if (obrResolver.resolve()) {
-      
-      List<Resource> requiredResources = retrieveRequiredResources(obrResolver);
-
-      if (requiredResources == null) {
-        log.debug("resolver.getRequiredResources() returned null");
-      } else {
-
-        for (Resource r : requiredResources) {
-          NameValueMap<String, String> attribs = new NameValueMap<String, String>();
-          attribs.put(Constants.VERSION_ATTRIBUTE, "[" + r.getVersion() + ',' + r.getVersion()
-              + "]");
-          ModelledResource modelledResourceForThisMatch = null; 
-          try { 
-            modelledResourceForThisMatch = new ModelledBundleResource (r);
-          } catch (InvalidAttributeException iax) { 
-            
-            ResolverException re = new ResolverException("Internal error occurred: " + iax.toString());
-            log.debug(LOG_EXIT, "resolve", re);
-            
-            throw re;
-          }
-          toReturn.add(modelledResourceForThisMatch);
-        }
-      }
-      log.debug(LOG_EXIT, "resolve", toReturn); 
-      return toReturn;
-    } else {
-      Reason[] reasons = obrResolver.getUnsatisfiedRequirements();
-      // let's refine the list by removing the indirect unsatisfied bundles that are caused by unsatisfied packages or other bundles
-      Map<String,Set<String>> refinedReqs = refineUnsatisfiedRequirements(obrResolver, reasons);
-      StringBuffer reqList = new StringBuffer();
-      List<String> unsatisfiedRequirements = new LinkedList<String>();
-
-      for (Map.Entry<String, Set<String>> filterEntry : refinedReqs.entrySet()) {
-        log.debug("unable to satisfied the filter , filter = " + filterEntry.getKey() + "required by "+filterEntry.getValue());
-       
-        String reason = extractConsumableMessageInfo(filterEntry.getKey(),filterEntry.getValue());
-
-        reqList.append('\n');
-        reqList.append(reason);
-        unsatisfiedRequirements.add(reason);
-      }
-
-      ResolverException re = new ResolverException(MessageUtil.getMessage("RESOLVER_UNABLE_TO_RESOLVE", 
-          new Object[] { appName, reqList }));
-      re.setUnsatisfiedRequirements(unsatisfiedRequirements);
-      log.debug(LOG_EXIT, "resolve", re);
-      
-      throw re;
-    }
-    
-  }
+ 
    
    private Collection<ImportedBundle> toImportedBundle(Collection<Content> content) throws ResolverException
    {
@@ -639,7 +653,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
      List<ImportedBundle> result = new ArrayList<ImportedBundle>();
      for (Content c : content) {
        try {
-       result.add(ModellingManager.getImportedBundle(c.getContentName(), c.getVersion().toString()));
+       result.add(modellingManager.getImportedBundle(c.getContentName(), c.getVersion().toString()));
        } catch (InvalidAttributeException iae) {
          throw new ResolverException(iae);
        }
@@ -655,7 +669,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
      if ((bundleInfos != null) && (!!!bundleInfos.isEmpty())) {
        for (BundleInfo bi : bundleInfos) {
          try {
-         result.add(ModellingManager.getModelledResource(null, bi, null, null));
+         result.add(modellingManager.getModelledResource(null, bi, null, null));
          } catch (InvalidAttributeException iae) {
            throw new ResolverException(iae);
          }
