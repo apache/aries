@@ -21,6 +21,7 @@
 package org.apache.aries.application.modelling;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.aries.application.management.ResolverException;
 
@@ -91,4 +92,11 @@ public interface DeployedBundles {
    * @throws ResolverException if the requirements could not be resolved.
    */
   Collection<ModelledResource> getRequiredUseBundle() throws ResolverException;
+
+  /**
+   * A local environment extension to Apache Aries may manipulate a DeployedBundles object. 
+   * This method returns the extra headers and their values. 
+   * @return
+   */
+  Map<String, String> getExtraHeaders();
 }

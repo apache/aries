@@ -18,20 +18,17 @@
  */
 package org.apache.aries.application;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.apache.aries.application.management.ResolverException;
-import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.modelling.DeployedBundles;
 
 public interface PostResolveTransformer
 {
 /**
  *  This method is to perform any post process after the resolver returns back a collection of bundles. It returns the updated manifest map.
  * @param bundles A collection of bundles required by this application. 
- * @param deploymentHeaders the deployment manifest map
+ * @return Modified collection of bundles
  * @throws ResolverException
  */
-  void postResolveProcess(Collection<ModelledResource> bundles, Map<String, String> deploymentHeaders) throws ResolverException;
+  DeployedBundles postResolveProcess(DeployedBundles deployedBundles) throws ResolverException;
   
 }

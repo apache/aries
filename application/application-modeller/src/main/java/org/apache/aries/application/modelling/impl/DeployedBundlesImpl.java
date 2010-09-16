@@ -463,4 +463,15 @@ public final class DeployedBundlesImpl implements DeployedBundles
     logger.debug(LOG_EXIT, "getRequiredUseBundle", usedUseBundles);
     return usedUseBundles;
   }
+
+  /** This method will be overridden by a PostResolveTransformer returning an extended version of
+   * DeployedBundles 
+   */
+  @Override
+  public Map<String, String> getExtraHeaders() {
+    logger.debug (LOG_ENTRY, "getExtraHeaders");
+    Map<String, String> result = Collections.emptyMap();
+    logger.debug (LOG_EXIT, "getExtraHeaders", result);
+    return result;
+  }
 }
