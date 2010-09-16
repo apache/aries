@@ -31,7 +31,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -70,6 +69,7 @@ import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
+import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +78,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 
   private Logger _logger = LoggerFactory.getLogger(DeploymentManifestManagerImpl.class);
   private AriesApplicationResolver resolver;
-  private List<PostResolveTransformer> postResolveTransformers;
+  private PostResolveTransformer postResolveTransformer = null;
 
   private ModelledResourceManager modelledResourceManager;
   private LocalPlatform localPlatform;
@@ -113,31 +113,20 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     this.modelledResourceManager = modelledResourceManager;
   }
 
+  @Override
   public AriesApplicationResolver getResolver()
   {
     return resolver;
   }
 
-  public void setPostResolveTransformers(List<PostResolveTransformer> transformers) {
-    postResolveTransformers = transformers;
+  public void setPostResolveTransformer(PostResolveTransformer transformer) {
+    postResolveTransformer = transformer;
   }
+  
   public void setResolver(AriesApplicationResolver resolver)
   {
     this.resolver = resolver;
   }
-
-  /* Mutable state */
-  private DeployedBundles deployedBundles;
-  private Collection<ModelledResource> bundlesToBeProvisioned;
-  private String importPackages;
-  private Collection<ModelledResource> requiredUseBundle;
-
-
-
-  public DeployedBundles getDeployedBundles() {
-    return deployedBundles;
-  }
-
 
   /**
    * Perform provisioning to work out the 'freeze dried list' of the eba
@@ -146,6 +135,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
    * @return manifest the generated deployment manifest
    * @throws ResolverException
    */
+  @Override
   public Manifest generateDeploymentManifest( AriesApplication app,  ResolveConstraint... constraints ) throws ResolverException
   {
 
@@ -172,9 +162,13 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       Content content = ManifestHeaderProcessor.parseContent(constraint.getBundleName(), constraint.getVersionRange().toString());
       restrictedReqs.add(content);
     }
-    Manifest man = generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+    
+    DeployedBundles deployedBundles = generateDeployedBundles (appMetadata.getApplicationSymbolicName(),
         appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
         byValueBundles, useBundles, restrictedReqs, appMetadata.getApplicationImportServices());
+    
+    Manifest man = generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+        appMetadata.getApplicationVersion().toString(), deployedBundles);
     _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {man});
     return man;
   }
@@ -187,7 +181,9 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
    * @return
    * @throws ResolverException
    */
-  public Manifest generateDeploymentManifest( 
+  @Override
+  public DeployedBundles generateDeployedBundles
+  ( 
       String appSymbolicName, 
       String appVersion,
       Collection<Content> appContent, 
@@ -196,10 +192,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       Collection<Content> otherBundles, 
       Collection<ServiceDeclaration> applicationImportService) throws ResolverException {  
     
-    _logger.debug(LOG_ENTRY, "generateDeploymentManifest", new Object[]{appSymbolicName, appVersion, 
+    _logger.debug(LOG_ENTRY, "generateDeployedBundles", new Object[]{appSymbolicName, appVersion, 
         appContent, provideByValueBundles,useBundleSet,otherBundles });
-    Map<String, String> deploymentManifestMap = Collections.EMPTY_MAP;
-
     Collection<Content> bundlesToResolve = new ArrayList<Content>();
     Set<ImportedBundle> appContentIB = null;
     Set<ImportedBundle> useBundleIB = null;
@@ -222,145 +216,149 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     }
     byValueBundles.add(fakeBundleResource);
     String uniqueName = appSymbolicName + "_" + appVersion;
-    deployedBundles = modellingHelper.createDeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
-    bundlesToBeProvisioned = resolver.resolve(
+    
+    DeployedBundles deployedBundles = modellingHelper.createDeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
+    Collection<ModelledResource> bundlesToBeProvisioned = resolver.resolve(
         appSymbolicName, appVersion, byValueBundles, bundlesToResolve);
     pruneFakeBundleFromResults (bundlesToBeProvisioned);
 
     if (bundlesToBeProvisioned.isEmpty()) {
       throw new ResolverException(MessageUtil.getMessage("EMPTY_DEPLOYMENT_CONTENT",uniqueName));
-    } else {
+    } 
+    for (ModelledResource rbm : bundlesToBeProvisioned)
+    {
+      deployedBundles.addBundle(rbm);
+    }
+    Collection<ModelledResource> requiredUseBundle = deployedBundles.getRequiredUseBundle();
+    if (requiredUseBundle.size() < useBundleSet.size())
+    {
+      // Some of the use-bundle entries were redundant so resolve again with just the good ones.
+      deployedBundles = modellingHelper.createDeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
+      bundlesToResolve.clear();
+      bundlesToResolve.addAll(appContent);
+      Collection<ImportedBundle> slimmedDownUseBundle = narrowUseBundles(useBundleIB, requiredUseBundle);
+      bundlesToResolve.addAll(toContent(slimmedDownUseBundle));
+      bundlesToBeProvisioned = resolver.resolve(appSymbolicName, appVersion, byValueBundles, bundlesToResolve);
+      pruneFakeBundleFromResults (bundlesToBeProvisioned);
       for (ModelledResource rbm : bundlesToBeProvisioned)
       {
         deployedBundles.addBundle(rbm);
       }
-      requiredUseBundle = deployedBundles.getRequiredUseBundle();
+    }
 
-      if (requiredUseBundle.size() < useBundleSet.size())
-      {
-        // Some of the use-bundle entries were redundant so resolve again with just the good ones.
-        deployedBundles = modellingHelper.createDeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
-        bundlesToResolve.clear();
-        bundlesToResolve.addAll(appContent);
-        Collection<ImportedBundle> slimmedDownUseBundle = narrowUseBundles(useBundleIB, requiredUseBundle);
-        bundlesToResolve.addAll(toContent(slimmedDownUseBundle));
-        bundlesToBeProvisioned = resolver.resolve(appSymbolicName, appVersion, byValueBundles, bundlesToResolve);
-        pruneFakeBundleFromResults (bundlesToBeProvisioned);
-        for (ModelledResource rbm : bundlesToBeProvisioned)
-        {
-          deployedBundles.addBundle(rbm);
+    // Check for circular dependencies. No shared bundle can depend on any 
+    // isolated bundle. 
+    Collection<ModelledResource> sharedBundles = new HashSet<ModelledResource>();
+    sharedBundles.addAll (deployedBundles.getDeployedProvisionBundle());
+    sharedBundles.addAll (deployedBundles.getRequiredUseBundle()); 
+
+    Collection<Content> requiredSharedBundles = new ArrayList<Content>();
+    for (ModelledResource mr : sharedBundles) { 
+      String version = mr.getExportedBundle().getVersion();
+      String exactVersion = "[" + version + "," + version + "]";
+
+      Content ib = ManifestHeaderProcessor.parseContent(mr.getExportedBundle().getSymbolicName(), 
+          exactVersion);
+      requiredSharedBundles.add(ib);
+
+    }
+    // This will throw a ResolverException if the shared content does not resolve
+    Collection<ModelledResource> resolvedSharedBundles = resolver.resolve(appSymbolicName, appVersion
+        , byValueBundles, requiredSharedBundles);
+
+    List<String> differences = findDifferences (resolvedSharedBundles, sharedBundles);
+    // If we have differences, it means that we have shared bundles trying to import packages
+    // from isolated bundles. We need to build up the error message and throw a ResolverException
+    if (!differences.isEmpty()) { 
+      StringBuilder msgs = new StringBuilder();
+      List<String> unsatisfiedRequirements = new ArrayList<String>();
+
+      Map<String, List<String>> isolatedBundles = new HashMap<String, List<String>>();
+      // Find the isolated bundles and store all the packages that they export in a map.
+      for (ModelledResource mr : resolvedSharedBundles) {
+        String mrName = mr.getSymbolicName() + "_" + mr.getExportedBundle().getVersion();
+        if (differences.contains(mrName)) {
+          List<String> exportedPackages = new ArrayList<String>();
+          isolatedBundles.put(mrName, exportedPackages);
+          for (ExportedPackage ep : mr.getExportedPackages()) {
+            exportedPackages.add(ep.getPackageName());
+          }
         }
       }
+      // Now loop through the shared bundles, reading the imported packages, and find which ones 
+      // are exported from the isolated bundles.
+      for (ModelledResource mr : resolvedSharedBundles) {
+        String mrName = mr.getSymbolicName() + "_" + mr.getExportedBundle().getVersion();
+        // if current reource isn't an isolated bundle check it's requirements
+        if (!!! differences.contains(mrName)) {
+          // Iterate through the imported packages of the current shared bundle.
+          for (ImportedPackage ip : mr.getImportedPackages()) {
+            String packageName = ip.getPackageName();
+            List<String> bundlesExportingPackage = new ArrayList<String>();
+            // Loop through each exported package of each isolated bundle, and if we
+            // get a match store the info away.
+            for (Map.Entry<String, List<String>> currBundle : isolatedBundles.entrySet()) {
 
-      // Check for circular dependencies. No shared bundle can depend on any 
-      // isolated bundle. 
-      Collection<ModelledResource> sharedBundles = new HashSet<ModelledResource>();
-      sharedBundles.addAll (deployedBundles.getDeployedProvisionBundle());
-      sharedBundles.addAll (deployedBundles.getRequiredUseBundle()); 
-
-      Collection<Content> requiredSharedBundles = new ArrayList<Content>();
-      for (ModelledResource mr : sharedBundles) { 
-        String version = mr.getExportedBundle().getVersion();
-        String exactVersion = "[" + version + "," + version + "]";
-
-        Content ib = ManifestHeaderProcessor.parseContent(mr.getExportedBundle().getSymbolicName(), 
-            exactVersion);
-        requiredSharedBundles.add(ib);
-
-      }
-      // This will throw a ResolverException if the shared content does not resolve
-      Collection<ModelledResource> resolvedSharedBundles = resolver.resolve(appSymbolicName, appVersion
-          , byValueBundles, requiredSharedBundles);
-
-      List<String> differences = findDifferences (resolvedSharedBundles, sharedBundles);
-      // If we have differences, it means that we have shared bundles trying to import packages
-      // from isolated bundles. We need to build up the error message and throw a ResolverException
-      if (!differences.isEmpty()) { 
-        StringBuilder msgs = new StringBuilder();
-        List<String> unsatisfiedRequirements = new ArrayList<String>();
-
-        Map<String, List<String>> isolatedBundles = new HashMap<String, List<String>>();
-        // Find the isolated bundles and store all the packages that they export in a map.
-        for (ModelledResource mr : resolvedSharedBundles) {
-          String mrName = mr.getSymbolicName() + "_" + mr.getExportedBundle().getVersion();
-          if (differences.contains(mrName)) {
-            List<String> exportedPackages = new ArrayList<String>();
-            isolatedBundles.put(mrName, exportedPackages);
-            for (ExportedPackage ep : mr.getExportedPackages()) {
-              exportedPackages.add(ep.getPackageName());
+              List<String> exportedPackages = currBundle.getValue();
+              if (exportedPackages != null && exportedPackages.contains(packageName)) {
+                bundlesExportingPackage.add(currBundle.getKey());
+              }
+            }
+            // If we have found at least one matching entry, we construct the sub message for the
+            // exception.
+            if (!!! bundlesExportingPackage.isEmpty()) {
+              String newMsg;
+              if (bundlesExportingPackage.size() > 1) {
+                newMsg = MessageUtil.getMessage("SHARED_BUNDLE_IMPORTING_FROM_ISOLATED_BUNDLES", 
+                    new Object[] {mrName, packageName, bundlesExportingPackage}); 
+              } else {
+                newMsg = MessageUtil.getMessage("SHARED_BUNDLE_IMPORTING_FROM_ISOLATED_BUNDLE", 
+                    new Object[] {mrName, packageName, bundlesExportingPackage});
+              }
+              msgs.append("\n");
+              msgs.append(newMsg);
+              unsatisfiedRequirements.add(newMsg);
             }
           }
         }
-        // Now loop through the shared bundles, reading the imported packages, and find which ones 
-        // are exported from the isolated bundles.
-        for (ModelledResource mr : resolvedSharedBundles) {
-          String mrName = mr.getSymbolicName() + "_" + mr.getExportedBundle().getVersion();
-          // if current reource isn't an isolated bundle check it's requirements
-          if (!!! differences.contains(mrName)) {
-            // Iterate through the imported packages of the current shared bundle.
-            for (ImportedPackage ip : mr.getImportedPackages()) {
-              String packageName = ip.getPackageName();
-              List<String> bundlesExportingPackage = new ArrayList<String>();
-              // Loop through each exported package of each isolated bundle, and if we
-              // get a match store the info away.
-              for (Map.Entry<String, List<String>> currBundle : isolatedBundles.entrySet()) {
-
-                List<String> exportedPackages = currBundle.getValue();
-                if (exportedPackages != null && exportedPackages.contains(packageName)) {
-                  bundlesExportingPackage.add(currBundle.getKey());
-                }
-              }
-              // If we have found at least one matching entry, we construct the sub message for the
-              // exception.
-              if (!!! bundlesExportingPackage.isEmpty()) {
-                String newMsg;
-                if (bundlesExportingPackage.size() > 1) {
-                  newMsg = MessageUtil.getMessage("SHARED_BUNDLE_IMPORTING_FROM_ISOLATED_BUNDLES", 
-                      new Object[] {mrName, packageName, bundlesExportingPackage}); 
-                } else {
-                  newMsg = MessageUtil.getMessage("SHARED_BUNDLE_IMPORTING_FROM_ISOLATED_BUNDLE", 
-                      new Object[] {mrName, packageName, bundlesExportingPackage});
-                }
-                msgs.append("\n");
-                msgs.append(newMsg);
-                unsatisfiedRequirements.add(newMsg);
-              }
-            }
-          }
-        }
-        // Once we have iterated over all bundles and have got our translated submessages, 
-        // throw the exception.
-        // Well! if the msgs is empty, no need to throw an exception
-        if (msgs.length() !=0) {
-          String message = MessageUtil.getMessage(
-              "SUSPECTED_CIRCULAR_DEPENDENCIES", new Object[] {appSymbolicName, msgs});
-          ResolverException rx = new ResolverException (message);
-          rx.setUnsatisfiedRequirements(unsatisfiedRequirements);
-          _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {rx});
-          throw (rx);
-        }
       }
-
-      requiredUseBundle = deployedBundles.getRequiredUseBundle();
-      importPackages = deployedBundles.getImportPackage();
-      Collection<ModelledResource> requiredBundles = new HashSet<ModelledResource>();
-      requiredBundles.addAll(deployedBundles.getDeployedContent());
-      requiredBundles.addAll(deployedBundles.getRequiredUseBundle());
-      requiredBundles.addAll(deployedBundles.getDeployedProvisionBundle());
-      deploymentManifestMap = generateDeploymentAttributes(appSymbolicName, appVersion);
-      // Perform some post process if there are any.
-      if ((postResolveTransformers != null) && (!postResolveTransformers.isEmpty())) {
-        // validate the contents
-        for (PostResolveTransformer prt : postResolveTransformers) {
-          prt.postResolveProcess(requiredBundles, deploymentManifestMap);
-        }
+      // Once we have iterated over all bundles and have got our translated submessages, 
+      // throw the exception.
+      // Well! if the msgs is empty, no need to throw an exception
+      if (msgs.length() !=0) {
+        String message = MessageUtil.getMessage(
+            "SUSPECTED_CIRCULAR_DEPENDENCIES", new Object[] {appSymbolicName, msgs});
+        ResolverException rx = new ResolverException (message);
+        rx.setUnsatisfiedRequirements(unsatisfiedRequirements);
+        _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {rx});
+        throw (rx);
       }
     }
+      
+    if (postResolveTransformer != null) try {  
+      deployedBundles = postResolveTransformer.postResolveProcess (deployedBundles);
+    } catch (ServiceUnavailableException e) { 
+      _logger.debug(MessageUtil.getMessage("POST_RESOLVE_TRANSFORMER_UNAVAILABLE",e));
+    }
+    return deployedBundles;
+  }
+  
+
+  @Override
+  public Manifest generateDeploymentManifest(String appSymbolicName,
+      String appVersion, DeployedBundles deployedBundles)
+      throws ResolverException 
+    {
+    
+    _logger.debug (LOG_ENTRY, "generateDeploymentManifest", 
+        new Object[]{appSymbolicName, appVersion, deployedBundles});
+    Map<String, String> deploymentManifestMap = generateDeploymentAttributes(appSymbolicName, 
+        appVersion, deployedBundles);
     Manifest man = convertMapToManifest(deploymentManifestMap);
-    _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {man});
+    _logger.debug (LOG_EXIT, "generateDeploymentManifest", man);
     return man;
   }
-
+    
   /**
    * Returns a Collection of the {@link ImportedBundle} objects that are
    * satisfied by the contents of the Collection of requiredUseBundles.
@@ -389,7 +387,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 
 
 
-  private Map<String,String> generateDeploymentAttributes(String appSymbolicName, String version) throws ResolverException
+  private Map<String,String> generateDeploymentAttributes(String appSymbolicName, String version, 
+      DeployedBundles deployedBundles) throws ResolverException
   {
     _logger.debug(LOG_ENTRY, "generateDeploymentAttributes", new Object[] {appSymbolicName, version});
     Map<String,String> result = new HashMap<String, String>();
@@ -416,14 +415,17 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       result.put(AppConstants.DEPLOYMENTSERVICE_IMPORT, importServices);
     }
 
-
+    String importPackages = deployedBundles.getImportPackage();
     if (!importPackages.isEmpty()) {
       result.put(Constants.IMPORT_PACKAGE, importPackages);
     }
 
     result.put(AppConstants.APPLICATION_VERSION, version);
     result.put(AppConstants.APPLICATION_SYMBOLIC_NAME, appSymbolicName);
-    _logger.debug(LOG_ENTRY, "generateDeploymentAttributes", new Object[] {result});
+    
+    result.putAll(deployedBundles.getExtraHeaders());
+    
+    _logger.debug(LOG_EXIT, "generateDeploymentAttributes", result);
     return result;
   }
 
@@ -591,5 +593,6 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     _logger.debug(LOG_EXIT, "getByValueBundles", new Object[]{result});
     return result;
   }
+
 
 }
