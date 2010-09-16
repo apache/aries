@@ -21,7 +21,7 @@
   
   <bean id="deploymentManifestManager" class="org.apache.aries.application.deployment.management.impl.DeploymentManifestManagerImpl">
     <property name="resolver" ref="resolver"/>
-    <property name="postResolveTransformers" ref="post-resolver-transformers"/>
+    <property name="postResolveTransformer" ref="postResolveTransformer"/>
     <property name="modelledResourceManager" ref = "modelledResourceManager"/>
     <property name="localPlatform" ref="localPlatform"/>
     <property name="modellingManager" ref="modellingManager"/>
@@ -30,10 +30,10 @@
   
   <reference id="modellingManager" interface="org.apache.aries.application.modelling.ModellingManager"/>
   <reference id="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
-  <reference id = "modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
+  <reference id="modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
   <reference id="localPlatform" interface="org.apache.aries.application.management.spi.runtime.LocalPlatform"/>
   <reference id="resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>
-  <reference-list id="post-resolver-transformers" interface="org.apache.aries.application.PostResolveTransformer" availability="optional"/>
+  <reference id="postResolveTransformer" interface="org.apache.aries.application.PostResolveTransformer" availability="optional"/>
   
   <service id ="deploymentManifestManager-Service" ref="deploymentManifestManager" interface="org.apache.aries.application.management.spi.resolve.DeploymentManifestManager"/>
     

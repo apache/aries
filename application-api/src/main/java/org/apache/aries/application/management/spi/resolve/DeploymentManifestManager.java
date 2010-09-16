@@ -26,6 +26,7 @@ import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ModelledResource;
 
 public interface DeploymentManifestManager
@@ -47,10 +48,10 @@ public interface DeploymentManifestManager
    * @param useBundleSet Use Bundle set
    * @param otherBundles Other bundles to be used to narrow the resolved bundles
    * @param appImportServices the Application-ImportService header
-   * @return the deployment manifest 
+   * @return DeployedBundles model of the deployed application
    * @throws ResolverException
    */
-  Manifest generateDeploymentManifest( 
+  DeployedBundles generateDeployedBundles( 
       String appName, 
       String appVersion, 
       Collection<Content> appContent, 
@@ -59,6 +60,20 @@ public interface DeploymentManifestManager
       Collection<Content> otherBundles, 
       Collection<ServiceDeclaration> appImportServices) throws ResolverException;
 
+  /**
+   * Generate a Manifest representation of a DEPLOYMENT.MF, 
+   * suitable for example to writing to disk
+   * @param appSymbolicName
+   * @param appVersion
+   * @param deployedBundles Such as obtained from generateDeployedBundles()
+   * @return
+   * @throws ResolverException
+   */
+  Manifest generateDeploymentManifest (
+      String appSymbolicName, 
+      String appVersion, 
+      DeployedBundles deployedBundles) throws ResolverException; 
+      
   /**
    * 
    * @return the AriesApplicationResolver
