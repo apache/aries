@@ -46,6 +46,7 @@ import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.management.spi.runtime.LocalPlatform;
+import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModellingManager;
@@ -71,13 +72,14 @@ import org.osgi.framework.Version;
  */
 public class DeploymentGeneratorTest
 {
-  private DeploymentManifestManagerImpl sut;
+  private DeploymentManifestManagerImpl deplMFMgr;
   private AriesApplication app;
   private ApplicationMetadata appMetadata;
   
   private static class MockResolver implements AriesApplicationResolver {
     boolean returnAppContentNextTime = true;
     
+    @Override
     public Collection<ModelledResource> resolve(String appName, String appVersion,
         Collection<ModelledResource> byValueBundles, Collection<Content> inputs)
         throws ResolverException
@@ -183,11 +185,11 @@ public class DeploymentGeneratorTest
     app = Skeleton.newMock(AriesApplication.class);
     Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
     
-    sut = new DeploymentManifestManagerImpl();
-    sut.setResolver(_resolver);
-    sut.setLocalPlatform(localPlatform);
-    sut.setModellingManager(modellingManager);
-    sut.setModellingHelper(modellingHelper);
+    deplMFMgr = new DeploymentManifestManagerImpl();
+    deplMFMgr.setResolver(_resolver);
+    deplMFMgr.setLocalPlatform(localPlatform);
+    deplMFMgr.setModellingManager(modellingManager);
+    deplMFMgr.setModellingHelper(modellingHelper);
   }
   
   private static ExportedPackage CAPABILITY_A;
@@ -238,11 +240,15 @@ public class DeploymentGeneratorTest
   {
     
     Skeleton.getSkeleton(appMetadata).setReturnValue(new MethodCall(ApplicationMetadata.class, "getApplicationContents"), Arrays.asList(mockContent("aries.test.a", "1.0.0"), mockContent("aries.test.b", "[1.0.0, 2.0.0)" )));
-    Manifest man = sut.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(), 
+    
+    
+    DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata.getApplicationSymbolicName(),
         appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
         new ArrayList<ModelledResource>(), 
-        Arrays.asList(BUNDLE_C, BUNDLE_D), Collections.<Content>emptyList(), 
-        appMetadata.getApplicationImportServices());
+        Arrays.asList(BUNDLE_C, BUNDLE_D), Collections.<Content>emptyList(), appMetadata.getApplicationImportServices());
+    Manifest man = deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+        appMetadata.getApplicationVersion().toString(), deployedBundles);
+    
     Attributes attrs = man.getMainAttributes();
     
     assertEquals("aries.test", attrs.getValue(AppConstants.APPLICATION_SYMBOLIC_NAME));
@@ -284,12 +290,12 @@ public class DeploymentGeneratorTest
     
     
     try { 
-      
-      sut.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(), 
+      DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata.getApplicationSymbolicName(),
           appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
-          new ArrayList<ModelledResource>(), new ArrayList<Content>(), 
-          Collections.<Content>emptyList(), 
-          appMetadata.getApplicationImportServices());
+          new ArrayList<ModelledResource>(), 
+          new ArrayList<Content>(), Collections.<Content>emptyList(), appMetadata.getApplicationImportServices());
+      deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+          appMetadata.getApplicationVersion().toString(), deployedBundles);
     } catch (ResolverException rx) { 
       List<String> usr = rx.getUnsatisfiedRequirements();
       assertEquals ("One unsatisfied requirement expected, not " + usr.size(), usr.size(), 1);
@@ -337,12 +343,12 @@ public class DeploymentGeneratorTest
     Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
     
     try {
-           sut.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(), 
-               appMetadata.getApplicationVersion().toString(), 
-               appMetadata.getApplicationContents(), 
-               Arrays.asList(new ModelledResource[] {testIsolated1.getBundle(), testIsolated2.getBundle()}), new ArrayList<Content>(), Collections.<Content>emptyList(), 
-               appMetadata.getApplicationImportServices());
-
+      DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata.getApplicationSymbolicName(),
+          appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
+          Arrays.asList(new ModelledResource[] {testIsolated1.getBundle(), testIsolated2.getBundle()}), 
+          new ArrayList<Content>(), Collections.<Content>emptyList(), appMetadata.getApplicationImportServices());
+      deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+          appMetadata.getApplicationVersion().toString(), deployedBundles);
     } catch (ResolverException rx) { 
       // Get the unsatisfied Requirements
       List<String> unsatisfiedReqs = rx.getUnsatisfiedRequirements();

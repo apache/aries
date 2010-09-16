@@ -67,6 +67,7 @@ import org.apache.aries.application.management.spi.resolve.AriesApplicationResol
 import org.apache.aries.application.management.spi.resolve.DeploymentManifestManager;
 import org.apache.aries.application.management.spi.runtime.AriesApplicationContextManager;
 import org.apache.aries.application.management.spi.runtime.LocalPlatform;
+import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
@@ -145,8 +146,23 @@ public class AriesApplicationManagerImplTest {
         throws ResolverException {
       return null;
     }
-    
-    
+
+    public DeployedBundles generateDeployedBundles(String appName,
+        String appVersion, Collection<Content> appContent,
+        Collection<ModelledResource> byValueBundles,
+        Collection<Content> useBundleSet, Collection<Content> otherBundles,
+        Collection<ServiceDeclaration> appImportServices)
+        throws ResolverException {
+      // Not required or used in this test
+      return null;
+    }
+
+    public Manifest generateDeploymentManifest(String appSymbolicName,
+        String appVersion, DeployedBundles deployedBundles)
+        throws ResolverException {
+      // Not required or used in this test
+      return null;
+    }
   }
 
   static class DummyResolver implements AriesApplicationResolver {
