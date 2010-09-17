@@ -336,6 +336,11 @@
 		</dependency>
 
 		<dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
 			<groupId>org.apache.aries.jpa</groupId>
 			<artifactId>org.apache.aries.jpa.api</artifactId>
             <scope>test</scope>
@@ -376,7 +381,11 @@
 			<artifactId>org.apache.aries.transaction.wrappers</artifactId>
             <scope>test</scope>
 		</dependency>
-		
+		<dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.resolver.obr</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
     <build>
