@@ -137,6 +137,8 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
+        mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
