@@ -83,10 +83,10 @@ public class JpaBlogSampleWithEbaTest extends AbstractIntegrationTest {
 
 
     /*Check that they haven't timed out trying to register*/
-	assertTrue("No services reistered for " + bbiz.getSymbolicName(), isServiceRegistered(bbiz));
-	assertTrue("No services reistered for " + bper.getSymbolicName(), isServiceRegistered(bper));
-	assertTrue("No services reistered for " + bds.getSymbolicName(), isServiceRegistered(bds));
-	assertTrue("No services reistered for " + txs.getSymbolicName(), isServiceRegistered(txs));
+	assertTrue("No services registered for " + bbiz.getSymbolicName(), isServiceRegistered(bbiz));
+	assertTrue("No services registered for " + bper.getSymbolicName(), isServiceRegistered(bper));
+	assertTrue("No services registered for " + bds.getSymbolicName(), isServiceRegistered(bds));
+	assertTrue("No services registered for " + txs.getSymbolicName(), isServiceRegistered(txs));
 
 	/*Check what services are registered - uncomment for additional debug */
 	/*
@@ -155,6 +155,8 @@ bootDelegationPackages("javax.transaction", "javax.transaction.*"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint" ),
             mavenBundle("org.apache.aries", "org.apache.aries.util" ),
             mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi" ),
+            mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+            mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.install" ),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.api" ),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.management" ),
