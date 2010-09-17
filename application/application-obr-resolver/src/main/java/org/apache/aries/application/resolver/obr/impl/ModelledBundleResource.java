@@ -38,6 +38,7 @@ import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.application.modelling.utils.ModellingHelper;
@@ -181,10 +182,15 @@ public class ModelledBundleResource implements ModelledResource {
         if (rankingText != null) ranking = Integer.parseInt(rankingText);
         // objectClass may come out as a String or String[]
         Object rawObjectClass = props.remove (Constants.OBJECTCLASS);
-        if (rawObjectClass.getClass().isArray()) { 
-          ifaces = Arrays.asList((String[])rawObjectClass);
-        } else { 
-          ifaces = Arrays.asList((String)rawObjectClass);
+        if (rawObjectClass == null) {
+        	// get it from service
+        	ifaces = Arrays.asList((String)props.get(ModellingConstants.OBR_SERVICE));
+        } else {
+        	if (rawObjectClass.getClass().isArray()) { 
+        		ifaces = Arrays.asList((String[])rawObjectClass);
+        	} else { 
+        		ifaces = Arrays.asList((String)rawObjectClass);
+        	}
         }
 
         ExportedService svc = modellingManager.getExportedService(name, ranking, ifaces, props);

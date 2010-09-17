@@ -37,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-
 @RunWith(JUnit4TestRunner.class)
 public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
 
@@ -72,8 +71,8 @@ public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
         waitForServices(bper, "org.apache.aries.samples.blog.api.persistence.BlogPersistenceService");
 
        /*Check that they haven't timed out trying to register*/
-    	assertTrue("No services reistered for " + bbiz.getSymbolicName(), isServiceRegistered(bbiz));
-    	assertTrue("No services reistered for " + bper.getSymbolicName(), isServiceRegistered(bper));
+    	assertTrue("No services registered for " + bbiz.getSymbolicName(), isServiceRegistered(bbiz));
+    	assertTrue("No services registered for " + bper.getSymbolicName(), isServiceRegistered(bper));
 
 		/*Check what services are registered - uncomment for additional debug */
 		/*
@@ -143,6 +142,8 @@ public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.management" ),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime" ),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils" ),
+                mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
                 mavenBundle("org.apache.felix", "org.apache.felix.fileinstall" ),
@@ -154,6 +155,14 @@ public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint" ),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers" ),
                 mavenBundle("asm", "asm-all" ),
+                /* For debugging, uncomment the next two lines  */
+                /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+                waitForFrameworkStartup(),  
+*/
+                /* For debugging, add these imports:
+                import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+                import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+                */
                 equinox().version("3.5.0")
         );
         options = updateOptions(options);
