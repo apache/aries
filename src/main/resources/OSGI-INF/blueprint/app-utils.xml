@@ -29,14 +29,11 @@
        particular application server environment follow -->
 
   <bean id="default-local-platform" class="org.apache.aries.application.utils.runtime.DefaultLocalPlatform" />
-  <bean id="no-op-resolver" class="org.apache.aries.application.utils.runtime.NoOpResolver" /> 
- 
+  
   <service interface="org.apache.aries.application.management.spi.runtime.LocalPlatform" 
             ref="default-local-platform"
             ranking="-1" />
-  <service interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver" 
-            ref="no-op-resolver"
-            ranking="-1" />
+  
   <bean id="default-platform-repository" class="org.apache.aries.application.utils.runtime.DefaultPlatformRepository"/>
   <service interface="org.apache.aries.application.management.spi.repository.PlatformRepository" ref="default-platform-repository" ranking="-1"/>
             
