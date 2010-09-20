@@ -18,12 +18,13 @@
  */
 package org.apache.aries.jndi.services;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.osgi.framework.Bundle;
 
 public interface ProxyFactory {
 
-    Object createProxy(Bundle bundle, Class[] classes, Callable<Object> dispatcher);
+    Object createProxy(Bundle bundle, List<Class<?>> classes, Callable<Object> dispatcher);
 
 }
