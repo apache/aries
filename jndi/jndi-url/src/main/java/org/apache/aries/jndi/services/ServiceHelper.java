@@ -334,9 +334,8 @@ public final class ServiceHelper
     // wrapping the service provider bundle. The class is actually defined
     // on this adapter.
 
-    Class[] classArray = clazz.toArray(new Class[clazz.size()]);
     try {
-      return proxyFactory.createProxy(serviceProviderBundle, classArray, ih);
+      return proxyFactory.createProxy(serviceProviderBundle, clazz, ih);
     } catch (IllegalArgumentException e) {
       throw e;
     } catch (RuntimeException e) {
@@ -434,7 +433,7 @@ public final class ServiceHelper
       try {
         // Try load load a cglib class (to make sure it's actually available
         // then create the cglib factory
-        ServiceHelper.class.getClassLoader().loadClass("net.sf.cglib.proxy.Enhancer");
+        Class.forName("net.sf.cglib.proxy.Enhancer");
         proxyFactory = new CgLibProxyFactory();
       } catch (Throwable t) {
         proxyFactory = new JdkProxyFactory();

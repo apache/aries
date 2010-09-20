@@ -41,6 +41,10 @@
         <aries.osgi.activator>
             org.apache.aries.jndi.url.Activator
         </aries.osgi.activator>
+        <aries.osgi.import.pkg>
+          net.sf.cglib.proxy;resolution:=optional,
+          *
+        </aries.osgi.import.pkg>
     </properties>
 
     <dependencies>
