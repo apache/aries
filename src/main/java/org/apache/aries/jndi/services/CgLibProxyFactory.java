@@ -19,6 +19,7 @@
 package org.apache.aries.jndi.services;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -31,7 +32,7 @@ import org.osgi.framework.Bundle;
 public class CgLibProxyFactory implements ProxyFactory {
 
     public Object createProxy(final Bundle bundle,
-                              final Class[] classes,
+                              final List<Class<?>> classes,
                               final Callable<Object> dispatcher) {
         Enhancer e = new Enhancer();
         e.setClassLoader(new CgLibClassLoader(bundle));
@@ -47,7 +48,7 @@ public class CgLibProxyFactory implements ProxyFactory {
         return e.create();
     }
 
-    private static Class<?>[] getInterfaces(Class<?>[] classes) {
+    private static Class<?>[] getInterfaces(List<Class<?>> classes) {
         Set<Class<?>> interfaces = new HashSet<Class<?>>();
         for (Class<?> clazz : classes) {
             if (clazz.isInterface()) {
@@ -57,7 +58,7 @@ public class CgLibProxyFactory implements ProxyFactory {
         return interfaces.toArray(new Class[interfaces.size()]);
     }
 
-    protected Class<?> getTargetClass(Class<?>[] interfaceNames) {
+    protected Class<?> getTargetClass(List<Class<?>> interfaceNames) {
         // Only allow class proxying if specifically asked to
         Class<?> root = Object.class;
         for (Class<?> clazz : interfaceNames) {
