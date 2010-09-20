@@ -22,6 +22,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.util.BundleToClassLoaderAdapter;
@@ -30,9 +32,15 @@ import org.osgi.framework.Bundle;
 public class JdkProxyFactory implements ProxyFactory {
 
     public Object createProxy(final Bundle bundle,
-                              final Class[] classes,
+                              final List<Class<?>> classes,
                               final Callable<Object> dispatcher) {
-        return Proxy.newProxyInstance(new BundleToClassLoaderAdapter(bundle), classes,
+      
+        Iterator<Class<?>> it = classes.iterator();
+        while (it.hasNext()) {
+            if (it.next().isInterface()) it.remove();
+        }
+        
+        return Proxy.newProxyInstance(new BundleToClassLoaderAdapter(bundle), classes.toArray(new Class[classes.size()]),
                 new InvocationHandler() {
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         try {
