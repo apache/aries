@@ -44,6 +44,7 @@ import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -67,12 +68,16 @@ import org.w3c.dom.NodeList;
  * the {@link GlobalPersistenceManager}.
  */
 public class NSHandler implements NamespaceHandler {
+    private static final String ATTR_INDEX = "index";
+
     /** Logger */
     private static final Logger _logger = LoggerFactory
             .getLogger("org.apache.aries.jpa.blueprint.aries");
 
-    /** The JPA namespace */
-    public static final String NS_URI = "http://aries.apache.org/xmlns/jpa/v1.0.0";
+    /** The JPA 1.0.0 namespace */
+    public static final String NS_URI_100 = "http://aries.apache.org/xmlns/jpa/v1.0.0";
+    /** The JPA 1.0.0 namespace */
+    public static final String NS_URI_110 = "http://aries.apache.org/xmlns/jpa/v1.1.0";
     /** The standard blueprint namespace */
     private static final String BLUEPRINT_NS = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
 
@@ -128,8 +133,8 @@ public class NSHandler implements NamespaceHandler {
         Element element = (Element) node;
         // The surrounding component should always be a bean
         if (!(component instanceof BeanMetadata)) {
-            _logger.error("The JPA namespace should only be used to inject properties into a bean. The surrounding component was {}.",
-                            new Object[] { component });
+            _logger.error("The JPA namespace should only be used to inject properties or constuctor arguments into a bean." +
+            		" The surrounding component was {}.", new Object[] { component });
             throw new IllegalArgumentException(component.toString());
         }
         
@@ -142,27 +147,45 @@ public class NSHandler implements NamespaceHandler {
 
         MutableBeanMetadata bean = (MutableBeanMetadata) component;
 
-        if (!NS_URI.equals(element.getNamespaceURI())) {
-            _logger
-                    .error(
-                            "The JPA namespace handler should not be called for the namespace {}.",
+        if (!NS_URI_100.equals(element.getNamespaceURI())
+            && !NS_URI_110.equals(element.getNamespaceURI())) {
+            _logger.error("The JPA namespace handler should not be called for the namespace {}.",
                             new Object[] { element.getNamespaceURI() });
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The JPA namespace handler should not be called for the namespace " 
+                   + element.getNamespaceURI());
         }
 
         if (!TAG_UNIT.equals(element.getLocalName())
                 && !TAG_CONTEXT.equals(element.getLocalName())) {
-            _logger
-                    .error(
-                            "The JPA namespace handler did not recognize the element named {}.",
+            _logger.error("The JPA namespace handler did not recognize the element named {}.",
                             new Object[] { element.getLocalName() });
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The JPA namespace handler did not recognize the element named " 
+                   + element.getLocalName());
         }
 
-        // Create an injection point for the JPA resource (a blueprint property)
-        final BeanProperty beanProperty = createInjectMetadata(element,
-                TAG_UNIT.equals(element.getLocalName()), context);
+        String property = element.getAttribute(ATTR_PROPERTY);
+        property = property.isEmpty() ? null : property;
+        String index = element.getAttribute(ATTR_INDEX);
+        index = index.isEmpty() ? null : index;
+        if(property != null && index != null) {
+          _logger.error("It is invalid to specify a bean property and an index") ;
+        } else if (property != null) {
+            
+                
+            // Create an injection point for the JPA resource (a blueprint property)
+            BeanProperty beanProperty = createBeanProperty(element, property,
+                    TAG_UNIT.equals(element.getLocalName()), context);
 
+            bean.addProperty(beanProperty);
+        } else {
+          
+          //Create a constructor argument for the JPA resource
+          BeanArgument argument = createArgument(element, index, 
+              TAG_UNIT.equals(element.getLocalName()), context);
+          
+          bean.addArgument(argument);
+        }
+        
         // If this is a persistence context then register it with the manager
         if (TAG_CONTEXT.equals(element.getLocalName())) {
             Bundle client = getBlueprintBundle(context);
@@ -188,8 +211,6 @@ public class NSHandler implements NamespaceHandler {
             }
         }
 
-        bean.addProperty(beanProperty);
-        
         return bean;
     }
 
@@ -200,8 +221,10 @@ public class NSHandler implements NamespaceHandler {
     }
 
     public URL getSchemaLocation(String namespace) {
-        if(NS_URI.equals(namespace))
+        if(NS_URI_100.equals(namespace))
             return getClass().getResource("/org/apache/aries/jpa/blueprint/namespace/jpa.xsd");
+        else if (NS_URI_110.equals(namespace))
+            return getClass().getResource("/org/apache/aries/jpa/blueprint/namespace/jpa_110.xsd");
         else
             return null;
     }
@@ -246,10 +269,9 @@ public class NSHandler implements NamespaceHandler {
      *            The current parser context
      * @return
      */
-    private BeanProperty createInjectMetadata(Element element,
+    private BeanProperty createBeanProperty(Element element, final String property,
             boolean isPersistenceUnit, ParserContext ctx) {
         String unitName = parseUnitName(element);
-        final String property = element.getAttribute(ATTR_PROPERTY);
 
         if (_logger.isDebugEnabled()) {
             if (isPersistenceUnit)
@@ -260,45 +282,8 @@ public class NSHandler implements NamespaceHandler {
                                 new Object[] { unitName, property });
         }
 
-        // Create a service reference for the EMF (it is an EMF for persistence
-        // contexts and units)
-        final MutableReferenceMetadata refMetadata = (MutableReferenceMetadata) ctx
-                .createMetadata(ReferenceMetadata.class);
-        refMetadata.setActivation(ACTIVATION_EAGER.equalsIgnoreCase(ctx
-                .getDefaultActivation()) ? ReferenceMetadata.ACTIVATION_EAGER
-                : ReferenceMetadata.ACTIVATION_LAZY);
-        refMetadata.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
-        refMetadata.setInterface(EntityManagerFactory.class.getName());
-
-        // Pick the right EMF by looking for the presence, or absence, of the
-        // PROXY_FACTORY service property
-        StringBuilder filter = new StringBuilder("(&");
-        // Persistence units do not have the property, persistence contexts do
-        if (isPersistenceUnit)
-            filter.append("(!(").append(PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE)
-            .append("=*))");
-        else
-            filter.append("(").append(PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE)
-                    .append("=*)");
-
-        // Add the empty name filter if necessary
-        if (!"".equals(unitName))
-            filter.append("(" + PersistenceUnitConstants.OSGI_UNIT_NAME + "="
-                    + unitName + ")");
-        else
-            filter.append(EMPTY_UNIT_NAME_FILTER);
-
-        filter.append(")");
-
-        refMetadata.setFilter(filter.toString());
-        refMetadata.setTimeout(Integer.parseInt(ctx.getDefaultTimeout()));
-        refMetadata.setDependsOn((List<String>) Collections.EMPTY_LIST);
-        refMetadata.setId(ctx.generateId());
-
-        // Finally, if this is a persistence context we need to create the
-        // entity manager as the Target
-        final Metadata target = isPersistenceUnit ? refMetadata
-                : createInjectionBeanMetedata(ctx, refMetadata);
+        final Metadata target = createTargetMetadata(isPersistenceUnit, ctx,
+            unitName);
 
         return new BeanProperty() {
             public Metadata getValue() {
@@ -309,6 +294,116 @@ public class NSHandler implements NamespaceHandler {
                 return property;
             }
         };
+    }
+    
+    /**
+     * Create a BeanProperty that will inject a JPA resource into a bean
+     * 
+     * @param element
+     *            The element being parsed
+     * @param isPersistenceUnit
+     *            true if this is a persistence unit
+     * @param ctx
+     *            The current parser context
+     * @return
+     */
+    private BeanArgument createArgument(Element element, final String index,
+            final boolean isPersistenceUnit, ParserContext ctx) {
+        
+        String unitName = parseUnitName(element);
+        if (_logger.isDebugEnabled()) {
+          if (isPersistenceUnit) {
+              if (index == null)
+                  _logger.debug("Creating blueprint injection metadata to inject the unit {} as a constructor argument",
+                              new Object[] { unitName });
+              else
+                  _logger.debug("Creating blueprint injection metadata to inject the unit {} as a constructor argument" +
+                      " with index {}", new Object[] { unitName, index });
+          } else {
+              if (index == null)
+                  _logger.debug("Creating blueprint injection metadata to inject the context {} as a constructor argument",
+                              new Object[] { unitName });
+              else
+                  _logger.debug("Creating blueprint injection metadata to inject the context {} as a constructor argument" +
+                      " with index {}", new Object[] { unitName, index });
+          }
+      }
+        
+        final int i;
+        
+        if(index == null) {
+            i = -1;
+        } else {
+            try {
+                i = Integer.parseInt(index);
+            } catch (NumberFormatException nfe) {
+                throw new IllegalArgumentException("The string " + index + " could not be parsed as an index.", nfe);
+            }
+        }
+        
+        final Metadata target = createTargetMetadata(isPersistenceUnit, ctx,
+            unitName);
+
+        return new BeanArgument() {
+            public Metadata getValue() {
+                return target;
+            }
+
+            @Override
+            public String getValueType() {
+              return isPersistenceUnit ? "javax.persistence.EntityManagerFactory" 
+                                       : "javax.persistence.EntityManager";
+            }
+
+            @Override
+            public int getIndex() {
+              return i;
+            }
+        };
+    }
+
+    private Metadata createTargetMetadata(boolean isPersistenceUnit,
+        ParserContext ctx, String unitName) {
+      // Create a service reference for the EMF (it is an EMF for persistence
+      // contexts and units)
+      final MutableReferenceMetadata refMetadata = (MutableReferenceMetadata) ctx
+              .createMetadata(ReferenceMetadata.class);
+      refMetadata.setActivation(ACTIVATION_EAGER.equalsIgnoreCase(ctx
+              .getDefaultActivation()) ? ReferenceMetadata.ACTIVATION_EAGER
+              : ReferenceMetadata.ACTIVATION_LAZY);
+      refMetadata.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
+      refMetadata.setInterface(EntityManagerFactory.class.getName());
+
+      // Pick the right EMF by looking for the presence, or absence, of the
+      // PROXY_FACTORY service property
+      StringBuilder filter = new StringBuilder("(&");
+      // Persistence units do not have the property, persistence contexts do
+      if (isPersistenceUnit)
+          filter.append("(!(").append(PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE)
+          .append("=*))");
+      else
+          filter.append("(").append(PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE)
+                  .append("=*)");
+
+      // Add the empty name filter if necessary
+      if (!"".equals(unitName))
+          filter.append("(" + PersistenceUnitConstants.OSGI_UNIT_NAME + "="
+                  + unitName + ")");
+      else
+          filter.append(EMPTY_UNIT_NAME_FILTER);
+
+      filter.append(")");
+
+      refMetadata.setFilter(filter.toString());
+      refMetadata.setTimeout(Integer.parseInt(ctx.getDefaultTimeout()));
+      refMetadata.setDependsOn((List<String>) Collections.EMPTY_LIST);
+      refMetadata.setId(ctx.generateId());
+
+      // Finally, if this is a persistence context we need to create the
+      // entity manager as the Target
+      final Metadata target = isPersistenceUnit ? refMetadata
+              : createInjectionBeanMetedata(ctx, refMetadata);
+      return target;
     }
 
     /**
