@@ -23,8 +23,12 @@
             
   <service ref="namespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
     <service-properties>
-      <entry key="osgi.service.blueprint.namespace" 
-             value="http://aries.apache.org/xmlns/jpa/v1.0.0"/>
+      <entry key="osgi.service.blueprint.namespace">
+        <array value-type="java.net.URI">
+          <value>http://aries.apache.org/xmlns/jpa/v1.0.0</value>
+          <value>http://aries.apache.org/xmlns/jpa/v1.1.0</value>
+        </array>
+      </entry>
     </service-properties>
   </service>
   
