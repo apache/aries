@@ -27,6 +27,18 @@ public class JPATestBean {
   
   private EntityManager persistenceContext;
   
+  private EntityManagerFactory constructorEMF;
+  
+  private EntityManager constructorEM;
+
+  public JPATestBean(EntityManagerFactory constructorEMF,
+      EntityManager constructorEM) {
+    this.constructorEMF = constructorEMF;
+    this.constructorEM = constructorEM;
+  }
+  
+  public JPATestBean() {  }
+  
   public void setPersistenceUnit(EntityManagerFactory emf) {
     persistenceUnit = emf;
   }
@@ -51,4 +63,19 @@ public class JPATestBean {
     return true;
   }
   
+  /**
+   * @return True if we sucessfully called a method on the EMF
+   */
+  public boolean constructorPUnitAvailable() {
+    constructorEMF.isOpen();
+    return true;
+  }
+  
+  /**
+   * @return True if we sucessfully called a method on the EM
+   */
+  public boolean constructorPContextAvailable() {
+    constructorEM.isOpen();
+    return true;
+  }
 }

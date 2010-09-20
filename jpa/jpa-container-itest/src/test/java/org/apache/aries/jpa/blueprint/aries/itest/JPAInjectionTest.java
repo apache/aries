@@ -49,7 +49,18 @@ public class JPAInjectionTest {
  
   @Test
   public void findResources() throws Exception {
-    JPATestBean bean = getOsgiService(JPATestBean.class);
+    JPATestBean bean = getOsgiService(JPATestBean.class, "(version=1.0.0)", DEFAULT_TIMEOUT);
+    
+    assertTrue("No persistence unit injection", bean.pUnitAvailable());
+    assertTrue("No persistence context injection", bean.pContextAvailable());
+  }
+  
+  @Test
+  public void findResources_110() throws Exception {
+    JPATestBean bean = getOsgiService(JPATestBean.class, "(version=1.1.0)", DEFAULT_TIMEOUT);
+    
+    assertTrue("No constructor unit injection", bean.constructorPUnitAvailable());
+    assertTrue("No constructor context injection", bean.constructorPContextAvailable());
     
     assertTrue("No persistence unit injection", bean.pUnitAvailable());
     assertTrue("No persistence context injection", bean.pContextAvailable());
