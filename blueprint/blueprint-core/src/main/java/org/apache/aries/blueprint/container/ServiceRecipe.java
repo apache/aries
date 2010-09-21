@@ -61,6 +61,8 @@ import org.slf4j.LoggerFactory;
 public class ServiceRecipe extends AbstractRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRecipe.class);
+    final static String LOG_ENTRY = "Method entry: {}, args {}";
+    final static String LOG_EXIT = "Method exit: {}, returning {}";
 
     private final ExtendedBlueprintContainer blueprintContainer;
     private final ServiceMetadata metadata;
@@ -407,84 +409,96 @@ public class ServiceRecipe extends AbstractRecipe {
     	private QuiesceInterceptor interceptor;
     	private ServiceRecipe serviceRecipe;
     	private ComponentMetadata cm;
-    	public TriggerServiceFactory(ServiceRecipe serviceRecipe, ComponentMetadata cm)
+    	private ServiceMetadata sm;
+    	public TriggerServiceFactory(ServiceRecipe serviceRecipe, ServiceMetadata cm)
     	{
     		this.serviceRecipe = serviceRecipe;
     		this.cm = cm;
+    		this.sm = cm;
     	}
     	
-        public Object getService(Bundle bundle, ServiceRegistration registration) 
-        {
-        	Object original = ServiceRecipe.this.getService(bundle, registration);
-        	Object intercepted = null;
+        public Object getService(Bundle bundle, ServiceRegistration registration) {
+            Object original = ServiceRecipe.this.getService(bundle,
+                    registration);
+            LOGGER.debug(LOG_ENTRY, "getService", original);
+            Object intercepted = null;
             boolean asmAvailable = false;
             boolean cglibAvailable = false;
-            
-            if (interceptor == null)
-            {
-            	interceptor = new QuiesceInterceptor(serviceRecipe);
+
+            if (interceptor == null) {
+                interceptor = new QuiesceInterceptor(serviceRecipe);
             }
-            
+
             List<Interceptor> interceptors = new ArrayList<Interceptor>();
             interceptors.add(interceptor);
-            
-            try 
-            {
+
+            try {
                 // Try load load an asm class (to make sure it's actually
                 // available)
                 getClass().getClassLoader().loadClass(
                         "org.objectweb.asm.ClassVisitor");
                 LOGGER.debug("asm available for interceptors");
                 asmAvailable = true;
-            } 
-            catch (Throwable t) 
-            {
-                try 
-                {
+            } catch (Throwable t) {
+                try {
                     // Try load load a cglib class (to make sure it's actually
                     // available)
                     getClass().getClassLoader().loadClass(
                             "net.sf.cglib.proxy.Enhancer");
                     cglibAvailable = true;
-                } 
-                catch (Throwable u) 
-                {
-                	LOGGER.info("No quiesce support is available, so blueprint components will not participate in quiesce operations");
-                	return original;
+                } catch (Throwable u) {
+                    LOGGER
+                            .info("A problem occurred trying to create a proxy object. Returning the original object instead.");
+                    LOGGER.debug(LOG_EXIT, "getService", original);
+                    return original;
                 }
             }
-            
-            try
-            {
-	            if (asmAvailable) 
-	            {
-	                // if asm is available we can proxy the original object with the
-	                // AsmInterceptorWrapper
-	                intercepted = AsmInterceptorWrapper.createProxyObject(original
-	                        .getClass().getClassLoader(), cm, interceptors,
-	                        original, original.getClass());
-	            } 
-	            else if (cglibAvailable)
-	            {
-	                LOGGER.debug("cglib available for interceptors");
-	                // otherwise we're using cglib and need to use the interfaces
-	                // with the CgLibInterceptorWrapper
-	                intercepted = CgLibInterceptorWrapper.createProxyObject(
-	                        original.getClass().getClassLoader(), cm,
-	                        interceptors, original, original.getClass()
-	                                .getInterfaces());
-	            }
-	            else
-	            {
-	            	return original;
-	            }
+
+            try {
+                if (asmAvailable) {
+                    List<String> interfaces = sm.getInterfaces();
+
+                    // check for the case where interfaces is null or empty
+                    if (interfaces == null || interfaces.isEmpty()) {
+                        intercepted = AsmInterceptorWrapper.createProxyObject(
+                                original.getClass().getClassLoader(), cm,
+                                interceptors, original, original.getClass());
+                        LOGGER.debug(LOG_EXIT, "getService", intercepted);
+                        return intercepted;
+                    }
+                    Class[] classesToProxy = new Class[interfaces.size()];
+                    for (int i = 0; i < interfaces.size(); i++) {
+                        classesToProxy[i] = Class.forName(interfaces.get(i),
+                                true, original.getClass().getClassLoader());
+                    }
+
+                    // if asm is available we can proxy the original object with
+                    // the
+                    // AsmInterceptorWrapper
+                    intercepted = AsmInterceptorWrapper.createProxyObject(
+                            original.getClass().getClassLoader(), cm,
+                            interceptors, original, classesToProxy);
+                } else if (cglibAvailable) {
+                    LOGGER.debug("cglib available for interceptors");
+                    // otherwise we're using cglib and need to use the
+                    // interfaces
+                    // with the CgLibInterceptorWrapper
+                    intercepted = CgLibInterceptorWrapper.createProxyObject(
+                            original.getClass().getClassLoader(), cm,
+                            interceptors, original, original.getClass()
+                                    .getInterfaces());
+                } else {
+                    LOGGER.debug(LOG_EXIT, "getService", original);
+                    return original;
+                }
+            } catch (Throwable u) {
+                LOGGER
+                        .info("A problem occurred trying to create a proxy object. Returning the original object instead.");
+                LOGGER.debug(LOG_EXIT, "getService", original);
+                return original;
             }
-            catch (Throwable u) 
-            {
-            	LOGGER.info("No quiesce support is available, so blueprint components will not participate in quiesce operations");
-            	return original;
-            }
-            
+
+            LOGGER.debug(LOG_EXIT, "getService", intercepted);
             return intercepted;
 
         }
