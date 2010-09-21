@@ -37,7 +37,7 @@ public class JdkProxyFactory implements ProxyFactory {
       
         Iterator<Class<?>> it = classes.iterator();
         while (it.hasNext()) {
-            if (it.next().isInterface()) it.remove();
+            if (!!!it.next().isInterface()) it.remove();
         }
         
         return Proxy.newProxyInstance(new BundleToClassLoaderAdapter(bundle), classes.toArray(new Class[classes.size()]),
