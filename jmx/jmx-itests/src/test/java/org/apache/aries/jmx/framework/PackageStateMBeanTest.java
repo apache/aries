@@ -46,7 +46,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
     public static Option[] configuration() {
         Option[] options = CoreOptions.options(CoreOptions.equinox(), mavenBundle("org.ops4j.pax.logging",
                 "pax-logging-api"), mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), mavenBundle(
-                "org.apache.aries.jmx", "org.apache.aries.jmx"));
+                "org.apache.aries.jmx", "org.apache.aries.jmx"),mavenBundle("org.apache.aries", "org.apache.aries.util"));
         options = updateOptions(options);
         return options;
     }

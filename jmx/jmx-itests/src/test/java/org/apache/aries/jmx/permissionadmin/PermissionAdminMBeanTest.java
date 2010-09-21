@@ -52,6 +52,7 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
             mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
             mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
+            mavenBundle("org.apache.aries", "org.apache.aries.util"),
             provision(newBundle()
                     .add(org.apache.aries.jmx.test.bundlea.Activator.class)
                     .add(org.apache.aries.jmx.test.bundlea.api.InterfaceA.class)
