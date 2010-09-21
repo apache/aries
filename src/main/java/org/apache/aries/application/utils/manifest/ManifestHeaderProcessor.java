@@ -33,6 +33,7 @@ import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.impl.ContentImpl;
 import org.apache.aries.application.impl.VersionRangeImpl;
 import org.apache.aries.application.utils.internal.MessageUtil;
+import org.apache.aries.util.ManifestHeaderUtils;
 import org.osgi.framework.Constants;
 
 
@@ -187,47 +188,10 @@ public class ManifestHeaderProcessor
    */
   public static List<String> split(String value, String delimiter)
   {
-    List<String> result = new ArrayList<String>();
-    if (value != null) {
-      String[] packages = value.split(delimiter);
-      
-      for (int i = 0; i < packages.length; ) {
-        String tmp = packages[i++].trim();
-        // if there is a odd number of " in a string, we need to append
-        while (count(tmp, "\"") % 2 != 0) {
-          // check to see if we need to append the next package[i++]          
-            if (i<packages.length)
-              tmp = tmp + delimiter + packages[i++].trim();
-            else 
-              // oops. The double quotes are not paired up. We have reached to the end of the string.
-              throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0008E",tmp));        
-        }
-        
-        result.add(tmp);
-        
-      }
-    }
-    return result;
+    return ManifestHeaderUtils.split(value, delimiter);
   }  
   
- /**
-  * count the number of characters in a string
-  * @param parent The string to be searched
-  * @param subString The substring to be found
-  * @return the number of occurrence of the subString
-  */
-  private static int count(String parent, String subString) {
-    
-    int count = 0 ;
-    int i = parent.indexOf(subString);
-    while (i > -1) {
-      if (parent.length() >= i+1)
-        parent = parent.substring(i+1);
-      count ++;
-      i = parent.indexOf(subString);
-    }
-    return count;
-  }
+ 
   /**
    * Internal method to parse headers with the format<p>
    *   [Name](;[Name])*(;[attribute-name]=[attribute-value])*<br> 
