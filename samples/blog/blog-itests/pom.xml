@@ -381,6 +381,21 @@
 			<artifactId>org.apache.aries.transaction.wrappers</artifactId>
             <scope>test</scope>
 		</dependency>
+		
+		<dependency>
+      		<groupId>org.apache.aries.quiesce</groupId>
+      		<artifactId>org.apache.aries.quiesce.api</artifactId>
+      		<version>0.3-incubating-SNAPSHOT</version>
+      		<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+      		<groupId>org.apache.aries.quiesce</groupId>
+      		<artifactId>org.apache.aries.quiesce.manager</artifactId>
+      		<version>0.3-incubating-SNAPSHOT</version>
+      		<scope>provided</scope>
+		</dependency>
+		
 		<dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
