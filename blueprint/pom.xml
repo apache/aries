@@ -194,11 +194,11 @@
         <module>blueprint-annotation-api</module>
         <module>blueprint-annotation-impl</module>
         <module>blueprint-sample-annotation</module>
-        <module>blueprint-annotation-itest</module>
         <module>blueprint-testbundlea</module>
         <module>blueprint-testbundleb</module>
         <module>blueprint-testquiescebundle</module>
         <module>blueprint-itests</module>
+        <module>blueprint-annotation-itest</module>
     </modules>
 
 </project>

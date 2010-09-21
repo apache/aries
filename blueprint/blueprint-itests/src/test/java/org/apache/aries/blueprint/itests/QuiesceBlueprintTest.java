@@ -118,7 +118,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart(),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testquiescebundle"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.cm"),
+        //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.cm"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         
         //new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
@@ -157,65 +157,6 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
         .versionAsInProject();
   }
 
-  protected static Option[] updateOptions(Option[] options) {
-    // We need to add pax-exam-junit here when running with the ibm
-    // jdk to avoid the following exception during the test run:
-    // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
-    if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
-      Option[] ibmOptions = options(wrappedBundle(mavenBundle(
-          "org.ops4j.pax.exam", "pax-exam-junit")));
-      options = combine(ibmOptions, options);
-    }
-
-    return options;
-  }
-
-  protected <T> T getOsgiService(Class<T> type, long timeout) {
-    return getOsgiService(type, null, timeout);
-  }
-
-  protected <T> T getOsgiService(Class<T> type) {
-    return getOsgiService(type, null, DEFAULT_TIMEOUT);
-  }
-  
-  protected <T> T getOsgiService(Class<T> type, String filter, long timeout) {
-    return getOsgiService(null, type, filter, timeout);
-  }
-
-  protected <T> T getOsgiService(BundleContext bc, Class<T> type,
-      String filter, long timeout) {
-    ServiceTracker tracker = null;
-    try {
-      String flt;
-      if (filter != null) {
-        if (filter.startsWith("(")) {
-          flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")"
-              + filter + ")";
-        } else {
-          flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")("
-              + filter + "))";
-        }
-      } else {
-        flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
-      }
-      Filter osgiFilter = FrameworkUtil.createFilter(flt);
-      tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter,
-          null);
-      tracker.open();
-      // Note that the tracker is not closed to keep the reference
-      // This is buggy, has the service reference may change i think
-      Object svc = type.cast(tracker.waitForService(timeout));
-      if (svc == null) {
-        throw new RuntimeException("Gave up waiting for service " + flt);
-      }
-      return type.cast(svc);
-    } catch (InvalidSyntaxException e) {
-      throw new IllegalArgumentException("Invalid filter", e);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-  }
-  
   @Test
   public void testBasicQuieseEmptyCounter() throws Exception 
   {
@@ -366,6 +307,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
 		    
 		    Thread t = new Thread(new TestBeanClient((TestBean)obj, 1500));
 		    t.start();
+		    Thread.sleep(200);
 	        
 			participant.quiesce(callback, bundles);
 			
