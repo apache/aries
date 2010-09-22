@@ -26,5 +26,4 @@ import org.osgi.framework.Bundle;
 public interface ProxyFactory {
 
     Object createProxy(Bundle bundle, List<Class<?>> classes, Callable<Object> dispatcher);
-
 }
