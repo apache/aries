@@ -53,7 +53,7 @@ public interface JNDIProviderAdmin {
 	 *         resolve the JNDI reference.
 	 */
 	public Object getObjectInstance(Object refInfo, Name name, Context context,
-			Map environment) throws Exception;
+			Map<?,?> environment) throws Exception;
 
 	/**
 	 * Resolve the object from the given reference.
@@ -69,5 +69,5 @@ public interface JNDIProviderAdmin {
 	 *         resolve the JNDI reference.
 	 */
 	public Object getObjectInstance(Object refInfo, Name name, Context context,
-			Map environment, Attributes attributes) throws Exception;
+			Map<?,?> environment, Attributes attributes) throws Exception;
 }
