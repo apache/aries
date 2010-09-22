@@ -181,6 +181,12 @@
                 <artifactId>org.apache.aries.application.modeller</artifactId>
                 <version>${project.version}</version>
             </dependency>
+<dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.resolver.noop</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -197,6 +203,7 @@
         <module>application-itest-interface</module>
         <module>application-itests</module>
         <module>application-obr-resolver</module>
+        <module>application-noop-resolver</module>
         <module>application-install</module>
         <module>application-bundle</module>
         <module>application-deployment-management</module>
