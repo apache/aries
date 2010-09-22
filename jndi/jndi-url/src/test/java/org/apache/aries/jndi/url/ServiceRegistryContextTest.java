@@ -24,8 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -40,8 +38,6 @@ import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 
-import org.apache.aries.jndi.ContextHelper;
-import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.unittest.mocks.MethodCall;
@@ -56,7 +52,6 @@ import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.jndi.JNDIConstants;
 
 /**
  * Tests for our JNDI implementation for the service registry.
