@@ -29,7 +29,11 @@
     <name>Apache Aries Application Converters</name>
 
     <properties>
-        <aries.osgi.export.pkg />
+        <aries.osgi.export.pkg>
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.application.converters;
+        </aries.osgi.private.pkg>
     </properties>
 
     <dependencies>
