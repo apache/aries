@@ -39,19 +39,19 @@ public class ProviderAdminService implements JNDIProviderAdmin {
     public Object getObjectInstance(Object obj, 
                                     Name name, 
                                     Context context, 
-                                    Map environment)
+                                    Map<?,?> environment)
         throws Exception {
-        Hashtable env = Utils.toHashtable(environment);
+        Hashtable<?,?> env = Utils.toHashtable(environment);
         return helper.getObjectInstance(obj, name, context, env);
     }
 
     public Object getObjectInstance(Object obj,
                                     Name name,
                                     Context context,
-                                    Map environment,
+                                    Map<?,?> environment,
                                     Attributes attributes) 
         throws Exception {
-        Hashtable env = Utils.toHashtable(environment);
+        Hashtable<?,?> env = Utils.toHashtable(environment);
         return helper.getObjectInstance(obj, name, context, env, attributes);
     }
 

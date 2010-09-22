@@ -19,20 +19,13 @@
 package org.apache.aries.jndi;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
 public class ContextManagerServiceFactory implements ServiceFactory {
 
-    private BundleContext defaultContext;
-    
-    public ContextManagerServiceFactory(BundleContext defaultContext) {
-        this.defaultContext = defaultContext;
-    }
-    
     public Object getService(Bundle bundle, ServiceRegistration registration) {
-        return new ContextManagerService(defaultContext, bundle.getBundleContext());
+        return new ContextManagerService(bundle.getBundleContext());
     }
 
     public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
