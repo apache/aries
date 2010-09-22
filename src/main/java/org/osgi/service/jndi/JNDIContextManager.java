@@ -52,7 +52,7 @@ public interface JNDIContextManager {
 	 * @throws NamingException upon any error that occurs during context
 	 *         creation
 	 */
-	public Context newInitialContext(Map environment) throws NamingException;
+	public Context newInitialContext(Map<?,?> environment) throws NamingException;
 
 	/**
 	 * Creates a new initial DirContext with the default JNDI environment
@@ -73,6 +73,6 @@ public interface JNDIContextManager {
 	 * @throws NamingException upon any error that occurs during context
 	 *         creation
 	 */
-	public DirContext newInitialDirContext(Map environment)
+	public DirContext newInitialDirContext(Map<?,?> environment)
 			throws NamingException;
 }
