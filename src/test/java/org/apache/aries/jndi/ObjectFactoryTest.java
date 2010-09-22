@@ -21,7 +21,6 @@ package org.apache.aries.jndi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-import java.lang.reflect.Field;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -32,23 +31,22 @@ import javax.naming.StringRefAddr;
 import javax.naming.spi.NamingManager;
 import javax.naming.spi.ObjectFactory;
 
+import org.apache.aries.jndi.startup.Activator;
+import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
+import org.apache.aries.mocks.BundleContextMock;
+import org.apache.aries.unittest.mocks.MethodCall;
+import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.jndi.JNDIConstants;
 
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
-import org.apache.aries.jndi.ContextHelper;
-import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
-import org.apache.aries.jndi.startup.Activator;
-import org.apache.aries.mocks.BundleContextMock;
-
 public class ObjectFactoryTest
 {
+  private Activator activator;
   private BundleContext bc;
-  private Hashtable env;
+  private Hashtable<Object,Object> env;
 
   /**
    * This method does the setup .
@@ -61,9 +59,10 @@ public class ObjectFactoryTest
   public void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
   {
     bc =  Skeleton.newMock(new BundleContextMock(), BundleContext.class);
-    new Activator().start(bc);
+    activator = new Activator();
+    activator.start(bc);
         
-    env = new Hashtable();
+    env = new Hashtable<Object, Object>();
     env.put(JNDIConstants.BUNDLE_CONTEXT, bc);
   }
 
@@ -73,7 +72,7 @@ public class ObjectFactoryTest
   @After
   public void teardown()
   {
-    new Activator().stop(bc);
+    activator.stop(bc);
     BundleContextMock.clear();
   }
 
@@ -98,6 +97,22 @@ public class ObjectFactoryTest
     props.setProperty("osgi.jndi.urlScheme", "wibble");
 
     bc.registerService(ObjectFactory.class.getName(), factory, props);
+
+    Reference ref = new Reference(null);
+    ref.add(new StringRefAddr("URL", "wibble"));
+    Object obj = NamingManager.getObjectInstance(ref, null, null, env);
+    
+    assertEquals("The naming manager should have returned the test object", testObject, obj);
+  }
+
+  @Test
+  public void testURLReferenceUsingURLObjectFactoryFinder() throws Exception
+  {
+    String testObject = "Test object";
+    URLObjectFactoryFinder factory = Skeleton.newMock(URLObjectFactoryFinder.class);
+    Skeleton.getSkeleton(factory).setReturnValue(new MethodCall(ObjectFactory.class, "getObjectInstance", Object.class, Name.class, Context.class, Hashtable.class), testObject);
+
+    bc.registerService(URLObjectFactoryFinder.class.getName(), factory, new Properties());
 
     Reference ref = new Reference(null);
     ref.add(new StringRefAddr("URL", "wibble"));
