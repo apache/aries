@@ -29,46 +29,28 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>org.eclipse.equinox</groupId>
-			<artifactId>cm</artifactId>
-		</dependency>
-
+    <!--not sure about this one -->
         <dependency>
 	       <groupId>org.apache.felix</groupId>
 	       <artifactId>javax.servlet</artifactId>
 	       <version>1.0.0</version>
 	    </dependency>
 
+		<!-- Base (JDBC) platform dependencies -->
+
 		<dependency>
-            <groupId>org.apache.aries.application</groupId>
-		    <artifactId>org.apache.aries.application</artifactId>
-			<version>0.3-incubating-SNAPSHOT</version>
+			<groupId>org.eclipse</groupId>
+			<artifactId>osgi</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint</artifactId>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>cm</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.aries</groupId>
-			<artifactId>org.apache.aries.util</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.aries.application</groupId>
-			<artifactId>org.apache.aries.application.api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.aries.application</groupId>
-			<artifactId>org.apache.aries.application.install</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.fileinstall</artifactId>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>services</artifactId>
 		</dependency>
 
 		<dependency>
@@ -85,6 +67,10 @@
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-extender-war</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.ops4j.pax.web</groupId>
+			<artifactId>pax-web-jetty-bundle</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
@@ -92,19 +78,69 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.ops4j.pax.web</groupId>
-			<artifactId>pax-web-jetty-bundle</artifactId>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.eclipse.osgi</groupId>
-			<artifactId>services</artifactId>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.fileinstall</artifactId>
+		</dependency>
+
+
+		<!-- Base (JDBC) Aries dependencies -->
+
+		<dependency>
+			<groupId>org.apache.aries.blueprint</groupId>
+			<artifactId>org.apache.aries.blueprint</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.eclipse</groupId>
-			<artifactId>osgi</artifactId>
+			<groupId>org.apache.aries</groupId>
+			<artifactId>org.apache.aries.util</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.jndi</groupId>
+			<artifactId>org.apache.aries.jndi</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.install</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.management</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.runtime</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.utils</artifactId>
+		</dependency>
+        <dependency>
+             <groupId>org.apache.aries.application</groupId>
+             <artifactId>org.apache.aries.application.modeller</artifactId>
+        </dependency>
+        <dependency>
+             <groupId>org.apache.aries.application</groupId>
+              <artifactId>org.apache.aries.application.deployment.management</artifactId>
+        </dependency>
+		<dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.resolver.noop</artifactId>
+        </dependency>
 
         <dependency>
 			<groupId>org.apache.aries.samples.goat</groupId>
