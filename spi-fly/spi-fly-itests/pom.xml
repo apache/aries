@@ -198,8 +198,44 @@
                         </goals>
                         <configuration>
                             <tasks>
+                                <!-- Add Ant tasks from the ant-contrib jar -->
+                                <taskdef
+                                    resource="net/sf/antcontrib/antcontrib.properties" />
+
                                 <property name="output.path"
                                     location="${project.build.directory}/weaver" />
+
+                                <!-- Load contents of the settings.xml file -->
+                                <xmlproperty
+                                    file="${user.home}/.m2/settings.xml"
+                                    prefix="settingsxml" keepRoot="false" />
+                                <if>
+                                    <isset
+                                        property="settingsxml.proxies.proxy.host" />
+                                    <then>
+                                        <echo
+                                            message="Proxy settings found. Using ${settingsxml.proxies.proxy.host}:${settingsxml.proxies.proxy.port}" />
+
+                                        <!--
+                                            Please note: this is a workaround that will not
+                                            properly handle a situation when settings.xml contains
+                                            definitions of multiple proxies. Properties defined
+                                            in settings.xml should be read by the antrun plugin
+                                            and made available through Ant properties. Such brute
+                                            force workarounds like the one used here should not be
+                                            required.
+                                        -->
+                                        <!-- Proxy auth is not used. -->
+                                        <setproxy
+                                            proxyHost="${settingsxml.proxies.proxy.host}"
+                                            proxyPort="${settingsxml.proxies.proxy.port}"
+                                            nonProxyHosts="${settings.proxies.proxy.nonProxyHosts}" />
+                                    </then>
+                                    <else>
+                                        <echo
+                                            message="Proxy settings not found." />
+                                    </else>
+                                </if>
 
                                 <!-- Download Equinox Aspects feature from Eclipse Incubator. -->
                                 <get src="${equinox.aspects.url}"
@@ -254,6 +290,11 @@
                         <groupId>org.apache.ant</groupId>
                         <artifactId>ant-apache-regexp</artifactId>
                         <version>1.8.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
                     </dependency>
                 </dependencies>
             </plugin>
