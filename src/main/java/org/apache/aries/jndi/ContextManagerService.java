@@ -34,11 +34,9 @@ import org.osgi.service.jndi.JNDIContextManager;
 public class ContextManagerService implements JNDIContextManager {
 
     private Set<Context> contexts = Collections.synchronizedSet(new HashSet<Context>());
-    private BundleContext defaultContext;
     private BundleContext callerContext;
     
-    public ContextManagerService(BundleContext defaultContext, BundleContext callerContext) {
-        this.defaultContext = defaultContext;
+    public ContextManagerService(BundleContext callerContext) {
         this.callerContext = callerContext;
     }
     
@@ -56,23 +54,23 @@ public class ContextManagerService implements JNDIContextManager {
     }
     
     public Context newInitialContext() throws NamingException {
-        return newInitialContext(new Hashtable());
+        return newInitialContext(new Hashtable<Object, Object>());
     }
 
-    public Context newInitialContext(Map environment) throws NamingException {
+    public Context newInitialContext(Map<?,?> environment) throws NamingException {
         return getInitialContext(environment);
     }
 
     public DirContext newInitialDirContext() throws NamingException {
-        return newInitialDirContext(new Hashtable());
+        return newInitialDirContext(new Hashtable<Object, Object>());
     }
 
-    public DirContext newInitialDirContext(Map environment) throws NamingException {
+    public DirContext newInitialDirContext(Map<?,?> environment) throws NamingException {
         return DirContext.class.cast( getInitialContext(environment) );
     }
     
-    private Context getInitialContext(Map environment) throws NamingException {        
-        Hashtable env = Utils.toHashtable(environment);
+    private Context getInitialContext(Map<?,?> environment) throws NamingException {        
+        Hashtable<?,?> env = Utils.toHashtable(environment);
         Context context = ContextHelper.getInitialContext(callerContext, env);
         contexts.add(context);
         return context;

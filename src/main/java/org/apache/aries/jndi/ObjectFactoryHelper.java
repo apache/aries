@@ -36,7 +36,6 @@ import javax.naming.spi.ObjectFactoryBuilder;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.jndi.JNDIConstants;
 
 public class ObjectFactoryHelper implements ObjectFactory {
     
@@ -156,28 +155,17 @@ public class ObjectFactoryHelper implements ObjectFactory {
             RefAddr address = addresses.nextElement();
             if (address instanceof StringRefAddr && "URL".equals(address.getType())) {
                 String urlScheme = getUrlScheme( (String) address.getContent() );
-                ObjectFactory factory = null;
-                ServiceReference ref = null;
-                try {
-                    ServiceReference[] services = callerContext.getServiceReferences(ObjectFactory.class.getName(), 
-                            "(&(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme + "))");
-
-                    if (services != null && services.length > 0) {
-                        ref = services[0];
-                    }
-                } catch (InvalidSyntaxException e) {
-                    // should not happen
-                    throw new RuntimeException("Invalid filter", e);
-                }
-
-                if (ref != null) {
-                    factory = (ObjectFactory) callerContext.getService(ref);
+                
+                ServicePair<ObjectFactory> factoryService = ContextHelper.getURLObjectFactory(callerContext, urlScheme, environment);
+                
+                if (factoryService != null) {
+                    ObjectFactory factory = factoryService.get();
                     
                     String value = (String) address.getContent();
                     try {
                         result = factory.getObjectInstance(value, name, nameCtx, environment);
                     } finally {
-                        callerContext.ungetService(ref);
+                        factoryService.unget();
                     }
                     
                     // if the result comes back and is not null and not the reference
