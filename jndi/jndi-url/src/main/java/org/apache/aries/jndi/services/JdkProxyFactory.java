@@ -22,7 +22,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -35,12 +35,15 @@ public class JdkProxyFactory implements ProxyFactory {
                               final List<Class<?>> classes,
                               final Callable<Object> dispatcher) {
       
-        Iterator<Class<?>> it = classes.iterator();
-        while (it.hasNext()) {
-            if (!!!it.next().isInterface()) it.remove();
+        List<Class<?>> classesToUse = new ArrayList<Class<?>>();
+        
+        for (Class<?> clazz : classes) {
+          if (clazz.isInterface()) classesToUse.add(clazz);
         }
         
-        return Proxy.newProxyInstance(new BundleToClassLoaderAdapter(bundle), classes.toArray(new Class[classes.size()]),
+        if (classesToUse.isEmpty()) throw new IllegalArgumentException("Trying to proxy a service with the classes: " + classes + " but none of them are interfaces.");
+        
+        return Proxy.newProxyInstance(new BundleToClassLoaderAdapter(bundle), classesToUse.toArray(new Class[classesToUse.size()]),
                 new InvocationHandler() {
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         try {
