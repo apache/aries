@@ -91,7 +91,7 @@ public final class Utils {
             
             // get the caller of the constructor
             if (indexOfConstructor >= 0 && (indexOfConstructor + 1) < classStack.length) {
-                Class callerClass = classStack[indexOfConstructor + 1];
+                Class<?> callerClass = classStack[indexOfConstructor + 1];
                 result = getBundleContext(callerClass.getClassLoader());
             }
         }
@@ -127,15 +127,14 @@ public final class Utils {
         });
     }
     
-    public static Hashtable toHashtable(Map map) {
-        Hashtable env;
-        if (map instanceof Hashtable) {
-            env = (Hashtable) map;
+    public static Hashtable<?,?> toHashtable(Map<?,?> map) {
+        Hashtable<?,?> env;
+        if (map instanceof Hashtable<?,?>) {
+            env = (Hashtable<?,?>) map;
+        } else if (map == null) {
+            env = new Hashtable<Object,Object>();
         } else {
-            env = new Hashtable();
-            if (map != null) {
-                env.putAll(map);
-            }
+            env = new Hashtable<Object,Object>(map);
         }
         return env;
     }

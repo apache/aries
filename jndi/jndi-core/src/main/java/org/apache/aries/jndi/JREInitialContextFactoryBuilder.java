@@ -32,7 +32,8 @@ public class JREInitialContextFactoryBuilder implements InitialContextFactoryBui
         String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (contextFactoryClass != null) {
             try {
-                Class clazz = ClassLoader.getSystemClassLoader().loadClass(contextFactoryClass);
+                @SuppressWarnings("unchecked")
+                Class<? extends InitialContextFactory> clazz = (Class<? extends InitialContextFactory>) ClassLoader.getSystemClassLoader().loadClass(contextFactoryClass);
                 return InitialContextFactory.class.cast(clazz.newInstance());
             } catch (Exception e) {
                 return null;

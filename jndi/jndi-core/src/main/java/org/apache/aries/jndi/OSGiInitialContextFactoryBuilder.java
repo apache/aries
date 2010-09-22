@@ -32,12 +32,6 @@ import org.osgi.framework.BundleContext;
 
 public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBuilder, InitialContextFactory {
 
-	private BundleContext _context;
-	
-	public OSGiInitialContextFactoryBuilder(BundleContext context) {	
-		_context = context;
-	}
-	
 	public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) 
 	    throws NamingException {
 	    return this;
