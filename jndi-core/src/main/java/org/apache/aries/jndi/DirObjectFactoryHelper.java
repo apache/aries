@@ -20,16 +20,13 @@ package org.apache.aries.jndi;
 
 import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
-import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
-import javax.naming.StringRefAddr;
 import javax.naming.directory.Attributes;
 import javax.naming.spi.DirObjectFactory;
 import javax.naming.spi.ObjectFactory;
@@ -38,7 +35,6 @@ import javax.naming.spi.ObjectFactoryBuilder;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.jndi.JNDIConstants;
 
 public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirObjectFactory {
 
@@ -79,18 +75,15 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
             if (className != null) {
                 // Step 3
                 result = getObjectInstanceUsingClassName(obj, className, obj, name, nameCtx, environment, attrs);
-            } else {
-                // Step 4
-                result = getObjectInstanceUsingRefAddress(ref.getAll(), obj, name, nameCtx, environment, attrs);
             }
         }
 
-        // Step 5
+        // Step 4
         if (result == null || result == obj) {
             result = getObjectInstanceUsingObjectFactoryBuilders(obj, name, nameCtx, environment, attrs);
         }
         
-        // Step 6
+        // Step 5
         if (result == null || result == obj) {                
             if ((obj instanceof Reference && ((Reference) obj).getFactoryClassName() == null) ||
                 !(obj instanceof Reference)) {
@@ -138,55 +131,6 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
             result = getObjectInstanceUsingObjectFactories(obj, name, nameCtx, environment);
         }
         
-        return (result == null) ? obj : result;
-    }
-
-    private Object getObjectInstanceUsingRefAddress(Enumeration<RefAddr> addresses,
-                                                    Object obj,
-                                                    Name name,
-                                                    Context nameCtx,
-                                                    Hashtable<?, ?> environment,
-                                                    Attributes attrs) 
-        throws Exception {
-        Object result = null;
-        while (addresses.hasMoreElements()) {
-            RefAddr address = addresses.nextElement();
-            if (address instanceof StringRefAddr && "URL".equals(address.getType())) {
-                String urlScheme = getUrlScheme( (String) address.getContent() );
-                DirObjectFactory factory = null;
-                ServiceReference ref = null;
-                try {
-                    ServiceReference[] services = callerContext.getServiceReferences(DirObjectFactory.class.getName(), 
-                            "(&(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme + "))");
-
-                    if (services != null && services.length > 0) {
-                        ref = services[0];
-                    }
-                } catch (InvalidSyntaxException e) {
-                    // should not happen
-                    throw new RuntimeException("Invalid filter", e);
-                }
-
-                if (ref != null) {
-                    factory = (DirObjectFactory) callerContext.getService(ref);
-                    
-                    String value = (String) address.getContent();
-                    try {
-                        result = factory.getObjectInstance(value, name, nameCtx, environment, attrs);
-                    } finally {
-                        callerContext.ungetService(ref);
-                    }
-
-                    // if the result comes back and is not null and not the reference
-                    // object then we should return the result, so break out of the
-                    // loop we are in.
-                    if (result != null && result != obj) {
-                        break;
-                    }
-                }
-            }
-        }
-
         return (result == null) ? obj : result;
     }
 

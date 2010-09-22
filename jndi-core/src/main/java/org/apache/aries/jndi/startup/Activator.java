@@ -19,25 +19,21 @@
 package org.apache.aries.jndi.startup;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.NamingManager;
 import javax.naming.spi.ObjectFactoryBuilder;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.jndi.JNDIContextManager;
-import org.osgi.service.jndi.JNDIProviderAdmin;
-
 import org.apache.aries.jndi.ContextManagerServiceFactory;
 import org.apache.aries.jndi.JREInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
 import org.apache.aries.jndi.ProviderAdminServiceFactory;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.jndi.JNDIContextManager;
+import org.osgi.service.jndi.JNDIProviderAdmin;
 
 /**
  * The activator for this bundle makes sure the static classes in it are
@@ -45,14 +41,13 @@ import org.apache.aries.jndi.ProviderAdminServiceFactory;
  */
 public class Activator implements BundleActivator {
     
-    private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
     private OSGiInitialContextFactoryBuilder icfBuilder;
     private OSGiObjectFactoryBuilder ofBuilder;
     
     public void start(BundleContext context) {
           
         try {
-            OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder(context);
+            OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder();
             NamingManager.setInitialContextFactoryBuilder(builder);
             icfBuilder = builder;
         } catch (NamingException e) {
@@ -71,17 +66,17 @@ public class Activator implements BundleActivator {
             System.err.println("Cannot set the ObjectFactoryBuilder. Another builder is already installed");
         }
         
-        registrations.add(context.registerService(JNDIProviderAdmin.class.getName(), 
-                          new ProviderAdminServiceFactory(context), 
-                          null));
+        context.registerService(JNDIProviderAdmin.class.getName(), 
+                                new ProviderAdminServiceFactory(context), 
+                                null);
 
-        registrations.add(context.registerService(InitialContextFactoryBuilder.class.getName(), 
-                          new JREInitialContextFactoryBuilder(), 
-                          null));
+        context.registerService(InitialContextFactoryBuilder.class.getName(), 
+                                new JREInitialContextFactoryBuilder(), 
+                                null);
 
-        registrations.add(context.registerService(JNDIContextManager.class.getName(), 
-                          new ContextManagerServiceFactory(context),
-                          null));
+        context.registerService(JNDIContextManager.class.getName(), 
+                                new ContextManagerServiceFactory(),
+                                null);
     }
 
     public void stop(BundleContext context) {
@@ -95,11 +90,6 @@ public class Activator implements BundleActivator {
         if (ofBuilder != null) {
             unsetField(ObjectFactoryBuilder.class);
         }
-        
-        for (ServiceRegistration registration : registrations) {
-            registration.unregister();
-        }
-        registrations.clear();
     }
     
     /*
@@ -110,17 +100,13 @@ public class Activator implements BundleActivator {
         try {
             for (Field field : NamingManager.class.getDeclaredFields()) {
                 if (expectedType.equals(field.getType())) {
-                    boolean accessible = field.isAccessible();
                     field.setAccessible(true);
-                    try {
-                        field.set(null, null);
-                    } finally {
-                        field.setAccessible(accessible);
-                    }
+                    field.set(null, null);
                 }
             }
         } catch (Throwable t) {
             // Ignore
+          t.printStackTrace();
         }
     }
 }
