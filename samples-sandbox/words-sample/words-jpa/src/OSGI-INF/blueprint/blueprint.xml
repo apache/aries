@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0">
+
+	<service interface="org.apache.words.WordGetterService">
+		<bean class="org.apache.words.jpa.WordLister" />
+	</service>
+	<service interface="org.apache.words.AssociationRecorderService"
+		ref="recorder" />
+	<bean class="org.apache.words.jpa.Recorder" id="recorder">
+		<jpa:context property="entityManager" unitname="words-jpa" />
+		<tx:transaction method="*" value="Required" />
+	</bean>
+
+</blueprint>

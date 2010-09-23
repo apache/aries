@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><templates><template autoinsert="false" context="xml_attribute" deleted="false" description="" enabled="true" name="jpans">xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0"</template><template autoinsert="true" context="xml_tag" deleted="false" description="lister" enabled="true" name="lister">	&lt;service interface="org.apache.words.WordGetterService"&gt;
+		&lt;bean class="org.apache.words.jpa.WordLister" /&gt;
+	&lt;/service&gt;
+</template><template autoinsert="true" context="xml_tag" deleted="false" description="" enabled="true" name="recorder">	&lt;service interface="org.apache.words.AssociationRecorderService"
+		ref="recorder" /&gt;
+	&lt;bean class="org.apache.words.jpa.Recorder" id="recorder"&gt;
+		&lt;jpa:context property="entityManager" unitname="words-jpa" /&gt;
+		&lt;tx:transaction method="*" value="Required" /&gt;
+	&lt;/bean&gt;
+</template></templates>
