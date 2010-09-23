@@ -138,7 +138,7 @@ public class ImportedServiceImpl implements ImportedService
   @Deprecated
   public ImportedServiceImpl (String ifaceName, Map<String, String> attributes) throws InvalidAttributeException {
     
-    _optional = false;
+    _optional = ("optional".equals(attributes.get("availability:")));
     _iface = ifaceName;
     _isMultiple = false;
     _componentName = null;

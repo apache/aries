@@ -33,4 +33,5 @@
   
   <reference id="fromOutside" interface="foo.bar.MyInjectedService"/>
 
+  <reference id="anotherOptionalReference" interface="foo.bar.MyInjectedService" availability="optional"/>
 </blueprint>
