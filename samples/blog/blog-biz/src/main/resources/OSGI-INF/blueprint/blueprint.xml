@@ -15,7 +15,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<!--  commented out the optional dependency on comment service temporary in order to bypass the felix obr jira FELIX-2601 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
@@ -26,25 +25,23 @@
   <bean id="blogEntryManager" class="org.apache.aries.samples.blog.biz.BlogEntryManagerImpl">
     <property name="persistenceService" ref="persistenceManager"/>
   </bean>
-  <!-- 
+ 
   <bean id="blogCommentManager" class="org.apache.aries.samples.blog.biz.BlogCommentManagerImpl">
     <property name="commentService" ref="commentPersistenceService"/>
   </bean>
-  -->
+  
   
   <bean id="bloggingServiceComponent" class="org.apache.aries.samples.blog.biz.BloggingServiceImpl">
     <property name="blogEntryManager" ref="blogEntryManager"/>
     <property name="blogAuthorManager" ref="blogAuthorManager"/>
-    <!-- property name="blogCommentManager" ref="blogCommentManager"/-->
+    <property name="blogCommentManager" ref="blogCommentManager"/>
   </bean>
   
   <service ref="bloggingServiceComponent" interface="org.apache.aries.samples.blog.api.BloggingService"/>
 
   <reference id="persistenceManager" interface="org.apache.aries.samples.blog.api.persistence.BlogPersistenceService"/>
 
-<!-- 
   <reference id="commentPersistenceService" availability="optional" interface="org.apache.aries.samples.blog.api.comment.persistence.BlogCommentService">
     <reference-listener ref="blogCommentManager" bind-method="blogServiceBound" unbind-method="blogServiceUnbound"/>
   </reference>
- -->
 </blueprint>
