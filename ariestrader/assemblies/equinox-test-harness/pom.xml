@@ -200,7 +200,7 @@
         </dependency>
 <dependency>
             <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.resolver.noop</artifactId>
+            <artifactId>org.apache.aries.application.resolver.obr</artifactId>
            
         </dependency>
 
