@@ -1,0 +1,897 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Demonstrating the Word Association application</title>
+<style type="text/css">
+body
+{
+font-family:"sans-serif";
+}
+.instruction
+{
+font-style: italic;
+
+}
+p.dialogue
+{
+}
+.code
+{
+background-color:#e5e5e5;
+font-family:"Courier", "monospace";
+white-space:pre}
+p.field
+{
+font-family:"Courier", "monospace";
+}
+p.command
+{
+font-family: "Courier", "monospace";
+white-space: pre;
+font-weight: bold;
+}
+.xml
+{
+font-family:"Courier", "monospace";
+color:green;
+white-space:pre;
+}
+h2
+{
+color:white;
+background-color:#003366;
+}
+.template
+{
+color:blue;
+}
+.menu
+{
+font-weight: bold;s
+}
+</style>
+</head>
+<body>
+<h1>Demonstrating the Word Association application</h1>
+<p>
+The Word Association application shows a very simple
+example of a realistic
+application architecture. The intention is that it can be coded up
+from scratch in front of a live audience, rather than that it
+demonstrate best practices or more complex patterns. A reference
+copy of the finished application is included with these instructions.
+</p>
+
+<p>The word association application is so trivial that it may
+seem like a pretty contrived example. After all, no one would actually bother <i>write</i>
+a word association web app, would they? </p>
+
+<p>Apparently, if it can be done, <a href="http://www.wordassociation.org">someone's already done it:</a></p>
+
+<img src="www-wordassocation-org.gif" width="500"/>
+
+<p>Things can go wrong in unexpected ways in live demos, so do have a
+practice run before trying to write the words application
+in front of other people. I've known of people who practice the live
+coding parts of their demos twenty times before a presentation, although
+that might be a bit too much preparation for most of us! The <a href="#troubleshooting">
+troubleshooting tips</a> may help debug common problems. A working copy of the application is provided
+for reference, so you can refer to it if things go slightly wrong, or swap
+in pre-built bundles for broken bundles if things go very wrong.
+</p>
+
+<p>Italicized text is instructions to the person giving the demo. Most
+of the rest of the text of this document is a sample script
+for a demo.</p>
+
+<h2>Pre-demo set-up</h2>
+<h3>Assembly set-up</h3>
+
+This should be done before starting the demo. Build the words-assembly
+project using maven. The target directory provides an assembly into which the words
+jars can be loaded and run.
+
+
+<h3>IDE set-up</h3>
+
+<h4>IBM Rational Tools for OSGi Applications</h4>
+<p>The instructions assume the free version of the IBM Rational Tools for OSGi Applications are being used. The demo will work fine without them, but some of the steps 
+for project creation and project export will be different. Follow these <a href="http://www.ibm.com/developerworks/rational/downloads/10/rationaldevtoolsforosgiapplications.html">instructions for 
+installing the tools</a>. Try to get comfortable
+with using the ctrl-space content assist for almost all your typing
+- it will speed the process of producing the code and xml up considerably.
+</p>
+
+
+<h3>OpenJPA</h3>
+
+<p>
+Download OpenJPA 2 from http://openjpa.apache.org/downloads.html.
+(When I tried the binary download zip wouldn't unpack, so I had to download the source
+distribution and build it.) It's needed for entity enhancement.
+</p>
+
+
+<h3>Database set-up</h3>
+
+<p>This is also best done before starting the demo. The sql for creating the database will be
+found in the target directory of the words-assembly project after it has been built. 
+</p>
+
+<p class="instruction">Run the following commands:
+</p>
+
+<p class="command">cd words-assembly/target
+export CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
+java org.apache.derby.tools.ij createDB.sql
+</p>
+
+<p>The words-assembly includes a datasource bundle already.
+This is a minor sleight-of-hand, but coding up the datasource
+in front of a live audience and ensuring it loads before the
+jpa bundle doesn't add much value pedagogically.
+</p>
+
+<h3>Workspace set-up</h3>
+
+<p>You can make some changes in your workspace beforehand which will make the demo
+faster. What works well is deleting the created projects at the end of a demo
+but keeping the actual workspace so that the templates and builders can be re-used.
+</p>
+
+<p> You'll need to be using the JEE perspective or some
+of the instructions won't make sense,
+so switch to that perspective before the demo. </p>
+
+<h4>Templates</h4>
+
+<p>The application has the minimum necessary amount of code, 
+but it's possibly still more than you'll want to type in front
+of an audience. There are two strategies for avoiding the typing.
+One is to dual-head the laptop and keep a file on the non-projected
+screen from which you can cute and paste. The other is to set up
+some eclipse templates.</p>
+
+<p class="instruction">Navigate to Preferences&rarr;Java&rarr;Editor&rarr;Templates. Select Import, and choose java-templates.xml.
+You should get three new templates, dopost, doget, and webform.
+</p>
+
+<p class="instruction">Navigate to Preferences&rarr;XML&rarr;XMLFiles&rarr;Editor&rarr;Templates. Select Import, and choose xml-templates.xml.
+You should get three new templates, recorder, lister, and jpans.
+</p>
+
+<h4>Target platform</h4>
+
+<p>We need some plugins which don't ship with the Eclipse WTP
+platform by default, and want to ensure we don't introduce 
+dependencies on bundles which aren't in our 
+assembly. We do this by defining a new target platform.</p>
+
+<p class="instruction">Navigate to <span class="menu">Window&rarr;Preferences</span>
+and then navigate to <span class="menu">Plug-in development&rarr;Target platform</span>.
+Select the <span class="menu">Add...</span> button, 
+accept the Initialize with 'nothing' option on the next panel.
+Choose <span class="menu">Add...</span> again on the Target Content
+panel, accept the 'Directory' default in the list, 
+ and browse to the 
+words-assembly/target directory. Choose <span class="menu">Finish</span>.
+The words-assembly should show in the list, with 
+around 36 plugins. (If the list of plugins is empty, 
+build the words-assembly and then choose <span class="menu">Reload</span>.
+Click <span class="menu">OK</span>, and you should now 
+have a list of target platforms which includes your new platform.
+Select it so that it is checked as the default target platform.</p>
+
+<h4>Entity enhancement</h4>
+
+
+<p>
+If you're running in a JEE-5-application server, JPA entities will be automatically enhanced. 
+We're just running in a little OSGi container, so we need to do that ourselves.Normally an ant task would be used to enhance the entities when building, 
+but it can also be done 
+ using
+an eclipse builder. Most of the work to set up the builder can be done
+in advance. 
+
+</p>
+
+<p class="instruction">In your workspace, select External Tools from the 
+toolbar. (It's the play icon with what looks like a little red suitcase on it.) 
+Select External tool configurations ... from the menu,
+highlight Program in the panel on the left of the wizard, and then
+click the new icon from the toolbar within the wizard (it's the 
+white rectangle with the little yellow cross in the corner).</p>
+
+
+<p>Fill in JPA_enhancer for the name. Move to the Location field and fill in the full path to the java executable,
+as follows:</p>
+
+<p class="field">[your_java_home]/jre/bin/java</p>
+
+<p class="instruction">Fill in the following in the Arguments box:</p>
+
+<p class="field">-cp [your_openJPA_home]/openjpa-all-2.0.0.jar:${build_project}/src org.apache.openjpa.enhance.PCEnhancer ${build_files}</p>
+
+
+(Here [your_java_home] should be 
+your Java 6 installation, and [your_openJPA_home]  the root of the OpenJPA download. The other two
+variables will be filled in by eclipse when the enhancer builder run.)
+</p>
+
+<h3>JPA library</h3>
+
+<p>Eclipse needs to be told where to find the JPA implementation. The easiest way to 
+do this is create a new OSGI project. (We'll delete it at the end.)</p>
+
+<p class="instruction">Create a new OSGi bundle project by bringing up a context menu in the package explorer and selecting <strong>New&rarr;Other&rarr;OSGi&rarr;OSGi Bundle Project.</strong>, and choose a JPA facet. 
+Type 'eraseme' for the name, and accept the defaults for everything else. Click next
+and keep clicking next until you get to the panel called JPA facet (about three panels in).
+</p>
+
+<p class="instruction">The platform should be Generic 2.0 and the type should be 
+User Library. Create a library by clicking on the little book icon to the right 
+of the list of libraries. Click <strong>New</strong>, fill in jpa_library for the name, and click <strong>OK</strong>.
+With the new jpa_library library highlighted, click the <strong>Add jars</strong>
+button, and navigate to the geronimo-jpa_2.0_spec-1.0.jar (it will be in your words-assembly). 
+Accept the defaults for the other parameters and finish. Then delete the eraseme project; the
+library will be saved in your workspace for re-use.
+</p>
+
+<h3>Launch configuration</h3>
+
+TODO Making a launch configuration allows the app to be launched within Eclipse.
+More instructions to come! 
+
+   7. We now have bundles we can build against, but this isn't going to help run any tests. Some of the Apache Aries bundles depend on javax.transaction. The problem is javax.transaction exists in the JVM, but only contains a few exceptions from the package which causes bundles wanting to use javax.transaction problems. to fix that we need to configure the target platform. This is fixed by going to the Arguments tab and adding the following as a vm argument:
+
+      -Dorg.osgi.framework.system.packages.extra=javax.transaction;version=1.1.0,javax.transaction.xa;version=1.1.0 -Xbootclasspath/p:${target_home}/geronimo-jta_1.1_spec-1.1.1.jar
+
+The working directory should be ${target_home}. 
+
+      This does two things. The first is it tells the OSGi framework to export the JTA packages at version 1.1, which is the version expected by Apache Aries, and the second thing it does is add the extra classes onto the JVM boot classpath.
+      Note: I added some spaces into the example to ensure it wraps on the blog. The only space that should exist when copied into the dialog is the one before -Xbootclasspath.
+
+ 
+
+TODO this can be saved and imported
+
+<h3>Set-up verification</h3>
+
+<p>
+This demo involves a lot of live coding, so there is a possibility
+of things going wrong. In the event of demo accidents, it may be best
+to swap in the 'official' version of the problem jar. To confirm the
+official versions will work, and verify the assembly is correct, copy
+all the words bundles - <i>except for the datasource jar</i> - into the load directory of the words-assembly
+directory. 
+</p>
+<p class="command">
+cd words-assembly/target 
+mkdir load
+cp ../../words-api/target/*.jar load 
+cp ../../words-web/target/*.jar load 
+cp ../../words-jpa/target/*.jar load
+</p>
+
+<p class="instruction">
+Launch the OSGi container (from words-assembly/target). 
+</p>
+
+<p class="command">
+java -jar osgi-3.5.0.v20090520.jar -clean -console
+</p>
+
+<p>Confirm that <a href=http://localhost:8080/words-web/AssociateWord>http://localhost:8080/words-web/AssociateWord</a> 
+URL works. 
+</p>
+
+<p>Don't forget to remove the official jars before the demo starts - but do 
+keep them somewhere handy for emergencies. A directory called backup in the target
+directory is a good place.</p>
+
+<h3>Finally ... 
+</h3>
+
+<p>The first time you practice the demo, it may take an long time. It may seem like you'll never manage to write a whole web application in a short enough time. However, with a few practice runs you should get pretty quick at it.
+It should be possible to do the whole demo in around half an hour, or less if you
+pre-can some parts of some of the bundles. 
+</p>
+
+<p>
+Do remember to print out a copy of these instructions to take with you during the demo.</p> 
+<h2>The demo</h2>
+
+<h3>Setting the scene</h3>
+
+<p class="dialogue">We're going to write a web application which plays a game of 
+word association with a user. The application has three components - there's a web
+front end, a back end which handles the data and persistence using JPA. We want the 
+front end and back end to be loosely coupled, so there's a third component which is 
+a set of shared APIs.
+</p>
+
+<p class="instruction">It can be helpful to show the following architecture diagram:</p>
+
+<img src="architecture.gif"></img>
+
+<h4>The OSGi console</h4>
+<p class="dialogue">
+Before we do anything else, we're going to launch our OSGi container. 
+</p>
+
+<p class="command">
+java -jar osgi-3.5.0.v20090520.jar -clean -console
+</p>
+
+<p class="dialogue">The command ss lists the currently installed bundles.
+What we're running with here is a minimal set of bundles. We have an OSGi
+container, which is just a few jars, and then we have some Apache Geronimo jars 
+to give us the JEE services we're going to be using like JPA and JTA. Then we have Apache Aries sitting 
+on top of the OSGi container. Aries can also sit on top of a full JEE server, and 
+that's probably a more typical way of using it. </p>
+
+<p>It should be possible to do the whole of the demo without restarting the OSGi console.</p> 
+
+<h4>The IDE</h4>
+
+<p class="dialogue">What we need to do now is create the bundles which make up our application.
+A bundle is a jar which some extra-metadata, and so it's easy to create using your
+favourite IDE. Eclipse has lots of OSGi support, and there's also a set of free tools
+which have extra support for Aries, so I'll be using those, but all of this can easily
+be done in another IDE, with base eclipse, or on the command line for the very hardcore.</p>
+
+
+<p class="dialogue">We start off with a shared API. We want everything to be loosely coupled, so 
+we'll have a bundle with interfaces. 
+</p>
+
+<p class="instruction">Right click, <b>New&rarr;Other&rarr;OSGi&rarr;OSGi Bundle project</b>.
+Fill in the name words.api and click Finish. 
+</p>
+
+<p class="dialogue">We're going to play a game of word assocation,
+so we need a service that gives us a word to associate with. 
+</p>
+
+<p class="instruction">Right click on the newly created project, do <b>New&rarr;Interface</b>, and 
+</p>
+<p style="field">
+Package: org.apache.words
+Name: WordGetterService. 
+</p>
+Add the following method:
+
+<p class="code">        String getRandomWord();
+</p>
+
+<p class="dialogue">We'll also want to do some sort of analysis on what associations people make, so
+ we'll add an association recorder service. 
+</p>
+
+<p class="instruction">
+Right click on the newly created project, do <b>New&rarr;Interface</b>, and
+</p>
+<p style="field">
+Package: org.apache.words
+Name: AssociationRecorderService.
+</p>
+
+<p class="instruction">Add the following method:
+</p>
+<p class="code">        void recordAssociation(String word, String association);
+</p>
+
+<p class="dialogue">It's no use making a note of what associations have been made if we can't access
+ that data, so we'll add one more method:</p>
+
+<p class="code">        String getLastAssociation(String word);
+</p>
+
+<p class="dialogue">The default in OSGi is for classes to be private to a bundle, but this is an API, so we 
+declare that everyone can use these interfaces. </p>
+
+<p class="instruction">Double-click on the manifest, click on the runtime tab, and click Add.
+Select the words package. Select manifest tab to show the change which has been made.</p>
+
+<p class="dialogue">Making that package visible externally is just a question of adding a line in the bundle manifest. </p>
+
+<h4>Export</h4>
+
+<p class="instruction">Finish off by exporting the bundle. Right click on
+the project, choose Export, and then navigate to OSGi&rarr;OSGi Bundle.
+Choose the load directory of your assembly for the export location 
+and click Finish. Go back to the OSGi console and type ss again.
+The new bundle should have appeared in the framework. The GOAT
+tool could also be used to show the bundle appearing.</p>
+
+<h3>The web bundle</h3>
+
+<p class="dialogue">Now that we have our interfaces for our services, 
+we're going to create our web front-end.</p>
+<p class="instruction">Make the project for the web front end. Right click, New&rarr;Other&rarr;OSGi&rarr;OSGi Bundle project.
+Fill in the name words-web
+Select 'OSGi Web Configuration' from the configuration drop-down.
+Click Finish.
+</p>
+
+<p class="instruction">
+Expand the Deployment Descriptor twistie. (If it's not there, make 
+sure you're in the JEE perspective.)
+</p>
+<p class="instruction">Right-click on Servlets to create a new servlet. 
+</p>
+<p class="instruction">Enter the following.
+</p>
+
+<p class="field">
+package name: org.apache.words.web
+<br/>
+class name: AssociateWord
+</p>
+
+<p class="dialogue">It will auto-create the servlet. </p>
+
+<p class="dialogue">There will be compile errors.
+This is the first point at which we're starting to see it's OSGi.
+Normally, we'd have to change the eclipse classpath to add the javax.servlet jar. Well, that's actually the second step. First of all we'd have to work out what
+ jar the HttpServlet class is in. 
+ How many of you have got good at doing 'grep -r' on your system to figure out what jar a class is in? 
+</p>
+
+<p class="dialogue">In this case, we just declare that we're have a dependency on the javax.servlet 
+and javax.servlet.http packages. To do that, we open our manifest and enter it as a dependency. Eclipse will even give us content completion, but we can also enter it by hand on the manifest
+</p>
+<p class="instruction">Expand WebContent&rarr;META-INF&rarr;MANIFEST.MF and double click. 
+Add the package to the top-right box on the dependencies tab. 
+</p>
+
+<p class="dialogue">We're also going to want to use our api, so we'll add that dependency now too.
+</p>
+
+<p class="instruction">Click Add, enter *word* and select the words package.
+Switch tabs to show the change which has been made to the manifest.
+Then navigate back to the AssociateWord class
+</p>
+
+<p class="dialogue">We need to fill in some html boilerplate in the doGet() method
+so that our servlet sends back some html.
+</p>
+
+<p class="instruction">Type 'dog', hit ctrl-space, and select the <span class="template">doget</span> template from
+the content assist. You should now have the following code:</p>
+
+<p class="code">        PrintWriter out = response.getWriter();
+        out.println("&lt;html&gt;");
+        out.println("&lt;/html&gt;");
+</p>
+
+<p class="dialogue">What our servlet will do is prompt the user
+with a random word which it gets from the word getter service. </p>
+
+<p class="instruction">Navigate to between the two lines for the html
+element creation and fill in the html to print out the random word:
+</p>
+
+<p class="code">                WordGetterService getter;
+				String randomWord = getter.getRandomWord();
+				out.println("The word is " + randomWord);
+</p>
+
+<p class="dialogue">
+So do you think this is going to work? I don't think so either - we're using a service,
+but we haven't written any implementation for it. We better put some failsafes in. 
+</p>
+
+<p class="instruction">Add guards around the getter dereference:</p>
+
+<p class="code">            if (getter != null)
+            {
+</p>
+and 
+
+<p class="code">            } else 
+            {
+                out.println("Oh dear. Our dependencies haven't been found.");
+            }
+</p>
+
+<p class="dialogue">
+Now we've given the user a word, and we want them to give us back a word they 
+associate with it. We do this with html input. 
+</p>
+
+<p class="instruction">Move the cursor back to below the first out.println and add the following using the <span class="template">webform</span> content assist template.</p>
+
+<p class="code">
+			out.println("<br/>);
+			out.println("&lt;form action=\"AssociateWord\" method=\"post\"&gt;");
+			out.println("What do you associate with "
+					+ randomWord
+					+ "?	    &lt;input type=\"text\" name=\"association\" /&gt; &lt;br /&gt;    ");
+			out.println("&lt;input type=\"hidden\" name=\"word\" value=\""
+					+ randomWord + "\"/&gt;");
+			out.println("&lt;input type=\"submit\" name=\"Submit\"/&gt;");
+			out.println("&lt;/form&gt;");
+
+</p>
+<p class="dialogue">When the user submits the form, we want to tell them what other things have 
+been associated with that word. 
+</p>
+<p class="instruction">
+Add the following content to the doPost() method using the <span class="template">dopost</span> template:
+</p>
+<p class="code">                String word = request.getParameter("word");
+                String association = request.getParameter("association");
+
+                String previousAssociation = null;
+                if (recorder != null) {
+                        previousAssociation = recorder.getLastAssociation(word);
+                        recorder.recordAssociation(word, association);
+                }
+                PrintWriter out = response.getWriter();
+                out.println("The last person associated " + word + " with "
+                                + previousAssociation);
+</p>
+
+<p class="dialogue">Now we've got a basic web front end. However, 
+we're relying on services and we haven't done anything to 
+get those services. There are three ways we can get our services. One is the normal OSGi way of looking them up in a bundle context. Aries adds the possibility of dependency injection,
+and also a JEE-integration which allows looking them up in JNDI.
+Blueprint dependencies can't be injected into a servlet, because a servlet
+is a JEE kind of artefact and we don't control its lifecycle - this is the same as you get with spring, 
+dependency injection doesn't work with spring.  Instead we'll look them up in JNDI. This is
+the first thing we're doing which is specific to Aries. Normally you
+can have a JEE bundle, or you can have an OSGi bundle, but there's not 
+much integration between the two. Here Aries is providing a compatibility
+layer between the servlet, which is managed by the JEE container, and 
+all the great OSGi services we're going to want to use.</p>
+
+<p class="instruction">
+</p>
+
+<p class="dialogue">This is an OSGi bundle, and InitialContext isn't shipped as an OSGi bundle, 
+so we need to add Import-Package: javax.naming. We could also use @Resource here. 
+</p>
+
+<p class="instruction">Navigate back to the manifest and add a dependency
+on javax.naming. 
+</p>
+
+<p class="instruction">Add the following code to the beginning of the doGet() method
+(after declaring the getter variable). You'll also need to set the getter to be null
+when you declare it. It may be easier to not type the try-catch and add it in by using ctrl-1
+while hovering over the compile-error:
+</p>
+
+<p class="code">		try {
+			getter = (WordGetterService) new InitialContext()
+					.lookup("aries:services/"
+							+ WordGetterService.class.getName());
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
+</p>
+
+<p class="code">AssociationRecorder recorder = null;
+			try {
+			recorder = (AssociationRecorderService) new InitialContext()
+					.lookup("aries:services/"
+							+ AssociationRecorderService.class.getName());
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
+</p>
+
+<p>(It may be worth defining a template for these pieces of code as well - there's
+more argument for typing them out in full since they're conceptually quite
+important.)
+</p>
+
+<p class="instruction">To export the bundle, right click and choose
+Export&rarr;War file. Browse to the assembly load directory and choose
+an archive name. Once the export is complete, typing ss in the OSGi
+console should show the bundle. Navigating to <a href="http://localhost:8080/words-web/AssociateWord">http://localhost:8080/words-web/AssociateWord</a>words
+should bring up a web page that reports missing dependencies.
+
+<h3>The persistence</h3>
+
+<p>The JPA project is the most complex project and you may wish to pre-create
+part of the project - for example, the base project, the manifest, and the persistence.xml
+definitions.</p>
+
+<p class="instruction">Create another OSGi bundle project, and choose a JPA facet. The <strong>Finish</strong>
+button should be enabled.
+</p>
+<p class="instruction">(If the finish button isn't enabled, click through until prompted to choose a library on the JPA facet panel.
+Select the jpa_library library you created earlier. Accept the defaults for the other parameters and finish.) 
+</p>
+
+<p class="dialogue">This new project is going to implement the words
+services, so We need to add a dependency on the words API. 
+</p>
+
+<p class="instruction">Navigate to the manifest, and add the package which comes up if you type *word* into the filter box.
+</p>
+
+<p class="dialogue">Note that *word* doesn't show any code from our web bundle, because we wanted to
+ keep that private. 
+</p>
+
+<h4>Setting up the persistence</h4>
+
+<h5>Entity enhancement</h5>
+
+<p class="dialogue">If you're running in a JEE-5-application server, JPA entities will be automatically enhanced. We're just running in a little OSGi container, so we need to do that ourselves. Normally you'd use an ant task to enhance the entities, but we're running
+in Eclipse, so we'll add an eclipse builder.
+</p>
+
+<p class="instruction">Right-click on the project, select Properties, choose Builders,
+then Import. Choose the JPA launcher you defined earlier. You should see the following message in the console following each build:
+</p>
+<p class="field" style="color: red;">132  words-jpa  INFO   [main] openjpa.Tool - No targets were given.  Running on all classes in your persistent classes list, or all metadata files in classpath directories if you have not listed your persistent classes.  Use -help to display tool usage information.
+</p>
+
+<h5>Package dependencies</h5>
+
+<p class="instruction">You will also need to add some package dependencies. Add depencies on javax.persistence,
+org.apache.openjpa.enhance, and org.apache.openjpa.util.</p>
+
+<p class="code">
+Import-Package: javax.persistence,
+ org.apache.openjpa.enhance,
+ org.apache.openjpa.util,
+ org.apache.words
+ </p>
+
+<h4>Defining the entity</h4>
+
+<p class="instruction">Create a new class called org.apache.words.jpa.Association. Add 'word' and 'associated' fields. 
+Right click and choose <strong>Source&rarr;Generate getters and setters</strong>. Select both word and as
+sociation, and change the insertion point to 'last member'.
+</p>
+<p class="code">        private String word;
+        private String associated;
+</p>
+
+<p class="instruction">Map this to a persistence entity, by adding an @Entity annotation. Use ctrl-shift-o
+to organise imports and import the annotation.</p>
+
+<p class="code">@Entity(name = "ASSOCIATION")
+</p>
+
+<p class="instruction">Add a primary key for the word field:
+</p>
+<p class="code">        @Id
+        private String word;
+</p>
+
+   
+<p class="dialogue">
+Now we get a compilation error, because we have a dependency on org.apache.openjpa.enhance.
+Normally we'd have to work out which jar this came from and add it to the classpath,
+and if we're sharing the project adding the jar to the classpath in a portable
+way is a bit of a nuisance. Instead we can just add the org.apache.openjpa.enhance package
+to our dependencies.
+</p>
+
+<p class="instruction">
+Navigate to the manifest and add an import-package for org.apache.openjpa.enhance.
+</p>
+
+<h4>Setting up the persistence</h4>
+
+<p class="instruction">
+Expand the newly created project, expand JPA content, and
+open persistence.xml. On the general tab, add the Association
+class to the list of managed classes, and make sure 'exclude unlisted classes' is selected.
+Navigate to the Connection tab and fill in the following (as a JTA data source):
+</p>
+<p class="field">aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/wordsdb)
+</p>
+
+<p class="dialogue">
+Here we're again making use of the JNDI integration Aries provides
+to point JPA at the JNDI mapping of a datasource we've defined
+as an OSGi service. 
+</p>
+
+<p class="dialogue">
+We want to declare the services, and we do this by creating an xml
+file with the service definitions in it. 
+</p>
+
+<p class="instruction">Create a blueprint.xml by New&rarr;Other&rarr;OSGi&rarr;blueprint.xml
+or right-clicking on the project and choosing <strong>OSGi&rarr;Create a new blueprint file</strong>
+</p>
+
+<p class="dialogue">
+We now need to fill in some namespaces manually, to indicate that we're
+not just going to be using this blueprint.xml for dependency injection -
+we're going to use to get integration with our transaction and persistence 
+providers so that they get injected too. We do this by adding the following namespace to our blueprint xml.
+</p>
+
+<p class="instruction">Navigate to the <span class="code">blueprint</span> element
+and use ctrl-space to bring up the content assist, and choose the <span class="template">jpans</span>
+template. It should fill in the following:</p>
+
+<p class="xml">xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0"
+</p>
+
+
+<p class="dialogue">The blueprint.xml file is one of the most important
+files in an Aries application. It's where we declare dependency injections,
+container-managed persistence, and container-managed transactions.
+It also allows us to create services declaratively. Normally an OSGi service
+would be registered at runtime, by Java code, but that doesn't 
+have a very enterprise feel to it. What Aries allows us to do is 
+register services declaratively in XML instead.</p>
+
+<p class="instruction">Add a bean and service definition for the 
+association recorder using the <span class="template">recorder</span>
+template. You should end up with the following:</p><p class="xml">	&lt;service interface="org.apache.words.AssociationRecorderService"
+		ref="recorder" /&gt;
+	&lt;bean class="org.apache.words.jpa.Recorder" id="recorder"&gt;
+		&lt;jpa:context property="entityManager" unitname="words-jpa" /&gt;
+		&lt;tx:transaction method="*" value="Required" /&gt;
+	&lt;/bean&gt;
+</p>
+
+<p class="instruction">Avoid the temptation to declare the bean inside
+the service. It saves typing but doesn't work when JPA is involved.</p>
+
+<p class="instruction">The unit name should match the one defined in persistence.xml.
+</p>
+
+
+<h4>Defining the recorder service</h4>
+
+<p class="instruction">Define a new class org.apache.words.jpa.Recorder which
+implements the AssociationRecorderService. Use the new class wizard to fill in
+stubs for the interface methods.
+
+</p>
+
+<p class="instruction">Create a field for the entity manager 
+and right click, choose <strong>Source&rarr;Generate getters and setters</strong>
+and generate a setter (but no getter).</p>
+
+<p class="code">
+    private EntityManager em;
+</p>
+
+<p class="code">
+    public void setEntityManager(EntityManager em) {
+      this.em = em;
+    }
+</p>
+
+<p class="dialogue">
+The cool thing here is that we didn't have to do anything to initialize the 
+JPA entity manager - it gets injected for us. Now we just need to fill in
+the logic to handle persisting our data.
+</p>
+
+<p class="instruction">Fill in the following contents for recordAssociation()
+using the <span class="template">recordAssociation</span> template.
+</p>
+
+<p class="code">		Association found = em.find(Association.class, word);
+		if (found != null) {
+			found.setAssociated(association);
+		} else {
+			Association a = new Association();
+			a.setWord(word);
+			a.setAssociated(association);
+			em.persist(a);
+		}
+</p>
+
+<p class="instruction">and getLastAssociation() using the <span class="template">getLastAssociation</span> template
+</p>
+
+<p class="code">		Association found = em.find(Association.class, word);
+		if (found != null) {
+			return found.getAssociated();
+		} else {
+			return "nothing";
+		}
+</p>
+
+
+
+<h4>The word lister</h4>
+
+<p class="dialogue">Finally, we need to provide a service which returns
+words to make the associations with. We could have this service backed by
+a database, but it would look pretty similar to the recorder service, so
+for testing we'll just use a static list instead.</p>
+
+<p class="instruction">Navigate back to the blueprint.xml and add
+a declaration for the service using the <span class="template"">lister</span>
+template. You should end up with the following:</p>
+
+<p class="xml">
+	&lt;service interface="org.apache.words.WordGetterService"&gt;
+		&lt;bean class="org.apache.words.jpa.WordLister" /&gt;
+	&lt;/service&gt;
+	</p>
+
+<p class="instruction">Create a WordLister class, have it implement WordGetterService in the class
+creation wizard and fill in the following content around the boiler-plate. You can ask
+the audience to supply the three words to keep them awake.</p>
+
+<p class="code">public class WordLister implements WordGetterService {
+	String[] words = { "computers", "Java", "coffee" };
+
+	public WordLister() {
+	}
+
+	@Override
+	public String getRandomWord() {
+		return words[new Random().nextInt(3)];
+	}
+
+</p>
+
+<h4>Exporting and testing</h4>
+
+<p class="instruction">Export the JPA bundle to the load directory. 
+Revisiting the web application URL should bring up a web application
+which handles both prompting for a word association and 
+telling users what previous users came up with. Making the associations
+should provide another opportunity for people in the audience to 
+get involved by calling out word associations.</p>
+
+<h2>Extras</h2>
+
+<p>For a longer demo, consider some of the following.
+</p>
+
+<h3>Application assembly</h3>
+
+<p>If there's time, we can assemble our bundles into an application.
+The free tools provide support for this. Create a new project of type OSGi Enterprise
+Application, provide a name and choose Next, and then add the words bundles
+to it as a contained bundles and export. 
+</p>
+
+<h3>Multiple lister services</h3>
+
+<p>We can add a second bundle with a different lister service and show how we can switch
+between the two bundles using the OSGi console.
+</p>
+
+<h2 id="troubleshooting">Common errors</h2>
+
+<ul>
+<li>Spelling 'association' 'assocation', 'assciaton', or 'associaton' - or numerous other variants!</li>
+<li>Making a dependency on the bundle instead of the package</li>
+<li>Shortening package names. It's temping to use shorter package names while coding live. Doing this is risky
+ because it means the canned bundles can't be swapped in to replace bundles which don't work quite right after being coded in front of an audience.
+ </li>
+ <li>Split packages. If shorter package names are used, a different short package name must be used for each bundle or blueprint will struggle to resolve things.</li>
+<li>Forgetting build-time JPA enhancement. This leads to the following runtime error: ""This configuration disallows runtime optimization, but the following listed types were not enhanced at build time or at class load time with a javaagent".
+To resolve, make sure the OpenJPA plugin is installed in eclipse and add the
+ bytecode enhancer to the JPA project.</li>
+ <li>Anonymous beans for JPA services. Using an anonymous bean to define the Recorder service seems sensible, but it seems that it prevents proper container management of the transactions.</li>
+<li>Non-JTA data sources. Both JTA and non-JTA data sources need to be defined.</li>
+<li>""nonfatal general error: org.apache.openjpa.persistence.PersistenceException: Error extracting class information from "bundleresource://43.fwk1934652240/"." This error is 
+caused by forgetting the following line from the persistence.xml (also available as checkbox on the General tab):		
+<p class="xml">&lt;exclude-unlisted-classes&gt;true&lt;/exclude-unlisted-classes&gt;
+
+</p>
+
+
+<li>Using the OpenJPA entity enhancement Eclipse plugin. The OpenJPA provide a plugin for Eclipse which 
+automatically enhances entities, but it doesn't work very well, probably because it's
+built on OpenJPA 1.2. Add your own builder or use an ant task.</li>
+</ul>
+
+<p>If importing the existing projects into an Eclipse WTP/OSGi Application Tools
+installation, it's necessary to create an OpenJPA user library by navigating to <strong>Window&rarr;Preferences&rarr;Java&rarr;Build Path&rarr;User libraries</strong> and creating a new library called OpenJPA which includes the geronimo-jpa and org.apache.aries.jpa.container jars.
+</p>
+
+</body>
+</html>
