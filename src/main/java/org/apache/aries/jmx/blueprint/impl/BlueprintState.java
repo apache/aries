@@ -21,9 +21,16 @@ package org.apache.aries.jmx.blueprint.impl;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
@@ -35,8 +42,15 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.BlueprintListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class BlueprintState implements BlueprintStateMBean, MBeanRegistration {
+public class BlueprintState extends NotificationBroadcasterSupport implements BlueprintStateMBean, MBeanRegistration {
+
+    // notification type description
+    public static String BLUEPRINT_EVENT = "org.osgi.blueprint.event";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintState.class);
 
     private BundleContext context;
 
@@ -44,21 +58,27 @@ public class BlueprintState implements BlueprintStateMBean, MBeanRegistration {
 
     private Map<Long, CompositeData> dataMap = new HashMap<Long, CompositeData>();
 
+    private ExecutorService eventDispatcher;
+
+    private AtomicInteger notificationSequenceNumber = new AtomicInteger(1);
+
+    private AtomicInteger registrations = new AtomicInteger(0);
+
     public BlueprintState(BundleContext context) {
         this.context = context;
     }
 
     public synchronized long[] getBlueprintBundleIds() throws IOException {
-        Long[] bundleIdKeys = dataMap.keySet().toArray(new Long[0]);
+        Long[] bundleIdKeys = dataMap.keySet().toArray(new Long[dataMap.size()]);
         long[] bundleIds = new long[bundleIdKeys.length];
         for (int i = 0; i < bundleIdKeys.length; i++) {
-            bundleIds[i] = bundleIdKeys[i].longValue();
+            bundleIds[i] = bundleIdKeys[i];
         }
         return bundleIds;
     }
 
     public synchronized CompositeData getLastEvent(long bundleId) throws IOException {
-        return dataMap.get(Long.valueOf(bundleId));
+        return dataMap.get(bundleId);
     }
 
     public synchronized TabularData getLastEvents() throws IOException {
@@ -73,30 +93,87 @@ public class BlueprintState implements BlueprintStateMBean, MBeanRegistration {
     }
 
     public void postRegister(Boolean registrationDone) {
-        BlueprintListener listener = new BlueprintStateListener();
         // reg listener
-        listenerReg = context.registerService(BlueprintListener.class.getName(), listener, null);
+        if (registrationDone && registrations.incrementAndGet() == 1) {
+            BlueprintListener listener = new BlueprintStateListener();
+            eventDispatcher = Executors.newSingleThreadExecutor(new JMXThreadFactory("JMX OSGi Blueprint State Event Dispatcher"));
+            listenerReg = context.registerService(BlueprintListener.class.getName(), listener, null);
+        }
     }
 
     public void preDeregister() throws Exception {
-        // deregister Listener
-        try{
-            listenerReg.unregister();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public void postDeregister() {
         // no op
     }
 
+    public void postDeregister() {
+        if (registrations.decrementAndGet() < 1) {
+            try {
+                listenerReg.unregister();
+            } catch(Exception e) {
+                // ignore
+            }
+            if (eventDispatcher != null) {
+                eventDispatcher.shutdown(); 
+            }
+        }
+    }
+
+    protected synchronized void onEvent(BlueprintEvent event) {
+        CompositeData data = new OSGiBlueprintEvent(event).asCompositeData();
+        dataMap.put(event.getBundle().getBundleId(), data);
+
+        if (!event.isReplay()) {
+            final Notification notification = new Notification(EVENT_TYPE, OBJECTNAME,
+                    notificationSequenceNumber.getAndIncrement());
+            try {
+                notification.setUserData(data);
+                eventDispatcher.submit(new Runnable() {
+                    public void run() {
+                        sendNotification(notification);
+                    }
+                });
+            } catch (RejectedExecutionException re) {
+                LOGGER.warn("Task rejected for JMX Notification dispatch of event ["
+                        + event + "] - Dispatcher may have been shutdown");
+            } catch (Exception e) {
+                LOGGER.warn("Exception occured on JMX Notification dispatch for event [" + event + "]", e);
+            }
+        }
+    }
+
+    /**
+     * @see javax.management.NotificationBroadcasterSupport#getNotificationInfo()
+     */
+    @Override
+    public MBeanNotificationInfo[] getNotificationInfo() {
+        String[] types = new String[] { BLUEPRINT_EVENT };
+        String name = Notification.class.getName();
+        String description = "A BlueprintEvent issued from the Blueprint Extender describing a blueprint bundle lifecycle change";
+        MBeanNotificationInfo info = new MBeanNotificationInfo(types, name, description);
+        return new MBeanNotificationInfo[] { info };
+    }
+
     private class BlueprintStateListener implements BlueprintListener {
-        public synchronized void blueprintEvent(BlueprintEvent event) {
-            CompositeData data = new OSGiBlueprintEvent(event).asCompositeData();
-            dataMap.put(Long.valueOf(event.getBundle().getBundleId()), data);
+        public void blueprintEvent(BlueprintEvent event) {
+            onEvent(event);
         }
 
+    }
+
+    public static class JMXThreadFactory implements ThreadFactory {
+        private final ThreadFactory factory = Executors.defaultThreadFactory();
+        private final String name;
+
+        public JMXThreadFactory(String name) {
+            this.name = name;
+        }
+
+        public Thread newThread(Runnable r) {
+            final Thread t = factory.newThread(r);
+            t.setName(name);
+            t.setDaemon(true);
+            return t;
+        }
     }
 
 }
