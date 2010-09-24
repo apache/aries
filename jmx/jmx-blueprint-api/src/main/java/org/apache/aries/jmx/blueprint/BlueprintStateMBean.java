@@ -29,6 +29,9 @@ import javax.management.openmbean.TabularType;
 
 /**
  * This MBean provides the management interface to the OSGi Blueprint Service.
+ *
+ * This MBean also emits events that clients can use to get notified of the
+ * changes in the blueprint containers state in the framework.
  * 
  * @version $Revision$
  */
@@ -190,8 +193,7 @@ public interface BlueprintStateMBean {
     /**
      * Returns all the last events associated with the blueprint bundles.
      * 
-     * @param bundleId The bundle id of a blueprint bundle
-     * @return the tabular representation of all the last events associated with the blueprint bundles see {@link #OSGI_BLUEPRINT_EVENTS_TYPE} 
+     * @return the tabular representation of all the last events associated with the blueprint bundles see {@link #OSGI_BLUEPRINT_EVENTS_TYPE}
      * @throws IOException if the operation fails
      */ 
     public TabularData getLastEvents() throws IOException;

@@ -43,7 +43,8 @@
             org.apache.aries.jmx.codec;version="${project.version}"
         </aries.osgi.export>
         <aries.osgi.import>
-            !org.apache.aries.jmx*,
+            !org.apache.aries*,
+            !org.osgi.service.framework,
             org.osgi.framework;version="1.5.0",
             org.osgi.service.cm;version="1.3.0";resolution:="optional",
             org.osgi.service.permissionadmin;version="1.2.0";resolution:="optional",
@@ -59,11 +60,15 @@
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
+            org.apache.aries.util*,
             org.apache.aries.jmx*
         </aries.osgi.private.pkg>
         <aries.osgi.import.service>
             javax.management.MBeanServer
         </aries.osgi.import.service>
+        <aries.osgi.failok>
+            true
+        </aries.osgi.failok>
     </properties>
 
     <dependencies>

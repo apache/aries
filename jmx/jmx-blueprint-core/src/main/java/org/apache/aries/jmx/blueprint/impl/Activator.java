@@ -138,7 +138,7 @@ public class Activator implements BundleActivator {
         // create BlueprintStateMBean
         /* the StardardMBean does not implement the MBeanRegistration in jdk1.5 */
         try {
-            blueprintState = new RegistrationStandardMBean(new BlueprintState(bundleContext), BlueprintStateMBean.class);
+            blueprintState = new RegistrableStandardEmitterMBean(new BlueprintState(bundleContext), BlueprintStateMBean.class);
         } catch (NotCompliantMBeanException e) {
             LOGGER.error("Unable to create StandardMBean for BlueprintState", e);
             return;
