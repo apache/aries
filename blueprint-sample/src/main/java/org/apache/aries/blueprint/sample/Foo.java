@@ -102,5 +102,6 @@ public class Foo implements Serializable {
     public Map<String, Object> getProps() {
         return props;
     }
+
 }
 

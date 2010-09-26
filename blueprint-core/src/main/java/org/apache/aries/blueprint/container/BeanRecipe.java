@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
@@ -40,7 +41,6 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
-import org.apache.aries.blueprint.proxy.CgLibInterceptorWrapper;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -676,42 +676,22 @@ public class BeanRecipe extends AbstractRecipe {
                 .getComponentDefinitionRegistry();
         List<Interceptor> interceptors = reg.getInterceptors(interceptorLookupKey);
         if (interceptors != null && interceptors.size() > 0) {
-            boolean asmAvailable = false;
             try {
                 // Try load load an asm class (to make sure it's actually
                 // available)
                 getClass().getClassLoader().loadClass(
                         "org.objectweb.asm.ClassVisitor");
                 LOGGER.debug("asm available for interceptors");
-                asmAvailable = true;
             } catch (Throwable t) {
-                try {
-                    // Try load load a cglib class (to make sure it's actually
-                    // available)
-                    getClass().getClassLoader().loadClass(
-                            "net.sf.cglib.proxy.Enhancer");
-                } catch (Throwable u) {
-                    throw new ComponentDefinitionException(
-                            "Interceptors have been configured but neither asm nor cglib are available",
-                            u);
-                }
+                throw new ComponentDefinitionException(
+                        "Interceptors have been configured but asm is not available",
+                        t);
             }
-            if (asmAvailable) {
-                // if asm is available we can proxy the original object with the
-                // AsmInterceptorWrapper
-                intercepted = AsmInterceptorWrapper.createProxyObject(original
-                        .getClass().getClassLoader(), interceptorLookupKey, interceptors,
-                        original, original.getClass());
-            } else {
-                LOGGER.debug("cglib available for interceptors");
-                // otherwise we're using cglib and need to use the interfaces
-                // with the CgLibInterceptorWrapper
-                intercepted = CgLibInterceptorWrapper.createProxyObject(
-                        original.getClass().getClassLoader(), interceptorLookupKey,
-                        interceptors, original, original.getClass()
-                                .getInterfaces());
-            }
-
+            // if asm is available we can proxy the original object with the
+            // AsmInterceptorWrapper
+            intercepted = AsmInterceptorWrapper.createProxyObject(original
+                    .getClass().getClassLoader(), interceptorLookupKey, interceptors,
+                    AsmInterceptorWrapper.passThrough(original), original.getClass());
         } else {
             intercepted = original;
         }

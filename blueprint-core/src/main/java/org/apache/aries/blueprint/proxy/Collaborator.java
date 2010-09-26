@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.Interceptor;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -44,14 +45,14 @@ class Collaborator implements InvocationHandler, Serializable {
 
     /** The invocation handler to call */
     final InvocationHandler delegate;
-    final Object object;
+    final Callable<?> object;
 
     private transient List<Interceptor> interceptors = null;
     private transient ComponentMetadata cm = null;
     private transient boolean sorted = false;
 
     Collaborator(ComponentMetadata cm, List<Interceptor> interceptors,
-            final Object delegateObj) {
+            final Callable<?> delegateObj) {
         this.cm = cm;
         this.object = delegateObj;
         this.delegate = new InvocationHandler() {
@@ -63,7 +64,7 @@ class Collaborator implements InvocationHandler, Serializable {
                     throws Throwable {
                 Object result;
                 try {
-                    result = method.invoke(object, args);
+                    result = method.invoke(object.call(), args);
                 } catch (InvocationTargetException ite) {
                     // We are invisible, so unwrap and throw the cause as
                     // though we called the method directly.
@@ -117,20 +118,10 @@ class Collaborator implements InvocationHandler, Serializable {
             throws Throwable {
         Object toReturn = null;
         
-        // Added method to unwrap from the collaborator.
-        if (method.getName().equals("unwrapObject")
-                && method.getDeclaringClass() == WrapperedObject.class) {
-            toReturn = object;
-        } else
         // Unwrap calls for equals
         if (method.getName().equals("equals")
                 && method.getDeclaringClass() == Object.class) {
-            // replace the wrapper with the unwrapped object, to
-            // enable object identity etc to function.
-            if (args[0] instanceof WrapperedObject) {
-                // unwrap in the WrapperedObject case
-                args[0] = ((WrapperedObject) args[0]).unwrapObject();
-            } else if (AsmInterceptorWrapper.isProxyClass(args[0].getClass())) {
+            if (AsmInterceptorWrapper.isProxyClass(args[0].getClass())) {
                 // unwrap in the asm case
                 args[0] = AsmInterceptorWrapper.unwrapObject(args[0]);
             }
@@ -282,4 +273,5 @@ class Collaborator implements InvocationHandler, Serializable {
         }
 
     }
+
 }

@@ -40,10 +40,9 @@
         <aries.osgi.import>
             !org.apache.aries.blueprint*,
             !org.osgi.service.blueprint*,
+            !org.objectweb.asm*;version="[3.1,4)";resolution:=optional,
             org.osgi.service.event*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
-            net.sf.cglib*;resolution:=optional,
-            org.objectweb.asm*;version="[3.1,4)";resolution:=optional,
             org.osgi.service.cm;version="[1.2.0,2.0.0)",
             org.apache.aries.blueprint.annotation.service;resolution:=optional,
             org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
@@ -59,6 +58,8 @@
         </aries.osgi.export>
         <aries.osgi.private.pkg>
             org.apache.aries.util.tracker,
+            org.objectweb.asm,
+            org.objectweb.asm.commons,
             OSGI-INF*
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
@@ -88,11 +89,6 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>asm</groupId>

@@ -24,6 +24,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.Interceptor;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -39,7 +40,7 @@ public class AsmInterceptorWrapper
   final static String LOG_EXCEPTION = "Caught exception";
 
   public static Object createProxyObject(ClassLoader cl, ComponentMetadata cm,
-      List<Interceptor> interceptors, Object delegate, Class<?>... classesToProxy)
+      List<Interceptor> interceptors, Callable<Object> delegate, Class<?>... classesToProxy)
   {
 
     LOGGER.debug(LOG_ENTRY, "createProxyObject", new Object[] { cl, cm, interceptors, delegate,
@@ -148,13 +149,13 @@ public class AsmInterceptorWrapper
       throw new ComponentDefinitionException("Unable to proxy bean for interceptors: " + e);
     }
 
-    LOGGER.debug(LOG_EXIT, "createProxyObject", proxyObject);
+//    LOGGER.debug(LOG_EXIT, "createProxyObject", proxyObject);
 
     return proxyObject;
   }
 
   private static Object createSubclassProxy(Class<?> classToProxy, ComponentMetadata cm,
-      List<Interceptor> interceptors, Object delegate) throws UnableToProxyException
+      List<Interceptor> interceptors, Callable<Object> delegate) throws UnableToProxyException
   {
     LOGGER.debug(LOG_ENTRY, "createSubclassProxy", new Object[] { classToProxy, cm, interceptors,
         delegate });
@@ -163,8 +164,8 @@ public class AsmInterceptorWrapper
       Object proxyObject = ProxySubclassGenerator.newProxySubclassInstance(classToProxy,
           new Collaborator(cm, interceptors, delegate));
 
-      LOGGER.debug("Generated subclass proxy object: {}", proxyObject);
-      LOGGER.debug(LOG_EXIT, "createSubclassProxy", proxyObject);
+//      LOGGER.debug("Generated subclass proxy object: {}", proxyObject);
+//      LOGGER.debug(LOG_EXIT, "createSubclassProxy", proxyObject);
       return proxyObject;
     } catch (UnableToProxyException e) {
       LOGGER.debug(LOG_EXCEPTION, e);
@@ -182,7 +183,7 @@ public class AsmInterceptorWrapper
     return isProxyObject;
   }
 
-  static Object unwrapObject(Object o)
+  static Object unwrapObject(Object o) throws Exception
   {
     LOGGER.debug(LOG_ENTRY, "unwrapObject", new Object[] { o });
     InvocationHandler ih = null;
@@ -193,10 +194,23 @@ public class AsmInterceptorWrapper
       ih = Proxy.getInvocationHandler(o);
     }
     if (ih instanceof Collaborator) {
-      unwrappedObject = ((Collaborator) ih).object;
+      unwrappedObject = ((Collaborator) ih).object.call();
     }
-    LOGGER.debug(LOG_EXIT, "unwrapObject", unwrappedObject);
+//    LOGGER.debug(LOG_EXIT, "unwrapObject", unwrappedObject);
     return unwrappedObject;
   }
 
+    public static <T> Callable<T> passThrough(T t) {
+        return new PassThrough<T>(t);
+    }
+
+    public static class PassThrough<T> implements Callable<T> {
+        private final T t;
+        public PassThrough(T t) {
+            this.t = t;
+        }
+        public T call() throws Exception {
+            return t;
+        }
+    }
 }

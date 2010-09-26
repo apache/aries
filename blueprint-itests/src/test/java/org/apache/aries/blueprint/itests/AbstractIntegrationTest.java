@@ -259,7 +259,7 @@ public abstract class AbstractIntegrationTest {
 
         obj = getOsgiService(bc == null ? bundleContext : bc, Foo.class, null, 5000);
         assertNotNull(obj);
-        assertSame(foo, obj);
+        assertEquals(obj, foo);
         
         obj = blueprintContainer.getComponentInstance("accountOne");
         assertNotNull(obj);
