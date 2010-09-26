@@ -22,9 +22,11 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,7 +40,6 @@ import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
-import org.apache.aries.blueprint.proxy.CgLibInterceptorWrapper;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -421,9 +422,7 @@ public class ServiceRecipe extends AbstractRecipe {
             Object original = ServiceRecipe.this.getService(bundle,
                     registration);
             LOGGER.debug(LOG_ENTRY, "getService", original);
-            Object intercepted = null;
-            boolean asmAvailable = false;
-            boolean cglibAvailable = false;
+            Object intercepted;
 
             if (interceptor == null) {
                 interceptor = new QuiesceInterceptor(serviceRecipe);
@@ -438,59 +437,38 @@ public class ServiceRecipe extends AbstractRecipe {
                 getClass().getClassLoader().loadClass(
                         "org.objectweb.asm.ClassVisitor");
                 LOGGER.debug("asm available for interceptors");
-                asmAvailable = true;
             } catch (Throwable t) {
-                try {
-                    // Try load load a cglib class (to make sure it's actually
-                    // available)
-                    getClass().getClassLoader().loadClass(
-                            "net.sf.cglib.proxy.Enhancer");
-                    cglibAvailable = true;
-                } catch (Throwable u) {
-                    LOGGER
-                            .info("A problem occurred trying to create a proxy object. Returning the original object instead.");
-                    LOGGER.debug(LOG_EXIT, "getService", original);
-                    return original;
-                }
+                LOGGER
+                        .info("A problem occurred trying to create a proxy object. Returning the original object instead.");
+                LOGGER.debug(LOG_EXIT, "getService", original);
+                return original;
             }
 
             try {
-                if (asmAvailable) {
-                    List<String> interfaces = sm.getInterfaces();
+                Set<String> interfaces = getClasses();
 
-                    // check for the case where interfaces is null or empty
-                    if (interfaces == null || interfaces.isEmpty()) {
-                        intercepted = AsmInterceptorWrapper.createProxyObject(
-                                original.getClass().getClassLoader(), cm,
-                                interceptors, original, original.getClass());
-                        LOGGER.debug(LOG_EXIT, "getService", intercepted);
-                        return intercepted;
-                    }
-                    Class[] classesToProxy = new Class[interfaces.size()];
-                    for (int i = 0; i < interfaces.size(); i++) {
-                        classesToProxy[i] = Class.forName(interfaces.get(i),
-                                true, original.getClass().getClassLoader());
-                    }
-
-                    // if asm is available we can proxy the original object with
-                    // the
-                    // AsmInterceptorWrapper
+                // check for the case where interfaces is null or empty
+                if (interfaces == null || interfaces.isEmpty()) {
                     intercepted = AsmInterceptorWrapper.createProxyObject(
                             original.getClass().getClassLoader(), cm,
-                            interceptors, original, classesToProxy);
-                } else if (cglibAvailable) {
-                    LOGGER.debug("cglib available for interceptors");
-                    // otherwise we're using cglib and need to use the
-                    // interfaces
-                    // with the CgLibInterceptorWrapper
-                    intercepted = CgLibInterceptorWrapper.createProxyObject(
-                            original.getClass().getClassLoader(), cm,
-                            interceptors, original, original.getClass()
-                                    .getInterfaces());
-                } else {
-                    LOGGER.debug(LOG_EXIT, "getService", original);
-                    return original;
+                            interceptors, AsmInterceptorWrapper.passThrough(original),
+                            original.getClass());
+                    LOGGER.debug(LOG_EXIT, "getService", intercepted);
+                    return intercepted;
                 }
+                Class[] classesToProxy = new Class[interfaces.size()];
+                Iterator<String> it = interfaces.iterator();
+                for (int i = 0; i < interfaces.size(); i++) {
+                    classesToProxy[i] = Class.forName(it.next(),
+                            true, original.getClass().getClassLoader());
+                }
+
+                // if asm is available we can proxy the original object with
+                // the AsmInterceptorWrapper
+                intercepted = AsmInterceptorWrapper.createProxyObject(
+                        original.getClass().getClassLoader(), cm,
+                        interceptors, AsmInterceptorWrapper.passThrough(original),
+                        classesToProxy);
             } catch (Throwable u) {
                 LOGGER
                         .info("A problem occurred trying to create a proxy object. Returning the original object instead.");

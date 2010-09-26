@@ -122,11 +122,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
             <scope>test</scope>
