@@ -319,11 +319,11 @@ public class ProxySubclassGeneratorTest
   public void testObjectEquality() throws Exception
   {
     Object delegate = TEST_CLASS.newInstance();
-    InvocationHandler collaborator = new Collaborator(null, null, delegate);
+    InvocationHandler collaborator = new Collaborator(null, null, AsmInterceptorWrapper.passThrough(delegate));
     Object o = ProxySubclassGenerator.newProxySubclassInstance(TEST_CLASS, collaborator);
     //Calling equals on the proxy with an arg of the unwrapped object should be true
     assertTrue("The proxy object should be equal to its delegate",o.equals(delegate));
-    InvocationHandler collaborator2 = new Collaborator(null, null, delegate);
+    InvocationHandler collaborator2 = new Collaborator(null, null, AsmInterceptorWrapper.passThrough(delegate));
     Object o2 = ProxySubclassGenerator.newProxySubclassInstance(TEST_CLASS, collaborator2);
     //The proxy of a delegate should equal another proxy of the same delegate
     assertTrue("The proxy object should be equal to another proxy instance of the same delegate", o2.equals(o));
@@ -341,7 +341,7 @@ public class ProxySubclassGeneratorTest
   @Test
   public void testFinalizeNotCalled() throws Exception {
       ProxyTestOverridesFinalize testObj = new ProxyTestOverridesFinalize();
-      InvocationHandler ih = new Collaborator(null, null, testObj);
+      InvocationHandler ih = new Collaborator(null, null, AsmInterceptorWrapper.passThrough(testObj));
       Object o = ProxySubclassGenerator.newProxySubclassInstance(ProxyTestOverridesFinalize.class, ih);
       
       Method m = o.getClass().getDeclaredMethod("finalize");
