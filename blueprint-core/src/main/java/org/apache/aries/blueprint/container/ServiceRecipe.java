@@ -143,6 +143,10 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     public void register() {
+        int state = blueprintContainer.getBundleContext().getBundle().getState();
+        if (state != Bundle.ACTIVE && state != Bundle.STARTING) {
+            return;
+        }
         if (registered.compareAndSet(false, true)) {
             createExplicitDependencies();
             
