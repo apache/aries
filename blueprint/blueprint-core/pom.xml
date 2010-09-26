@@ -85,11 +85,6 @@
           <scope>provided</scope>
       </dependency>
       <dependency>
-          <groupId>org.apache.servicemix.bundles</groupId>
-          <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
-          <optional>true</optional>
-      </dependency>
-      <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
       </dependency>

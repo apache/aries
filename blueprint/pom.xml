@@ -106,13 +106,6 @@
                 <artifactId>org.apache.aries.util</artifactId>
                 <version>0.3-incubating-SNAPSHOT</version> 
             </dependency>
-            <!-- Use an OSGi enabled cglib version, so that BND can find the version information
-                 and we can use it in integration tests -->
-            <dependency>
-                <groupId>org.apache.servicemix.bundles</groupId>
-                <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
-                <version>2.1_3_4</version>
-            </dependency>
             <!-- TODO: We need felix 2.0.0 which is not supported by pax exam yet,
                  so tests are only enabled on equinox for now
             <dependency>

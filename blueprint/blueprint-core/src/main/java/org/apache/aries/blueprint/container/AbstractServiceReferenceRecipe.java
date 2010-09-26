@@ -37,9 +37,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.sf.cglib.proxy.Dispatcher;
-import net.sf.cglib.proxy.Enhancer;
-
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
@@ -47,6 +44,7 @@ import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.Recipe;
+import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
 import org.apache.aries.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -327,10 +325,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 }
             }
             try {
-                // Try load load a cglib class (to make sure it's actually available
-                // then create the cglib factory
-                getClass().getClassLoader().loadClass("net.sf.cglib.proxy.Enhancer");
-                proxyFactory = new CgLibProxyFactory();
+                // Try load load a asm class (to make sure it's actually available
+                // then create the asm factory
+                getClass().getClassLoader().loadClass("org.objectweb.asm.ClassVisitor");
+                proxyFactory = new AsmProxyFactory();
             } catch (Throwable t) {
                 if (proxyClass) {
                     throw new ComponentDefinitionException("Class proxying has been enabled but cglib can not be used", t);
@@ -639,38 +637,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     }
 
-    public static class CgLibProxyFactory implements ProxyFactory {
+    public static class AsmProxyFactory implements ProxyFactory {
 
         public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
-            Enhancer e = new Enhancer();
-            e.setClassLoader(classLoader);
-            e.setSuperclass(getTargetClass(classes));
-            e.setInterfaces(getInterfaces(classes));
-            e.setInterceptDuringConstruction(false);
-            e.setCallback(new Dispatcher() {
-                public Object loadObject() throws Exception {
-                    return dispatcher.call();
-                }
-            });
-            e.setUseFactory(false);
-            return e.create();
-        }
-
-        protected Class<?> getTargetClass(Class<?>[] interfaceNames) {
-            // Only allow class proxying if specifically asked to
-            Class<?> root = Object.class;
-            for (Class<?> clazz : interfaceNames) {
-                if (!clazz.isInterface()) {
-                    if (root.isAssignableFrom(clazz)) {
-                        root = clazz;
-                    } else if (clazz.isAssignableFrom(root)) {
-                        //nothing to do, root is correct
-                    } else {
-                        throw new ComponentDefinitionException("Classes " + root.getClass().getName() + " and " + clazz.getName() + " are not in the same hierarchy");
-                    }
-                }
-            }
-            return root;
+            return AsmInterceptorWrapper.createProxyObject(classLoader, null, null, dispatcher, classes);
         }
 
     }
