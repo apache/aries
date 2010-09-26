@@ -110,7 +110,6 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
 
         // Bundles
         mavenBundle("asm","asm-all"),
-        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.cglib"),
         
         mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
