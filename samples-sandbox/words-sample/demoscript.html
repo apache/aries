@@ -98,33 +98,15 @@ jars can be loaded and run.
 <h4>IBM Rational Tools for OSGi Applications</h4>
 <p>The instructions assume the free version of the IBM Rational Tools for OSGi Applications are being used. The demo will work fine without them, but some of the steps 
 for project creation and project export will be different. Follow these <a href="http://www.ibm.com/developerworks/rational/downloads/10/rationaldevtoolsforosgiapplications.html">instructions for 
-installing the tools</a>. Try to get comfortable
+installing the tools</a> (or use Eclipse marketplace). Try to get comfortable
 with using the ctrl-space content assist for almost all your typing
 - it will speed the process of producing the code and xml up considerably.
 </p>
 
-
-<h3>OpenJPA</h3>
-
-<p>
-Download OpenJPA 2 from http://openjpa.apache.org/downloads.html.
-(When I tried the binary download zip wouldn't unpack, so I had to download the source
-distribution and build it.) It's needed for entity enhancement.
-</p>
-
-
 <h3>Database set-up</h3>
 
-<p>This is also best done before starting the demo. The sql for creating the database will be
-found in the target directory of the words-assembly project after it has been built. 
-</p>
-
-<p class="instruction">Run the following commands:
-</p>
-
-<p class="command">cd words-assembly/target
-export CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
-java org.apache.derby.tools.ij createDB.sql
+<p>The database will be automatically created when the words-assembly build is run. 
+It can be found in the target directory of the words-assembly project after it has been built. 
 </p>
 
 <p>The words-assembly includes a datasource bundle already.
@@ -177,7 +159,7 @@ panel, accept the 'Directory' default in the list,
  and browse to the 
 words-assembly/target directory. Choose <span class="menu">Finish</span>.
 The words-assembly should show in the list, with 
-around 36 plugins. (If the list of plugins is empty, 
+around 40 plugins. Make sure all the plugins are selected. (If the list of plugins is empty, 
 build the words-assembly and then choose <span class="menu">Reload</span>.
 Click <span class="menu">OK</span>, and you should now 
 have a list of target platforms which includes your new platform.
@@ -207,11 +189,11 @@ white rectangle with the little yellow cross in the corner).</p>
 <p>Fill in JPA_enhancer for the name. Move to the Location field and fill in the full path to the java executable,
 as follows:</p>
 
-<p class="field">[your_java_home]/jre/bin/java</p>
+<p class="field">${java_home}/jre/bin/java</p>
 
 <p class="instruction">Fill in the following in the Arguments box:</p>
 
-<p class="field">-cp [your_openJPA_home]/openjpa-all-2.0.0.jar:${build_project}/src org.apache.openjpa.enhance.PCEnhancer ${build_files}</p>
+<p class="field">-cp ${target_home}/openjpa-all-2.0.0.jar:${build_project}/src org.apache.openjpa.enhance.PCEnhancer ${build_files}</p>
 
 
 (Here [your_java_home] should be 
@@ -234,35 +216,58 @@ User Library. Create a library by clicking on the little book icon to the right
 of the list of libraries. Click <strong>New</strong>, fill in jpa_library for the name, and click <strong>OK</strong>.
 With the new jpa_library library highlighted, click the <strong>Add jars</strong>
 button, and navigate to the geronimo-jpa_2.0_spec-1.0.jar (it will be in your words-assembly). 
-Accept the defaults for the other parameters and finish. Then delete the eraseme project; the
-library will be saved in your workspace for re-use.
+Accept the defaults for the other parameters and finish. Even after deleting the eraseme project, the
+library will be saved in your workspace for re-use. (Don't delete the eraseme project until you've
+set up the launch configuration.)
 </p>
+
 
 <h3>Launch configuration</h3>
 
-TODO Making a launch configuration allows the app to be launched within Eclipse.
-More instructions to come! 
+<p>The words jars can be run in two ways, either by exporting them and adding them
+to the assembly and launching an OSGi framework from the command line, or 
+by running the projects within Eclipse. Running within eclipse is faster
+and usually looks better for the demo. </p>
 
-   7. We now have bundles we can build against, but this isn't going to help run any tests. Some of the Apache Aries bundles depend on javax.transaction. The problem is javax.transaction exists in the JVM, but only contains a few exceptions from the package which causes bundles wanting to use javax.transaction problems. to fix that we need to configure the target platform. This is fixed by going to the Arguments tab and adding the following as a vm argument:
+<p>Copy the "Words launch configuration.launch" file into the eraseme project and refresh.
+</p>
+<p>
+Navigate to the <b>Run</b> icon (the large green arrow on the toolbar), bring
+up the dropdown menu, and select <b>Run configurations...</b>. The Words 
+launch configuration should be listed in under OSGi Frameworks. Verify that
+all the plugins in the target platform are selected. Navigate to the Arguments
+tab, and confirm that the arguments include:
+</p>
 
+<p class="code"/>
       -Dorg.osgi.framework.system.packages.extra=javax.transaction;version=1.1.0,javax.transaction.xa;version=1.1.0 -Xbootclasspath/p:${target_home}/geronimo-jta_1.1_spec-1.1.1.jar
-
-The working directory should be ${target_home}. 
-
-      This does two things. The first is it tells the OSGi framework to export the JTA packages at version 1.1, which is the version expected by Apache Aries, and the second thing it does is add the extra classes onto the JVM boot classpath.
-      Note: I added some spaces into the example to ensure it wraps on the blog. The only space that should exist when copied into the dialog is the one before -Xbootclasspath.
-
+</p>
+<p>
+This ensures the OSGi framework exported the JTA packages at version 1.1, which is the version expected by Apache Aries, and the second thing it does is add the extra classes onto the JVM boot classpath.</p>
+On the same tab, the working directory should be ${target_home}. </p>
  
+<p>Finally, you need to ensure the launch configuration survives when you 
+delete the eraseme project. To do this, navigate to the Common tab and change
+the radio button from <i>Shared file</i> to <i>Local file</i>.
+</p>
 
-TODO this can be saved and imported
+<p>Delete the eraseme project (including its contents on disk) and make sure that
+the Words launch configuration is still available in the Run configurations menu. 
+</p>
 
 <h3>Set-up verification</h3>
 
 <p>
 This demo involves a lot of live coding, so there is a possibility
 of things going wrong. In the event of demo accidents, it may be best
-to swap in the 'official' version of the problem jar. To confirm the
-official versions will work, and verify the assembly is correct, copy
+to swap in the 'official' version of the problem jar or project. Of course, 
+you'll want to confirm the
+official versions will work before starting. The official versions can 
+be used in two ways, either on the command line, or as eclipse projects
+launched within eclipse. </p>
+
+<h4>Running on the command line (less cool-looking)</h4>
+<p>Copy
 all the words bundles - <i>except for the datasource jar</i> - into the load directory of the words-assembly
 directory. 
 </p>
@@ -290,6 +295,19 @@ URL works.
 keep them somewhere handy for emergencies. A directory called backup in the target
 directory is a good place.</p>
 
+<h4>Running within eclipse (better-looking)</h4>
+
+<p>Within Eclipse, right click to bring up the context menu and chose <b>Import&rarr;Import&rarr;General&rarr;Existing projects into workspace</b>.
+Make sure the <b>Select root directory</b> radio button is selected and browse to the words-sample directory.
+Select all the projects except the the words-datasource project. Make sure that the 
+Copy projects into workspace option is selected and import.
+</p>
+<p>
+<p>You can also import the eclipse projects into your workspace, which will add them
+to the launch configuration.</p>
+
+
+
 <h3>Finally ... 
 </h3>
 
@@ -315,20 +333,9 @@ a set of shared APIs.
 
 <img src="architecture.gif"></img>
 
-<h4>The OSGi console</h4>
-<p class="dialogue">
-Before we do anything else, we're going to launch our OSGi container. 
-</p>
-
-<p class="command">
-java -jar osgi-3.5.0.v20090520.jar -clean -console
-</p>
-
-<p class="dialogue">The command ss lists the currently installed bundles.
-What we're running with here is a minimal set of bundles. We have an OSGi
-container, which is just a few jars, and then we have some Apache Geronimo jars 
-to give us the JEE services we're going to be using like JPA and JTA. Then we have Apache Aries sitting 
-on top of the OSGi container. Aries can also sit on top of a full JEE server, and 
+<p class="dialogue">What we're going to be running the application on is a little
+OSGi 
+container embedded in Eclipse. Aries can also sit on top of a full JEE server, like Geronimo, and 
 that's probably a more typical way of using it. </p>
 
 <p>It should be possible to do the whole of the demo without restarting the OSGi console.</p> 
@@ -346,7 +353,7 @@ be done in another IDE, with base eclipse, or on the command line for the very h
 we'll have a bundle with interfaces. 
 </p>
 
-<p class="instruction">Right click, <b>New&rarr;Other&rarr;OSGi&rarr;OSGi Bundle project</b>.
+<p class="instruction">Right click, <b>New&rarr;Other&rarr;OSGi&rarr;OSGi Bundle project</b> (or type OSG in the box to filter).
 Fill in the name words.api and click Finish. 
 </p>
 
@@ -396,7 +403,7 @@ Select the words package. Select manifest tab to show the change which has been 
 
 <p class="dialogue">Making that package visible externally is just a question of adding a line in the bundle manifest. </p>
 
-<h4>Export</h4>
+<h4>Export (not needed if using the launch configuration)</h4>
 
 <p class="instruction">Finish off by exporting the bundle. Right click on
 the project, choose Export, and then navigate to OSGi&rarr;OSGi Bundle.
@@ -430,7 +437,7 @@ package name: org.apache.words.web
 class name: AssociateWord
 </p>
 
-<p class="dialogue">It will auto-create the servlet. </p>
+<p class="dialogue">Click Finish. It will auto-create the servlet. </p>
 
 <p class="dialogue">There will be compile errors.
 This is the first point at which we're starting to see it's OSGi.
@@ -473,7 +480,7 @@ with a random word which it gets from the word getter service. </p>
 element creation and fill in the html to print out the random word:
 </p>
 
-<p class="code">                WordGetterService getter;
+<p class="code">                WordGetterService getter = null;
 				String randomWord = getter.getRandomWord();
 				out.println("The word is " + randomWord);
 </p>
@@ -501,7 +508,7 @@ Now we've given the user a word, and we want them to give us back a word they
 associate with it. We do this with html input. 
 </p>
 
-<p class="instruction">Move the cursor back to below the first out.println and add the following using the <span class="template">webform</span> content assist template.</p>
+<p class="instruction">Move the cursor back to below the out.println which prints the random word and add the following using the <span class="template">webform</span> content assist template.</p>
 
 <p class="code">
 			out.println("<br/>);
@@ -524,6 +531,7 @@ Add the following content to the doPost() method using the <span class="template
 <p class="code">                String word = request.getParameter("word");
                 String association = request.getParameter("association");
 
+				AssociationRecorder recorder = null;
                 String previousAssociation = null;
                 if (recorder != null) {
                         previousAssociation = recorder.getLastAssociation(word);
@@ -532,6 +540,11 @@ Add the following content to the doPost() method using the <span class="template
                 PrintWriter out = response.getWriter();
                 out.println("The last person associated " + word + " with "
                                 + previousAssociation);
+</p>
+
+<p class="instruction">You can now try it out using the launch configuration. 
+If you navigate to <a href=http://localhost:8080/words-web/AssociateWord>http://localhost:8080/words-web/AssociateWord</a>
+and there should be a message about missing dependencies.
 </p>
 
 <p class="dialogue">Now we've got a basic web front end. However, 
@@ -588,11 +601,10 @@ more argument for typing them out in full since they're conceptually quite
 important.)
 </p>
 
-<p class="instruction">To export the bundle, right click and choose
-Export&rarr;War file. Browse to the assembly load directory and choose
-an archive name. Once the export is complete, typing ss in the OSGi
-console should show the bundle. Navigating to <a href="http://localhost:8080/words-web/AssociateWord">http://localhost:8080/words-web/AssociateWord</a>words
-should bring up a web page that reports missing dependencies.
+<p class="instruction">Launching the launch configuration and navigating to <a href="http://localhost:8080/words-web/AssociateWord">http://localhost:8080/words-web/AssociateWord</a>words
+should bring up a web page that's blank. There will be lots of stack traces
+about the missing dependencies since that's how we chose to handle our missing
+dependencies - perhaps not the best technique!
 
 <h3>The persistence</h3>
 
@@ -600,7 +612,7 @@ should bring up a web page that reports missing dependencies.
 part of the project - for example, the base project, the manifest, and the persistence.xml
 definitions.</p>
 
-<p class="instruction">Create another OSGi bundle project, and choose a JPA facet. The <strong>Finish</strong>
+<p class="instruction">Create another OSGi bundle project, call it words-jpa, and choose a JPA facet. The <strong>Finish</strong>
 button should be enabled.
 </p>
 <p class="instruction">(If the finish button isn't enabled, click through until prompted to choose a library on the JPA facet panel.
@@ -646,26 +658,17 @@ Import-Package: javax.persistence,
 
 <h4>Defining the entity</h4>
 
-<p class="instruction">Create a new class called org.apache.words.jpa.Association. Add 'word' and 'associated' fields. 
-Right click and choose <strong>Source&rarr;Generate getters and setters</strong>. Select both word and as
-sociation, and change the insertion point to 'last member'.
-</p>
-<p class="code">        private String word;
-        private String associated;
-</p>
+<h5>Defining the entities using tooling</h5>
 
-<p class="instruction">Map this to a persistence entity, by adding an @Entity annotation. Use ctrl-shift-o
-to organise imports and import the annotation.</p>
+<p class="instruction">Right-click on the words-jpa project and choose <b>New&rarr;Entity</b>.
+Fill in org.apache.words.jpa for the package and Association for the class name. Choose <b>Next</b> and add 'word' and 'associated' entity fields.
+Use 'String' as the type and 'word' and 'associated' as the names. (Make sure to use associated and not association as the field name!)</p>
 
-<p class="code">@Entity(name = "ASSOCIATION")
-</p>
-
-<p class="instruction">Add a primary key for the word field:
+<p class="instruction">There will be a compile error because there is no primary key, so add a primary key for the word field:
 </p>
 <p class="code">        @Id
         private String word;
 </p>
-
    
 <p class="dialogue">
 Now we get a compilation error, because we have a dependency on org.apache.openjpa.enhance.
@@ -683,8 +686,8 @@ Navigate to the manifest and add an import-package for org.apache.openjpa.enhanc
 
 <p class="instruction">
 Expand the newly created project, expand JPA content, and
-open persistence.xml. On the general tab, add the Association
-class to the list of managed classes, and make sure 'exclude unlisted classes' is selected.
+open persistence.xml. On the general tab, make sure the Association
+class is on the list of managed classes, and make sure 'exclude unlisted classes' is selected.
 Navigate to the Connection tab and fill in the following (as a JTA data source):
 </p>
 <p class="field">aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/wordsdb)
@@ -736,10 +739,8 @@ template. You should end up with the following:</p><p class="xml">	&lt;service i
 		&lt;jpa:context property="entityManager" unitname="words-jpa" /&gt;
 		&lt;tx:transaction method="*" value="Required" /&gt;
 	&lt;/bean&gt;
+	&lt;service&gt;
 </p>
-
-<p class="instruction">Avoid the temptation to declare the bean inside
-the service. It saves typing but doesn't work when JPA is involved.</p>
 
 <p class="instruction">The unit name should match the one defined in persistence.xml.
 </p>
@@ -758,12 +759,12 @@ and right click, choose <strong>Source&rarr;Generate getters and setters</strong
 and generate a setter (but no getter).</p>
 
 <p class="code">
-    private EntityManager em;
+    private EntityManager entityManager;
 </p>
 
 <p class="code">
     public void setEntityManager(EntityManager em) {
-      this.em = em;
+      this.entityManager = em;
     }
 </p>
 
@@ -830,14 +831,14 @@ the audience to supply the three words to keep them awake.</p>
 
 	@Override
 	public String getRandomWord() {
-		return words[new Random().nextInt(3)];
+		return words[new Random().nextInt(words.length)];
 	}
 
 </p>
 
-<h4>Exporting and testing</h4>
+<h4>Testing</h4>
 
-<p class="instruction">Export the JPA bundle to the load directory. 
+<p class="instruction">Launch the launch configuration. 
 Revisiting the web application URL should bring up a web application
 which handles both prompting for a word association and 
 telling users what previous users came up with. Making the associations

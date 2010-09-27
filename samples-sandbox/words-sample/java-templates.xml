@@ -7,6 +7,7 @@ out.println("&lt;/html&gt;");
 <template autoinsert="true" context="java" deleted="false" description="" enabled="true" name="dopost">		String word = request.getParameter("word");
 		String association = request.getParameter("association");
 
+		AssociationRecorder recorder = null;
 		String previousAssociation = null;
 		if (recorder != null) {
 			previousAssociation = recorder.getLastAssociation(word);
@@ -26,19 +27,19 @@ out.println("&lt;/html&gt;");
 		out.println("&lt;input type=\"submit\" name=\"Submit\"/&gt;");
 		out.println("&lt;/form&gt;");
 </template>
-<template autoinsert="false" context="java" deleted="false" description="" enabled="true" name="getLastAssociation">			Association found = em.find(Association.class, word);
+<template autoinsert="false" context="java" deleted="false" description="" enabled="true" name="getLastAssociation">			Association found = entityManager.find(Association.class, word);
 		if (found != null) {
 			return found.getAssociated();
 		} else {
 			return "nothing";
 		}</template>
-<template autoinsert="false" context="java" deleted="false" description="" enabled="true" name="recordAssociation">			Association found = em.find(Association.class, word);
+<template autoinsert="false" context="java" deleted="false" description="" enabled="true" name="recordAssociation">			Association found = entityManager.find(Association.class, word);
 		if (found != null) {
 			found.setAssociated(association);
 		} else {
 			Association a = new Association();
 			a.setWord(word);
 			a.setAssociated(association);
-			em.persist(a);
+			entityManager.persist(a);
 		}</template>
 </templates>
