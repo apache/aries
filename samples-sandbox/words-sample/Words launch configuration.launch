@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><launchConfiguration type="org.eclipse.pde.ui.EquinoxLauncher">
+<booleanAttribute key="append.args" value="true"/>
+<booleanAttribute key="automaticAdd" value="true"/>
+<booleanAttribute key="automaticValidate" value="false"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/Words launch configuration"/>
+<booleanAttribute key="default" value="true"/>
+<booleanAttribute key="default_auto_start" value="true"/>
+<intAttribute key="default_start_level" value="4"/>
+<booleanAttribute key="includeOptional" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.framework.system.packages.extra=javax.transaction;version=1.1.0,javax.transaction.xa;version=1.1.0 -Xbootclasspath/p:${target_home}/geronimo-jta_1.1_spec-1.1.1.jar"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${target_home}"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<stringAttribute key="target_bundles" value="org.apache.geronimo.components.geronimo-transaction@default:default,org.ops4j.pax.web.pax-web-jetty-bundle@default:default,org.eclipse.osgi@-1:true,org.apache.aries.application.management@default:default,org.apache.aries.transaction.manager@default:default,org.apache.aries.jpa.api@default:default,org.ops4j.pax.web.pax-web-jsp@default:default,org.apache.aries.application.utils@default:default,org.apache.servicemix.bundles.serp@default:default,org.objectweb.asm.all@default:default,org.eclipse.equinox.cm@default:default,org.apache.aries.application.modeller@default:default,org.apache.commons.collections@default:default,org.apache.commons.pool@default:default,org.apache.openjpa@default:default,org.apache.aries.application.install@default:default,org.apache.aries.blueprint@default:default,org.apache.commons.lang@default:default,org.apache.aries.transaction.blueprint@default:default,org.apache.aries.util@default:default,org.apache.aries.jpa.container.context@default:default,org.ops4j.pax.web.pax-web-extender-war@default:default,words-datasource@default:default,org.apache.aries.application.resolver.noop@default:default,org.apache.aries.jndi@default:default,org.apache.geronimo.specs.geronimo-jpa_2.0_spec@default:default,org.apache.aries.application.api@default:default,org.ops4j.pax.logging.pax-logging-service@default:default,org.apache.aries.jpa.blueprint.aries@default:default,org.apache.aries.application.deployment.management@default:default,org.apache.aries.jpa.container@default:default,org.apache.felix.fileinstall@default:default,org.apache.geronimo.specs.geronimo-jta_1.1_spec@default:default,derby@default:default,org.eclipse.osgi.services@default:default,org.ops4j.pax.logging.pax-logging-api@default:default,org.apache.geronimo.specs.geronimo-j2ee-connector_1.5_spec@default:default,org.apache.aries.application.runtime@default:default,org.apache.aries.transaction.wrappers@default:default"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useCustomFeatures" value="false"/>
+<booleanAttribute key="useDefaultConfigArea" value="true"/>
+<stringAttribute key="workspace_bundles" value="words-jpa@default:default,words-api@default:default,words-web@default:default"/>
+</launchConfiguration>
