@@ -45,9 +45,17 @@
                 <xsd:attribute name="placeholder-prefix" type="xsd:string" use="optional" default="${"/>
                 <xsd:attribute name="placeholder-suffix" type="xsd:string" use="optional" default="}"/>
                 <xsd:attribute name="defaults-ref" type="bp:Tidref" use="optional"/>
+                <xsd:attribute name="update-strategy" type="TplaceholderUpdateStrategyType" use="optional" default="none"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+    
+    <xsd:simpleType name="TplaceholderUpdateStrategyType">
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="none"/>
+            <xsd:enumeration value="reload"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
 
     <!-- #### is this the correct type here?  This is defining placeholder properties,
