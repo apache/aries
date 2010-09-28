@@ -79,7 +79,8 @@ import org.slf4j.LoggerFactory;
 public class CmNamespaceHandler implements NamespaceHandler {
 
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
-    public static final String BLUEPRINT_CM_NAMESPACE = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0";
+    public static final String BLUEPRINT_CM_NAMESPACE_1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0";
+    public static final String BLUEPRINT_CM_NAMESPACE_1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String MANAGED_PROPERTIES_ELEMENT = "managed-properties";
@@ -138,7 +139,13 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public URL getSchemaLocation(String namespace) {
-        return getClass().getResource("blueprint-cm.xsd");
+        if (BLUEPRINT_CM_NAMESPACE_1_1.equals(namespace)) {
+            return getClass().getResource("blueprint-cm-1.1.0.xsd");
+        } else if (BLUEPRINT_CM_NAMESPACE_1_0.equals(namespace)) {
+            return getClass().getResource("blueprint-cm-1.0.0.xsd");
+        } else {
+            return null;
+        }
     }
 
     public Set<Class> getManagedClasses() {
@@ -226,7 +233,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
+                if (BLUEPRINT_CM_NAMESPACE_1_0.equals(e.getNamespaceURI())
+                        || BLUEPRINT_CM_NAMESPACE_1_1.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
                         if (defaultsRef != null) {
                             throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
@@ -257,7 +265,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
+                if (BLUEPRINT_CM_NAMESPACE_1_0.equals(e.getNamespaceURI())
+                        || BLUEPRINT_CM_NAMESPACE_1_1.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
                         BeanProperty prop = context.parseElement(BeanProperty.class, enclosingComponent, e);
                         props.addEntry(createValue(context, prop.getName(), String.class.getName()), prop.getValue());
@@ -325,7 +334,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
                     } else if (nodeNameEquals(e, Parser.REGISTRATION_LISTENER_ELEMENT)) {
                         listeners.add(parser.parseRegistrationListener(e, factoryMetadata));
                     }
-                } else if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
+                } else if (BLUEPRINT_CM_NAMESPACE_1_0.equals(e.getNamespaceURI())
+                        || BLUEPRINT_CM_NAMESPACE_1_1.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, MANAGED_COMPONENT_ELEMENT)) {
                         MutableBeanMetadata managedComponent = context.parseElement(MutableBeanMetadata.class, null, e);
                         generateIdIfNeeded(context, managedComponent);
