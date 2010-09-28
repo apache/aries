@@ -203,7 +203,21 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             executors.submit(this);
         }
     }
-    
+
+    public void reload() {
+        unregisterServices();
+        untrackServiceReferences();
+        destroyComponents();
+        this.componentDefinitionRegistry.reset();
+        this.repository = null;
+        this.processors = new ArrayList<Processor>();
+        timeout = 5 * 60 * 1000;
+        waitForDependencies = true;
+        xmlValidation = true;
+        state = State.Unknown;
+        schedule();
+    }
+
     public void run() {
         scheduled.set(false);
         synchronized (scheduled) {
@@ -313,7 +327,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         timeoutFuture.cancel(false);
                         registerServices();
                         instantiateEagerComponents();
-
                         // Register the BlueprintContainer in the OSGi registry
                         if (registration == null) {
                             Properties props = new Properties();
@@ -322,9 +335,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             props.put(BlueprintConstants.CONTAINER_VERSION_PROPERTY,
                                       JavaUtils.getBundleVersion(bundleContext.getBundle()));
                             registration = registerService(new String [] { BlueprintContainer.class.getName() }, this, props);
-                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundleContext().getBundle(), getExtenderBundle()));
-                            state = State.Created;
                         }
+                        eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundleContext().getBundle(), getExtenderBundle()));
+                        state = State.Created;
                         break;
                     case Created:
                     case Failed:
