@@ -56,6 +56,12 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
         interceptors = Collections.synchronizedMap(new HashMap<ComponentMetadata, List<Interceptor>>());
     }
 
+    public void reset() {
+        components.clear();
+        typeConverters.clear();
+        interceptors.clear();
+    }
+
     public boolean containsComponentDefinition(String name) {
         return components.containsKey(name);
     }

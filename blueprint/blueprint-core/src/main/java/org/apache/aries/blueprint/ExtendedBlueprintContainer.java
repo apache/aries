@@ -58,5 +58,7 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     Object getService(ServiceReference reference);
     
     AccessControlContext getAccessControlContext();
+
+    void reload();
             
 }
