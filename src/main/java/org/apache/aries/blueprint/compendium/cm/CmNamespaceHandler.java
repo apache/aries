@@ -186,6 +186,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
         metadata.setId(getId(context, element));
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         metadata.setRuntimeClass(CmPropertyPlaceholder.class);
+        metadata.setInitMethod("init");
+        metadata.setDestroyMethod("destroy");
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         metadata.addProperty("configAdmin", createConfigAdminProxy(context));
         metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
@@ -212,6 +214,11 @@ public class CmNamespaceHandler implements NamespaceHandler {
             systemProperties = ExtNamespaceHandler.SYSTEM_PROPERTIES_NEVER;
         }
         metadata.addProperty("systemProperties", createValue(context, systemProperties));
+        String updateStrategy = element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE);
+        if (updateStrategy != null) {
+            metadata.addProperty("updateStrategy", createValue(context, updateStrategy));
+        }
+        metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         // Parse elements
         List<String> locations = new ArrayList<String>();
         NodeList nl = element.getChildNodes();

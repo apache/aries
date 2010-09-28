@@ -19,11 +19,13 @@
 package org.apache.aries.blueprint.compendium.cm;
 
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ext.AbstractPropertyPlaceholder;
 import org.apache.aries.blueprint.ext.PropertyPlaceholder;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.cm.Configuration;
@@ -36,20 +38,22 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
-public class CmPropertyPlaceholder extends PropertyPlaceholder {
+public class CmPropertyPlaceholder extends PropertyPlaceholder implements ManagedObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmPropertyPlaceholder.class);
 
-    private BlueprintContainer blueprintContainer;
+    private ExtendedBlueprintContainer blueprintContainer;
     private ConfigurationAdmin configAdmin; 
     private String persistentId;
-    private transient Configuration config;
+    private String updateStrategy;
+    private ManagedObjectManager managedObjectManager;
+    private Dictionary<String,Object> properties;
 
-    public BlueprintContainer getBlueprintContainer() {
+    public ExtendedBlueprintContainer getBlueprintContainer() {
         return blueprintContainer;
     }
 
-    public void setBlueprintContainer(BlueprintContainer blueprintContainer) {
+    public void setBlueprintContainer(ExtendedBlueprintContainer blueprintContainer) {
         this.blueprintContainer = blueprintContainer;
     }
 
@@ -69,21 +73,50 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder {
         this.persistentId = persistentId;
     }
 
+    public String getUpdateStrategy() {
+        return updateStrategy;
+    }
+
+    public void setUpdateStrategy(String updateStrategy) {
+        this.updateStrategy = updateStrategy;
+    }
+
+    public ManagedObjectManager getManagedObjectManager() {
+        return managedObjectManager;
+    }
+
+    public void setManagedObjectManager(ManagedObjectManager managedObjectManager) {
+        this.managedObjectManager = managedObjectManager;
+    }
+
+    public void init() throws Exception {
+        LOGGER.debug("Initializing CmPropertyPlaceholder");
+        Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
+        if (config != null) {
+            properties = config.getProperties();
+        }
+        Properties props = new Properties();
+        props.put(Constants.SERVICE_PID, persistentId);
+        Bundle bundle = blueprintContainer.getBundleContext().getBundle();
+        props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
+        props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
+        managedObjectManager.register(this, props);
+    }
+
+    public void destroy() {
+        LOGGER.debug("Destroying CmPropertyPlaceholder");
+        managedObjectManager.unregister(this);
+    }
+
     protected String getProperty(String val) {
         LOGGER.debug("Retrieving property value {} from configuration with pid {}", val, persistentId);
-        Configuration config = getConfig();
         Object v = null;
-        if (config != null) {
-            Dictionary props = config.getProperties();
-            if (props != null) {
-                v = props.get(val);
-                if (v != null) {
-                    LOGGER.debug("Found property value {}", v);
-                } else {
-                    LOGGER.debug("Property not found in configuration");
-                }
+        if (properties != null) {
+            v = properties.get(val);
+            if (v != null) {
+                LOGGER.debug("Found property value {}", v);
             } else {
-                LOGGER.debug("No dictionary available from configuration");
+                LOGGER.debug("Property not found in configuration");
             }
         }
         if (v == null) {
@@ -92,15 +125,44 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder {
         return v != null ? v.toString() : null;
     }
 
-    protected synchronized Configuration getConfig() {
-        if (config == null) {
-            try {
-                config = CmUtils.getConfiguration(configAdmin, persistentId);
-            } catch (IOException e) {
-                // ignore
-            }
+    public Bundle getBundle() {
+        return blueprintContainer.getBundleContext().getBundle();
+    }
+
+    public void updated(Dictionary props) {
+        if ("reload".equalsIgnoreCase(updateStrategy) && !equals(properties, props)) {
+            LOGGER.debug("Configuration updated for pid={}", persistentId);
+            // Run in a separate thread to avoid re-entrance
+            new Thread() {
+                public void run() {
+                    blueprintContainer.reload();
+                }
+            }.start();
         }
-        return config;
+    }
+
+    private <T,U> boolean equals(Dictionary<T,U> d1, Dictionary<T,U> d2) {
+        if (d1 == null || d1.isEmpty()) {
+            return d2 == null || d2.isEmpty();
+        } else if (d2 == null || d1.size() != d2.size()) {
+            return false;
+        } else {
+            for (Enumeration<T> e = d1.keys(); e.hasMoreElements();) {
+                T k = e.nextElement();
+                U v1 = d1.get(k);
+                U v2 = d2.get(k);
+                if (v1 == null) {
+                    if (v2 != null) {
+                        return false;
+                    }
+                } else {
+                    if (!v1.equals(v2)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 
 }
