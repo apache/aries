@@ -52,18 +52,15 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Category>sling</Bundle-Category>
-                        <!-- No Export-Package -->
+                        <Bundle-Category>aries</Bundle-Category>
+                        <Bundle-Activator>org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard.Activator</Bundle-Activator>
+                        <Export-Package>!*</Export-Package>
                         <Private-Package>
-                            org.apache.sling.extensions.cachecontrol.impl.*,
+                            org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard
                         </Private-Package>
                     </instructions>
                 </configuration>

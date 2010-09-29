@@ -36,25 +36,19 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(metatype = false)
-public class JmxWhiteboardSupport {
+class JmxWhiteboardSupport {
 
     private static final String PROP_OBJECT_NAME = "jmx.objectname";
 
     /** default log */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Reference(referenceInterface = MBeanServer.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC, bind = "addMBeanServer", unbind = "removeMBeanServer")
     private MBeanServer[] mbeanServers = new MBeanServer[0];
 
-    @Reference(referenceInterface = DynamicMBean.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC, bind = "registerMBean", unbind = "unregisterMBean")
     private final Map<DynamicMBean, Map<MBeanServer, ObjectName>> mbeans = new IdentityHashMap<DynamicMBean, Map<MBeanServer, ObjectName>>();
 
     protected void addMBeanServer(final MBeanServer mbeanServer) {
@@ -86,7 +80,8 @@ public class JmxWhiteboardSupport {
         mbeanServers = serverList.toArray(new MBeanServer[serverList.size()]);
     }
 
-    protected void registerMBean(DynamicMBean mbean, Map<String, Object> props) {
+    protected void registerMBean(DynamicMBean mbean,
+            final ServiceReference props) {
         ObjectName objectName = getObjectName(props);
         if (objectName != null || mbean instanceof MBeanRegistration) {
             Map<MBeanServer, ObjectName> registration = new HashMap<MBeanServer, ObjectName>();
@@ -128,8 +123,8 @@ public class JmxWhiteboardSupport {
         registration.clear();
     }
 
-    private ObjectName getObjectName(final Map<String, Object> props) {
-        Object oName = props.get(PROP_OBJECT_NAME);
+    private ObjectName getObjectName(final ServiceReference props) {
+        Object oName = props.getProperty(PROP_OBJECT_NAME);
         if (oName instanceof ObjectName) {
             return (ObjectName) oName;
         } else if (oName instanceof String) {
