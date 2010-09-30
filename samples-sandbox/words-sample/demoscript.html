@@ -86,6 +86,7 @@ of the rest of the text of this document is a sample script
 for a demo.</p>
 
 <h2>Pre-demo set-up</h2>
+
 <h3>Assembly set-up</h3>
 
 This should be done before starting the demo. Build the words-assembly
@@ -101,6 +102,13 @@ for project creation and project export will be different. Follow these <a href=
 installing the tools</a> (or use Eclipse marketplace). Try to get comfortable
 with using the ctrl-space content assist for almost all your typing
 - it will speed the process of producing the code and xml up considerably.
+</p>
+
+<h4>Setting ${java_home}</h4>
+
+
+<p>You'll need to add a variable called java_home. Go to <b>Window&rarr;Preferences&rarr;Run/debug&rarr;String substitution</b> and add
+a variable called java_home which points to your java home.
 </p>
 
 <h3>Database set-up</h3>
@@ -196,9 +204,7 @@ as follows:</p>
 <p class="field">-cp ${target_home}/openjpa-all-2.0.0.jar:${build_project}/src org.apache.openjpa.enhance.PCEnhancer ${build_files}</p>
 
 
-(Here [your_java_home] should be 
-your Java 6 installation, and [your_openJPA_home]  the root of the OpenJPA download. The other two
-variables will be filled in by eclipse when the enhancer builder run.)
+(The variables will be filled in by eclipse when the enhancer builder run.)
 </p>
 
 <h3>JPA library</h3>
@@ -687,7 +693,7 @@ Navigate to the manifest and add an import-package for org.apache.openjpa.enhanc
 <p class="instruction">
 Expand the newly created project, expand JPA content, and
 open persistence.xml. On the general tab, make sure the Association
-class is on the list of managed classes, and make sure 'exclude unlisted classes' is selected.
+class is on the list of managed classes, and <emph>you must make sure</emph> 'exclude unlisted classes' is selected.
 Navigate to the Connection tab and fill in the following (as a JTA data source):
 </p>
 <p class="field">aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/wordsdb)
@@ -763,8 +769,8 @@ and generate a setter (but no getter).</p>
 </p>
 
 <p class="code">
-    public void setEntityManager(EntityManager em) {
-      this.entityManager = em;
+    public void setEntityManager(EntityManager entityManager) {
+      this.entityManager = entityManager;
     }
 </p>
 
@@ -778,21 +784,21 @@ the logic to handle persisting our data.
 using the <span class="template">recordAssociation</span> template.
 </p>
 
-<p class="code">		Association found = em.find(Association.class, word);
+<p class="code">		Association found = entityManager.find(Association.class, word);
 		if (found != null) {
 			found.setAssociated(association);
 		} else {
 			Association a = new Association();
 			a.setWord(word);
 			a.setAssociated(association);
-			em.persist(a);
+			entityManager.persist(a);
 		}
 </p>
 
 <p class="instruction">and getLastAssociation() using the <span class="template">getLastAssociation</span> template
 </p>
 
-<p class="code">		Association found = em.find(Association.class, word);
+<p class="code">		Association found = entityManager.find(Association.class, word);
 		if (found != null) {
 			return found.getAssociated();
 		} else {
@@ -881,9 +887,16 @@ To resolve, make sure the OpenJPA plugin is installed in eclipse and add the
 <li>""nonfatal general error: org.apache.openjpa.persistence.PersistenceException: Error extracting class information from "bundleresource://43.fwk1934652240/"." This error is 
 caused by forgetting the following line from the persistence.xml (also available as checkbox on the General tab):		
 <p class="xml">&lt;exclude-unlisted-classes&gt;true&lt;/exclude-unlisted-classes&gt;
+<li>Forgetting to explicitly exclude unlisted classes can also cause the following runtime error:
+<p class="code">&lt;openjpa-2.0.0-r422266:935683 nonfatal general error&gt; org.apache.openjpa.persistence.PersistenceException: Error extracting class information from "bundleresource://42.fwk1060257586/".
+	at org.apache.openjpa.kernel.AbstractBrokerFactory.newBroker(AbstractBrokerFactory.java:208)
+	at org.apache.openjpa.kernel.DelegatingBrokerFactory.newBroker(DelegatingBrokerFactory.java:156)
+</p>
+<To resolve, make  the following line is in the persistence.xml (also available as checkbox on the General tab):		
+<p class="xml">&lt;exclude-unlisted-classes&gt;true&lt;/exclude-unlisted-classes&gt;
 
 </p>
-
+</li>
 
 <li>Using the OpenJPA entity enhancement Eclipse plugin. The OpenJPA provide a plugin for Eclipse which 
 automatically enhances entities, but it doesn't work very well, probably because it's
