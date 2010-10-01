@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.BlueprintConstants;
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.ServiceProcessor;
@@ -435,6 +436,14 @@ public class ServiceRecipe extends AbstractRecipe {
             List<Interceptor> interceptors = new ArrayList<Interceptor>();
             interceptors.add(interceptor);
 
+            //check for any registered interceptors for this metadata
+            ComponentDefinitionRegistry reg = blueprintContainer.getComponentDefinitionRegistry();
+            List<Interceptor> registeredInterceptors = reg.getInterceptors(cm);
+            //add the registered interceptors to the list of interceptors
+            if (registeredInterceptors != null && registeredInterceptors.size()>0){
+              interceptors.addAll(registeredInterceptors);
+            }
+            
             try {
                 // Try load load an asm class (to make sure it's actually
                 // available)
