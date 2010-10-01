@@ -357,6 +357,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
    */
   private void addPlatformRepositories (Resolver obrResolver, String appName)
   { 
+    log.debug(LOG_ENTRY, "addPlatformRepositories", new Object[]{obrResolver, appName});
     DataModelHelper helper = repositoryAdmin.getHelper();
     if (platformRepository != null) {
       Collection<URI> uris = platformRepository.getPlatformRepositoryURLs();
@@ -383,6 +384,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
         }
       }
     }
+    log.debug(LOG_EXIT, "addPlatformRepositories");
   }
   
   private Resource createApplicationResource( String appName, Version appVersion,
