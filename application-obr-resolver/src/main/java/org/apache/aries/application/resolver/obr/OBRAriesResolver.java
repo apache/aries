@@ -24,7 +24,9 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +61,7 @@ import org.apache.aries.application.resolver.obr.impl.ModelledBundleResource;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
 import org.apache.aries.application.resolver.obr.impl.RepositoryGeneratorImpl;
 import org.apache.aries.application.resolver.obr.impl.ResourceWrapper;
+import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.felix.bundlerepository.Capability;
@@ -163,20 +166,9 @@ public class OBRAriesResolver implements AriesApplicationResolver
     resolveRepos.add(getLocalRepository(repositoryAdmin));
     // add application repository
     resolveRepos.add(appRepo);
-    // add the user-defined repositories 
-    if (platformRepository != null) {
-      Collection<URI> uris = platformRepository.getPlatformRepositoryURLs();
-      if ((uris != null) && (!uris.isEmpty())) {
-        for (URI uri : uris) {
-          try {
-            resolveRepos.add(helper.readRepository(uri.toString()));
-          } catch (Exception e) {
-            // no a big problem
-            log.error(MessageUtil.getMessage("RESOLVER_UNABLE_TO_READ_REPOSITORY_EXCEPTION", new Object[]{appName, uri}) );
-          }
-        }
-      }
-    }
+    
+
+    
    // Need to refresh the repositories added to repository admin
     
     // add user-defined repositories
@@ -185,6 +177,8 @@ public class OBRAriesResolver implements AriesApplicationResolver
       resolveRepos.add(r);      
     }     
     Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
+    addPlatformRepositories (obrResolver, appName);
+    
     // add a resource describing the requirements of the application metadata.
     obrResolver.add(createApplicationResource( appName, appVersion, importedBundles));
     if (obrResolver.resolve()) {
@@ -240,7 +234,6 @@ public class OBRAriesResolver implements AriesApplicationResolver
     }
     
   }
-    
  
   @Deprecated
   @Override
@@ -285,29 +278,15 @@ public class OBRAriesResolver implements AriesApplicationResolver
     resolveRepos.add(getLocalRepository(repositoryAdmin));
     // add application repository
     resolveRepos.add(appRepo);
-    // add the user-defined repositories 
-    if (platformRepository != null) {
-      Collection<URI> uris = platformRepository.getPlatformRepositoryURLs();
-      //No need to add repository admin as it does not contain bundles.
-      // Just pass to the resolver when doing resolving.
-      if ((uris != null) && (!uris.isEmpty())) {
-        for (URI uri : uris) {
-          try {
-            resolveRepos.add(helper.readRepository(uri.toString()));
-          } catch (Exception e) {
-            // no a big problem
-            log.error(MessageUtil.getMessage("RESOLVER_UNABLE_TO_READ_REPOSITORY_EXCEPTION", new Object[]{appName, uri}) );
-          }
-        }
-      }
-      // add these real repositories to the repository admin as the bundles within can be discovered when calling getBundleInfo();
-    }
+    
     // add user-defined repositories
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository r : repos) {
       resolveRepos.add(r);      
     }    
     Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
+    addPlatformRepositories (obrResolver, appName);
+    
     // add a resource describing the requirements of the application metadata.
     obrResolver.add(createApplicationResource( appName, appVersion, contents));
     if (obrResolver.resolve()) {
@@ -372,6 +351,40 @@ public class OBRAriesResolver implements AriesApplicationResolver
     }
   }
 
+  /* A 'platform repository' describes capabilities of the target runtime environment
+   * These should be added to the resolver without being listed as coming from a particular 
+   * repository or bundle.  
+   */
+  private void addPlatformRepositories (Resolver obrResolver, String appName)
+  { 
+    DataModelHelper helper = repositoryAdmin.getHelper();
+    if (platformRepository != null) {
+      Collection<URI> uris = platformRepository.getPlatformRepositoryURLs();
+      if ((uris != null) && (!uris.isEmpty())) {
+        for (URI uri : uris) {
+          InputStream is = null;
+          try {
+            is = uri.toURL().openStream();
+            Reader repoReader = new InputStreamReader(is);
+            Repository aPlatformRepo = helper.readRepository(repoReader);
+            Resource resources[] = aPlatformRepo.getResources();
+            for (Resource r : resources) { 
+              Capability[] caps = r.getCapabilities();
+              for (Capability c : caps) { 
+                obrResolver.addGlobalCapability(c);
+              }
+            }
+          } catch (Exception e) {
+            // no a big problem
+            log.error(MessageUtil.getMessage("RESOLVER_UNABLE_TO_READ_REPOSITORY_EXCEPTION", new Object[]{appName, uri}) );
+          } finally { 
+            IOUtils.close(is);
+          }
+        }
+      }
+    }
+  }
+  
   private Resource createApplicationResource( String appName, Version appVersion,
       List<Content> appContent)
   {
