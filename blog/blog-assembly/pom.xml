@@ -80,6 +80,11 @@
 			<artifactId>org.apache.felix.fileinstall</artifactId>
 		</dependency>
 
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+        </dependency>
+
 		<!--  Additional (JPA persistence layer) platform dependencies -->
 
 		<dependency>
@@ -170,19 +175,18 @@
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.utils</artifactId>
 		</dependency>
-                <dependency>
-                        <groupId>org.apache.aries.application</groupId>
-                        <artifactId>org.apache.aries.application.modeller</artifactId>
-                </dependency>
-                <dependency>
-                        <groupId>org.apache.aries.application</groupId>
-                        <artifactId>org.apache.aries.application.deployment.management</artifactId>
-                </dependency>
-<dependency>
+        <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.modeller</artifactId>
+        </dependency>
+        <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.deployment.management</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-           
-        </dependency>
+         </dependency>
 
 		<!-- Additional (JPA persistence layer) Aries dependencies -->
 
