@@ -178,6 +178,11 @@
                 <artifactId>org.apache.felix.fileinstall</artifactId>
                 <version>2.0.8</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.bundlerepository</artifactId>
+                <version>1.6.4</version>
+            </dependency>
 
             <!-- other aries subproject dependency management -->
             <dependency>
