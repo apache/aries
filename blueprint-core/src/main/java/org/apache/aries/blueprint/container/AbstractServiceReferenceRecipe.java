@@ -45,6 +45,7 @@ import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
+import org.apache.aries.blueprint.proxy.UnableToProxyException;
 import org.apache.aries.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -640,7 +641,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     public static class AsmProxyFactory implements ProxyFactory {
 
         public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
-            return AsmInterceptorWrapper.createProxyObject(classLoader, null, null, dispatcher, classes);
+            try {
+                return AsmInterceptorWrapper.createProxyObject(classLoader, null, null, dispatcher, classes);
+            } catch (UnableToProxyException e) {
+                throw new ComponentDefinitionException("Unable to create asm proxy", e);
+            }
         }
 
     }
