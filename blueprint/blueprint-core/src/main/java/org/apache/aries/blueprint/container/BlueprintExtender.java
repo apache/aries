@@ -110,7 +110,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
     /**
      * this method checks the initial bundle that are installed/active before
-     * bundle tracker is opened.  
+     * bundle tracker is opened.
+     *
+     * @param b the bundle to check
      */
     private void checkInitialBundle(Bundle b) {
         // If the bundle is active, check it
@@ -335,7 +337,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         if (privateDataVersion != null
                 && privateDataVersion.exists()) {
             try {
-                override = privateDataVersion.toURL();
+                override = privateDataVersion.toURI().toURL();
             } catch (MalformedURLException e) {
                 LOGGER.error("Unexpected URL Conversion Issue", e);
             }
@@ -411,7 +413,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     
     protected BlueprintContainerImpl getBlueprintContainerImpl(Bundle bundle)
     {
-    	return (BlueprintContainerImpl) containers.get(bundle);
+    	return containers.get(bundle);
     }
     
 }
