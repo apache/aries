@@ -40,14 +40,14 @@ public class AsmInterceptorWrapper
   final static String LOG_EXCEPTION = "Caught exception";
 
   public static Object createProxyObject(ClassLoader cl, ComponentMetadata cm,
-      List<Interceptor> interceptors, Callable<Object> delegate, Class<?>... classesToProxy)
+      List<Interceptor> interceptors, Callable<Object> delegate, Class<?>... classesToProxy) throws UnableToProxyException
   {
 
     LOGGER.debug(LOG_ENTRY, "createProxyObject", new Object[] { cl, cm, interceptors, delegate,
         classesToProxy });
 
     Object proxyObject = null;
-    try {
+
       if (classesToProxy.length == 1 && !classesToProxy[0].isInterface()) {
 
         Class<?> classToProxy = classesToProxy[0];
@@ -141,13 +141,6 @@ public class AsmInterceptorWrapper
         }
 
       }
-    } catch (UnableToProxyException e) {
-      // translate UnableToProxyException into
-      // ComponentDefinitionException
-      // if the bean is final, or otherwise unable to be proxied.
-      LOGGER.debug(LOG_EXIT, "createProxyObject", e);
-      throw new ComponentDefinitionException("Unable to proxy bean for interceptors: " + e);
-    }
 
 //    LOGGER.debug(LOG_EXIT, "createProxyObject", proxyObject);
 

@@ -41,6 +41,7 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
+import org.apache.aries.blueprint.proxy.UnableToProxyException;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -689,9 +690,13 @@ public class BeanRecipe extends AbstractRecipe {
             }
             // if asm is available we can proxy the original object with the
             // AsmInterceptorWrapper
-            intercepted = AsmInterceptorWrapper.createProxyObject(original
-                    .getClass().getClassLoader(), interceptorLookupKey, interceptors,
-                    AsmInterceptorWrapper.passThrough(original), original.getClass());
+            try {
+                intercepted = AsmInterceptorWrapper.createProxyObject(original
+                        .getClass().getClassLoader(), interceptorLookupKey, interceptors,
+                        AsmInterceptorWrapper.passThrough(original), original.getClass());
+            } catch (UnableToProxyException e) {
+                throw new ComponentDefinitionException("Unable to create asm proxy", e);
+            }
         } else {
             intercepted = original;
         }
