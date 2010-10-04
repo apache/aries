@@ -17,6 +17,7 @@
 package org.apache.aries.blueprint.container;
 
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -30,17 +31,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.aries.blueprint.BlueprintConstants;
-import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
-import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.blueprint.ServiceProcessor;
+import org.apache.aries.blueprint.*;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
+import org.apache.aries.blueprint.proxy.FinalModifierException;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -54,6 +52,8 @@ import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.lang.reflect.Modifier.isFinal;
 
 /**
  * A <code>Recipe</code> to export services into the OSGi registry.
@@ -412,86 +412,73 @@ public class ServiceRecipe extends AbstractRecipe {
      
     private class TriggerServiceFactory implements ServiceFactory 
     {
-    	private QuiesceInterceptor interceptor;
     	private ServiceRecipe serviceRecipe;
     	private ComponentMetadata cm;
     	private ServiceMetadata sm;
+        private boolean isQuiesceAvailable;
+        private boolean isAsmAvailable;
     	public TriggerServiceFactory(ServiceRecipe serviceRecipe, ServiceMetadata cm)
     	{
     		this.serviceRecipe = serviceRecipe;
     		this.cm = cm;
     		this.sm = cm;
+            this.isQuiesceAvailable = isClassAvailable("org.apache.aries.quiesce.participant.QuiesceParticipant");
+            this.isAsmAvailable = isClassAvailable("org.objectweb.asm.ClassVisitor");
     	}
     	
         public Object getService(Bundle bundle, ServiceRegistration registration) {
-            Object original = ServiceRecipe.this.getService(bundle,
-                    registration);
+            Object original = ServiceRecipe.this.getService(bundle, registration);
             LOGGER.debug(LOG_ENTRY, "getService", original);
-            Object intercepted;
-
-            if (interceptor == null) {
-                interceptor = new QuiesceInterceptor(serviceRecipe);
-            }
 
             List<Interceptor> interceptors = new ArrayList<Interceptor>();
-            interceptors.add(interceptor);
-
-            //check for any registered interceptors for this metadata
             ComponentDefinitionRegistry reg = blueprintContainer.getComponentDefinitionRegistry();
             List<Interceptor> registeredInterceptors = reg.getInterceptors(cm);
-            //add the registered interceptors to the list of interceptors
-            if (registeredInterceptors != null && registeredInterceptors.size()>0){
-              interceptors.addAll(registeredInterceptors);
+            if (registeredInterceptors != null) {
+                interceptors.addAll(registeredInterceptors);
             }
-            
-            try {
-                // Try load load an asm class (to make sure it's actually
-                // available)
-                getClass().getClassLoader().loadClass(
-                        "org.objectweb.asm.ClassVisitor");
-                LOGGER.debug("asm available for interceptors");
-            } catch (Throwable t) {
-                LOGGER
-                        .info("A problem occurred trying to create a proxy object. Returning the original object instead.");
+            // Add quiesce interceptor if needed
+            if (isQuiesceAvailable)
+            {
+                interceptors.add(new QuiesceInterceptor(serviceRecipe));
+            }
+            // Exit if no interceptors configured
+            if (interceptors.isEmpty()) {
+                return original;
+            }
+            // If asm is not available, exit
+            if (!isAsmAvailable) {
+                LOGGER.info("ASM is not available to create a proxy object. Returning the original object instead.");
                 LOGGER.debug(LOG_EXIT, "getService", original);
                 return original;
             }
 
+            Object intercepted;
             try {
-                Set<String> interfaces = getClasses();
-
-                // check for the case where interfaces is null or empty
-                if (interfaces == null || interfaces.isEmpty()) {
+                try {
+                    // Try with subclass proxying first
                     intercepted = AsmInterceptorWrapper.createProxyObject(
                             original.getClass().getClassLoader(), cm,
                             interceptors, AsmInterceptorWrapper.passThrough(original),
                             original.getClass());
-                    LOGGER.debug(LOG_EXIT, "getService", intercepted);
-                    return intercepted;
+                } catch (FinalModifierException u) {
+                    LOGGER.debug("Error creating asm proxy (final modifier), trying with interfaces");
+                    List<Class> classes = new ArrayList<Class>();
+                    for (String className : getClasses()) {
+                        classes.add(blueprintContainer.loadClass(className));
+                    }
+                    intercepted = AsmInterceptorWrapper.createProxyObject(
+                            original.getClass().getClassLoader(), cm,
+                            interceptors, AsmInterceptorWrapper.passThrough(original),
+                            classes.toArray(new Class[classes.size()]));
                 }
-                Class[] classesToProxy = new Class[interfaces.size()];
-                Iterator<String> it = interfaces.iterator();
-                for (int i = 0; i < interfaces.size(); i++) {
-                    classesToProxy[i] = Class.forName(it.next(),
-                            true, original.getClass().getClassLoader());
-                }
-
-                // if asm is available we can proxy the original object with
-                // the AsmInterceptorWrapper
-                intercepted = AsmInterceptorWrapper.createProxyObject(
-                        original.getClass().getClassLoader(), cm,
-                        interceptors, AsmInterceptorWrapper.passThrough(original),
-                        classesToProxy);
             } catch (Throwable u) {
-                LOGGER
-                        .info("A problem occurred trying to create a proxy object. Returning the original object instead.");
+                LOGGER.info("A problem occurred trying to create a proxy object. Returning the original object instead.", u);
                 LOGGER.debug(LOG_EXIT, "getService", original);
                 return original;
             }
 
             LOGGER.debug(LOG_EXIT, "getService", intercepted);
             return intercepted;
-
         }
 
         public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
@@ -526,6 +513,19 @@ public class ServiceRecipe extends AbstractRecipe {
             JavaUtils.copy(table, properties);
             ServiceRecipe.this.setProperties(table);
         }        
+    }
+
+    private boolean isClassAvailable(String clazz) {
+        try {
+            getClass().getClassLoader().loadClass(clazz);
+            return true;
+        }
+        catch (ClassNotFoundException e) {
+            return false;
+        }
+        catch (NoClassDefFoundError e) {
+            return false;
+        }
     }
 
 }
