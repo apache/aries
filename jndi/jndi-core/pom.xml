@@ -33,10 +33,10 @@
 
     <properties>
         <aries.osgi.export.pkg>
-            org.apache.aries.jndi
+            org.apache.aries.jndi.urls
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
-            org.apache.aries.jndi.startup
+            org.apache.aries.jndi*
         </aries.osgi.private.pkg>
         <aries.osgi.activator>
             org.apache.aries.jndi.startup.Activator
@@ -52,6 +52,11 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
