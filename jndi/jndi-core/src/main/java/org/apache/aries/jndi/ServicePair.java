@@ -33,11 +33,20 @@ public class ServicePair<T>
     return serviceObject;
   }
   
+  public boolean isValid() {
+    return (ref.getBundle() != null);
+  }
+
   public void unget()
   {
     if (serviceObject != null) {
       ctx.ungetService(ref);
       serviceObject = null;
     }
+  }
+
+  public ServiceReference getReference() 
+  {
+    return ref;
   }
 }

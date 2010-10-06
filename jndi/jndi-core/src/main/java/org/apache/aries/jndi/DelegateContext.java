@@ -18,7 +18,9 @@
  */
 package org.apache.aries.jndi;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.naming.Binding;
 import javax.naming.Context;
@@ -34,7 +36,6 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.apache.aries.jndi.ContextHelper.ContextProvider;
 import org.osgi.framework.BundleContext;
 
 public class DelegateContext implements DirContext {
@@ -43,6 +44,7 @@ public class DelegateContext implements DirContext {
 
     private BundleContext bundleContext;
     private ContextProvider contextProvider;
+    private Map<String, ContextProvider> urlContexts = new HashMap<String, ContextProvider>();
     private boolean rebind;
 
     public DelegateContext(BundleContext bundleContext, Hashtable<?, ?> theEnv) {
@@ -54,7 +56,7 @@ public class DelegateContext implements DirContext {
     public DelegateContext(BundleContext bundleContext, ContextProvider contextProvider) throws NamingException {
         this.bundleContext = bundleContext;
         this.contextProvider = contextProvider;
-        env.putAll(contextProvider.context.getEnvironment());
+        env.putAll(contextProvider.getContext().getEnvironment());
         rebind = true;
     }
 
@@ -78,8 +80,14 @@ public class DelegateContext implements DirContext {
 
     public void close() throws NamingException {
         if (contextProvider != null) {
-            contextProvider.context.close();
+            contextProvider.close();
         }
+        
+        for (ContextProvider provider : urlContexts.values()) {
+          provider.close();
+        }
+        
+        urlContexts.clear();
         env.clear();
     }
 
@@ -223,7 +231,7 @@ public class DelegateContext implements DirContext {
             if (contextProvider == null) {
                 throw new NoInitialContextException();
             } else {
-                return contextProvider.context;
+                return contextProvider.getContext();
             }
         } else {
             throw new NoInitialContextException();
@@ -238,7 +246,14 @@ public class DelegateContext implements DirContext {
         if (index != -1) {
             String scheme = name.substring(0, index);
 
-            ctx = ContextHelper.createURLContext(bundleContext, scheme, env);
+            ContextProvider provider = urlContexts.get(scheme);
+            
+            if (provider == null || !!!provider.isValid()) {
+              provider = ContextHelper.createURLContext(bundleContext, scheme, env);
+              if (provider != null) urlContexts.put(scheme, provider);
+            }
+            
+            if (provider != null) ctx = provider.getContext();
         }
 
         if (ctx == null) {
