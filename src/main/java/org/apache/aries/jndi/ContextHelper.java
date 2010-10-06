@@ -19,8 +19,6 @@
 package org.apache.aries.jndi;
 
 import java.security.PrivilegedExceptionAction;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -30,11 +28,11 @@ import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.ObjectFactory;
 
+import org.apache.aries.jndi.startup.Activator;
+import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.jndi.JNDIConstants;
 
 /**
  * Provides helper methods for the DelegateContext. This provides the methods so
@@ -47,12 +45,12 @@ public final class ContextHelper {
         throw new RuntimeException();
     }
 
-    public static Context createURLContext(final BundleContext context,
+    public static ContextProvider createURLContext(final BundleContext context,
                                            final String urlScheme, 
                                            final Hashtable<?, ?> env)
         throws NamingException {
-        return Utils.doPrivilegedNaming(new PrivilegedExceptionAction<Context>() {
-            public Context run() throws Exception {
+        return Utils.doPrivilegedNaming(new PrivilegedExceptionAction<ContextProvider>() {
+            public ContextProvider run() throws Exception {
                 return doCreateURLContext(context, urlScheme, env);
             }
         });
@@ -67,7 +65,7 @@ public final class ContextHelper {
      * @return a Context
      * @throws NamingException
      */
-    private static Context doCreateURLContext(BundleContext context, String urlScheme, Hashtable<?, ?> env)
+    private static ContextProvider doCreateURLContext(BundleContext context, String urlScheme, Hashtable<?, ?> env)
         throws NamingException {
       
         ServicePair<ObjectFactory> urlObjectFactory = getURLObjectFactory(context, urlScheme, env);
@@ -77,13 +75,14 @@ public final class ContextHelper {
             
             if (factory != null) {
                 try {
-                    return (Context) factory.getObjectInstance(null, null, null, env);
+                    Context ctx = (Context) factory.getObjectInstance(null, null, null, env);
+                    
+                    return new ContextProvider(context, urlObjectFactory.getReference(), ctx);
                 } catch (Exception e) {
+                    urlObjectFactory.unget();
                     NamingException e2 = new NamingException();
                     e2.initCause(e);
                     throw e2;
-                } finally {
-                    urlObjectFactory.unget();
                 }
             }
         }
@@ -96,49 +95,29 @@ public final class ContextHelper {
       throws NamingException
     {
       ServicePair<ObjectFactory> result = null;
-      try {
-          ServiceReference[] services = ctx.getServiceReferences(ObjectFactory.class.getName(), 
-                                                                     "(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme.trim() + ")");
-
-          if (services != null) {
-              Arrays.sort(services);
-              result = new ServicePair<ObjectFactory>(ctx, services[services.length - 1]);
-          }
-      } catch (InvalidSyntaxException e1) {
-          NamingException e = new NamingException("Argh this should never happen :)");
-          e.initCause(e1);
-          throw e;
-      }
       
-      if (result == null) {
-        ServiceReference[] refs;
-        try {
-          refs = ctx.getServiceReferences(URLObjectFactoryFinder.class.getName(), null);
-          if (refs != null) {
-            // need a reverse sort.
-            Arrays.sort(refs, new Comparator<ServiceReference>() {
-              public int compare(ServiceReference o1, ServiceReference o2) {
-                return o2.compareTo(o1);
-              }
-            });
-            
-            for (ServiceReference finderRef : refs) {
-              URLObjectFactoryFinder finder = (URLObjectFactoryFinder) ctx.getService(finderRef);
-              if (finder != null) {
-                ObjectFactory f = finder.findFactory(urlScheme);
-                
-                if (f != null) {
-                  result = new ServicePair<ObjectFactory>(ctx, finderRef, f);
-                  break;
-                } else {
-                  ctx.ungetService(finderRef);
-                }
+      ServiceReference ref = ServiceTrackerCustomizers.URL_FACTORY_CACHE.find(urlScheme);
+      
+      if (ref == null) {
+        ServiceReference[] refs = Activator.getURLObectFactoryFinderServices();
+        
+        if (refs != null) {
+          for (ServiceReference finderRef : refs) {
+            URLObjectFactoryFinder finder = (URLObjectFactoryFinder) ctx.getService(finderRef);
+            if (finder != null) {
+              ObjectFactory f = finder.findFactory(urlScheme, environment);
+              
+              if (f != null) {
+                result = new ServicePair<ObjectFactory>(ctx, finderRef, f);
+                break;
+              } else {
+                ctx.ungetService(finderRef);
               }
             }
           }
-        } catch (InvalidSyntaxException e) {
-          // Since the filter is null this cannot happen (famous last words).
         }
+      } else {
+        result = new ServicePair<ObjectFactory>(ctx, ref);
       }
       
       return result;
@@ -147,19 +126,16 @@ public final class ContextHelper {
     public static Context getInitialContext(BundleContext context, Hashtable<?, ?> environment)
         throws NamingException {
         ContextProvider provider = getContextProvider(context, environment);
-        String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
-        if (contextFactoryClass == null) {
-            if (provider == null) {
-                return new DelegateContext(context, environment);
-            } else {
-                return new DelegateContext(context, provider);
-            }
+        
+        if (provider != null) {
+          return new DelegateContext(context, provider);
         } else {
-            if (provider == null) {
-                throw new NoInitialContextException("We could not find an InitialContextFactory to use");
-            } else {
-                return new DelegateContext(context, provider);
-            }
+          String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
+          if (contextFactoryClass == null) {
+            return new DelegateContext(context, environment);
+          } else {
+            throw new NoInitialContextException("We could not find an InitialContextFactory to use");
+          }
         }
     }
 
@@ -184,59 +160,39 @@ public final class ContextHelper {
 
             // 2. lookup all ContextFactory services
             if (provider == null) {
-                String filter = "(&(objectClass=javax.naming.spi.InitialContextFactory))";
-                ServiceReference[] references = null;
-                try {
-                    references = context.getAllServiceReferences(InitialContextFactory.class.getName(), filter);
-                } catch (InvalidSyntaxException e) {
-                    NamingException ex = new NamingException("Bad filter: " + filter);
-                    ex.initCause(e);
-                    throw ex;
-                }
+                ServiceReference[] references = Activator.getInitialContextFactoryServices();
                 if (references != null) {
                     Context initialContext = null;
-                    Arrays.sort(references, Utils.SERVICE_REFERENCE_COMPARATOR);
                     for (ServiceReference reference : references) {
                         InitialContextFactory factory = (InitialContextFactory) context.getService(reference);
                         try {
                             initialContext = factory.getInitialContext(environment);
+                            if (initialContext != null) {
+                              provider = new ContextProvider(context, reference, initialContext);
+                              break;
+                          }
                         } finally {
-                            context.ungetService(reference);
-                        }
-                        if (initialContext != null) {
-                            provider = new ContextProvider(reference, initialContext);
-                            break;
+                            if (provider == null) context.ungetService(reference);
                         }
                     }
                 }
             }
         } else {
-            // 1. lookup ContextFactory using the factory class
-            String filter = "(&(objectClass=javax.naming.spi.InitialContextFactory)(objectClass="+ contextFactoryClass + "))";
-            ServiceReference[] references = null;
-            try {
-                references = context.getServiceReferences(InitialContextFactory.class.getName(), filter);
-            } catch (InvalidSyntaxException e) {
-                NamingException ex = new NamingException("Bad filter: " + filter);
-                ex.initCause(e);
-                throw ex;
-            }
-
-            if (references != null && references.length > 0) {
-                Context initialContext = null;
-                Arrays.sort(references, Utils.SERVICE_REFERENCE_COMPARATOR);
-                ServiceReference reference = references[0];
-                InitialContextFactory factory = (InitialContextFactory) context.getService(reference);
+            ServiceReference ref = ServiceTrackerCustomizers.ICF_CACHE.find(contextFactoryClass);
+            
+            if (ref != null) {
+              Context initialContext = null;
+              InitialContextFactory factory = (InitialContextFactory) context.getService(ref);
+              if (factory != null) {
                 try {
                     initialContext = factory.getInitialContext(environment);
+                    provider = new ContextProvider(context, ref, initialContext);
                 } finally {
-                    context.ungetService(reference);
+                    if (provider == null) context.ungetService(ref);
                 }
-                if (initialContext != null) {
-                    provider = new ContextProvider(reference, initialContext);                    
-                }
+              }
             }
-
+            
             // 2. get ContextFactory using builder
             if (provider == null) {
                 provider = getInitialContextUsingBuilder(context, environment);
@@ -250,46 +206,27 @@ public final class ContextHelper {
                                                                  Hashtable<?, ?> environment)
             throws NamingException {
         ContextProvider provider = null;
-        try {
-            ServiceReference[] refs = context.getAllServiceReferences(InitialContextFactoryBuilder.class.getName(), null);
-            if (refs != null) {
-                InitialContextFactory factory = null;
-                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
-                for (ServiceReference ref : refs) {                    
-                    InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) context.getService(ref);
-                    try {
-                        factory = builder.createInitialContextFactory(environment);
-                    } catch (NamingException e) {
-                        // TODO: log
-                        // ignore
-                    } finally {
-                        context.ungetService(ref);
-                    }
+        ServiceReference[] refs = Activator.getInitialContextFactoryBuilderServices();
+        if (refs != null) {
+            InitialContextFactory factory = null;
+            for (ServiceReference ref : refs) {                    
+                InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) context.getService(ref);
+                try {
+                    factory = builder.createInitialContextFactory(environment);
                     if (factory != null) {
-                        provider = new ContextProvider(ref, factory.getInitialContext(environment));
-                        break;
+                      provider = new ContextProvider(context, ref, factory.getInitialContext(environment));
+                      break;
+                    } else {
+                      context.ungetService(ref); // we didn't get something back, so this was no good.
                     }
+                } catch (NamingException e) {
+                    // TODO: log
+                    // ignore
+                    context.ungetService(ref);
                 }
             }
-        } catch (InvalidSyntaxException e) {
-            // ignore - should never happen
         }
         return provider;
-    }
-    
-    public static class ContextProvider {
-        
-        ServiceReference reference;
-        Context context;
-        
-        public ContextProvider(ServiceReference reference, Context context) {
-            this.reference = reference;
-            this.context = context;
-        }        
-        
-        public boolean isValid() {
-            return (reference.getBundle() != null);
-        }
     }
 
 }
