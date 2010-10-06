@@ -80,7 +80,7 @@ public class Framework implements FrameworkMBean {
             Bundle bundle = context.installBundle(location);
             return bundle.getBundleId();
         } catch (Exception e) {
-            IOException ioex = new IOException("Can't install bundle with location " + location);
+            IOException ioex = new IOException("Installation of a bundle with location " + location + " failed with the message: " + e.getMessage());
             ioex.initCause(e);
             throw ioex;
         }
@@ -96,7 +96,7 @@ public class Framework implements FrameworkMBean {
             Bundle bundle = context.installBundle(location, inputStream);
             return bundle.getBundleId();
         } catch (Exception e) {
-            IOException ioex = new IOException("Can't install bundle with location " + location);
+            IOException ioex = new IOException("Installation of a bundle with location " + location + " failed with the message: " + e.getMessage());
             ioex.initCause(e);
             throw ioex;
         } finally {
@@ -183,7 +183,7 @@ public class Framework implements FrameworkMBean {
               try {
                   bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
               } catch (Exception e) {
-                  IOException ex = new IOException("Unable to refresh bundles");
+                  IOException ex = new IOException("Unable to find bundle with id " + bundleIdentifiers[i]);
                   ex.initCause(e);
                   throw ex;
               }
@@ -211,7 +211,7 @@ public class Framework implements FrameworkMBean {
               try {
                   bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
               } catch (Exception e) {
-                  IOException ex = new IOException("Unable to resolve bundles");
+                  IOException ex = new IOException("Unable to find bundle with id " + bundleIdentifiers[i]);
                   ex.initCause(e);
                   throw ex;
               }
@@ -228,7 +228,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.update();
         } catch (Exception be) {
-            IOException ioex = new IOException("Failed to restart framework");
+            IOException ioex = new IOException("Framework restart failed with message: " + be.getMessage());
             ioex.initCause(be);
             throw ioex;
         }
@@ -242,7 +242,7 @@ public class Framework implements FrameworkMBean {
         try {
             startLevel.setBundleStartLevel(bundle, newlevel);
         } catch (IllegalArgumentException e) {
-            throw new IOException("Unable to set bundle start level", e);
+            throw new IOException("Setting the start level for bundle with id " + bundle.getBundleId() + " to level " + newlevel + " failed with message: " + e.getMessage(), e);
         }
     }
 
@@ -274,7 +274,7 @@ public class Framework implements FrameworkMBean {
         try {
             startLevel.setStartLevel(newlevel);
         } catch (Exception e) {
-            IOException ioex = new IOException("Failed to set framework start level");
+            IOException ioex = new IOException("Setting the framework start level to " + newlevel + " failed with message: " + e.getMessage());
             ioex.initCause(e);
             throw ioex;
         }
@@ -287,7 +287,7 @@ public class Framework implements FrameworkMBean {
         try {
             startLevel.setInitialBundleStartLevel(newlevel);
         } catch (Exception e) {
-            IOException ioex = new IOException("Failed to set initial bundle start level");
+            IOException ioex = new IOException("Setting the initial start level to " + newlevel + " failed with message: " + e.getMessage());
             ioex.initCause(e);
             throw ioex;
         }        
@@ -301,7 +301,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.stop();
         } catch (Exception be) {
-            IOException ioex = new IOException("Failed to shutdown framework");
+            IOException ioex = new IOException("Stopping the framework failed with message: " + be.getMessage());
             ioex.initCause(be);
             throw ioex;
         }
@@ -315,7 +315,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.start();
         } catch (Exception be) {
-            IOException ioex = new IOException("Failed to start bundle with id " + bundleIdentifier);
+            IOException ioex = new IOException("Start of bundle with id " + bundleIdentifier + " failed with message: " + be.getMessage());
             ioex.initCause(be);
             throw ioex;
         }
@@ -346,7 +346,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.stop();
         } catch (Exception e) {
-            IOException ioex = new IOException("Failed to stop bundle with id " + bundleIdentifier);
+            IOException ioex = new IOException("Stop of bundle with id " + bundleIdentifier + " failed with message: " + e.getMessage());
             ioex.initCause(e);
             throw ioex;
         }
@@ -377,7 +377,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.uninstall();
         } catch (Exception be) {
-            IOException ioex = new IOException("Failed to uninstall bundle with id " + bundleIdentifier);
+            IOException ioex = new IOException("Uninstall of bundle with id " + bundleIdentifier + " failed with message: " + be.getMessage());
             ioex.initCause(be);
             throw ioex;
         }
@@ -408,7 +408,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.update();
         } catch (Exception be) {
-            IOException ioex = new IOException("Failed to update bundle with id " + bundleIdentifier);
+            IOException ioex = new IOException("Update of bundle with id " + bundleIdentifier + " failed with message: " + be.getMessage());
             ioex.initCause(be);
             throw ioex;
         }
@@ -424,7 +424,7 @@ public class Framework implements FrameworkMBean {
             inputStream = createStream(url);
             bundle.update(inputStream);
         } catch (Exception be) {
-            IOException ioex = new IOException("Can't update system bundle");
+            IOException ioex = new IOException("Update of bundle with id " + bundleIdentifier + " from url " + url + " failed with message: " + be.getMessage());
             ioex.initCause(be);
             throw ioex;
         } finally {
@@ -484,7 +484,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.update();
         } catch (Exception be) {
-            IOException ioex = new IOException("Failed to update system bundle");
+            IOException ioex = new IOException("Update of framework bundle failed with message: " + be.getMessage());
             ioex.initCause(be);
             throw ioex;
         }
