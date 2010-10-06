@@ -32,7 +32,8 @@
 
     <properties>
         <aries.osgi.export>
-            org.osgi.service.jndi;version="1.0"
+            org.osgi.service.jndi;version="1.0",
+            org.apache.aries.jndi.urls
         </aries.osgi.export>
         <aries.osgi.import>
             net.sf.cglib*;resolution:=optional,
