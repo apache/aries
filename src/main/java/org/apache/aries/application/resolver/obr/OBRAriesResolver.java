@@ -194,16 +194,20 @@ public class OBRAriesResolver implements AriesApplicationResolver
           attribs.put(Constants.VERSION_ATTRIBUTE, "[" + r.getVersion() + ',' + r.getVersion()
               + "]");
           ModelledResource modelledResourceForThisMatch = null; 
-          try { 
-            modelledResourceForThisMatch = new ModelledBundleResource (r, modellingManager, modellingHelper);
-          } catch (InvalidAttributeException iax) { 
-            
-            ResolverException re = new ResolverException("Internal error occurred: " + iax.toString());
-            log.debug(LOG_EXIT, "resolve", re);
-            
-            throw re;
+          // OBR may give us back the global capabilities. Typically these do not have a bundle symbolic name - they're a 
+          // list of packages available in the target runtime environment. If the resource has no symbolic name, we can ignore it
+          if (r.getSymbolicName() != null) { 
+            try { 
+              modelledResourceForThisMatch = new ModelledBundleResource (r, modellingManager, modellingHelper);
+            } catch (InvalidAttributeException iax) { 
+              
+              ResolverException re = new ResolverException("Internal error occurred: " + iax.toString());
+              log.debug(LOG_EXIT, "resolve", re);
+              
+              throw re;
+            }
+            toReturn.add(modelledResourceForThisMatch);
           }
-          toReturn.add(modelledResourceForThisMatch);
         }
       }
       log.debug(LOG_EXIT, "resolve", toReturn); 

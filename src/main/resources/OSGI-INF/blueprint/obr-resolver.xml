@@ -19,8 +19,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <bean id="obr-resolver" class="org.apache.aries.application.resolver.obr.OBRAriesResolver" scope="singleton"
-          activation="eager">
+    <bean id="obr-resolver" class="org.apache.aries.application.resolver.obr.OBRAriesResolver" scope="singleton">
         <argument>
             <reference interface="org.apache.felix.bundlerepository.RepositoryAdmin"/>
         </argument>
