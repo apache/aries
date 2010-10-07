@@ -113,12 +113,6 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     this.modelledResourceManager = modelledResourceManager;
   }
 
-  @Override
-  public AriesApplicationResolver getResolver()
-  {
-    return resolver;
-  }
-
   public void setPostResolveTransformer(PostResolveTransformer transformer) {
     postResolveTransformer = transformer;
   }
