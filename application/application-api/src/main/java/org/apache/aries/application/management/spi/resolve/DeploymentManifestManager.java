@@ -73,11 +73,5 @@ public interface DeploymentManifestManager
       String appSymbolicName, 
       String appVersion, 
       DeployedBundles deployedBundles) throws ResolverException; 
-      
-  /**
-   * 
-   * @return the AriesApplicationResolver
-   */
-  AriesApplicationResolver getResolver();
-  
+       
 }
