@@ -16,22 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard.integration.helper;
+package org.apache.aries.jmx.whiteboard.integration.helper;
 
-import javax.management.NotCompliantMBeanException;
-import javax.management.StandardMBean;
-
-public class TestStandardMBean extends StandardMBean implements TestClassMBean {
+/**
+ * The <code>TestClass</code> is a simple class which will be registered as a
+ * Simple MBean implementing the {@link TestClassMBean} interface.
+ */
+public class TestClass implements TestClassMBean {
 
     private final String instanceName;
 
-    protected TestStandardMBean() throws NotCompliantMBeanException {
+    public TestClass() {
         this(null);
     }
 
-    public TestStandardMBean(final String name)
-            throws NotCompliantMBeanException {
-        super(TestClassMBean.class);
+    public TestClass(final String name) {
         this.instanceName = (name == null) ? getClass().getName() : name;
     }
 

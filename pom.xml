@@ -20,11 +20,11 @@
         <version>0.2-incubating</version>
     </parent>
 
-    <artifactId>org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard</artifactId>
+    <artifactId>org.apache.aries.jmx.whiteboard</artifactId>
     <packaging>bundle</packaging>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>Apache Sling Whiteboard support for JMX DynamicMBean services</name>
+    <name>Apache Aries Whiteboard support for JMX DynamicMBean services</name>
     <description>
         This bundle implements whiteboard pattern support for DynamicMBean
         services registered with the OSGi service registry. Each DynamicMBean
@@ -33,9 +33,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/sling/whiteboard/fmeschbe/jmx-whiteboard</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/sling/fmeschbe/jmx-whiteboard</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/sling/fmeschbe/jmx-whiteboard</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/jmx/jmx-whiteboard</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jmx/jmx-whiteboard</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jmx/jmx-whiteboard</url>
     </scm>
 
 
@@ -61,13 +61,13 @@
         </bundle.file.name>
 
         <aries.osgi.activator>
-            org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard.Activator
+            org.apache.aries.jmx.whiteboard.Activator
         </aries.osgi.activator>
         <aries.osgi.export.pkg>
             !*
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
-            org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard
+            org.apache.aries.jmx.whiteboard
         </aries.osgi.private.pkg>
         <aries.osgi.import.service>
             javax.management.MBeanServer
@@ -114,12 +114,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-            <version>1.3.0</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

@@ -16,16 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard.integration;
+package org.apache.aries.jmx.whiteboard.integration;
 
+import javax.management.DynamicMBean;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
-import org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard.integration.helper.IntegrationTestBase;
-import org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard.integration.helper.TestClass;
-import org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard.integration.helper.TestClassMBean;
+import org.apache.aries.jmx.whiteboard.integration.helper.IntegrationTestBase;
+import org.apache.aries.jmx.whiteboard.integration.helper.TestClass;
+import org.apache.aries.jmx.whiteboard.integration.helper.TestClassMBean;
+import org.apache.aries.jmx.whiteboard.integration.helper.TestStandardMBean;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
@@ -35,43 +37,58 @@ import org.osgi.framework.ServiceRegistration;
  * The <code>MBeanTest</code> tests MBean registration with MBean Servers
  */
 @RunWith(JUnit4TestRunner.class)
-public class MBeanServerTest extends IntegrationTestBase {
+public class MBeanTest extends IntegrationTestBase {
 
     @Test
-    public void test_MServerBean() throws Exception {
+    public void test_simple_MBean() throws Exception {
         final String instanceName = "simple.test.instance";
         final String objectNameString = "domain:instance=" + instanceName;
         final ObjectName objectName = new ObjectName(objectNameString);
         final TestClass testInstance = new TestClass(instanceName);
 
-        // get or create the dynamic MBean Server
-        final MBeanServer server = getOrCreateMBeanServer();
+        final MBeanServer server = getStaticMBeanServer();
 
-        // MBean server not registered as service, unknown object
+        // expect MBean to not be registered yet
         assertNotRegistered(server, objectName);
 
         // expect the MBean to be registered with the static server
-        final ServiceRegistration mBeanReg = registerService(
+        final ServiceRegistration reg = registerService(
             TestClassMBean.class.getName(), testInstance, objectNameString);
-
-        // MBean server not registered, expect object to not be known
-        assertNotRegistered(server, objectName);
-
-        // register MBean server, expect MBean registered
-        ServiceRegistration mBeanServerReg = registerMBeanServer(server);
         assertRegistered(server, objectName);
 
         // expect MBean to return expected value
         TestCase.assertEquals(instanceName,
             server.getAttribute(objectName, "InstanceName"));
 
-        // unregister MBean server, expect MBean to be unregistered
-        mBeanServerReg.unregister();
-        assertNotRegistered(server, objectName);
-
         // unregister MBean, expect to not be registered any more
-        mBeanReg.unregister();
+        reg.unregister();
         assertNotRegistered(server, objectName);
     }
 
+    @Test
+    public void test_StandardMBean() throws Exception {
+        final String instanceName = "standard.test.instance";
+        final String objectNameString = "domain:instance=" + instanceName;
+        final ObjectName objectName = new ObjectName(objectNameString);
+        final TestStandardMBean testInstance = new TestStandardMBean(
+            instanceName);
+
+        final MBeanServer server = getStaticMBeanServer();
+
+        // expect MBean to not be registered yet
+        assertNotRegistered(server, objectName);
+
+        // expect the MBean to be registered with the static server
+        final ServiceRegistration reg = registerService(
+            DynamicMBean.class.getName(), testInstance, objectNameString);
+        assertRegistered(server, objectName);
+
+        // expect MBean to return expected value
+        TestCase.assertEquals(instanceName,
+            server.getAttribute(objectName, "InstanceName"));
+
+        // unregister MBean, expect to not be registered any more
+        reg.unregister();
+        assertNotRegistered(server, objectName);
+    }
 }

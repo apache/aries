@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard.integration.helper;
+package org.apache.aries.jmx.whiteboard.integration.helper;
 
 /**
  * The <code>TestClassMBean</code> is the simple MBean interface for the
