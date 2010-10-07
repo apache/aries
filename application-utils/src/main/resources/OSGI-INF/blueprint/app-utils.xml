@@ -33,8 +33,5 @@
   <service interface="org.apache.aries.application.management.spi.runtime.LocalPlatform" 
             ref="default-local-platform"
             ranking="-1" />
-  
-  <bean id="default-platform-repository" class="org.apache.aries.application.utils.runtime.DefaultPlatformRepository"/>
-  <service interface="org.apache.aries.application.management.spi.repository.PlatformRepository" ref="default-platform-repository" ranking="-1"/>
-            
+         
 </blueprint>
