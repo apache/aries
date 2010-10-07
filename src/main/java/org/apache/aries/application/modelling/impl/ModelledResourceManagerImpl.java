@@ -185,13 +185,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
         File bundleFile = new File(appBundle.toString());
         BundleManifest bundleMf = BundleManifest.fromBundle(bundleFile);
         BundleBlueprintParser bpParser = new BundleBlueprintParser(bundleMf);
-        ZipFile zipFile = new ZipFile(bundleFile);
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-          ZipEntry ze = entries.nextElement();
-
-          System.out.println(ze.getName());
-        }
         List<IFile> files = appBundle.listAllFiles();
         Iterator<IFile> it = files.iterator();
         while (it.hasNext()) {
