@@ -28,7 +28,7 @@
         <property name="modellingHelper" ref="modellingHelper"/>
         
     </bean>
-    <reference id="platformRepository" interface="org.apache.aries.application.management.spi.repository.PlatformRepository" availability="optional"/>
+    <reference id="platformRepository" interface="org.apache.aries.application.management.spi.repository.PlatformRepository"/>
     <reference id="modellingManager" interface="org.apache.aries.application.modelling.ModellingManager"/>
     <reference id="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
     <service ref="obr-resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>
