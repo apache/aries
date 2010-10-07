@@ -26,21 +26,20 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.Bundle;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.quiesce.manager.QuiesceManager;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.framework.Bundle;
 
 
 
@@ -223,6 +222,8 @@ bootDelegationPackages("javax.transaction", "javax.transaction.*"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.install" ),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.api" ),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.management" ),
+            mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.platform.repo"),
+            mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.postresolve.process"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime" ),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils" ),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
