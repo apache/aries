@@ -18,22 +18,13 @@
  */
 package org.apache.sling.whiteboard.fmeschbe.jmx.whiteboard;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.management.DynamicMBean;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistration;
-import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
 import org.osgi.framework.ServiceReference;
@@ -49,78 +40,61 @@ class JmxWhiteboardSupport {
 
     private MBeanServer[] mbeanServers = new MBeanServer[0];
 
-    private final Map<DynamicMBean, Map<MBeanServer, ObjectName>> mbeans = new IdentityHashMap<DynamicMBean, Map<MBeanServer, ObjectName>>();
+    private final HashMap<MBeanHolder, MBeanHolder> mbeans = new HashMap<MBeanHolder, MBeanHolder>();
 
     protected void addMBeanServer(final MBeanServer mbeanServer) {
-        List<MBeanServer> serverList = Arrays.asList(mbeanServers);
+
+        log.info("addMBeanServer: Adding MBeanServer " + mbeanServer);
+
+        ArrayList<MBeanServer> serverList = new ArrayList<MBeanServer>(
+            Arrays.asList(mbeanServers));
         serverList.add(mbeanServer);
         mbeanServers = serverList.toArray(new MBeanServer[serverList.size()]);
 
-        // TODO: register all mbeans with the new server
-        for (Entry<DynamicMBean, Map<MBeanServer, ObjectName>> mbean : mbeans.entrySet()) {
+        // register all mbeans with the new server
+        for (MBeanHolder mbean : mbeans.values()) {
+            mbean.register(mbeanServer);
         }
     }
 
     protected void removeMBeanServer(final MBeanServer mbeanServer) {
-        for (Map<MBeanServer, ObjectName> registration : mbeans.values()) {
-            ObjectName name = registration.remove(mbeanServer);
-            if (name != null) {
-                try {
-                    mbeanServer.unregisterMBean(name);
-                } catch (MBeanRegistrationException e) {
-                    log.error("unregisterMBean: Failure unregistering", e);
-                } catch (InstanceNotFoundException e) {
-                    log.error("unregisterMBean: Failure unregistering", e);
-                }
-            }
+
+        log.info("removeMBeanServer: Removing MBeanServer " + mbeanServer);
+
+        // remove all dynamically registered mbeans from the server
+        for (MBeanHolder mbean : mbeans.values()) {
+            mbean.unregister(mbeanServer);
         }
 
-        List<MBeanServer> serverList = Arrays.asList(mbeanServers);
+        ArrayList<MBeanServer> serverList = new ArrayList<MBeanServer>(
+            Arrays.asList(mbeanServers));
         serverList.remove(mbeanServer);
         mbeanServers = serverList.toArray(new MBeanServer[serverList.size()]);
     }
 
-    protected void registerMBean(DynamicMBean mbean,
-            final ServiceReference props) {
+    protected void registerMBean(Object mbean, final ServiceReference props) {
+
+        log.info("registerMBean: Adding MBean " + mbean);
+
         ObjectName objectName = getObjectName(props);
         if (objectName != null || mbean instanceof MBeanRegistration) {
-            Map<MBeanServer, ObjectName> registration = new HashMap<MBeanServer, ObjectName>();
+            MBeanHolder holder = new MBeanHolder(mbean, objectName);
             MBeanServer[] mbeanServers = this.mbeanServers;
             for (MBeanServer mbeanServer : mbeanServers) {
-                try {
-                    ObjectInstance registeredObject = mbeanServer.registerMBean(
-                        mbean, objectName);
-                    registration.put(mbeanServer,
-                        registeredObject.getObjectName());
-                } catch (InstanceAlreadyExistsException e) {
-                    log.error("registerMBean: Failure registering MBean "
-                        + mbean, e);
-                } catch (MBeanRegistrationException e) {
-                    log.error("registerMBean: Failure registering MBean "
-                        + mbean, e);
-                } catch (NotCompliantMBeanException e) {
-                    log.error("registerMBean: Failure registering MBean "
-                        + mbean, e);
-                }
+                holder.register(mbeanServer);
             }
-            mbeans.put(mbean, registration);
+            mbeans.put(holder, holder);
         }
     }
 
-    protected void unregisterMBean(DynamicMBean mbean) {
-        Map<MBeanServer, ObjectName> registration = mbeans.remove(mbean);
-        for (Entry<MBeanServer, ObjectName> reg : registration.entrySet()) {
-            try {
-                reg.getKey().unregisterMBean(reg.getValue());
-            } catch (MBeanRegistrationException e) {
-                log.error("unregisterMBean: Failure unregistering MBean "
-                    + mbean, e);
-            } catch (InstanceNotFoundException e) {
-                log.error("unregisterMBean: Failure unregistering MBean "
-                    + mbean, e);
-            }
+    protected void unregisterMBean(Object mbean) {
+
+        log.info("unregisterMBean: Removing MBean " + mbean);
+
+        final MBeanHolder holder = mbeans.remove(new MBeanHolder(mbean, null));
+        if (holder != null) {
+            holder.unregister();
         }
-        registration.clear();
     }
 
     private ObjectName getObjectName(final ServiceReference props) {
