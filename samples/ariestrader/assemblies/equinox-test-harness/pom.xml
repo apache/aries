@@ -196,6 +196,17 @@
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.deployment.management</artifactId>
         </dependency>
+
+ 		<dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.noop.platform.repo</artifactId>            
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.noop.postresolve.process</artifactId>            
+        </dependency>
+
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
