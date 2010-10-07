@@ -153,13 +153,22 @@
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
             <scope>test</scope>
         </dependency>
-        
+       
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.noop</artifactId>
             <scope>test</scope>
         </dependency>
-        
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.noop.platform.repo</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.noop.postresolve.process</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
         	<groupId>org.apache.aries.transaction</groupId>
         	<artifactId>org.apache.aries.transaction.blueprint</artifactId>
