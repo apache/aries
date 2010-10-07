@@ -143,8 +143,6 @@ public class BlueprintAnnotationScannerImpl implements
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
-            System.out.println("generated annotation xml is located " + file.getAbsolutePath());
             try {
                 return file.toURL();
             } catch (MalformedURLException e) {

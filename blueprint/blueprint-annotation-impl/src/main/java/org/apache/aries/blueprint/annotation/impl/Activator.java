@@ -30,15 +30,12 @@ public class Activator implements BundleActivator {
     ServiceRegistration sr;
     
     public void start(BundleContext context) {
-        System.out.println("Annotation Scanner Impl Bundle start");
         Dictionary dict = new Hashtable();
         dict.put(Constants.SERVICE_RANKING, 0);
         sr = context.registerService(BlueprintAnnotationScanner.class.getName(), new BlueprintAnnotationScannerImpl(context), dict);
-        System.out.println("finish register service");
     }
 
     public void stop(BundleContext context) {
-        System.out.println("Annotation Scanner Impl Bundle stop");
         if (sr != null) {
             sr.unregister();
         }
