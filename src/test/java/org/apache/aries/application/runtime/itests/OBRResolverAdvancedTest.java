@@ -459,6 +459,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.platform.repo"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.postresolve.process"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").noStart(),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
