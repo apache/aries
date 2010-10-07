@@ -42,9 +42,9 @@ class JmxWhiteboardSupport {
 
     private final HashMap<MBeanHolder, MBeanHolder> mbeans = new HashMap<MBeanHolder, MBeanHolder>();
 
-    protected void addMBeanServer(final MBeanServer mbeanServer) {
+    protected synchronized void addMBeanServer(final MBeanServer mbeanServer) {
 
-        log.info("addMBeanServer: Adding MBeanServer " + mbeanServer);
+        log.debug("addMBeanServer: Adding MBeanServer {}", mbeanServer);
 
         ArrayList<MBeanServer> serverList = new ArrayList<MBeanServer>(
             Arrays.asList(mbeanServers));
@@ -57,9 +57,9 @@ class JmxWhiteboardSupport {
         }
     }
 
-    protected void removeMBeanServer(final MBeanServer mbeanServer) {
+    protected synchronized void removeMBeanServer(final MBeanServer mbeanServer) {
 
-        log.info("removeMBeanServer: Removing MBeanServer " + mbeanServer);
+        log.debug("removeMBeanServer: Removing MBeanServer {}", mbeanServer);
 
         // remove all dynamically registered mbeans from the server
         for (MBeanHolder mbean : mbeans.values()) {
@@ -72,9 +72,9 @@ class JmxWhiteboardSupport {
         mbeanServers = serverList.toArray(new MBeanServer[serverList.size()]);
     }
 
-    protected void registerMBean(Object mbean, final ServiceReference props) {
+    protected synchronized void registerMBean(Object mbean, final ServiceReference props) {
 
-        log.info("registerMBean: Adding MBean " + mbean);
+        log.debug("registerMBean: Adding MBean {}", mbean);
 
         ObjectName objectName = getObjectName(props);
         if (objectName != null || mbean instanceof MBeanRegistration) {
@@ -87,9 +87,9 @@ class JmxWhiteboardSupport {
         }
     }
 
-    protected void unregisterMBean(Object mbean) {
+    protected synchronized void unregisterMBean(Object mbean) {
 
-        log.info("unregisterMBean: Removing MBean " + mbean);
+        log.debug("unregisterMBean: Removing MBean {}", mbean);
 
         final MBeanHolder holder = mbeans.remove(new MBeanHolder(mbean, null));
         if (holder != null) {
