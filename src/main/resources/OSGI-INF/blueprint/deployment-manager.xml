@@ -33,7 +33,7 @@
   <reference id="modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
   <reference id="localPlatform" interface="org.apache.aries.application.management.spi.runtime.LocalPlatform"/>
   <reference id="resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>
-  <reference id="postResolveTransformer" interface="org.apache.aries.application.PostResolveTransformer" availability="optional"/>
+  <reference id="postResolveTransformer" interface="org.apache.aries.application.management.spi.resolve.PostResolveTransformer"/>
   
   <service id ="deploymentManifestManager-Service" ref="deploymentManifestManager" interface="org.apache.aries.application.management.spi.resolve.DeploymentManifestManager"/>
     
