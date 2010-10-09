@@ -50,7 +50,6 @@ class Collaborator implements InvocationHandler, Serializable {
 
     private transient List<Interceptor> interceptors = null;
     private transient ComponentMetadata cm = null;
-    private transient boolean sorted = false;
 
     Collaborator(ComponentMetadata cm, List<Interceptor> interceptors,
             final Callable<?> delegateObj) {
@@ -147,8 +146,8 @@ class Collaborator implements InvocationHandler, Serializable {
                         calledInterceptors);
 
             } catch (Throwable e) {
-                // log the exception e
-                LOGGER.error("invoke", e);
+                // whether the the exception is an error is an application decision
+                LOGGER.debug("invoke", e);
 
                 // if we catch an exception we decide carefully which one to
                 // throw onwards
@@ -215,7 +214,7 @@ class Collaborator implements InvocationHandler, Serializable {
                 se.interceptor.postCallWithReturn(cm, method, returnType, se
                         .getPreCallToken());
             } catch (Throwable t) {
-                LOGGER.error("postCallInterceptorWithReturn", t);
+                LOGGER.debug("postCallInterceptorWithReturn", t);
                 // propagate this to invoke ... further interceptors will be
                 // called via the postCallInterceptorWithException method
                 throw t;
@@ -231,7 +230,7 @@ class Collaborator implements InvocationHandler, Serializable {
      * @param method
      *            : method
      * @param exception
-     *            : exception throwed
+     *            : exception thrown
      */
     private void postCallInterceptorWithException(ComponentMetadata cm,
             Method method, Throwable exception,
@@ -259,7 +258,7 @@ class Collaborator implements InvocationHandler, Serializable {
 
     // info to store on interceptor stack during invoke
     private static class StackElement {
-        private Interceptor interceptor;
+        private final Interceptor interceptor;
         private Object preCallToken;
 
         private StackElement(Interceptor i) {
