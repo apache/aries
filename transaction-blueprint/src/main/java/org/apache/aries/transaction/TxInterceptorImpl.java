@@ -86,7 +86,8 @@ public class TxInterceptorImpl implements Interceptor {
         }
         catch (Exception e)
         {
-          LOGGER.error("An exception has occured.", e);
+          // We are throwing an exception, so we don't error it out
+          LOGGER.debug("An exception has occured.", e);
           throw new TransactionRollbackException(e);
         }
       }
