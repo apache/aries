@@ -179,12 +179,16 @@ class Collaborator implements InvocationHandler, Serializable {
                     // we will throw this exception
                     if (exceptionToRethrow == null) {
                         exceptionToRethrow = f;
+                    } else {
+                      LOGGER.warn("Discarding post-call with interceptor exception", f);
                     }
                 }
                 // if we made it this far without choosing an exception we
                 // should throw e
                 if (exceptionToRethrow == null) {
                     exceptionToRethrow = e;
+                } else {
+                  LOGGER.warn("Discarding initial exception", e);
                 }
                 throw exceptionToRethrow;
             }
@@ -245,9 +249,12 @@ class Collaborator implements InvocationHandler, Serializable {
                         .getPreCallToken());
             } catch (Throwable t) {
                 // log the exception
-                LOGGER.error("postCallInterceptorWithException", t);
-                if (tobeRethrown == null)
+                LOGGER.debug("postCallInterceptorWithException", t);
+                if (tobeRethrown == null) {
                     tobeRethrown = t;
+                } else {
+                  LOGGER.warn("Discarding post-call with interceptor exception", t);
+                }
             }
 
         } // end while
