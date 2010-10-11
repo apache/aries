@@ -21,6 +21,7 @@ package org.apache.aries.application.utils.runtime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.application.Content;
@@ -66,6 +67,24 @@ public class InstallUtils
       }
     }
     return Collections.unmodifiableSet(results);
+  }
+
+  public static String contentToString(Content content)
+  {
+    StringBuffer value = new StringBuffer();
+    value.append(content.getContentName());
+
+    Map<String, String> nvm = content.getNameValueMap();
+
+    for (Map.Entry<String, String> entry : nvm.entrySet()) {
+      if (entry.getKey().equalsIgnoreCase(Constants.VERSION_ATTRIBUTE) || entry.getKey().equalsIgnoreCase(Constants.BUNDLE_VERSION_ATTRIBUTE)) {
+        value.append(";" + entry.getKey() + "=\"" + entry.getValue() + "\"");
+      } else {
+        value.append(";" + entry.getKey() + "=" + entry.getValue());
+      }
+    }
+
+    return value.toString();
   }
 
 }
