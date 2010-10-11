@@ -21,15 +21,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 
 import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemEvent;
 import org.apache.aries.subsystem.SubsystemException;
-import org.apache.aries.subsystem.SubsystemListener;
 import org.apache.aries.subsystem.spi.Resource;
-import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.apache.felix.utils.manifest.Clause;
 import org.apache.felix.utils.manifest.Parser;
 import org.osgi.framework.Bundle;
@@ -38,7 +38,6 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.Version;
-import org.osgi.service.composite.CompositeAdmin;
 import org.osgi.service.composite.CompositeBundle;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
@@ -50,20 +49,16 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
 
     final BundleContext context;
     final Map<Long, Subsystem> subsystems = new HashMap<Long, Subsystem>();
-    final ServiceTracker compositeAdminTracker;
-    final ServiceTracker resourceResolverTracker;
     final SubsystemEventDispatcher eventDispatcher;
-    final ServiceTracker listenersTracker;
+    final ServiceTracker executorTracker;
+    final HashMap<String, SubsystemFutureTask> installInProgress = new HashMap<String, SubsystemFutureTask>();
+    final HashMap<String, SubsystemFutureTask> updateInProgress = new HashMap<String, SubsystemFutureTask>();
     
     public SubsystemAdminImpl(BundleContext context, SubsystemEventDispatcher eventDispatcher) {
         this.context = context;
         this.eventDispatcher = eventDispatcher;
-        this.compositeAdminTracker = new ServiceTracker(context, CompositeAdmin.class.getName(), null);
-        this.compositeAdminTracker.open();
-        this.resourceResolverTracker = new ServiceTracker(context, ResourceResolver.class.getName(), null);
-        this.resourceResolverTracker.open();
-        this.listenersTracker = new ServiceTracker(context, SubsystemListener.class.getName(), null);
-        this.listenersTracker.open();
+        this.executorTracker = new ServiceTracker(context, Executor.class.getName(), null);
+        this.executorTracker.open();
         // Track subsystems
         synchronized (subsystems) {
             this.context.addBundleListener(new SynchronousBundleListener() {
@@ -76,27 +71,62 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     }
 
     public void dispose() {
-        compositeAdminTracker.close();
-        resourceResolverTracker.close();
-        listenersTracker.close();
+        executorTracker.close();
     }
 
     public void bundleChanged(BundleEvent event) {
         synchronized (subsystems) {
             Bundle bundle = event.getBundle();
-            if (event.getType() == BundleEvent.UPDATED || event.getType() == BundleEvent.UNINSTALLED) {
+            if (event.getType() == BundleEvent.UNINSTALLED) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Removing bundle symbolic name {} version {} from subsystems map being tracked", bundle.getSymbolicName(), bundle.getVersion());
                 }
                 subsystems.remove(bundle.getBundleId());
             }
-            if (event.getType() == BundleEvent.INSTALLED || event.getType() == BundleEvent.UPDATED) {
+            if (event.getType() == BundleEvent.UPDATED) {
+                Subsystem s = isSubsystem(bundle);
+
+                // If this is a subsystem we have in progress, then set the result on the SubsystemFutureTask
+                if (updateInProgress.containsKey(s.getLocation())) {
+                    SubsystemFutureTask task = updateInProgress.remove(s.getLocation());
+                    task.set(s);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug(
+                                "Update of subsystem url {} is successful",
+                                s.getLocation());
+                    }
+
+                    // emit the subsystem event
+                    eventDispatcher.subsystemEvent(new SubsystemEvent(
+                            SubsystemEvent.Type.UPDATED, System.currentTimeMillis(), s));
+
+                }
+
+            }
+            if (event.getType() == BundleEvent.INSTALLED) {
                 Subsystem s = isSubsystem(bundle);
                 if (s != null) {
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("Adding bundle symbolic name {} version {} to subsystems map being tracked", bundle.getSymbolicName(), bundle.getVersion());
                     }
                     subsystems.put(s.getSubsystemId(), s);
+                    
+                    // If this is a subsystem we have in progress, then set the result on the SubsystemFutureTask
+                    if (installInProgress.containsKey(s.getLocation())) {
+                        SubsystemFutureTask task = installInProgress.remove(s
+                                .getLocation());
+                        task.set(s);
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug(
+                                    "Install of subsystem url {} is successful",
+                                    s.getLocation());
+                        }
+
+                        // emit the subsystem event
+                        eventDispatcher.subsystemEvent(new SubsystemEvent(
+                                SubsystemEvent.Type.INSTALLED, System.currentTimeMillis(), s));
+
+                    }
                 }
             }
             if (event.getType() == BundleEvent.RESOLVED) {
@@ -164,117 +194,182 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         }
     }
 
-    public Subsystem install(String url) {
+    public Future<Subsystem> install(String url) {
         return install(url, null);
     }
 
-    public synchronized Subsystem install(String url, final InputStream is) throws SubsystemException {
+    public synchronized Future<Subsystem> install(final String url, final InputStream is) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Installing subsystem url {}", url);
         }
-        // let's check if the subsystem has been installed or not first before proceed installation
+        
+        // check if the subsystem install is already in progress
+        Future<Subsystem> futureToReturn = installInProgress.get(url);
+        if (futureToReturn != null) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("A Future<Subsystem> containing the same location identifier {} is already in installing.", url);
+            }       
+            return futureToReturn;
+        }
+
+        // check if the subsystem has already been installed before proceeding with the installation
         Subsystem toReturn = getInstalledSubsytem(url);      
         if (toReturn != null) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("A subsystem containing the same location identifier {} is already installed", url);
             }
-            return toReturn;
+            return new ImmediateFuture<Subsystem>(toReturn);
         }
         
-        Resource subsystemResource = new ResourceImpl(null, null, SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, url, Collections.<String, String>emptyMap()) {
-            @Override
-            public InputStream open() throws IOException {
-                if (is != null) {
-                    return is;
-                }
-                return super.open();
+        // Create a new Future to handle the installation of the Subsystem
+        SubsystemFutureTask installTask = new SubsystemFutureTask(new Runnable() {
+            public void run() {
+                Resource subsystemResource = new ResourceImpl(null, null,
+                        SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, url,
+                        Collections.<String, String> emptyMap()) {
+                    @Override
+                    public InputStream open() throws IOException {
+                        if (is != null) {
+                            return is;
+                        }
+                        return super.open();
+                    }
+                };
+                SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
+                SubsystemResourceProcessor.SubsystemSession session = processor
+                        .createSession(context);
+                boolean success = false;
+                try {
+                    session.process(subsystemResource);
+                    session.prepare();
+                    session.commit();
+                    success = true;
+                    
+                } finally {
+                    if (!success) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug(
+                                    "Installing subsystem url {} is not successful, rollback now",
+                                    url);
+                        }
+                        session.rollback();
+                    }
+                }                
             }
-        };
-        SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
-        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(context);
-        boolean success = false;
-        try {
-            session.process(subsystemResource);
-            session.prepare();
-            session.commit();
-            success = true;
-        } finally {
-            if (!success) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Installing subsystem url {} is not successful, rollback now", url);
-                }
-                session.rollback();
-            }
-        }
-
-        // let's get the one we just installed
-        if (success) {
-            toReturn = getInstalledSubsytem(url);       
-            if (toReturn != null) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Installing subsystem url {} is successful", url);
-                }
-                
-                // emit the subsystem event
-                eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.INSTALLED, System.currentTimeMillis(), toReturn));
-
-                return toReturn;
-            }
-        }
+        }, context, url, is);
         
-        throw new IllegalStateException();
+        // Kick off the future and return it
+        installInProgress.put(url, installTask);
+
+        execute(installTask);
+
+        return installTask;
     }
 
-    public void update(Subsystem subsystem) throws SubsystemException {
-        update(subsystem, null);
+    /**
+     * Execute the Future either using an Executor from the service registry or
+     * a new Thread.
+     * 
+     * @param installTask
+     */
+    private void execute(SubsystemFutureTask installTask) {
+        Executor ex = (Executor) executorTracker.getService();
+        if (ex != null) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Using Executor to execute Subsystem Install");
+            }
+            ex.execute(installTask);
+        } else {
+            // Create own thread if no executor is available
+            Thread thread = new Thread(installTask);
+            thread.start();
+        }
     }
 
-    public void update(final Subsystem subsystem, final InputStream is) throws SubsystemException {
+    public Future<Subsystem> update(Subsystem subsystem) throws SubsystemException {
+        return update(subsystem, null);
+    }
+
+    public Future<Subsystem> update(final Subsystem subsystem, final InputStream is) throws SubsystemException {
         if (subsystem.getState().equals(Subsystem.State.UNINSTALLED)) {
             throw new IllegalStateException("Unable to update subsystem as subsystem is already uninstalled");
         }
         
-        if (subsystem.getState().equals(Subsystem.State.ACTIVE) 
-                || subsystem.getState().equals(Subsystem.State.STARTING) 
-                || subsystem.getState().equals(Subsystem.State.STOPPING)) {
-            subsystem.stop();
-        }
-        
-        Resource subsystemResource = new ResourceImpl(subsystem.getSymbolicName(), subsystem.getVersion(), SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, subsystem.getLocation(), Collections.<String, String>emptyMap()) {
-            @Override
-            public InputStream open() throws IOException {
-                if (is != null) {
-                    return is;
-                }
-                // subsystem-updatelocation specified the manifest has higher priority than subsystem original location
-                String subsystemLoc = subsystem.getHeaders().get(SubsystemConstants.SUBSYSTEM_UPDATELOCATION);
-                if (subsystemLoc != null && subsystemLoc.length() > 0) {
-                    // we have a subsystem location let us use it
-                    return new URL(subsystemLoc).openStream();
-                }
-                return super.open();
-            }
-        };
-        SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
-        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(context);
-        boolean success = false;
-        try {
-            session.process(subsystemResource);
-            session.prepare();
-            session.commit();
-            success = true;
+        // check if the subsystem install is already in progress
+        Future<Subsystem> futureToReturn = updateInProgress.get(subsystem.getLocation());
+        if (futureToReturn != null) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Updating subsystem {} is successful", subsystem.getSymbolicName());
-            }
- 
-            // emit the subsystem event
-            eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.UPDATED, System.currentTimeMillis(), subsystem));
- 
-        } finally {
-            if (!success) {
-                session.rollback();
-            }
-        }
+                LOGGER.debug("A Future<Subsystem> containing the same location identifier {} is already updating.", subsystem.getLocation());
+            }       
+            return futureToReturn;
+        }        
+
+        // Create a new Future to handle the update of the Subsystem
+        SubsystemFutureTask updateTask = new SubsystemFutureTask(
+                new Runnable() {
+                    public void run() {
+                        if (subsystem.getState().equals(Subsystem.State.ACTIVE)
+                                || subsystem.getState().equals(
+                                        Subsystem.State.STARTING)
+                                || subsystem.getState().equals(
+                                        Subsystem.State.STOPPING)) {
+                            subsystem.stop();
+                        }
+                        Resource subsystemResource = new ResourceImpl(
+                                subsystem.getSymbolicName(),
+                                subsystem.getVersion(),
+                                SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM,
+                                subsystem.getLocation(),
+                                Collections.<String, String> emptyMap()) {
+                            @Override
+                            public InputStream open() throws IOException {
+                                if (is != null) {
+                                    return is;
+                                }
+                                // subsystem-updatelocation specified the
+                                // manifest has higher priority than subsystem
+                                // original location
+                                String subsystemLoc = subsystem
+                                        .getHeaders()
+                                        .get(SubsystemConstants.SUBSYSTEM_UPDATELOCATION);
+                                if (subsystemLoc != null
+                                        && subsystemLoc.length() > 0) {
+                                    // we have a subsystem location lets us use it
+                                    return new URL(subsystemLoc).openStream();
+                                }
+                                return super.open();
+                            }
+                        };
+                        SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
+                        SubsystemResourceProcessor.SubsystemSession session = processor
+                                .createSession(context);
+                        boolean success = false;
+                        try {
+                            session.process(subsystemResource);
+                            session.prepare();
+                            session.commit();
+                            success = true;
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug(
+                                        "Updating subsystem {} is successful",
+                                        subsystem.getSymbolicName());
+                            }
+
+                        } finally {
+                            if (!success) {
+                                session.rollback();
+                            }
+                        }
+                    }
+                }, context, subsystem.getLocation(), is);
+
+        // Kick off the future and return it
+        updateInProgress.put(subsystem.getLocation(), updateTask);
+
+        execute(updateTask);
+
+        return updateTask;
+        
     }
 
     public void uninstall(Subsystem subsystem) {
@@ -305,11 +400,6 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         }
     }
 
-    public boolean cancel() {
-        // TODO
-        return false;
-    }
-
     private Subsystem getInstalledSubsytem(String url) {
         for (Subsystem ss : getSubsystems()) {
             if (url.equals(ss.getLocation())) {
@@ -318,4 +408,5 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         }
         return null;
     }
+        
 }

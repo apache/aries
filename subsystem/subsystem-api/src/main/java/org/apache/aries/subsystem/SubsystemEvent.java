@@ -14,6 +14,7 @@
 package org.apache.aries.subsystem;
 
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Event sent to listeners when an operation has been performed on a subsystem.
@@ -65,13 +66,25 @@ public class SubsystemEvent {
         /**
          * Event type used to indicate a subsystem is stopping.
          */
-        STOPPING
+        STOPPING,
+        
+        /**
+         * Event type used to indicate that the operation failed (e.g. an exception was thrown during installation).
+         */
+        FAILED,
+        
+        /**
+         * Event type used to indicate that the operations was cancelled (e.g. an install was cancelled).
+         */
+        CANCELLED
     }
     private final Type type;
 
     private final long timestamp;
 
     private final Subsystem subsystem;
+    
+    private final String location;
 
     /**
      * Constructs a new subsystem event.
@@ -84,6 +97,21 @@ public class SubsystemEvent {
         this.type = type;
         this.timestamp = timestamp;
         this.subsystem = subsystem;
+        this.location = subsystem.getLocation();
+    }
+
+    /**
+     * Constructs a new subsystem event.
+     * 
+     * @param type The type of the event.  For example, INSTALLED.  See {@link SubsystemEvent.Type} for the list of event types.
+     * @param timestamp The timestamp for the event.
+     * @param location The location of the subsystem for failure/cancellation cases.
+     */
+    public SubsystemEvent(Type type, long timestamp, String location) {
+        this.type = type;
+        this.timestamp = timestamp;
+        this.location = location;
+        this.subsystem = null;
     }
 
     /**
@@ -110,6 +138,15 @@ public class SubsystemEvent {
      */
     public Subsystem getSubsystem() {
         return subsystem;
+    }
+
+    /**
+     * Gets the location for the subsystem.
+     * 
+     * @return the location of the subsystem.
+     */
+    public String getLocation() {
+        return location;
     }
 
 }

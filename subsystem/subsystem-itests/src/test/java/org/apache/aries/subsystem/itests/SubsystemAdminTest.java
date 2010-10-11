@@ -37,6 +37,8 @@ import java.util.Currency;
 import java.util.Hashtable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 
 import org.junit.Before;
@@ -100,7 +102,8 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
         File f = new File("test.eba");
         // capture initial bundle size
         int init = bundleContext.getBundles().length;
-        Subsystem subsystem = sa.install(f.toURI().toURL().toExternalForm());
+        Future<Subsystem> subsystemFuture = sa.install(f.toURI().toURL().toExternalForm());
+        Subsystem subsystem = subsystemFuture.get(5, TimeUnit.SECONDS);
         assertNotNull("subsystem should not be null", subsystem);
         
         assertTrue("subsystem should have a unique id", subsystem.getSubsystemId() > 0);

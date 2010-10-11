@@ -58,6 +58,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.executor</artifactId>
+            <scope>test</scope>
+            <version>0.3-incubating-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
