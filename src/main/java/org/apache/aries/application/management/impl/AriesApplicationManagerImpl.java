@@ -69,7 +69,9 @@ import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceException;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -282,17 +284,31 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   } 
 
   public AriesApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException {
+    
     if (!app.isResolved()) {
-        app = resolve(app);
+      app = resolve(app);
+    }
+  
+    // Register an Application Repository for this application if none exists
+    String appScope = app.getApplicationMetadata().getApplicationScope();    
+    ServiceReference[] ref = null;
+    try {
+        String filter = "(" + BundleRepository.REPOSITORY_SCOPE + "=" + appScope + ")";
+        ref = _bundleContext.getServiceReferences(BundleRepository.class.getName(),filter);
+    } 
+    catch (InvalidSyntaxException e) {
+        // Something went wrong attempting to find a service so we will act as if 
+        // there is no existing service.
     }
     
-    // Register an Application Repository for this application
-    Dictionary dict = new Hashtable();
-    dict.put(BundleRepository.REPOSITORY_SCOPE, app.getApplicationMetadata().getApplicationScope());
-    _bundleContext.registerService(BundleRepository.class.getName(), 
-        new ApplicationRepository(app), 
-        dict);
-    
+    if (ref == null || ref.length == 0) {
+        Dictionary dict = new Hashtable();
+        dict.put(BundleRepository.REPOSITORY_SCOPE, appScope);
+        _bundleContext.registerService(BundleRepository.class.getName(), 
+            new ApplicationRepository(app), 
+            dict);
+    }
+  
     AriesApplicationContext result = _applicationContextManager.getApplicationContext(app);
     return result;
   }
