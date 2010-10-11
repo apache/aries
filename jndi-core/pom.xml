@@ -32,9 +32,6 @@
     </description>
 
     <properties>
-        <aries.osgi.export.pkg>
-            org.apache.aries.jndi.urls
-        </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.jndi*
         </aries.osgi.private.pkg>
