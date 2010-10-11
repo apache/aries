@@ -159,9 +159,10 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     
     if (imports != null && !imports.isEmpty())
     {
-      String importString = imports.toString();
-      importString = importString.substring(1, importString.length()-1); // Remove [ and ] characters
-      frameworkBundleManifest.put(Constants.IMPORT_PACKAGE, importString);
+      StringBuffer buffer = new StringBuffer();
+      for (Content i : imports)
+        buffer.append(InstallUtils.contentToString(i) + ",");
+      frameworkBundleManifest.put(Constants.IMPORT_PACKAGE, buffer.substring(0, buffer.length()-1));
     }
     
     /**
