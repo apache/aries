@@ -50,6 +50,8 @@ import org.osgi.service.composite.CompositeAdmin;
 import org.osgi.service.composite.CompositeBundle;
 import org.osgi.service.composite.CompositeConstants;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.aries.subsystem.core.internal.FileUtils.closeQuietly;
 
@@ -58,6 +60,9 @@ import static org.osgi.service.composite.CompositeConstants.*;
 import static org.apache.aries.subsystem.SubsystemConstants.*;
 
 public class SubsystemResourceProcessor implements ResourceProcessor {
+
+    private static final Logger LOGGER = LoggerFactory
+    .getLogger(SubsystemResourceProcessor.class);
 
     private static final Version SUBSYSTEM_MANIFEST_VERSION = new Version("1.0");
 
@@ -94,6 +99,12 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
          */
         private void process(Resource res, Manifest manifest) {
 
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(
+                        "Installing subsystem resource {}",
+                        res.getLocation());
+            }            
+            
             try {
 
                 CompositeAdmin admin = getService(CompositeAdmin.class);
@@ -130,6 +141,13 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                 List<Resource> content = new ArrayList<Resource>();
                 String contentHeader = manifest.getMainAttributes().getValue(
                         SUBSYSTEM_CONTENT);
+                
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(
+                            "Installing subsystem content {}",
+                            contentHeader);
+                }                         
+                
                 Clause[] contentClauses = Parser.parseHeader(contentHeader);
                 for (Clause c : contentClauses) {
                     Resource r = resolver.find(c.toString());
