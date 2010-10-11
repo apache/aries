@@ -30,7 +30,10 @@ public final class BundleWideTxData
   
   public BundleWideTxData(String value,
           String method, String bean) {
-      this.value = value;
+      if(value == null || value.isEmpty())
+        this.value = "Required";
+      else
+        this.value = value;
       setupPatterns(method, bean);  
   }
  
