@@ -125,6 +125,7 @@
         <module>subsystem-api</module>
         <module>subsystem-core</module>
         <module>subsystem-obr</module>
+        <module>subsystem-executor</module>
         <module>subsystem-install</module>
         <module>subsystem-itests</module>
 	</modules>

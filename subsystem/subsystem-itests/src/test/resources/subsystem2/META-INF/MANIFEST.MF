@@ -4,4 +4,3 @@ Subsystem-SymbolicName: felix-file-install2
 Subsystem-Version: 2.0.8
 Subsystem-Content: org.apache.felix.fileinstall;version=2.0.8
 
-
