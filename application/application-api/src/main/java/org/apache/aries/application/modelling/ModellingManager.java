@@ -65,6 +65,14 @@ public interface ModellingManager {
       Collection<ImportedService> importedServices,
       Collection<ExportedService> exportedServices)
       throws InvalidAttributeException;
+  
+  ModelledResource getModelledResource (String fileURI, 
+      Attributes bundleAttributes,
+      ExportedBundle exportedBundle, 
+      ResourceType resourceType, 
+      Collection<ImportedService> importedServices,
+      Collection<ExportedService> exportedServices)
+      throws InvalidAttributeException;
 
   ParsedServiceElements getParsedServiceElements(
       Collection<ExportedService> services,
