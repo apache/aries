@@ -33,6 +33,7 @@ import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ParsedServiceElements;
+import org.apache.aries.application.modelling.ResourceType;
 
 public class ModellingManagerImpl implements ModellingManager
 {
@@ -128,5 +129,11 @@ public class ModellingManagerImpl implements ModellingManager
   public ParsedServiceElements getParsedServiceElements ( Collection<ExportedService> services, 
       Collection<ImportedService> references) {
     return new ParsedServiceElementsImpl(services, references);
+  }
+  public ModelledResource getModelledResource(String fileURI,
+      Attributes bundleAttributes, ExportedBundle exportedBundle,
+      ResourceType resourceType, Collection<ImportedService> importedServices,
+      Collection<ExportedService> exportedServices) throws InvalidAttributeException {
+    return new ModelledResourceImpl(fileURI, bundleAttributes, exportedBundle, resourceType, importedServices, exportedServices);
   }
 }
