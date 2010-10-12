@@ -34,6 +34,7 @@ import org.apache.aries.jndi.OSGiInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
 import org.apache.aries.jndi.ProviderAdminServiceFactory;
 import org.apache.aries.jndi.Utils;
+import org.apache.aries.jndi.spi.EnvironmentAugmentation;
 import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
 import org.osgi.framework.BundleActivator;
@@ -56,6 +57,7 @@ public class Activator implements BundleActivator {
     private static ServiceTracker urlObjectFactoryFinders;
     private static ServiceTracker initialContextFactories;
     private static ServiceTracker objectFactories;
+    private static ServiceTracker environmentAugmentors;
     
     public void start(BundleContext context) {
         
@@ -63,6 +65,7 @@ public class Activator implements BundleActivator {
         objectFactories = initServiceTracker(context, ObjectFactory.class, ServiceTrackerCustomizers.URL_FACTORY_CACHE);
         icfBuilders = initServiceTracker(context, InitialContextFactoryBuilder.class, ServiceTrackerCustomizers.LAZY);
         urlObjectFactoryFinders = initServiceTracker(context, URLObjectFactoryFinder.class, ServiceTrackerCustomizers.LAZY);
+        environmentAugmentors = initServiceTracker(context, EnvironmentAugmentation.class, null);
         
         try {
             OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder();
@@ -121,7 +124,7 @@ public class Activator implements BundleActivator {
         urlObjectFactoryFinders.close();
         objectFactories.close();
         initialContextFactories.close();
-        
+        environmentAugmentors.close();
     }
     
     /*
@@ -167,5 +170,10 @@ public class Activator implements BundleActivator {
       if (refs != null) Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
       
       return refs;
+    }
+    
+    public static Object[] getEnvironmentAugmentors()
+    {
+      return environmentAugmentors.getServices();
     }
 }
