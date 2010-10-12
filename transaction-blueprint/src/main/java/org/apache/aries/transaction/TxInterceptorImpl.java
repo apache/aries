@@ -63,7 +63,8 @@ public class TxInterceptorImpl implements Interceptor {
          catch (Exception e)
          {
            // we do not throw the exception since there already is one, but we need to log it
-           LOGGER.error("An exception has occured.", e);
+           LOGGER.warn("An exception occurred during transaction clean up, which will be discared in favour of an exception" +
+           		" already thrown.", e);
          }
        } else {
          // TODO: what now?
