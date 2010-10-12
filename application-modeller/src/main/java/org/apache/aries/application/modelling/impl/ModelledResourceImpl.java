@@ -71,8 +71,8 @@ public class ModelledResourceImpl implements ModelledResource
   private final Collection<ExportedPackage> _exportedPackages;
   private final Collection<ImportedPackage> _importedPackages;
   private final Collection<ImportedBundle> _requiredBundles;
-  private final ExportedBundle _exportedBundle;
-  private final ResourceType _resourceType;
+  private final ExportedBundle _exportedBundle; 
+  private final ResourceType _resourceType;     
   
   /**
    * Construct a new {@link ModelledResourceImpl} for the following manifest and services
@@ -97,11 +97,48 @@ public class ModelledResourceImpl implements ModelledResource
    * @throws InvalidAttributeException
    */
   @SuppressWarnings("deprecation")
+  public ModelledResourceImpl (String fileURI, Attributes bundleAttributes, ExportedBundle exportedBundle, ResourceType resourceType,
+      Collection<ImportedService> importedServices, 
+      Collection<ExportedService> exportedServices) throws InvalidAttributeException
+  { 
+    this (fileURI, bundleAttributes, resourceType, exportedBundle, importedServices, exportedServices);
+    logger.debug(LOG_ENTRY, "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices});
+    logger.debug(LOG_EXIT, "ModelledResourceImpl");
+  }
+
+  /**
+   * Construct a new {@link ModelledResourceImpl} for the following manifest and services
+   * @param fileURI The location of the bundle, may be null, which indicates a by value bundle
+   * @param bundleAttributes The bundle manifest, must not be null
+   * @param importedServices The blueprint references defined by the bundle. May be null
+   * @param exportedServices The blueprint services exported by the bundle. May be null
+   * @throws InvalidAttributeException
+   */
+  @SuppressWarnings("deprecation")
   public ModelledResourceImpl (String fileURI, Attributes bundleAttributes, 
       Collection<ImportedService> importedServices, 
       Collection<ExportedService> exportedServices) throws InvalidAttributeException
   { 
+    this (fileURI, bundleAttributes, ResourceType.BUNDLE, null, importedServices, exportedServices );
     logger.debug(LOG_ENTRY, "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices});
+    logger.debug(LOG_EXIT, "ModelledResourceImpl");
+  }
+  
+  public ModelledResourceImpl (String fileURI, Attributes bundleAttributes, 
+      ResourceType resourceType, ExportedBundle exportedBundle,
+      Collection<ImportedService> importedServices, 
+      Collection<ExportedService> exportedServices 
+      ) throws InvalidAttributeException 
+  {
+    logger.debug(LOG_ENTRY, "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices, 
+        resourceType});
+
+    if (exportedBundle == null) { 
+      _exportedBundle = new ExportedBundleImpl (bundleAttributes);
+    } else { 
+      _exportedBundle = exportedBundle;
+    }
+    _resourceType = resourceType;
     _fileURI = fileURI;
     if(importedServices != null)
       _importedServices = new ArrayList<ImportedService> (importedServices);
@@ -112,12 +149,6 @@ public class ModelledResourceImpl implements ModelledResource
       _exportedServices = new ArrayList<ExportedService> (exportedServices);
     else
       _exportedServices = new ArrayList<ExportedService>();
-    
-    
-      _resourceType = ResourceType.BUNDLE;
-      _exportedBundle = new ExportedBundleImpl (bundleAttributes);
-  
-
     
     _exportedPackages = new ArrayList<ExportedPackage>();
     String packageExports = bundleAttributes.getValue(EXPORT_PACKAGE);
@@ -130,7 +161,7 @@ public class ModelledResourceImpl implements ModelledResource
     
       }
     }
-
+  
     _importedPackages = new ArrayList<ImportedPackage>();
     String packageImports = bundleAttributes.getValue(IMPORT_PACKAGE);
     if (packageImports != null) {
@@ -156,7 +187,7 @@ public class ModelledResourceImpl implements ModelledResource
         _exportedServices.add(new ExportedServiceImpl(exportedService.getName(), exportedService.getValue()));
       }
     }
-
+  
     String serviceImports =null;
     if (_resourceType == ResourceType.BUNDLE) { 
       serviceImports = bundleAttributes.getValue(IMPORT_SERVICE);
@@ -204,7 +235,6 @@ public class ModelledResourceImpl implements ModelledResource
         }
       }
     }
-
     logger.debug(LOG_EXIT, "ModelledResourceImpl");
   }
 
