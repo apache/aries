@@ -40,6 +40,8 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
 	public Context getInitialContext(Hashtable<?, ?> environment) 
 	    throws NamingException {
 	    
+	    Utils.augmentEnvironment(environment);
+	  
 	    BundleContext context = Utils.getBundleContext(environment, InitialContext.class.getName());	    
 	    if (context == null) {
 	        context = Utils.getBundleContext(environment, InitialDirContext.class.getName());
