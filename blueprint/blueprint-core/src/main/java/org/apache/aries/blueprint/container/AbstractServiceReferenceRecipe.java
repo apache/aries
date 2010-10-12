@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
-import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
@@ -48,7 +47,6 @@ import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
 import org.apache.aries.blueprint.proxy.UnableToProxyException;
 import org.apache.aries.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -122,10 +120,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         final ExtendedBlueprintContainer blueprintContainer,
         ServiceReferenceMetadata metadata) {
       
-      String typeName = metadata.getInterface();
-      Class typeClass = metadata instanceof ExtendedServiceReferenceMetadata
-                                ? ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() : null;
-      if (typeName == null && typeClass == null) {
+      Class typeClass = getInterfaceClass();
+      if (typeClass == null) {
         return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
           public ClassLoader run() {
             return new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
@@ -134,17 +130,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         });
       }
       
-      final ClassLoader interfaceClassLoader;
-      if (typeClass != null) {
-          interfaceClassLoader = typeClass.getClassLoader();
-      } else {
-        try {
-          Bundle clientBundle = blueprintContainer.getBundleContext().getBundle();
-          interfaceClassLoader = clientBundle.loadClass(typeName).getClassLoader();
-        } catch (ClassNotFoundException cnfe) {
-          throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, cnfe);
-        }
-      }
+      final ClassLoader interfaceClassLoader = typeClass.getClassLoader();
       
       return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
         public ClassLoader run() {
@@ -248,30 +234,25 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     protected void createListeners() {
-        try {
             if (listenersRecipe != null) {
                 List<Listener> listeners = (List<Listener>) listenersRecipe.create();
                 for (Listener listener : listeners) {
-                    List<Class> cl = new ArrayList<Class>();
-                    if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
-                        cl.add(((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface());
-                    } else if (metadata.getInterface() != null) {
-                        cl.addAll(loadAllClasses(Collections.singletonList(metadata.getInterface())));
+                    List<Class> classList = new ArrayList<Class>();
+                    Class clz = getInterfaceClass();
+                    if (clz != null) { 
+                        classList.add(clz);
                     } else {
-                        cl.add(Object.class);
+                        classList.add(Object.class);
                     }
-                    listener.init(cl);
+                    listener.init(classList);
                 }
                 this.listeners = listeners;
             } else {
                 this.listeners = Collections.emptyList();
             }
-        } catch (ClassNotFoundException e) {
-            throw new ComponentDefinitionException(e);
-        }
     }
 
-    protected List<Class> loadAllClasses(Iterable<String> interfaceNames) throws ClassNotFoundException {
+    protected List<Class> loadAllClasses(Iterable<String> interfaceNames) {
         List<Class> classes = new ArrayList<Class>();
         for (String name : interfaceNames) {
             Class clazz = loadClass(name);
@@ -312,13 +293,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             }
             if (!proxyClass) {
                 Set<Class> interfaces = new HashSet<Class>();
-                if (metadata.getInterface() != null) {
-                    interfaces.add(loadClass(metadata.getInterface()));
-                }
-                if (metadata instanceof ExtendedReferenceListMetadata
-                            && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
-                        interfaces.add(((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface());
-                    }
+                Class clz = getInterfaceClass();
+                if (clz != null) interfaces.add(clz);
+                
                 for (Class cl : interfaces) {
                     if (!cl.isInterface()) {
                         throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='classes' attribute needs to be added to this service reference.");
@@ -382,6 +359,22 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             untrack(ref);
         }
         setSatisfied(satisfied);
+    }
+    
+    protected Class getInterfaceClass() {
+        Class clz = getRuntimeClass(metadata);
+        if (clz != null)
+            return clz;
+        else if (metadata.getInterface() != null)
+            return loadClass(metadata.getInterface());
+        return null;
+    }
+    
+    protected static Class getRuntimeClass(ServiceReferenceMetadata metadata) {
+        if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
+           return ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface();
+        } 
+        return null;
     }
 
     protected void setSatisfied(boolean s) {
@@ -576,8 +569,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
         // Handle interfaces
         String interfaceName = metadata.getInterface();
-        if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
-            interfaceName = ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface().getName();
+        Class runtimeClass = getRuntimeClass(metadata);
+        if (runtimeClass != null) {
+            interfaceName = runtimeClass.getName();
         }
         if (interfaceName != null && interfaceName.length() > 0) {
             members.add("(" + Constants.OBJECTCLASS + "=" + interfaceName + ")");
