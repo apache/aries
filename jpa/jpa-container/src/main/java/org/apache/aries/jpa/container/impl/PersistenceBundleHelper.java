@@ -24,12 +24,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,33 +62,46 @@ public class PersistenceBundleHelper
    * @return
    */
   public static Collection<PersistenceDescriptor> findPersistenceXmlFiles(Bundle bundle)
-  {    
-    String header = (String) bundle.getHeaders().get(PERSISTENCE_UNIT_HEADER);
-    if (header == null) {
-      return Collections.emptySet();
-    }
-      
-    // Do not scan WABs
-    if (bundle.getHeaders().get(WEB_CONTEXT_PATH_HEADER) != null) {
-      _logger.warn("The bundle " + bundle.getSymbolicName() + " specifies both the " + 
-                  PERSISTENCE_UNIT_HEADER + " and the " + WEB_CONTEXT_PATH_HEADER + " header. WABs that use JPA " +
-                  "are not supported as part of the OSGi JPA specification. No persistence descriptors will be processed" +
-                  "for this bundle.");
-      return Collections.emptySet();
-    }
+  { 
+    Dictionary<String, String> headers = bundle.getHeaders();
+    String metaPersistence = headers.get(PERSISTENCE_UNIT_HEADER);
+    String webContextPath = headers.get(WEB_CONTEXT_PATH_HEADER);
     
+    Collection<String> locations;
+    
+    if (metaPersistence == null) {
+      if(webContextPath == null) {
+        return Collections.emptySet();
+      } else {
+        // WABs behave a bit differently to normal bundles. We process them even if they don't have a Meta-Persistence
+       
+        if(_logger.isInfoEnabled())
+          _logger.info("The bundle " + bundle.getSymbolicName() + " specifies both the " + 
+                     WEB_CONTEXT_PATH_HEADER + " header, but it does not specify the " + PERSISTENCE_UNIT_HEADER + " header." +
+                     " This bundle will be scanned for persistence descriptors in any locations defined by the JPA specification" +
+                     "that are on the Classpath.");
+        
+        String bundleClassPath = headers.get(Constants.BUNDLE_CLASSPATH);
+        
+        locations = findWABClassPathLocations(bundleClassPath);
+      }
+    } else {
+
+      //Always search the default location, and use a set so we don't search the same
+      //location twice!
+      locations = new HashSet<String>();
+      locations.add(PERSISTENCE_XML);
+      
+      if(!!!metaPersistence.isEmpty()) {
+        //Split apart the header to get the individual entries
+        for (String s : metaPersistence.split(",")) {
+          locations.add(s.trim());
+        }
+      }
+    }
+
     //The files we have found
     Collection<PersistenceDescriptor> persistenceXmlFiles = new ArrayList<PersistenceDescriptor>();
-    
-    //Always search the default location, and use a set so we don't search the same
-    //location twice!
-    Collection<String> locations = new HashSet<String>();
-    locations.add(PERSISTENCE_XML);
-          
-    //Split apart the header to get the individual entries
-    for (String s : header.split(",")) {
-      locations.add(s.trim());
-    }
     
     //Find the file and add it to our list
     for (String location : locations) {
@@ -120,6 +135,45 @@ public class PersistenceBundleHelper
     }
 
     return persistenceXmlFiles;
+  }
+
+  private static Collection<String> findWABClassPathLocations(String bundleClassPath) {
+    
+    Collection<String> locations = new HashSet<String>();
+    
+    if(bundleClassPath == null || bundleClassPath.isEmpty()) {
+      locations.add(PERSISTENCE_XML); 
+    } else {
+      //Remove quoted parameters (that may have , or ; in them)
+      bundleClassPath = bundleClassPath.replaceAll(";[^;,]*?=\\s*\".*?\"", "");
+      //Remove any other parameters
+      bundleClassPath = bundleClassPath.replaceAll(";[^;,]*?=[^;,]*", ",");
+      //Remove any ";" left
+      bundleClassPath = bundleClassPath.replace(';', ',');
+      
+      //Tidy up any duplicate "," we have ended up with
+      bundleClassPath = bundleClassPath.replaceAll(",+", ",");
+      
+      //Finally we have the entries we want
+      String[] entries = bundleClassPath.split(",");
+      
+      for(String entry : entries) {
+        entry = entry.trim();
+        if(entry.isEmpty())
+          continue;
+        else if(".".equals(entry)) {
+          locations.add(PERSISTENCE_XML);
+        } else if(entry.endsWith(".jar")) {
+          locations.add(entry + "!/" + PERSISTENCE_XML);
+        }  else {
+          if(!!!entry.endsWith("/"))
+            entry = entry + "/";
+          
+          locations.add(entry + PERSISTENCE_XML);
+        }
+      }
+    }
+    return locations;
   }
 
   /**
