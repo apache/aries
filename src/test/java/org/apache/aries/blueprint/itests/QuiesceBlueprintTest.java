@@ -68,8 +68,6 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
 		return calls;
 	}
   }
-
-  private static final int DEFAULT_TIMEOUT = 30000;
   
   @Inject
   protected BundleContext bundleContext;
