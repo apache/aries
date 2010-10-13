@@ -21,6 +21,8 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
+//import org.ops4j.pax.exam.container.def.options.VMOption;
+//import org.ops4j.pax.exam.options.TimeoutOption
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +55,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(JUnit4TestRunner.class)
 public class QuiesceManagerTest {
-    public static final long DEFAULT_TIMEOUT = 30000;
+    public static final long DEFAULT_TIMEOUT = 60000;
     private QuiesceManager manager;
     private Bundle b1;
     private Bundle b2;
@@ -310,6 +312,9 @@ public class QuiesceManagerTest {
                 mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
                 mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api"),
                 mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.manager"),
+                
+                //new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+                //new TimeoutOption( 0 ),
 
                 equinox().version("3.5.0"));
         options = updateOptions(options);
