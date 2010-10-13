@@ -56,7 +56,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractIntegrationTest {
 
-    public static final long DEFAULT_TIMEOUT = 30000;
+    public static final long DEFAULT_TIMEOUT = 60000;
 
     private List<ServiceTracker> srs;
 

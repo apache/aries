@@ -53,7 +53,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", DEFAULT_TIMEOUT);
         assertNotNull(blueprintContainer);
 
         Foo foo = (Foo) blueprintContainer.getComponentInstance("none-managed");
@@ -87,7 +87,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", DEFAULT_TIMEOUT);
         assertNotNull(blueprintContainer);
 
         Foo foo = (Foo) blueprintContainer.getComponentInstance("container-managed");
@@ -120,7 +120,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", DEFAULT_TIMEOUT);
         assertNotNull(blueprintContainer);
 
         Foo foo = (Foo) blueprintContainer.getComponentInstance("component-managed");
@@ -156,7 +156,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", DEFAULT_TIMEOUT);
         assertNotNull(blueprintContainer);
 
         Thread.sleep(5000);

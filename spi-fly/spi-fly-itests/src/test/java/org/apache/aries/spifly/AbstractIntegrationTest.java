@@ -43,7 +43,7 @@ import org.osgi.util.tracker.ServiceTracker;
 @RunWith(JUnit4TestRunner.class)
 public class AbstractIntegrationTest {
 
-    public static final long DEFAULT_TIMEOUT = 30000;
+    public static final long DEFAULT_TIMEOUT = 60000;
 
     @Inject
     protected BundleContext bundleContext;
