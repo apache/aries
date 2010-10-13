@@ -28,10 +28,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -176,20 +179,51 @@ public class PersistenceBundleLifecycleTest
   public void testManager_WABandJPABundle() throws Exception 
   {
     BundleContext ctx = preExistingBundleSetup();
-    setupPersistenceBundle("file23", "");
+    setupPersistenceBundle("file4", "");
     persistenceBundle.getHeaders().put("Web-ContextPath", "/test");
 
     // make sure we don't succeed because of not having a provider
     Hashtable<String,Object> hash1 = new Hashtable<String, Object>();
-    hash1.put("javax.persistence.provider", "use.this.Provider");
+    hash1.put("javax.persistence.provider", "no.such.Provider");
     hash1.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
-
+    ServiceReference ref = reg.getReference();
+    
     mgr.start(ctx);
     
-    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
-    assertNull("We should not have an EntityManagerFactoryManager", getTrackedObject());
+    //Check the persistence.xml was looked for
+    Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
+    //Check we didn't use getResource()
+    Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getResource", String.class));
+    
+    testSuccessfulCreationEvent(ref, ctx, 1);
+    testSuccessfulRegistrationEvent(ref, ctx, 1);
+    
+    assertNotNull("We should not have an EntityManagerFactoryManager", getTrackedObject());
+  }
+  
+  @Test
+  public void testManager_WABNoMetaPersistence() throws Exception {
+   
+    
+    BundleContext extenderContext = preExistingBundleSetup();
+    
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
+    hash1.put("javax.persistence.provider", "no.such.Provider");
+    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+        pp, hash1 );
+    
+    ServiceReference ref = reg.getReference();
+    setupWABBundle();
+    
+    mgr.start(extenderContext);
+    
+    
+    Skeleton.getSkeleton(persistenceBundle).assertCalledExactNumberOfTimes(new MethodCall(Bundle.class, "getEntry", String.class), 3);
+    
+    testSuccessfulCreationEvent(ref, extenderContext, 3);
+    testSuccessfulRegistrationEvent(ref, extenderContext, 3, "webInfClassesOnClassPath", "jarOne", "jarTwo");
   }
 
   @Test
@@ -1203,6 +1237,66 @@ public class PersistenceBundleLifecycleTest
     
   }
 
+  private void setupWABBundle() throws Exception {
+    
+    persistenceBundle.getHeaders().put("Web-ContextPath", "/test2");
+    persistenceBundle.getHeaders().put("Bundle-ClassPath", "WEB-INF/classes/onClasspath, WEB-INF/lib/onClasspath.jar;" +
+    		" WEB-INF/lib/alsoOnClasspath.jar; prop=\"value\"; complexProp:=\"a,b\";complexProp2:= \"c;d\";anotherProp=anotherValue; yetMoreProp=something");
+    
+    Skeleton skel = Skeleton.getSkeleton(persistenceBundle);
+    skel.setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.ACTIVE);
+
+    URL xml = getClass().getClassLoader().getResource("file23/META-INF/persistence.xml");
+    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"), xml);
+    
+    xml = getClass().getClassLoader().getResource("file23/WEB-INF/classes/onClasspath/META-INF/persistence.xml");
+    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "WEB-INF/classes/onClasspath/META-INF/persistence.xml"), xml);
+    
+    xml = getClass().getClassLoader().getResource("file23/WEB-INF/classes/notOnClasspath/META-INF/persistence.xml");
+    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "WEB-INF/classes/notOnClasspath/META-INF/persistence.xml"), xml);
+    
+    URL root = getClass().getClassLoader().getResource("file23");
+    
+    buildJarFile(skel, root, "WEB-INF/lib/onClasspath.jar", "jarOne");
+    buildJarFile(skel, root, "WEB-INF/lib/alsoOnClasspath.jar", "jarTwo");
+    
+    buildJarFile(skel, root, "WEB-INF/lib/notOnClasspath.jar", "jarNotOnClassPath");
+    
+    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("0.0.0"));
+    
+  }
+
+  private void buildJarFile(Skeleton skel, URL root, String filePath, String pUnitName) throws URISyntaxException,
+      IOException, FileNotFoundException {
+    
+    File f = new File(new File(root.toURI()), filePath);
+    
+    f.getParentFile().mkdirs();
+    
+    JarOutputStream jos = new JarOutputStream(new FileOutputStream(f));
+    
+    jos.putNextEntry(new ZipEntry("META-INF/persistence.xml"));
+    
+    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(jos));
+    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    writer.newLine();
+    writer.write("<persistence xmlns=\"http://java.sun.com/xml/ns/persistence\"");
+    writer.newLine();
+    writer.write("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+    writer.newLine();    
+    writer.write("xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd\"");
+    writer.newLine();
+    writer.write("version=\"1.0\">");
+    writer.newLine();
+    writer.write("<persistence-unit name=\"" + pUnitName + "\"/>");
+    writer.newLine();
+    writer.write("</persistence>");
+    
+    writer.close();
+    
+    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", filePath), f.toURI().toURL());
+  }
+  
   private void setupPersistenceBundle(String root, String header) throws MalformedURLException
   {
     persistenceBundle.getHeaders().put("Meta-Persistence", header);
