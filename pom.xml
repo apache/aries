@@ -33,7 +33,9 @@
 
     <properties>
         <aries.osgi.private.pkg>
-            org.apache.aries.jndi*
+            org.apache.aries.jndi,
+            org.apache.aries.jndi.startup,
+            org.apache.aries.jndi.tracker
         </aries.osgi.private.pkg>
         <aries.osgi.activator>
             org.apache.aries.jndi.startup.Activator
