@@ -94,7 +94,7 @@ public class AbstractMultiBundleTest extends AbstractIntegrationTest{
         //bundleb's container will hold the beans we need to query to check the function
         //provided by bundlea functioned as expected
         BlueprintContainer beanContainer = 
-            getBlueprintContainerForBundle( bundleContext , "org.apache.aries.blueprint.testbundleb", 5000);
+            getBlueprintContainerForBundle( bundleContext , "org.apache.aries.blueprint.testbundleb", DEFAULT_TIMEOUT);
         assertNotNull(beanContainer);
 
         //TestBeanA should have the values below, no interference should be present from other sources.
@@ -122,7 +122,7 @@ public class AbstractMultiBundleTest extends AbstractIntegrationTest{
        
         //handlers are in bundlea, with its own container.
         BlueprintContainer handlerContainer = 
-            getBlueprintContainerForBundle( bundleContext , "org.apache.aries.blueprint.testbundlea", 5000);
+            getBlueprintContainerForBundle( bundleContext , "org.apache.aries.blueprint.testbundlea", DEFAULT_TIMEOUT);
         assertNotNull(handlerContainer);
         
         Object ns1 = handlerContainer.getComponentInstance("NSHandlerOne");

@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractIntegrationTest {
 
-    public static final long DEFAULT_TIMEOUT = 30000;
+    public static final long DEFAULT_TIMEOUT = 60000;
 
     private List<ServiceTracker> srs;
 
@@ -230,7 +229,7 @@ public abstract class AbstractIntegrationTest {
     protected void testBlueprintContainer(BundleContext bc, Bundle bundle) throws Exception {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(
                 bc == null ? bundleContext : bc, "org.apache.aries.blueprint.sample",
-                5000);
+                DEFAULT_TIMEOUT);
         assertNotNull(blueprintContainer);
 
         Object obj = blueprintContainer.getComponentInstance("bar");
@@ -257,7 +256,7 @@ public abstract class AbstractIntegrationTest {
         assertTrue(foo.isInitialized());
         assertFalse(foo.isDestroyed());
 
-        obj = getOsgiService(bc == null ? bundleContext : bc, Foo.class, null, 5000);
+        obj = getOsgiService(bc == null ? bundleContext : bc, Foo.class, null, DEFAULT_TIMEOUT);
         assertNotNull(obj);
         assertEquals(obj, foo);
         
