@@ -40,8 +40,8 @@ import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
-import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
+import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.apache.aries.application.management.spi.update.UpdateStrategy;
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.runtime.itests.util.IsolationTestUtils;
@@ -262,6 +262,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.default.local.platform"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.platform.repo"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.postresolve.process"),
         mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
