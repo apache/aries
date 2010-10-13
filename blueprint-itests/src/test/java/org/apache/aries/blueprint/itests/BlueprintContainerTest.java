@@ -74,7 +74,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
 
       bundle.start();
       
-      getBlueprintContainerForBundle(bundleContext, "org.apache.aries.blueprint.sample",5000);
+      getBlueprintContainerForBundle(bundleContext, "org.apache.aries.blueprint.sample",DEFAULT_TIMEOUT);
       
       // no actual assertions, we just don't want to deadlock
     }
