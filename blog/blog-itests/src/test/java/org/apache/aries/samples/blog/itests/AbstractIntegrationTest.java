@@ -55,7 +55,7 @@ import org.osgi.util.tracker.ServiceTracker;
 public abstract class AbstractIntegrationTest {
 
     private static final int CONNECTION_TIMEOUT = 30000;
-    public static final long DEFAULT_TIMEOUT = 30000;
+    public static final long DEFAULT_TIMEOUT = 60000;
 
 	@Inject
   	protected BundleContext bundleContext;
