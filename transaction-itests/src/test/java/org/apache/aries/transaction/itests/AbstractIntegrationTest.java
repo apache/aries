@@ -25,6 +25,9 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+import org.ops4j.pax.exam.container.def.options.VMOption;
+import org.ops4j.pax.exam.options.TimeoutOption;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +52,8 @@ import org.osgi.util.tracker.ServiceTracker;
 @RunWith(JUnit4TestRunner.class)
 public abstract class AbstractIntegrationTest {
 
-    public static final long DEFAULT_TIMEOUT = 30000;
+    public static final long DEFAULT_TIMEOUT = 60000;
+//    public static final long DEFAULT_TIMEOUT = 0;
     
     private List<ServiceTracker> srs;
 
