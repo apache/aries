@@ -170,6 +170,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+             <groupId>org.apache.aries.application</groupId>
+             <artifactId>org.apache.aries.application.default.local.platform</artifactId>
+             <scope>test</scope>
+        </dependency>
+        <dependency>
         	<groupId>org.apache.aries.transaction</groupId>
         	<artifactId>org.apache.aries.transaction.blueprint</artifactId>
         	<version>0.3-incubating-SNAPSHOT</version>
