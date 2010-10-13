@@ -1,0 +1,5 @@
+Follow the following steps to run the itests -
+
+1. Build scope-api, scope-impl & subsystem-example
+2. Run org.apache.aries.subsystem.itests.JarCreator as java application, which will install helloIsolation and helloIsolationRef 1.0.0 & 2.0.0 jar in your local maven 2 repo.  This is needed for the itests
+3. Execute the itests using mvn clean install
