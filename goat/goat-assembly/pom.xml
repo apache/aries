@@ -152,6 +152,11 @@
             <artifactId>org.apache.aries.application.noop.postresolve.process</artifactId>            
         </dependency>
 
+		<dependency>
+             <groupId>org.apache.aries.application</groupId>
+             <artifactId>org.apache.aries.application.default.local.platform</artifactId>            
+        </dependency>
+		
         <dependency>
 			<groupId>org.apache.aries.samples.goat</groupId>
 			<artifactId>org.apache.aries.samples.goat.api</artifactId>
