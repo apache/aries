@@ -28,7 +28,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
 public interface BundleFramework
-{
+{  
+  public static final String SHARED_BUNDLE_FRAMEWORK = "shared.bundle.framework";
+  
   /**
    * Initialises the framework
    * @throws BundleException
