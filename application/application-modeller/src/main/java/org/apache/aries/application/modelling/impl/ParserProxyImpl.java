@@ -36,6 +36,7 @@ import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ParserService;
 import org.osgi.framework.BundleContext;
@@ -50,6 +51,7 @@ import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.jndi.JNDIConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -258,6 +260,12 @@ public class ParserProxyImpl implements ParserProxy {
       // JTA - detect interface
       blacklisted |= iface.equals("javax.transaction.UserTransaction");
       blacklisted |= iface.equals("javax.transaction.TransactionSynchronizationRegistry");
+      
+      // Don't provision against JNDI references
+      if (blueprintFilter != null && !blueprintFilter.trim().isEmpty()) { 
+        Map<String, String> filter = ManifestHeaderProcessor.parseFilter(blueprintFilter);
+        blacklisted |= filter.containsKey(JNDIConstants.JNDI_SERVICENAME);
+      }
     }
     _logger.debug(LOG_EXIT, "isNotBlacklisted", new Object[]{!blacklisted});
     return !blacklisted;
