@@ -23,16 +23,13 @@ package org.apache.aries.application.resolver.obr.impl;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
-import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.application.modelling.Consumer;
 import org.apache.aries.application.utils.FilterUtils;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.felix.bundlerepository.Capability;
-import org.apache.felix.bundlerepository.Property;
 import org.apache.felix.bundlerepository.Requirement;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
@@ -163,10 +160,10 @@ public class RequirementImpl implements Requirement
       try {
         Filter f = FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(filterToCreate));
         Hashtable<String, Object> hash = new Hashtable<String, Object>();
-        List<Property> props = Arrays.asList(cap.getProperties());
+        Map<String, String> props = cap.getPropertiesAsMap();
         if ((props != null) && (!!!props.isEmpty())) {
-          for (Property prop : props) {
-            hash.put(prop.getName(), prop.getValue());
+          for (Map.Entry<String, String> propertyPair : props.entrySet()) {
+            hash.put(propertyPair.getKey(), propertyPair.getValue());
           }
         }
 
