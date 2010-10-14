@@ -35,6 +35,7 @@ import java.util.Set;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
+import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
@@ -48,6 +49,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,8 +135,6 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
      * Set up framework config properties
      */
     Properties frameworkConfig = new Properties();
-    frameworkConfig.put("osgi.console", "0");
-
     String osgiFrameworkLocation = parentCtx.getProperty(FrameworkConstants.OSGI_FRAMEWORK);
     if (osgiFrameworkLocation != null) {
       frameworkConfig.put(FrameworkConstants.OSGI_FRAMEWORK, osgiFrameworkLocation);
@@ -151,6 +151,9 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     frameworkBundleManifest.put(Constants.BUNDLE_SYMBOLICNAME, deploymentMF.getApplicationSymbolicName());
     frameworkBundleManifest.put(Constants.BUNDLE_VERSION, deploymentMF.getApplicationVersion().toString());
 
+    /**
+     * Set up Import-Package header for framework manifest
+     */
     // Extract the import packages and remove anything we already have available in the current framework
     Collection<Content> imports = 
       InstallUtils.calculateImports(
@@ -163,6 +166,31 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
       for (Content i : imports)
         buffer.append(InstallUtils.contentToString(i) + ",");
       frameworkBundleManifest.put(Constants.IMPORT_PACKAGE, buffer.substring(0, buffer.length()-1));
+    }
+    
+    /**
+     * Set up CompositeServiceFilter-Import header for framework manifest
+     */
+    StringBuffer serviceImportFilter = 
+      new StringBuffer("(" + Constants.OBJECTCLASS + "=javax.transaction.TransactionSynchronizationRegistry)");
+    
+    try
+    {
+      for (Filter importFilter : app.getDeploymentMetadata().getDeployedServiceImport()) {
+        if (serviceImportFilter.length() > 0) {
+          serviceImportFilter.append(",");
+        }
+        serviceImportFilter.append(importFilter.toString());
+      }
+      
+      frameworkBundleManifest.put("CompositeServiceFilter-Import",
+          serviceImportFilter.toString());
+    }
+    catch (InvalidAttributeException e)
+    {
+      LOGGER.debug(LOG_EXCEPTION, e);
+      LOGGER.debug(LOG_EXIT,"isolatedInstall", e);
+      throw new BundleException("Failed to process Service Imports" , e);
     }
     
     /**

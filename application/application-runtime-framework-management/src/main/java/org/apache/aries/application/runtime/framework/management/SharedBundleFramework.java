@@ -33,14 +33,12 @@ import org.apache.aries.application.management.spi.repository.ContextException;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 
 public class SharedBundleFramework
 {  
   private static final Logger LOGGER = LoggerFactory.getLogger(SharedBundleFramework.class);
   
   private static BundleFramework sharedFramework;
-  private static final String SHARED_BUNDLE_FRAMEWORK = "shared.bundle.framework";
 
   /**
    * This is not the right way to make blueprint usable by applications, but it is all
@@ -79,12 +77,12 @@ public class SharedBundleFramework
       }
       
       Properties compositeManifest = new Properties();
-      compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, SHARED_BUNDLE_FRAMEWORK);
+      compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, BundleFramework.SHARED_BUNDLE_FRAMEWORK);
 
       //Add blueprint so that it is available to applications.
       compositeManifest.put(Constants.IMPORT_PACKAGE, RUNTIME_PACKAGES);
 
-      sharedFramework = bundleFrameworkFactory.createBundleFramework(bc, SHARED_BUNDLE_FRAMEWORK,
+      sharedFramework = bundleFrameworkFactory.createBundleFramework(bc, BundleFramework.SHARED_BUNDLE_FRAMEWORK,
           frameworkConfig, compositeManifest);
 
       sharedFramework.init();
