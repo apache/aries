@@ -300,7 +300,7 @@ public class DeploymentGeneratorTest
       List<String> usr = rx.getUnsatisfiedRequirements();
       assertEquals ("One unsatisfied requirement expected, not " + usr.size(), usr.size(), 1);
       String chkMsg = "Shared bundle test.shared_1.0.0 has a dependency for package " +
-      		"test.shared which is exported from isolated bundle [test.isolated_1.0.0]";
+      		"test.shared which is exported from application bundle [test.isolated_1.0.0]";
       assertTrue (chkMsg + " expected, not " + usr, usr.contains(chkMsg));
       return;
     }
@@ -357,13 +357,13 @@ public class DeploymentGeneratorTest
       List<String> checkMessages = new ArrayList<String>();
       // Now load an array with the expected messages.
       checkMessages.add("Shared bundle test.shared1_1.0.0 has a dependency for package test.isolated1 which " +
-      "is exported from isolated bundles [test.isolated1_1.0.0, test.isolated2_1.0.0]");
+      "is exported from application bundles [test.isolated1_1.0.0, test.isolated2_1.0.0]");
       checkMessages.add("Shared bundle test.shared1_1.0.0 has a dependency for package test.isolated2 which " +
-      "is exported from isolated bundles [test.isolated1_1.0.0, test.isolated2_1.0.0]");
+      "is exported from application bundles [test.isolated1_1.0.0, test.isolated2_1.0.0]");
       checkMessages.add("Shared bundle test.shared2_1.0.0 has a dependency for package test.isolated1 which " +
-      "is exported from isolated bundles [test.isolated1_1.0.0, test.isolated2_1.0.0]");
+      "is exported from application bundles [test.isolated1_1.0.0, test.isolated2_1.0.0]");
       checkMessages.add("Shared bundle test.shared2_1.0.0 has a dependency for package test.isolated2 which " +
-      "is exported from isolated bundles [test.isolated1_1.0.0, test.isolated2_1.0.0]");
+      "is exported from application bundles [test.isolated1_1.0.0, test.isolated2_1.0.0]");
       
       // Loop through the unsatisfied Requirements and compare them to the expected msgs. We trim the strings
       // because some unsatisfied reqs have spaces at the end of the string.
