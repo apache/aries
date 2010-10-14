@@ -564,9 +564,6 @@ public class OBRAriesResolver implements AriesApplicationResolver
       inserts.add(filter);
     }
 
-    if (!unknownType && !customAttrs.isEmpty()) {
-      inserts.add(customAttrs);    
-    }
     if (bundlesFailing != null && bundlesFailing.size() != 0) {
       msgKey.append("_REQUIRED_BY_BUNDLE");
       if (bundlesFailing.size() == 1)
@@ -576,6 +573,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     }
     if (!unknownType && !customAttrs.isEmpty()) {
       msgKey.append("_WITH_ATTRS");
+      inserts.add(customAttrs);
     }
 
     if (!unknownType && attrs.containsKey(Constants.VERSION_ATTRIBUTE)) {
