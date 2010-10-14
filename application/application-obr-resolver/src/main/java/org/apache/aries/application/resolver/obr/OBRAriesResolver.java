@@ -646,9 +646,9 @@ public class OBRAriesResolver implements AriesApplicationResolver
       Map.Entry<Requirement, Set<String>> entry = iterator.next();
       Requirement req = entry.getKey();
       for (Capability cap :caps) {
-        if (req.isSatisfied(cap)){
-          // remove the key from the map
+        if (req.isSatisfied(cap)){ // remove the key from the map
           iterator.remove();
+          break;
         }
       }
     }
