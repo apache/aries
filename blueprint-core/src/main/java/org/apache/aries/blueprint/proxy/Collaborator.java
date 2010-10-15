@@ -187,7 +187,7 @@ class Collaborator implements InvocationHandler, Serializable {
                 // should throw e
                 if (exceptionToRethrow == null) {
                     exceptionToRethrow = e;
-                } else {
+                } else if (exceptionToRethrow != e) {
                   LOGGER.warn("Discarding initial exception", e);
                 }
                 throw exceptionToRethrow;
