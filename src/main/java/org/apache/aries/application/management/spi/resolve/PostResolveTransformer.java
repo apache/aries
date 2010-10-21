@@ -18,6 +18,7 @@
  */
 package org.apache.aries.application.management.spi.resolve;
 
+import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.modelling.DeployedBundles;
 
@@ -25,10 +26,11 @@ public interface PostResolveTransformer
 {
 /**
  *  This method is to perform any post process after the resolver returns back a collection of bundles. It returns the updated manifest map.
+ * @param appMetaData The application that was resolved
  * @param bundles A collection of bundles required by this application. 
  * @return Modified collection of bundles
  * @throws ResolverException
  */
-  DeployedBundles postResolveProcess(DeployedBundles deployedBundles) throws ResolverException;
+  DeployedBundles postResolveProcess(ApplicationMetadata appMetaData, DeployedBundles deployedBundles) throws ResolverException;
 
 }
