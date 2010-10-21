@@ -113,6 +113,14 @@
         </dependency>
         
         <dependency>
+            <groupId>org.apache.aries.application.itest.twitter</groupId>
+            <artifactId>org.apache.aries.application.itest.twitter.eba</artifactId>
+            <version>${version}</version>
+            <type>eba</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
             <scope>test</scope>
@@ -208,6 +216,9 @@
                         <goals>
                             <goal>generate-depends-file</goal>
                         </goals>
+                        <configuration>
+                            <outputFile>${project.build.directory}/test-classes/META-INF/maven/dependencies.properties</outputFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
