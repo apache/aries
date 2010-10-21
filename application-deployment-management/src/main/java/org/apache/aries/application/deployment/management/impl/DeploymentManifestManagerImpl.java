@@ -143,11 +143,10 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     } catch (Exception e) {
       throw new ResolverException (e);
     }
-    Collection<Content> useBundles = app.getApplicationMetadata().getUseBundles();
 
     Collection<Content> bundlesToResolve = new ArrayList<Content>();
     bundlesToResolve.addAll(appMetadata.getApplicationContents());    
-    bundlesToResolve.addAll(useBundles);
+    bundlesToResolve.addAll(app.getApplicationMetadata().getUseBundles());
 
     //If we pass in provision bundles (e.g. import deployment manifest sanity check), we add them into our bundlesToResolve set.
     // This is because we want to make sure all bundles we passed into resolver the same as what we are going to get from resolver. 
@@ -157,9 +156,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       restrictedReqs.add(content);
     }
     
-    DeployedBundles deployedBundles = generateDeployedBundles (appMetadata.getApplicationSymbolicName(),
-        appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
-        byValueBundles, useBundles, restrictedReqs, appMetadata.getApplicationImportServices());
+    DeployedBundles deployedBundles = generateDeployedBundles (appMetadata, 
+        byValueBundles, restrictedReqs);
     
     Manifest man = generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
         appMetadata.getApplicationVersion().toString(), deployedBundles);
@@ -178,21 +176,20 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
   @Override
   public DeployedBundles generateDeployedBundles
   ( 
-      String appSymbolicName, 
-      String appVersion,
-      Collection<Content> appContent, 
+      ApplicationMetadata appMetadata, 
       Collection<ModelledResource> provideByValueBundles, 
-      Collection<Content> useBundleSet, 
-      Collection<Content> otherBundles, 
-      Collection<ServiceDeclaration> applicationImportService) throws ResolverException {  
+      Collection<Content> otherBundles) throws ResolverException {  
     
-    _logger.debug(LOG_ENTRY, "generateDeployedBundles", new Object[]{appSymbolicName, appVersion, 
-        appContent, provideByValueBundles,useBundleSet,otherBundles });
+    _logger.debug(LOG_ENTRY, "generateDeployedBundles", new Object[]{appMetadata,
+        provideByValueBundles,otherBundles });
+    
+    Collection<Content> useBundleSet = appMetadata.getUseBundles();
+    Collection<Content> appContent = appMetadata.getApplicationContents();
+    
     Collection<Content> bundlesToResolve = new ArrayList<Content>();
-    Set<ImportedBundle> appContentIB = null;
-    Set<ImportedBundle> useBundleIB = null;
-    useBundleIB = new HashSet<ImportedBundle> (toImportedBundle(useBundleSet));
-    appContentIB = new HashSet<ImportedBundle>(toImportedBundle(appContent));
+    Set<ImportedBundle> appContentIB = toImportedBundle(appContent);
+    Set<ImportedBundle> useBundleIB = toImportedBundle(useBundleSet);
+
 
     bundlesToResolve.addAll(useBundleSet);
 
@@ -201,7 +198,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     Collection<ModelledResource> byValueBundles = new ArrayList<ModelledResource>(provideByValueBundles);
     ModelledResource fakeBundleResource;
     try { 
-      fakeBundleResource = createFakeBundle(applicationImportService);
+      fakeBundleResource = createFakeBundle(appMetadata.getApplicationImportServices());
     } catch (InvalidAttributeException iax) { 
       ResolverException rx = new ResolverException (iax);
       _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {rx});
@@ -209,6 +206,9 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       throw rx;
     }
     byValueBundles.add(fakeBundleResource);
+    
+    String appSymbolicName = appMetadata.getApplicationSymbolicName();
+    String appVersion = appMetadata.getApplicationVersion().toString();
     String uniqueName = appSymbolicName + "_" + appVersion;
     
     DeployedBundles deployedBundles = modellingHelper.createDeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
@@ -330,7 +330,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     }
       
     if (postResolveTransformer != null) try {  
-      deployedBundles = postResolveTransformer.postResolveProcess (deployedBundles);
+      deployedBundles = postResolveTransformer.postResolveProcess (appMetadata, deployedBundles);
     } catch (ServiceUnavailableException e) { 
       _logger.debug(MessageUtil.getMessage("POST_RESOLVE_TRANSFORMER_UNAVAILABLE",e));
     }
@@ -523,12 +523,12 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
    * @return a collection of ImportedBundle objects
    * @throws ResolverException
    */
-  private Collection<ImportedBundle> toImportedBundle(Collection<Content> content) throws ResolverException
+  private Set<ImportedBundle> toImportedBundle(Collection<Content> content) throws ResolverException
   {
 
     _logger.debug(LOG_ENTRY, "toImportedBundle", new Object[]{content});
 
-    List<ImportedBundle> result = new ArrayList<ImportedBundle>();
+    Set<ImportedBundle> result = new HashSet<ImportedBundle>();
     for (Content c : content) {
       try {
         result.add(modellingManager.getImportedBundle(c.getContentName(), c.getVersion().toString()));
