@@ -20,8 +20,14 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +37,8 @@ import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
+import org.ops4j.pax.url.mvn.Handler;
+import org.ops4j.pax.url.mvn.ServiceConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -63,11 +71,11 @@ public class AbstractIntegrationTest {
           }  
       }
   }
-
+  
   protected Bundle getBundle(String symbolicName) {
     return getBundle(symbolicName, null);
   }
-
+	
   protected Bundle getBundle(String bundleSymbolicName, String version) {
     Bundle result = null;
     for (Bundle b : bundleContext.getBundles()) {
@@ -83,11 +91,12 @@ public class AbstractIntegrationTest {
   }
 
   public static MavenArtifactProvisionOption mavenBundle(String groupId,
-      String artifactId) {
+          String artifactId) {
     return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId)
         .versionAsInProject();
   }
 
+  
   protected static Option[] updateOptions(Option[] options) {
     // We need to add pax-exam-junit here when running with the ibm
     // jdk to avoid the following exception during the test run:
@@ -150,4 +159,55 @@ public class AbstractIntegrationTest {
     }
   }
  
+  public static URL getUrlToEba(String groupId, String artifactId) throws MalformedURLException {
+    String artifactVersion = getArtifactVersion(groupId, artifactId);
+
+    // Need to use handler from org.ops4j.pax.url.mvn
+    URL urlToEba = new URL(null,
+        ServiceConstants.PROTOCOL + ":" + groupId + "/" +artifactId + "/"
+            + artifactVersion + "/eba", new Handler());
+    return urlToEba;
+  }
+
+  public static String getArtifactVersion(final String groupId, final String artifactId)
+  {
+    final Properties dependencies = new Properties();
+    try {
+      InputStream in = getFileFromClasspath("META-INF/maven/dependencies.properties");
+      try {
+        dependencies.load(in);
+      } finally {
+        in.close();
+      }
+      final String version = dependencies.getProperty(groupId + "/" + artifactId + "/version");
+      if (version == null) {
+        throw new RuntimeException("Could not resolve version. Do you have a dependency for "
+            + groupId + "/" + artifactId + " in your maven project?");
+      }
+      return version;
+    } catch (IOException e) {
+      // TODO throw a better exception
+      throw new RuntimeException(
+          "Could not resolve version. Did you configure the depends-maven-plugin in your maven project? "
+              + " Or maybe you did not run the maven build and you are using an IDE?");
+    }
+  }  
+
+  private static InputStream getFileFromClasspath( final String filePath )
+    throws FileNotFoundException
+  {
+    try
+    {
+        URL fileURL = AbstractIntegrationTest.class.getClassLoader().getResource( filePath );
+        if( fileURL == null )
+        {
+            throw new FileNotFoundException( "File [" + filePath + "] could not be found in classpath" );
+        }
+        return fileURL.openStream();
+    }
+    catch (IOException e)
+    {
+        throw new FileNotFoundException( "File [" + filePath + "] could not be found: " + e.getMessage() );
+    }
+  }
 }
