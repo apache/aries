@@ -18,6 +18,8 @@
  */
 
 package org.apache.aries.application.noop.postresolve.process.impl;
+
+import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.resolve.PostResolveTransformer;
 import org.apache.aries.application.modelling.DeployedBundles;
@@ -28,7 +30,7 @@ public class DefaultPostResolveTransformer implements PostResolveTransformer
 {
 
   @Override
-  public DeployedBundles postResolveProcess(DeployedBundles deployedBundles)
+  public DeployedBundles postResolveProcess(ApplicationMetadata appMetadata, DeployedBundles deployedBundles)
       throws ResolverException
   {
     

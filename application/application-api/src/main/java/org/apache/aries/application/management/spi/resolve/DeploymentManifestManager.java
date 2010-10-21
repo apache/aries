@@ -21,6 +21,7 @@ package org.apache.aries.application.management.spi.resolve;
 import java.util.Collection;
 import java.util.jar.Manifest;
 
+import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.management.AriesApplication;
@@ -52,13 +53,9 @@ public interface DeploymentManifestManager
    * @throws ResolverException
    */
   DeployedBundles generateDeployedBundles( 
-      String appName, 
-      String appVersion, 
-      Collection<Content> appContent, 
+      ApplicationMetadata appMetadata, 
       Collection<ModelledResource> byValueBundles, 
-      Collection<Content> useBundleSet, 
-      Collection<Content> otherBundles, 
-      Collection<ServiceDeclaration> appImportServices) throws ResolverException;
+      Collection<Content> otherBundles) throws ResolverException;
 
   /**
    * Generate a Manifest representation of a DEPLOYMENT.MF, 

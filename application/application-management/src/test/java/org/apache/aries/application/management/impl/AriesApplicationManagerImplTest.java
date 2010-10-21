@@ -147,11 +147,8 @@ public class AriesApplicationManagerImplTest {
       return null;
     }
 
-    public DeployedBundles generateDeployedBundles(String appName,
-        String appVersion, Collection<Content> appContent,
-        Collection<ModelledResource> byValueBundles,
-        Collection<Content> useBundleSet, Collection<Content> otherBundles,
-        Collection<ServiceDeclaration> appImportServices)
+    public DeployedBundles generateDeployedBundles(ApplicationMetadata appMetadata,
+        Collection<ModelledResource> byValueBundles, Collection<Content> otherBundles)
         throws ResolverException {
       // Not required or used in this test
       return null;
