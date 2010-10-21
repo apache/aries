@@ -181,6 +181,8 @@ public class DeploymentGeneratorTest
         new MethodCall(ApplicationMetadata.class, "getApplicationSymbolicName"), "aries.test");
     Skeleton.getSkeleton(appMetadata).setReturnValue(
         new MethodCall(ApplicationMetadata.class, "getApplicationVersion"), new Version("1.0.0"));
+    Skeleton.getSkeleton(appMetadata).setReturnValue(
+        new MethodCall(ApplicationMetadata.class, "getUseBundles"), Collections.EMPTY_LIST);    
     
     app = Skeleton.newMock(AriesApplication.class);
     Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
@@ -240,12 +242,10 @@ public class DeploymentGeneratorTest
   {
     
     Skeleton.getSkeleton(appMetadata).setReturnValue(new MethodCall(ApplicationMetadata.class, "getApplicationContents"), Arrays.asList(mockContent("aries.test.a", "1.0.0"), mockContent("aries.test.b", "[1.0.0, 2.0.0)" )));
+    Skeleton.getSkeleton(appMetadata).setReturnValue(new MethodCall(ApplicationMetadata.class, "getUseBundles"), Arrays.asList(BUNDLE_C, BUNDLE_D));
     
-    
-    DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata.getApplicationSymbolicName(),
-        appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
-        new ArrayList<ModelledResource>(), 
-        Arrays.asList(BUNDLE_C, BUNDLE_D), Collections.<Content>emptyList(), appMetadata.getApplicationImportServices());
+    DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata, 
+        new ArrayList<ModelledResource>(), Collections.<Content>emptyList()); 
     Manifest man = deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
         appMetadata.getApplicationVersion().toString(), deployedBundles);
     
@@ -290,10 +290,8 @@ public class DeploymentGeneratorTest
     
     
     try { 
-      DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata.getApplicationSymbolicName(),
-          appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
-          new ArrayList<ModelledResource>(), 
-          new ArrayList<Content>(), Collections.<Content>emptyList(), appMetadata.getApplicationImportServices());
+      DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata, 
+          new ArrayList<ModelledResource>(), new ArrayList<Content>());
       deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
           appMetadata.getApplicationVersion().toString(), deployedBundles);
     } catch (ResolverException rx) { 
@@ -343,10 +341,9 @@ public class DeploymentGeneratorTest
     Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
     
     try {
-      DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata.getApplicationSymbolicName(),
-          appMetadata.getApplicationVersion().toString(), appMetadata.getApplicationContents(), 
+      DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata, 
           Arrays.asList(new ModelledResource[] {testIsolated1.getBundle(), testIsolated2.getBundle()}), 
-          new ArrayList<Content>(), Collections.<Content>emptyList(), appMetadata.getApplicationImportServices());
+          new ArrayList<Content>());
       deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
           appMetadata.getApplicationVersion().toString(), deployedBundles);
     } catch (ResolverException rx) { 
