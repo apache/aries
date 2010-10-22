@@ -226,6 +226,7 @@
         <module>application-noop-platform-repository</module>
 	   <module>application-noop-postresolve-process</module>
 	   <module>application-default-local-platform</module>
+        <module>application-itest-twitter</module>
 
     </modules>
 
