@@ -408,38 +408,38 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
 
 
   //Test for JIRA-461 which currently fails.
-//  @Test
-//  public void testTwitter() throws Exception
-//  {
-//    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
-//    Repository[] repos = repositoryAdmin.listRepositories();
-//    for (Repository repo : repos) {
-//      repositoryAdmin.removeRepository(repo.getURI());
-//    }
-//
-//    // Use the superclasses' getUrlToEba() method instead of the pax-exam mavenBundle() method because pax-exam is running in a
-//    // diffference bundle which doesn't have visibility to the META-INF/maven/dependencies.properties file used to figure out the
-//    // version of the maven artifact.
-//    URL twitterEbaUrl = getUrlToEba("org.apache.aries.application.itest.twitter",
-//        "org.apache.aries.application.itest.twitter.eba");
-//
-//    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-//    repositoryAdmin.addRepository("http://sigil.codecauldron.org/spring-external.obr");
-//    AriesApplication app = manager.createApplication(twitterEbaUrl);
-//    //installing requires a valid url for the bundle in repository.xml
-//
-//    app = manager.resolve(app);
-//
-//    DeploymentMetadata depMeta = app.getDeploymentMetadata();
-//    List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
-//    Collection<DeploymentContent> useBundles = depMeta.getDeployedUseBundle();
-//    Collection<DeploymentContent> appContent = depMeta.getApplicationDeploymentContents();
-//    assertEquals(provision.toString(), 2, provision.size());
-//    assertEquals(useBundles.toString(), 0, useBundles.size());
-//    assertEquals(appContent.toString(), 1, appContent.size());
-//    AriesApplicationContext ctx = manager.install(app);
-//    ctx.start();
-//  }
+  @Test
+  public void testTwitter() throws Exception
+  {
+    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    Repository[] repos = repositoryAdmin.listRepositories();
+    for (Repository repo : repos) {
+      repositoryAdmin.removeRepository(repo.getURI());
+    }
+
+    // Use the superclasses' getUrlToEba() method instead of the pax-exam mavenBundle() method because pax-exam is running in a
+    // diffference bundle which doesn't have visibility to the META-INF/maven/dependencies.properties file used to figure out the
+    // version of the maven artifact.
+    URL twitterEbaUrl = getUrlToEba("org.apache.aries.application.itest.twitter",
+        "org.apache.aries.application.itest.twitter.eba");
+
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    repositoryAdmin.addRepository("http://sigil.codecauldron.org/spring-external.obr");
+    AriesApplication app = manager.createApplication(twitterEbaUrl);
+    //installing requires a valid url for the bundle in repository.xml
+
+    app = manager.resolve(app);
+
+    DeploymentMetadata depMeta = app.getDeploymentMetadata();
+    List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
+    Collection<DeploymentContent> useBundles = depMeta.getDeployedUseBundle();
+    Collection<DeploymentContent> appContent = depMeta.getApplicationDeploymentContents();
+    assertEquals(provision.toString(), 2, provision.size());
+    assertEquals(useBundles.toString(), 0, useBundles.size());
+    assertEquals(appContent.toString(), 1, appContent.size());
+    AriesApplicationContext ctx = manager.install(app);
+    ctx.start();
+  }
   
   private void generateOBRRepoXML(boolean nullURI, String ... bundleFiles) throws Exception
   {
