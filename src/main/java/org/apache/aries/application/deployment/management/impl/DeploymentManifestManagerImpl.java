@@ -246,6 +246,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     sharedBundles.addAll (deployedBundles.getDeployedProvisionBundle());
     sharedBundles.addAll (deployedBundles.getRequiredUseBundle()); 
 
+    Collection<ModelledResource> appContentBundles = deployedBundles.getDeployedContent();
     Collection<Content> requiredSharedBundles = new ArrayList<Content>();
     for (ModelledResource mr : sharedBundles) { 
       String version = mr.getExportedBundle().getVersion();
@@ -260,10 +261,13 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     Collection<ModelledResource> resolvedSharedBundles = resolver.resolve(appSymbolicName, appVersion
         , byValueBundles, requiredSharedBundles);
 
-    List<String> differences = findDifferences (resolvedSharedBundles, sharedBundles);
+    // we need to find out whether any shared bundles depend on the isolated bundles
+    List<String> suspects = findSuspects (resolvedSharedBundles, sharedBundles, appContentBundles);
     // If we have differences, it means that we have shared bundles trying to import packages
     // from isolated bundles. We need to build up the error message and throw a ResolverException
-    if (!differences.isEmpty()) { 
+    if (!suspects.isEmpty()) { 
+    	
+    	
       StringBuilder msgs = new StringBuilder();
       List<String> unsatisfiedRequirements = new ArrayList<String>();
 
@@ -271,7 +275,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       // Find the isolated bundles and store all the packages that they export in a map.
       for (ModelledResource mr : resolvedSharedBundles) {
         String mrName = mr.getSymbolicName() + "_" + mr.getExportedBundle().getVersion();
-        if (differences.contains(mrName)) {
+        if (suspects.contains(mrName)) {
           List<String> exportedPackages = new ArrayList<String>();
           isolatedBundles.put(mrName, exportedPackages);
           for (ExportedPackage ep : mr.getExportedPackages()) {
@@ -283,8 +287,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       // are exported from the isolated bundles.
       for (ModelledResource mr : resolvedSharedBundles) {
         String mrName = mr.getSymbolicName() + "_" + mr.getExportedBundle().getVersion();
-        // if current reource isn't an isolated bundle check it's requirements
-        if (!!! differences.contains(mrName)) {
+        // if current resource isn't an isolated bundle check it's requirements
+        if (!!! suspects.contains(mrName)) {
           // Iterate through the imported packages of the current shared bundle.
           for (ImportedPackage ip : mr.getImportedPackages()) {
             String packageName = ip.getPackageName();
@@ -488,31 +492,37 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 
   /**
    * We've done a sanity check resolve on our sharedBundles and received back 
-   * resolvedSharedBundles. These two collections should be equal in size and 
-   * contain the same elements. If this is not true, we've found a circular dependency. 
+   * resolvedSharedBundles. The resolvedSharedBundles should not contain any bundles listed in the isolated bundle list.
+   * If this is not true, we've found a case of shared bundles depending on isolated bundles. 
    * This method extracts the name_versions of those bundles in resolvedSharedBundles
    * that do not appear in sharedBundles. 
    * @param resolvedSharedBundles What we got back from the resolver
    * @param sharedBundles         What we expected to get back from the resolver
-   * @return                      The difference
+   * @param appContentBundles     The isolated bundles
+   * @return                      The isolated bundles depended by the shared bundles
    */
-  private List<String> findDifferences (Collection<ModelledResource> resolvedSharedBundles, 
-      Collection<ModelledResource> sharedBundles){
-    _logger.debug(LOG_ENTRY, "findDifferences", new Object[]{resolvedSharedBundles,sharedBundles });
+  private List<String> findSuspects (Collection<ModelledResource> resolvedSharedBundles, 
+      Collection<ModelledResource> sharedBundles, Collection<ModelledResource> appContentBundles){
+    _logger.debug(LOG_ENTRY, "findSuspects", new Object[]{resolvedSharedBundles,sharedBundles, appContentBundles });
     Set<String> expectedBundles = new HashSet<String>();
+    Set<String> isolatedBundles = new HashSet<String>();
     for (ModelledResource sb : sharedBundles) { 
       expectedBundles.add(sb.getExportedBundle().getSymbolicName() + "_" + 
           sb.getExportedBundle().getVersion());
+    }
+    for (ModelledResource sb : appContentBundles) { 
+    	isolatedBundles.add(sb.getExportedBundle().getSymbolicName() + "_" + 
+            sb.getExportedBundle().getVersion());
     }
     List<String> suspects = new ArrayList<String>();
     for (ModelledResource mr : resolvedSharedBundles) {
       String thisBundle = mr.getExportedBundle().getSymbolicName() + "_" + 
       mr.getExportedBundle().getVersion();
-      if (!expectedBundles.contains(thisBundle)) { 
+      if (!expectedBundles.contains(thisBundle) && (isolatedBundles.contains(thisBundle))) { 
         suspects.add(thisBundle);   
       }
     }
-    _logger.debug(LOG_EXIT, "pruneFakeBundleFromResults", new Object[]{suspects});
+    _logger.debug(LOG_EXIT, "findSuspects", new Object[]{suspects});
 
     return suspects;
   }
