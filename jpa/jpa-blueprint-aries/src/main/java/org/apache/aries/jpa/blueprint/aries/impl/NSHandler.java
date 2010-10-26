@@ -383,7 +383,7 @@ public class NSHandler implements NamespaceHandler {
           .append("=*))");
       else
           filter.append("(").append(PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE)
-                  .append("=*)");
+                  .append("=true)");
 
       // Add the empty name filter if necessary
       if (!"".equals(unitName))
