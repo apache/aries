@@ -51,24 +51,30 @@ public final class VersionRange {
      */
     public VersionRange(String version) {
         this.version = version;
-        processVersionAttribute(this.version);
+        processVersionAttribute(version);
     }
 
     /**
-     * 
+     * This method should be used to create a version range from a single
+     * version string.
      * @param version
      *            version for the versioninfo
      * @param exactVersion
-     *            whether this is an exact version
+     *            whether this is an exact version {@code true} or goes to infinity
+     *            {@code false}
      */
     public VersionRange(String version, boolean exactVersion) {
-        this.version = version;
+        
         if (exactVersion) {
+            // Store the correct version string 
+            this.version = "[" + version + "," + version + "]";
+            // Use the modified version string to parse
             processExactVersionAttribute(this.version);
         } else {
+            this.version = version;
             processVersionAttribute(this.version);
         }
-
+        
         assertInvariants();
     }
 
@@ -101,7 +107,8 @@ public final class VersionRange {
      */
     @Override
     public String toString() {
-        // Some constructors don't take in a string, so construct one if needed
+        // Some constructors don't take in a string that we can return directly, 
+        // so construct one if needed
         if (version == null) {
             if (maximumVersion == null) {
                 version = minimumVersion.toString();
@@ -207,10 +214,6 @@ public final class VersionRange {
      */
     private boolean processExactVersionAttribute(String version) throws IllegalArgumentException {
         boolean success = processVersionAttribute(version);
-
-        if (maximumVersion == null) {
-            maximumVersion = minimumVersion;
-        }
 
         if (!minimumVersion.equals(maximumVersion)) {
             throw new IllegalArgumentException(MessageUtil.getMessage("UTIL0011E", version));
