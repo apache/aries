@@ -271,7 +271,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)(osgi.unit.name=myUnit))", reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
@@ -293,7 +293,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)(osgi.unit.name=myUnit))", reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
@@ -317,7 +317,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)(osgi.unit.name=myUnit))", reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
@@ -341,7 +341,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)(osgi.unit.name=myUnit))", reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
@@ -362,7 +362,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
         reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
@@ -386,7 +386,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
         reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
@@ -452,7 +452,7 @@ public class NSHandlerTest {
       reference = (ReferenceMetadata) registeredComponents.get(0);
       
       assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-      assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
+      assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)(osgi.unit.name=myUnit))", reference.getFilter());
       
       Map<String,Object> props = new HashMap<String, Object>();
       props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
@@ -499,7 +499,7 @@ public class NSHandlerTest {
       reference = (ReferenceMetadata) registeredComponents.get(0);
       
       assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-      assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
+      assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)(osgi.unit.name=myUnit))", reference.getFilter());
       
       Map<String,Object> props = new HashMap<String, Object>();
       props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
