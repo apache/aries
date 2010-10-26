@@ -66,15 +66,13 @@ public final class VersionRange {
     public VersionRange(String version, boolean exactVersion) {
         
         if (exactVersion) {
-            // Store the correct version string 
-            this.version = "[" + version + "," + version + "]";
-            // Use the modified version string to parse
-            processExactVersionAttribute(this.version);
+            // Do not store this string as it might be just a version, or a range!
+            processExactVersionAttribute(version);
         } else {
             this.version = version;
             processVersionAttribute(this.version);
         }
-        
+
         assertInvariants();
     }
 
@@ -214,6 +212,10 @@ public final class VersionRange {
      */
     private boolean processExactVersionAttribute(String version) throws IllegalArgumentException {
         boolean success = processVersionAttribute(version);
+
+        if (maximumVersion == null) {
+            maximumVersion = minimumVersion;
+        }
 
         if (!minimumVersion.equals(maximumVersion)) {
             throw new IllegalArgumentException(MessageUtil.getMessage("UTIL0011E", version));
