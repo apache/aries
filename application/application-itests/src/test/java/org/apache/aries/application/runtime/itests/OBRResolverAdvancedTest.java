@@ -398,7 +398,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     /* 
      * HelloWorldManager hwm = getOsgiService(HelloWorldManager.class);
      * int numberOfServices = hwm.getNumOfHelloServices();
-     * assertEquals(numberOfServices, 2); 
+     * assertEquals(2, numberOfServices); 
      */
     ctx.stop();
     manager.uninstall(ctx);
@@ -417,6 +417,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
       repositoryAdmin.removeRepository(repo.getURI());
     }
 
+    
     // Use the superclasses' getUrlToEba() method instead of the pax-exam mavenBundle() method because pax-exam is running in a
     // diffference bundle which doesn't have visibility to the META-INF/maven/dependencies.properties file used to figure out the
     // version of the maven artifact.
@@ -426,15 +427,23 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     repositoryAdmin.addRepository("http://sigil.codecauldron.org/spring-external.obr");
     AriesApplication app = manager.createApplication(twitterEbaUrl);
-    //installing requires a valid url for the bundle in repository.xml
-
     app = manager.resolve(app);
-
     DeploymentMetadata depMeta = app.getDeploymentMetadata();
     List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
     Collection<DeploymentContent> useBundles = depMeta.getDeployedUseBundle();
     Collection<DeploymentContent> appContent = depMeta.getApplicationDeploymentContents();
-    assertEquals(provision.toString(), 2, provision.size());
+    // We cannot be sure whether there are two or three provision bundles pulled in by Felix OBR as there is an outstanding defect
+    // https://issues.apache.org/jira/browse/FELIX-2672
+    // The workaround is to check we get the two bunldes we are looking for, instead of insisting on just having two bundles.
+    
+    List<String> provisionBundleSymbolicNames = new ArrayList<String>();
+    for (DeploymentContent dep : provision) {
+       provisionBundleSymbolicNames.add(dep.getContentName());
+    }
+    String provision_bundle1 = "com.springsource.org.apache.commons.lang";
+    String provision_bundle2 = "twitter4j";
+    assertTrue("Bundle " + provision_bundle1 + " not found.", provisionBundleSymbolicNames.contains(provision_bundle1));
+    assertTrue("Bundle " + provision_bundle2 + " not found.", provisionBundleSymbolicNames.contains(provision_bundle2));
     assertEquals(useBundles.toString(), 0, useBundles.size());
     assertEquals(appContent.toString(), 1, appContent.size());
     AriesApplicationContext ctx = manager.install(app);
