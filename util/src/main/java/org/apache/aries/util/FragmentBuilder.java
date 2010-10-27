@@ -31,6 +31,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import org.apache.aries.util.internal.MessageUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -256,7 +257,7 @@ public class FragmentBuilder {
             } else if ((expecting & CHAR) > 0) {            
                 sb.append(c);
             } else {
-                throw new IllegalArgumentException("Invalid delimited string: " + value);
+                throw new IllegalArgumentException(MessageUtil.getMessage("UTIL0012E", value));
             }
         }
 
