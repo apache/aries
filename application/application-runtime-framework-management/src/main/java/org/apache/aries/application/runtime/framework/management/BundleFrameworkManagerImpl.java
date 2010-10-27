@@ -199,7 +199,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     bundleFramework = 
       _bundleFrameworkFactory.createBundleFramework(
           parentCtx, 
-          deploymentMF.getApplicationSymbolicName() + " " + deploymentMF.getApplicationVersion(), 
+          app.getApplicationMetadata().getApplicationScope(), 
           frameworkConfig, 
           frameworkBundleManifest);
 
