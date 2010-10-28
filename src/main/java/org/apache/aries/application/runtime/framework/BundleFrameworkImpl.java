@@ -89,7 +89,8 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public void stop(Bundle b) throws BundleException
   {
-    b.stop();
+    if (!isFragment(b))
+      b.stop();
   }
 
   public Bundle getFrameworkBundle()
