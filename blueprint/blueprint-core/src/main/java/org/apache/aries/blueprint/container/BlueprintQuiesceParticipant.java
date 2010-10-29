@@ -37,8 +37,8 @@ import org.osgi.framework.ServiceReference;
 
 public class BlueprintQuiesceParticipant implements QuiesceParticipant 
 {
-	private BundleContext ctx;
-	private BlueprintExtender extender;
+	private final BundleContext ctx;
+	private final BlueprintExtender extender;
 	
 	public BlueprintQuiesceParticipant(BundleContext context, BlueprintExtender extender)
 	{
@@ -83,8 +83,8 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant
 	{
 		/** The bundle being quiesced */
 		private final Bundle bundleToQuiesce;
-		private QuiesceCallback callback;
-		private BlueprintExtender extender;
+		private final QuiesceCallback callback;
+		private final BlueprintExtender extender;
 		
 		public QuiesceBundle(QuiesceCallback callback, Bundle bundleToQuiesce, 
 				BlueprintExtender extender) 
@@ -99,24 +99,31 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant
 		{
 			BlueprintContainerImpl container = extender.getBlueprintContainerImpl(bundleToQuiesce);
 						
-			BlueprintRepository repository = container.getRepository();
-			Set<String> names = repository.getNames();
-			container.quiesce();
-			boolean hasServices = false;
-			
-			for (String name: names)
-			{
-				Recipe recipe = repository.getRecipe(name);
-				if (recipe instanceof ServiceRecipe)
-				{
-					hasServices = true;
-					((ServiceRecipe)recipe).quiesce(new QuiesceDelegatingCallback(callback, bundleToQuiesce));
-				}
-			}
-			//If the bundle has no services we can quiesce immediately
-			if (!hasServices)
-			{
-				callback.bundleQuiesced(bundleToQuiesce);
+			// have we got an actual blueprint bundle
+			if (container != null) {
+  			BlueprintRepository repository = container.getRepository();
+  			Set<String> names = repository.getNames();
+  			container.quiesce();
+  			boolean hasServices = false;
+  			
+  			for (String name: names)
+  			{
+  				Recipe recipe = repository.getRecipe(name);
+  				if (recipe instanceof ServiceRecipe)
+  				{
+  					hasServices = true;
+  					((ServiceRecipe)recipe).quiesce(new QuiesceDelegatingCallback(callback, bundleToQuiesce));
+  				}
+  			}
+  			//If the bundle has no services we can quiesce immediately
+  			if (!hasServices)
+  			{
+  				callback.bundleQuiesced(bundleToQuiesce);
+  			}
+			} else {
+			  // for non-Blueprint bundles just call return completed
+			  
+			  callback.bundleQuiesced(bundleToQuiesce);
 			}
 		}
 	}
@@ -134,7 +141,7 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant
 	  /** The single bundle being quiesced by this DestroyCallback */
 	  private final Bundle toQuiesce;
 	
-	  private Set<String> services = new HashSet<String>();
+	  private final Set<String> services = new HashSet<String>();
 	    
 	  public QuiesceDelegatingCallback(QuiesceCallback cbk, Bundle b) 
 	  {
