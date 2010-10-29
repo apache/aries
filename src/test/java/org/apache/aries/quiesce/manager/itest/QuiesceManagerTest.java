@@ -99,7 +99,7 @@ public class QuiesceManagerTest {
     public void testNoParticipants() throws Exception {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
 
         //Try quiescing one bundle with no participants
         manager.quiesceWithFuture(2000, bundleList).get(5000, TimeUnit.MILLISECONDS);
@@ -114,11 +114,11 @@ public class QuiesceManagerTest {
         //Register a mock participant which will report back quiesced immediately
         bundleContext.registerService(QuiesceParticipant.class.getName(), participant1, null);
         //Try quiescing the bundle with immediate return
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         
         manager.quiesceWithFuture(1000,bundleList).get(5000, TimeUnit.MILLISECONDS);
         
-        assertTrue("Participant should have finished once", participant1.getFinishedCount() == 1);
+        assertEquals("Participant should have finished once", 1, participant1.getFinishedCount());
         assertTrue("Bundle "+b1.getSymbolicName()+" should not be in active state", b1.getState() != Bundle.ACTIVE);
     }
 
@@ -131,15 +131,15 @@ public class QuiesceManagerTest {
         bundleList.add(b1);
 
         //Try quiescing the bundle with no return
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         manager.quiesce(1000,bundleList);
         timeoutTime = System.currentTimeMillis()+5000;
         while (System.currentTimeMillis() < timeoutTime && b1.getState() == Bundle.ACTIVE){
             Thread.sleep(500);
         }
         
-        assertTrue("Participant should have started once", participant2.getStartedCount() == 1);
-        assertTrue("Participant should not have finished", participant2.getFinishedCount() == 0);
+        assertEquals("Participant should have started once", 1, participant2.getStartedCount());
+        assertEquals("Participant should not have finished", 0, participant2.getFinishedCount());
         assertTrue("Bundle "+b1.getSymbolicName()+" should not be in active state", b1.getState() != Bundle.ACTIVE);
     }
 
@@ -151,13 +151,13 @@ public class QuiesceManagerTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
 
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         
         // we should be finishing in about 5000 millis not 10000
         manager.quiesceWithFuture(10000,bundleList).get(7000, TimeUnit.MILLISECONDS);
 
-        assertTrue("Participant should have started once", participant3.getStartedCount() == 1);
-        assertTrue("Participant should finished once", participant3.getFinishedCount() == 1);
+        assertEquals("Participant should have started once", 1, participant3.getStartedCount());
+        assertEquals("Participant should finished once", 1, participant3.getFinishedCount());
         assertTrue("Bundle "+b1.getSymbolicName()+" should not be in active state", b1.getState() != Bundle.ACTIVE);
     }
 
@@ -170,16 +170,16 @@ public class QuiesceManagerTest {
         //recreate the list as it may have been emptied
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         
         manager.quiesceWithFuture(10000,bundleList).get(15000, TimeUnit.MILLISECONDS);
         
-        assertTrue("Participant 1 should have started once", participant1.getStartedCount() == 1);
-        assertTrue("Participant 1 should finished once", participant1.getFinishedCount() == 1);
-        assertTrue("Participant 2 should have started once", participant2.getStartedCount() == 1);
-        assertTrue("Participant 2 should not have finished", participant2.getFinishedCount() == 0);
-        assertTrue("Participant 3 should have started once", participant3.getStartedCount() == 1);
-        assertTrue("Participant 3 should finished once", participant3.getFinishedCount() == 1);
+        assertEquals("Participant 1 should have started once", 1, participant1.getStartedCount());
+        assertEquals("Participant 1 should finished once", 1, participant1.getFinishedCount());
+        assertEquals("Participant 2 should have started once", 1, participant2.getStartedCount());
+        assertEquals("Participant 2 should not have finished", 0, participant2.getFinishedCount());
+        assertEquals("Participant 3 should have started once", 1, participant3.getStartedCount());
+        assertEquals("Participant 3 should finished once", 1, participant3.getFinishedCount());
         assertTrue("Bundle "+b1.getSymbolicName()+" should not be in active state", b1.getState() != Bundle.ACTIVE);
     }
 
@@ -189,7 +189,7 @@ public class QuiesceManagerTest {
         bundleContext.registerService(QuiesceParticipant.class.getName(), participant3, null);
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
 
         Future<?> future = manager.quiesceWithFuture(2000, Arrays.asList(b1));
 
@@ -208,7 +208,7 @@ public class QuiesceManagerTest {
         bundleContext.registerService(QuiesceParticipant.class.getName(), participant3, null);
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
 
         Future<?> future = manager.quiesceWithFuture(2000, Arrays.asList(b1));
 
@@ -224,7 +224,7 @@ public class QuiesceManagerTest {
         assertEquals("Participant 2 has finished", 0, participant2.getFinishedCount());
         assertEquals("Participant 3 has started", 1, participant3.getStartedCount());
         assertEquals("Participant 3 has finished", 0, participant3.getFinishedCount());
-        assertTrue("Bundle "+b1.getSymbolicName()+" should still be active, because we did not wait long enough", b1.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should still be active, because we did not wait long enough", Bundle.ACTIVE, b1.getState());
     }
 
     @Test
@@ -237,17 +237,17 @@ public class QuiesceManagerTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
         bundleList.add(b2);
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
-        assertTrue("Bundle "+b2.getSymbolicName()+" should be in active state", b2.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
+        assertEquals("Bundle "+b2.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b2.getState());
 
         manager.quiesceWithFuture(10000,bundleList).get(15000, TimeUnit.MILLISECONDS);
 
-        assertTrue("Participant 1 should have started once", participant1.getStartedCount() == 1);
-        assertTrue("Participant 1 should finished once", participant1.getFinishedCount() == 1);
-        assertTrue("Participant 2 should have started once", participant2.getStartedCount() == 1);
-        assertTrue("Participant 2 should not have finished", participant2.getFinishedCount() == 0);
-        assertTrue("Participant 3 should have started once", participant3.getStartedCount() == 1);
-        assertTrue("Participant 3 should finished once", participant3.getFinishedCount() == 1);
+        assertEquals("Participant 1 should have started once", 1, participant1.getStartedCount());
+        assertEquals("Participant 1 should finished once", 1, participant1.getFinishedCount());
+        assertEquals("Participant 2 should have started once", 1, participant2.getStartedCount());
+        assertEquals("Participant 2 should not have finished", 0, participant2.getFinishedCount());
+        assertEquals("Participant 3 should have started once", 1, participant3.getStartedCount());
+        assertEquals("Participant 3 should finished once", 1, participant3.getFinishedCount());
         assertTrue("Bundle "+b1.getSymbolicName()+" should not be in active state", b1.getState() != Bundle.ACTIVE);
         assertTrue("Bundle "+b2.getSymbolicName()+" should not be in active state", b2.getState() != Bundle.ACTIVE);
     }
@@ -263,9 +263,9 @@ public class QuiesceManagerTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
         bundleList.add(b2);
-        assertTrue("Bundle "+b1.getSymbolicName()+" should be in active state", b1.getState() == Bundle.ACTIVE);
-        assertTrue("Bundle "+b2.getSymbolicName()+" should be in active state", b2.getState() == Bundle.ACTIVE);
-        assertTrue("Bundle "+b3.getSymbolicName()+" should be in active state", b3.getState() == Bundle.ACTIVE);
+        assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
+        assertEquals("Bundle "+b2.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b2.getState());
+        assertEquals("Bundle "+b3.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b3.getState());
         manager.quiesce(2000,bundleList);
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b2);
@@ -275,12 +275,12 @@ public class QuiesceManagerTest {
         while (System.currentTimeMillis() < timeoutTime && (b1.getState() == Bundle.ACTIVE || b2.getState() == Bundle.ACTIVE || b3.getState() == Bundle.ACTIVE)) {
             Thread.sleep(500);
         }
-        assertTrue("Participant 1 should have started twice as it has been asked to quiesce twice", participant1.getStartedCount() == 2);
-        assertTrue("Participant 1 should finished twice as it should have returned from two quiesce requests immediately", participant1.getFinishedCount() == 2);
-        assertTrue("Participant 2 should have started twice as it has been asked to quiesce twice", participant2.getStartedCount() == 2);
-        assertTrue("Participant 2 should not have finished as it should never return from it's two quiesce requests", participant2.getFinishedCount() == 0);
-        assertTrue("Participant 3 should have started twice as it has been asked to quiesce twice", participant3.getStartedCount() == 2);
-        assertTrue("Participant 3 should finished twice as it should have waited a short time before returning from it's two quiesce requests", participant3.getFinishedCount() == 2);
+        assertEquals("Participant 1 should have started twice as it has been asked to quiesce twice", 2, participant1.getStartedCount());
+        assertEquals("Participant 1 should finished twice as it should have returned from two quiesce requests immediately", 2, participant1.getFinishedCount());
+        assertEquals("Participant 2 should have started twice as it has been asked to quiesce twice", 2, participant2.getStartedCount());
+        assertEquals("Participant 2 should not have finished as it should never return from it's two quiesce requests", 0, participant2.getFinishedCount());
+        assertEquals("Participant 3 should have started twice as it has been asked to quiesce twice", 2, participant3.getStartedCount());
+        assertEquals("Participant 3 should finished twice as it should have waited a short time before returning from it's two quiesce requests", 2, participant3.getFinishedCount());
         assertTrue("Bundle "+b1.getSymbolicName()+" should not be in active state", b1.getState() != Bundle.ACTIVE);
         assertTrue("Bundle "+b2.getSymbolicName()+" should not be in active state", b2.getState() != Bundle.ACTIVE);
         assertTrue("Bundle "+b3.getSymbolicName()+" should not be in active state", b3.getState() != Bundle.ACTIVE);
