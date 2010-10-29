@@ -32,6 +32,10 @@ import java.util.Enumeration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 
+/**
+ * @deprecated Please use AriesFrameworkUtil.getClassLoader to get a class loader for a bundle instead of this method
+ */
+@Deprecated
 public class BundleToClassLoaderAdapter extends ClassLoader implements BundleReference
 {
   private Bundle b;

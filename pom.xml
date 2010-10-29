@@ -48,6 +48,9 @@
             !org.apache.aries.util*,
             org.osgi.framework.launch;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
+            org.eclipse.osgi.internal.loader;resolution:=optional,
+            org.eclipse.osgi.framework.internal.core;resolution:=optional,
+            org.eclipse.osgi.framework.adaptor;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
