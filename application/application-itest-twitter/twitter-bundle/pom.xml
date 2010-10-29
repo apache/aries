@@ -28,6 +28,12 @@
 	<name>Apache Aries Twitter itest bundle</name>
 	<packaging>bundle</packaging>
 
+    <properties>
+        <aries.osgi.import.pkg>
+            twitter4j;version="[2.0.8,2.1.0)",
+            *
+        </aries.osgi.import.pkg>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>net.homeip.yusuke</groupId>
