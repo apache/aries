@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scact:sca-config targetNamespace="http://api.goat.samples.aries.apache.org/"
+	xmlns:sca="http://docs.oasis-open.org/ns/opencsa/sca/200912"
+	xmlns:scact="http://www.osgi.org/xmlns/scact/v1.0.0" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.osgi.org/xmlns/scact/v1.0.0 http://www.osgi.org/xmlns/scact/v1.0.0 ">
+	<sca:binding.ws name="bundleCtxProvider" uri="http://localhost:8081/bundlecontext" />
+</scact:sca-config>
