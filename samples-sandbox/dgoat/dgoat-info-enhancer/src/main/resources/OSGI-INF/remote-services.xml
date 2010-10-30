@@ -1,0 +1,14 @@
+<endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
+  <endpoint-description>
+    <property name="objectClass">
+      <array>
+        <value>org.apache.aries.samples.goat.api.ModelInfoService</value>
+        <!--<value>org.apache.aries.samples.goat.bundleContextModel.BundleContextInfoProvider</value>-->
+      </array>
+    </property>
+    <property name="endpoint.id">http://localhost:9090/bundlectx</property>
+    <property name="service.imported.configs">org.apache.cxf.ws</property>
+  </endpoint-description>
+</endpoint-descriptions>
+
+
