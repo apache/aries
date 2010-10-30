@@ -26,6 +26,7 @@ import static org.osgi.jmx.framework.BundleStateMBean.UNKNOWN;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.List;
@@ -245,7 +246,6 @@ public class FrameworkUtils {
      * @throws IllegalArgumentException
      *             if fragment or packageAdmin are null
      */
-    @SuppressWarnings("unchecked")
     public static String[] getBundleImportedPackages(BundleContext localBundleContext, Bundle bundle,
             PackageAdmin packageAdmin) throws IllegalArgumentException {
         if (bundle == null) {
@@ -254,49 +254,61 @@ public class FrameworkUtils {
         if (packageAdmin == null) {
             throw new IllegalArgumentException("Argument packageAdmin cannot be null");
         }
+        
         List<String> result = new ArrayList<String>();
-        Dictionary<String, String> bundleHeaders = bundle.getHeaders();
-        String dynamicImportHeader = bundleHeaders.get(Constants.DYNAMICIMPORT_PACKAGE);
-        // if DynamicImport-Package used, then do full iteration
-        // else means no dynamic import or has dynamic import but no wildcard "*" in it.
-        if (dynamicImportHeader != null && dynamicImportHeader.contains("*")) {
-            Bundle[] bundles = localBundleContext.getBundles();
-            for (Bundle candidate : bundles) {
-                if (candidate.equals(bundle)) {
-                    continue;
-                }
-                ExportedPackage[] candidateExports = packageAdmin.getExportedPackages(candidate);
-                if (candidateExports != null) {
-                    for (ExportedPackage exportedPackage : candidateExports) {
-                        Bundle[] userBundles = exportedPackage.getImportingBundles();
-                        if (userBundles != null && arrayContains(userBundles, bundle)) {
-                            result.add(exportedPackage.getName() + ";" + exportedPackage.getVersion().toString());
-                        }
-                    }// end for candidateExports
-                }
-            }// end for bundles
-        } else { // only query ExportPackage for package names declared as imported
-            List<String> importPackages = new ArrayList<String>();
-            String importPackageHeader = bundleHeaders.get(Constants.IMPORT_PACKAGE);
-            if (importPackageHeader != null && importPackageHeader.length() > 0) {
-            	importPackages.addAll(extractHeaderDeclaration(importPackageHeader));
-            }
-            if (dynamicImportHeader != null) {
-            	importPackages.addAll(extractHeaderDeclaration(dynamicImportHeader));
-            }
-            for (String packageName : importPackages) {
-                ExportedPackage[] candidateExports = packageAdmin.getExportedPackages(packageName);
-                if (candidateExports != null) {
-                    for (ExportedPackage exportedPackage : candidateExports) {
-                        Bundle[] userBundles = exportedPackage.getImportingBundles();
-                        if (userBundles != null && arrayContains(userBundles, bundle)) {
-                            result.add(exportedPackage.getName() + ";" + exportedPackage.getVersion().toString());
-                        }
-                    }// end for candidateExports
-                }
-            }
+        for (ExportedPackage ep : getBundleImportedPackagesRaw(localBundleContext, bundle, packageAdmin)) {
+          result.add(ep.getName()+";"+ep.getVersion());
         }
-        return result.toArray(new String[result.size()]);
+        
+        return result.toArray(new String[0]);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static Collection<ExportedPackage> getBundleImportedPackagesRaw(BundleContext localBundleContext, Bundle bundle, PackageAdmin packageAdmin) throws IllegalArgumentException 
+    {
+      List<ExportedPackage> result = new ArrayList<ExportedPackage>();
+      Dictionary<String, String> bundleHeaders = bundle.getHeaders();
+      String dynamicImportHeader = bundleHeaders.get(Constants.DYNAMICIMPORT_PACKAGE);
+      // if DynamicImport-Package used, then do full iteration
+      // else means no dynamic import or has dynamic import but no wildcard "*" in it.
+      if (dynamicImportHeader != null && dynamicImportHeader.contains("*")) {
+          Bundle[] bundles = localBundleContext.getBundles();
+          for (Bundle candidate : bundles) {
+              if (candidate.equals(bundle)) {
+                  continue;
+              }
+              ExportedPackage[] candidateExports = packageAdmin.getExportedPackages(candidate);
+              if (candidateExports != null) {
+                  for (ExportedPackage exportedPackage : candidateExports) {
+                      Bundle[] userBundles = exportedPackage.getImportingBundles();
+                      if (userBundles != null && arrayContains(userBundles, bundle)) {
+                          result.add(exportedPackage);
+                      }
+                  }// end for candidateExports
+              }
+          }// end for bundles
+      } else { // only query ExportPackage for package names declared as imported
+          List<String> importPackages = new ArrayList<String>();
+          String importPackageHeader = bundleHeaders.get(Constants.IMPORT_PACKAGE);
+          if (importPackageHeader != null && importPackageHeader.length() > 0) {
+            importPackages.addAll(extractHeaderDeclaration(importPackageHeader));
+          }
+          if (dynamicImportHeader != null) {
+            importPackages.addAll(extractHeaderDeclaration(dynamicImportHeader));
+          }
+          for (String packageName : importPackages) {
+              ExportedPackage[] candidateExports = packageAdmin.getExportedPackages(packageName);
+              if (candidateExports != null) {
+                  for (ExportedPackage exportedPackage : candidateExports) {
+                      Bundle[] userBundles = exportedPackage.getImportingBundles();
+                      if (userBundles != null && arrayContains(userBundles, bundle)) {
+                          result.add(exportedPackage);
+                      }
+                  }// end for candidateExports
+              }
+          }
+      }
+      return result;
     }
 
     /**
@@ -473,22 +485,11 @@ public class FrameworkUtils {
             throw new IllegalArgumentException("Argument packageAdmin cannot be null");
         }
         Set<Bundle> dependencies = new HashSet<Bundle>();
-        // Handle imported packages (statically or dynamically)
-        for (Bundle exportBundle : localBundleContext.getBundles()) {
-            if (exportBundle == bundle) {
-                continue;
-            }
-            ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(exportBundle);
-            if (exportedPackages != null) {
-                for (ExportedPackage exportedPackage : exportedPackages) {
-                    Bundle[] importingBundles = exportedPackage.getImportingBundles();
-                    if (importingBundles != null && arrayContains(importingBundles, bundle)) {
-                        dependencies.add(exportBundle);
-                        break;
-                    }
-                }
-            }
+        
+        for (ExportedPackage ep : getBundleImportedPackagesRaw(localBundleContext, bundle, packageAdmin)) {
+          dependencies.add(ep.getExportingBundle());
         }
+        
         // Handle required bundles
         Dictionary<String, String> bundleHeaders = bundle.getHeaders();
         String requireBundleHeader = bundleHeaders.get(Constants.REQUIRE_BUNDLE);
