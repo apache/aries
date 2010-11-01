@@ -228,7 +228,7 @@ public class ManifestProcessor
       } else {
         // We can't use a JarInputStream because that assumes the manifest name is MANIFEST.MF
         zipInputStream = new ZipInputStream(url.openStream());
-        // Search through for our entry by hand so we can be case-insensitive (story 5399)
+        // Search through for our entry by hand so we can be case-insensitive 
         ZipEntry manifestEntry = null;
         ZipEntry nextEntry = zipInputStream.getNextEntry();
         while (manifestEntry == null && nextEntry != null) {
