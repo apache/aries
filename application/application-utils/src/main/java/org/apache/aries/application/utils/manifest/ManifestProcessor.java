@@ -19,6 +19,7 @@
 package org.apache.aries.application.utils.manifest;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -248,6 +249,75 @@ public class ManifestProcessor
     return bundleManifest;
   }
 
+  /**
+   * Retrieves an InputStream for the application manifest that guarantees a terminating new line
+   * at the end, so that the manifest can be parsed by java.util.jar.Manifest.
+   * <p>
+   * Also guarantees line lengths are less than 72 bytes.
+   * <p>
+   * @param is  InputStream to the manifest file
+   * @return Manifest read from the sanitized manifest file
+   */
+  public static Manifest readSanitizedManifest(InputStream is)
+  {
+    StringBuffer manifestContent = new StringBuffer();
+    ByteArrayInputStream bais = null;
+    BufferedReader r = new BufferedReader(new InputStreamReader(is));
+
+    try {
+      String line;
+      while ((line = r.readLine()) != null) {
+        //we check if the line length is >71 because we haven't included a line terminator
+        if (line.length() > 71) {
+          //if we have a line that is too long we split it
+          //we split at 70 so we have room to add a new line
+          //and a space for the continuation
+          manifestContent.append(line.substring(0, 70));
+          manifestContent.append('\n');
+          line = line.substring(70, line.length());
+          while (line.length() > 71) {
+            manifestContent.append(' ');
+            manifestContent.append(line.substring(0, 70));
+            manifestContent.append('\n');
+            line = line.substring(70, line.length());
+          }
+          manifestContent.append(' ');
+          manifestContent.append(line);
+          manifestContent.append('\n');
+        } else {
+          manifestContent.append(line);
+          manifestContent.append('\n');
+        }
+      }
+      //remember to close the input stream to avoid zip file locking
+      is.close();
+      r.close();
+      bais = new ByteArrayInputStream(manifestContent.toString().getBytes());
+    } catch (IOException e) {
+      // NO-OP we will just return an empty set
+      bais = null;
+    }
+
+    Manifest result = null;
+    try {
+      if (bais != null)
+        result = new Manifest(bais);
+    } catch (IOException e) {
+      // NO-OP we will just return null
+    }
+    finally {
+      if (bais != null) { 
+        try { 
+          bais.close(); 
+        } catch (IOException e) {
+          // NO-OP
+        } 
+      }
+    }
+    return result;
+  }  
+  
+  
   /**
    * count the number of characters in a string
    * @param parent The string to be searched
