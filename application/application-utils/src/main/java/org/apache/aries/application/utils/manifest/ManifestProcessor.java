@@ -306,13 +306,7 @@ public class ManifestProcessor
       // NO-OP we will just return null
     }
     finally {
-      if (bais != null) { 
-        try { 
-          bais.close(); 
-        } catch (IOException e) {
-          // NO-OP
-        } 
-      }
+      IOUtils.close(bais);
     }
     return result;
   }  
