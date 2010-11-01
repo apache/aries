@@ -161,7 +161,7 @@ public class ManifestProcessor
     IFile manifestFile = appDir.getFile(manifestName);
     Manifest man = null;
     if (manifestFile != null) {
-      man = parseManifest(manifestFile.open());
+      man = readSanitizedManifest(manifestFile.open());
     }
     return man;
   }
