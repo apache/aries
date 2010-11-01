@@ -19,9 +19,12 @@
 package org.apache.aries.application.utils.manifest;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +33,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.utils.AppConstants;
+import org.apache.aries.application.utils.filesystem.FileSystem;
+import org.apache.aries.application.utils.filesystem.IOUtils;
 
 /**
  * This class contains utilities for parsing manifests. It provides methods to
@@ -196,6 +203,52 @@ public class ManifestProcessor
   }  
   
   /**
+   * Obtains a manifest from a file or directory at the given URL. The manifest name
+   * can be arbitrary.
+   * @param url the url of an archive file or directory 
+   * @param fileName the name of the manifest to look for
+   * @return
+   * @throws IOException if the url can't be read
+   * @throws URISyntaxException 
+   */
+  public static Manifest obtainManifest(URL url, String fileName) throws IOException, URISyntaxException
+  {
+
+    Manifest bundleManifest = null;
+    // try read the compositeBundle Manifest from url
+    
+    ZipInputStream zipInputStream = null;
+    try {
+      File file = null;
+      file = new File(url.toURI());
+      if (file.isDirectory()) {
+        IDirectory iDirectory = FileSystem.getFSRoot(file);
+        bundleManifest = obtainManifestFromAppDir(iDirectory, fileName);
+      } else {
+        // We can't use a JarInputStream because that assumes the manifest name is MANIFEST.MF
+        zipInputStream = new ZipInputStream(url.openStream());
+        // Search through for our entry by hand so we can be case-insensitive (story 5399)
+        ZipEntry manifestEntry = null;
+        ZipEntry nextEntry = zipInputStream.getNextEntry();
+        while (manifestEntry == null && nextEntry != null) {
+          if (fileName.equalsIgnoreCase(nextEntry.getName())) {
+            manifestEntry = nextEntry;
+          } else {
+            nextEntry = zipInputStream.getNextEntry();
+          }
+        }
+        if (manifestEntry != null) {
+          bundleManifest = parseManifest(zipInputStream);
+        }
+      }
+    } finally {
+      IOUtils.close(zipInputStream);
+    }
+
+    return bundleManifest;
+  }
+
+  /**
    * count the number of characters in a string
    * @param parent The string to be searched
    * @param subString The substring to be found
@@ -213,4 +266,5 @@ public class ManifestProcessor
      }
      return count;
    }  
+   
 }
