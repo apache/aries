@@ -152,6 +152,7 @@
         <module>jmx-api</module>
         <module>jmx-blueprint-api</module>
         <module>jmx-core</module>
+        <module>jmx-whiteboard</module>
         <module>jmx-blueprint-core</module>
         <module>jmx-bundle</module>
         <module>jmx-blueprint-bundle</module>
