@@ -19,13 +19,9 @@
 package org.apache.aries.application.utils.manifest;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,14 +30,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.filesystem.FileSystem;
-import org.apache.aries.application.utils.filesystem.IOUtils;
 
 /**
  * This class contains utilities for parsing manifests. It provides methods to
@@ -161,7 +153,7 @@ public class ManifestProcessor
     IFile manifestFile = appDir.getFile(manifestName);
     Manifest man = null;
     if (manifestFile != null) {
-      man = readSanitizedManifest(manifestFile.open());
+      man = parseManifest(manifestFile.open());
     }
     return man;
   }
@@ -202,115 +194,6 @@ public class ManifestProcessor
 
     return result;
   }  
-  
-  /**
-   * Obtains a manifest from a file or directory at the given URL. The manifest name
-   * can be arbitrary.
-   * @param url the url of an archive file or directory 
-   * @param fileName the name of the manifest to look for
-   * @return
-   * @throws IOException if the url can't be read
-   * @throws URISyntaxException 
-   */
-  public static Manifest obtainManifest(URL url, String fileName) throws IOException, URISyntaxException
-  {
-
-    Manifest bundleManifest = null;
-    // try read the compositeBundle Manifest from url
-    
-    ZipInputStream zipInputStream = null;
-    try {
-      File file = null;
-      file = new File(url.toURI());
-      if (file.isDirectory()) {
-        IDirectory iDirectory = FileSystem.getFSRoot(file);
-        bundleManifest = obtainManifestFromAppDir(iDirectory, fileName);
-      } else {
-        // We can't use a JarInputStream because that assumes the manifest name is MANIFEST.MF
-        zipInputStream = new ZipInputStream(url.openStream());
-        // Search through for our entry by hand so we can be case-insensitive 
-        ZipEntry manifestEntry = null;
-        ZipEntry nextEntry = zipInputStream.getNextEntry();
-        while (manifestEntry == null && nextEntry != null) {
-          if (fileName.equalsIgnoreCase(nextEntry.getName())) {
-            manifestEntry = nextEntry;
-          } else {
-            nextEntry = zipInputStream.getNextEntry();
-          }
-        }
-        if (manifestEntry != null) {
-          bundleManifest = parseManifest(zipInputStream);
-        }
-      }
-    } finally {
-      IOUtils.close(zipInputStream);
-    }
-
-    return bundleManifest;
-  }
-
-  /**
-   * Retrieves an InputStream for the application manifest that guarantees a terminating new line
-   * at the end, so that the manifest can be parsed by java.util.jar.Manifest.
-   * <p>
-   * Also guarantees line lengths are less than 72 bytes.
-   * <p>
-   * @param is  InputStream to the manifest file
-   * @return Manifest read from the sanitized manifest file
-   */
-  public static Manifest readSanitizedManifest(InputStream is)
-  {
-    StringBuffer manifestContent = new StringBuffer();
-    ByteArrayInputStream bais = null;
-    BufferedReader r = new BufferedReader(new InputStreamReader(is));
-
-    try {
-      String line;
-      while ((line = r.readLine()) != null) {
-        //we check if the line length is >71 because we haven't included a line terminator
-        if (line.length() > 71) {
-          //if we have a line that is too long we split it
-          //we split at 70 so we have room to add a new line
-          //and a space for the continuation
-          manifestContent.append(line.substring(0, 70));
-          manifestContent.append('\n');
-          line = line.substring(70, line.length());
-          while (line.length() > 71) {
-            manifestContent.append(' ');
-            manifestContent.append(line.substring(0, 70));
-            manifestContent.append('\n');
-            line = line.substring(70, line.length());
-          }
-          manifestContent.append(' ');
-          manifestContent.append(line);
-          manifestContent.append('\n');
-        } else {
-          manifestContent.append(line);
-          manifestContent.append('\n');
-        }
-      }
-      //remember to close the input stream to avoid zip file locking
-      is.close();
-      r.close();
-      bais = new ByteArrayInputStream(manifestContent.toString().getBytes());
-    } catch (IOException e) {
-      // NO-OP we will just return an empty set
-      bais = null;
-    }
-
-    Manifest result = null;
-    try {
-      if (bais != null)
-        result = new Manifest(bais);
-    } catch (IOException e) {
-      // NO-OP we will just return null
-    }
-    finally {
-      IOUtils.close(bais);
-    }
-    return result;
-  }  
-  
   
   /**
    * count the number of characters in a string
