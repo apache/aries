@@ -75,8 +75,8 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 }
             }
             // Create the proxy
-            Set<Class> interfaces = new HashSet<Class>();
-            Class clz = getInterfaceClass();
+            Set<Class<?>> interfaces = new HashSet<Class<?>>();
+            Class<?> clz = getInterfaceClass();
             if (clz != null) interfaces.add(clz);
 
             proxy = createProxy(new ServiceDispatcher(), interfaces);

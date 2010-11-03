@@ -110,8 +110,8 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                     }
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
-                    Set<Class> interfaces = new HashSet<Class>();
-                    Class clz = getInterfaceClass();
+                    Set<Class<?>> interfaces = new HashSet<Class<?>>();
+                    Class<?> clz = getInterfaceClass();
                     if (clz != null) interfaces.add(clz);
                     if (metadata instanceof ExtendedReferenceListMetadata) {
                         boolean greedy = (((ExtendedReferenceListMetadata) metadata).getProxyMethod() & ExtendedReferenceListMetadata.PROXY_METHOD_GREEDY) != 0;
