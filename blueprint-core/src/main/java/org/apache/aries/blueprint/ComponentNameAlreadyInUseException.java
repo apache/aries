@@ -16,24 +16,18 @@
  */
 package org.apache.aries.blueprint;
 
-import org.apache.aries.util.nls.MessageUtil;
 
 public class ComponentNameAlreadyInUseException extends RuntimeException {
+  private String conflictingName;
 
-    private String conflictingName;
-    private String message;
+  public ComponentNameAlreadyInUseException(String conflictingName) {
+      this.conflictingName = conflictingName;
+  }
+  
+  public String getMessage() {
+      return "Name '" + this.conflictingName + "' is already in use by a registered component";
+  }
 
-    public ComponentNameAlreadyInUseException(String conflictingName) {
-        this.conflictingName = conflictingName;
-        message = MessageUtil.createMessageUtil(this.getClass(), "org.apache.aries.blueprint.nls.BlueprintMessages")
-                                    .getMessage("duplicate.component", conflictingName);
-    }
-    
-    public String getMessage() {
-        return message;
-    }
-
-    public String getConflictingName() {
-        return this.conflictingName;
-    }
-}
+  public String getConflictingName() {
+      return this.conflictingName;
+  }}
