@@ -20,14 +20,12 @@ package org.apache.aries.blueprint.proxy;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.Interceptor;
+import org.apache.aries.proxy.InvocationHandlerWrapper;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * A collaborator which ensures preInvoke and postInvoke occur before and after
  * method invocation
  */
-class Collaborator implements InvocationHandler, Serializable {
+public class Collaborator implements InvocationHandlerWrapper, Serializable {
 
     /** Serial version UID for this class */
     private static final long serialVersionUID = -58189302118314469L;
@@ -44,45 +42,11 @@ class Collaborator implements InvocationHandler, Serializable {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Collaborator.class);
 
-    /** The invocation handler to call */
-    final InvocationHandler delegate;
-    final Callable<?> object;
-
     private transient List<Interceptor> interceptors = null;
     private transient ComponentMetadata cm = null;
 
-    Collaborator(ComponentMetadata cm, List<Interceptor> interceptors,
-            final Callable<?> delegateObj) {
+    public Collaborator(ComponentMetadata cm, List<Interceptor> interceptors) {
         this.cm = cm;
-        this.object = delegateObj;
-        this.delegate = new InvocationHandler() {
-            private void onUnexpectedException(Throwable cause) {
-                throw new Error("Unreachable catch statement reached", cause);
-            }
-
-            public Object invoke(Object proxy, Method method, Object[] args)
-                    throws Throwable {
-                Object result;
-                try {
-                    result = method.invoke(object.call(), args);
-                } catch (InvocationTargetException ite) {
-                    // We are invisible, so unwrap and throw the cause as
-                    // though we called the method directly.
-                    throw ite.getCause();
-                } catch (IllegalAccessException e) {
-                    onUnexpectedException(e);
-                    return null;
-                } catch (IllegalArgumentException e) {
-                    onUnexpectedException(e);
-                    return null;
-                } catch (SecurityException e) {
-                    onUnexpectedException(e);
-                    return null;
-                }
-
-                return result;
-            }
-        };
         this.interceptors = interceptors;
     }
 
@@ -114,84 +78,67 @@ class Collaborator implements InvocationHandler, Serializable {
         }
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args)
+    public Object invoke(Object proxy, Method method, Object[] args, InvocationHandler target)
             throws Throwable {
         Object toReturn = null;
         
-        // Unwrap calls for equals
-        if (method.getName().equals("equals")
-                && method.getDeclaringClass() == Object.class) {
-            if (AsmInterceptorWrapper.isProxyClass(args[0].getClass())
-                    || Proxy.isProxyClass(args[0].getClass())) {
-                // unwrap in the asm case
-                args[0] = AsmInterceptorWrapper.unwrapObject(args[0]);
+        Stack<Collaborator.StackElement> calledInterceptors = new Stack<Collaborator.StackElement>();
+        boolean inInvoke = false;
+        try {
+            preCallInterceptor(interceptors, cm, method, args,
+                    calledInterceptors);
+            inInvoke = true;
+            toReturn = target.invoke(proxy, method, args);
+            inInvoke = false;
+            postCallInterceptorWithReturn(cm, method, toReturn,
+                    calledInterceptors);
+
+        } catch (Throwable e) {
+            // whether the the exception is an error is an application decision
+            LOGGER.debug("invoke", e);
+
+            // if we catch an exception we decide carefully which one to
+            // throw onwards
+            Throwable exceptionToRethrow = null;
+            // if the exception came from a precall or postcall interceptor
+            // we will rethrow it
+            // after we cycle through the rest of the interceptors using
+            // postCallInterceptorWithException
+            if (!inInvoke) {
+                exceptionToRethrow = e;
             }
-            toReturn = delegate.invoke(proxy, method, args);
-        } else if (method.getName().equals("finalize") && method.getParameterTypes().length == 0) {
-            // special case finalize, don't route through to delegate because that will get its own call
-            toReturn = null;
-        } else 
-        // Proxy the call through to the delegate, wrapping call in 
-        // interceptor invocations.
-        {
-            Stack<Collaborator.StackElement> calledInterceptors = new Stack<Collaborator.StackElement>();
-            boolean inInvoke = false;
+            // if the exception didn't come from precall or postcall then it
+            // came from invoke
+            // we will rethrow this exception if it is not a runtime
+            // exception
+            else {
+                if (!(e instanceof RuntimeException)) {
+                    exceptionToRethrow = e;
+                }
+            }
             try {
-                preCallInterceptor(interceptors, cm, method, args,
+                postCallInterceptorWithException(cm, method, e,
                         calledInterceptors);
-                inInvoke = true;
-                toReturn = delegate.invoke(proxy, method, args);
-                inInvoke = false;
-                postCallInterceptorWithReturn(cm, method, toReturn,
-                        calledInterceptors);
-
-            } catch (Throwable e) {
-                // whether the the exception is an error is an application decision
-                LOGGER.debug("invoke", e);
-
-                // if we catch an exception we decide carefully which one to
-                // throw onwards
-                Throwable exceptionToRethrow = null;
-                // if the exception came from a precall or postcall interceptor
-                // we will rethrow it
-                // after we cycle through the rest of the interceptors using
+            } catch (Exception f) {
+                // we caught an exception from
                 // postCallInterceptorWithException
-                if (!inInvoke) {
-                    exceptionToRethrow = e;
-                }
-                // if the exception didn't come from precall or postcall then it
-                // came from invoke
-                // we will rethrow this exception if it is not a runtime
-                // exception
-                else {
-                    if (!(e instanceof RuntimeException)) {
-                        exceptionToRethrow = e;
-                    }
-                }
-                try {
-                    postCallInterceptorWithException(cm, method, e,
-                            calledInterceptors);
-                } catch (Exception f) {
-                    // we caught an exception from
-                    // postCallInterceptorWithException
-                    // logger.catching("invoke", f);
-                    // if we haven't already chosen an exception to rethrow then
-                    // we will throw this exception
-                    if (exceptionToRethrow == null) {
-                        exceptionToRethrow = f;
-                    } else {
-                      LOGGER.warn("Discarding post-call with interceptor exception", f);
-                    }
-                }
-                // if we made it this far without choosing an exception we
-                // should throw e
+                // logger.catching("invoke", f);
+                // if we haven't already chosen an exception to rethrow then
+                // we will throw this exception
                 if (exceptionToRethrow == null) {
-                    exceptionToRethrow = e;
-                } else if (exceptionToRethrow != e) {
-                  LOGGER.warn("Discarding initial exception", e);
+                    exceptionToRethrow = f;
+                } else {
+                  LOGGER.warn("Discarding post-call with interceptor exception", f);
                 }
-                throw exceptionToRethrow;
             }
+            // if we made it this far without choosing an exception we
+            // should throw e
+            if (exceptionToRethrow == null) {
+                exceptionToRethrow = e;
+            } else if (exceptionToRethrow != e) {
+              LOGGER.warn("Discarding initial exception", e);
+            }
+            throw exceptionToRethrow;
         }
         return toReturn;
     }
