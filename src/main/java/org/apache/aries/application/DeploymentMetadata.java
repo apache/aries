@@ -76,7 +76,7 @@ public interface DeploymentMetadata {
    * Get the list of DeployedService-Import
    * @return DeployedService-Import
    */
-  public Collection<Filter> getDeployedServiceImport() throws InvalidAttributeException;
+  public Collection<Filter> getDeployedServiceImport();
   
   /**
    * get the contents of deployment manifest in a map
