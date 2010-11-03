@@ -173,25 +173,16 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
      */
     StringBuffer serviceImportFilter = 
       new StringBuffer("(" + Constants.OBJECTCLASS + "=javax.transaction.TransactionSynchronizationRegistry)");
-    
-    try
-    {
-      for (Filter importFilter : app.getDeploymentMetadata().getDeployedServiceImport()) {
-        if (serviceImportFilter.length() > 0) {
-          serviceImportFilter.append(",");
-        }
-        serviceImportFilter.append(importFilter.toString());
+
+    for (Filter importFilter : app.getDeploymentMetadata().getDeployedServiceImport()) {
+      if (serviceImportFilter.length() > 0) {
+        serviceImportFilter.append(",");
       }
-      
-      frameworkBundleManifest.put("CompositeServiceFilter-Import",
-          serviceImportFilter.toString());
+      serviceImportFilter.append(importFilter.toString());
     }
-    catch (InvalidAttributeException e)
-    {
-      LOGGER.debug(LOG_EXCEPTION, e);
-      LOGGER.debug(LOG_EXIT,"isolatedInstall", e);
-      throw new BundleException("Failed to process Service Imports" , e);
-    }
+    
+    frameworkBundleManifest.put("CompositeServiceFilter-Import",
+        serviceImportFilter.toString());
     
     /**
      * Install and start the new isolated bundle framework
