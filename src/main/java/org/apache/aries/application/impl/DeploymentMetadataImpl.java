@@ -286,7 +286,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     return Collections.unmodifiableSet(_deploymentImportPackage);
   }
 
-  public Collection<Filter> getDeployedServiceImport() throws InvalidAttributeException
+  public Collection<Filter> getDeployedServiceImport() 
   {
     return Collections.unmodifiableCollection(_deployedImportService);
   }
