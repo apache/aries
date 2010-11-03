@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,15 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy;
+package org.apache.aries.proxy.impl.gen;
 
-import java.util.concurrent.Callable;
-
-import org.osgi.framework.Bundle;
-
-public interface ProxyFactory 
+public interface Constants 
 {
-  public Object createProxy(Bundle clientBundle, Class<?>[] classes, Callable<Object> dispatcher);
-  public Object createProxy(Bundle clientBundle, Class<?>[] classes, Callable<Object> dispatcher, InvocationHandlerWrapper wrapper);
-  public boolean isProxy(Object proxy);
+  final static String LOG_ENTRY = "Method entry: {}, args {}";
+  final static String LOG_EXIT = "Method exit: {}, returning {}";
+  final static String LOG_EXCEPTION = "Caught exception";
 }

@@ -61,6 +61,7 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant
 	
 	public void quiesce(QuiesceCallback callback, List<Bundle> bundlesToQuiesce) 
 	{
+	    boolean shutdownMe = false;
 		for(Bundle b : bundlesToQuiesce) 
 		{
 		  try 
@@ -70,10 +71,11 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant
 		  catch (RejectedExecutionException re) {
 		  }
 		  
-		  //If we are quiescing, then we need to quiesce this threadpool!
-		  if(b.equals(ctx.getBundle()))
-		    executor.shutdown();
+          //If we are quiescing, then we need to quiesce this threadpool!
+		  shutdownMe |= b.equals(ctx.getBundle());
 		}
+		
+		if (shutdownMe) executor.shutdown();
 	}
 
   /**

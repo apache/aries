@@ -16,18 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.impl.gen;
 
-public class ProxyClassInstantiationException extends UnableToProxyException
+import org.apache.aries.proxy.UnableToProxyException;
+
+public class ProxyClassBytecodeGenerationException extends UnableToProxyException
 {
+
   /**
    * 
    */
-  private static final long serialVersionUID = -2303296601108980837L;
+  private static final long serialVersionUID = -8015178382210046784L;
 
-  public ProxyClassInstantiationException(Class<?> clazz, Exception e)
+  public ProxyClassBytecodeGenerationException(String string, Throwable throwable)
   {
-    super(clazz, e);
+    super(string, throwable);
   }
-
 }

@@ -16,36 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.impl.gen;
 
-public class FinalModifierException extends UnableToProxyException
+import org.apache.aries.proxy.UnableToProxyException;
+
+public class ProxyClassInstantiationException extends UnableToProxyException
 {
-
   /**
    * 
    */
-  private static final long serialVersionUID = -3139392096074404448L;
-  public String finalMethods = null;
+  private static final long serialVersionUID = -2303296601108980837L;
 
-  public FinalModifierException(Class<?> clazz)
+  public ProxyClassInstantiationException(Class<?> clazz, Exception e)
   {
-    super(clazz);
-  }
-
-  public FinalModifierException(Class<?> clazz, String finalMethods)
-  {
-    super(clazz);
-    this.finalMethods = finalMethods;
-  }
-
-  public boolean isFinalClass()
-  {
-    return (finalMethods == null || finalMethods.equals(""));
-  }
-
-  public String getFinalMethods()
-  {
-    return finalMethods;
+    super(clazz, e);
   }
 
 }
