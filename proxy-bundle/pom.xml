@@ -19,8 +19,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
+        <groupId>org.apache.aries.proxy</groupId>
+        <artifactId>proxy</artifactId>
         <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
@@ -39,14 +39,21 @@
     </scm>
 
     <properties>
+        <aries.osgi.activator>
+            org.apache.aries.proxy.impl.ProxyManagerActivator
+        </aries.osgi.activator>
         <aries.osgi.export.pkg>
             org.apache.aries.proxy;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
+            org.objectweb.asm;resolution:=optional,
+            org.objectweb.asm.commons;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
-            org.apache.aries.proxy.impl
+            org.apache.aries.util*,
+            org.objectweb.asm*,
+            org.apache.aries.proxy.impl*
         </aries.osgi.private.pkg>
     </properties>
 
@@ -76,6 +83,16 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries</groupId>
+        	<artifactId>org.apache.aries.proxy.api</artifactId>
+        	<version>${project.version}</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.proxy</groupId>
+        	<artifactId>org.apache.aries.proxy.impl</artifactId>
+        	<version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -19,8 +19,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
+        <groupId>org.apache.aries.proxy</groupId>
+        <artifactId>proxy</artifactId>
         <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
@@ -39,17 +39,35 @@
     </scm>
 
     <properties>
-        <aries.osgi.export.pkg>
-        </aries.osgi.export.pkg>
+        <aries.osgi.export.pkg/>
+        <aries.osgi.activator>
+            org.apache.aries.proxy.impl.ProxyManagerActivator
+        </aries.osgi.activator>
         <aries.osgi.import.pkg>
+            org.objectweb.asm;resolution:=optional,
+            org.objectweb.asm.commons;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
-            org.apache.aries.proxy.impl
+            org.apache.aries.proxy.impl*
         </aries.osgi.private.pkg>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -81,6 +99,11 @@
         	<artifactId>org.apache.aries.proxy.api</artifactId>
         	<version>0.3-incubating-SNAPSHOT</version>
         	<type>bundle</type>
+        	<scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries</groupId>
+        	<artifactId>org.apache.aries.util</artifactId>
         	<scope>compile</scope>
         </dependency>
     </dependencies>
