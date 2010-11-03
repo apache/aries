@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ParserService;
@@ -38,6 +39,9 @@ import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
+import org.apache.aries.proxy.ProxyManager;
+import org.apache.aries.util.SingleServiceTracker;
+import org.apache.aries.util.SingleServiceTracker.SingleServiceListener;
 import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -50,6 +54,8 @@ import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,37 +78,50 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private RecursiveBundleTracker bt;
     private ServiceRegistration parserServiceReg;
     private ServiceRegistration quiesceParticipantReg;
-
-    public void start(BundleContext context) {
+    private static SingleServiceTracker<ProxyManager> proxyManager;
+    
+    public void start(BundleContext ctx) {
         LOGGER.debug("Starting blueprint extender...");
 
-        this.context = context;
-        handlers = new NamespaceHandlerRegistryImpl(context);
+        this.context = ctx;
+        handlers = new NamespaceHandlerRegistryImpl(ctx);
         executors = Executors.newScheduledThreadPool(3, new BlueprintThreadFactory("Blueprint Extender"));
-        eventDispatcher = new BlueprintEventDispatcher(context, executors);
+        eventDispatcher = new BlueprintEventDispatcher(ctx, executors);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
 
         int stateMask = Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE
         | Bundle.STOPPING;
-        bt = new RecursiveBundleTracker(context, stateMask, new BlueprintBundleTrackerCustomizer());
-        bt.open();
-
+        bt = new RecursiveBundleTracker(ctx, stateMask, new BlueprintBundleTrackerCustomizer());
+        
+        proxyManager = new SingleServiceTracker<ProxyManager>(ctx, ProxyManager.class, new SingleServiceListener() {
+          public void serviceFound() {
+            LOGGER.debug("Found ProxyManager service, starting to process blueprint bundles");
+            bt.open();
+          }
+          public void serviceLost() {
+            // TODO we should probably close here, not sure.
+          }
+          public void serviceReplaced() {
+          }
+        });
+        proxyManager.open();
+        
         // Create and publish a ParserService
-        parserServiceReg = context.registerService(ParserService.class.getName(), 
+        parserServiceReg = ctx.registerService(ParserService.class.getName(), 
             new ParserServiceImpl (handlers), 
             new Hashtable<Object, Object>()); 
 
         try{
-            context.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
+            ctx.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
             //Class was loaded, register
 
-            quiesceParticipantReg = context.registerService(QUIESCE_PARTICIPANT_CLASS, 
-              new BlueprintQuiesceParticipant(context, this), 
+            quiesceParticipantReg = ctx.registerService(QUIESCE_PARTICIPANT_CLASS, 
+              new BlueprintQuiesceParticipant(ctx, this), 
               new Hashtable<Object, Object>()); 
         } 
         catch (ClassNotFoundException e) 
         {
-            LOGGER.info("No quiesce support is available, so blueprint components will not participate in quiesce operations", e);
+            LOGGER.info("No quiesce support is available, so blueprint components will not participate in quiesce operations");
         }
         
         LOGGER.debug("Blueprint extender started");
@@ -153,6 +172,14 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         this.handlers.destroy();
         executors.shutdown();
         LOGGER.debug("Blueprint extender stopped");
+    }
+    
+    /**
+     * @return the proxy manager. This will return null if the blueprint is not yet managing bundles.
+     */
+    public static ProxyManager getProxyManager()
+    {
+      return proxyManager.getService();
     }
 
     private List<Bundle> getBundlesToDestroy() {
@@ -304,7 +331,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         boolean compatible;
         if (bundle.getState() == Bundle.ACTIVE) {
             try {
-                Class clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContainer.class.getName());
+                Class<?> clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContainer.class.getName());
                 compatible = (clazz == BlueprintContainer.class);
             } catch (ClassNotFoundException e) {
                 compatible = true;
@@ -365,7 +392,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     }
     
     private void addEntries(Bundle bundle, String path, String filePattern, List<Object> pathList) {
-        Enumeration e = bundle.findEntries(path, filePattern, false);
+        Enumeration<?> e = bundle.findEntries(path, filePattern, false);
         while (e != null && e.hasMoreElements()) {
             URL u = (URL) e.nextElement();
             URL override = getOverrideURL(bundle, u, path);

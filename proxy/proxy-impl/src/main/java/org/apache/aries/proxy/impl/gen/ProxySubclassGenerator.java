@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.impl.gen;
 
 import static java.lang.reflect.Modifier.isFinal;
 
@@ -34,6 +34,8 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.aries.proxy.FinalModifierException;
+import org.apache.aries.proxy.UnableToProxyException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -66,7 +68,7 @@ public class ProxySubclassGenerator
 
   public static Class<?> getProxySubclass(Class<?> aClass) throws UnableToProxyException
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "getProxySubclass", new Object[] { aClass });
+    LOGGER.debug(Constants.LOG_ENTRY, "getProxySubclass", new Object[] { aClass });
 
     ClassLoader loader = aClass.getClassLoader();
     // in the special case where the loader is null we use a default classloader
@@ -108,7 +110,7 @@ public class ProxySubclassGenerator
         try {
           classToReturn = loader.loadClass(className);
         } catch (ClassNotFoundException cnfe) {
-          LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, cnfe);
+          LOGGER.debug(Constants.LOG_EXCEPTION, cnfe);
           throw new UnableToLoadProxyException(className, cnfe);
         }
       } else {
@@ -138,7 +140,7 @@ public class ProxySubclassGenerator
       }
     }
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "getProxySubclass", classToReturn);
+    LOGGER.debug(Constants.LOG_EXIT, "getProxySubclass", classToReturn);
 
     return classToReturn;
   }
@@ -147,7 +149,7 @@ public class ProxySubclassGenerator
       throws UnableToProxyException
   {
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "newProxySubclassInstance", new Object[] {
+    LOGGER.debug(Constants.LOG_ENTRY, "newProxySubclassInstance", new Object[] {
         classToProxy, ih });
 
     Object proxySubclassInstance = null;
@@ -160,20 +162,20 @@ public class ProxySubclassGenerator
       proxySubclassInstance = subclassConstructor.newInstance(ih);
       LOGGER.debug("Invoked proxy subclass constructor");
     } catch (NoSuchMethodException nsme) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, nsme);
+      LOGGER.debug(Constants.LOG_EXCEPTION, nsme);
       throw new ProxyClassInstantiationException(classToProxy, nsme);
     } catch (InvocationTargetException ite) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, ite);
+      LOGGER.debug(Constants.LOG_EXCEPTION, ite);
       throw new ProxyClassInstantiationException(classToProxy, ite);
     } catch (InstantiationException ie) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, ie);
+      LOGGER.debug(Constants.LOG_EXCEPTION, ie);
       throw new ProxyClassInstantiationException(classToProxy, ie);
     } catch (IllegalAccessException iae) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, iae);
+      LOGGER.debug(Constants.LOG_EXCEPTION, iae);
       throw new ProxyClassInstantiationException(classToProxy, iae);
     }
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "newProxySubclassInstance", proxySubclassInstance);
+    LOGGER.debug(Constants.LOG_EXIT, "newProxySubclassInstance", proxySubclassInstance);
 
     return proxySubclassInstance;
   }
@@ -181,7 +183,7 @@ public class ProxySubclassGenerator
   private static Class<?> generateAndLoadSubclass(Class<?> aClass, ClassLoader loader)
       throws UnableToProxyException
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "generateAndLoadSubclass", new Object[] { aClass,
+    LOGGER.debug(Constants.LOG_ENTRY, "generateAndLoadSubclass", new Object[] { aClass,
         loader });
 
     // set the newClassName
@@ -207,38 +209,38 @@ public class ProxySubclassGenerator
       clazz = loadClassFromBytes(loader, getBinaryName(fullNewClassName), byteClassData, aClass
           .getName());
     } catch (IOException ioe) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, ioe);
+      LOGGER.debug(Constants.LOG_EXCEPTION, ioe);
       throw new ProxyClassBytecodeGenerationException(aClass.getName(), ioe);
     } catch (TypeNotPresentException tnpe) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, tnpe);
+      LOGGER.debug(Constants.LOG_EXCEPTION, tnpe);
       throw new ProxyClassBytecodeGenerationException(tnpe.typeName(), tnpe.getCause());
     }
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "generateAndLoadSubclass", clazz);
+    LOGGER.debug(Constants.LOG_EXIT, "generateAndLoadSubclass", clazz);
 
     return clazz;
   }
 
   private static byte[] processClass(ClassReader cReader, ClassWriter cWriter, ClassVisitor cVisitor)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "processClass", new Object[] { cReader, cWriter,
+    LOGGER.debug(Constants.LOG_ENTRY, "processClass", new Object[] { cReader, cWriter,
         cVisitor });
 
     cReader.accept(cVisitor, ClassReader.SKIP_DEBUG);
     byte[] byteClassData = cWriter.toByteArray();
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "processClass", byteClassData);
+    LOGGER.debug(Constants.LOG_EXIT, "processClass", byteClassData);
 
     return byteClassData;
   }
 
   private static String getBinaryName(String name)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "getBinaryName", name);
+    LOGGER.debug(Constants.LOG_ENTRY, "getBinaryName", name);
 
     String binaryName = name.replaceAll("/", "\\.");
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "getBinaryName", binaryName);
+    LOGGER.debug(Constants.LOG_EXIT, "getBinaryName", binaryName);
 
     return binaryName;
   }
@@ -246,7 +248,7 @@ public class ProxySubclassGenerator
   private static Class<?> loadClassFromBytes(ClassLoader loader, String name, byte[] classData,
       String classToProxyName) throws UnableToProxyException
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "loadClassFromBytes", new Object[] { loader, name,
+    LOGGER.debug(Constants.LOG_ENTRY, "loadClassFromBytes", new Object[] { loader, name,
         classData });
 
     Class<?> clazz = null;
@@ -260,27 +262,27 @@ public class ProxySubclassGenerator
           ProxySubclassGenerator.class.getProtectionDomain());
       defineClassMethod.setAccessible(false);
     } catch (ClassNotFoundException cnfe) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, cnfe);
+      LOGGER.debug(Constants.LOG_EXCEPTION, cnfe);
       throw new ProxyClassDefinitionException(classToProxyName, cnfe);
     } catch (NoSuchMethodException nsme) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, nsme);
+      LOGGER.debug(Constants.LOG_EXCEPTION, nsme);
       throw new ProxyClassDefinitionException(classToProxyName, nsme);
     } catch (InvocationTargetException ite) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, ite);
+      LOGGER.debug(Constants.LOG_EXCEPTION, ite);
       throw new ProxyClassDefinitionException(classToProxyName, ite);
     } catch (IllegalAccessException iae) {
-      LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, iae);
+      LOGGER.debug(Constants.LOG_EXCEPTION, iae);
       throw new ProxyClassDefinitionException(classToProxyName, iae);
     }
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "loadClassFromBytes", clazz);
+    LOGGER.debug(Constants.LOG_EXIT, "loadClassFromBytes", clazz);
 
     return clazz;
   }
 
   public static boolean isProxySubclass(Class<?> aClass)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "isProxySubclass", new Object[] { aClass });
+    LOGGER.debug(Constants.LOG_ENTRY, "isProxySubclass", new Object[] { aClass });
 
     // We will always have a proxy map for the class loader of any proxy
     // class, so if
@@ -289,14 +291,14 @@ public class ProxySubclassGenerator
 
     boolean isProxySubclass = (proxies != null && proxies.containsValue(aClass.getName()));
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "isProxySubclass", isProxySubclass);
+    LOGGER.debug(Constants.LOG_EXIT, "isProxySubclass", isProxySubclass);
 
     return isProxySubclass;
   }
 
   private static void scanForFinalModifiers(Class<?> clazz) throws FinalModifierException
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "scanForFinalModifiers", new Object[] { clazz });
+    LOGGER.debug(Constants.LOG_ENTRY, "scanForFinalModifiers", new Object[] { clazz });
 
     if (isFinal(clazz.getModifiers())) {
       throw new FinalModifierException(clazz);
@@ -323,13 +325,13 @@ public class ProxySubclassGenerator
       throw new FinalModifierException(clazz, methodList);
     }
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "scanForFinalModifiers");
+    LOGGER.debug(Constants.LOG_EXIT, "scanForFinalModifiers");
 
   }
 
   public static InvocationHandler getInvocationHandler(Object o)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "getInvoationHandler", new Object[] { o });
+    LOGGER.debug(Constants.LOG_ENTRY, "getInvoationHandler", new Object[] { o });
 
     InvocationHandler ih = null;
     if (isProxySubclass(o.getClass())) {
@@ -342,18 +344,18 @@ public class ProxySubclassGenerator
         ih = (InvocationHandler) o.getClass().getDeclaredMethod("getInvocationHandler",
             new Class[] {}).invoke(o, new Object[] {});
       } catch (IllegalArgumentException e) {
-        LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, e);
+        LOGGER.debug(Constants.LOG_EXCEPTION, e);
       } catch (SecurityException e) {
-        LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, e);
+        LOGGER.debug(Constants.LOG_EXCEPTION, e);
       } catch (IllegalAccessException e) {
-        LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, e);
+        LOGGER.debug(Constants.LOG_EXCEPTION, e);
       } catch (InvocationTargetException e) {
-        LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, e);
+        LOGGER.debug(Constants.LOG_EXCEPTION, e);
       } catch (NoSuchMethodException e) {
-        LOGGER.debug(AsmInterceptorWrapper.LOG_EXCEPTION, e);
+        LOGGER.debug(Constants.LOG_EXCEPTION, e);
       }
     }
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "getInvoationHandler", ih);
+    LOGGER.debug(Constants.LOG_EXIT, "getInvoationHandler", ih);
     return ih;
   }
 

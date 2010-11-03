@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.impl.gen;
 
 import java.util.Collection;
 
@@ -47,19 +47,19 @@ public class ProxySubclassHierarchyAdapter implements ClassVisitor, Opcodes
 
   ProxySubclassHierarchyAdapter(ProxySubclassAdapter adapter, Collection<String> methodsToImplement)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "ProxySubclassHeirarchyAdapter", new Object[] {
+    LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassHeirarchyAdapter", new Object[] {
         this, adapter, methodsToImplement });
 
     this.methodsToImplement = methodsToImplement;
     this.adapter = adapter;
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "ProxySubclassHeirarchyAdapter", this);
+    LOGGER.debug(Constants.LOG_EXIT, "ProxySubclassHeirarchyAdapter", this);
   }
 
   public MethodVisitor visitMethod(int access, String name, String desc, String signature,
       String[] exceptions)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "visitMethod", new Object[] { access, name, desc,
+    LOGGER.debug(Constants.LOG_ENTRY, "visitMethod", new Object[] { access, name, desc,
         signature, exceptions });
 
     // if the method we find in the superclass is one that is available on
@@ -73,7 +73,7 @@ public class ProxySubclassHierarchyAdapter implements ClassVisitor, Opcodes
       adapter.visitMethod(access, name, desc, signature, exceptions);
     }
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "visitMethod");
+    LOGGER.debug(Constants.LOG_EXIT, "visitMethod");
 
     // always return null because we don't want to copy any method code
     return null;

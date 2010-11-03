@@ -51,6 +51,7 @@
         <module>jpa</module>
         <module>spi-fly</module>
         <module>samples</module>
+        <module>proxy</module>
     </modules>
 
     <build>

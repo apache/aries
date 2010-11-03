@@ -155,6 +155,17 @@
               <artifactId>org.apache.aries.testsupport.unit</artifactId>
               <version>0.3-incubating-SNAPSHOT</version>
             </dependency>            
+            <dependency>
+            	<groupId>org.apache.aries</groupId>
+            	<artifactId>org.apache.aries.proxy.api</artifactId>
+            	<version>0.3-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.aries.proxy</groupId>
+        	  <artifactId>org.apache.aries.proxy</artifactId>
+        	  <version>0.3-incubating-SNAPSHOT</version>
+        	  <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

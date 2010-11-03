@@ -43,10 +43,9 @@ import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.Recipe;
-import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
-import org.apache.aries.blueprint.proxy.UnableToProxyException;
 import org.apache.aries.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
+import org.apache.aries.proxy.UnableToProxyException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -78,7 +77,6 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected final ServiceReferenceMetadata metadata;
     protected final CollectionRecipe listenersRecipe;
     protected final List<Recipe> explicitDependencies;
-    protected final ClassLoader proxyClassLoader;
     protected final boolean optional;
     /** The OSGi filter for tracking references */
     protected final String filter;
@@ -89,7 +87,6 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private final AtomicBoolean started = new AtomicBoolean();
     private final AtomicBoolean satisfied = new AtomicBoolean();
     private SatisfactionListener satisfactionListener;
-    private volatile ProxyFactory proxyFactory;
 
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
@@ -104,57 +101,12 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         this.explicitDependencies = explicitDependencies;
         
         
-        this.proxyClassLoader = makeProxyClassLoader(blueprintContainer, metadata);
-
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.filter = createOsgiFilter(metadata);
     }
 
 
 
-    // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes
-    // so that the created proxy can access cglib classes.
-    // TODO: we should be able to get rid of this classloader when using JDK 1.4 proxies with a single interface
-    //         (the case defined by the spec) and use the interface classloader instead
-    private ClassLoader makeProxyClassLoader(
-        final ExtendedBlueprintContainer blueprintContainer,
-        ServiceReferenceMetadata metadata) {
-      
-      Class typeClass = getInterfaceClass();
-      if (typeClass == null) {
-        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-          public ClassLoader run() {
-            return new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
-                AbstractServiceReferenceRecipe.class.getClassLoader());
-          }      
-        });
-      }
-      
-      final ClassLoader interfaceClassLoader = typeClass.getClassLoader();
-      
-      return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-        public ClassLoader run() {
-          return new DualClassloader(interfaceClassLoader);
-        }      
-      });
-    }
-
-    private static class DualClassloader extends ClassLoader {
-      DualClassloader(ClassLoader parent) {
-        super(parent);
-      }
-      
-      @Override
-      protected Class<?> findClass(String name) throws ClassNotFoundException {
-        return getClass().getClassLoader().loadClass(name);
-      }
-
-      @Override
-      protected URL findResource(String name) {
-        return getClass().getClassLoader().getResource(name);
-      }
-    }
-    
     public CollectionRecipe getListenersRecipe() {
         return listenersRecipe;
     }
@@ -252,10 +204,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             }
     }
 
-    protected List<Class> loadAllClasses(Iterable<String> interfaceNames) {
-        List<Class> classes = new ArrayList<Class>();
+    protected List<Class<?>> loadAllClasses(Iterable<String> interfaceNames) {
+        List<Class<?>> classes = new ArrayList<Class<?>>();
         for (String name : interfaceNames) {
-            Class clazz = loadClass(name);
+            Class<?> clazz = loadClass(name);
             classes.add(clazz);
         }
         return classes;
@@ -277,44 +229,12 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
 
-    protected Object createProxy(final Callable<Object> dispatcher, Set<Class> interfaces) throws Exception {
+    protected Object createProxy(final Callable<Object> dispatcher, Set<Class<?>> interfaces) throws Exception {
         if (!interfaces.iterator().hasNext()) {
             return new Object();
         } else {
-            return getProxyFactory().createProxy(proxyClassLoader, toClassArray(interfaces), dispatcher);
+            return BlueprintExtender.getProxyManager().createProxy(blueprintContainer.getBundleContext().getBundle(), interfaces, dispatcher);
         }
-    }
-
-    protected synchronized ProxyFactory getProxyFactory() throws ClassNotFoundException {
-        if (proxyFactory == null) {
-            boolean proxyClass = false;
-            if (metadata instanceof ExtendedServiceReferenceMetadata) {
-                proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
-            }
-            if (!proxyClass) {
-                Set<Class> interfaces = new HashSet<Class>();
-                Class clz = getInterfaceClass();
-                if (clz != null) interfaces.add(clz);
-                
-                for (Class cl : interfaces) {
-                    if (!cl.isInterface()) {
-                        throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='classes' attribute needs to be added to this service reference.");
-                    }
-                }
-            }
-            try {
-                // Try load load a asm class (to make sure it's actually available
-                // then create the asm factory
-                getClass().getClassLoader().loadClass("org.objectweb.asm.ClassVisitor");
-                proxyFactory = new AsmProxyFactory();
-            } catch (Throwable t) {
-                if (proxyClass) {
-                    throw new ComponentDefinitionException("Class proxying has been enabled but cglib can not be used", t);
-                }
-                proxyFactory = new JdkProxyFactory();
-            }
-        }
-        return proxyFactory;
     }
 
     public void serviceChanged(ServiceEvent event) {
@@ -608,40 +528,6 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     private static Class[] toClassArray(Set<Class> classes) {
         return classes.toArray(new Class [classes.size()]);
-    }
-
-    public static interface ProxyFactory {
-
-        public Object createProxy(ClassLoader classLoader, Class[] classes, Callable<Object> dispatcher);
-
-    }
-
-    public static class JdkProxyFactory implements ProxyFactory {
-
-        public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
-            return Proxy.newProxyInstance(classLoader, getInterfaces(classes), new InvocationHandler() {
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                    try {
-                        return method.invoke(dispatcher.call(), args);
-                    } catch (InvocationTargetException ite) {
-                      throw ite.getTargetException();
-                    }
-                }
-            });
-        }
-
-    }
-
-    public static class AsmProxyFactory implements ProxyFactory {
-
-        public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
-            try {
-                return AsmInterceptorWrapper.createProxyObject(classLoader, null, null, dispatcher, classes);
-            } catch (UnableToProxyException e) {
-                throw new ComponentDefinitionException("Unable to create asm proxy", e);
-            }
-        }
-
     }
 
 }

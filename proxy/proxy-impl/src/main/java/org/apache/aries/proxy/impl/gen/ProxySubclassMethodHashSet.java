@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.impl.gen;
 
 import java.util.HashSet;
 
@@ -37,7 +37,7 @@ public class ProxySubclassMethodHashSet<E> extends HashSet<String>
 
   public void addMethodArray(java.lang.reflect.Method[] arrayOfEntries)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "addMethodArray", new Object[] { arrayOfEntries });
+    LOGGER.debug(Constants.LOG_ENTRY, "addMethodArray", new Object[] { arrayOfEntries });
 
     for (java.lang.reflect.Method entry : arrayOfEntries) {
       String methodName = entry.getName();
@@ -54,7 +54,7 @@ public class ProxySubclassMethodHashSet<E> extends HashSet<String>
       LOGGER.debug("Added: {}", added);
     }
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "addMethodArray");
+    LOGGER.debug(Constants.LOG_EXIT, "addMethodArray");
   }
 
   static String typeArrayToStringArgDescriptor(Type[] argTypes)

@@ -17,13 +17,11 @@
 package org.apache.aries.blueprint.container;
 
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,18 +29,24 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.aries.blueprint.*;
+import org.apache.aries.blueprint.BlueprintConstants;
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.Interceptor;
+import org.apache.aries.blueprint.ServiceProcessor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
-import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
-import org.apache.aries.blueprint.proxy.FinalModifierException;
+import org.apache.aries.blueprint.proxy.Collaborator;
+import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
+import org.apache.aries.proxy.InvocationHandlerWrapper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -52,8 +56,6 @@ import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.lang.reflect.Modifier.isFinal;
 
 /**
  * A <code>Recipe</code> to export services into the OSGi registry.
@@ -454,22 +456,20 @@ public class ServiceRecipe extends AbstractRecipe {
 
             Object intercepted;
             try {
+                Bundle b = FrameworkUtil.getBundle(original.getClass());
+                Callable<Object> target = ProxyUtils.passThrough(original);
+                InvocationHandlerWrapper collaborator = new Collaborator(cm, interceptors);
                 try {
-                    // Try with subclass proxying first
-                    intercepted = AsmInterceptorWrapper.createProxyObject(
-                            original.getClass().getClassLoader(), cm,
-                            interceptors, AsmInterceptorWrapper.passThrough(original),
-                            original.getClass());
-                } catch (FinalModifierException u) {
+                    intercepted = BlueprintExtender.getProxyManager().createProxy(b, 
+                        ProxyUtils.asList(original.getClass()), target, collaborator);
+                } catch (org.apache.aries.proxy.FinalModifierException u) {
                     LOGGER.debug("Error creating asm proxy (final modifier), trying with interfaces");
-                    List<Class> classes = new ArrayList<Class>();
+                    List<Class<?>> classes = new ArrayList<Class<?>>();
                     for (String className : getClasses()) {
                         classes.add(blueprintContainer.loadClass(className));
                     }
-                    intercepted = AsmInterceptorWrapper.createProxyObject(
-                            original.getClass().getClassLoader(), cm,
-                            interceptors, AsmInterceptorWrapper.passThrough(original),
-                            classes.toArray(new Class[classes.size()]));
+                    intercepted = BlueprintExtender.getProxyManager().createProxy(b, 
+                        classes, target, collaborator);
                 }
             } catch (Throwable u) {
                 LOGGER.info("A problem occurred trying to create a proxy object. Returning the original object instead.", u);

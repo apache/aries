@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.impl.gen;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -65,7 +65,7 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     super(writer);
     // the writer is now the cv in the superclass of ClassAdapter
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "ProxySubclassAdapter", new Object[] { this, writer,
+    LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassAdapter", new Object[] { this, writer,
         newClassName });
 
     // set the newClassName field
@@ -76,7 +76,7 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     // set the classloader
     this.loader = loader;
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "ProxySubclassAdapter", this);
+    LOGGER.debug(Constants.LOG_EXIT, "ProxySubclassAdapter", this);
   }
 
   /*
@@ -96,7 +96,7 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
   public void visit(int version, int access, String name, String signature, String superName,
       String[] interfaces)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "visit", new Object[] { version, access, name,
+    LOGGER.debug(Constants.LOG_ENTRY, "visit", new Object[] { version, access, name,
         signature, superName, interfaces });
 
     // store the superclass binary name
@@ -235,23 +235,23 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     // now we are ready to visit all the methods on the lowest class
     // which will happen by the ASM ClassVisitor implemented in this adapter
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "visit");
+    LOGGER.debug(Constants.LOG_EXIT, "visit");
   }
 
   public void visitSource(String source, String debug)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "visitSource", new Object[] { source, debug });
+    LOGGER.debug(Constants.LOG_ENTRY, "visitSource", new Object[] { source, debug });
 
     // set the source to null since the class is generated on the fly and
     // not compiled
     cv.visitSource(null, null);
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "visitSource");
+    LOGGER.debug(Constants.LOG_EXIT, "visitSource");
   }
 
   public void visitEnd()
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "visitEnd");
+    LOGGER.debug(Constants.LOG_ENTRY, "visitEnd");
 
     // this method is called when we reach the end of the class
     // so it is time to make sure the static initialiser method is closed
@@ -260,7 +260,7 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     // now delegate to the cv
     cv.visitEnd();
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "visitEnd");
+    LOGGER.debug(Constants.LOG_EXIT, "visitEnd");
   }
 
   /*
@@ -272,7 +272,7 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
   public MethodVisitor visitMethod(int access, String name, String desc, String signature,
       String[] exceptions)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "visitMethod", new Object[] { access, name, desc,
+    LOGGER.debug(Constants.LOG_ENTRY, "visitMethod", new Object[] { access, name, desc,
         signature, exceptions });
 
     /*
@@ -343,7 +343,7 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
       methodVisitorToReturn = null;
     }
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "visitMethod", methodVisitorToReturn);
+    LOGGER.debug(Constants.LOG_EXIT, "visitMethod", methodVisitorToReturn);
 
     return methodVisitorToReturn;
 
@@ -352,7 +352,7 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
   private void processMethod(int access, String name, String desc, String signature,
       String[] exceptions)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "processMethod", new Object[] { access, name, desc,
+    LOGGER.debug(Constants.LOG_ENTRY, "processMethod", new Object[] { access, name, desc,
         signature, exceptions });
 
     LOGGER.debug("Processing method: {} with descriptor {}", name, desc);
@@ -541,12 +541,12 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     // end the method
     methodAdapter.endMethod();
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "processMethod");
+    LOGGER.debug(Constants.LOG_EXIT, "processMethod");
   }
 
   private void addClassStaticField(String classBinaryName)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "addClassStaticField",
+    LOGGER.debug(Constants.LOG_ENTRY, "addClassStaticField",
         new Object[] { classBinaryName });
 
     currentClassFieldName = classBinaryName.replaceAll("\\.", "_");
@@ -574,18 +574,18 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     // put the Class in the static field
     staticAdapter.putStatic(newClassType, currentClassFieldName, CLASS_TYPE);
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "addClassStaticField");
+    LOGGER.debug(Constants.LOG_ENTRY, "addClassStaticField");
   }
 
   private void setCurrentAnalysisClassFields(Class<?> aClass)
   {
-    LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "setCurrentAnalysisClassFields",
+    LOGGER.debug(Constants.LOG_ENTRY, "setCurrentAnalysisClassFields",
         new Object[] { aClass });
 
     currentlyAnalysedClassName = aClass.getName();
     currentlyAnalysedClass = aClass;
 
-    LOGGER.debug(AsmInterceptorWrapper.LOG_EXIT, "setCurrentAnalysisClassFields");
+    LOGGER.debug(Constants.LOG_EXIT, "setCurrentAnalysisClassFields");
   }
 
   // we don't want to copy fields from the class into the proxy

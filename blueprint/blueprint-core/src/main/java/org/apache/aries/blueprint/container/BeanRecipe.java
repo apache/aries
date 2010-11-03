@@ -40,10 +40,11 @@ import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.Recipe;
-import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
-import org.apache.aries.blueprint.proxy.UnableToProxyException;
+import org.apache.aries.blueprint.proxy.Collaborator;
+import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -669,7 +670,7 @@ public class BeanRecipe extends AbstractRecipe {
         return obj;
     }    
     
-    private Object addInterceptors(Object original)
+    private Object addInterceptors(final Object original)
             throws ComponentDefinitionException {
 
         Object intercepted = null;
@@ -691,10 +692,10 @@ public class BeanRecipe extends AbstractRecipe {
             // if asm is available we can proxy the original object with the
             // AsmInterceptorWrapper
             try {
-                intercepted = AsmInterceptorWrapper.createProxyObject(original
-                        .getClass().getClassLoader(), interceptorLookupKey, interceptors,
-                        AsmInterceptorWrapper.passThrough(original), original.getClass());
-            } catch (UnableToProxyException e) {
+              intercepted = BlueprintExtender.getProxyManager().createProxy(FrameworkUtil.getBundle(original.getClass()), 
+                  ProxyUtils.asList(original.getClass()), ProxyUtils.passThrough(original), 
+                  new Collaborator(interceptorLookupKey, interceptors));
+            } catch (org.apache.aries.proxy.UnableToProxyException e) {
                 throw new ComponentDefinitionException("Unable to create asm proxy", e);
             }
         } else {
