@@ -40,7 +40,8 @@
         <aries.osgi.import>
             !org.apache.aries.blueprint*,
             !org.osgi.service.blueprint*,
-            !org.objectweb.asm*;version="[3.1,4)";resolution:=optional,
+            !org.objectweb.asm*,
+            !org.eclipse*,
             org.osgi.service.event*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
             org.osgi.service.cm;version="[1.2.0,2.0.0)",
