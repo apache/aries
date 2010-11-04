@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MyTestBundleModifications
+Bundle-SymbolicName: MyTestBundleModifications
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.aries.spifly.mysvc,
+ org.apache.aries.spifly.util,
+ org.osgi.framework;version="1.6.0",
+ org.osgi.framework.wiring;version="1.0.0",
+ org.osgi.util.tracker;version="1.5.0"
