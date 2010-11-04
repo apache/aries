@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Extender
+Bundle-SymbolicName: Extender
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: extender.Activator
+Import-Package: org.osgi.framework;version="1.3.0",
+ org.osgi.framework.wiring;version="1.0.0",
+ org.osgi.service.log;version="1.3.0",
+ org.osgi.util.tracker;version="1.5.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.apache.aries.spifly.util
