@@ -48,14 +48,22 @@ public class IOUtils
   public static void copy(InputStream in, OutputStream out) throws IOException
   {
     try {
-      int len;
-      byte[] b = new byte[1024];
-      while ((len = in.read(b)) != -1)
-        out.write(b,0,len);
+      copyAndDoNotCloseInputStream(in, out);
     }
     finally {
       close(in);
     }
+  }
+  
+  /**
+   * Copy an InputStream to an OutputStream and do not close the InputStream afterwards.
+   */
+  public static void copyAndDoNotCloseInputStream(InputStream in, OutputStream out) throws IOException
+  {
+    int len;
+    byte[] b = new byte[1024];
+    while ((len = in.read(b)) != -1)
+      out.write(b,0,len);
   }
   
   /**
@@ -67,7 +75,9 @@ public class IOUtils
       if (c != null)
         c.close();
     }
-    catch (IOException e) { c=null; } //in other words do nothing in a language findbugs can understand 
+    catch (IOException e) {
+      c = null;
+    }
   }
   
   public static OutputStream getOutputStream(File outputDir, String relativePath) throws IOException
@@ -81,18 +91,18 @@ public class IOUtils
     {
       dirName = relativePath.substring(0, lastSeparatorIndex);
       fileName = relativePath.substring(lastSeparatorIndex + 1);
+
       outputDirectory = new File(outputDir, dirName);
       
+      if (!!!outputDirectory.exists() && !!!outputDirectory.mkdirs())
+        throw new IOException(MessageUtil.getMessage("APPUTILS0012E", relativePath));
     }
     else
     {
       outputDirectory = outputDir;
       fileName = relativePath;
     }
-    if (!!!outputDirectory.exists() && !!!outputDirectory.mkdirs()) {
-        throw new IOException(MessageUtil.getMessage("APPUTILS0012E", relativePath));
-    }
-
+    
     File outputFile = new File(outputDirectory, fileName);
     return new FileOutputStream(outputFile);
   }
@@ -113,7 +123,23 @@ public class IOUtils
     }
   }
   
-  /** 
+  /**
+   * Write the given InputStream to a file given by a root directory (outputDir) and a relative directory.
+   * Necessary subdirectories will be created. This method will not close the supplied InputStream.
+   */
+  public static void writeOutAndDontCloseInputStream(File outputDir, String relativePath, InputStream content) throws IOException
+  {
+    OutputStream out = null;
+    try {
+      out = getOutputStream(outputDir, relativePath);
+      IOUtils.copyAndDoNotCloseInputStream(content, out);
+    }
+    finally {
+      close(out);
+    }
+  }
+  
+   /** 
    * Zip up all contents of rootDir (recursively) into targetStream
    */
   @SuppressWarnings("unchecked")
@@ -131,9 +157,17 @@ public class IOUtils
   /**
    * Zip up all contents of rootDir (recursively) into targetFile
    */
+  @SuppressWarnings("unchecked")
   public static void zipUp(File rootDir, File targetFile) throws IOException
   {
-    zipUp (rootDir, new FileOutputStream (targetFile));
+    ZipOutputStream out = null; 
+    try {
+      out = new ZipOutputStream(new FileOutputStream(targetFile));
+      zipUpRecursive(out, "", rootDir, (Set<String>) Collections.EMPTY_SET);
+    }
+    finally {
+      close(out);
+    }
   }
   
   /**
@@ -232,11 +266,6 @@ public class IOUtils
         do { 
           if (!zipEntry.isDirectory()) { 
             writeOutAndDontCloseInputStream(outputDir, zipEntry.getName(), zis);
-          } else { 
-            File f = new File (outputDir, zipEntry.getName());
-            if (!f.exists()) { 
-              success &= f.mkdirs();
-            }
           }
           zis.closeEntry();
           zipEntry = zis.getNextEntry();
@@ -250,31 +279,5 @@ public class IOUtils
     return success;
   }
   
-  /**
-   * Write the given InputStream to a file given by a root directory (outputDir) and a relative directory.
-   * Necessary subdirectories will be created. This method will not close the supplied InputStream.
-   */
-  public static void writeOutAndDontCloseInputStream(File outputDir, String relativePath, InputStream content) throws IOException
-  {
-    OutputStream out = null;
-    try {
-      out = getOutputStream(outputDir, relativePath);
-      IOUtils.copyAndDoNotCloseInputStream(content, out);
-    }
-    finally {
-      close(out);
-    }
-  }
-  
-  /**
-   * Copy an InputStream to an OutputStream and do not close the InputStream afterwards.
-   */
-  public static void copyAndDoNotCloseInputStream(InputStream in, OutputStream out) throws IOException
-  {
-    int len;
-    byte[] b = new byte[1024];
-    while ((len = in.read(b)) != -1)
-      out.write(b,0,len);
-  }
-}
 
+}
