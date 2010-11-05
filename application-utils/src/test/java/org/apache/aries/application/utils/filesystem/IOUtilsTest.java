@@ -31,23 +31,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.util.zip.ZipFile;
 
+import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.application.utils.filesystem.impl.FileImpl;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class IOUtilsTest
 {
-  @BeforeClass 
-  public static void setup()
-  { 
-    new File("ioUtilsTest").mkdir();
-  }
-  
   @AfterClass
   public static void cleanUp()
   {
@@ -56,22 +50,38 @@ public class IOUtilsTest
   }
   
   @Test
-  public void testZipUp() throws IOException
+  public void testZipUpAndUnzipAndDeleteRecursive() throws IOException
   {
+    new File ("ioUtilsTest").mkdir();
     IOUtils.zipUp(new File("../src/test/resources/zip"), new File("ioUtilsTest/test.zip"));
     
     ZipFile zip = new ZipFile("ioUtilsTest/test.zip");
     assertNotNull(zip.getEntry("file.txt"));
     assertNotNull(zip.getEntry("subdir/someFile.txt"));
     zip.close();
+    
+    IDirectory dir = FileSystem.getFSRoot(new File("ioUtilsTest"));
+    IFile izip = dir.getFile("test.zip");
+    File output = new File("ioUtilsTest/zipout");
+    output.mkdirs();
+    IOUtils.unpackZip(izip, output);
+    File a = new File(output,"file.txt");
+    File b = new File(output,"subdir");
+    File c = new File(b,"someFile.txt");
+    assertTrue(output.exists());
+    assertTrue(a.exists() && a.isFile());
+    assertTrue(b.exists() && b.isDirectory());
+    assertTrue(c.exists() && c.isFile());
+    
+    IOUtils.deleteRecursive(output);
+    assertFalse(output.exists());
   }
   
   @Test
   public void testWriteOut() throws IOException
   {
     File tmpDir = new File("ioUtilsTest/tmp");
-    // Do not call mkdirs() on tmpDir. writeOut() should create it. 
-    // tmpDir.mkdirs(); 
+    tmpDir.mkdir();
     
     IOUtils.writeOut(tmpDir, "simple.txt", new StringBufferInputStream("abc"));
     IOUtils.writeOut(tmpDir, "some/relative/directory/complex.txt", new StringBufferInputStream("def"));
@@ -121,7 +131,7 @@ public class IOUtilsTest
         fail("Close was invoked");
       }
     };
-    File f = new File("unittest/outtest1");
+    File f = new File("ioUtilsTest/outtest1");
     f.mkdirs();
     IOUtils.writeOutAndDontCloseInputStream(f, "/fred", is);
     File fred = new File(f,"/fred");
@@ -132,48 +142,90 @@ public class IOUtilsTest
     
   }
   
-  @Test
-  public void testEmptyDirectory() throws IOException {
-    /* Create a .zip with a single entry, an empty directory inside. 
-     * Confirm that the directory is recreated on unzip. 
-     */
-    File testDir = new File ("unittest/emptyDirTest/");
-    File parent = new File (testDir, "emptyTestRootDir/");
-    File emptyDir = new File (parent, "foo/");
-    emptyDir.mkdirs();
-    assertTrue (emptyDir.exists());
+  @Test 
+  public void testCopy() throws IOException{
+    InputStream is = new InputStream(){
+      boolean closed=false;
+      int idx=0;
+      int data[]=new int[]{1,2,3,4,5,-1};
+      @Override
+      public int read() throws IOException
+      {
+        if(idx<data.length)
+          return data[idx++];
+        else
+          return -1;
+      }
+      @Override
+      public void close() throws IOException
+      {
+        closed=true;
+      }
+      @Override
+      public int available() throws IOException
+      {
+        if(!closed)
+          return super.available();
+        else
+          return 123456789;
+      }
+      
+    };
     
-    File zipWithEmptyDir = new File (testDir, "empty.zip");
-    IOUtils.zipUp(parent, zipWithEmptyDir);
+    OutputStream os = new OutputStream(){
+      int idx=0;
+      int data[]=new int[]{1,2,3,4,5,-1};
+      @Override
+      public void write(int b) throws IOException
+      {
+        if(b!=data[idx++]){
+          fail("Data written to outputstream was not as expected");
+        }
+      }
+    };
     
-    emptyDir.delete();
-    assertFalse (emptyDir.exists());
+    IOUtils.copy(is,os);
+    if(is.available()!=123456789){
+      fail("close was not invoked");
+    }
     
-    IFile zip = new FileImpl(zipWithEmptyDir, testDir);
-    IOUtils.unpackZip(zip, parent);
-    assertTrue (emptyDir.exists());
+    
   }
   
   @Test
-  public void testSingleRootLevelEntry() throws IOException { 
-    /* Create a .zip with a single entry, a root-level file. 
-     * Confirm that the file is recreated on unzip. 
-     */
-    File testDir = new File ("unittest/singleFileInZipTest/");
-    File parent = new File (testDir, "singleFileRootDir/");
-    File entry = new File (parent, "foo.txt");
-    entry.mkdirs();
-    assertTrue (entry.exists());
+  public void testCopyAndDoNotClose() throws IOException{
     
-    File zipWithSingleFileInRootdir = new File (testDir, "singleFile.zip");
-    IOUtils.zipUp(parent, zipWithSingleFileInRootdir);
+    InputStream is = new InputStream(){
+      int idx=0;
+      int data[]=new int[]{1,2,3,4,5,-1};
+      @Override
+      public int read() throws IOException
+      {
+        if(idx<data.length)
+          return data[idx++];
+        else
+          return -1;
+      }
+      @Override
+      public void close() throws IOException
+      {
+        fail("Close invoked");
+      }
+    };
     
-    entry.delete();
-    assertFalse (entry.exists());
+    OutputStream os = new OutputStream(){
+      int idx=0;
+      int data[]=new int[]{1,2,3,4,5,-1};
+      @Override
+      public void write(int b) throws IOException
+      {
+        if(b!=data[idx++]){
+          fail("Data written to outputstream was not as expected");
+        }
+      }
+    };
     
-    IFile zip = new FileImpl(zipWithSingleFileInRootdir, testDir);
-    IOUtils.unpackZip(zip, parent);
-    assertTrue (entry.exists());
+    IOUtils.copyAndDoNotCloseInputStream(is,os);
+    
   }
 }
-
