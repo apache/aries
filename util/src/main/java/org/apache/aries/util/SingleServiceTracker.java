@@ -112,7 +112,14 @@ public final class SingleServiceTracker<T>
     boolean result = false;
     int foundLostReplaced = -1;
 
-    synchronized (newRef) {
+    // Make sure we don't try to get a lock on null
+    Object lock;
+    
+    if (newRef != null) lock = newRef;
+    else if (deadRef != null) lock = deadRef;
+    else lock = this;
+    
+    synchronized (lock) {
       if (open.get()) {
         result = this.ref.compareAndSet(deadRef, newRef);
         if (result) {
