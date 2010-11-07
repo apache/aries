@@ -32,6 +32,17 @@
 			<groupId>${pom.groupId}</groupId>
 			<artifactId>org.apache.aries.samples.dgoat.web</artifactId>
 		</dependency>
+		<dependency>
+		            <groupId>org.apache.felix</groupId>
+		            <artifactId>org.apache.felix.framework</artifactId>
+		            <version>3.0.3</version>
+		            <exclusions>
+		                    <exclusion>
+		                          <groupId>org.apache.felix</groupId>
+		                          <artifactId>org.osgi.foundation</artifactId>
+		                    </exclusion>
+		            </exclusions>
+	 </dependency>
 	</dependencies>
 
 
@@ -50,9 +61,10 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Remote-Service>OSGI-INF/remote-service</Remote-Service>
+						<Remote-Service>OSGI-INF/remote-service/remote-services.xml</Remote-Service>
 						<Private-Package>org.apache.aries.samples.goat.enhancer.*</Private-Package> 
 						<Export-Package>!org.apache.aries.samples.goat.enhancer.*</Export-Package> 
+						<DynamicImport-Package>org.apache.cxf.dosgi.dsw.qos,org.apache.cxf</DynamicImport-Package>
 					</instructions>
 				</configuration>
 			</plugin>

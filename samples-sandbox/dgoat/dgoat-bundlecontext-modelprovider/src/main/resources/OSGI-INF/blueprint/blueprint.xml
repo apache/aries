@@ -29,7 +29,7 @@
   	  -->
 		<!-- CXF entries -->
 		<entry key="service.exported.configs" value="org.apache.cxf.ws" />
-		<entry key="org.apache.cxf.ws.address" value="http://localhost:9090/bundlectx" />
+		<entry key="org.apache.cxf.ws.address" value="http://localhost:9191/bundlectx" />
   	</service-properties>
   </service>
 </blueprint>
