@@ -66,6 +66,21 @@
                 <artifactId>org.apache.aries.samples.dgoat.info.enhancer</artifactId>
                 <version>${version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.dgoat.cxf-api</groupId>
+                <artifactId>cxf-api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.dgoat.cxf-client</groupId>
+                <artifactId>cxf-client</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.dgoat.cxf-server</groupId>
+                <artifactId>cxf-server</artifactId>
+                <version>${version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -79,6 +94,9 @@
         <module>dgoat-eba</module> 
         <module>dgoat-bundlecontext-modelprovider</module>
         <module>dgoat-info-enhancer</module>
+        <module>dgoat-cxf-sample-api</module>
+        <module>dgoat-cxf-sample-cli</module>
+        <module>dgoat-cxf-sample-server</module>
     </modules>
 
 </project>

@@ -169,6 +169,21 @@
 			<artifactId>cxf-dosgi-ri-singlebundle-distribution</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.samples.dgoat.cxf-api</groupId>
+			<artifactId>cxf-api</artifactId>
+			<version>0.3-incubating-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.samples.dgoat.cxf-client</groupId>
+			<artifactId>cxf-client</artifactId>
+			<version>0.3-incubating-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.samples.dgoat.cxf-server</groupId>
+			<artifactId>cxf-server</artifactId>
+			<version>0.3-incubating-SNAPSHOT</version>
+		</dependency>
 		
 		<!-- Required for Tuscany -->
 		<dependency>
