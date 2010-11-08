@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -349,17 +351,17 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     assertEquals("The number of properties is not expected. ", nodes_expected.getLength(), nodes_real.getLength());
     // Let's verify all p elements are shown as expected.
     for (int index=0; index < nodes_expected.getLength(); index++) {
-    	Node node = nodes_expected.item(index);
-    	boolean contains = false;
-    	// make sure the node exists in the real generated repository
-    	for (int i=0; i<nodes_real.getLength(); i++) {
-    		Node real_node = nodes_real.item(i);
-    		if (node.isEqualNode(real_node)) {
-    			contains = true;
-    			break;
-    		}
-    	}
-    	assertTrue("The node " + node.toString() + "should exist.", contains);
+      Node node = nodes_expected.item(index);
+      boolean contains = false;
+      // make sure the node exists in the real generated repository
+      for (int i=0; i<nodes_real.getLength(); i++) {
+        Node real_node = nodes_real.item(i);
+        if (node.isEqualNode(real_node)) {
+          contains = true;
+          break;
+        }
+      }
+      assertTrue("The node " + node.toString() + "should exist.", contains);
     }
   }
   
@@ -395,8 +397,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     // "Only one service is provisioned even when specifying for mulitple services"
     // is fixed. This tracks the problem of provisioning only one service even when we 
     // specify multiple services.
-    /* 
-     * HelloWorldManager hwm = getOsgiService(HelloWorldManager.class);
+     
+     /** HelloWorldManager hwm = getOsgiService(HelloWorldManager.class);
      * int numberOfServices = hwm.getNumOfHelloServices();
      * assertEquals(2, numberOfServices); 
      */
@@ -423,9 +425,26 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     // version of the maven artifact.
     URL twitterEbaUrl = getUrlToEba("org.apache.aries.application.itest.twitter",
         "org.apache.aries.application.itest.twitter.eba");
-
+    URL twitterCommonLangJar_url = getUrlToBundle("commons-lang", "commons-lang");
+    URL twitterJar_url = getUrlToBundle("org.apache.aries.application", "twitter4j");
+   
+    // add the repository xml to the repository admin
+    StringBuilder repositoryXML = new StringBuilder();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/obr/twitter/TwitterRepository.xml")));
+    String line;
+    while ((line = reader.readLine()) != null) {
+      repositoryXML.append(line);
+      repositoryXML.append("\r\n");
+    }
+  //replace the jar file url with the real url related to the environment
+    String repo = repositoryXML.toString().replaceAll("commons.lang.location", twitterCommonLangJar_url.toExternalForm());
+    repo = repo.replaceAll("twitter4j.location", twitterJar_url.toExternalForm());
+    
+    FileWriter writer = new FileWriter("twitterRepo.xml");
+    writer.write(repo);
+    writer.close();
+    repositoryAdmin.addRepository(new File("twitterRepo.xml").toURI().toURL());
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    repositoryAdmin.addRepository("http://sigil.codecauldron.org/spring-external.obr");
     AriesApplication app = manager.createApplication(twitterEbaUrl);
     app = manager.resolve(app);
     DeploymentMetadata depMeta = app.getDeploymentMetadata();
@@ -434,13 +453,13 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     Collection<DeploymentContent> appContent = depMeta.getApplicationDeploymentContents();
     // We cannot be sure whether there are two or three provision bundles pulled in by Felix OBR as there is an outstanding defect
     // https://issues.apache.org/jira/browse/FELIX-2672
-    // The workaround is to check we get the two bunldes we are looking for, instead of insisting on just having two bundles.
+    // The workaround is to check we get the two bundles we are looking for, instead of insisting on just having two bundles.
     
     List<String> provisionBundleSymbolicNames = new ArrayList<String>();
     for (DeploymentContent dep : provision) {
        provisionBundleSymbolicNames.add(dep.getContentName());
     }
-    String provision_bundle1 = "com.springsource.org.apache.commons.lang";
+    String provision_bundle1 = "org.apache.commons.lang";
     String provision_bundle2 = "twitter4j";
     assertTrue("Bundle " + provision_bundle1 + " not found.", provisionBundleSymbolicNames.contains(provision_bundle1));
     assertTrue("Bundle " + provision_bundle2 + " not found.", provisionBundleSymbolicNames.contains(provision_bundle2));
@@ -471,13 +490,13 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
 
   @After
   public void clearRepository() {
-	  RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
-	  Repository[] repos = repositoryAdmin.listRepositories();
-	  if ((repos != null) && (repos.length >0)) {
-		  for (Repository repo : repos) {
-			  repositoryAdmin.removeRepository(repo.getURI());
-		  }
-	  }
+    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    Repository[] repos = repositoryAdmin.listRepositories();
+    if ((repos != null) && (repos.length >0)) {
+      for (Repository repo : repos) {
+        repositoryAdmin.removeRepository(repo.getURI());
+      }
+    }
   }
 
   @org.ops4j.pax.exam.junit.Configuration
@@ -512,7 +531,6 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
-
         /* For debugging, uncomment the next two lines  */
         /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5010"),
         waitForFrameworkStartup(),  */
