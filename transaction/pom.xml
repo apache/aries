@@ -26,7 +26,7 @@
     </parent>
 
     <properties>
-        <geronimo-transaction-version>2.2</geronimo-transaction-version>
+        <geronimo-transaction-version>2.1.3</geronimo-transaction-version>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
