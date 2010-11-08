@@ -211,10 +211,10 @@
         <module>application-management</module>
         <module>application-converters</module>
         <module>application-runtime</module>
-	  <module>application-runtime-isolated</module>
-	  <module>application-runtime-framework</module>
-	  <module>application-runtime-framework-management</module>
-	  <module>application-runtime-repository</module>
+	    <module>application-runtime-isolated</module>
+	    <module>application-runtime-framework</module>
+	    <module>application-runtime-framework-management</module>
+	    <module>application-runtime-repository</module>
         <module>application-itest-interface</module>
         <module>application-itests</module>
         <module>application-obr-resolver</module>
@@ -224,10 +224,10 @@
         <module>application-deployment-management</module>
         <module>application-modeller</module>
         <module>application-noop-platform-repository</module>
-	   <module>application-noop-postresolve-process</module>
-	   <module>application-default-local-platform</module>
+	    <module>application-noop-postresolve-process</module>
+	    <module>application-default-local-platform</module>
         <module>application-itest-twitter</module>
-
+		<module>application-twitter4j</module>
     </modules>
 
     <build>
