@@ -16,17 +16,17 @@
  */
 package org.apache.aries.jmx;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
+import static org.ops4j.pax.exam.OptionUtils.combine;
+
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
-import static org.ops4j.pax.exam.OptionUtils.combine;
-import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
-import static org.junit.Assert.*;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
@@ -41,6 +41,7 @@ import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -50,7 +51,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
-import org.osgi.jmx.framework.BundleStateMBean;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
