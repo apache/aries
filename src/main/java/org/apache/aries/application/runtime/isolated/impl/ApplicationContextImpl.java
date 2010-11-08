@@ -26,8 +26,8 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +67,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
 
     _bundleFrameworkManager = acm.getBundleFrameworkManager();
     _bundleRepositoryManager = acm.getBundleRepositoryManager();
-    _bundles = new HashSet<Bundle>();
+    _bundles = new LinkedHashSet<Bundle>();
 
     _application = app;
     _deploymentMF = _application.getDeploymentMetadata();
