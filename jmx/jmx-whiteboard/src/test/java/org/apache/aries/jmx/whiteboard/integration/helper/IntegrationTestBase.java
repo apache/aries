@@ -22,6 +22,8 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
+import static org.ops4j.pax.exam.OptionUtils.combine;
 
 import java.io.File;
 import java.util.Dictionary;
@@ -40,7 +42,6 @@ import org.junit.Before;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.OptionUtils;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -103,8 +104,25 @@ public class IntegrationTestBase {
         final Option vmOption = (paxRunnerVmOption != null)
                 ? PaxRunnerOptions.vmOption(paxRunnerVmOption)
                 : null;
-        return OptionUtils.combine(base, vmOption);
+        
+        Option[] options = combine(base, vmOption);
+        return updateOptions (options);
     }
+    
+    // This method is copied from AbstractIntegrationTest 
+    // in org.apache.aries.jmx.itests
+    protected static Option[] updateOptions(Option[] options) {
+      // We need to add pax-exam-junit here when running with the ibm
+      // jdk to avoid the following exception during the test run:
+      // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
+      if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
+          Option[] ibmOptions = options(
+              wrappedBundle(mavenBundle("org.ops4j.pax.exam", "pax-exam-junit"))
+          );
+          options = combine(ibmOptions, options);
+      }
+      return options;
+  }
 
     @Before
     public void setUp() {
