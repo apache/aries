@@ -142,7 +142,7 @@ public class AbstractIntegrationTest {
       tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter,
           null);
       tracker.open();
-      
+     
       // add tracker to the list of trackers we close at tear down
       srs.add(tracker);
 
@@ -168,6 +168,16 @@ public class AbstractIntegrationTest {
             + artifactVersion + "/eba", new Handler());
     return urlToEba;
   }
+  
+  public static URL getUrlToBundle(String groupId, String artifactId) throws MalformedURLException {
+	    String artifactVersion = getArtifactVersion(groupId, artifactId);
+
+	    // Need to use handler from org.ops4j.pax.url.mvn
+	    URL urlToEba = new URL(null,
+	        ServiceConstants.PROTOCOL + ":" + groupId + "/" +artifactId + "/"
+	            + artifactVersion, new Handler());
+	    return urlToEba;
+	  }
 
   public static String getArtifactVersion(final String groupId, final String artifactId)
   {
