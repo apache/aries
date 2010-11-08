@@ -34,6 +34,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -78,6 +79,16 @@ public class IOUtils
     catch (IOException e) {
       c = null;
     }
+  }
+  
+  /**
+   * A special version of close() for ZipFiles, which don't implement Closeable.
+   * @param file the file to close. ZipFiles seem prone to file locking problems
+   * on Windows, so to aid diagnostics we throw, not swallow, any exceptions. 
+   */
+  public static void close(ZipFile file) throws IOException
+  {
+    if (file != null) file.close();
   }
   
   public static OutputStream getOutputStream(File outputDir, String relativePath) throws IOException
