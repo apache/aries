@@ -76,7 +76,7 @@ public interface BundleFrameworkManager
   public boolean allowsUpdate(DeploymentMetadata newMetadata, DeploymentMetadata oldMetadata);
   
   public interface BundleLocator {
-    public Map<DeploymentContent, BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles) throws ContextException;    
+    public Map<DeploymentContent, BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles) throws BundleException;    
   }
   
   public void updateBundles(

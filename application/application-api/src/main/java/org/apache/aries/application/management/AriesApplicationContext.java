@@ -49,13 +49,13 @@ public interface AriesApplicationContext
    * in the associated AriesApplication's DeploymentMetadata. 
    * @throws BundleException
    */
-  public void start() throws BundleException;
+  public void start() throws BundleException, IllegalStateException;
   
   /**
    * Stop the application by stopping all its constituent bundles. 
    * @throws BundleException
    */
-  public void stop() throws BundleException;
+  public void stop() throws BundleException, IllegalStateException;
   
   /**
    * Get the org.osgi.framework.Bundle objects representing the application's runtime
