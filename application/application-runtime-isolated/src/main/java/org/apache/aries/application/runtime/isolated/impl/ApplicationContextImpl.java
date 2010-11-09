@@ -25,7 +25,6 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -36,7 +35,6 @@ import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
-import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkManager;
 import org.apache.aries.application.management.spi.repository.BundleRepositoryManager;
@@ -61,7 +59,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
   private DeploymentMetadata _deploymentMF;
 
   public ApplicationContextImpl(AriesApplication app, ApplicationContextManagerImpl acm)
-      throws BundleException, ManagementException
+      throws BundleException
   {
     LOGGER.debug(LOG_ENTRY, "ApplicationContextImpl", new Object[] { app, acm });
 
@@ -73,10 +71,8 @@ public class ApplicationContextImpl implements AriesApplicationContext
     _deploymentMF = _application.getDeploymentMetadata();
 
     if (_deploymentMF.getApplicationDeploymentContents() != null
-        && !_deploymentMF.getApplicationDeploymentContents().isEmpty()) {
-      if (processContent()) 
-        _state = ApplicationState.INSTALLED;
-    }
+        && !_deploymentMF.getApplicationDeploymentContents().isEmpty())
+      install();
 
     LOGGER.debug(LOG_EXIT, "ApplicationContextImpl", this);
   }
@@ -87,13 +83,10 @@ public class ApplicationContextImpl implements AriesApplicationContext
    * @return whether the installation is successful
    * 
    */
-  private boolean processContent()
+  private void install() throws BundleException
   {
     LOGGER.debug(LOG_ENTRY, "install");
 
-    boolean success = true;
-    boolean provisionBundleInstall = false;
-    boolean useBundleInstall = false;
     List<DeploymentContent> bundlesToFind = new ArrayList<DeploymentContent>(_deploymentMF
         .getApplicationDeploymentContents());
     List<DeploymentContent> useBundlesToFind = new ArrayList<DeploymentContent>(_deploymentMF
@@ -101,26 +94,23 @@ public class ApplicationContextImpl implements AriesApplicationContext
     List<DeploymentContent> provisionBundlesToFind = new ArrayList<DeploymentContent>(_deploymentMF
         .getApplicationProvisionBundles());
 
-    provisionBundleInstall = install(provisionBundlesToFind, true);
-    useBundleInstall = install(useBundlesToFind, true);
-    success = install(bundlesToFind, false);
+    try {
+      installBundles(provisionBundlesToFind, true);
+      installBundles(useBundlesToFind, true);
+      installBundles(bundlesToFind, false);
 
-    if (success && provisionBundleInstall && useBundleInstall) {
       LOGGER.debug("Successfully installed application "
           + _application.getApplicationMetadata().getApplicationSymbolicName());
-    } else {
+    } catch (BundleException e) {
       LOGGER.debug(LOG_EXCEPTION, "Failed to install application "
           + _application.getApplicationMetadata().getApplicationSymbolicName());
       uninstall();
+      throw e;
     }
+    
+    _state = ApplicationState.INSTALLED;
 
-    // calculate installed again as we only claim install success 
-    // when provision bundle and use bundle are installed too.
-    success = success && provisionBundleInstall && useBundleInstall;
-
-    LOGGER.debug(LOG_EXIT, "install", new Object[] { Boolean.valueOf(success) });
-
-    return success;
+    LOGGER.debug(LOG_EXIT, "install");
 
   }
 
@@ -129,11 +119,12 @@ public class ApplicationContextImpl implements AriesApplicationContext
    * calls will be ignored.
    * @return whether the uninstallation is successful
    */
-  protected boolean uninstall()
+  protected synchronized void uninstall() throws BundleException, IllegalStateException
   {
     LOGGER.debug(LOG_ENTRY, "uninstall");
-
-    int numErrorBundle = 0;
+    
+    if (_state == ApplicationState.UNINSTALLED)
+      throw new IllegalStateException("Appication is in incorrect state " + _state);
 
     // Iterate through all of the bundles that were started when this application was started, 
     // and attempt to stop and uninstall each of them. 
@@ -150,19 +141,15 @@ public class ApplicationContextImpl implements AriesApplicationContext
         _bundleFrameworkManager.uninstallBundle(bundleToRemove);
 
       } catch (BundleException be) {
-        numErrorBundle++;
         LOGGER.debug(LOG_EXCEPTION, be);
+        throw be;
       }
     }
-
     _bundles.clear();
+    
+    _state = ApplicationState.UNINSTALLED;
 
-    // return success only if all bundles were uninstalled successfully
-    boolean result = (numErrorBundle == 0);
-
-    LOGGER.debug(LOG_EXIT, "uninstall", new Object[] { Boolean.valueOf(result) });
-
-    return result;
+    LOGGER.debug(LOG_EXIT, "uninstall");
 
   }
 
@@ -172,23 +159,21 @@ public class ApplicationContextImpl implements AriesApplicationContext
    * @param shared                      whether the bundles will be shared or isolated
    * @return the result of execution
    */
-  private boolean install(List<DeploymentContent> bundlesToFind, boolean shared)
+  private void installBundles(List<DeploymentContent> bundlesToFind, boolean shared)
+      throws BundleException
   {
     LOGGER.debug(LOG_ENTRY, "install", new Object[] { bundlesToFind, Boolean.valueOf(shared) });
-
-    int numException = 0; //log the number of exceptions, only assert success if no exception
 
     if (!bundlesToFind.isEmpty() || !shared) {
 
       Iterator<DeploymentContent> it = bundlesToFind.iterator();
 
       /**
-       * Dont install any bundles from the list which are already installed
+       * Dont install any bundles from the list which are already
+       * installed
        */
-      Bundle[] sharedBundles = 
-        _bundleFrameworkManager.getSharedBundleFramework().
-                                getIsolatedBundleContext().
-                                getBundles();
+      Bundle[] sharedBundles = _bundleFrameworkManager.getSharedBundleFramework()
+          .getIsolatedBundleContext().getBundles();
       if (shared) {
         if (sharedBundles.length > 0) {
           while (it.hasNext()) {
@@ -207,47 +192,45 @@ public class ApplicationContextImpl implements AriesApplicationContext
       }
 
       /**
-       * Ask the repository manager to find us a list of suggested bundles to install based on our
-       * content list
+       * Ask the repository manager to find us a list of suggested bundles
+       * to install based on our content list
        */
-      Map<DeploymentContent, BundleSuggestion> bundlesToBeInstalled = new HashMap<DeploymentContent, BundleSuggestion>();
-      try {
-        bundlesToBeInstalled = findBundleSuggestions(bundlesToFind);
-      } catch (ContextException e) {
-        numException++;
-        LOGGER.debug(LOG_EXCEPTION, e);
-      }
+      Map<DeploymentContent, BundleSuggestion> bundlesToBeInstalled = 
+        findBundleSuggestions(bundlesToFind);
 
-      if (numException == 0) {
-        /**
-         * Perform the install of the bundles
-         */
-        try {
-          if (shared) 
-            _bundles.addAll(_bundleFrameworkManager.installSharedBundles(
-              new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
-          else 
-            _bundles.add(_bundleFrameworkManager.installIsolatedBundles(
-              new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
-  
-        } catch (BundleException e) {
-          numException++;
-          LOGGER.debug(LOG_EXCEPTION, e);
-        }
+      /**
+       * Perform the install of the bundles
+       */
+      try {
+        if (shared) _bundles.addAll(_bundleFrameworkManager.installSharedBundles(
+            new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
+        else _bundles.add(_bundleFrameworkManager.installIsolatedBundles(
+            new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
+
+      } catch (BundleException e) {
+        LOGGER.debug(LOG_EXCEPTION, e);
+        throw e;
       }
     }
+    LOGGER.debug(LOG_EXIT, "install");
 
-    LOGGER.debug(LOG_EXIT, "install", new Object[] { Boolean.valueOf(numException == 0) });
-
-    return (numException == 0);
   }
-  
-  private Map<DeploymentContent, BundleSuggestion> findBundleSuggestions(Collection<DeploymentContent> bundlesToFind)
-    throws ContextException
+
+  private Map<DeploymentContent, BundleSuggestion> findBundleSuggestions(
+      Collection<DeploymentContent> bundlesToFind) throws BundleException
   {
-    return _bundleRepositoryManager.getBundleSuggestions(_application
-        .getApplicationMetadata().getApplicationSymbolicName(), _application
-        .getApplicationMetadata().getApplicationVersion().toString(), bundlesToFind);
+    Map<DeploymentContent, BundleSuggestion> suggestions = null;
+    try {
+      suggestions = _bundleRepositoryManager.getBundleSuggestions(_application
+          .getApplicationMetadata().getApplicationSymbolicName(), _application
+          .getApplicationMetadata().getApplicationVersion().toString(), bundlesToFind);
+    } catch (ContextException e) {
+      LOGGER.debug(LOG_EXCEPTION, e);
+      throw new BundleException("Failed to locate bundle suggestions", e);
+    }
+
+    return suggestions;
+
   }
 
   public AriesApplication getApplication()
@@ -258,7 +241,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
     return _application;
   }
 
-  public Set<Bundle> getApplicationContent()
+  public synchronized Set<Bundle> getApplicationContent()
   {
     LOGGER.debug(LOG_ENTRY, "getApplicationContent");
     LOGGER.debug(LOG_EXIT, "getApplicationContent", new Object[] { _bundles });
@@ -266,7 +249,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
     return _bundles;
   }
 
-  public ApplicationState getApplicationState()
+  public synchronized ApplicationState getApplicationState()
   {
     LOGGER.debug(LOG_ENTRY, "getApplicationState");
     LOGGER.debug(LOG_EXIT, "getApplicationState", new Object[] { _state });
@@ -274,13 +257,14 @@ public class ApplicationContextImpl implements AriesApplicationContext
     return _state;
   }
 
-  public void start() throws BundleException
+  public synchronized void start() throws BundleException, IllegalStateException
   {
     LOGGER.debug(LOG_ENTRY, "start");
 
-    ApplicationState oldState = _state;
-    _state = ApplicationState.STARTING;
-
+    if (!(_state == ApplicationState.INSTALLED || 
+        _state == ApplicationState.RESOLVED))
+      throw new IllegalStateException("Appication is in incorrect state " + _state + " expected " + ApplicationState.INSTALLED + " or " + ApplicationState.RESOLVED);
+    
     List<Bundle> bundlesWeStarted = new ArrayList<Bundle>();
     try {
       for (Bundle b : _bundles) {
@@ -299,100 +283,98 @@ public class ApplicationContextImpl implements AriesApplicationContext
           LOGGER.debug(LOG_EXCEPTION, be2);
         }
       }
-      _state = oldState;
 
       LOGGER.debug(LOG_EXCEPTION, be);
       LOGGER.debug(LOG_EXIT, "start", new Object[] { be });
       throw be;
     }
+    
     _state = ApplicationState.ACTIVE;
 
     LOGGER.debug(LOG_EXIT, "start");
   }
 
-  public void stop() throws BundleException
+  public synchronized void stop() throws BundleException, IllegalStateException
   {
     LOGGER.debug(LOG_ENTRY, "stop");
-
+    
+    if (_state != ApplicationState.ACTIVE)
+      throw new IllegalStateException("Appication is in incorrect state " + _state + " expected " + ApplicationState.ACTIVE);
+        
     for (Bundle entry : _bundles) {
       Bundle b = entry;
       _bundleFrameworkManager.stopBundle(b);
     }
+    
     _state = ApplicationState.RESOLVED;
 
     LOGGER.debug(LOG_EXIT, "stop");
   }
 
-  public void setState(ApplicationState state)
-  {
-    LOGGER.debug(LOG_ENTRY, "setState", new Object[] { _state, state });
-
-    _state = state;
-
-    LOGGER.debug(LOG_EXIT, "setState");
-  }
-  
-  public void update(final DeploymentMetadata newMetadata, final DeploymentMetadata oldMetadata) 
-    throws UpdateException
+  public synchronized void update(final DeploymentMetadata newMetadata, final DeploymentMetadata oldMetadata)
+      throws UpdateException
   {
     final boolean toStart = getApplicationState() == ApplicationState.ACTIVE;
-    
+
     if (_bundleFrameworkManager.allowsUpdate(newMetadata, oldMetadata)) {
-      _bundleFrameworkManager.updateBundles(
-          newMetadata, oldMetadata, 
-          _application, 
-          new BundleFrameworkManager.BundleLocator() {            
+      _bundleFrameworkManager.updateBundles(newMetadata, oldMetadata, _application,
+          new BundleFrameworkManager.BundleLocator() {
             public Map<DeploymentContent, BundleSuggestion> suggestBundle(
-                Collection<DeploymentContent> bundles) throws ContextException {
+                Collection<DeploymentContent> bundles) throws BundleException
+            {
               return findBundleSuggestions(bundles);
             }
-          },
-          _bundles, 
-          toStart);
-      
+          }, _bundles, toStart);
+
     } else {
       // fallback do a uninstall, followed by a reinstall
-      
-      boolean uninstallSuccess = uninstall();
-      
-      if (uninstallSuccess) {
-        _deploymentMF = newMetadata;
-        boolean reinstallSuccess = processContent();
-        Exception installException = null;
-        
-        if (reinstallSuccess) {
-          if (toStart) {
-            try {
-              start();
-            } catch (BundleException be) {
-              reinstallSuccess = false;
-              installException = be;              
-            }
-          }
+      try {        
+        uninstall();
+        _deploymentMF = newMetadata;        
+        try {
+          install();
+          
+          if (toStart)
+            start();
         }
-          
-        if (!!!reinstallSuccess) {
-          boolean rollbackSuccess = uninstall();
-          Exception rollbackException = null;
-          
-          if (rollbackSuccess) {
-            _deploymentMF = oldMetadata;
-            rollbackSuccess = processContent();
+        catch (BundleException e)
+        {
+          try {
+            uninstall();
             
-            if (rollbackSuccess && toStart) {
-              try {
-                start();
-              } catch (BundleException be) {
-                rollbackException = be;
-                rollbackSuccess = false;
-              }
-            }
-          }
+            _deploymentMF = oldMetadata;
+            install();
+
+            if (toStart)
+              start();
            
-          throw new UpdateException("Could not install updated application", installException, rollbackSuccess, rollbackException);
+            throw new UpdateException("Could not install updated application", e,
+                true, null);
+          }
+          catch (BundleException e2)
+          {
+            throw new UpdateException("Could not install updated application", e,
+                false, e2);
+          }          
+        }       
+      }
+      catch (BundleException e)
+      {
+        try {          
+          _deploymentMF = oldMetadata;
+          install();
+
+          if (toStart)
+            start();
+          
+          throw new UpdateException("Could not install updated application", e,
+              true, null);
         }
-      } else {
-        throw new UpdateException("Could not uninstall old bundles", null, false, null);
+        catch (BundleException e2)
+        {
+          throw new UpdateException("Could not install updated application", e,
+              false, e2);
+        } 
       }
     }
   }
