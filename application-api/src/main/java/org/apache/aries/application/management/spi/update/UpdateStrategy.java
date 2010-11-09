@@ -27,9 +27,9 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
 import org.apache.aries.application.management.spi.repository.BundleRepository;
-import org.apache.aries.application.management.spi.repository.ContextException;
 import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 
 /**
  * Plug point for update implementation
@@ -55,7 +55,7 @@ public interface UpdateStrategy {
      * Find {@link BundleSuggestion} objects for new bundle requests
      */
     public Map<DeploymentContent, BundleRepository.BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles)
-      throws ContextException;
+      throws BundleException;
 
     /**
      * Register a new bundle with the application (i.e. a new bundle was installed)
