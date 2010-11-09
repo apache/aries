@@ -34,9 +34,9 @@ public class UberActivator implements BundleActivator
     blueprintActivator.start(context);
   }
 
-  public void stop(BundleContext arg0)
+  public void stop(BundleContext context)
   {
-    blueprintActivator.stop(arg0);
-    proxyActivator.start(arg0);
+    blueprintActivator.stop(context);
+    proxyActivator.stop(context);
   }
 }
