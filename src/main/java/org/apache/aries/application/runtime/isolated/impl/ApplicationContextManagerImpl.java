@@ -20,6 +20,7 @@
 package org.apache.aries.application.runtime.isolated.impl;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
+import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.HashSet;
@@ -46,7 +47,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContextManagerImpl.class);
   
-  private ConcurrentMap<AriesApplication, ApplicationContextImpl> _appToContextMap;
+  private ConcurrentMap<AriesApplication, AriesApplicationContext> _appToContextMap;
   private BundleFrameworkManager _bundleFrameworkManager;  
   private BundleRepositoryManager _bundleRepositoryManager;
 
@@ -54,7 +55,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   {
     LOGGER.debug(LOG_ENTRY, "ApplicationContextImpl");
     
-    _appToContextMap = new ConcurrentHashMap<AriesApplication, ApplicationContextImpl>();
+    _appToContextMap = new ConcurrentHashMap<AriesApplication, AriesApplicationContext>();
     
     LOGGER.debug(LOG_EXIT, "ApplicationContextImpl", this);
   }
@@ -88,12 +89,12 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   {
     LOGGER.debug(LOG_ENTRY, "getApplicationContext", app);
         
-    ApplicationContextImpl result;
+    AriesApplicationContext result;
     if (_appToContextMap.containsKey(app)) {
       result = _appToContextMap.get(app);
     } else {
       result = new ApplicationContextImpl(app, this);
-      ApplicationContextImpl previous = _appToContextMap.putIfAbsent(app, result);
+      AriesApplicationContext previous = _appToContextMap.putIfAbsent(app, result);
       if (previous != null) {
         result = previous;
       }
@@ -109,7 +110,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     LOGGER.debug(LOG_ENTRY, "getApplicationContexts");
     
     Set<AriesApplicationContext> result = new HashSet<AriesApplicationContext>();
-    for (Map.Entry<AriesApplication, ApplicationContextImpl> entry : _appToContextMap.entrySet()) {
+    for (Map.Entry<AriesApplication, AriesApplicationContext> entry : _appToContextMap.entrySet()) {
       result.add(entry.getValue());
     }
     
@@ -118,22 +119,22 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     return result;
   }
 
-  public synchronized void remove(AriesApplicationContext app)
+  public synchronized void remove(AriesApplicationContext app) throws BundleException
   {
     LOGGER.debug(LOG_ENTRY, "remove", app);
     
-    Iterator<Map.Entry<AriesApplication, ApplicationContextImpl>> it = _appToContextMap.entrySet()
+    Iterator<Map.Entry<AriesApplication, AriesApplicationContext>> it = _appToContextMap.entrySet()
         .iterator();
 
     while (it.hasNext()) {
-      Map.Entry<AriesApplication, ApplicationContextImpl> entry = it.next();
+      Map.Entry<AriesApplication, AriesApplicationContext> entry = it.next();
 
-      ApplicationContextImpl potentialMatch = entry.getValue();
+      ApplicationContextImpl potentialMatch = (ApplicationContextImpl) entry.getValue();
 
       if (potentialMatch == app) {
         it.remove();
 
-        uninstall(potentialMatch);
+        potentialMatch.uninstall();
 
         break;
       }
@@ -142,25 +143,22 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     LOGGER.debug(LOG_EXIT, "remove");
   }
 
-  private void uninstall(ApplicationContextImpl app)
-  {
-    LOGGER.debug(LOG_ENTRY, "uninstall", app);
-    
-    if (app.uninstall())
-      app.setState(ApplicationState.UNINSTALLED);      
-    
-    LOGGER.debug(LOG_EXIT, "uninstall");
-  }
-
   public synchronized void close()
   {
     LOGGER.debug(LOG_ENTRY, "close");
     
-    for (ApplicationContextImpl ctx : _appToContextMap.values()) {
-      uninstall(ctx);
+    Iterator<AriesApplicationContext> it = _appToContextMap.values().iterator();
+    while (it.hasNext())
+    {      
+      try {
+        ApplicationContextImpl ctx = (ApplicationContextImpl)it.next();
+        ctx.uninstall();
+        it.remove();
+      } catch (BundleException e)
+      {
+        LOGGER.debug(LOG_EXCEPTION,e);
+      }
     }
-
-    _appToContextMap.clear();
     
     LOGGER.debug(LOG_EXIT, "close");
   }
@@ -174,7 +172,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   }
 
   public AriesApplicationContext update(AriesApplication app, DeploymentMetadata oldMetadata) throws UpdateException {
-    ApplicationContextImpl ctx = _appToContextMap.get(app);
+    ApplicationContextImpl ctx = (ApplicationContextImpl)_appToContextMap.get(app);
     
     if (ctx == null) {
       throw new IllegalArgumentException("AriesApplication "+
