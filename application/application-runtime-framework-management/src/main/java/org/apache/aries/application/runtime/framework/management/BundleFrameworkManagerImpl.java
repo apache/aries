@@ -35,7 +35,6 @@ import java.util.Set;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
-import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
@@ -303,7 +302,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
         bundles.remove(bundle);
       }
       
-      public Map<DeploymentContent, BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles) throws ContextException {
+      public Map<DeploymentContent, BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles) throws BundleException {
         return locator.suggestBundle(bundles);
       }
       
