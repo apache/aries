@@ -56,6 +56,8 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
   private RepositoryAdmin repositoryAdmin;
   private static Logger logger = LoggerFactory.getLogger(RepositoryGeneratorImpl.class);
   private static Collection<BundleResourceTransformer> bundleResourceTransformers = new ArrayList<BundleResourceTransformer>();
+  private static final String MANDATORY_DIRECTIVE = Constants.MANDATORY_DIRECTIVE + ":";
+  
   
   public void setBundleResourceTransformers (List<BundleResourceTransformer> brts) { 
     bundleResourceTransformers = brts;
@@ -126,35 +128,17 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
 
     Property[] props = c.getProperties();
 
-    String mandatoryDirective = Constants.MANDATORY_DIRECTIVE + ":";
-    boolean mandatoryPresent = false;
     for (Property entry : props) {
-
 
       String name = (String) entry.getName();
       String objectAttrs = entry.getValue();
-      if (name.endsWith(":")) {
-        if (mandatoryDirective.equals(name)) {
-          mandatoryPresent = true;
-          // remove the : and write it out
-          name = name.substring(0, name.length() - 1);
-        } else {
-          // ignore other directives
-          continue;
-        }
-      }
+      
       String type = getType(name);
 
       // remove the beginning " and tailing "
       if (objectAttrs.startsWith("\"") && objectAttrs.endsWith("\""))
         objectAttrs = objectAttrs.substring(1, objectAttrs.length() - 1);
       addProperty(doc, capability, name, objectAttrs, type);
-    }
-
-    // OBR's strange behaviour requires that we write out the mandatory entry
-    // with an empty string if the mandatory is not specified
-    if (!!!mandatoryPresent) {
-      addProperty(doc, capability, Constants.MANDATORY_DIRECTIVE, "" , null);
     }
 
     logger.debug(LOG_EXIT, "writeCapability");
@@ -233,7 +217,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
     String type = null;
     if (Constants.VERSION_ATTRIBUTE.equals(name) || (Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name))) {
       type =  "version";
-    } else if (Constants.OBJECTCLASS.equals(name))
+    } else if (Constants.OBJECTCLASS.equals(name) || MANDATORY_DIRECTIVE.equals(name))
       type = "set";
     logger.debug(LOG_EXIT, "getType", new Object[]{type});
     return type;
