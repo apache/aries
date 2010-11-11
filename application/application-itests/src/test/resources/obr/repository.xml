@@ -13,7 +13,6 @@
         <capability name="package">
             <p v="org.apache.aries.sample.impl" n="package"/>
             <p v="1.0" t="version" n="version"/>
-            <p n='mandatory' v=''/>
         </capability>
     </resource>
 

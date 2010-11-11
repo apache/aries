@@ -4,13 +4,14 @@
 <p n="presentationname" v="Test Bundle"/>
 <p n="Fragment-Host" v="aries.ws.eba.framework;bundle-version=&quot;[3.0,4.0]&quot;"/>
 <p n="version" t="version" v="2.0.0"/>
+<p n="fragment-attachment:" v="always"/>
 <p n="symbolicname" v="aries.ws.eba.bundle1"/>
 <p n="Bundle-ManifestVersion" v="2"/>
-<p n="mandatory" v=""/>
+<p n="singleton:" v="true"/>
 </capability>
 <capability name="package">
 <p n="security" v="false"/>
-<p n="mandatory" v="company,security"/>
+<p n="mandatory:" t="set" v="company,security"/>
 <p n="package" v="aries.ws.eba.bundle1"/>
 <p n="version" t="version" v="2.2.0"/>
 <p n="bundle-symbolic-name" v="aries.ws.eba.bundle1"/>
@@ -22,13 +23,11 @@
 <p n="osgi.service.blueprint.compname" v="helloWorldManager"/>
 <p n="objectClass" t="set" v="org.apache.aries.sample.HelloWorldManager"/>
 <p n="service.ranking" v="0"/>
-<p n="mandatory" v=""/>
 </capability>
 <capability name="service">
 <p n="service" v="service"/>
 <p n="objectClass" t="set" v="aries.ws.eba.export"/>
 <p n="service.ranking" v="0"/>
-<p n="mandatory" v=""/>
 </capability>
 <require extend="false" filter="(&amp;(package=org.osgi.framework)(version&gt;=1.3.0))" multiple="false" name="package" optional="false">Requires package with attributes {package=org.osgi.framework, version=1.3.0}</require>
 <require extend="false" filter="(&amp;(package=aries.ws.event)(version&gt;=1.0.0))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.ws.event, version=1.0.0}</require>
