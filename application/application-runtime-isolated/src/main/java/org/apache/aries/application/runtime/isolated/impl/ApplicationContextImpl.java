@@ -95,20 +95,23 @@ public class ApplicationContextImpl implements AriesApplicationContext
         .getApplicationProvisionBundles());
 
     try {
+    	
       installBundles(provisionBundlesToFind, true);
       installBundles(useBundlesToFind, true);
       installBundles(bundlesToFind, false);
-
+      
+      _state = ApplicationState.INSTALLED;
+      
       LOGGER.debug("Successfully installed application "
           + _application.getApplicationMetadata().getApplicationSymbolicName());
     } catch (BundleException e) {
       LOGGER.debug(LOG_EXCEPTION, "Failed to install application "
           + _application.getApplicationMetadata().getApplicationSymbolicName());
+      
       uninstall();
+      
       throw e;
     }
-    
-    _state = ApplicationState.INSTALLED;
 
     LOGGER.debug(LOG_EXIT, "install");
 
@@ -119,13 +122,10 @@ public class ApplicationContextImpl implements AriesApplicationContext
    * calls will be ignored.
    * @return whether the uninstallation is successful
    */
-  protected synchronized void uninstall() throws BundleException, IllegalStateException
+  protected synchronized void uninstall() throws BundleException
   {
     LOGGER.debug(LOG_ENTRY, "uninstall");
     
-    if (_state == ApplicationState.UNINSTALLED)
-      throw new IllegalStateException("Appication is in incorrect state " + _state);
-
     // Iterate through all of the bundles that were started when this application was started, 
     // and attempt to stop and uninstall each of them. 
     for (Iterator<Bundle> bundleIter = _bundles.iterator(); bundleIter.hasNext();) {
