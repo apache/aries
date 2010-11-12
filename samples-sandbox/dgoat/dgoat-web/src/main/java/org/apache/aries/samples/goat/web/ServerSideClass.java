@@ -42,16 +42,22 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 public class ServerSideClass {
 
 	private String modelInfoServiceHint = "";
 
 	private ModelInfoService ModelInfoService = null;
+	
+	private ModelInfoService blah;
 
 	private Map<ModelInfoService, ComponentInfoProvider.ComponentInfoListener> clisteners = new HashMap<ModelInfoService, ComponentInfoProvider.ComponentInfoListener>();
 	private Map<ModelInfoService, RelationshipInfoProvider.RelationshipInfoListener> rlisteners = new HashMap<ModelInfoService, RelationshipInfoProvider.RelationshipInfoListener>();
 
+	public ServerSideClass(ModelInfoService blah) {
+		this.blah = blah;
+	}
 	private class ComponentInfoListenerImpl implements
 			ComponentInfoProvider.ComponentInfoListener {
 		String server;
@@ -155,6 +161,7 @@ public class ServerSideClass {
 								ModelInfoService.class.getName(),
 								"(displayName=" + this.modelInfoServiceHint
 										+ ")");
+						
 						if (sr != null) {
 							System.err.println("Getting bcip");
 							this.ModelInfoService = (ModelInfoService) b_ctx
@@ -263,6 +270,11 @@ public class ServerSideClass {
 
 						String name = (String.valueOf(sr
 								.getProperty("displayName")));
+						
+						Long bid = sr.getBundle().getBundleId();
+						
+						System.err.println("ZZZZ Name: " + name);
+						System.err.println("ZZZZ Bundle Id: " + bid);
 
 						result.add(name);
 					}
