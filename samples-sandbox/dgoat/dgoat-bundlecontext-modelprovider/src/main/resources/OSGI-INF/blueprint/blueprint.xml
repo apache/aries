@@ -27,7 +27,6 @@
 <!--  	  <entry key="service.exported.configs" value="org.osgi.sca" />
   	  <entry key="org.osgi.sca.bindings" value="bundleCtxProvider" />
   	  -->
-		<!-- CXF entries -->
 		<entry key="service.exported.configs" value="org.apache.cxf.ws" />
 		<entry key="org.apache.cxf.ws.address" value="http://localhost:9191/bundlectx" />
   	</service-properties>
