@@ -19,7 +19,6 @@
 
 package org.apache.aries.application.management.spi.framework;
 
-import java.util.Properties;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
@@ -28,14 +27,10 @@ public interface BundleFrameworkFactory
   /**
    * Creates a new isolated bundle framework with the properties provided. 
    * @param bc The context in which to install the new framework
-   * @param frameworkId The id of the new framework
-   * @param frameworkConfig The config properties used to configure the new framework
-   * @param frameworkManifest The manifest used to install the new bundle associated with the framework
+   * @param config The BundleFrameworkConfiguration object used to configure the returned framework
    * @return
    * @throws BundleException
    */
-  public BundleFramework createBundleFramework(BundleContext bc, 
-      String frameworkId,
-      Properties frameworkConfig,
-      Properties frameworkManifest) throws BundleException;
+  public BundleFramework createBundleFramework(BundleContext bc, BundleFrameworkConfiguration config)
+      throws BundleException;
 }
