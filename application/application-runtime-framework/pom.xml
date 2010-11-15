@@ -32,6 +32,16 @@
         An equinox based bundle framework runtime implementation
     </description>
 
+    <properties>
+        <aries.osgi.export.pkg>
+        org.apache.aries.application.runtime.framework.utils
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.application.runtime.framework;
+			org.apache.aries.application.runtime.framework.config
+        </aries.osgi.private.pkg>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

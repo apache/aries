@@ -78,8 +78,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
   }
 
   /**
-   * Called to install the application, if called multiple times the subsequent
-   * calls will be ignored.
+   * Called to install the application.
    * @return whether the installation is successful
    * 
    */
