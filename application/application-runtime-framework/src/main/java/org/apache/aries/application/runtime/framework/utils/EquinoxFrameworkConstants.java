@@ -17,10 +17,13 @@
  * under the License.
  */
 
-package org.apache.aries.application.runtime.framework.management;
+package org.apache.aries.application.runtime.framework.utils;
 
-public interface FrameworkConstants
+public interface EquinoxFrameworkConstants
 {
-  public static final String OSGI_FRAMEWORK = "osgi.framework"; 
+  public static final String TRANSACTION_BUNDLE = "javax.transaction";
+  public static final String TRANSACTION_BUNDLE_VERSION = "1.1.0";
+  public static final String TRANSACTION_REGISTRY_BUNDLE = "javax.transaction.TransactionSynchronizationRegistry";
+  public static final String COMPOSITE_SERVICE_FILTER_IMPORT = "CompositeServiceFilter-Import";
   
 }

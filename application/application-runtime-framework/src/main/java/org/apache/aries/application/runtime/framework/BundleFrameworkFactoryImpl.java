@@ -19,9 +19,8 @@
 
 package org.apache.aries.application.runtime.framework;
 
-import java.util.Properties;
-
 import org.apache.aries.application.management.spi.framework.BundleFramework;
+import org.apache.aries.application.management.spi.framework.BundleFrameworkConfiguration;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -31,8 +30,7 @@ import org.osgi.service.framework.CompositeBundleFactory;
 
 public class BundleFrameworkFactoryImpl implements BundleFrameworkFactory
 {  
-  public BundleFramework createBundleFramework(BundleContext bc, String frameworkId,
-      Properties frameworkConfig, Properties frameworkManifest) throws BundleException
+  public BundleFramework createBundleFramework(BundleContext bc, BundleFrameworkConfiguration config) throws BundleException
   {
     BundleFramework framework = null;
     ServiceReference sr = bc.getServiceReference(CompositeBundleFactory.class.getName());
@@ -41,9 +39,9 @@ public class BundleFrameworkFactoryImpl implements BundleFrameworkFactory
       CompositeBundleFactory cbf = (CompositeBundleFactory) bc.getService(sr);
 
       CompositeBundle compositeBundle = cbf.installCompositeBundle(
-          frameworkConfig, 
-          frameworkId,
-          frameworkManifest);
+          config.getFrameworkProperties(), 
+          config.getFrameworkID(),
+          config.getFrameworkManifest());
 
       framework = new BundleFrameworkImpl(compositeBundle);
     } else throw new BundleException("Failed to obtain framework factory service");
