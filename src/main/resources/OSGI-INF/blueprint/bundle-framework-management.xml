@@ -21,6 +21,7 @@
   
   <bean id="equinox-bundle-framework-manager" class="org.apache.aries.application.runtime.framework.management.BundleFrameworkManagerImpl" init-method="init">
       <property name="bundleFrameworkFactory" ref="bundle-framework-factory"/>
+      <property name="bundleFrameworkConfigurationFactory" ref="bundle-framework-configuration-factory"/>
       <property name="bundleContext" ref="blueprintBundleContext"/>
       <property name="updateStrategies" ref="strategies" />
   </bean>
@@ -30,6 +31,8 @@
             ranking="-1"/>
             
   <reference id="bundle-framework-factory" interface="org.apache.aries.application.management.spi.framework.BundleFrameworkFactory"/>
+  
+  <reference id="bundle-framework-configuration-factory" interface="org.apache.aries.application.management.spi.framework.BundleFrameworkConfigurationFactory"/>
 
   <reference-list id="strategies" interface="org.apache.aries.application.management.spi.update.UpdateStrategy" availability="optional" />
 

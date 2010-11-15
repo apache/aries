@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.aries.application.management.spi.framework.BundleFramework;
+import org.apache.aries.application.management.spi.framework.BundleFrameworkConfiguration;
+import org.apache.aries.application.management.spi.framework.BundleFrameworkConfigurationFactory;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkFactory;
 import org.apache.aries.application.management.spi.repository.ContextException;
 
@@ -35,62 +37,50 @@ import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 public class SharedBundleFramework
-{  
+{
   private static final Logger LOGGER = LoggerFactory.getLogger(SharedBundleFramework.class);
-  
   private static BundleFramework sharedFramework;
 
   /**
-   * This is not the right way to make blueprint usable by applications, but it is all
-   * we have time to make work. I have locked down the version ranges so that this can
-   * be fixed properly in the future. NB The org.osgi.service.blueprint
-   * package is deliberately unversioned as it is not part of the osgi compendium.
+   * This is not the right way to make blueprint usable by applications, but
+   * it is all we have time to make work. I have locked down the version
+   * ranges so that this can be fixed properly in the future. NB The
+   * org.osgi.service.blueprint package is deliberately unversioned as it is
+   * not part of the osgi compendium.
    */
   private static final String RUNTIME_PACKAGES = "org.osgi.service.blueprint,org.osgi.service.blueprint.container;version=\"[1.0.0,1.0.1]\",org.osgi.service.blueprint.reflect;version=\"[1.0.0,1.0.1]\",org.apache.aries.transaction.exception;version=\"[0.1,1.0.0)\"";
 
   /**
-   * create using any bundle context in EBA App framework
-   * as we want to create a child framework under EBA App framework
+   * create using any bundle context in EBA App framework as we want to create
+   * a child framework under EBA App framework
+   * 
    * @param bc
    * @throws BundleException
    * @throws InvalidSyntaxException
    */
   private static void createSharedBundleFramework(BundleContext bc,
+      BundleFrameworkConfigurationFactory bundleFrameworkConfigFactory,
       BundleFrameworkFactory bundleFrameworkFactory) throws ContextException
   {
-    LOGGER.debug(LOG_ENTRY, "createSharedBundleFramework", new Object[] {bc, bundleFrameworkFactory});
+    LOGGER.debug(LOG_ENTRY, "createSharedBundleFramework", new Object[] { bc,
+        bundleFrameworkFactory });
 
     try {
-      // Set up the isolated framework
-      Properties frameworkConfig = new Properties();
-      frameworkConfig.put("osgi.console", "0");
 
-      String osgiFrameworkLocation = bc.getProperty(FrameworkConstants.OSGI_FRAMEWORK);
-      if (osgiFrameworkLocation != null) {
-
-        frameworkConfig.put(FrameworkConstants.OSGI_FRAMEWORK, osgiFrameworkLocation);
-        if (bc.getProperty(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA) != null)
-        {
-          frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, bc
-            .getProperty(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA));
-        }
-      }
+      BundleFrameworkConfiguration config = 
+        new SharedBundleFrameworkConfiguration(
+            bundleFrameworkConfigFactory.createBundleFrameworkConfig(
+                BundleFramework.SHARED_BUNDLE_FRAMEWORK, 
+                bc));
       
-      Properties compositeManifest = new Properties();
-      compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, BundleFramework.SHARED_BUNDLE_FRAMEWORK);
-
-      //Add blueprint so that it is available to applications.
-      compositeManifest.put(Constants.IMPORT_PACKAGE, RUNTIME_PACKAGES);
-
-      sharedFramework = bundleFrameworkFactory.createBundleFramework(bc, BundleFramework.SHARED_BUNDLE_FRAMEWORK,
-          frameworkConfig, compositeManifest);
+      sharedFramework = bundleFrameworkFactory.createBundleFramework(bc, config);
 
       sharedFramework.init();
-      
+
     } catch (BundleException e) {
       LOGGER.debug(LOG_EXIT, "createSharedBundleFramework", e);
-      throw new ContextException(
-          "Unable to create or start the shared framework composite bundle " + sharedFramework, e);
+      throw new ContextException("Unable to create or start the shared framework composite bundle "
+          + sharedFramework, e);
     }
 
     LOGGER.debug(LOG_EXIT, "createSharedBundleFramework");
@@ -99,23 +89,64 @@ public class SharedBundleFramework
   /**
    * pass in the EBA framework bundle context and get the shared bundle
    * framework associated with the bundle context
-   * @param bc      any bundle context in EBA framework
-   * @return        the composite bundle associated with the shared bundle framework
+   * 
+   * @param bc
+   *            any bundle context in EBA framework
+   * @return the composite bundle associated with the shared bundle framework
    * @throws BundleException
    * @throws InvalidSyntaxException
    * @throws SharedFrameworkCreationException
    */
   public synchronized static BundleFramework getSharedBundleFramework(BundleContext bc,
+      BundleFrameworkConfigurationFactory bfcf,
       BundleFrameworkFactory bff) throws ContextException
   {
-    LOGGER.debug(LOG_ENTRY, "getSharedBundleFramework", new Object[] {bc, bff});
-    
+    LOGGER.debug(LOG_ENTRY, "getSharedBundleFramework", new Object[] { bc, bff });
+
     if (sharedFramework == null) {
-      createSharedBundleFramework(bc, bff);
+      createSharedBundleFramework(bc, bfcf, bff);
     }
-    
+
     LOGGER.debug(LOG_EXIT, "getSharedBundleFramework", sharedFramework);
 
     return sharedFramework;
+  }
+
+  /**
+   * Wrapper for the basic framework configuration
+   * @author cwilkin
+   *
+   */
+  private static class SharedBundleFrameworkConfiguration implements BundleFrameworkConfiguration
+  {
+    BundleFrameworkConfiguration basicConfig = null;
+
+    public SharedBundleFrameworkConfiguration(BundleFrameworkConfiguration basicConfig)  {
+      this.basicConfig = basicConfig;
+    }
+
+    public String getFrameworkID()
+    {
+      return basicConfig.getFrameworkID();
+    }
+
+    public Properties getFrameworkManifest()
+    {
+
+      Properties compositeManifest = basicConfig.getFrameworkManifest();
+      
+      compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, BundleFramework.SHARED_BUNDLE_FRAMEWORK);
+
+      // Add blueprint so that it is available to applications.
+      compositeManifest.put(Constants.IMPORT_PACKAGE, RUNTIME_PACKAGES);
+      
+      return compositeManifest;
+    }
+
+    public Properties getFrameworkProperties()
+    {
+      return basicConfig.getFrameworkProperties();
+    }
+
   }
 }

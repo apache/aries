@@ -32,6 +32,14 @@
         A bundle framework manager implementation
     </description>
 
+    <properties>
+        <aries.osgi.export.pkg>
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+			org.apache.aries.application.runtime.framework.management
+        </aries.osgi.private.pkg>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
