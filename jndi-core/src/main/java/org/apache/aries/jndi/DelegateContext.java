@@ -212,14 +212,6 @@ public class DelegateContext implements DirContext {
             toReturn = getDefaultContext();
         }
 
-        if (toReturn != null) {
-            String packages = Utils.getSystemProperty(Context.URL_PKG_PREFIXES, null);
-
-            if (packages != null) {
-                toReturn.addToEnvironment(Context.URL_PKG_PREFIXES, packages);
-            }
-        }
-
         return toReturn;
     }
 
