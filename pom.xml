@@ -32,6 +32,14 @@
         An bundle repository runtime implementation
     </description>
 
+    <properties>
+        <aries.osgi.export.pkg>
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+			org.apache.aries.application.runtime.repository
+        </aries.osgi.private.pkg>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
