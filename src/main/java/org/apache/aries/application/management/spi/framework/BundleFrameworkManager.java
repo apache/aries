@@ -29,11 +29,17 @@ import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.UpdateException;
-import org.apache.aries.application.management.spi.repository.ContextException;
 import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 
 public interface BundleFrameworkManager
 {
+  /**
+   * All additions/removals of frameworks and bundles from the shared bundle framework are
+   * performed under this object lock. Users bypassing this api and performing operations on 
+   * the underlying OSGi frameworks should be sure to hold this lock.
+   */
+  Object SHARED_FRAMEWORK_LOCK = new Object();
+
   /**
    * Gets the BundleFramework object associated with the given bundle
    * @param frameworkBundle - The bundle representing the bundle framework
