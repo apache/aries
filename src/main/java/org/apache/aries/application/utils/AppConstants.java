@@ -79,6 +79,8 @@ public interface AppConstants
   public static final String DEPLOYMENT_PROVISION_BUNDLE = "Provision-Bundle";  
   /** Blueprint managed services imported by the isolated bundles */ 
   public static final String DEPLOYMENTSERVICE_IMPORT = "DeployedService-Import";
+  
+  public static final String PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP="provision.exclude.local.repository";
   /**
    * Logging insert strings
    */
