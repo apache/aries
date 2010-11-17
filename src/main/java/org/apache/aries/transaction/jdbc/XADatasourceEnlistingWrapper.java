@@ -22,10 +22,16 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 /**
@@ -44,22 +50,86 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
     
     private transient TransactionManager tm;
     
-    public Connection getConnection() throws SQLException
-    {
-      XAConnection xaConn = wrappedDS.getXAConnection();
-      Connection conn = getEnlistedConnection(xaConn);
-      
-      return conn;
+    private transient Map<Object, Connection> connectionMap = 
+        new ConcurrentHashMap<Object, Connection>();
+    
+    public Connection getConnection() throws SQLException {
+        Transaction transaction = getTransaction();
+        if (transaction != null) {
+            Connection connection = connectionMap.get(transaction);
+            if (connection == null) {
+                XAConnection xaConnection = wrappedDS.getXAConnection();                
+                enlist(transaction, xaConnection);
+                connection = xaConnection.getConnection();
+                connectionMap.put(transaction, connection);                
+            }
+            return getEnlistedConnection(connection, true);
+        } else {
+            return getEnlistedConnection(wrappedDS.getXAConnection().getConnection(), false);
+        }
     }
 
-    public Connection getConnection(String username, String password) throws SQLException
-    {
-      XAConnection xaConn = wrappedDS.getXAConnection(username, password);
-      Connection conn = getEnlistedConnection(xaConn);
-      
-      return conn;
+    public Connection getConnection(String username, String password) throws SQLException {
+        Transaction transaction = getTransaction();
+        if (transaction != null) {
+            ConnectionKey key = new ConnectionKey(username, password, transaction);
+            Connection connection = connectionMap.get(key);
+            if (connection == null) {
+                XAConnection xaConnection = wrappedDS.getXAConnection(username, password);
+                enlist(transaction, xaConnection);
+                connection = xaConnection.getConnection();
+                connectionMap.put(key, connection);
+            }
+            return getEnlistedConnection(connection, true);
+        } else {
+            return getEnlistedConnection(wrappedDS.getXAConnection(username, password).getConnection(), false);
+        }
     }
 
+    private Transaction getTransaction() throws SQLException {
+        try {
+            return (tm.getStatus() == Status.STATUS_ACTIVE) ? tm.getTransaction() : null;
+        } catch (SystemException e) {
+            throw new SQLException("Error getting transaction");
+        }
+    }
+    
+    private void enlist(Transaction transaction, XAConnection xaConnection) throws SQLException {
+        try {
+            transaction.enlistResource(xaConnection.getXAResource());            
+            transaction.registerSynchronization(new TransactionListener(xaConnection));
+        } catch (Exception e) {
+            try {
+                tm.setRollbackOnly();
+            } catch (IllegalStateException e1) {
+                e1.printStackTrace();
+            } catch (SystemException e1) {
+                e1.printStackTrace();
+            }
+        } 
+    }
+    
+    private static class TransactionListener implements Synchronization {
+
+        private final XAConnection xaConnection;
+        
+        public TransactionListener(XAConnection xaConnection) {
+            this.xaConnection = xaConnection;
+        }
+        
+        public void afterCompletion(int status) {
+            try {
+                xaConnection.getConnection().close();
+            } catch (SQLException e) {
+                // ignore
+            }            
+        }
+
+        public void beforeCompletion() {
+        }
+        
+    }
+    
     public PrintWriter getLogWriter() throws SQLException
     {
       return wrappedDS.getLogWriter();
@@ -80,9 +150,9 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
       wrappedDS.setLoginTimeout(seconds);
     }
 
-    private Connection getEnlistedConnection(XAConnection xaConn) throws SQLException
+    private Connection getEnlistedConnection(Connection connection, boolean enlisted) throws SQLException
     {
-        return new ConnectionWrapper(xaConn, tm);
+        return new ConnectionWrapper(connection, enlisted);
     }
 
     public void setDataSource(XADataSource dsToWrap)

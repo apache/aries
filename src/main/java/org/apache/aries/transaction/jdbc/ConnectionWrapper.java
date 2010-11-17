@@ -36,11 +36,6 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.sql.XAConnection;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 /**
@@ -50,62 +45,75 @@ import javax.transaction.xa.XAResource;
  * @see XADatasourceEnlistingWrapper
  */
 public class ConnectionWrapper implements Connection {
+    
     private Connection connection;
     
-    private XAConnection xaConnection;
+    private boolean closed;
     
-    private TransactionManager tm;
+    private boolean enlisted;
     
-    public ConnectionWrapper(XAConnection xaConnection, TransactionManager tm) {
-        try {
-            this.xaConnection = xaConnection;
-            this.tm = tm;
-            this.connection = xaConnection.getConnection();
+    public ConnectionWrapper(Connection connection, boolean enlisted) {
+        this.enlisted = enlisted;
+        this.connection = connection;
+    }
             
-            if (tm.getStatus() == Status.STATUS_ACTIVE) {
-                Transaction tx = tm.getTransaction();
-                tx.enlistResource(xaConnection.getXAResource());
-            }
-        } catch (Exception e) {
-            try {
-                if (tm != null)
-                    tm.setRollbackOnly();
-            } catch (IllegalStateException e1) {
-                e1.printStackTrace();
-            } catch (SystemException e1) {
-                e1.printStackTrace();
-            }
-        }
-    }
-
-    public void clearWarnings() throws SQLException {
-        connection.clearWarnings();
-    }
-
     public void close() throws SQLException {
-        try {
-            if (tm.getStatus() == Status.STATUS_ACTIVE) {
-                Transaction tx = tm.getTransaction();
-                tx.delistResource(xaConnection.getXAResource(), XAResource.TMSUCCESS);
-            }
-        } catch (Exception e) {
-            try {
-                if (tm != null)
-                    tm.setRollbackOnly();
-            } catch (IllegalStateException e1) {
-                e1.printStackTrace();
-            } catch (SystemException e1) {
-                e1.printStackTrace();
-            }
+        if (!closed) {
+            try {                       
+                // don't close connection if enlisted in a transaction
+                // the connection will be closed in once the transaction completes
+                if (!enlisted) {
+                    connection.close();
+                }
+            } finally {
+                closed = true;
+            }            
         }
-        
-        connection.close();
     }
 
+    // cannot be used while enrolled in a transaction 
+    
     public void commit() throws SQLException {
+        if (enlisted) {
+            throw new SQLException("Cannot commit while enrolled in a transaction");
+        }
         connection.commit();
     }
 
+    public void rollback() throws SQLException {
+        if (enlisted) {
+            throw new SQLException("Cannot rollback while enrolled in a transaction");
+        }
+        connection.rollback();
+    }
+
+    public void rollback(Savepoint savepoint) throws SQLException {
+        if (enlisted) {
+            throw new SQLException("Cannot rollback while enrolled in a transaction");
+        }
+        connection.rollback(savepoint);
+    }
+    
+    public Savepoint setSavepoint() throws SQLException {
+        if (enlisted) {
+            throw new SQLException("Cannot set savepoint while enrolled in a transaction");
+        }
+        return connection.setSavepoint();
+    }
+
+    public Savepoint setSavepoint(String name) throws SQLException {
+        if (enlisted) {
+            throw new SQLException("Cannot set savepoint while enrolled in a transaction");
+        }
+        return connection.setSavepoint(name);
+    }
+    
+    // rest of the methods
+    
+    public void clearWarnings() throws SQLException {
+        connection.clearWarnings();
+    }
+    
     public Array createArrayOf(String typeName, Object[] elements)
             throws SQLException {
         return connection.createArrayOf(typeName, elements);
@@ -256,14 +264,6 @@ public class ConnectionWrapper implements Connection {
         connection.releaseSavepoint(savepoint);
     }
 
-    public void rollback() throws SQLException {
-        connection.rollback();
-    }
-
-    public void rollback(Savepoint savepoint) throws SQLException {
-        connection.rollback(savepoint);
-    }
-
     public void setAutoCommit(boolean autoCommit) throws SQLException {
         connection.setAutoCommit(autoCommit);
     }
@@ -288,14 +288,6 @@ public class ConnectionWrapper implements Connection {
 
     public void setReadOnly(boolean readOnly) throws SQLException {
         connection.setReadOnly(readOnly);
-    }
-
-    public Savepoint setSavepoint() throws SQLException {
-        return connection.setSavepoint();
-    }
-
-    public Savepoint setSavepoint(String name) throws SQLException {
-        return connection.setSavepoint(name);
     }
 
     public void setTransactionIsolation(int level) throws SQLException {
