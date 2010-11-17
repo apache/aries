@@ -61,6 +61,7 @@ import org.apache.aries.application.resolver.obr.impl.ModelledBundleResource;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
 import org.apache.aries.application.resolver.obr.impl.RepositoryGeneratorImpl;
 import org.apache.aries.application.resolver.obr.impl.ResourceWrapper;
+import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
@@ -146,41 +147,12 @@ public class OBRAriesResolver implements AriesApplicationResolver
   {
      log.debug(LOG_ENTRY, "resolve", new Object[]{appName, appVersion,byValueBundles, inputs});
     Collection<ImportedBundle> importedBundles = toImportedBundle(inputs);
-    DataModelHelper helper = repositoryAdmin.getHelper();
-
-   
     Collection<ModelledResource> toReturn = new ArrayList<ModelledResource>();
-    Repository appRepo;
-    try {      
-      ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-      RepositoryGeneratorImpl.generateRepository(repositoryAdmin, appName + "_" + appVersion, byValueBundles, bytesOut);
-      appRepo = helper.readRepository(new InputStreamReader(new ByteArrayInputStream(bytesOut.toByteArray())));
-    } catch (Exception e) {
-      throw new ResolverException(e);
-    } 
-        
-    List<Repository> resolveRepos = new ArrayList<Repository>();
-    // add system repository
-    resolveRepos.add(repositoryAdmin.getSystemRepository());
-    // add local repository
-    resolveRepos.add(getLocalRepository(repositoryAdmin));
-    // add application repository
-    resolveRepos.add(appRepo);
     
-
-    
-   // Need to refresh the repositories added to repository admin
-    
-    // add user-defined repositories
-    Repository[] repos = repositoryAdmin.listRepositories();
-    for (Repository r : repos) {
-      resolveRepos.add(r);      
-    }     
-    Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
-    addPlatformRepositories (obrResolver, appName);
-    
+    Resolver obrResolver = getConfiguredObrResolver(appName, appVersion, byValueBundles);
     // add a resource describing the requirements of the application metadata.
     obrResolver.add(createApplicationResource( appName, appVersion, importedBundles));
+    
     if (obrResolver.resolve()) {
       
       List<Resource> requiredResources = retrieveRequiredResources(obrResolver);
@@ -238,15 +210,48 @@ public class OBRAriesResolver implements AriesApplicationResolver
     }
     
   }
+
+  private Resolver getConfiguredObrResolver(String appName, String appVersion,
+      Collection<ModelledResource> byValueBundles) throws ResolverException
+  {
+    log.debug(LOG_ENTRY, "getConfiguredObrResolver", new Object[]{appName, appVersion,byValueBundles });
+    DataModelHelper helper = repositoryAdmin.getHelper();
+    Repository appRepo;
+    try {      
+      ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+      RepositoryGeneratorImpl.generateRepository(repositoryAdmin, appName + "_" + appVersion, byValueBundles, bytesOut);
+      appRepo = helper.readRepository(new InputStreamReader(new ByteArrayInputStream(bytesOut.toByteArray())));
+    } catch (Exception e) {
+      throw new ResolverException(e);
+    } 
+        
+    List<Repository> resolveRepos = new ArrayList<Repository>();
+    // add system repository
+    resolveRepos.add(repositoryAdmin.getSystemRepository());
+    // add local repository if configured
+    if (!(excludeLocalRuntime())) {
+      resolveRepos.add(getLocalRepository(repositoryAdmin));
+    }
+    // add application repository
+    resolveRepos.add(appRepo);
+    // Need to refresh the repositories added to repository admin 
+    // add user-defined repositories
+    Repository[] repos = repositoryAdmin.listRepositories();
+    for (Repository r : repos) {
+      resolveRepos.add(r);      
+    }     
+    Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
+    addPlatformRepositories (obrResolver, appName);
+    log.debug(LOG_EXIT, "getConfiguredObrResolver", obrResolver);
+    return obrResolver;
+  }
  
+  
   @Deprecated
   @Override
   public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
   {
     log.trace("resolving {}", app);
-    DataModelHelper helper = repositoryAdmin.getHelper();
-
-    
     ApplicationMetadata appMeta = app.getApplicationMetadata();
 
     String appName = appMeta.getApplicationSymbolicName();
@@ -263,34 +268,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
       }
     }
 
-    Repository appRepo;
-    try {
-      
-      ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-      RepositoryGeneratorImpl.generateRepository(repositoryAdmin, appName + "_" + appVersion, toModelledResource(app.getBundleInfo()), bytesOut);
-      
-      appRepo = helper.readRepository(new InputStreamReader(new ByteArrayInputStream(bytesOut.toByteArray())));
-    } catch (Exception e) {
-      throw new ResolverException(e);
-    } 
-        
-    List<Repository> resolveRepos = new ArrayList<Repository>();
-    
-    // add system repository
-    resolveRepos.add(repositoryAdmin.getSystemRepository());
- // add local repository
-    resolveRepos.add(getLocalRepository(repositoryAdmin));
-    // add application repository
-    resolveRepos.add(appRepo);
-    
-    // add user-defined repositories
-    Repository[] repos = repositoryAdmin.listRepositories();
-    for (Repository r : repos) {
-      resolveRepos.add(r);      
-    }    
-    Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
-    addPlatformRepositories (obrResolver, appName);
-    
+    Resolver obrResolver = getConfiguredObrResolver(appName, appVersion.toString(), toModelledResource(app.getBundleInfo()));
     // add a resource describing the requirements of the application metadata.
     obrResolver.add(createApplicationResource( appName, appVersion, contents));
     if (obrResolver.resolve()) {
@@ -334,6 +312,8 @@ public class OBRAriesResolver implements AriesApplicationResolver
       throw re;
     }
   }
+
+  
   
   @Override
   public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
@@ -710,5 +690,8 @@ public class OBRAriesResolver implements AriesApplicationResolver
    }
    
 
+   private boolean excludeLocalRuntime() {   
+     return Boolean.parseBoolean(System.getProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP));     
+   }
 
 }
