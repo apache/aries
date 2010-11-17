@@ -42,6 +42,7 @@ import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
+import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
@@ -148,6 +149,8 @@ public class OBRResolverTest extends AbstractIntegrationTest
   @Test(expected=ResolverException.class)
   public void testBlogAppResolveFail() throws ResolverException, Exception
   {
+    //  provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
     generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
@@ -165,10 +168,41 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     app = manager.resolve(app);
   }
+  /**
+   * Test the resolution should fail because the required package org.apache.aries.util is provided by the local runtime, 
+   * which is not included when provisioning.
+   *  
+   * @throws Exception
+   */
+  @Test(expected=ResolverException.class)
+  public void testProvisionExcludeLocalRepo() throws Exception {
+    // do not provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
+    generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
+    
+    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    
+    Repository[] repos = repositoryAdmin.listRepositories();
+    for (Repository repo : repos) {
+      repositoryAdmin.removeRepository(repo.getURI());
+    }
+    
+    repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
+
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
+    //installing requires a valid url for the bundle in repository.xml.
+    
+    app = manager.resolve(app);
+    
+
   
+  }
   @Test
   public void testBlogApp() throws Exception 
   {
+    //  provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
     generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
