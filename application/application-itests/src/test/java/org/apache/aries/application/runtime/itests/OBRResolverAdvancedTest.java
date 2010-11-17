@@ -50,6 +50,7 @@ import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
+import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
@@ -230,6 +231,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
   @Test(expected=ResolverException.class)
   public void testDemoAppResolveFail() throws ResolverException, Exception
   {
+    // do not provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     generateOBRRepoXML(false, TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar",  USE_BUNDLE_BY_REFERENCE+".jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
@@ -252,6 +255,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
   @Test
   public void testDemoApp() throws Exception 
   {
+    // do not provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     generateOBRRepoXML(false, TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar", USE_BUNDLE_BY_REFERENCE+".jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
@@ -327,6 +332,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
    */
   @Test
   public void testRepo() throws Exception {
+    // do not provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     generateOBRRepoXML(true, REPO_BUNDLE+".jar");
     //print out the repository.xml
     BufferedReader reader = new BufferedReader(new FileReader(new File("repository.xml")));
@@ -367,6 +374,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
   
   @Test
   public void testMutlipleServices() throws Exception{
+    // provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
     generateOBRRepoXML(false, HELLO_WORLD_SERVICE_BUNDLE1 + ".jar", HELLO_WORLD_SERVICE_BUNDLE2 + ".jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
@@ -413,6 +422,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
   @Test
   public void testTwitter() throws Exception
   {
+    // provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
