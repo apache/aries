@@ -33,6 +33,7 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 
 /**
  * This class allows JDBC XA data sources to participate in global transactions,
@@ -56,12 +57,13 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
     public Connection getConnection() throws SQLException {
         Transaction transaction = getTransaction();
         if (transaction != null) {
-            Connection connection = connectionMap.get(transaction);
+            Object key = transaction;
+            Connection connection = connectionMap.get(key);
             if (connection == null) {
-                XAConnection xaConnection = wrappedDS.getXAConnection();                
-                enlist(transaction, xaConnection);
+                XAConnection xaConnection = wrappedDS.getXAConnection();                                
                 connection = xaConnection.getConnection();
-                connectionMap.put(transaction, connection);                
+                enlist(transaction, xaConnection.getXAResource(), key);
+                connectionMap.put(key, connection);                
             }
             return getEnlistedConnection(connection, true);
         } else {
@@ -72,12 +74,12 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
     public Connection getConnection(String username, String password) throws SQLException {
         Transaction transaction = getTransaction();
         if (transaction != null) {
-            ConnectionKey key = new ConnectionKey(username, password, transaction);
+            Object key = new ConnectionKey(username, password, transaction);
             Connection connection = connectionMap.get(key);
             if (connection == null) {
                 XAConnection xaConnection = wrappedDS.getXAConnection(username, password);
-                enlist(transaction, xaConnection);
                 connection = xaConnection.getConnection();
+                enlist(transaction, xaConnection.getXAResource(), key);               
                 connectionMap.put(key, connection);
             }
             return getEnlistedConnection(connection, true);
@@ -94,10 +96,10 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
         }
     }
     
-    private void enlist(Transaction transaction, XAConnection xaConnection) throws SQLException {
+    private void enlist(Transaction transaction, XAResource xaResource, Object key) throws SQLException {
         try {
-            transaction.enlistResource(xaConnection.getXAResource());            
-            transaction.registerSynchronization(new TransactionListener(xaConnection));
+            transaction.enlistResource(xaResource);            
+            transaction.registerSynchronization(new TransactionListener(key));
         } catch (Exception e) {
             try {
                 tm.setRollbackOnly();
@@ -109,20 +111,23 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
         } 
     }
     
-    private static class TransactionListener implements Synchronization {
+    private class TransactionListener implements Synchronization {
 
-        private final XAConnection xaConnection;
+        private final Object key;
         
-        public TransactionListener(XAConnection xaConnection) {
-            this.xaConnection = xaConnection;
+        public TransactionListener(Object key) {
+            this.key = key;
         }
         
         public void afterCompletion(int status) {
-            try {
-                xaConnection.getConnection().close();
-            } catch (SQLException e) {
-                // ignore
-            }            
+            Connection connection = connectionMap.remove(key);
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    // ignore
+                }
+            }
         }
 
         public void beforeCompletion() {
