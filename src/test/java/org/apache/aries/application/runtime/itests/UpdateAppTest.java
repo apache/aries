@@ -45,6 +45,7 @@ import org.apache.aries.application.management.spi.repository.BundleRepository.B
 import org.apache.aries.application.management.spi.update.UpdateStrategy;
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.runtime.itests.util.IsolationTestUtils;
+import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.isolated.sample.HelloWorld;
@@ -254,6 +255,8 @@ public class UpdateAppTest extends AbstractIntegrationTest {
         // logging (logProfile)
         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
+        // do not provision against the local runtime
+        systemProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP).value("true"),
         // Bundles
         
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
