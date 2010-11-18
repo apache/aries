@@ -182,4 +182,5 @@ public class ScopeImpl implements Scope {
     public String getLocation() {
         return this.location;
     }
+    
 }

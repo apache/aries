@@ -18,6 +18,10 @@
  */
 package org.apache.aries.subsystem.scope.impl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +29,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.Scope;
@@ -34,7 +40,13 @@ import org.apache.aries.subsystem.scope.SharePolicy;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.condpermadmin.ConditionInfo;
+import org.osgi.service.condpermadmin.ConditionalPermissionAdmin;
+import org.osgi.service.condpermadmin.ConditionalPermissionInfo;
+import org.osgi.service.condpermadmin.ConditionalPermissionUpdate;
+import org.osgi.service.permissionadmin.PermissionInfo;
 
 public class ScopeUpdateImpl implements ScopeUpdate {
 
@@ -44,6 +56,27 @@ public class ScopeUpdateImpl implements ScopeUpdate {
     private List<Scope> tbrChildren = new ArrayList<Scope>();
     private BundleContext bc;
     private static ConcurrentHashMap<Long, ServiceRegistration> srs = new ConcurrentHashMap<Long, ServiceRegistration>();
+    private final static PermissionInfo[] denyInfo = 
+    {
+        new PermissionInfo("org.osgi.framework.ServicePermission", "org.osgi.service.condpermadmin.ConditionalPermissionAdmin", "*"),
+        new PermissionInfo("org.osgi.framework.ServicePermission", "org.osgi.service.permissionadmin.PermissionAdmin", "*"),
+        new PermissionInfo("org.osgi.framework.ServicePermission", "org.osgi.framework.hooks.service.*", "*"),
+        new PermissionInfo("org.osgi.framework.ServicePermission", "org.osgi.service.packageadmin.PackageAdmin", "*")
+    };
+    
+    private final static PermissionInfo[] allowInfo = {
+        new PermissionInfo("org.osgi.framework.PackagePermission", "*", "import"),
+        new PermissionInfo("org.osgi.framework.BundlePermission", "*", "host,provide,fragment"),
+    };
+    
+    private final static PermissionInfo[] defaultAllowInfo = {
+            new PermissionInfo("java.lang.RuntimePermission", "loadLibrary.*", "*"),
+            new PermissionInfo("java.lang.RuntimePermission", "queuePrintJob", "*"),
+            new PermissionInfo("java.net.SocketPermission", "*", "connect"),
+            new PermissionInfo("java.util.PropertyPermission", "*", "read"),
+            new PermissionInfo("org.osgi.framework.PackagePermission", "*", "exportonly,import"),
+            new PermissionInfo("org.osgi.framework.ServicePermission", "*", "get,register"),
+        };
     
     public ScopeUpdateImpl(ScopeImpl scope, BundleContext bc) {
         this.scope = scope;
@@ -69,6 +102,8 @@ public class ScopeUpdateImpl implements ScopeUpdate {
     public boolean commit() throws BundleException {
         // process installedBundle
         boolean success = false;
+        int numException = 0;
+        
         List<Bundle> installedBundle = new ArrayList<Bundle>();
         for (InstallInfo info : this.installInfo) {
             URL url = info.getContent();
@@ -83,12 +118,15 @@ public class ScopeUpdateImpl implements ScopeUpdate {
             }
             
             try {
+                // prefix location with scope-scopeId:
+                loc = "scope-" + this.getScope().getId() + ": " + loc;
                 scope.getToBeInstalledBundleLocation().add(loc);
                 b = bc.installBundle(loc, url.openStream());
                 installedBundle.add(b);
             } catch (IOException e) {
                 // clear bundle location off the list.
                 scope.getToBeInstalledBundleLocation().remove(loc);
+                numException++;
                 throw new BundleException("problem when opening url " + e.getCause());
             }
             scope.getToBeInstalledBundleLocation().remove(loc);
@@ -100,6 +138,17 @@ public class ScopeUpdateImpl implements ScopeUpdate {
         // update bundle list for the scope
         getBundles().addAll(installedBundle);
 
+        
+        // Sets up Java 2 security permissions for the application
+        try {
+          boolean suc = setupJava2Security(scope.getLocation());
+          if (!suc) {
+              numException++;
+          }
+        } catch (BundleException ex) {
+            numException++;
+            throw ex;
+        }
         
         // process child scopes
         Collection<ScopeUpdate> children = getChildren();
@@ -122,6 +171,7 @@ public class ScopeUpdateImpl implements ScopeUpdate {
                     sr.unregister();
                     srs.remove(scopeUpdateImpl.getScope().getId());
                 }
+                numException++;
                 throw new BundleException("problem when commiting child scope: " + child.getName() + " " + e.getCause());
             }
             
@@ -136,10 +186,54 @@ public class ScopeUpdateImpl implements ScopeUpdate {
             removeChildScope(scope); 
         }
         
+        return numException == 0 ? true : false;
+    }
+     
+    private boolean setupJava2Security(String location) throws BundleException {
+        // obtain security manager
+        SecurityManager secMan = System.getSecurityManager();
+        
+        if (secMan == null) {
+            return true;
+        }
+        
+        ServiceReference permRef = bc.getServiceReference(ConditionalPermissionAdmin.class.getName());
+
+        ConditionalPermissionAdmin permAdmin = (ConditionalPermissionAdmin) bc.getService(permRef);
+        ConditionalPermissionUpdate update = permAdmin.newConditionalPermissionUpdate();
+
+        List<ConditionalPermissionInfo> infos = update.getConditionalPermissionInfos();
+        //infos.clear();
+
+        // set up the conditionInfo
+        String scopePrefix = "scope-" + this.scope.getId() + "-*";
+        ConditionInfo[] conditionInfo = new ConditionInfo[] {new ConditionInfo("org.osgi.service.condpermadmin.BundleLocationCondition", new String[]{scopePrefix})}; 
+        // Set up permissions which are common to all applications
+        infos.add(permAdmin.newConditionalPermissionInfo(null, conditionInfo, denyInfo, "deny"));
+        infos.add(permAdmin.newConditionalPermissionInfo(null, conditionInfo, allowInfo, "allow"));
+
+        // exact scope permission from scope installation loc
+        // TODO: need to figure out the permFile from the scope/subsystem, META-INF/permissions.perm
+        // Also add code to handle the permission file
+        File permFile = new File("META-INF/permissions.perm");
+        if (!permFile.exists()) { 
+            /*
+             * If there is no specific permissions file provided, the following 
+             * default permissions are provided.
+             */        
+            infos.add(permAdmin.newConditionalPermissionInfo(null, conditionInfo, defaultAllowInfo, "allow"));
+
+        }
+        
+        if (!update.commit()) {
+            return false;
+        }
         
         return true;
+        
+        
     }
-    
+
     // check if the install info is already installed in the scope
     private Bundle alreadyInstalled(InstallInfo info) {
         String loc = info.getLocation();
