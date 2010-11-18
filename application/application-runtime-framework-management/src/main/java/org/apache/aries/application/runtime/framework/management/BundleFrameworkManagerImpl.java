@@ -29,10 +29,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
-import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
@@ -45,12 +43,9 @@ import org.apache.aries.application.management.spi.framework.BundleFrameworkMana
 import org.apache.aries.application.management.spi.repository.ContextException;
 import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.apache.aries.application.management.spi.update.UpdateStrategy;
-import org.apache.aries.application.runtime.framework.utils.EquinoxFrameworkUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,19 +159,29 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     // We should now have a bundleFramework
     if (bundleFramework != null) {
 
+      boolean frameworkStarted = false;
+      try {
+        // Start the empty framework bundle
+        bundleFramework.init();
+        frameworkStarted = true;
+      } catch (BundleException e) {
+        // This may fail if the framework bundle has exports but we will retry later
+      }
+
       /**
        * Install the bundles into the new framework
        */
-
+      
       List<Bundle> installedBundles = new ArrayList<Bundle>();
       BundleContext frameworkBundleContext = bundleFramework.getIsolatedBundleContext();
       if (frameworkBundleContext != null) {
         for (BundleSuggestion suggestion : bundlesToBeInstalled)
           installedBundles.add(bundleFramework.install(suggestion, app));
       }
-
+      
       // Finally, start the whole lot
-      bundleFramework.init();
+      if (!frameworkStarted)
+        bundleFramework.init();
     }
 
     LOGGER.debug(LOG_EXIT, "isolatedInstall", bundleFramework);
