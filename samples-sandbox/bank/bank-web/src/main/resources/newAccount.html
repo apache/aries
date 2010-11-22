@@ -1,0 +1,38 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<html>
+<head></head>
+<body>
+<p>Create a new account</p>
+<form action="CreateAccount" method="POST">
+<table>
+<tr><td>Name</td><td><input type="text" name="name"/></td></tr>
+<tr><td>Account type</td>
+  <td>
+  <select name="accountType">
+    <option value="Chequing">Chequing</option>
+    <option value="LineOfCredit">Line of credit</option>
+  </select> 
+  </td>
+<tr><td>Assets</td><td><input type="text" name="assets" value="0"/></td></tr>
+<tr><td>Liabilities</td><td><input type="text" name="liabilities" value="0"/></td></tr>
+</table>
+<br/>
+<input type="submit" value="submit request" />
+</form>
+</body>
+</html>

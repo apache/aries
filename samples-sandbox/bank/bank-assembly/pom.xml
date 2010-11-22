@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		* Licensed to the Apache Software Foundation (ASF) under one * or more
+		contributor license agreements. See the NOTICE file * distributed with
+		this work for additional information * regarding copyright ownership.
+		The ASF licenses this file * to you under the Apache License, Version
+		2.0 (the * "License"); you may not use this file except in compliance
+		* with the License. You may obtain a copy of the License at * *
+		http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
+		applicable law or agreed to in writing, * software distributed under
+		the License is distributed on an * "AS IS" BASIS, WITHOUT WARRANTIES
+		OR CONDITIONS OF ANY * KIND, either express or implied. See the
+		License for the * specific language governing permissions and
+		limitations * under the License.
+	-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.apache.aries.samples.bank</groupId>
+		<artifactId>bank</artifactId>
+		<version>0.3-incubating-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>bank-assembly</artifactId>
+	<name>Apache Aries Bank Sample Assembly</name>
+	<packaging>pom</packaging>
+
+	<properties>
+<!--
+    	This downloads a pre-released version. Needs fixing as soon as release is available.
+-->
+    	<tuscany-version>2.0-Beta1</tuscany-version> 
+    	<tuscany-site>http://people.apache.org/~slaws/tuscany/2.0-beta1-RC3/</tuscany-site>
+    </properties>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>osgi</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>cm</artifactId>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.eclipse.equinox</groupId>
+            <artifactId>event</artifactId>
+            <version>1.0.100-v20070516</version>
+        </dependency>
+
+		<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>org.eclipse.osgi.services</artifactId>
+			<version>3.2.100.v20100503</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ops4j.pax.logging</groupId>
+			<artifactId>pax-logging-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ops4j.pax.logging</groupId>
+			<artifactId>pax-logging-service</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ops4j.pax.web</groupId>
+			<artifactId>pax-web-extender-war</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ops4j.pax.web</groupId>
+			<artifactId>pax-web-jetty-bundle</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ops4j.pax.web</groupId>
+			<artifactId>pax-web-jsp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.fileinstall</artifactId>
+		</dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.blueprint</groupId>
+			<artifactId>org.apache.aries.blueprint</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries</groupId>
+			<artifactId>org.apache.aries.util</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.jndi</groupId>
+			<artifactId>org.apache.aries.jndi</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.install</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.management</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.runtime</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.utils</artifactId>
+		</dependency>
+
+ 		<dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.noop.platform.repo</artifactId>
+        </dependency>
+
+		<dependency>
+             <groupId>org.apache.aries.application</groupId>
+             <artifactId>org.apache.aries.application.default.local.platform</artifactId>            
+        </dependency>
+		
+		<dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.noop.postresolve.process</artifactId>
+        </dependency>
+
+        <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.modeller</artifactId>
+        </dependency>
+
+        <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.deployment.management</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.resolver.obr</artifactId>
+         </dependency>
+	</dependencies>
+
+	<build>
+			<plugins>
+		<!-- Tuscany has dependencies on jars which are not bundle-ised avd available from from the Maven repo. Tuscany have budle-ised dependencies
+		     that were not already OSGi bundle(eg wsdl4j) and converted a number of incorrect OSGi manifests in other dependencies (eg axis2*) but the fixed
+		     bundles are only available as part of the Tuscany dsitribution.
+		     Because of this the only way for us to use Tuscany is to download and extract the who;e distro, then use a configuration file 
+		     (config.ini) to select the jars that require.
+		 --> 
+		<plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-antrun-plugin</artifactId>
+		    <executions>
+		        <execution>
+		        <phase>install</phase>
+		           <goals>
+		               <goal>run</goal>
+		           </goals>
+		           <configuration>
+		            <tasks>
+		            <!-- Uncomment this to download the Tuscany distro. Altenatively - make a copy in the reources dir of the project -->
+					<!--
+		                <get src="${tuscany-site}/apache-tuscany-sca-all-${tuscany-version}.zip" dest="${project.build.directory}/tuscany-${tuscany-version}.zip" />
+		                <unzip src="${project.build.directory}/tuscany-${tuscany-version}.zip" dest="${project.build.directory}/" overwrite="true"/>
+		            -->
+						<get src="${tuscany-site}/apache-tuscany-sca-all-${tuscany-version}.zip" dest="${project.build.directory}/tuscany-${tuscany-version}.zip" />
+					<!-- Or you may find it easier just to put the Tuscany distro somewhere local and copy/unzip -->
+					<!--
+						<copy file="src/main/resources/apache-tuscany-sca-all-2.0-Beta1.zip" todir="${project.build.directory}/" />
+					-->
+		                <unzip src="${project.build.directory}/apache-tuscany-sca-all-2.0-Beta1.zip" dest="${project.build.directory}/" overwrite="true"/>
+		            </tasks>
+		            </configuration>
+		         </execution>
+		      </executions>
+         </plugin>
+     		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>filter</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>resources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<excludeTransitive>true</excludeTransitive>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
