@@ -176,18 +176,20 @@ public class ReflectionUtils {
             }            
             
             if (allowFieldInjection) {
-                for (Field field : clazz.getDeclaredFields()) {
-                    if (!!!Modifier.isStatic(field.getModifiers())) {
-                        String name = decapitalize(field.getName());
-                        PropertyDescriptor desc = props.get(name);
-                        if (desc == null) {
-                            props.put(name, new FieldPropertyDescriptor(name, field));
-                        } else if (desc instanceof MethodPropertyDescriptor) {
-                            props.put(name, 
-                                    new JointPropertyDescriptor((MethodPropertyDescriptor) desc, 
-                                            new FieldPropertyDescriptor(name, field)));
-                        } else {
-                            illegalProperties.add(name);
+                for (Class cl = clazz; cl != null && cl != Object.class; cl = cl.getSuperclass()) {
+                    for (Field field : cl.getDeclaredFields()) {
+                        if (!!!Modifier.isStatic(field.getModifiers())) {
+                            String name = decapitalize(field.getName());
+                            PropertyDescriptor desc = props.get(name);
+                            if (desc == null) {
+                                props.put(name, new FieldPropertyDescriptor(name, field));
+                            } else if (desc instanceof MethodPropertyDescriptor) {
+                                props.put(name,
+                                        new JointPropertyDescriptor((MethodPropertyDescriptor) desc,
+                                                new FieldPropertyDescriptor(name, field)));
+                            } else {
+                                illegalProperties.add(name);
+                            }
                         }
                     }
                 }
