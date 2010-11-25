@@ -194,7 +194,7 @@
 					<!--
 						<copy file="src/main/resources/apache-tuscany-sca-all-2.0-Beta1.zip" todir="${project.build.directory}/" />
 					-->
-		                <unzip src="${project.build.directory}/apache-tuscany-sca-all-2.0-Beta1.zip" dest="${project.build.directory}/" overwrite="true"/>
+		                <unzip src="${project.build.directory}/tuscany-2.0-Beta1.zip" dest="${project.build.directory}/" overwrite="true"/>
 		            </tasks>
 		            </configuration>
 		         </execution>
