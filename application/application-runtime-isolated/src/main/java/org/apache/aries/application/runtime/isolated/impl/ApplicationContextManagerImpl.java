@@ -139,10 +139,10 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
         break;
       }
     }
-    
+        
     LOGGER.debug(LOG_EXIT, "remove");
   }
-
+  
   public synchronized void close()
   {
     LOGGER.debug(LOG_ENTRY, "close");
