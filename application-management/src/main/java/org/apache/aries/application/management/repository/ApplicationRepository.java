@@ -24,10 +24,10 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.spi.framework.BundleFramework;
 import org.apache.aries.application.management.spi.repository.BundleRepository;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
 
@@ -110,10 +110,10 @@ public class ApplicationRepository implements BundleRepository
       
     }
 
-    public Bundle install(BundleContext ctx, AriesApplication app) throws BundleException
+    public Bundle install(BundleFramework framework, AriesApplication app) throws BundleException
     {
       if (bundleInfo != null ) {
-        return ctx.installBundle(bundleInfo.getLocation());
+        return framework.getIsolatedBundleContext().installBundle(bundleInfo.getLocation());
       } else {
         throw new BundleException("Unable to install the bundle, as the BundleInfo is null.");
       }

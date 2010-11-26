@@ -139,7 +139,7 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public Bundle install(BundleSuggestion suggestion, AriesApplication app) throws BundleException
   {
-    Bundle installedBundle = suggestion.install(getIsolatedBundleContext(), app);
+    Bundle installedBundle = suggestion.install(this, app);
     _bundles.add(installedBundle);
     
     return installedBundle;

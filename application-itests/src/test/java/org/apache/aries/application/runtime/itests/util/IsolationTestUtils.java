@@ -31,6 +31,7 @@ import java.util.jar.Attributes;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.spi.framework.BundleFramework;
 import org.apache.aries.application.management.spi.repository.BundleRepository;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.modelling.ModelledResource;
@@ -94,10 +95,10 @@ public class IsolationTestUtils {
         if (content.getContentName().equals("org.apache.aries.isolated.sample")) {
           return new BundleSuggestion() {
 
-            public Bundle install(BundleContext ctx, AriesApplication app) throws BundleException {
+            public Bundle install(BundleFramework framework, AriesApplication app) throws BundleException {
               File f = new File("sample_2.0.0.jar");
               try {
-                return ctx.installBundle(f.toURL().toString());                
+                return framework.getIsolatedBundleContext().installBundle(f.toURL().toString());                
               } catch (MalformedURLException mue) {
                 throw new RuntimeException(mue);
               }
