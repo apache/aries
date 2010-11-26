@@ -24,8 +24,8 @@ import java.util.Set;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.spi.framework.BundleFramework;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
 
@@ -53,7 +53,7 @@ public interface BundleRepository {
 	     * @return the installed bundle
 	     * @throws BundleException
 	     */
-	    public Bundle install(BundleContext ctx, 
+	    public Bundle install(BundleFramework framework, 
 	                          AriesApplication app) throws BundleException;
 	    
 	    /**
