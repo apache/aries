@@ -56,7 +56,7 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
     private ServiceNamingEnumeration(BundleContext context, ServiceReference[] theRefs, ThingManager<T> manager)
     {
       ctx = context;
-      refs = theRefs;
+      refs = (theRefs != null) ? theRefs : new ServiceReference[0];
       mgr = manager;
     }
     
