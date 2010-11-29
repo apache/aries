@@ -1,0 +1,163 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Test</title>
+<link rel="stylesheet" href="http://www.osgi.org/www/osgi.css" type="text/css">
+<style type="text/css">
+					.code { font-family: Courier,
+					sans-serif; }
+					.error,.ok, .info,
+					.warning {
+					background-position: 4 4;
+					background-repeat:no-repeat;
+					width:10px; }
+					.ok {
+					background-image:url("http://www.osgi.org/www/greenball.png"); }
+					.warning {
+					background-image:url("http://www.osgi.org/www/orangeball.png"); }
+					.error {
+					background-image:url("http://www.osgi.org/www/redball.png"); }
+					.info {
+					background-image:url("http://www.osgi.org/www/info.png"); }
+					.class { padding-top:20px; padding-bottom: 10px; font-size:12;
+					font-weight:bold; }
+
+					h2 { margin-top : 20px; margin-bottom:10px; }
+					table, th, td { border: 1px solid black; padding:5px; }
+					table {
+					border-collapse:collapse; width:100%; margin-top:20px;}
+					th { height:20px; }
+					} 
+				</style>
+<script language="javascript">
+					function toggle(name) {
+					var el =
+					document.getElementById(name);
+					if ( el.style.display != 'none' ) {
+					el.style.display = 'none';
+					}
+					else {
+					el.style.display = '';
+					}
+					}				
+				</script>
+</head>
+<body style="width:800px">
+<h2>Summary</h2>
+<p>The following table provides a sumary of the test information.</p>
+<table>
+<tr>
+<th>Property Key</th><th>Property Value</th>
+</tr>
+<tr>
+<td width="50%">Target</td><td>/Users/zoe/Workspaces/aries/ComplianceTests/ApacheAriesTests/jar/org.osgi.test.cases.blueprint.java5-4.2.0.jar</td>
+</tr>
+<tr>
+<td width="50%">Framework</td><td>org.eclipse.osgi.launch.Equinox@1b4a74b</td>
+</tr>
+<tr>
+<td width="50%">Testrun</td><td>Wed Sep 01 17:23:50 BST 2010</td>
+</tr>
+<tr>
+<th colspan="2">Bundles</th>
+</tr>
+<tr>
+<td>org.eclipse.osgi</td><td>3.5.0.v20090520</td>
+</tr>
+<tr>
+<td>osgi.cmpn</td><td>4.2.0.200908310645</td>
+</tr>
+<tr>
+<td>org.ops4j.pax.logging.pax-logging-api</td><td>1.4</td>
+</tr>
+<tr>
+<td>org.ops4j.pax.logging.pax-logging-service</td><td>1.4</td>
+</tr>
+<tr>
+<td>org.eclipse.equinox.cm</td><td>3.2.0.v20070116</td>
+</tr>
+<tr>
+<td>org.eclipse.equinox.event</td><td>1.1.100.v20090520-1800</td>
+</tr>
+<tr>
+<td>org.apache.felix.configadmin</td><td>1.2.4</td>
+</tr>
+<tr>
+<td>org.osgi.test.cases.blueprint</td><td>4.2.0.201004301237</td>
+</tr>
+<tr>
+<td>org.apache.aries.blueprint</td><td>0.2.0.incubating</td>
+</tr>
+<tr>
+<td>org.osgi.test.cases.blueprint.java5</td><td>4.2.0.201004301237</td>
+</tr>
+</table>
+<h2>Testcases</h2>
+<p>The following table shows the results of each test. A red icon indicates that the 
+					test failed or had an error. A green icon
+					indicates success. Any errors or failure messages 
+					will be displayed as a list beneath the test name. To see the 
+					exception, click on the info icon on the right.</p>
+<table width="100%">
+<tr>
+<th width="15px"><img src="http://www.osgi.org/www/colorball.png" title="Status. red=bad, orange=almost good, green is perfect"></th><th>Test</th><th>Failures</th><th>Error</th><th>Info</th>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGenericCollectionInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGenericPropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListCollectionReferenceImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListCollectionServiceImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCollectionReferenceImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPatternInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGenericConversionError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGenericRawClassError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListServiceError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testEnumConversionError</td><td>0</td><td>0</td><td></td>
+</tr>
+</table>
+<br>
+</body>
+</html>

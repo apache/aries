@@ -1,0 +1,577 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Test</title>
+<link rel="stylesheet" href="http://www.osgi.org/www/osgi.css" type="text/css">
+<style type="text/css">
+					.code { font-family: Courier,
+					sans-serif; }
+					.error,.ok, .info,
+					.warning {
+					background-position: 4 4;
+					background-repeat:no-repeat;
+					width:10px; }
+					.ok {
+					background-image:url("http://www.osgi.org/www/greenball.png"); }
+					.warning {
+					background-image:url("http://www.osgi.org/www/orangeball.png"); }
+					.error {
+					background-image:url("http://www.osgi.org/www/redball.png"); }
+					.info {
+					background-image:url("http://www.osgi.org/www/info.png"); }
+					.class { padding-top:20px; padding-bottom: 10px; font-size:12;
+					font-weight:bold; }
+
+					h2 { margin-top : 20px; margin-bottom:10px; }
+					table, th, td { border: 1px solid black; padding:5px; }
+					table {
+					border-collapse:collapse; width:100%; margin-top:20px;}
+					th { height:20px; }
+					} 
+				</style>
+<script language="javascript">
+					function toggle(name) {
+					var el =
+					document.getElementById(name);
+					if ( el.style.display != 'none' ) {
+					el.style.display = 'none';
+					}
+					else {
+					el.style.display = '';
+					}
+					}				
+				</script>
+</head>
+<body style="width:800px">
+<h2>Summary</h2>
+<p>The following table provides a sumary of the test information.</p>
+<table>
+<tr>
+<th>Property Key</th><th>Property Value</th>
+</tr>
+<tr>
+<td width="50%">Target</td><td>/Users/zoe/Workspaces/aries/ComplianceTests/ApacheAriesTests/jar/org.osgi.test.cases.jndi-4.2.0.jar</td>
+</tr>
+<tr>
+<td width="50%">Framework</td><td>org.eclipse.osgi.launch.Equinox@11ca803</td>
+</tr>
+<tr>
+<td width="50%">Testrun</td><td>Wed Sep 01 20:30:52 BST 2010</td>
+</tr>
+<tr>
+<th colspan="2">Bundles</th>
+</tr>
+<tr>
+<td>org.eclipse.osgi</td><td>3.5.0.v20090520</td>
+</tr>
+<tr>
+<td>org.apache.aries.util</td><td>0.2.0.incubating</td>
+</tr>
+<tr>
+<td>org.apache.aries.jndi</td><td>0.2.0.incubating</td>
+</tr>
+<tr>
+<td>org.osgi.test.cases.jndi</td><td>4.2.0.201004301238</td>
+</tr>
+</table>
+<h2>Testcases</h2>
+<p>The following table shows the results of each test. A red icon indicates that the 
+					test failed or had an error. A green icon
+					indicates success. Any errors or failure messages 
+					will be displayed as a list beneath the test name. To see the 
+					exception, click on the info icon on the right.</p>
+<table width="100%">
+<tr>
+<th width="15px"><img src="http://www.osgi.org/www/colorball.png" title="Status. red=bad, orange=almost good, green is perfect"></th><th>Test</th><th>Failures</th><th>Error</th><th>Info</th>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceableLookup</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceableLookupWithAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceLookup</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceLookupWithAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceLookupWithNoFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceLookupWithNoFactoryAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceLookupWithBuilder</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceLookupWithBuilderAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceLookupWithBuilderAndNoFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceLookupWithBuilderAndNoFactoryAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testObjectFactoryRemoval</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testObjectFactoryBuilderRemoval</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLookupOfJREProvidedContexts</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLookupWithSpecificInitialContextFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLookupWithSpecificInitialDirContextFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDefaultLookupWithInitialContextFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDefaultLookupWithInitialDirContextFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLookupWithInitialContextFactoryBuilder</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLookupWithInitialDirContextFactoryBuilder</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDefaultLookupWithInitialContextFactoryBuilder</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDefaultLookupWithInitialDirContextFactoryBuilder</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLookupWithJndiPropertiesFile</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLookupWithNoMatchingContext</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDefaultLookupWithNoMatchingContext</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitialContextFactoryBuilderExceptionHandling</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testProviderUnregistration</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testProviderUnregistrationWithBuilder</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testContextRebinding</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testUngetContextManager</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testServiceRanking<ul>
+<li></li>
+</ul>
+<pre id="testServiceRanking" style="display:none">
+<div class="code">
+
+java.lang.IllegalArgumentException: org.osgi.test.cases.jndi.provider.CTInitialContextFactory is not an interface
+	at java.lang.reflect.Proxy.getProxyClass(Proxy.java:362)
+	at java.lang.reflect.Proxy.newProxyInstance(Proxy.java:581)
+	at org.apache.aries.jndi.services.JdkProxyFactory.createProxy(JdkProxyFactory.java:35)
+	at org.apache.aries.jndi.services.ServiceHelper.proxyPriviledged(ServiceHelper.java:339)
+	at org.apache.aries.jndi.services.ServiceHelper.access$700(ServiceHelper.java:62)
+	at org.apache.aries.jndi.services.ServiceHelper$1.run(ServiceHelper.java:264)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at org.apache.aries.jndi.services.ServiceHelper.proxy(ServiceHelper.java:261)
+	at org.apache.aries.jndi.services.ServiceHelper.getService(ServiceHelper.java:235)
+	at org.apache.aries.jndi.url.ServiceRegistryContext.lookup(ServiceRegistryContext.java:99)
+	at org.apache.aries.jndi.url.ServiceRegistryContext.lookup(ServiceRegistryContext.java:141)
+	at org.apache.aries.jndi.DelegateContext.lookup(DelegateContext.java:148)
+	at org.osgi.test.cases.jndi.tests.TestJNDIContextManager.testServiceRanking(TestJNDIContextManager.java:576)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testServiceRanking')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceRankingOnContextCreation</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testServiceRanking<ul>
+<li></li>
+</ul>
+<pre id="testServiceRanking" style="display:none">
+<div class="code">
+
+java.lang.IllegalArgumentException: org.osgi.test.cases.jndi.provider.CTInitialContextFactory is not an interface
+	at java.lang.reflect.Proxy.getProxyClass(Proxy.java:362)
+	at java.lang.reflect.Proxy.newProxyInstance(Proxy.java:581)
+	at org.apache.aries.jndi.services.JdkProxyFactory.createProxy(JdkProxyFactory.java:35)
+	at org.apache.aries.jndi.services.ServiceHelper.proxyPriviledged(ServiceHelper.java:339)
+	at org.apache.aries.jndi.services.ServiceHelper.access$700(ServiceHelper.java:62)
+	at org.apache.aries.jndi.services.ServiceHelper$1.run(ServiceHelper.java:264)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at org.apache.aries.jndi.services.ServiceHelper.proxy(ServiceHelper.java:261)
+	at org.apache.aries.jndi.services.ServiceHelper.getService(ServiceHelper.java:235)
+	at org.apache.aries.jndi.url.ServiceRegistryContext.lookup(ServiceRegistryContext.java:99)
+	at org.apache.aries.jndi.url.ServiceRegistryContext.lookup(ServiceRegistryContext.java:141)
+	at org.apache.aries.jndi.DelegateContext.lookup(DelegateContext.java:148)
+	at javax.naming.InitialContext.lookup(InitialContext.java:392)
+	at org.osgi.test.cases.jndi.tests.TestInitialContextFactory.testServiceRanking(TestInitialContextFactory.java:389)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testServiceRanking')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceRankingOnContextCreation</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSpecificInitialContextFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSpecificInitialDirContextFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testUnspecifiedInitialContextFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testUnspecifiedInitialDirContextFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitialContextFactoryBuilderWithFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitialDirContextFactoryBuilderWithFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitialContextFactoryBuilderWithNoFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitialDirContextFactoryBuilderWithNoFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitialContextFactoryFromPropertiesFile</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitialContextFactoryRemoval</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitialContextFactoryBuilderRemoval</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNoInitialContextFound</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testURLContextFactoryRegistration</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testURLContextFactoryRemoval</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithReferenceable</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithReferencableAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithNoReference</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithNoReferenceAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithFactoryName</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithFactoryNameAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithNoFactoryName</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithNoFactoryNameAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithNoFactoryNameAndURL</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithBuilder</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithBuilderAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithMissingFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithMissingFactoryAndAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetObjectInstanceWithAttributesAndNoDirObjectFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSignature</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceLookup</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceLookupWithRebinding</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceLookupWithoutRebinding</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultipleServiceLookupWithListBindings</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultipleServiceLookupWithList</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultipleServiceLookupWithRebinding</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundleContextLookup</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceNameProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+</table>
+<br>
+<h2>Coverage</h2>
+<p>The following table provides a sumary of the coverage based on static analysis.
+					A red icon indicates the method is never referred. An orange icon indicates there is
+					only one method referring to the method and a green icon indicates there are 2 or more
+					references. The references are shown by clicking on the info icon. This table is based on static analysis so it is not possible to see
+					how often the method is called and with what parameters.</p>
+<table width="100%">
+<tr>
+<th width="15px"></th><th>org.osgi.service.jndi.JNDIContextManager</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Context JNDIContextManager.newInitialContext()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Context JNDIContextManager.newInitialContext()" title="Callers">void TestJNDIContextManager.testDefaultLookupWithInitialContextFactory()<br>void TestJNDIContextManager.testDefaultLookupWithInitialContextFactoryBuilder()<br>void TestJNDIContextManager.testLookupWithJndiPropertiesFile()<br>void TestJNDIContextManager.testDefaultLookupWithNoMatchingContext()<br>void TestJNDIContextManager.testInitialContextFactoryBuilderExceptionHandling()<br>void TestJNDIContextManager.testServiceRanking()<br>void TestJNDIContextManager.testServiceRankingOnContextCreation()<br>
+</div>
+</td><td>7</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Context JNDIContextManager.newInitialContext()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Context JNDIContextManager.newInitialContext(Map)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Context JNDIContextManager.newInitialContext(Map)" title="Callers">void TestJNDIProviderAdmin.testGetObjectInstanceWithNoFactoryNameAndURL()<br>void TestJNDIContextManager.testLookupOfJREProvidedContexts()<br>void TestJNDIContextManager.testLookupWithSpecificInitialContextFactory()<br>void TestJNDIContextManager.testLookupWithInitialContextFactoryBuilder()<br>void TestJNDIContextManager.testLookupWithNoMatchingContext()<br>void TestJNDIContextManager.testProviderUnregistration()<br>void TestJNDIContextManager.testProviderUnregistrationWithBuilder()<br>void TestJNDIContextManager.testContextRebinding()<br>void TestJNDIContextManager.testUngetContextManager()<br>
+</div>
+</td><td>9</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Context JNDIContextManager.newInitialContext(Map)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">DirContext JNDIContextManager.newInitialDirContext()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="DirContext JNDIContextManager.newInitialDirContext()" title="Callers">void TestJNDIContextManager.testDefaultLookupWithInitialDirContextFactory()<br>void TestJNDIContextManager.testDefaultLookupWithInitialDirContextFactoryBuilder()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('DirContext JNDIContextManager.newInitialDirContext()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">DirContext JNDIContextManager.newInitialDirContext(Map)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="DirContext JNDIContextManager.newInitialDirContext(Map)" title="Callers">void TestJNDIContextManager.testLookupWithSpecificInitialDirContextFactory()<br>void TestJNDIContextManager.testLookupWithInitialDirContextFactoryBuilder()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('DirContext JNDIContextManager.newInitialDirContext(Map)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.jndi.JNDIProviderAdmin</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Object JNDIProviderAdmin.getObjectInstance(Object,Name,Context,Map)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Object JNDIProviderAdmin.getObjectInstance(Object,Name,Context,Map)" title="Callers">void TestJNDIProviderAdmin.testGetObjectInstanceWithReferenceable()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithNoReference()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithFactoryName()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithNoFactoryName()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithNoFactoryNameAndURL()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithBuilder()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithMissingFactory()<br>
+</div>
+</td><td>7</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Object JNDIProviderAdmin.getObjectInstance(Object,Name,Context,Map)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Object JNDIProviderAdmin.getObjectInstance(Object,Name,Context,Map,Attributes)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Object JNDIProviderAdmin.getObjectInstance(Object,Name,Context,Map,Attributes)" title="Callers">void TestJNDIProviderAdmin.testGetObjectInstanceWithReferencableAndAttributes()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithNoReferenceAndAttributes()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithFactoryNameAndAttributes()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithNoFactoryNameAndAttributes()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithBuilderAndAttributes()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithMissingFactoryAndAttributes()<br>void TestJNDIProviderAdmin.testGetObjectInstanceWithAttributesAndNoDirObjectFactory()<br>
+</div>
+</td><td>7</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Object JNDIProviderAdmin.getObjectInstance(Object,Name,Context,Map,Attributes)')" title="Show/Hide Callers"></td>
+</tr>
+</table>
+</body>
+</html>

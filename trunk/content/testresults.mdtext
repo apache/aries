@@ -1,25 +1,20 @@
 Title: TestResults
 These are the test results for the most recent Aries release.
 
-<a name="TestResults-Blueprint"></a>
 ### Blueprint
- * [Blueprint ](-http://people.apache.org/~zoe/org.osgi.test.cases.blueprint.html.html)
- * [Blueprint-java5 ](-http://people.apache.org/~zoe/org.osgi.test.cases.blueprint.java5.html.html)
- * [Blueprint-security ](-http://people.apache.org/~zoe/org.osgi.test.cases.blueprint.security.html.html)
+ * [Blueprint ](ct/0.2/org.osgi.test.cases.blueprint.html)
+ * [Blueprint-java5 ](ct/0.2/org.osgi.test.cases.blueprint.java5.html)
+ * [Blueprint-security ](ct/0.2/org.osgi.test.cases.blueprint.security.html)
 
-<a name="TestResults-JNDI"></a>
 ## JNDI
- * [JNDI ](-http://people.apache.org/~zoe/org.osgi.test.cases.jndi.html.html)
+ * [JNDI ](ct/0.2/org.osgi.test.cases.jndi.html)
 
-<a name="TestResults-JMX"></a>
 ## JMX
- * [JMX ](-http://people.apache.org/~zoe/org.osgi.test.cases.jmx.html.html)
+ * [JMX ](ct/0.2/org.osgi.test.cases.jmx.html)
 
-<a name="TestResults-JPA"></a>
 ## JPA
 Not run. The Aries container managed JPA implementation is not expected to
 pass the existing compliance tests for user managed JPA.
 
-<a name="TestResults-Transaction"></a>
 ## Transaction
- * [Transaction ](-http://people.apache.org/~zoe/org.osgi.test.cases.transaction.html.html)
+ * [Transaction ](ct/0.2/org.osgi.test.cases.transaction.html)

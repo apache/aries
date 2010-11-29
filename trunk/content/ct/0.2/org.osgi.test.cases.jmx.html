@@ -1,0 +1,2258 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Test</title>
+<link rel="stylesheet" href="http://www.osgi.org/www/osgi.css" type="text/css">
+<style type="text/css">
+					.code { font-family: Courier,
+					sans-serif; }
+					.error,.ok, .info,
+					.warning {
+					background-position: 4 4;
+					background-repeat:no-repeat;
+					width:10px; }
+					.ok {
+					background-image:url("http://www.osgi.org/www/greenball.png"); }
+					.warning {
+					background-image:url("http://www.osgi.org/www/orangeball.png"); }
+					.error {
+					background-image:url("http://www.osgi.org/www/redball.png"); }
+					.info {
+					background-image:url("http://www.osgi.org/www/info.png"); }
+					.class { padding-top:20px; padding-bottom: 10px; font-size:12;
+					font-weight:bold; }
+
+					h2 { margin-top : 20px; margin-bottom:10px; }
+					table, th, td { border: 1px solid black; padding:5px; }
+					table {
+					border-collapse:collapse; width:100%; margin-top:20px;}
+					th { height:20px; }
+					} 
+				</style>
+<script language="javascript">
+					function toggle(name) {
+					var el =
+					document.getElementById(name);
+					if ( el.style.display != 'none' ) {
+					el.style.display = 'none';
+					}
+					else {
+					el.style.display = '';
+					}
+					}				
+				</script>
+</head>
+<body style="width:800px">
+<h2>Summary</h2>
+<p>The following table provides a sumary of the test information.</p>
+<table>
+<tr>
+<th>Property Key</th><th>Property Value</th>
+</tr>
+<tr>
+<td width="50%">Target</td><td>/Users/zoe/Workspaces/aries/ComplianceTests/ApacheAriesTests/jar/org.osgi.test.cases.jmx-4.2.0.jar</td>
+</tr>
+<tr>
+<td width="50%">Framework</td><td>org.eclipse.osgi.launch.Equinox@fb6354</td>
+</tr>
+<tr>
+<td width="50%">Testrun</td><td>Wed Sep 01 20:28:48 BST 2010</td>
+</tr>
+<tr>
+<th colspan="2">Bundles</th>
+</tr>
+<tr>
+<td>org.eclipse.osgi</td><td>3.5.0.v20090520</td>
+</tr>
+<tr>
+<td>org.apache.felix.configadmin</td><td>1.2.4</td>
+</tr>
+<tr>
+<td>org.apache.aries.jmx</td><td>0.2.0.incubating</td>
+</tr>
+<tr>
+<td>org.knopflerfish.bundle.useradmin</td><td>3.0.1</td>
+</tr>
+<tr>
+<td>org.knopflerfish.log-API</td><td>3.0.1</td>
+</tr>
+<tr>
+<td>org.apache.felix.log</td><td>1.0.0</td>
+</tr>
+<tr>
+<td>osgi.cmpn</td><td>4.2.0.200908310645</td>
+</tr>
+<tr>
+<td>org.eclipse.equinox.ip</td><td>1.1.100.v20100503</td>
+</tr>
+<tr>
+<td>org.eclipse.equinox.util</td><td>1.0.200.v20100503</td>
+</tr>
+<tr>
+<td>org.apache.felix.http.bundle</td><td>2.0.4</td>
+</tr>
+<tr>
+<td>org.osgi.test.cases.jmx</td><td>4.2.0.201004301238</td>
+</tr>
+</table>
+<h2>Testcases</h2>
+<p>The following table shows the results of each test. A red icon indicates that the 
+					test failed or had an error. A green icon
+					indicates success. Any errors or failure messages 
+					will be displayed as a list beneath the test name. To see the 
+					exception, click on the info icon on the right.</p>
+<table width="100%">
+<tr>
+<th width="15px"><img src="http://www.osgi.org/www/colorball.png" title="Status. red=bad, orange=almost good, green is perfect"></th><th>Test</th><th>Failures</th><th>Error</th><th>Info</th>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testConfigurationGetBundleLocation<ul>
+<li></li>
+</ul>
+<pre id="testConfigurationGetBundleLocation" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testConfigurationGetBundleLocation(ConfigurationAdminMBeanTestCase.java:46)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testConfigurationGetBundleLocation')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testConfigurationSetBundleLocation<ul>
+<li></li>
+</ul>
+<pre id="testConfigurationSetBundleLocation" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.update(ConfigurationAdmin.java:209)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.update(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testConfigurationSetBundleLocation(ConfigurationAdminMBeanTestCase.java:61)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testConfigurationSetBundleLocation')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testConfigurationUpdate<ul>
+<li></li>
+</ul>
+<pre id="testConfigurationUpdate" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testConfigurationUpdate(ConfigurationAdminMBeanTestCase.java:74)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testConfigurationUpdate')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testConfigurationUpdateForLocation<ul>
+<li></li>
+</ul>
+<pre id="testConfigurationUpdateForLocation" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testConfigurationUpdateForLocation(ConfigurationAdminMBeanTestCase.java:86)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testConfigurationUpdateForLocation')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testConfigurationGetProperties<ul>
+<li></li>
+</ul>
+<pre id="testConfigurationGetProperties" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testConfigurationGetProperties(ConfigurationAdminMBeanTestCase.java:101)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testConfigurationGetProperties')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testConfigurationGetPropertiesForLocation<ul>
+<li></li>
+</ul>
+<pre id="testConfigurationGetPropertiesForLocation" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testConfigurationGetPropertiesForLocation(ConfigurationAdminMBeanTestCase.java:118)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testConfigurationGetPropertiesForLocation')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testConfigurationDelete<ul>
+<li></li>
+</ul>
+<pre id="testConfigurationDelete" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testConfigurationDelete(ConfigurationAdminMBeanTestCase.java:136)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testConfigurationDelete')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testConfigurationDeleteForLocation<ul>
+<li></li>
+</ul>
+<pre id="testConfigurationDeleteForLocation" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testConfigurationDeleteForLocation(ConfigurationAdminMBeanTestCase.java:149)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testConfigurationDeleteForLocation')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testDeleteConfigurationsFilter<ul>
+<li></li>
+</ul>
+<pre id="testDeleteConfigurationsFilter" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testDeleteConfigurationsFilter(ConfigurationAdminMBeanTestCase.java:163)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testDeleteConfigurationsFilter')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetFactoryPid</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetFactoryPidForLocation</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testGetConfigurationsFilter<ul>
+<li></li>
+</ul>
+<pre id="testGetConfigurationsFilter" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.updateForLocation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testGetConfigurationsFilter(ConfigurationAdminMBeanTestCase.java:205)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testGetConfigurationsFilter')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testCreateFactoryConfigurationForLocation<ul>
+<li></li>
+</ul>
+<pre id="testCreateFactoryConfigurationForLocation" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.update(ConfigurationAdmin.java:209)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.update(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testCreateFactoryConfigurationForLocation(ConfigurationAdminMBeanTestCase.java:243)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testCreateFactoryConfigurationForLocation')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testCreateFactoryConfiguration<ul>
+<li></li>
+</ul>
+<pre id="testCreateFactoryConfiguration" style="display:none">
+<div class="code">
+
+java.io.IOException: Invalid TabularType [javax.management.openmbean.TabularType(name=Properties,rowType=javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(Key))]
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.updateForLocation(ConfigurationAdmin.java:225)
+	at org.apache.aries.jmx.cm.ConfigurationAdmin.update(ConfigurationAdmin.java:209)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy0.update(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ConfigurationAdminMBeanTestCase.testCreateFactoryConfiguration(ConfigurationAdminMBeanTestCase.java:284)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testCreateFactoryConfiguration')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExceptions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExceptions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetDependencies</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetRequiringBundles</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetBundles</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetExportedPackages</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetImportedPackages</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetFragments</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetHeaders</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetRegisteredServices</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetServicesInUse</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetLocation</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetState</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetSymbolicName</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetVersion</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIsFragment</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIsRemovalPending</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIsRequired</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIsPersistentlyStarted</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetHosts</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExceptions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetServiceInterfaces</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetBundle</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetProperties</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetServices</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetUsingBundles</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExceptions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetInformation</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testAddInformation<ul>
+<li></li>
+</ul>
+<pre id="testAddInformation" style="display:none">
+<div class="code">
+
+java.lang.IllegalArgumentException: Invalid CompositeType [javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String))))]
+	at org.apache.aries.jmx.codec.PropertyData.from(PropertyData.java:260)
+	at org.apache.aries.jmx.provisioning.ProvisioningService.extractProvisioningDictionary(ProvisioningService.java:110)
+	at org.apache.aries.jmx.provisioning.ProvisioningService.addInformation(ProvisioningService.java:74)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy3.addInformation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ProvisioningServiceMBeanTestCase.testAddInformation(ProvisioningServiceMBeanTestCase.java:48)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testAddInformation')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testSetInformation<ul>
+<li></li>
+</ul>
+<pre id="testSetInformation" style="display:none">
+<div class="code">
+
+java.lang.IllegalArgumentException: Invalid CompositeType [javax.management.openmbean.CompositeType(name=Property,items=((itemName=Key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Type,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=Value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String))))]
+	at org.apache.aries.jmx.codec.PropertyData.from(PropertyData.java:260)
+	at org.apache.aries.jmx.provisioning.ProvisioningService.extractProvisioningDictionary(ProvisioningService.java:110)
+	at org.apache.aries.jmx.provisioning.ProvisioningService.addInformation(ProvisioningService.java:74)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:93)
+	at com.sun.jmx.mbeanserver.StandardMBeanIntrospector.invokeM2(StandardMBeanIntrospector.java:27)
+	at com.sun.jmx.mbeanserver.MBeanIntrospector.invokeM(MBeanIntrospector.java:208)
+	at com.sun.jmx.mbeanserver.PerInterface.invoke(PerInterface.java:120)
+	at com.sun.jmx.mbeanserver.MBeanSupport.invoke(MBeanSupport.java:262)
+	at javax.management.StandardMBean.invoke(StandardMBean.java:391)
+	at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:836)
+	at com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:761)
+	at javax.management.MBeanServerInvocationHandler.invoke(MBeanServerInvocationHandler.java:288)
+	at $Proxy3.addInformation(Unknown Source)
+	at org.osgi.test.cases.jmx.junit.ProvisioningServiceMBeanTestCase.testSetInformation(ProvisioningServiceMBeanTestCase.java:61)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testSetInformation')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAddInformationFromZip</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testShutdown<ul>
+<li></li>
+</ul>
+<pre id="testShutdown" style="display:none">
+<div class="code">
+
+org.osgi.framework.BundleException: An error occurred trying to read the bundle
+	at org.eclipse.osgi.internal.baseadaptor.BundleInstall.begin(BundleInstall.java:94)
+	at org.eclipse.osgi.framework.internal.core.Framework.installWorkerPrivileged(Framework.java:922)
+	at org.eclipse.osgi.framework.internal.core.Framework$1.run(Framework.java:838)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at org.eclipse.osgi.framework.internal.core.Framework.installWorker(Framework.java:889)
+	at org.eclipse.osgi.framework.internal.core.Framework.installBundle(Framework.java:833)
+	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.installBundle(BundleContextImpl.java:166)
+	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.installBundle(BundleContextImpl.java:160)
+	at org.osgi.test.cases.jmx.junit.FrameworkMBeanLifecycleTestCase.installFramework(FrameworkMBeanLifecycleTestCase.java:424)
+	at org.osgi.test.cases.jmx.junit.FrameworkMBeanLifecycleTestCase.setUp(FrameworkMBeanLifecycleTestCase.java:82)
+	at junit.framework.TestCase.runBare(TestCase.java:128)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+Caused by: java.io.FileNotFoundException: jar/osgi.enterprise-4.2.0.jar (No such file or directory)
+	at java.io.FileInputStream.open(Native Method)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:106)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:66)
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:70)
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:161)
+	at org.eclipse.osgi.internal.baseadaptor.BundleInstall.begin(BundleInstall.java:56)
+	... 21 more
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testShutdown')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testRestart<ul>
+<li></li>
+</ul>
+<pre id="testRestart" style="display:none">
+<div class="code">
+
+org.osgi.framework.BundleException: An error occurred trying to read the bundle
+	at org.eclipse.osgi.internal.baseadaptor.BundleInstall.begin(BundleInstall.java:94)
+	at org.eclipse.osgi.framework.internal.core.Framework.installWorkerPrivileged(Framework.java:922)
+	at org.eclipse.osgi.framework.internal.core.Framework$1.run(Framework.java:838)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at org.eclipse.osgi.framework.internal.core.Framework.installWorker(Framework.java:889)
+	at org.eclipse.osgi.framework.internal.core.Framework.installBundle(Framework.java:833)
+	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.installBundle(BundleContextImpl.java:166)
+	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.installBundle(BundleContextImpl.java:160)
+	at org.osgi.test.cases.jmx.junit.FrameworkMBeanLifecycleTestCase.installFramework(FrameworkMBeanLifecycleTestCase.java:424)
+	at org.osgi.test.cases.jmx.junit.FrameworkMBeanLifecycleTestCase.setUp(FrameworkMBeanLifecycleTestCase.java:82)
+	at junit.framework.TestCase.runBare(TestCase.java:128)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+Caused by: java.io.FileNotFoundException: jar/osgi.enterprise-4.2.0.jar (No such file or directory)
+	at java.io.FileInputStream.open(Native Method)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:106)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:66)
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:70)
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:161)
+	at org.eclipse.osgi.internal.baseadaptor.BundleInstall.begin(BundleInstall.java:56)
+	... 21 more
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testRestart')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testUpdate<ul>
+<li></li>
+</ul>
+<pre id="testUpdate" style="display:none">
+<div class="code">
+
+org.osgi.framework.BundleException: An error occurred trying to read the bundle
+	at org.eclipse.osgi.internal.baseadaptor.BundleInstall.begin(BundleInstall.java:94)
+	at org.eclipse.osgi.framework.internal.core.Framework.installWorkerPrivileged(Framework.java:922)
+	at org.eclipse.osgi.framework.internal.core.Framework$1.run(Framework.java:838)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at org.eclipse.osgi.framework.internal.core.Framework.installWorker(Framework.java:889)
+	at org.eclipse.osgi.framework.internal.core.Framework.installBundle(Framework.java:833)
+	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.installBundle(BundleContextImpl.java:166)
+	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.installBundle(BundleContextImpl.java:160)
+	at org.osgi.test.cases.jmx.junit.FrameworkMBeanLifecycleTestCase.installFramework(FrameworkMBeanLifecycleTestCase.java:424)
+	at org.osgi.test.cases.jmx.junit.FrameworkMBeanLifecycleTestCase.setUp(FrameworkMBeanLifecycleTestCase.java:82)
+	at junit.framework.TestCase.runBare(TestCase.java:128)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+Caused by: java.io.FileNotFoundException: jar/osgi.enterprise-4.2.0.jar (No such file or directory)
+	at java.io.FileInputStream.open(Native Method)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:106)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:66)
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:70)
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:161)
+	at org.eclipse.osgi.internal.baseadaptor.BundleInstall.begin(BundleInstall.java:56)
+	... 21 more
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testUpdate')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testAll<ul>
+<li></li>
+</ul>
+<pre id="testAll" style="display:none">
+<div class="code">
+
+org.osgi.framework.BundleException: An error occurred trying to read the bundle
+	at org.eclipse.osgi.internal.baseadaptor.BundleInstall.begin(BundleInstall.java:94)
+	at org.eclipse.osgi.framework.internal.core.Framework.installWorkerPrivileged(Framework.java:922)
+	at org.eclipse.osgi.framework.internal.core.Framework$1.run(Framework.java:838)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at org.eclipse.osgi.framework.internal.core.Framework.installWorker(Framework.java:889)
+	at org.eclipse.osgi.framework.internal.core.Framework.installBundle(Framework.java:833)
+	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.installBundle(BundleContextImpl.java:166)
+	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.installBundle(BundleContextImpl.java:160)
+	at org.osgi.test.cases.jmx.junit.FrameworkMBeanLifecycleTestCase.installFramework(FrameworkMBeanLifecycleTestCase.java:424)
+	at org.osgi.test.cases.jmx.junit.FrameworkMBeanLifecycleTestCase.setUp(FrameworkMBeanLifecycleTestCase.java:82)
+	at junit.framework.TestCase.runBare(TestCase.java:128)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+Caused by: java.io.FileNotFoundException: jar/osgi.enterprise-4.2.0.jar (No such file or directory)
+	at java.io.FileInputStream.open(Native Method)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:106)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:66)
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:70)
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:161)
+	at org.eclipse.osgi.internal.baseadaptor.BundleInstall.begin(BundleInstall.java:56)
+	... 21 more
+
+ </div>
+</pre>
+</td><td>0</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testAll')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExceptions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListLocations</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListDefaultPermissions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetPermissions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSetPermissions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSetDefaultPermissions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSignature</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExceptions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetProperties</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCreateUser</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCreateGroup</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAddRequiredMember</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAddAndRemoveGroupMember</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetGroup</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetAuthorization</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListGroups</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetImpliedRoles</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetMembers</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetRequiredMembers</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetUser</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListUsers</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRemoveRole</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAddPropertyString</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAddProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAddAndRemoveCredentialString</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAddAndRemoveCredential</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetCredentials</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetRole</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetRoleFilter</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetUserFilter</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetGroupFilter</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetUserWithProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListRoles</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRemoveGroup</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRemoveUser</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRemoveProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExceptions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testFrameworkMBeanExists</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testFrameworkStartLevel</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundleStartLevel</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundleInstallFromURL</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundleUpdateFromURL</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundleResolve</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundleStartStop</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundleRefresh</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testItem</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testItemArrayType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testItemCompositeType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testItemExtend</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testItemTabularType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testItemComplex</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundleInstallAndUpdate</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBundlesInstallAndUpdate</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExceptions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIsRemovalPending</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetExportingBundle</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetImportingBundles</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testGetPackages</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMBeanServerExistence</td><td>0</td><td>0</td><td></td>
+</tr>
+</table>
+<br>
+<h2>Coverage</h2>
+<p>The following table provides a sumary of the coverage based on static analysis.
+					A red icon indicates the method is never referred. An orange icon indicates there is
+					only one method referring to the method and a green icon indicates there are 2 or more
+					references. The references are shown by clicking on the info icon. This table is based on static analysis so it is not possible to see
+					how often the method is called and with what parameters.</p>
+<table width="100%">
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.Item</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Item(String,String,OpenType,String[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Item(String,String,OpenType,String[])" title="Callers">void FrameworkMBeanTestCase.testItem()<br>void FrameworkMBeanTestCase.testItemCompositeType()<br>void FrameworkMBeanTestCase.testItemCompositeType()<br>void FrameworkMBeanTestCase.testItemExtend()<br>void FrameworkMBeanTestCase.testItemExtend()<br>void FrameworkMBeanTestCase.testItemExtend()<br>void FrameworkMBeanTestCase.testItemTabularType()<br>void FrameworkMBeanTestCase.testItemTabularType()<br>void FrameworkMBeanTestCase.testItemComplex()<br>void FrameworkMBeanTestCase.testItemComplex()<br>
+</div>
+</td><td>10</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Item(String,String,OpenType,String[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">ArrayType Item.arrayType(int,OpenType)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="ArrayType Item.arrayType(int,OpenType)" title="Callers">void FrameworkMBeanTestCase.testItemArrayType()<br>void FrameworkMBeanTestCase.testItemComplex()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('ArrayType Item.arrayType(int,OpenType)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeType Item.compositeType(String,String,Item[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeType Item.compositeType(String,String,Item[])" title="Callers">void FrameworkMBeanTestCase.testItem()<br>void FrameworkMBeanTestCase.testItemCompositeType()<br>void FrameworkMBeanTestCase.testItemExtend()<br>void FrameworkMBeanTestCase.testItemTabularType()<br>void FrameworkMBeanTestCase.testItemComplex()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeType Item.compositeType(String,String,Item[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeType Item.extend(CompositeType,String,String,Item[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeType Item.extend(CompositeType,String,String,Item[])" title="Callers">void FrameworkMBeanTestCase.testItemExtend()<br>void FrameworkMBeanTestCase.testItemComplex()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeType Item.extend(CompositeType,String,String,Item[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularType Item.tabularType(String,String,CompositeType,String[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularType Item.tabularType(String,String,CompositeType,String[])" title="Callers">void FrameworkMBeanTestCase.testItemTabularType()<br>void FrameworkMBeanTestCase.testItemComplex()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularType Item.tabularType(String,String,CompositeType,String[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.framework.BundleStateMBean</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] BundleStateMBean.getExportedPackages(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] BundleStateMBean.getExportedPackages(long)" title="Callers">void BundleStateMBeanTestCase.testGetExportedPackages()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] BundleStateMBean.getExportedPackages(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] BundleStateMBean.getFragments(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] BundleStateMBean.getFragments(long)" title="Callers">void BundleStateMBeanTestCase.testGetFragments()<br>void BundleStateMBeanTestCase.testGetFragments()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] BundleStateMBean.getFragments(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData BundleStateMBean.getHeaders(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData BundleStateMBean.getHeaders(long)" title="Callers">void BundleStateMBeanTestCase.testGetHeaders()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData BundleStateMBean.getHeaders(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] BundleStateMBean.getHosts(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] BundleStateMBean.getHosts(long)" title="Callers">void BundleStateMBeanTestCase.testGetHosts()<br>void BundleStateMBeanTestCase.testGetHosts()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] BundleStateMBean.getHosts(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] BundleStateMBean.getImportedPackages(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] BundleStateMBean.getImportedPackages(long)" title="Callers">void BundleStateMBeanTestCase.testGetImportedPackages()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] BundleStateMBean.getImportedPackages(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long BundleStateMBean.getLastModified(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long BundleStateMBean.getLastModified(long)" title="Callers">void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundleInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundlesInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundlesInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundlesInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundlesInstallAndUpdate()<br>
+</div>
+</td><td>14</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long BundleStateMBean.getLastModified(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BundleStateMBean.getLocation(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BundleStateMBean.getLocation(long)" title="Callers">void BundleStateMBeanTestCase.testGetLocation()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BundleStateMBean.getLocation(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] BundleStateMBean.getRegisteredServices(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] BundleStateMBean.getRegisteredServices(long)" title="Callers">void BundleStateMBeanTestCase.testGetRegisteredServices()<br>void BundleStateMBeanTestCase.testGetRegisteredServices()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] BundleStateMBean.getRegisteredServices(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] BundleStateMBean.getRequiredBundles(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] BundleStateMBean.getRequiredBundles(long)" title="Callers">void BundleStateMBeanTestCase.testGetDependencies()<br>void BundleStateMBeanTestCase.testGetDependencies()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] BundleStateMBean.getRequiredBundles(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] BundleStateMBean.getRequiringBundles(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] BundleStateMBean.getRequiringBundles(long)" title="Callers">void BundleStateMBeanTestCase.testGetRequiringBundles()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] BundleStateMBean.getRequiringBundles(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] BundleStateMBean.getServicesInUse(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] BundleStateMBean.getServicesInUse(long)" title="Callers">void BundleStateMBeanTestCase.testGetServicesInUse()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] BundleStateMBean.getServicesInUse(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int BundleStateMBean.getStartLevel(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int BundleStateMBean.getStartLevel(long)" title="Callers">void BundleStateMBeanTestCase.testGetBundles()<br>void BundleStateMBeanTestCase.testGetBundles()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>
+</div>
+</td><td>8</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int BundleStateMBean.getStartLevel(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BundleStateMBean.getState(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BundleStateMBean.getState(long)" title="Callers">void BundleStateMBeanTestCase.testGetBundles()<br>void BundleStateMBeanTestCase.testGetBundles()<br>void BundleStateMBeanTestCase.testGetState()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>boolean FrameworkMBeanTestCase.waitBundleStateChange(long,String)<br>
+</div>
+</td><td>6</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BundleStateMBean.getState(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BundleStateMBean.getSymbolicName(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BundleStateMBean.getSymbolicName(long)" title="Callers">void BundleStateMBeanTestCase.testGetSymbolicName()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BundleStateMBean.getSymbolicName(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BundleStateMBean.getVersion(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BundleStateMBean.getVersion(long)" title="Callers">void BundleStateMBeanTestCase.testGetVersion()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BundleStateMBean.getVersion(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean BundleStateMBean.isFragment(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean BundleStateMBean.isFragment(long)" title="Callers">void BundleStateMBeanTestCase.testIsFragment()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean BundleStateMBean.isFragment(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean BundleStateMBean.isPersistentlyStarted(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean BundleStateMBean.isPersistentlyStarted(long)" title="Callers">void BundleStateMBeanTestCase.testIsPersistentlyStarted()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean BundleStateMBean.isPersistentlyStarted(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean BundleStateMBean.isRemovalPending(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean BundleStateMBean.isRemovalPending(long)" title="Callers">void BundleStateMBeanTestCase.testIsRemovalPending()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean BundleStateMBean.isRemovalPending(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean BundleStateMBean.isRequired(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean BundleStateMBean.isRequired(long)" title="Callers">void BundleStateMBeanTestCase.testIsRequired()<br>void BundleStateMBeanTestCase.testExceptions()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean BundleStateMBean.isRequired(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData BundleStateMBean.listBundles()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData BundleStateMBean.listBundles()" title="Callers">void BundleStateMBeanTestCase.testGetBundles()<br>void BundleStateMBeanTestCase.testGetHosts()<br>void BundleStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData BundleStateMBean.listBundles()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.framework.FrameworkMBean</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int FrameworkMBean.getFrameworkStartLevel()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int FrameworkMBean.getFrameworkStartLevel()" title="Callers">void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int FrameworkMBean.getFrameworkStartLevel()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int FrameworkMBean.getInitialBundleStartLevel()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int FrameworkMBean.getInitialBundleStartLevel()" title="Callers">void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int FrameworkMBean.getInitialBundleStartLevel()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long FrameworkMBean.installBundle(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long FrameworkMBean.installBundle(String)" title="Callers">void FrameworkMBeanTestCase.testBundleInstallAndUpdate()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long FrameworkMBean.installBundle(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long FrameworkMBean.installBundleFromURL(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long FrameworkMBean.installBundleFromURL(String,String)" title="Callers">void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>22</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long FrameworkMBean.installBundleFromURL(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData FrameworkMBean.installBundles(String[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData FrameworkMBean.installBundles(String[])" title="Callers">void FrameworkMBeanTestCase.testBundlesInstallAndUpdate()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>7</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData FrameworkMBean.installBundles(String[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData FrameworkMBean.installBundlesFromURL(String[],String[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData FrameworkMBean.installBundlesFromURL(String[],String[])" title="Callers">void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>7</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData FrameworkMBean.installBundlesFromURL(String[],String[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.refreshBundle(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.refreshBundle(long)" title="Callers">void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.refreshBundle(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.refreshBundles(long[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.refreshBundles(long[])" title="Callers">void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.refreshBundles(long[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean FrameworkMBean.resolveBundle(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean FrameworkMBean.resolveBundle(long)" title="Callers">void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean FrameworkMBean.resolveBundle(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean FrameworkMBean.resolveBundles(long[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean FrameworkMBean.resolveBundles(long[])" title="Callers">void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean FrameworkMBean.resolveBundles(long[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.restartFramework()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.restartFramework()" title="Callers">void FrameworkMBeanLifecycleTestCase.testRestart()<br>void FrameworkMBeanLifecycleTestCase.testAll()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.restartFramework()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.setBundleStartLevel(long,int)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.setBundleStartLevel(long,int)" title="Callers">void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>6</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.setBundleStartLevel(long,int)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData FrameworkMBean.setBundleStartLevels(long[],int[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData FrameworkMBean.setBundleStartLevels(long[],int[])" title="Callers">void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>7</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData FrameworkMBean.setBundleStartLevels(long[],int[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.setFrameworkStartLevel(int)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.setFrameworkStartLevel(int)" title="Callers">void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.setFrameworkStartLevel(int)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.setInitialBundleStartLevel(int)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.setInitialBundleStartLevel(int)" title="Callers">void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.setInitialBundleStartLevel(int)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.shutdownFramework()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.shutdownFramework()" title="Callers">void FrameworkMBeanLifecycleTestCase.testShutdown()<br>void FrameworkMBeanLifecycleTestCase.testAll()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.shutdownFramework()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.startBundle(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.startBundle(long)" title="Callers">void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>10</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.startBundle(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData FrameworkMBean.startBundles(long[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData FrameworkMBean.startBundles(long[])" title="Callers">void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData FrameworkMBean.startBundles(long[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.stopBundle(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.stopBundle(long)" title="Callers">void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.stopBundle(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData FrameworkMBean.stopBundles(long[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData FrameworkMBean.stopBundles(long[])" title="Callers">void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData FrameworkMBean.stopBundles(long[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.uninstallBundle(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.uninstallBundle(long)" title="Callers">void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testFrameworkStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleStartLevel()<br>void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleResolve()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleStartStop()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleRefresh()<br>void FrameworkMBeanTestCase.testBundleInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundleInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundleInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundleInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundlesInstallAndUpdate()<br>void FrameworkMBeanTestCase.testBundlesInstallAndUpdate()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>52</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.uninstallBundle(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData FrameworkMBean.uninstallBundles(long[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData FrameworkMBean.uninstallBundles(long[])" title="Callers">void FrameworkMBeanTestCase.testBundleInstallFromURL()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData FrameworkMBean.uninstallBundles(long[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.updateBundle(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.updateBundle(long)" title="Callers">void FrameworkMBeanTestCase.testBundleInstallAndUpdate()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.updateBundle(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.updateBundleFromURL(long,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.updateBundleFromURL(long,String)" title="Callers">void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.updateBundleFromURL(long,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData FrameworkMBean.updateBundles(long[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData FrameworkMBean.updateBundles(long[])" title="Callers">void FrameworkMBeanTestCase.testBundlesInstallAndUpdate()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData FrameworkMBean.updateBundles(long[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData FrameworkMBean.updateBundlesFromURL(long[],String[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData FrameworkMBean.updateBundlesFromURL(long[],String[])" title="Callers">void FrameworkMBeanTestCase.testBundleUpdateFromURL()<br>void FrameworkMBeanTestCase.testExceptions()<br>void FrameworkMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData FrameworkMBean.updateBundlesFromURL(long[],String[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void FrameworkMBean.updateFramework()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void FrameworkMBean.updateFramework()" title="Callers">void FrameworkMBeanLifecycleTestCase.testUpdate()<br>void FrameworkMBeanLifecycleTestCase.testAll()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void FrameworkMBean.updateFramework()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.framework.PackageStateMBean</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] PackageStateMBean.getExportingBundles(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] PackageStateMBean.getExportingBundles(String,String)" title="Callers">void PackageStateMBeanTestCase.testGetExportingBundle()<br>void PackageStateMBeanTestCase.testExceptions()<br>void PackageStateMBeanTestCase.testExceptions()<br>void PackageStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] PackageStateMBean.getExportingBundles(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] PackageStateMBean.getImportingBundles(String,String,long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] PackageStateMBean.getImportingBundles(String,String,long)" title="Callers">void PackageStateMBeanTestCase.testGetImportingBundles()<br>void PackageStateMBeanTestCase.testExceptions()<br>void PackageStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] PackageStateMBean.getImportingBundles(String,String,long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean PackageStateMBean.isRemovalPending(String,String,long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean PackageStateMBean.isRemovalPending(String,String,long)" title="Callers">void PackageStateMBeanTestCase.testIsRemovalPending()<br>void PackageStateMBeanTestCase.testExceptions()<br>void PackageStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean PackageStateMBean.isRemovalPending(String,String,long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData PackageStateMBean.listPackages()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData PackageStateMBean.listPackages()" title="Callers">void PackageStateMBeanTestCase.testGetPackages()<br>void PackageStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData PackageStateMBean.listPackages()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.framework.ServiceStateMBean</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long ServiceStateMBean.getBundleIdentifier(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long ServiceStateMBean.getBundleIdentifier(long)" title="Callers">void ServiceStateMBeanTestCase.testGetBundle()<br>void ServiceStateMBeanTestCase.testExceptions()<br>void ServiceStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long ServiceStateMBean.getBundleIdentifier(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] ServiceStateMBean.getObjectClass(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] ServiceStateMBean.getObjectClass(long)" title="Callers">void ServiceStateMBeanTestCase.testGetServiceInterfaces()<br>void ServiceStateMBeanTestCase.testExceptions()<br>void ServiceStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] ServiceStateMBean.getObjectClass(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData ServiceStateMBean.getProperties(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData ServiceStateMBean.getProperties(long)" title="Callers">void ServiceStateMBeanTestCase.testGetProperties()<br>void ServiceStateMBeanTestCase.testExceptions()<br>void ServiceStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData ServiceStateMBean.getProperties(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long[] ServiceStateMBean.getUsingBundles(long)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long[] ServiceStateMBean.getUsingBundles(long)" title="Callers">void ServiceStateMBeanTestCase.testGetUsingBundles()<br>void ServiceStateMBeanTestCase.testExceptions()<br>void ServiceStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long[] ServiceStateMBean.getUsingBundles(long)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData ServiceStateMBean.listServices()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData ServiceStateMBean.listServices()" title="Callers">void ServiceStateMBeanTestCase.testGetServices()<br>void ServiceStateMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData ServiceStateMBean.listServices()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.service.cm.ConfigurationAdminMBean</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ConfigurationAdminMBean.createFactoryConfiguration(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ConfigurationAdminMBean.createFactoryConfiguration(String)" title="Callers">void ConfigurationAdminMBeanTestCase.testCreateFactoryConfiguration()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ConfigurationAdminMBean.createFactoryConfiguration(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ConfigurationAdminMBean.createFactoryConfigurationForLocation(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ConfigurationAdminMBean.createFactoryConfigurationForLocation(String,String)" title="Callers">void ConfigurationAdminMBeanTestCase.testCreateFactoryConfigurationForLocation()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ConfigurationAdminMBean.createFactoryConfigurationForLocation(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ConfigurationAdminMBean.delete(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ConfigurationAdminMBean.delete(String)" title="Callers">void ConfigurationAdminMBeanTestCase.testConfigurationDelete()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ConfigurationAdminMBean.delete(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ConfigurationAdminMBean.deleteConfigurations(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ConfigurationAdminMBean.deleteConfigurations(String)" title="Callers">void ConfigurationAdminMBeanTestCase.testDeleteConfigurationsFilter()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ConfigurationAdminMBean.deleteConfigurations(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ConfigurationAdminMBean.deleteForLocation(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ConfigurationAdminMBean.deleteForLocation(String,String)" title="Callers">void ConfigurationAdminMBeanTestCase.testConfigurationDeleteForLocation()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ConfigurationAdminMBean.deleteForLocation(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ConfigurationAdminMBean.getBundleLocation(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ConfigurationAdminMBean.getBundleLocation(String)" title="Callers">void ConfigurationAdminMBeanTestCase.testConfigurationGetBundleLocation()<br>void ConfigurationAdminMBeanTestCase.testConfigurationSetBundleLocation()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ConfigurationAdminMBean.getBundleLocation(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] ConfigurationAdminMBean.getConfigurations(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] ConfigurationAdminMBean.getConfigurations(String)" title="Callers">void ConfigurationAdminMBeanTestCase.testGetConfigurationsFilter()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] ConfigurationAdminMBean.getConfigurations(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ConfigurationAdminMBean.getFactoryPid(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ConfigurationAdminMBean.getFactoryPid(String)" title="Callers">void ConfigurationAdminMBeanTestCase.testGetFactoryPid()<br>void ConfigurationAdminMBeanTestCase.testCreateFactoryConfiguration()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ConfigurationAdminMBean.getFactoryPid(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ConfigurationAdminMBean.getFactoryPidForLocation(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ConfigurationAdminMBean.getFactoryPidForLocation(String,String)" title="Callers">void ConfigurationAdminMBeanTestCase.testGetFactoryPidForLocation()<br>void ConfigurationAdminMBeanTestCase.testCreateFactoryConfigurationForLocation()<br>void ConfigurationAdminMBeanTestCase.testCreateFactoryConfigurationForLocation()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>6</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ConfigurationAdminMBean.getFactoryPidForLocation(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData ConfigurationAdminMBean.getProperties(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData ConfigurationAdminMBean.getProperties(String)" title="Callers">void ConfigurationAdminMBeanTestCase.testConfigurationUpdate()<br>void ConfigurationAdminMBeanTestCase.testConfigurationGetProperties()<br>void ConfigurationAdminMBeanTestCase.testConfigurationDelete()<br>void ConfigurationAdminMBeanTestCase.testConfigurationDelete()<br>void ConfigurationAdminMBeanTestCase.testConfigurationDeleteForLocation()<br>void ConfigurationAdminMBeanTestCase.testConfigurationDeleteForLocation()<br>void ConfigurationAdminMBeanTestCase.testDeleteConfigurationsFilter()<br>void ConfigurationAdminMBeanTestCase.testDeleteConfigurationsFilter()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>11</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData ConfigurationAdminMBean.getProperties(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData ConfigurationAdminMBean.getPropertiesForLocation(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData ConfigurationAdminMBean.getPropertiesForLocation(String,String)" title="Callers">void ConfigurationAdminMBeanTestCase.testConfigurationUpdateForLocation()<br>void ConfigurationAdminMBeanTestCase.testConfigurationGetPropertiesForLocation()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData ConfigurationAdminMBean.getPropertiesForLocation(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ConfigurationAdminMBean.setBundleLocation(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ConfigurationAdminMBean.setBundleLocation(String,String)" title="Callers">void ConfigurationAdminMBeanTestCase.testConfigurationSetBundleLocation()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ConfigurationAdminMBean.setBundleLocation(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ConfigurationAdminMBean.update(String,TabularData)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ConfigurationAdminMBean.update(String,TabularData)" title="Callers">void ConfigurationAdminMBeanTestCase.testConfigurationSetBundleLocation()<br>void ConfigurationAdminMBeanTestCase.testCreateFactoryConfigurationForLocation()<br>void ConfigurationAdminMBeanTestCase.testCreateFactoryConfiguration()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>6</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ConfigurationAdminMBean.update(String,TabularData)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ConfigurationAdminMBean.updateForLocation(String,String,TabularData)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ConfigurationAdminMBean.updateForLocation(String,String,TabularData)" title="Callers">void ConfigurationAdminMBeanTestCase.testConfigurationGetBundleLocation()<br>void ConfigurationAdminMBeanTestCase.testConfigurationUpdate()<br>void ConfigurationAdminMBeanTestCase.testConfigurationUpdateForLocation()<br>void ConfigurationAdminMBeanTestCase.testConfigurationGetProperties()<br>void ConfigurationAdminMBeanTestCase.testConfigurationGetPropertiesForLocation()<br>void ConfigurationAdminMBeanTestCase.testConfigurationDelete()<br>void ConfigurationAdminMBeanTestCase.testConfigurationDeleteForLocation()<br>void ConfigurationAdminMBeanTestCase.testDeleteConfigurationsFilter()<br>void ConfigurationAdminMBeanTestCase.testGetConfigurationsFilter()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>void ConfigurationAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>12</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ConfigurationAdminMBean.updateForLocation(String,String,TabularData)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.service.permissionadmin.PermissionAdminMBean</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] PermissionAdminMBean.getPermissions(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] PermissionAdminMBean.getPermissions(String)" title="Callers">void PermissionAdminMBeanTestCase.testGetPermissions()<br>void PermissionAdminMBeanTestCase.testSetPermissions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] PermissionAdminMBean.getPermissions(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] PermissionAdminMBean.listDefaultPermissions()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] PermissionAdminMBean.listDefaultPermissions()" title="Callers">void PermissionAdminMBeanTestCase.testListDefaultPermissions()<br>void PermissionAdminMBeanTestCase.testSetDefaultPermissions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] PermissionAdminMBean.listDefaultPermissions()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] PermissionAdminMBean.listLocations()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] PermissionAdminMBean.listLocations()" title="Callers">void PermissionAdminMBeanTestCase.testListLocations()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] PermissionAdminMBean.listLocations()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void PermissionAdminMBean.setDefaultPermissions(String[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void PermissionAdminMBean.setDefaultPermissions(String[])" title="Callers">void PermissionAdminMBeanTestCase.testSetDefaultPermissions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>6</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void PermissionAdminMBean.setDefaultPermissions(String[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void PermissionAdminMBean.setPermissions(String,String[])<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void PermissionAdminMBean.setPermissions(String,String[])" title="Callers">void PermissionAdminMBeanTestCase.testSetPermissions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>void PermissionAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>8</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void PermissionAdminMBean.setPermissions(String,String[])')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.service.provisioning.ProvisioningServiceMBean</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ProvisioningServiceMBean.addInformation(TabularData)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ProvisioningServiceMBean.addInformation(TabularData)" title="Callers">void ProvisioningServiceMBeanTestCase.testAddInformation()<br>void ProvisioningServiceMBeanTestCase.testSetInformation()<br>void ProvisioningServiceMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ProvisioningServiceMBean.addInformation(TabularData)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ProvisioningServiceMBean.addInformationFromZip(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ProvisioningServiceMBean.addInformationFromZip(String)" title="Callers">void ProvisioningServiceMBeanTestCase.testAddInformationFromZip()<br>void ProvisioningServiceMBeanTestCase.testExceptions()<br>void ProvisioningServiceMBeanTestCase.testExceptions()<br>void ProvisioningServiceMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ProvisioningServiceMBean.addInformationFromZip(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData ProvisioningServiceMBean.listInformation()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData ProvisioningServiceMBean.listInformation()" title="Callers">void ProvisioningServiceMBeanTestCase.testGetInformation()<br>void ProvisioningServiceMBeanTestCase.testGetInformation()<br>void ProvisioningServiceMBeanTestCase.testAddInformation()<br>void ProvisioningServiceMBeanTestCase.testSetInformation()<br>void ProvisioningServiceMBeanTestCase.testSetInformation()<br>void ProvisioningServiceMBeanTestCase.testAddInformationFromZip()<br>void ProvisioningServiceMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>7</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData ProvisioningServiceMBean.listInformation()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void ProvisioningServiceMBean.setInformation(TabularData)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void ProvisioningServiceMBean.setInformation(TabularData)" title="Callers">void ProvisioningServiceMBeanTestCase.testSetInformation()<br>void ProvisioningServiceMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void ProvisioningServiceMBean.setInformation(TabularData)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.jmx.service.useradmin.UserAdminMBean</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void UserAdminMBean.addCredential(String,byte[],String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void UserAdminMBean.addCredential(String,byte[],String)" title="Callers">void UserAdminMBeanTestCase.testAddAndRemoveCredential()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void UserAdminMBean.addCredential(String,byte[],String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void UserAdminMBean.addCredentialString(String,String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void UserAdminMBean.addCredentialString(String,String,String)" title="Callers">void UserAdminMBeanTestCase.testAddAndRemoveCredentialString()<br>void UserAdminMBeanTestCase.testGetCredentials()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void UserAdminMBean.addCredentialString(String,String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean UserAdminMBean.addMember(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean UserAdminMBean.addMember(String,String)" title="Callers">void UserAdminMBeanTestCase.testAddAndRemoveGroupMember()<br>void UserAdminMBeanTestCase.testGetMembers()<br>void UserAdminMBeanTestCase.testGetMembers()<br>void UserAdminMBeanTestCase.testGetMembers()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>7</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean UserAdminMBean.addMember(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void UserAdminMBean.addProperty(String,byte[],String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void UserAdminMBean.addProperty(String,byte[],String)" title="Callers">void UserAdminMBeanTestCase.testAddProperty()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void UserAdminMBean.addProperty(String,byte[],String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void UserAdminMBean.addPropertyString(String,String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void UserAdminMBean.addPropertyString(String,String,String)" title="Callers">void UserAdminMBeanTestCase.testAddPropertyString()<br>void UserAdminMBeanTestCase.testGetProperties()<br>void UserAdminMBeanTestCase.testGetRoleFilter()<br>void UserAdminMBeanTestCase.testGetUserFilter()<br>void UserAdminMBeanTestCase.testGetGroupFilter()<br>void UserAdminMBeanTestCase.testGetUserWithProperty()<br>void UserAdminMBeanTestCase.testRemoveProperty()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>10</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void UserAdminMBean.addPropertyString(String,String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean UserAdminMBean.addRequiredMember(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean UserAdminMBean.addRequiredMember(String,String)" title="Callers">void UserAdminMBeanTestCase.testAddRequiredMember()<br>void UserAdminMBeanTestCase.testGetRequiredMembers()<br>void UserAdminMBeanTestCase.testGetRequiredMembers()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>6</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean UserAdminMBean.addRequiredMember(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void UserAdminMBean.createGroup(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void UserAdminMBean.createGroup(String)" title="Callers">void UserAdminMBeanTestCase.testCreateGroup()<br>void UserAdminMBeanTestCase.testAddRequiredMember()<br>void UserAdminMBeanTestCase.testGetGroup()<br>void UserAdminMBeanTestCase.testListGroups()<br>void UserAdminMBeanTestCase.testListGroups()<br>void UserAdminMBeanTestCase.testGetMembers()<br>void UserAdminMBeanTestCase.testGetRequiredMembers()<br>void UserAdminMBeanTestCase.testGetGroupFilter()<br>void UserAdminMBeanTestCase.testListRoles()<br>void UserAdminMBeanTestCase.testListRoles()<br>void UserAdminMBeanTestCase.testRemoveGroup()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>14</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void UserAdminMBean.createGroup(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">void UserAdminMBean.createRole(String)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void UserAdminMBean.createUser(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void UserAdminMBean.createUser(String)" title="Callers">void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testAddRequiredMember()<br>void UserAdminMBeanTestCase.testGetAuthorization()<br>void UserAdminMBeanTestCase.testGetImpliedRoles()<br>void UserAdminMBeanTestCase.testGetMembers()<br>void UserAdminMBeanTestCase.testGetMembers()<br>void UserAdminMBeanTestCase.testGetMembers()<br>void UserAdminMBeanTestCase.testGetRequiredMembers()<br>void UserAdminMBeanTestCase.testGetRequiredMembers()<br>void UserAdminMBeanTestCase.testGetUser()<br>void UserAdminMBeanTestCase.testListUsers()<br>void UserAdminMBeanTestCase.testListUsers()<br>void UserAdminMBeanTestCase.testListUsers()<br>void UserAdminMBeanTestCase.testRemoveRole()<br>void UserAdminMBeanTestCase.testRemoveRole()<br>void UserAdminMBeanTestCase.testRemoveRole()<br>void UserAdminMBeanTestCase.testAddPropertyString()<br>void UserAdminMBeanTestCase.testAddProperty()<br>void UserAdminMBeanTestCase.testAddAndRemoveCredentialString()<br>void UserAdminMBeanTestCase.testAddAndRemoveCredential()<br>void UserAdminMBeanTestCase.testGetCredentials()<br>void UserAdminMBeanTestCase.testGetProperties()<br>void UserAdminMBeanTestCase.testGetRole()<br>void UserAdminMBeanTestCase.testGetRoleFilter()<br>void UserAdminMBeanTestCase.testGetUserFilter()<br>void UserAdminMBeanTestCase.testGetUserWithProperty()<br>void UserAdminMBeanTestCase.testRemoveUser()<br>void UserAdminMBeanTestCase.testRemoveProperty()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>33</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void UserAdminMBean.createUser(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData UserAdminMBean.getAuthorization(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData UserAdminMBean.getAuthorization(String)" title="Callers">void UserAdminMBeanTestCase.testGetAuthorization()<br>void UserAdminMBeanTestCase.testGetAuthorization()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData UserAdminMBean.getAuthorization(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData UserAdminMBean.getCredentials(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData UserAdminMBean.getCredentials(String)" title="Callers">void UserAdminMBeanTestCase.testAddAndRemoveCredentialString()<br>void UserAdminMBeanTestCase.testAddAndRemoveCredentialString()<br>void UserAdminMBeanTestCase.testAddAndRemoveCredential()<br>void UserAdminMBeanTestCase.testAddAndRemoveCredential()<br>void UserAdminMBeanTestCase.testGetCredentials()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>8</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData UserAdminMBean.getCredentials(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData UserAdminMBean.getGroup(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData UserAdminMBean.getGroup(String)" title="Callers">void UserAdminMBeanTestCase.testCreateGroup()<br>void UserAdminMBeanTestCase.testAddAndRemoveGroupMember()<br>void UserAdminMBeanTestCase.testAddAndRemoveGroupMember()<br>void UserAdminMBeanTestCase.testAddAndRemoveGroupMember()<br>void UserAdminMBeanTestCase.testGetGroup()<br>void UserAdminMBeanTestCase.testRemoveGroup()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>9</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData UserAdminMBean.getGroup(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.getGroups(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.getGroups(String)" title="Callers">void UserAdminMBeanTestCase.testGetGroupFilter()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.getGroups(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.getImpliedRoles(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.getImpliedRoles(String)" title="Callers">void UserAdminMBeanTestCase.testGetImpliedRoles()<br>void UserAdminMBeanTestCase.testGetImpliedRoles()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.getImpliedRoles(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.getMembers(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.getMembers(String)" title="Callers">void UserAdminMBeanTestCase.testGetMembers()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.getMembers(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">TabularData UserAdminMBean.getProperties(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="TabularData UserAdminMBean.getProperties(String)" title="Callers">void UserAdminMBeanTestCase.testAddPropertyString()<br>void UserAdminMBeanTestCase.testAddPropertyString()<br>void UserAdminMBeanTestCase.testAddProperty()<br>void UserAdminMBeanTestCase.testAddProperty()<br>void UserAdminMBeanTestCase.testAddProperty()<br>void UserAdminMBeanTestCase.testGetProperties()<br>void UserAdminMBeanTestCase.testRemoveProperty()<br>void UserAdminMBeanTestCase.testRemoveProperty()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>11</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('TabularData UserAdminMBean.getProperties(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.getRequiredMembers(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.getRequiredMembers(String)" title="Callers">void UserAdminMBeanTestCase.testAddRequiredMember()<br>void UserAdminMBeanTestCase.testGetRequiredMembers()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.getRequiredMembers(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData UserAdminMBean.getRole(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData UserAdminMBean.getRole(String)" title="Callers">void UserAdminMBeanTestCase.testGetRole()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData UserAdminMBean.getRole(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.getRoles(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.getRoles(String)" title="Callers">void UserAdminMBeanTestCase.testGetRoleFilter()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.getRoles(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">CompositeData UserAdminMBean.getUser(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="CompositeData UserAdminMBean.getUser(String)" title="Callers">void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testGetUser()<br>void UserAdminMBeanTestCase.testRemoveUser()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>8</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('CompositeData UserAdminMBean.getUser(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String UserAdminMBean.getUserWithProperty(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String UserAdminMBean.getUserWithProperty(String,String)" title="Callers">void UserAdminMBeanTestCase.testGetUserWithProperty()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String UserAdminMBean.getUserWithProperty(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.getUsers(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.getUsers(String)" title="Callers">void UserAdminMBeanTestCase.testGetUserFilter()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.getUsers(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.listGroups()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.listGroups()" title="Callers">void UserAdminMBeanTestCase.testListGroups()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.listGroups()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.listRoles()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.listRoles()" title="Callers">void UserAdminMBeanTestCase.testListRoles()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.listRoles()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] UserAdminMBean.listUsers()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] UserAdminMBean.listUsers()" title="Callers">void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testCreateUser()<br>void UserAdminMBeanTestCase.testListUsers()<br>void UserAdminMBeanTestCase.testListUsers()<br>void UserAdminMBeanTestCase.testRemoveRole()<br>void UserAdminMBeanTestCase.testRemoveRole()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>8</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] UserAdminMBean.listUsers()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void UserAdminMBean.removeCredential(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void UserAdminMBean.removeCredential(String,String)" title="Callers">void UserAdminMBeanTestCase.testAddAndRemoveCredentialString()<br>void UserAdminMBeanTestCase.testAddAndRemoveCredential()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void UserAdminMBean.removeCredential(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean UserAdminMBean.removeGroup(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean UserAdminMBean.removeGroup(String)" title="Callers">void UserAdminMBeanTestCase.testRemoveGroup()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean UserAdminMBean.removeGroup(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean UserAdminMBean.removeMember(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean UserAdminMBean.removeMember(String,String)" title="Callers">void UserAdminMBeanTestCase.testAddAndRemoveGroupMember()<br>void UserAdminMBeanTestCase.testAddAndRemoveGroupMember()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean UserAdminMBean.removeMember(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void UserAdminMBean.removeProperty(String,String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void UserAdminMBean.removeProperty(String,String)" title="Callers">void UserAdminMBeanTestCase.testRemoveProperty()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void UserAdminMBean.removeProperty(String,String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean UserAdminMBean.removeRole(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean UserAdminMBean.removeRole(String)" title="Callers">void UserAdminMBeanTestCase.testGetAuthorization()<br>void UserAdminMBeanTestCase.testRemoveRole()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>5</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean UserAdminMBean.removeRole(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean UserAdminMBean.removeUser(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean UserAdminMBean.removeUser(String)" title="Callers">void UserAdminMBeanTestCase.testRemoveUser()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>void UserAdminMBeanTestCase.testExceptions()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean UserAdminMBean.removeUser(String)')" title="Show/Hide Callers"></td>
+</tr>
+</table>
+</body>
+</html>

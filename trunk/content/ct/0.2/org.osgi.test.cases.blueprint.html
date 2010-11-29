@@ -1,0 +1,2652 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Test</title>
+<link rel="stylesheet" href="http://www.osgi.org/www/osgi.css" type="text/css">
+<style type="text/css">
+					.code { font-family: Courier,
+					sans-serif; }
+					.error,.ok, .info,
+					.warning {
+					background-position: 4 4;
+					background-repeat:no-repeat;
+					width:10px; }
+					.ok {
+					background-image:url("http://www.osgi.org/www/greenball.png"); }
+					.warning {
+					background-image:url("http://www.osgi.org/www/orangeball.png"); }
+					.error {
+					background-image:url("http://www.osgi.org/www/redball.png"); }
+					.info {
+					background-image:url("http://www.osgi.org/www/info.png"); }
+					.class { padding-top:20px; padding-bottom: 10px; font-size:12;
+					font-weight:bold; }
+
+					h2 { margin-top : 20px; margin-bottom:10px; }
+					table, th, td { border: 1px solid black; padding:5px; }
+					table {
+					border-collapse:collapse; width:100%; margin-top:20px;}
+					th { height:20px; }
+					} 
+				</style>
+<script language="javascript">
+					function toggle(name) {
+					var el =
+					document.getElementById(name);
+					if ( el.style.display != 'none' ) {
+					el.style.display = 'none';
+					}
+					else {
+					el.style.display = '';
+					}
+					}				
+				</script>
+</head>
+<body style="width:800px">
+<h2>Summary</h2>
+<p>The following table provides a sumary of the test information.</p>
+<table>
+<tr>
+<th>Property Key</th><th>Property Value</th>
+</tr>
+<tr>
+<td width="50%">Target</td><td>/Users/zoe/Workspaces/aries/ComplianceTests/ApacheAriesTests/jar/org.osgi.test.cases.blueprint-4.2.0.jar</td>
+</tr>
+<tr>
+<td width="50%">Framework</td><td>org.eclipse.osgi.launch.Equinox@bf5555</td>
+</tr>
+<tr>
+<td width="50%">Testrun</td><td>Wed Sep 01 16:59:17 BST 2010</td>
+</tr>
+<tr>
+<th colspan="2">Bundles</th>
+</tr>
+<tr>
+<td>org.eclipse.osgi</td><td>3.5.0.v20090520</td>
+</tr>
+<tr>
+<td>osgi.cmpn</td><td>4.2.0.200908310645</td>
+</tr>
+<tr>
+<td>org.ops4j.pax.logging.pax-logging-api</td><td>1.4</td>
+</tr>
+<tr>
+<td>org.ops4j.pax.logging.pax-logging-service</td><td>1.4</td>
+</tr>
+<tr>
+<td>org.eclipse.equinox.cm</td><td>3.2.0.v20070116</td>
+</tr>
+<tr>
+<td>org.eclipse.equinox.event</td><td>1.1.100.v20090520-1800</td>
+</tr>
+<tr>
+<td>org.apache.felix.configadmin</td><td>1.2.4</td>
+</tr>
+<tr>
+<td>org.apache.aries.blueprint</td><td>0.2.0.incubating</td>
+</tr>
+<tr>
+<td>org.osgi.test.cases.blueprint</td><td>4.2.0.201004301237</td>
+</tr>
+</table>
+<h2>Testcases</h2>
+<p>The following table shows the results of each test. A red icon indicates that the 
+					test failed or had an error. A green icon
+					indicates success. Any errors or failure messages 
+					will be displayed as a list beneath the test name. To see the 
+					exception, click on the info icon on the right.</p>
+<table width="100%">
+<tr>
+<th width="15px"><img src="http://www.osgi.org/www/colorball.png" title="Status. red=bad, orange=almost good, green is perfect"></th><th>Test</th><th>Failures</th><th>Error</th><th>Info</th>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSignature</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConstructorInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryConstructorInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryConstructorInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryPropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryPropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCompoundProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCompoundPropertyMissingName</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCompoundPropertyMissingValue</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServicePropertiesReevaluation</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentDirectDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentDependsOnDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceDependsOnDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentWaitingDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultipleGracePeriod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentNowaitDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentTimeoutDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInfiniteComponentTimeoutDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceRequestInitialization</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceRequestActivation</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testEagerServiceRequestInitialization</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceReferenceExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInlineServiceReferenceExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIndirectServiceReferenceExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCustomTypeInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultiRegisteredConverter</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCustomBooleanConverter</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceBooleanConverter</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSubclassConverterInstead</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConverterCalled</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConversionServiceInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConversionServiceInjectionOverride</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConstructorShortArgs</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConstructorLongArgs</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryShortArgs</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryLongArgs</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryShortArgs</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryLongArgs</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStringTypeConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testWrapperPrimitiveAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceWrapperPrimitiveAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticWrapperPrimitiveAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrimitiveWrapperAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstancePrimitiveWrapperAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticPrimitiveWrapperAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAssignabilityAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceAssignabilityAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticAssignabilityAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStringConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceStringConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticStringConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCollectionConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceCollectionConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticCollectionConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceMapConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticMapConversionAmbiguity</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testExtenderStart</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testExtenderStop<ul>
+<li>Unexpected event BlueprintContainerEvent org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE for bundle org.osgi.test.cases.blueprint.circular_ref_one with properties: [bundle.id=76, bundle.version=4.2.0, cause=org.osgi.service.blueprint.container.ComponentDefinitionException: Error setting property: PropertyDescriptor &lt;name: two, getter: null, setter: [public void org.osgi.test.cases.blueprint.components.serviceimport.ServiceProxyChecker.setTwo(org.osgi.test.cases.blueprint.services.TestServiceTwo)], event=org.osgi.service.blueprint.container.BlueprintEvent@16a8823, event.topics=org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE, bundle=org.osgi.test.cases.blueprint.circular_ref_one_4.2.0 [76], bundle.symbolicName=org.osgi.test.cases.blueprint.circular_ref_one, extender.bundle=org.apache.aries.blueprint_0.2.0.incubating [7] ] was received:</li>
+</ul>
+<pre id="testExtenderStop" style="display:none">
+<div class="code">
+
+junit.framework.AssertionFailedError: Unexpected event BlueprintContainerEvent org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE for bundle org.osgi.test.cases.blueprint.circular_ref_one with properties: [bundle.id=76, bundle.version=4.2.0, cause=org.osgi.service.blueprint.container.ComponentDefinitionException: Error setting property: PropertyDescriptor &lt;name: two, getter: null, setter: [public void org.osgi.test.cases.blueprint.components.serviceimport.ServiceProxyChecker.setTwo(org.osgi.test.cases.blueprint.services.TestServiceTwo)], event=org.osgi.service.blueprint.container.BlueprintEvent@16a8823, event.topics=org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE, bundle=org.osgi.test.cases.blueprint.circular_ref_one_4.2.0 [76], bundle.symbolicName=org.osgi.test.cases.blueprint.circular_ref_one, extender.bundle=org.apache.aries.blueprint_0.2.0.incubating [7] ] was received:
+	at org.osgi.test.cases.blueprint.framework.AdminTestEvent.failUnexpected(AdminTestEvent.java:99)
+	at org.osgi.test.cases.blueprint.framework.TestPhase.checkEventResults(TestPhase.java:184)
+	at org.osgi.test.cases.blueprint.framework.TestPhase.runTest(TestPhase.java:245)
+	at org.osgi.test.cases.blueprint.framework.BaseTestController.runTest(BaseTestController.java:294)
+	at org.osgi.test.cases.blueprint.framework.BaseTestController.run(BaseTestController.java:407)
+	at org.osgi.test.cases.blueprint.tests.TestExtenderLifeCycle.testExtenderStop(TestExtenderLifeCycle.java:172)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+Caused by: org.osgi.service.blueprint.container.ComponentDefinitionException: Error setting property: PropertyDescriptor &lt;name: two, getter: null, setter: [public void org.osgi.test.cases.blueprint.components.serviceimport.ServiceProxyChecker.setTwo(org.osgi.test.cases.blueprint.services.TestServiceTwo)]
+	at org.apache.aries.blueprint.container.BeanRecipe.setProperty(BeanRecipe.java:827)
+	at org.apache.aries.blueprint.container.BeanRecipe.setProperties(BeanRecipe.java:793)
+	at org.apache.aries.blueprint.container.BeanRecipe.setProperties(BeanRecipe.java:774)
+	at org.apache.aries.blueprint.container.BeanRecipe.internalCreate(BeanRecipe.java:740)
+	at org.apache.aries.blueprint.di.AbstractRecipe.create(AbstractRecipe.java:64)
+	at org.apache.aries.blueprint.container.BlueprintRepository.createInstances(BlueprintRepository.java:219)
+	at org.apache.aries.blueprint.container.BlueprintRepository.createAll(BlueprintRepository.java:147)
+	at org.apache.aries.blueprint.container.BlueprintContainerImpl.instantiateEagerComponents(BlueprintContainerImpl.java:624)
+	at org.apache.aries.blueprint.container.BlueprintContainerImpl.doRun(BlueprintContainerImpl.java:315)
+	at org.apache.aries.blueprint.container.BlueprintContainerImpl.run(BlueprintContainerImpl.java:213)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:441)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:98)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:207)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:637)
+Caused by: org.osgi.service.blueprint.container.ServiceUnavailableException: Timeout expired when waiting for OSGi service
+	at org.apache.aries.blueprint.container.ReferenceRecipe.getService(ReferenceRecipe.java:181)
+	at org.apache.aries.blueprint.container.ReferenceRecipe.access$000(ReferenceRecipe.java:52)
+	at org.apache.aries.blueprint.container.ReferenceRecipe$ServiceDispatcher.call(ReferenceRecipe.java:208)
+	at org.apache.aries.blueprint.container.AbstractServiceReferenceRecipe$JdkProxyFactory$1.invoke(AbstractServiceReferenceRecipe.java:632)
+	at $Proxy17.testTwo(Unknown Source)
+	at org.osgi.test.cases.blueprint.components.serviceimport.ServiceProxyChecker.setTwo(ServiceProxyChecker.java:58)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.apache.aries.blueprint.utils.ReflectionUtils$MethodPropertyDescriptor.internalSet(ReflectionUtils.java:416)
+	at org.apache.aries.blueprint.utils.ReflectionUtils$PropertyDescriptor.set(ReflectionUtils.java:302)
+	at org.apache.aries.blueprint.container.BeanRecipe.setProperty(BeanRecipe.java:825)
+	... 17 more
+
+ </div>
+</pre>
+</td><td>1</td><td>0</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testExtenderStop')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testExtenderRankedStop<ul>
+<li>Unexpected event BlueprintContainerEvent org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE for bundle org.osgi.test.cases.blueprint.circular_ref_two with properties: [bundle.id=82, bundle.version=4.2.0, cause=org.osgi.service.blueprint.container.ComponentDefinitionException: Error setting property: PropertyDescriptor &lt;name: one, getter: null, setter: [public void org.osgi.test.cases.blueprint.components.serviceimport.ServiceProxyChecker.setOne(org.osgi.test.cases.blueprint.services.TestServiceOne)], event=org.osgi.service.blueprint.container.BlueprintEvent@914a0a, event.topics=org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE, bundle=org.osgi.test.cases.blueprint.circular_ref_two_4.2.0 [82], bundle.symbolicName=org.osgi.test.cases.blueprint.circular_ref_two, extender.bundle=org.apache.aries.blueprint_0.2.0.incubating [7] ] was received:</li>
+</ul>
+<pre id="testExtenderRankedStop" style="display:none">
+<div class="code">
+
+junit.framework.AssertionFailedError: Unexpected event BlueprintContainerEvent org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE for bundle org.osgi.test.cases.blueprint.circular_ref_two with properties: [bundle.id=82, bundle.version=4.2.0, cause=org.osgi.service.blueprint.container.ComponentDefinitionException: Error setting property: PropertyDescriptor &lt;name: one, getter: null, setter: [public void org.osgi.test.cases.blueprint.components.serviceimport.ServiceProxyChecker.setOne(org.osgi.test.cases.blueprint.services.TestServiceOne)], event=org.osgi.service.blueprint.container.BlueprintEvent@914a0a, event.topics=org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE, bundle=org.osgi.test.cases.blueprint.circular_ref_two_4.2.0 [82], bundle.symbolicName=org.osgi.test.cases.blueprint.circular_ref_two, extender.bundle=org.apache.aries.blueprint_0.2.0.incubating [7] ] was received:
+	at org.osgi.test.cases.blueprint.framework.AdminTestEvent.failUnexpected(AdminTestEvent.java:99)
+	at org.osgi.test.cases.blueprint.framework.TestPhase.checkEventResults(TestPhase.java:184)
+	at org.osgi.test.cases.blueprint.framework.TestPhase.runTest(TestPhase.java:245)
+	at org.osgi.test.cases.blueprint.framework.BaseTestController.runTest(BaseTestController.java:294)
+	at org.osgi.test.cases.blueprint.framework.BaseTestController.run(BaseTestController.java:407)
+	at org.osgi.test.cases.blueprint.tests.TestExtenderLifeCycle.testExtenderRankedStop(TestExtenderLifeCycle.java:274)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+Caused by: org.osgi.service.blueprint.container.ComponentDefinitionException: Error setting property: PropertyDescriptor &lt;name: one, getter: null, setter: [public void org.osgi.test.cases.blueprint.components.serviceimport.ServiceProxyChecker.setOne(org.osgi.test.cases.blueprint.services.TestServiceOne)]
+	at org.apache.aries.blueprint.container.BeanRecipe.setProperty(BeanRecipe.java:827)
+	at org.apache.aries.blueprint.container.BeanRecipe.setProperties(BeanRecipe.java:793)
+	at org.apache.aries.blueprint.container.BeanRecipe.setProperties(BeanRecipe.java:774)
+	at org.apache.aries.blueprint.container.BeanRecipe.internalCreate(BeanRecipe.java:740)
+	at org.apache.aries.blueprint.di.AbstractRecipe.create(AbstractRecipe.java:64)
+	at org.apache.aries.blueprint.container.BlueprintRepository.createInstances(BlueprintRepository.java:219)
+	at org.apache.aries.blueprint.container.BlueprintRepository.createAll(BlueprintRepository.java:147)
+	at org.apache.aries.blueprint.container.BlueprintContainerImpl.instantiateEagerComponents(BlueprintContainerImpl.java:624)
+	at org.apache.aries.blueprint.container.BlueprintContainerImpl.doRun(BlueprintContainerImpl.java:315)
+	at org.apache.aries.blueprint.container.BlueprintContainerImpl.run(BlueprintContainerImpl.java:213)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:441)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:98)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:207)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:637)
+Caused by: org.osgi.service.blueprint.container.ServiceUnavailableException: Timeout expired when waiting for OSGi service
+	at org.apache.aries.blueprint.container.ReferenceRecipe.getService(ReferenceRecipe.java:181)
+	at org.apache.aries.blueprint.container.ReferenceRecipe.access$000(ReferenceRecipe.java:52)
+	at org.apache.aries.blueprint.container.ReferenceRecipe$ServiceDispatcher.call(ReferenceRecipe.java:208)
+	at org.apache.aries.blueprint.container.AbstractServiceReferenceRecipe$JdkProxyFactory$1.invoke(AbstractServiceReferenceRecipe.java:632)
+	at $Proxy22.testOne(Unknown Source)
+	at org.osgi.test.cases.blueprint.components.serviceimport.ServiceProxyChecker.setOne(ServiceProxyChecker.java:46)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.apache.aries.blueprint.utils.ReflectionUtils$MethodPropertyDescriptor.internalSet(ReflectionUtils.java:416)
+	at org.apache.aries.blueprint.utils.ReflectionUtils$PropertyDescriptor.set(ReflectionUtils.java:302)
+	at org.apache.aries.blueprint.container.BeanRecipe.setProperty(BeanRecipe.java:825)
+	... 17 more
+
+ </div>
+</pre>
+</td><td>1</td><td>0</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testExtenderRankedStop')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSingleInterfaceExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNoGracePeriod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceDependsOn</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSingleInterfacePrototypeExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentQualifier</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRankingExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRankingImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServicePropertyQualifier</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComplexServiceProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDependsOnQualifier</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultipleInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRegistrationListenerImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInlineRegistrationListenerImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConcreteInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAutoInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAutoHierarchy</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConcreteClassImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAutoAll</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testFactoryExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrototypeFactoryExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRegistrationInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInlineRegistrationInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDependencyWait</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListenerExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRegistrationListenerSingletonSignature</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListenerRegisteredExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListenerUnregisteredExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrototypeListenerExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInlineListenerExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCircularListenerExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultipleListenerExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultipleListenerMethodExport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceImportedListenerImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInlineServiceImportedListenerImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerBindOnly</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerUnbindOnly</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCircularServiceListenerImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceMultipleListenerImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceMultipleListenerMethodImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerReferenceMethodImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerNoMapMethodImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testUnregisteredServiceDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReplacementServiceDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testWaitingServiceDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testUnavailableServiceDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testUnavailableServiceDefaultDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceRebind</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceRankingRebind</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceRegistrationProxy</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLazyServiceRegistration</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLazyReference</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLazyServiceGet</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInterfacelessReference</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRegistrationListenerInitialState</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStartComponentDefault</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testWildcardHeader</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStartComponentMultiple</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStartComponentExplicit</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStartComponentAttributes</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSinglePathMultipleDir</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMultiplePathMultipleDir</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStartComponentAttributes2</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStartComponentDifferentDir</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStartComponentDirOnly</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNoNameDefault</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitDestroy</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrimitiveStaticFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrimitiveInstanceFactory</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testModuleContextAware</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentIdCase</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBlueprintId</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNonBlueprintBundle</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNonBlueprintBundleEmptyDir</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBlueprintBundleWildcardNoMatch</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testEmptyBlueprintBundleHeader</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIncompatibleVersion</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBlueprintListenerReplay</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testFragmentDefault</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConcreteClassImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNoConfigFile</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMissingConfigFile</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDuplicateComponentName</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMissingComponentClass</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNoComponentClass</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryMissingClass</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryMissingMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryNonPublicClass</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryNonPublicMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryNonStaticMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryNoClass</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryMissingMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryNoMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryNoComponent</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConstructorException</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLazyConstructorException</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryException</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryException</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropertyException</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitMethodException</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDestroyMethodException</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNoConstructorMatch</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConstructorTypeMismatch</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConstructorInvalidType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConstructorNonPrivate</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConversionError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIncompatibleType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConversionServiceError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConversionServiceOverrideError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testTypeConverterError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMissingReferenceError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMissingIdrefError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCircularReferenceError</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrimitiveNull</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMissingProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testProtectedProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrivateProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBadProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSkippedIndex</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDuplicateIndex</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPartialIndex</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitNoMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDestroyNoMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInitBadMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDestroyBadMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceBadComponent</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceBadInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceNoComponent</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceNoInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceWrongInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceDupInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerBadComponent</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerBadRegister</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerBadUnregister</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerNonPublicRegistered</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerNonPublicUnregistered</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerNoComponent</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerNoMethods</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerNoRegister</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerRefInline</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceListenerNoUnregister</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testComponentBadDependson</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceBadDependson</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceBadInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRefListBadInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerBadComponent</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerBadBind</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerBadUnbind</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerNonPublicBind</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerNonPublicUnbind</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerNoComponent</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerNoMethods</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerNobind</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerNoUnbind</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapBadKeyRef</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapBadValueRef</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapBadValueType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapBadKeyType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapPrimitiveKeyType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapDupValueRef</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapDupKeyRef</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapDupKey</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapDupValue</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListBadValueRef</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConverterWrongType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAmbiguousConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAmbiguousFactoryConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAmbiguousStaticFactoryConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInnerBeanId</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInnerBeanInitialization</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInnerBeanDestroy</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInlineServiceId</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInlineReferenceId</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInlineRefListId</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceBadDependsOn</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRefListBadDependsOn</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceServiceTarget</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testServiceRefListTarget</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListenerServiceTarget</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListenerRefListTarget</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRegistrationListenerServiceTarget</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRegistrationListenerRefListTarget</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBlueprintBundleOverride</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBlueprintBundleContextOverride</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBlueprintContainerOverride</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBlueprintConverterOverride</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        warning
+                                    "></td><td class="code">testExtraNamespace<ul>
+<li>Expected event BlueprintContainerEvent org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE for bundle org.osgi.test.cases.blueprint.comp1_extra_namespace was not received</li>
+</ul>
+<pre id="testExtraNamespace" style="display:none">
+<div class="code">
+
+junit.framework.AssertionFailedError: Expected event BlueprintContainerEvent org/osgi/test/cases/blueprint/BlueprintContainer/FAILURE for bundle org.osgi.test.cases.blueprint.comp1_extra_namespace was not received
+	at org.osgi.test.cases.blueprint.framework.AdminTestEvent.failExpected(AdminTestEvent.java:89)
+	at org.osgi.test.cases.blueprint.framework.EventSet.checkMissing(EventSet.java:281)
+	at org.osgi.test.cases.blueprint.framework.TestPhase.checkEventResults(TestPhase.java:190)
+	at org.osgi.test.cases.blueprint.framework.TestPhase.runTest(TestPhase.java:245)
+	at org.osgi.test.cases.blueprint.framework.BaseTestController.runTest(BaseTestController.java:294)
+	at org.osgi.test.cases.blueprint.framework.BaseTestController.run(BaseTestController.java:407)
+	at org.osgi.test.cases.blueprint.tests.TestConfigErrors.testExtraNamespace(TestConfigErrors.java:1221)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:164)
+	at junit.framework.TestCase.runBare(TestCase.java:130)
+	at junit.framework.TestResult$1.protect(TestResult.java:106)
+	at junit.framework.TestResult.runProtected(TestResult.java:124)
+	at junit.framework.TestResult.run(TestResult.java:109)
+	at junit.framework.TestCase.run(TestCase.java:120)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+	at junit.framework.TestSuite.run(TestSuite.java:225)
+	at aQute.junit.runtime.Target.doTesting(Target.java:234)
+	at aQute.junit.runtime.Target.run(Target.java:57)
+	at aQute.junit.runtime.Target.main(Target.java:37)
+
+ </div>
+</pre>
+</td><td>1</td><td>0</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('testExtraNamespace')" title="Show Exceptions"></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropertyValueValue</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropertyRefValue</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropertyValueRef</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArgumentValueValue</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArgumentRefValue</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArgumentValueRef</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAutoExportInterface</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAutoExportInterfaces</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testAutoRefInline</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceNegativeTimeout</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceNegativeDefaultTimeout</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceListenerRefInline</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBlueprintConverter</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBuiltinTypeConversions</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArrayTargetBadSource</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArrayTargetBadElement</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCollectionTargetBadSource</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCollectionTargetInterfaceOnly</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCollectionTargetBadSubType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapTargetBadSource</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapTargetInterfaceOnly</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapTargetBadSubType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testDictionaryTargetBadSubType</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testNonStringSource</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStringSourceNoConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConstructorInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryConstructorInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryConstructorInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryPropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryPropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBasic</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCollectionInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticListCollectionImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListCollectionDependson</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testLazyReferenceList</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticListCollectionReferenceImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListCollectionImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListCollectionReferenceImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCircularListCollectionImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testEmptyListCollectionImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testEmptyListCollectionDefaultImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testEmptyListCollectionServiceListener</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testEmptyListCollectionReferenceImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBindUnbindListImport</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testUnregisteredListServiceDependency</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRefListIterator</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArrayInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArrayArgConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArrayArgStaticFactoryConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArrayArgInstanceFactoryConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testArrayArgProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryArrayArgProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryArrayArgProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStringTypeConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryStringTypeConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryStringTypeConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStringTypeProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryStringTypeProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryStringTypeProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropertyBoxing</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testReferenceInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrototypeDestroy_Method</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testEagerPrototype</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testCycleBreaking</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSingletonCycle</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPrototypeCycle</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRecursiveConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRecursivePropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRecursiveInitMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRecursivePrototypePropertyInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testRecursivePrototypeInitMethod</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMetadataSampler</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testIdrefInjection</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListStaticFactoryConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListInstanceFactoryConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testListProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConvertedList</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConvertedSet</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testConvertedMap</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryListProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryListProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSetConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSetStaticFactoryConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSetInstanceFactoryConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testSetProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactorySetProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactorySetProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testFactoryMapConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryMapConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testMapProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryMapProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testFactoryMapProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropsConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryPropsConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryPropsConstructor</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testPropsProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testInstanceFactoryPropsProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testStaticFactoryPropsProperty</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBuiltinCollectionConversion</td><td>0</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+                                        ok
+                                    "></td><td class="code">testBuiltinMapConversion</td><td>0</td><td>0</td><td></td>
+</tr>
+</table>
+<br>
+<h2>Coverage</h2>
+<p>The following table provides a sumary of the coverage based on static analysis.
+					A red icon indicates the method is never referred. An orange icon indicates there is
+					only one method referring to the method and a green icon indicates there are 2 or more
+					references. The references are shown by clicking on the info icon. This table is based on static analysis so it is not possible to see
+					how often the method is called and with what parameters.</p>
+<table width="100%">
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.container.BlueprintContainer</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Set BlueprintContainer.getComponentIds()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Set BlueprintContainer.getComponentIds()" title="Callers">ComponentMetadata BlueprintMetadata.getComponentMetadata(TestComponentMetadata)<br>Set BlueprintMetadata.getComponentIds()<br>void MetadataSamplerValidator.validate(BundleContext)<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Set BlueprintContainer.getComponentIds()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Object BlueprintContainer.getComponentInstance(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Object BlueprintContainer.getComponentInstance(String)" title="Callers">void NoSuchComponentExceptionValidator.validate(BundleContext)<br>void ComponentMetadataAbsenceValidator.validate(BundleContext)<br>void GetComponentExceptionValidator.validate(BundleContext)<br>Object BlueprintMetadata.getComponent(String)<br>void MetadataSamplerValidator.validate(BundleContext)<br>RecursiveRequestor(String,BlueprintContainer,String)<br>void RecursiveRequestor.setMyId(String)<br>void RecursiveRequestor.init()<br>void RecursiveRequestor.setMyPrototypeId(String)<br>void RecursiveRequestor.prototypeInit()<br>void BlueprintContainerAwareComponent.init()<br>void BlueprintContainerAwareComponent.init()<br>
+</div>
+</td><td>12</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Object BlueprintContainer.getComponentInstance(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">ComponentMetadata BlueprintContainer.getComponentMetadata(String)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="ComponentMetadata BlueprintContainer.getComponentMetadata(String)" title="Callers">void NoSuchComponentExceptionValidator.validate(BundleContext)<br>ComponentMetadata BlueprintMetadata.getComponentMetadata(TestComponentMetadata)<br>ComponentMetadata BlueprintMetadata.getComponentMetadata(String)<br>void BlueprintMetadata.validateLifeCycle(String,String,String,String)<br>void BlueprintMetadata.validateArgumentMetadata(String,TestArgument[])<br>void BlueprintMetadata.validatePartialConstructorMetadata(String,TestArgument[])<br>void BlueprintMetadata.validateFactoryMetadata(String,String,String,TestValue)<br>void BlueprintMetadata.validatePropertyMetadata(String,TestProperty[])<br>List BlueprintMetadata.getComponentDependencies(String)<br>void MetadataSamplerValidator.validate(BundleContext)<br>
+</div>
+</td><td>10</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('ComponentMetadata BlueprintContainer.getComponentMetadata(String)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Collection BlueprintContainer.getMetadata(Class)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Collection BlueprintContainer.getMetadata(Class)" title="Callers">void GetBeanMetadataValidator.validate(BundleContext)<br>void GetReferencedServicesMetadataValidator.validate(BundleContext)<br>void BlueprintMetadata.validateExportedServices(ExportedService[])<br>void BlueprintMetadata.validateReferencedServices(ReferencedService[])<br>void MetadataSamplerValidator.validate(BundleContext)<br>void MetadataSamplerValidator.validate(BundleContext)<br>void MetadataSamplerValidator.validate(BundleContext)<br>void MetadataSamplerValidator.validate(BundleContext)<br>void MetadataSamplerValidator.validate(BundleContext)<br>void MetadataSamplerValidator.validate(BundleContext)<br>void GetExportedServicesMetadataValidator.validate(BundleContext)<br>
+</div>
+</td><td>11</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Collection BlueprintContainer.getMetadata(Class)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.container.BlueprintEvent</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">BlueprintEvent(int,Bundle,Bundle)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">BlueprintEvent(int,Bundle,Bundle,Throwable)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">BlueprintEvent(int,Bundle,Bundle,String[])</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">BlueprintEvent(int,Bundle,Bundle,String[],Throwable)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">BlueprintEvent(BlueprintEvent,boolean)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Bundle BlueprintEvent.getBundle()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Bundle BlueprintEvent.getBundle()" title="Callers">Event BlueprintContainerEvent.createEvent(BlueprintEvent)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Bundle BlueprintEvent.getBundle()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Throwable BlueprintEvent.getCause()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Throwable BlueprintEvent.getCause()" title="Callers">Event BlueprintContainerEvent.createEvent(BlueprintEvent)<br>Event BlueprintContainerEvent.createEvent(BlueprintEvent)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Throwable BlueprintEvent.getCause()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String[] BlueprintEvent.getDependencies()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String[] BlueprintEvent.getDependencies()" title="Callers">Event BlueprintContainerEvent.createEvent(BlueprintEvent)<br>Event BlueprintContainerEvent.createEvent(BlueprintEvent)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String[] BlueprintEvent.getDependencies()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Bundle BlueprintEvent.getExtenderBundle()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Bundle BlueprintEvent.getExtenderBundle()" title="Callers">Event BlueprintContainerEvent.createEvent(BlueprintEvent)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Bundle BlueprintEvent.getExtenderBundle()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">long BlueprintEvent.getTimestamp()</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int BlueprintEvent.getType()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int BlueprintEvent.getType()" title="Callers">Event BlueprintContainerEvent.createEvent(BlueprintEvent)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int BlueprintEvent.getType()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean BlueprintEvent.isReplay()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean BlueprintEvent.isReplay()" title="Callers">TestEvent BlueprintContainerEvent.validate(TestEvent)<br>TestEvent BlueprintAdminEvent.validate(TestEvent)<br>void ReplayListener.blueprintEvent(BlueprintEvent)<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean BlueprintEvent.isReplay()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.container.BlueprintListener</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">void BlueprintListener.blueprintEvent(BlueprintEvent)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="void BlueprintListener.blueprintEvent(BlueprintEvent)" title="Callers">void BaseTestController.&lt;implements&gt;()<br>void ReplayListener.&lt;implements&gt;()<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('void BlueprintListener.blueprintEvent(BlueprintEvent)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.container.ComponentDefinitionException</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">ComponentDefinitionException()</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">ComponentDefinitionException(String)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">ComponentDefinitionException(String,Throwable)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">ComponentDefinitionException(Throwable)</td><td>0</td><td></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.container.Converter</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">boolean Converter.canConvert(Object,ReifiedType)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="boolean Converter.canConvert(Object,ReifiedType)" title="Callers">void HashtableConverter.&lt;implements&gt;()<br>void CustomBooleanConverter.&lt;implements&gt;()<br>void ArrayListConverter.&lt;implements&gt;()<br>void SecurityTestBean.&lt;implements&gt;()<br>void VectorConverter.&lt;implements&gt;()<br>void EuropeanRegionCodeConverter.&lt;implements&gt;()<br>Object ConversionServiceChecker.convert(Object,ReifiedType)<br>void LinkedHashSetConverter.&lt;implements&gt;()<br>void AsianRegionCodeConverter.&lt;implements&gt;()<br>void TreeSetConverter.&lt;implements&gt;()<br>void HashMapConverter.&lt;implements&gt;()<br>void TreeMapConverter.&lt;implements&gt;()<br>void LinkedListConverter.&lt;implements&gt;()<br>void RegionCodeConverter.&lt;implements&gt;()<br>void HashSetConverter.&lt;implements&gt;()<br>
+</div>
+</td><td>15</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('boolean Converter.canConvert(Object,ReifiedType)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Object Converter.convert(Object,ReifiedType)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Object Converter.convert(Object,ReifiedType)" title="Callers">void HashtableConverter.&lt;implements&gt;()<br>void CustomBooleanConverter.&lt;implements&gt;()<br>void ArrayListConverter.&lt;implements&gt;()<br>void SecurityTestBean.&lt;implements&gt;()<br>void VectorConverter.&lt;implements&gt;()<br>void EuropeanRegionCodeConverter.&lt;implements&gt;()<br>void ConversionServiceComponent.setConversion(String)<br>Object ConversionServiceChecker.convert(Object,ReifiedType)<br>void ConversionServiceChecker.convertFailure(Object,ReifiedType)<br>void LinkedHashSetConverter.&lt;implements&gt;()<br>void AsianRegionCodeConverter.&lt;implements&gt;()<br>void TreeSetConverter.&lt;implements&gt;()<br>void HashMapConverter.&lt;implements&gt;()<br>void TreeMapConverter.&lt;implements&gt;()<br>void LinkedListConverter.&lt;implements&gt;()<br>void RegionCodeConverter.&lt;implements&gt;()<br>void HashSetConverter.&lt;implements&gt;()<br>
+</div>
+</td><td>17</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Object Converter.convert(Object,ReifiedType)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.container.NoSuchComponentException</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">NoSuchComponentException(String)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">NoSuchComponentException(String,String)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String NoSuchComponentException.getComponentId()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String NoSuchComponentException.getComponentId()" title="Callers">void NoSuchComponentExceptionValidator.validate(BundleContext)<br>void NoSuchComponentExceptionValidator.validate(BundleContext)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String NoSuchComponentException.getComponentId()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.container.ReifiedType</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">ReifiedType(Class)<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="ReifiedType(Class)" title="Callers">ConversionServiceChecker$CheckerReifiedType(ConversionServiceChecker,Class,Class[])<br>ReifiedType ConversionServiceChecker$CheckerReifiedType.getActualTypeArgument(int)<br>void ConversionServiceComponent.setConversion(String)<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>void ConversionServiceChecker.init()<br>
+</div>
+</td><td>76</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('ReifiedType(Class)')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">ReifiedType ReifiedType.getActualTypeArgument(int)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Class ReifiedType.getRawClass()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Class ReifiedType.getRawClass()" title="Callers">Object HashtableConverter.convert(Object,ReifiedType)<br>boolean HashtableConverter.canConvert(Object,ReifiedType)<br>Object CustomBooleanConverter.convert(Object,ReifiedType)<br>boolean CustomBooleanConverter.canConvert(Object,ReifiedType)<br>Object ArrayListConverter.convert(Object,ReifiedType)<br>boolean ArrayListConverter.canConvert(Object,ReifiedType)<br>boolean SecurityTestBean.canConvert(Object,ReifiedType)<br>Object VectorConverter.convert(Object,ReifiedType)<br>boolean VectorConverter.canConvert(Object,ReifiedType)<br>Object EuropeanRegionCodeConverter.convert(Object,ReifiedType)<br>boolean EuropeanRegionCodeConverter.canConvert(Object,ReifiedType)<br>Object LinkedHashSetConverter.convert(Object,ReifiedType)<br>boolean LinkedHashSetConverter.canConvert(Object,ReifiedType)<br>Object AsianRegionCodeConverter.convert(Object,ReifiedType)<br>boolean AsianRegionCodeConverter.canConvert(Object,ReifiedType)<br>Object TreeSetConverter.convert(Object,ReifiedType)<br>boolean TreeSetConverter.canConvert(Object,ReifiedType)<br>Object HashMapConverter.convert(Object,ReifiedType)<br>boolean HashMapConverter.canConvert(Object,ReifiedType)<br>Object TreeMapConverter.convert(Object,ReifiedType)<br>boolean TreeMapConverter.canConvert(Object,ReifiedType)<br>Object LinkedListConverter.convert(Object,ReifiedType)<br>boolean LinkedListConverter.canConvert(Object,ReifiedType)<br>Object RegionCodeConverter.convert(Object,ReifiedType)<br>boolean RegionCodeConverter.canConvert(Object,ReifiedType)<br>Object HashSetConverter.convert(Object,ReifiedType)<br>boolean HashSetConverter.canConvert(Object,ReifiedType)<br>
+</div>
+</td><td>27</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Class ReifiedType.getRawClass()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">int ReifiedType.size()</td><td>0</td><td></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.container.ServiceUnavailableException</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">ServiceUnavailableException(String,String)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">ServiceUnavailableException(String,String,Throwable)</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ServiceUnavailableException.getFilter()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ServiceUnavailableException.getFilter()" title="Callers">void UnregisteredCollectionDependencyChecker.init()<br>void UnregisteredCollectionDependencyChecker.init()<br>void UnavailableDependencyChecker.init()<br>void UnavailableDependencyChecker.init()<br>
+</div>
+</td><td>4</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ServiceUnavailableException.getFilter()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.BeanArgument</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int BeanArgument.getIndex()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int BeanArgument.getIndex()" title="Callers">void TestArgument.validate(BlueprintMetadata,BeanArgument)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int BeanArgument.getIndex()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Metadata BeanArgument.getValue()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Metadata BeanArgument.getValue()" title="Callers">void TestArgument.validate(BlueprintMetadata,BeanArgument)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Metadata BeanArgument.getValue()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BeanArgument.getValueType()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BeanArgument.getValueType()" title="Callers">void TestArgument.validate(BlueprintMetadata,BeanArgument)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BeanArgument.getValueType()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.BeanMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">List BeanMetadata.getArguments()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="List BeanMetadata.getArguments()" title="Callers">void BlueprintMetadata.validateArgumentMetadata(BeanMetadata,TestArgument[])<br>void BlueprintMetadata.validatePartialConstructorMetadata(BeanMetadata,TestArgument[])<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('List BeanMetadata.getArguments()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BeanMetadata.getClassName()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BeanMetadata.getClassName()" title="Callers">void BeanComponent.validate(BlueprintMetadata,ComponentMetadata)<br>boolean BeanComponent.matches(ComponentMetadata)<br>boolean BeanComponent.matches(ComponentMetadata)<br>boolean BeanComponent.matches(ComponentMetadata)<br>void BlueprintMetadata.validateLifeCycle(String,String,String,String)<br>void BlueprintMetadata.validateFactoryMetadata(BeanMetadata,String,String,TestValue)<br>
+</div>
+</td><td>6</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BeanMetadata.getClassName()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BeanMetadata.getDestroyMethod()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BeanMetadata.getDestroyMethod()" title="Callers">void BeanComponent.validate(BlueprintMetadata,ComponentMetadata)<br>void BlueprintMetadata.validateLifeCycle(String,String,String,String)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BeanMetadata.getDestroyMethod()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Target BeanMetadata.getFactoryComponent()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Target BeanMetadata.getFactoryComponent()" title="Callers">void BeanComponent.validate(BlueprintMetadata,ComponentMetadata)<br>void BlueprintMetadata.validateFactoryMetadata(BeanMetadata,String,String,TestValue)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Target BeanMetadata.getFactoryComponent()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BeanMetadata.getFactoryMethod()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BeanMetadata.getFactoryMethod()" title="Callers">void BeanComponent.validate(BlueprintMetadata,ComponentMetadata)<br>void BlueprintMetadata.validateFactoryMetadata(BeanMetadata,String,String,TestValue)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BeanMetadata.getFactoryMethod()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BeanMetadata.getInitMethod()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BeanMetadata.getInitMethod()" title="Callers">void BeanComponent.validate(BlueprintMetadata,ComponentMetadata)<br>void BlueprintMetadata.validateLifeCycle(String,String,String,String)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BeanMetadata.getInitMethod()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">List BeanMetadata.getProperties()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="List BeanMetadata.getProperties()" title="Callers">void BlueprintMetadata.validatePropertyMetadata(BeanMetadata,TestProperty[])<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('List BeanMetadata.getProperties()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BeanMetadata.getScope()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BeanMetadata.getScope()" title="Callers">void BeanComponent.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BeanMetadata.getScope()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.BeanProperty</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String BeanProperty.getName()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String BeanProperty.getName()" title="Callers">void TestProperty.validate(BlueprintMetadata,BeanProperty)<br>BeanProperty BlueprintMetadata.locateProperty(List,TestProperty)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String BeanProperty.getName()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Metadata BeanProperty.getValue()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Metadata BeanProperty.getValue()" title="Callers">void TestProperty.validate(BlueprintMetadata,BeanProperty)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Metadata BeanProperty.getValue()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.CollectionMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Class CollectionMetadata.getCollectionClass()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Class CollectionMetadata.getCollectionClass()" title="Callers">void TestCollectionValue.validate(BlueprintMetadata,Metadata)<br>boolean TestCollectionValue.equals(Metadata)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Class CollectionMetadata.getCollectionClass()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String CollectionMetadata.getValueType()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String CollectionMetadata.getValueType()" title="Callers">void TestCollectionValue.validate(BlueprintMetadata,Metadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String CollectionMetadata.getValueType()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">List CollectionMetadata.getValues()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="List CollectionMetadata.getValues()" title="Callers">boolean TestMapValue.equals(Metadata)<br>void TestCollectionValue.validate(BlueprintMetadata,Metadata)<br>boolean TestCollectionValue.equals(Metadata)<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('List CollectionMetadata.getValues()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.ComponentMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">int ComponentMetadata.getActivation()</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													error
+												"></td><td class="code">List ComponentMetadata.getDependsOn()</td><td>0</td><td></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ComponentMetadata.getId()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ComponentMetadata.getId()" title="Callers">void MetadataSamplerValidator.validate(BundleContext)<br>void MetadataSamplerValidator.validate(BundleContext)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ComponentMetadata.getId()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.IdRefMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String IdRefMetadata.getComponentId()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String IdRefMetadata.getComponentId()" title="Callers">void TestIdRefValue.validate(BlueprintMetadata,Metadata)<br>boolean TestIdRefValue.equals(Metadata)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String IdRefMetadata.getComponentId()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.MapEntry</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">NonNullMetadata MapEntry.getKey()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="NonNullMetadata MapEntry.getKey()" title="Callers">boolean MapValueEntry.equals(MapEntry)<br>void MapValueEntry.validate(BlueprintMetadata,MapEntry)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('NonNullMetadata MapEntry.getKey()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Metadata MapEntry.getValue()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Metadata MapEntry.getValue()" title="Callers">boolean MapValueEntry.equals(MapEntry)<br>void MapValueEntry.validate(BlueprintMetadata,MapEntry)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Metadata MapEntry.getValue()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.MapMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">List MapMetadata.getEntries()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="List MapMetadata.getEntries()" title="Callers">void TestMapValue.validate(BlueprintMetadata,Metadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('List MapMetadata.getEntries()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String MapMetadata.getKeyType()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String MapMetadata.getKeyType()" title="Callers">void TestMapValue.validate(BlueprintMetadata,Metadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String MapMetadata.getKeyType()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String MapMetadata.getValueType()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String MapMetadata.getValueType()" title="Callers">void TestMapValue.validate(BlueprintMetadata,Metadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String MapMetadata.getValueType()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.PropsMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">List PropsMetadata.getEntries()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="List PropsMetadata.getEntries()" title="Callers">void TestPropsValue.validate(BlueprintMetadata,Metadata)<br>boolean TestPropsValue.equals(Metadata)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('List PropsMetadata.getEntries()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.RefMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String RefMetadata.getComponentId()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String RefMetadata.getComponentId()" title="Callers">void TestRefValue.validate(BlueprintMetadata,Metadata)<br>boolean TestRefValue.equals(Metadata)<br>boolean TestRegistrationListener.matches(RegistrationListener)<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String RefMetadata.getComponentId()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.ReferenceListMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int ReferenceListMetadata.getMemberType()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int ReferenceListMetadata.getMemberType()" title="Callers">void ReferenceCollection.validate(BlueprintMetadata,ServiceReferenceMetadata)<br>boolean ReferenceCollection.matches(ComponentMetadata)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int ReferenceListMetadata.getMemberType()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.ReferenceListener</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ReferenceListener.getBindMethod()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ReferenceListener.getBindMethod()" title="Callers">void BindingListener.validate(BlueprintMetadata,ReferenceListener)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ReferenceListener.getBindMethod()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Target ReferenceListener.getListenerComponent()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Target ReferenceListener.getListenerComponent()" title="Callers">boolean BindingListener.matches(ReferenceListener)<br>void BindingListener.validate(BlueprintMetadata,ReferenceListener)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Target ReferenceListener.getListenerComponent()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ReferenceListener.getUnbindMethod()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ReferenceListener.getUnbindMethod()" title="Callers">void BindingListener.validate(BlueprintMetadata,ReferenceListener)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ReferenceListener.getUnbindMethod()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.ReferenceMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">long ReferenceMetadata.getTimeout()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="long ReferenceMetadata.getTimeout()" title="Callers">void ReferencedService.validate(BlueprintMetadata,ServiceReferenceMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('long ReferenceMetadata.getTimeout()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.RegistrationListener</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Target RegistrationListener.getListenerComponent()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Target RegistrationListener.getListenerComponent()" title="Callers">boolean TestRegistrationListener.matches(RegistrationListener)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Target RegistrationListener.getListenerComponent()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String RegistrationListener.getRegistrationMethod()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String RegistrationListener.getRegistrationMethod()" title="Callers">boolean TestRegistrationListener.matches(RegistrationListener)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String RegistrationListener.getRegistrationMethod()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String RegistrationListener.getUnregistrationMethod()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String RegistrationListener.getUnregistrationMethod()" title="Callers">boolean TestRegistrationListener.matches(RegistrationListener)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String RegistrationListener.getUnregistrationMethod()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.ServiceMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int ServiceMetadata.getAutoExport()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int ServiceMetadata.getAutoExport()" title="Callers">void ExportedService.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int ServiceMetadata.getAutoExport()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">List ServiceMetadata.getInterfaces()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="List ServiceMetadata.getInterfaces()" title="Callers">boolean ExportedService.matches(ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('List ServiceMetadata.getInterfaces()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int ServiceMetadata.getRanking()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int ServiceMetadata.getRanking()" title="Callers">void ExportedService.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int ServiceMetadata.getRanking()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Collection ServiceMetadata.getRegistrationListeners()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Collection ServiceMetadata.getRegistrationListeners()" title="Callers">void ExportedService.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Collection ServiceMetadata.getRegistrationListeners()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Target ServiceMetadata.getServiceComponent()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Target ServiceMetadata.getServiceComponent()" title="Callers">boolean ExportedService.matches(ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Target ServiceMetadata.getServiceComponent()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">List ServiceMetadata.getServiceProperties()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="List ServiceMetadata.getServiceProperties()" title="Callers">void ExportedService.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('List ServiceMetadata.getServiceProperties()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.ServiceReferenceMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">int ServiceReferenceMetadata.getAvailability()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="int ServiceReferenceMetadata.getAvailability()" title="Callers">void ReferencedServiceBase.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('int ServiceReferenceMetadata.getAvailability()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ServiceReferenceMetadata.getComponentName()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ServiceReferenceMetadata.getComponentName()" title="Callers">boolean ReferencedServiceBase.matches(ComponentMetadata)<br>boolean ReferencedServiceBase.matches(ComponentMetadata)<br>void ReferencedServiceBase.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ServiceReferenceMetadata.getComponentName()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ServiceReferenceMetadata.getFilter()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ServiceReferenceMetadata.getFilter()" title="Callers">boolean ReferencedServiceBase.matches(ComponentMetadata)<br>boolean ReferencedServiceBase.matches(ComponentMetadata)<br>void ReferencedServiceBase.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ServiceReferenceMetadata.getFilter()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ServiceReferenceMetadata.getInterface()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ServiceReferenceMetadata.getInterface()" title="Callers">boolean ReferencedServiceBase.matches(ComponentMetadata)<br>boolean ReferencedServiceBase.matches(ComponentMetadata)<br>void ReferencedServiceBase.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ServiceReferenceMetadata.getInterface()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">Collection ServiceReferenceMetadata.getReferenceListeners()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="Collection ServiceReferenceMetadata.getReferenceListeners()" title="Callers">void ReferencedServiceBase.validate(BlueprintMetadata,ComponentMetadata)<br>
+</div>
+</td><td>1</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('Collection ServiceReferenceMetadata.getReferenceListeners()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<th width="15px"></th><th>org.osgi.service.blueprint.reflect.ValueMetadata</th><th></th><th></th>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ValueMetadata.getStringValue()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ValueMetadata.getStringValue()" title="Callers">void TestStringValue.validate(BlueprintMetadata,Metadata)<br>boolean TestStringValue.equals(Metadata)<br>
+</div>
+</td><td>2</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ValueMetadata.getStringValue()')" title="Show/Hide Callers"></td>
+</tr>
+<tr>
+<td width="15px" class="
+													ok
+												"></td><td class="code">String ValueMetadata.getType()<div class="code" style="display:none;margin:4;padding:8; background-color: #FFFFCC;" id="String ValueMetadata.getType()" title="Callers">void TestStringValue.validate(BlueprintMetadata,Metadata)<br>boolean TestStringValue.equals(Metadata)<br>boolean TestStringValue.equals(Metadata)<br>
+</div>
+</td><td>3</td><td><img src="http://www.osgi.org/www/info.png" onclick="toggle('String ValueMetadata.getType()')" title="Show/Hide Callers"></td>
+</tr>
+</table>
+</body>
+</html>
