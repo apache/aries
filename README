@@ -1,0 +1,38 @@
+This is the new Apache Aries site content
+==========================================
+
+Here is what I did to create it.
+
+1) Branched the old site and created the new site structure as specififed
+
+2) Extracted the cwiki contenet using the export-site.pl tool.
+ To run this I had to install some extra perl modules:
+
+   sudo port install p5-crypt-ssleay
+   sudo port install  p5-libwww-perli
+   sudo port install  p5-rpc-xml
+
+These are Mac specific Darwin ports commands, could also have installed from CPAN.
+
+This generates the site content as *.mdtext files - but also leaves the cwiki files for reference
+
+3) Next step is to build the site using the build tools.
+
+First check the cms build tools out of SVN.
+To run the build_site.pl script I had to:
+
+rm lib/Dotiac/DTL/Addon/markup.pl from teh build tools directory, then install:
+
+sudo perl -MCPAN -e "install Dotiac::DTL"
+sudo cpan Dotiac::DTL::Addon::markup
+
+Also need to take a guess at what the site template shoudl be like. I copied comdev's.
+
+4) Check the site on a local server.
+
+The template needed a lot of fixing.
+The navigation needed some very specific fixing of the mdtext file.
+The site (mainly links) also still need a lot of fixing.
+
+
+
