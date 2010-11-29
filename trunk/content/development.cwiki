@@ -1,0 +1,26 @@
+h1. Contributing as a developer
+
+This page links to information for people that either are, or would like to be involved in, the development of Apache Aries.
+
+h2. Development
+
+ - [Source control|https://svn.apache.org/repos/asf/incubator/aries]
+ - [Bug tracking|https://issues.apache.org/jira/browse/ARIES]
+
+h2. Build
+
+ - [Building Aries|BuildingAries]
+ - [Build system|http://hudson.zones.apache.org/hudson/job/Aries/]
+ - [Module dependencies|ModuleDependencies]
+
+h2. Release
+
+ - [Release Manager's Guide|ReleasingAries]
+
+h2. Compliance testing
+
+ - [The Enterprise OSGi CT | ComplianceTesting ]
+
+h2. Instructions for maintaining the web pages
+
+Committers on the Aries project keep maintain the Web pages by editing a Confluence wiki which is then exported to the Aries Web site. Details of the process are documented [here|MaintainingTheWebPages]

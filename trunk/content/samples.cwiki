@@ -1,0 +1,25 @@
+h1. Samples
+
+h3. [Blog Sample|Blog Sample]
+Includes Blueprint, WAB and JPA concepts delivered in a EBA.
+
+h3. [AriesTrader Sample|AriesTrader]
+Includes Blueprint, WAB and JPA concepts delivered in a EBA.
+You may also know this as the [Apache Geronimo Daytrader|https://cwiki.apache.org/GMOxDOC22/daytrader-a-more-complex-application.html] application, which has been migrated from a pure Java EE environment to a OSGi Blueprint model.
+
+h3. [GOAT Sample|GOATSample]
+A graphical tool for displaying the status of, and relationships between, OSGi bundles running in an OSGi framework.
+
+
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+
+h4. [Archived Sample Instructions|ArchiveInstructions]
+Archived versions of Sample instructions from earlier Apache Aries releases.

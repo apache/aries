@@ -1,0 +1,27 @@
+
+h1. Assembled best practice notes
+
+h3. Overall structure
+
+The Aries project is a collection of loosely couple sub-projects, therefore it must be possible to build each project on it's own. This implies:
+
+# A parent pom that isn't at the root of the SVN trunk
+# Each sub-project has enough pom info so that it can be released independently
+# default-parent has dependency management for basic osgi-dependencies that all projects are almost certain to use (this includes PAX dependencies for testing)
+# Each sub-project has legal files in its checkout root
+# Each sub-project has an SCM element in its pom, but no others do.
+# Each subproject has dependency management for everything included in it.  In addition, it has its subprojects listed in dependency management.  This means that
+## modules in a subproject don't need to include versions for use of other modules
+## you can get dependency management for all the modules in a subproject by depending on the subproject pom with scope import  (see the samples pom for an example).
+# As a result of the above, modules don't have any versions in any dependency elements
+
+h3. Good practice in the pom
+
+# Alphabetic ordering in dependency management
+# Include a brief description of the project
+# Commenting in platform dependencies, see samples assembly projects.
+
+h3. Group and Artifact names 
+# The Bundle Symbolic Name is explicitly set to the Maven artifactId. For projects which deliver bundles, the artifactID will therefore completely describe the jar and must begin org.apache.aries.\{subproject\}. For projects which do not deliver bundles (for example agregator projects) it is acceptable to use a short descriptive artifactID.
+# The group ID will overlap with the artifactId and will normally be of the form org.apache.aries.\{subproject\}
+

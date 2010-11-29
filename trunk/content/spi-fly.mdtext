@@ -1,0 +1,40 @@
+Title: SPI Fly
+This page describes the SPI Fly component.
+The SPI Fly component is aimed at providing general support for the JRE SPI
+mechanism (including the usage of META-INF/services) in OSGi.
+
+The code can be found in
+http://svn.apache.org/repos/asf/incubator/aries/trunk/spi-fly
+
+Currently the implementation does the following:
+* It only considers bundles that have the following Manifest (opt-in)
+header: *SPI-Provider* (the value is not used at the moment).
+* For every new bundle being installed that has the opt-in header, it
+checks the META-INF/services directory for any files. If found it registers
+a service in the Service Registry for each implementation found with the
+following property
+ *spi.provider.url = <the URL to the associated META-INF/services file>*
+
+Additional ideas/concerns:
+* We need to find a mechanism to find any SPI implementations that are part
+of the JRE itself and register these in the Service Registry. Since there
+is typically not a META-INF/services file for these mechanisms nor do they
+implement a common interface we need another mechanism.
+** Can anyone think of a generic mechanism?
+** An ugly alternative could be to manually enumerate these, but this is a
+bit of a maintenance nightmare.
+
+* *gnodet:* the javamail spec do use the META-INF/services discovery
+mechanism, but to detect and instantiate classes using constructors
+that have arguments. We need to investigate if it could cause any real
+problem with the design ... or find a specific way for javamail maybe ...
+
+We need to support 'traditional' clients that don't look in the OSGi
+service registry to obtain their SPI implementation. Some ideas in this
+area are: 
+
+* We could automatically set a System Property for every SPI implementation
+found. That would typically shift the 'default' choice for an
+implementation to the last one found. 
+* Classloader problems around loading an implementation?
+* Various Lifecycle issues when using the traditional way.

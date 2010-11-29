@@ -1,0 +1,236 @@
+Title: Downloads
+<a name="Downloads-ApacheAriesDownloads"></a>
+# Apache Aries Downloads
+
+Apache Aries delivers a set of pluggable Java components enabling an
+enterprise OSGi application programming model.
+
+Apache Aries modules are distributed in source and binary form.
+Alternatively you may checkout the source from Subversion and build Aries
+yourself. Otherwise, the releases below are available for download. These [KEYS](http://www.apache.org/dist/incubator/aries/KEYS)
+ can be used to verify the release archive.
+
+All Apache Aries products are distributed under the terms of The Apache
+Software License (version 2.0). See the LICENSE file included in each
+distribution for additional license information.
+
+This table is for downloading the most recent Aries release, older releases
+can be found [here](archived-releases.html)
+. The release notes for the current release are [here|ReleaseNotes]
+.
+
+<a name="Downloads-Samples"></a>
+### Samples
+The easiest way to use the samples is to download the source zip, navigate
+to the appropriate 'assembly' module and run mvn install to download all
+the released  binary artifacts. Alternatively you can build the entire
+source.
+<table>
+<tr><th> Sub project </th><th> Module </th><th> Version </th><th> Download </th><th> Comments </th></tr>
+<tr><td> Aries Samples </td><td> </td><td> 0.2 </td><td>
+{ariesdownload:zip}samples-0.2-incubating-source-release{ariesdownload} </td><td>
+Source, ready to build </td></tr>
+<tr><td> </td><td> AriesTrader </td><td> 0.2 </td><td> \- </td><td> [AriesTrader sample instructions](aries:ariestrader.html)
+</tr>
+<tr><td> </td><td> AriesTrader JDBC app </td><td> 0.2 </td><td>
+{ariesdownload:eba}org.apache.aries.samples.ariestrader.jdbc-0.2-incubating{ariesdownload}
+</td><td> AriesTrader app with JDBC persistence only </td></tr>
+<tr><td> </td><td> AriesTrader JPA & JDBC app </td><td> 0.2 </td><td>
+{ariesdownload:eba}org.apache.aries.samples.ariestrader.all-0.2-incubating{ariesdownload}
+</td><td> AriesTrader app with all available persistence methods </td></tr>
+<tr><td> </td><td> Blog </td><td> 0.2 </td><td> \- </td><td> [Blog Sample instructions](aries:blog-sample.html)
+ </td></tr>
+<tr><td> </td><td> Blog JDBC app </td><td> 0.2 </td><td>
+{ariesdownload:eba}org.apache.aries.samples.blog.jdbc.eba-0.2-incubating{ariesdownload}
+</td><td> Blog app based on JDBC </td></tr>
+<tr><td> </td><td> Blog JPA app </td><td> 0.2 </td><td>
+{ariesdownload:eba}org.apache.aries.samples.blog.jpa.eba-0.2-incubating{ariesdownload}
+</td><td> Blog app based on JPA </td></tr>
+<tr><td> </td><td> Blueprint HelloWorld </td><td> 0.2 </td><td> \- </td><td> </td></tr>
+<tr><td> </td><td> Blueprint ID Verifier</td><td> 0.2 </td><td> \- </td><td> </td></tr>
+</table>
+
+<a name="Downloads-Projectcomponents"></a>
+### Project components
+
+<table>
+<tr><th> Sub project </th><th> Module </th><th> Version </th><th> Binary </th><th> Source </th><th> Comments </th></tr>
+<tr><td>Application </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}application-0.2-incubating-source-release{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> application-api </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.application.api-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.application.api-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> application-bundle </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.application-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.application-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> application-converters </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.application.converters-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.application.converters-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> application-install </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.application.install-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.application.install-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> application-management </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.application.management-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.application.management-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> application-obr-resolver </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.application.resolver.obr-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.application.resolver.obr-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> application-runtime </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.application.runtime-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.application.runtime-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> application-utils </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.application.utils-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.application.utils-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> Blueprint </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}blueprint-0.2-incubating-source-release{ariesdownload} </td><td>
+</td></tr>
+<tr><td> </td><td> blueprint-api </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.blueprint.api-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.blueprint.api-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> blueprint-bundle </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.blueprint-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.blueprint-0.2-incubating-sources{ariesdownload}
+</td><td> An Uber bundle collecting all the required sub-modules that provide the
+blueprint implementation </td></tr>
+<tr><td> </td><td> blueprint-cm </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.blueprint.cm-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.blueprint.cm-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> blueprint-core </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.blueprint.core-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.blueprint.core-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> eba-maven-plugin </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}eba-maven-plugin-0.2-incubating-source-release{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> \- </td><td> 0.2 </td><td>
+{ariesdownload:jar}eba-maven-plugin-0.2-incubating{ariesdownload} </td><td>
+{ariesdownload:jar}eba-maven-plugin-0.2-incubating-sources{ariesdownload} </td><td>
+</td></tr>
+<tr><td> JMX </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}jmx-0.2-incubating-source-release{ariesdownload} </td><td> </td></tr>
+<tr><td> </td><td> jmx-api </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jmx.api-0.2-incubating{ariesdownload} </td><td>
+{ariesdownload:jar}org.apache.aries.jmx.api-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jmx-blueprint-api </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jmx.blueprint.api-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jmx.blueprint.api-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jmx-blueprint-bundle </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jmx.blueprint-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jmx.blueprint-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jmx-blueprint-core </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jmx.blueprint.core-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jmx.blueprint.core-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jmx-bundle </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jmx-0.2-incubating{ariesdownload} </td><td>
+{ariesdownload:jar}org.apache.aries.jmx-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jmx-core </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jmx.core-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jmx.core-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> JNDI </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}jndi-0.2-incubating-source-release{ariesdownload} </td><td> </td></tr>
+<tr><td> </td><td> jndi-bundle </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jndi-0.2-incubating{ariesdownload} </td><td>
+{ariesdownload:jar}org.apache.aries.jndi-0.2-incubating-sources{ariesdownload}
+</td><td> An Uber bundle that collects the jndi-api, jndi-core and jndi-url bundles
+into one </td></tr>
+<tr><td> </td><td> jndi-core </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jndi.core-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jndi.core-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jndi-url </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jndi.url-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jndi.url-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> JPA </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}jpa-0.2-incubating-source-release{ariesdownload} </td><td> </td></tr>
+<tr><td> </td><td> jpa-api </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jpa.api-0.2-incubating{ariesdownload} </td><td>
+{ariesdownload:jar}org.apache.aries.jpa.api-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jpa-blueprint-aries </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jpa.blueprint.aries-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jpa.blueprint.aries-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jpa-container </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jpa.container-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jpa.container-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> jpa-container-context </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.jpa.container.context-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.jpa.container.context-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> Quiesce </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}quiesce-0.2-incubating-source-release{ariesdownload} </td><td> </td></tr>
+<tr><td> </td><td> quiesce-api </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.quiesce.api-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.quiesce.api-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> quiesce-manager </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.quiesce.manager-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.quiesce.manager-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> Transaction </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}transaction-0.2-incubating-source-release{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> transaction-blueprint </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.transaction.blueprint-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.transaction.blueprint-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> transaction-manager </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.transaction.manager-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.transaction.manager-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> transaction-wrappers </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.transaction.wrappers-0.2-incubating{ariesdownload}
+</td><td>
+{ariesdownload:jar}org.apache.aries.transaction.wrappers-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>
+<tr><td> Util </td><td> </td><td> 0.2 </td><td> \- </td><td>
+{ariesdownload:zip}org.apache.aries.util-0.2-incubating-source-release{ariesdownload}
+</td><td> </td></tr>
+<tr><td> </td><td> \- </td><td> 0.2 </td><td>
+{ariesdownload:jar}org.apache.aries.util-0.2-incubating{ariesdownload} </td><td>
+{ariesdownload:jar}org.apache.aries.util-0.2-incubating-sources{ariesdownload}
+</td><td> </td></tr>

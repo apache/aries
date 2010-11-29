@@ -1,0 +1,84 @@
+h1. The AriesTrader Sample
+
+
+h3. Prereqs 
+{note}
+The Derby installation prereq is only required when using the 0.1-incubating released version of the sample.  Subsequent releases will not require the installation of Derby.  
+
+Also note that the version of Derby used by the 0.1-incubating release and development versions of the AriesTrader Sample is 10.5.3.0. Since May 2010 the Derby tutorial points to the latest Derby release (10.6.x) - if this is installed the AriesTrader sample will not work. See [ARIES-317|https://issues.apache.org/jira/browse/ARIES-317]. For the present the best solution is to install Derby 10.5.3.
+{note}
+
+Follow the instructions [here|http://db.apache.org/derby/papers/DerbyTut/install_software.html#derby] to complete the following actions: Download Derby, Install Derby, Set DERBY_INSTALL, Configure Embedded Derby and then Verify Derby.
+
+
+h3. Creating the OSGi platform (equinox-test-harness) for AriesTrader 
+Download and unzip the source zip for the [latest release|ARIES:Downloads] of Aries Samples and build the equinox-test-harness module under ariestrader:
+{code}
+cd samples-0.1-incubating/ariestrader/assemblies/equinox-test-harness
+mvn install
+{code}
+This procedure will pull in the binaries from the latest release and its dependencies.
+
+h3. Alternative build using Apache Aries trunk.
+As an alternative to using the released version you can also choose to work with the latest, unreleased code.  This will require the use of subversion to checkout the code followed by building the entire Apache Aries project.  Directions are provided here:  [Building Aries instructions|ARIES:BuildingAries].
+
+
+h3. Starting the Equinox Test Harness to run the AriesTrader sample
+AriesTrader needs a test harness to run in.  For this purpose we are using an Equinox assembly that pulls in all of the necessary dependencies.  
+
+The first task is to create the database necessary for AriesTrader:
+{noformat}
+cd [your_aries_installation]/ariestrader-sample/assemblies/equinox-test-harness/target
+export CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
+java org.apache.derby.tools.ij tradeDB.sql
+{noformat}
+
+Next, start Aries in an OSGi framework using the Eclipse Equinox test harness
+{noformat}
+java -jar osgi-3.5.0.v20090520.jar -console
+{noformat}
+The OSGi console should start up, the 'ss' command should show the active bundles but the AriesTrader application is not yet installed (with the exception of the ariestrader derby datasource which is started with the test harness for convenience).  
+
+h3. Installing AriesTrader in the Equinox Test Harness
+To install the AriesTrader application simply copy the eba for AriesTrader into the target/load directory which was created when test harness containing Aries was started.  For convenience the AriesTraders EBAs are copied into the target directory as part of creating the OSGi Equinox test harness. 
+
+When using the "JDBC" only AriesTrader configuration which supports only jdbc persistence:
+{noformat}
+cp org.apache.aries.samples.ariestrader.jdbc-*.eba load/
+{noformat}
+
+When using the "All" AriesTrader configuration which supports all currently available persistence modes:
+{noformat}
+cp org.apache.aries.samples.ariestrader.all-*.eba load/
+{noformat}
+
+Now the 'ss' command should show all of the AriesTrader bundles in state 'ACTIVE'.
+
+If you subsequently delete org.apache.aries.samples.ariestrader.jdbc-*.eba or org.apache.aries.samples.ariestrader.all-*.eba from the target/load directory the application will be uninstalled.
+
+
+h3. Accessing and using the AriesTrader sample
+Point your browser at [http://localhost:8080/org.apache.aries.samples.ariestrader.web/]
+
+Select the "Configuration" tab and the "Configure AriesTrader run-time parameters" choice.  Then select from among the available runtime modes (defauls to JDBC).  Be sure to click "update config" to save your selection.
+
+At the moment the following persistence modes are available when using the "all" EBA:
+* JDBC persistence
+* JPA application managed entity manager persistence
+* JPA container managed entity managers using declarative transaction support  
+
+By default, the sample starts with JDBC persistence.  To select another persistence mechanism see the directions under "Accessing and using the AriesTrader sample. 
+ 
+After selecting the persistence mode you must create the AriesTrader Database tables and indexs.  Select the "Configuration" tab and the "(Re)-create AriesTrader Tables and Indexes". 
+
+Next, you must seed the database with test content.  Once again go to the "Configuration" tab but this time select "(Re)-populate AriesTrader Database" from the available choices to seed the database with a default set of users and stock quotes.  You will see a number of quotes (default is 400) and users (default is 200) created.
+
+Select the "Trading & Portfolios" tab to use the mock trade application or the "Primitives" tab to run some of the web primitive tests (PingJSPEL is not currently working).  You can also run the "Test AriesTrader Scenario" from the "Configuration" tab which will launch a new browser window and step through a trading scenario with each reload of the page.
+
+h3. About the AriesTrader Sample
+
+The AriesTrader sample is a modified version of the Apache Geronimo DayTrader sample.  It has been somewhat simplified and reorganized to support the Apache Aries programming model.  
+
+The AriesTrader sample bundles are organized like this:
+
+!ariesTraderOverview2.png!

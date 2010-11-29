@@ -1,0 +1,11 @@
+Title: ModuleDependencies
+<a name="ModuleDependencies-Modulebuildtimedependencies"></a>
+# Module build time dependencies
+
+There are build time dependencies between Aries modules. This diagram shows
+the dependencies. For example, if you need to build 0.2-incubating JPA
+module you will find that you need to have built (or have available)
+parent, testsupport, util, blueprint, quiesce and transaction at the level
+specified in the pom.xml for the JPA module.
+
+!AriseBuildDeps.png!

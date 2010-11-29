@@ -1,0 +1,62 @@
+h1. The Blog Sample - version 0.1-incubating.
+
+
+h2. Running the Blog Sample
+
+
+h3. Prereqs
+
+Follow the instructions [here|http://db.apache.org/derby/papers/DerbyTut/install_software.html#derby] to complete the following actions: Download Derby, Install Derby, Set DERBY_INSTALL, Configure Embedded Derby and then Verify Derby. 
+{note}
+The version of Derby used by the current release and development versions of the Blog Sample is 10.5.3.0. Since May 2010 the Derby tutorial points to the latest Derby release (10.6.x) - if this is installed the Blog sample will not work. See [ARIES-317|https://issues.apache.org/jira/browse/ARIES-317]. For the present the best solution is to install Derby 10.5.3.
+{note}
+
+h3. Create the OSGi platform for the Blog sample
+
+Download and unzip the source zip for the [latest release|ARIES:Downloads] of Aries Samples and build the blog-assembly module:
+{code}
+cd samples-0.1-incubating/blog/blog-assembly
+mvn install
+{code}
+This procedure will pull in the binaries from the latest release and its dependencies.
+
+h3. Running the Blog sample
+
+Download the JDBC based Blog sample application (.eba file) from the [latest release|ARIES:Downloads].
+
+Create the database
+{code}
+cd samples-0.1-incubating/blog-sample/blog-assembly/target
+export CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
+java org.apache.derby.tools.ij blogDB.sql
+{code}
+now start Aries in an OSGi framework (we're using Eclipse Equinox in this case)
+{code}
+java -jar osgi-3.5.0.v20090520.jar -console
+{code}
+
+The OSGi console should start up, the 'ss' command should show all of the Blog bundles in state 'ACTIVE'.
+
+Now start the blog application (.eba file) you downloaded earlier, by copying it into the load directory which was created when Aries started.
+
+Point your browser to [http://localhost:8080/org.apache.aries.samples.blog.web/]
+
+If you subsequently delete the .eba from the load directory the application will be uninstalled.
+
+h3. Running the sample using a JPA persistence layer
+
+The first blog sample application was written to use a JDBC persistence layer. There is a second application implemented to demonstrate the JPA capability
+
+To run the blog sample which uses the JPA persistence layer, start the OSGi framework, remove any previous copies of the blog sample from the target/load directory, then copy the Blog sample JPA .eba file into the load directory.
+
+Finally, after typing 'refresh' at the OSGi console, point your browser at [http://localhost:8080/org.apache.aries.samples.blog.web/]. You should see something that looks precisely the same as the blog sample running with the JDBC persistence layer, but this time running using the JPA persistence layer.
+
+h2. Using the latest, unreleased code
+
+If you prefer to use the very latest code from subversion, checkout and build the Aries trunk by following the [Building Aries instructions|ARIES:BuildingAries].
+
+h2. About the Blog sample
+
+The blog sample components can be visualised like this:
+
+!BlogSample.png!

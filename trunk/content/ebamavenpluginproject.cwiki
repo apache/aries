@@ -1,0 +1,84 @@
+h1. EBA Maven Plugin
+
+The EBA Maven Plugin provides the ability to generate EBA archives using Maven.  The EBA archive format is described in [Applications].  An EBA archive can optionally contain an Application manifest (APPLICATION.MF).  This can be added in one of two ways
+
+# Hand written and added into the archive.
+# Generated based on pom configuration.
+
+h2. Using the Plugin
+
+The plugin is included by as follows:
+
+{code:xml}
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>eba-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+{code}
+
+By default it will not generate a manifest, so in the above example it will attempt to copy a pre-defined APPLICATION.MF from src/main/resources/META-INF.  If that file does not exist, then no application manifest will be included.
+
+h2. Generating an APPLICATION.MF
+
+The following example shows how to get the plugin to generate an APPLICATION.MF based on the pom configuration:
+
+{code:xml}
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>eba-maven-plugin</artifactId>
+                <configuration>
+                    <generateManifest>true</generateManifest>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+{code}
+
+The pom to application manfiest header mapping is as follows:
+* Pom <groupId/>.<artifactId/> -> Application-SymbolicName
+* Pom <name/> -> Application-Name
+* Pom <version/> -> Application-Version (cleaned up for OSGi)
+* Pom <description/> -> Application-Description
+* Pom <dependencies/> -> Application-Content
+
+h2. Overriding Application-SymbolicName
+
+The application symbolic name defaults to the $\{pom.groupId\}.$\{pom.artifaceId\}.  The following shows how to override this:
+
+{code:xml}
+<configuration>
+  <instructions>
+    <Application-SymbolicName>${pom.artifaceId}</Application-SymbolicName>
+  </instructions>
+</configuration>
+{code}
+
+h2. Adding Application-ExportService and Application-ImportService headers
+
+The application import service and export service headers can be set as follows.  The text inside the elements is included as-is.
+
+{code:xml}
+<configuration>
+  <instructions>
+    <Application-ExportService>...</Application-ExportService>
+    <Application-ImportService>...</Application-ImportService>
+  </instructions>
+</configuration>
+{code}
+
+h2. Including transitive dependencies
+
+By default, the archive will only include the direct dependencies of the project.  Transitive dependencies can be includes as follows:
+
+
+{code:xml}
+<configuration>
+  <useTransitiveDependencies>true</useTransitiveDependencies>
+</configuration>
+{code}

@@ -1,0 +1,29 @@
+h1. Apache Aries
+
+The Aries project is delivering a set of pluggable Java components enabling an enterprise OSGi application programming model. This includes implementations and extensions of application-focused specifications defined by the OSGi Alliance Enterprise Expert Group (EEG) and an assembly format for multi-bundle applications, for deployment to a variety of OSGi based runtimes.
+
+The OSGi R4 V4.2 Enterprise Specification can be found here:
+
+[http://www.osgi.org/Download/Release4V42]
+
+
+To understand the complete scope of the Aries project, see the Aries proposal document on the [incubator wiki|http://wiki.apache.org/incubator/AriesProposal].
+
+h2. Building and Using Aries Components
+
+To understand how to _use_ Aries components, take a look at the [BlueprintHelloWorldTutorial] pages which guides you through how to build the Aries code, provides sample applications and describes how to set up an environment in which to run the consuming application.
+
+Aries provides enterprise OSGi componentry such as the Blueprint container and projects to integrate enterprise technologies such as JTA, JNDI and JPA into an OSGi environment to make these available to OSGi bundles. Some Aries components, such as the Aries Blueprint container, require nothing more than an OSGi framework (such as Equinox or Felix) to run on; others are intended to be integrated into application server or integration runtimes such as ServiceMix or Geronimo.
+
+Continuous builds of Aries are available for download from [http://hudson.zones.apache.org/hudson/view/Aries/]
+
+
+h1. Apache Incubator Disclaimer
+
+{panel}
+Apache Aries is an effort undergoing incubation at the Apache Software Foundation (ASF), sponsored by the Apache Incubator PMC.
+
+Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects.
+
+While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
+{panel}

@@ -1,0 +1,70 @@
+h5. Overview
+
+The Aries JNDI project aims to provide a fully compliant implementation of the OSGi Alliance JNDI Service Specification. This specification details how to advertise InitialContextFactory and ObjectFactories in an OSGi environment. It also defines how to obtain services from the service registry via JNDI.
+
+h5. Service Registry access from JNDI
+
+The OSGi service registry provides a centralised register/query capability for OSGi services. A common pattern outside of OSGi is to make use of the JNDI API to access services from a directory system. The OSGi service registry can be viewed as an example of such a system. The Aries JNDI project provides two URL lookup mechanisms via JNDI that can be used to access the service registry.
+
+h6. osgi:service
+
+The osgi:service lookup scheme is defined by the JNDI Service Specification and follows the scheme:
+
+
+{code}
+osgi:service/<interface>[/<filter>]
+{code}
+The interface part is an interface name, like javax.sql.DataSource, or javax.jms.ConnectionFactory. The filter allows selection based on the properties of the service.
+
+This example:
+
+{code}
+Context ctx = new InitialContext();
+
+Runnable r = (Runnable)ctx.lookup("osgi:service/java.lang.Runnable");
+{code}
+is equivalent to this code written to the OSGi service registry API.
+
+{code}
+BundleContext ctx = getABundleContext();
+ServiceReference ref = ctx.getServiceReference("java.lang.Runnable");
+if (ref != null) {
+  Runnable r = ctx.getService(ref);
+}
+{code}
+
+Lets say you wanted to filter for a Runnable with a property called _fred_ which was mapped to _wilma_. You could write
+
+{code}
+Context ctx = new InitialContext();
+
+Runnable r = (Runnable)ctx.lookup("osgi:service/java.lang.Runnable/(fred=wilma)");
+{code}
+
+which is equivalent to:
+
+{code}
+BundleContext ctx = getABundleContext();
+ServiceReference[] refs = ctx.getServiceReference("java.lang.Runnable", "(fred=wilma)");
+if (refs != null) {
+  Runnable r = ctx.getService(refs[refs.length - 1]);
+}
+{code}
+
+The osgi:service namepsace returns proxies, so if the Runnable was unregistered the proxy would switch to an equivalent alternative. If no such alternative exists then an org.osgi.framework.ServiceException with a type of ServiceException.UNREGISTERED.
+
+h6. osgi:servicelist
+
+It is possible that there are multiple services in the registry that match. In this case the osgi:servicelist lookup scheme can be used. It has the same format as osgi:service, but it is designed to return multiple.
+
+h6. aries:services
+
+The aries:services scheme works in the same way as the osgi:service scheme, but does not perform proxying. You get the actual object back. Care must be taken with this approach as the service could be unregistered, but the client cannot tell to stop using it. As a result it should only be used if the service is to be used for a short period of time. In addition their is no way to indicate that the client is no longer using the service, so clean up cannot occur.
+
+
+
+h5. More Information
+
+
+
+For more information, check out section "126 JNDI Services Specification Version 1.0" in the "OSGi Service Platform Enterprise Specification, Release 4, Version 4.2" available for public download from the [OSGi Alliance|http://www.osgi.org/Download/Release4V42].

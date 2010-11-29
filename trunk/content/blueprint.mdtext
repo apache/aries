@@ -1,0 +1,481 @@
+Title: Blueprint
+<a name="Blueprint-Blueprint"></a>
+# Blueprint
+
+<a name="Blueprint-Introduction"></a>
+## Introduction
+
+Blueprint provides a dependency injection framework for OSGi and was
+standardized by the OSGi Alliance in OSGi Compendium R4.2. It is designed
+to deal with the dynamic nature of OSGi, where services can become
+available and unavailable at any time. The specification is also designed
+to work with plain old Java objects (POJOs) enabling simple components to
+be written and unit tested in a JSE environment without needing to be aware
+of how they are assembled. The Blueprint XML files that define and describe
+the assembly of various components are key to the Blueprint programming
+model. The specification describes how the components get instantiated and
+wired together to form a running module. 
+
+The following documentation covers the 80:20 usage of Blueprint.  For
+further details, please refer to the OSGi Compendium R4.2 specification.
+
+
+<a name="Blueprint-BlueprintBundles"></a>
+##  Blueprint Bundles
+
+The Blueprint Container specification uses an extender pattern, whereby an
+extender bundle monitors the state of bundles in the framework and performs
+actions on behalf of those bundles based on their state. The Blueprint
+extender bundle waits for the bundles to be activated and checks whether
+they are Blueprint bundles. A bundle is considered to be a Blueprint bundle
+when it contains one or more Blueprint XML files. These XML files are at a
+fixed location under the OSGI-INF/blueprint/ directory or are specified
+explicitly in the Bundle-Blueprint manifest header.
+
+Once the extender determines that a bundle is a Blueprint bundle, it
+creates a Blueprint Container on behalf of that bundle. The Blueprint
+Container is responsible for:
+
+    * Parsing the Blueprint XML files
+    * Instantiating the components
+    * Wiring the components together
+    * Registering services
+    * Looking up service references
+
+During initialization, the Blueprint Container ensures that mandatory
+service references are satisfied, registers all the services into the
+service registry, and creates initial component instances. The Blueprint
+extender bundle also destroys the Blueprint Container for a bundle when the
+bundle is stopped. 
+
+<a name="Blueprint-BlueprintXML"></a>
+##  Blueprint XML
+
+The Blueprint XML file is identified by a top-level blueprint element, as
+shown below:
+
+{code:xml|title=blueprint.xml|borderStyle=solid}
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    ...
+</blueprint>
+{code} 
+
+The XML namespace identifies the document as conforming to the Blueprint
+version 1.0.0.	The top-level blueprint element identifies the document as
+a blueprint module definition.
+
+*TODO:* ensure id, activation and dependsOn get documented somewhere.
+
+
+<a name="Blueprint-Beans"></a>
+##  Beans
+
+Beans are declared using the bean element.  The following defines a single
+bean called *accountOne* implemented by the POJO
+*org.apache.aries.simple.Account*.
+
+{code:xml|title=bean.xml|borderStyle=solid}
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+   <bean id="accountOne" class="org.apache.aries.simple.Account" />
+</blueprint>
+{code} 
+
+<a name="Blueprint-BeanConstruction"></a>
+###  Bean Construction
+
+During object construction, the Blueprint Container must first find the
+right constructor or a factory method with a compatible set of parameters
+that matches the arguments specified in the XML. By default, the Blueprint
+Container uses the number and order of the argument elements in XML to find
+the right constructor or method. If the argument  elements cannot be mapped
+to the parameters in the order they are in, the Blueprint Container will
+attempt to reorder the argument elements and find the best-fitting
+arrangement.
+
+To help the Blueprint Container pick the right constructor, method, or
+parameter arrangement, additional attributes, such as index or type, can be
+specified on the argument element. For example, the type attribute
+specifies a class name used to match the argument element to a parameter by
+the exact type. 
+
+A bean can be constructed using a class constructor. In the following
+example, the *class* attribute specifies the name of the Java class to
+instantiate. The Blueprint Container will create the *Account* object by
+passing *1* as the argument to the constructor. 
+
+{code:java|title=Account.java|borderStyle=solid}
+   public class Account {      
+       public Account(long number) {
+	  ...
+       }
+       ...
+   }
+{code} 
+
+{code:xml|title=constructor.xml|borderStyle=solid}
+   <bean id="accountOne" class="org.apache.aries.simple.Account">
+       <argument value="1"/>
+   </bean>
+{code} 
+
+
+A bean can be constructed using a static factory method.  In this example,
+the *class* attribute specifies the name of the class that contains a
+static factory method. The name of the static factory method is specified
+by the *factory-method*  attribute. The Blueprint Container will call the
+*createAccount()* static method on the *StaticAccountFactory* class and
+pass 2 as the argument to create the Account object. 
+
+{code:java|title=StaticAccountFactory.java|borderStyle=solid}
+   public class StaticAccountFactory {	    
+       public static Account createAccount(long number) {
+	  return new Account(number);
+       }
+   }
+{code} 
+
+{code:xml|title=staticfactory.xml|borderStyle=solid}
+   <bean id="accountTwo"
+class="org.apache.aries.simple.StaticAccountFactory" 
+	 factory-method="createAccount">   
+       <argument value="2"/>
+   </bean>
+{code} 
+
+A bean can be constructed using an instance factory method.  In the
+example, the *accountFactory* bean is the factory. The Blueprint
+Container will first create the *AccountFactory* instance with its own
+arguments and properties. In this case, only a single argument is
+specified: the factory name. The Blueprint Container will then call the
+*createAccount()* method on the *AccountFactory* instance and pass 3 as
+the argument to create the Account object.
+
+{code:java|title=AccountFactory.java|borderStyle=solid}
+   public class AccountFactory {      
+       public AccountFactory(String factoryName) {
+	  ...
+       }
+       public Account createAccount(long number) {
+	  return new Account(number);
+       }
+   }
+
+{code} 
+
+{code:xml|title=instancefactory.xml|borderStyle=solid}
+   <bean id="accountFactory"
+class="org.apache.aries.simple.AccountFactory">  
+       <argument value="account factory"/>	
+   </bean>
+
+   <bean id="accountThree"
+	 factory-ref="accountFactory" 
+	 factory-method="createAccount">   
+       <argument value="3"/>
+   </bean>
+{code} 
+
+<a name="Blueprint-BeanProperties"></a>
+###  Bean Properties
+
+Beans can have property values injected.  Injection is performed
+immediately after the bean is constructed.  The following example creates
+the Account bean and then sets the description property using the Java
+Beans naming convention.
+
+
+{code:java|title=Account.java|borderStyle=solid}
+   public class Account {      
+       public Account(long number) {
+	  ...
+       }
+       public String getDescription() {
+	  ...
+       }
+   }
+{code} 
+
+{code:xml|title=constructor.xml|borderStyle=solid}
+   <bean id="accountOne" class="org.apache.aries.simple.Account">
+       <argument value="1"/>
+       <property name="description" value="#1 account"/>
+   </bean>
+{code}
+
+<a name="Blueprint-BeanWiring"></a>
+#### Bean Wiring
+
+Property injection is used for wiring beans together.  In the following
+example *accountOne* is injected with a *Currency* bean.
+
+{code:java|title=Account.java|borderStyle=solid}
+   public class Account {      
+       public Account() {
+	  ...
+       }
+       public void setCurrency(Currency currency) {
+	  ...
+       }
+   }
+{code} 
+
+{code:java|title=Currency.java|borderStyle=solid}
+   public class Currency {	
+       public Currency() {
+	  ...
+       }
+   }
+{code} 
+
+{code:xml|title=properties.xml|borderStyle=solid}
+   <bean id="accountOne" class="org.apache.aries.simple.Account">
+       <property name="currency" ref="currency" />
+   </bean>
+
+   <bean id="currency" class="org.apache.aries.simple.Currency" />
+{code}
+
+
+
+<a name="Blueprint-Services"></a>
+##  Services
+
+In Blueprint XML, a service element defines the registration of a service
+in the OSGi service registry. 
+
+The bean that provides the service object can be referenced using the
+*ref* attribute.  The interfaces under which the service is registered
+can be specified using the *interface* attribute:
+
+{code:java|title=AccountImpl.java|borderStyle=solid}
+   public class AccountImpl implements Account {      
+       public Account() {
+	  ...
+       }
+       public void setCurrency(Currency currency) {
+	  ...
+       }
+   }
+{code} 
+
+{code:xml|title=service.xml|borderStyle=solid}
+   <service id="serviceOne" ref="account"
+interface="org.apache.aries.simple.Account" />
+
+   <bean id="account" class="org.apache.aries.simple.AccountImpl" />
+{code}
+
+The bean that provides the service object can be inlined in the service
+element as follows:
+
+{code:xml|title=service.xml|borderStyle=solid}
+   <service id="serviceTwo"  interface="org.apache.aries.simple.Account">
+      <bean class="org.apache.aries.simple.AccountImpl" />
+   </service>
+{code}
+
+The interfaces under which a service is registered can be determined by
+Blueprint using *auto-export*.  The following registers the service under
+all the bean's interfaces:
+
+{code:xml|title=service.xml|borderStyle=solid}
+   <service id="serviceOne" ref="account" auto-export="interfaces" />
+
+   <bean id="account" class="org.apache.aries.simple.AccountImpl" />
+{code}
+
+Other values for *auto-export* are *disabled* (the default)
+*class-hierarchy* and *all-classes*.
+
+<a name="Blueprint-ServiceProperties"></a>
+### Service Properties
+
+A service can also be registered with a set of properties that can be
+specified using the *service-properties*  sub-element. The
+*service-properties* element contains multiple *entry* sub-elements
+that represent the individual properties. The property key is specified
+using a *key* attribute, but the property value can be specified as a
+*value* attribute or inlined within the element. The service property
+values can be of different types, but only OSGi service property types are
+permitted: primitives, primitive wrapper classes, collections, or arrays of
+primitive types. 
+
+The following is an example of a service registration with two service
+properties. The *active* service property has type of
+*java.lang.Boolean*. The *mode* property is of the default type,
+*String*. 
+
+{code:xml|title=serviceproperties.xml|borderStyle=solid}
+   <service id="serviceFour" ref="account" autoExport="all-classes">
+      <service-properties>
+	  <entry key="active">
+	      <value type="java.lang.Boolean">true</value>
+	  </entry>
+	  <entry key="mode" value="shared"/>
+      </service-properties>
+   </service>
+{code}
+
+<a name="Blueprint-ServiceRanking"></a>
+### Service Ranking
+
+Service ranking can be used to affect the choice of service when there are
+multiple matches.  When choosing between two services, the higher ranked
+service will be returned ahead of the lower.  The default ranking value is
+0. Service ranking is specified using the *ranking* attributes as
+follows:
+
+{code:xml|title=serviceranking.xml|borderStyle=solid}
+   <service id="serviceFive" ref="account" auto-export="all-classes"
+ranking="3" />
+{code}
+
+
+<a name="Blueprint-References"></a>
+## References
+
+Services are found in the service registry using the reference element. The
+following shows a reference named *accountRef* to an *Account* service.
+ If a service matching this reference is found in the service registry then
+it is set on the *accountClient* bean through the *account* property.
+
+{code:xml|title=servicereference.xml|borderStyle=solid}
+   <bean id="accountClient" class="...">
+       <property name="account" ref="accountRef" />
+   </bean>
+
+   <reference id="accountRef" interface="org.apache.aries.simple.Account"
+/> 
+{code}
+
+<a name="Blueprint-ReferenceDynamism"></a>
+### Reference Dynamism
+
+The object that is injected for a reference is actually a proxy to the
+service registered in the service registry. A proxy enables the injected
+object to remain the same while the backing service can come and go or be
+replaced with another service. Calls on a proxy that does not have a
+backing service will block until a service becomes available or a timeout
+occurs at which point a ServiceUnavailableException will be thrown.
+
+{code:java|title=AccountClient.java|borderStyle=solid}
+   try {
+      balance = account.getBalance();
+   } catch (ServiceUnavailableException e) {
+      ...
+   }
+{code} 
+
+The default timeout Blueprint will wait for is 300000 milliseconds (5
+minutes).  This value can be changed on a per bundle basis using directives
+on the Bundle-SymbolicName.  The following switches the timeout off
+completely (the default is true):
+
+{code:java|title=MANIFEST.MF|borderStyle=solid}
+   Bundle-SymbolicName: org.apache.aries.simple.account;
+blueprint.graceperiod:=false
+{code} 
+
+The following sets the timeout to 10000 milliseconds (10 seconds):
+
+{code:java|title=MANIFEST.MF|borderStyle=solid}
+   Bundle-SymbolicName: org.apache.aries.simple.account;
+blueprint.graceperiod:=false; blueprint.timeout=10000;
+{code} 
+
+The timeout can also be set on an individual reference using the
+*timeout* attribute.	The following sets the timeout for the account
+reference to 20000 milliseconds (20 seconds).
+
+{code:xml|title=servicereference.xml|borderStyle=solid}
+   <reference id="accountRef" timeout="20000"
+interface="org.apache.aries.simple.Account" /> 
+{code}
+
+In all cases, a value of 0 means wait indefinitely for the reference to
+become satisfied.
+
+<a name="Blueprint-ReferenceLists"></a>
+### Reference Lists
+
+Multiple matching services can be found using the *reference-list*
+element.  The *reference-list* provides a *List* object that contains
+the service proxy objects or *ServiceReference* objects, depending on the
+*member-type* setting. The provided *List* object is dynamic, as it can
+grow and shrink as matching services are added or removed from the service
+registry. The *List* object is read-only and only supports a subset of
+the *List* API.
+
+The proxies in a *reference-list* are different from the proxies for a
+reference. The *reference-list* proxies target a specific service, do not
+have a *timeout*, and throw *ServiceUnavailableException* immediately
+if their service becomes unavailable.
+
+The following example shows a reference-list that returns a list of service
+objects (proxies).  This is the default value for the *member-type*
+attribute
+
+{code:xml|title=referencelist.xml|borderStyle=solid}
+   <reference-list id="accountRefs" member-type="service-object"
+interface="org.apache.aries.simple.Account" /> 
+{code}
+
+The following shows an example of a reference-list that returns a list of
+ServiceReferences:
+
+{code:xml|title=referencelist.xml|borderStyle=solid}
+   <reference-list id="accountRefs" member-type="service-reference"
+interface="org.apache.aries.simple.Account" /> 
+{code}
+
+Example showing mandatory or optional references (availability)
+
+Example showing use of filter
+
+<a name="Blueprint-BeanProperties"></a>
+## Bean Properties
+
+Example showing use of bean properties
+
+<a name="Blueprint-Scopes"></a>
+## Scopes
+
+Example showing singleton scope
+
+Example showing prototype scope for beans
+
+Example showing prototype scope for services
+
+<a name="Blueprint-ObjectValues"></a>
+## Object Values
+
+Intro to Object Values
+
+Examples showing the use of the various different object value types - ref,
+map, props collection (list, array, set).
+
+<a name="Blueprint-Lifecycle"></a>
+##  Lifecycle
+
+Example showing use of init/destroy-method
+
+<a name="Blueprint-LazyandEagerActiviation"></a>
+##  Lazy and Eager Activiation
+
+Example showing lazy activiation.
+
+Example showing eager activation.
+
+<a name="Blueprint-Dynamism"></a>
+##  Dynamism
+
+Example showing service-listener
+
+Example showing reference-listener
+
+<a name="Blueprint-TypeConverters"></a>
+##  Type Converters
+
+

@@ -1,0 +1,104 @@
+h1. Blueprint tutorial
+
+h3. Introduction
+
+This tutorial is designed for people who are starting to use the Apache Aries Blueprint implementation. After you have worked through the tutorial you will
+* be able to run a very simple piece of code in the Aries Blueprint container
+* understand bean, service and reference definitions in Blueprint
+
+The tutorial assumes a basic working knowledge of Java development, Eclipse and some understanding of OSGi.
+
+In order to work through the tutorial you will need to do checkout and build copy of Aries, the instructions are [here|http://incubator.apache.org/aries/building-aries.html]. This tutorial assumes that you have built Aries and imported the samples/helloworld projects into Eclipse. 
+
+
+\\
+\\
+
+h3. The API, Server and Client projects
+
+\\
+
+When you have checked out and built the Aries code your workspace will contain the four projects highlighted in the picture below. This is a screen shot taken from my Eclipse package explorer:!HW1.png|align=center!
+The project called org.apache.aries.samples.helloworld.blueprint.assembly contains no Java code and is just used to pull together the minimal OSGi platform that is needed to run the sample.
+Expanding the org.apache.aries.samples.helloworld.blueprint.api project shows this:!HW2.png|align=center!
+There are two interesting features of this project, the HelloWorldService.java interface and empty META-INF directory. HelloWorldService.java is the interface for the Helloworld service. It is good OSGi practice to keep interfaces and implementation classes in separate bundles. This allows implementations to be replaced independently of their interfaces. The META-INF directory is where you would expect to see a file called MANIFEST.MF. You don't see it because we are using a Maven plugin (look at the pom.xml) to generate the bundle manifest automatically.
+
+\\
+Expanding the org.apache.aries.samples.helloworld.blueprint.server project shows !HW3.png|align=center!
+There are again two interesting files. HelloWorldServiceImpl.java is an implementation of the HelloWorldService interface in the first blueprint-helloworld-api project. The file config.xml is the Blueprint configuration for this package. 
+
+\\
+The org.apache.aries.samples.helloworld.blueprint.client project looks like this !HW4.png|align=center!
+The client implementation is in HelloWorldClient.java. The file config.xml contains the Blueprint for the client.
+\\
+\\
+
+h3. The Blueprint XML
+
+\\
+
+Blueprint xml files contain all the information that the Blueprint runtime needs to internally wire a bundle's components. They also contain the information that the Blueprint runtime needs to register and locate services in the OSGi service registry. This allows for service-based interactions between bundles. 
+
+\\
+This is a view of what the xml in the two config.xml files is describing: !BPTutorial5F.png|align=center!
+
+\\
+The client configuration file has one bean definition which names the Java class that it requires and gives the name of the method that will be run when the bean has been initialised. The bean definition also describes a property, helloWorldService, which points (see the arrow) to the reference definition. This is telling Blueprint that the bean (helloclient) needs the container to supply a service matched by the 'helloservice' reference, which in turns specifies the interface to be implemented by that service. !BPTutorial6F.png|align=center!
+
+\\
+The server configuration file is similar - with one bean definition which points to the Java class that implements HelloWorldService. The second element in this file is the service definition. This registers a service under the HelloWorldService interface, implemented by the 'helloservice' bean. !BPTutorial7F.png|align=center!
+
+\\
+h3. The Java classes
+
+\\
+
+Both the Java classes are very simple, there are just a couple of minor points to make about each one. The HelloWorldClient class looks like this:!BPTutorial8F.png|align=center!
+# The setHelloWorldService() method will be called by the Blueprint container in order to inject an object implementing the HelloWorldService interface.
+# The startUp() method will be run when the bundle is started: remember that this was specified in the Blueprint. This method executes a hello() method which must be supplied by an implementation of HelloWorldService. The startUp() method in this case will only be run after dependencies have been injected. This is the default Blueprint behaviour.
+
+\\
+\\
+The HelloWorldServiceImpl class is even simpler. It has two methods:!BPTutorial9F.png|align=center!
+# A startUp() method which writes a message to say that the bundle is being started
+# A hello() method which writes a 'hello' message
+
+\\
+\\
+
+h3. Running the code
+
+\\
+
+The code can be run on an Equinox (or Felix) framework. The org.apache.aries.samples.helloworld.blueprint.assembly package assembles an Equinox based platform that contains all of the OSGi bundles you need. To start it up go to the target directory in  org.apache.aries.samples.helloworld.blueprint.assembly, and from command line, type:
+{code}
+java -jar osgi-3.5.0.v20090520.jar -console
+{code}
+You will see some messages, after which you should get the 'osgi>' prompt; sometimes you will need to press return to see it. At the prompt, type 'ss' to see the status of the bundles:!BPTutorial10.png|align=center!
+Next, start the Blueprint container bundle by typing 'start 5' at the osgi prompt.  You will see many debug messages in the code, this is because the target/configuration/config.ini specifies the message level to be DEBUG, if there are too many messages you can change this to 'INFO'. The debug messages are quite interesting to look through in themselves, but a little beyond the scope of this tutorial. The last debug message should indicate that a Blueprint container is running in state 'created'. After that, start the blueprint-helloworld-api in the same way by typing 'start 6' at the prompt.
+
+\\
+The next step is to  start the blueprint-helloworld-server bundle. In amongst the DEBUG messages you should see the single line of output from the startUp() method if the HelloWorldServiceImpl class:
+{code}
+======>>> Starting HelloWorld Server
+{code}
+At this point it is possible to see if the HelloWorldService is registered, like this:
+{code}
+osgi> services (objectClass=org.apache.aries.samples.blueprint.helloworld.api.HelloWorldService)
+{code}
+running this command will tell you that a service is registered but that nothing is using it.
+
+Finally, start the blueprint-helloworld-client bundle. If things have gone according to plan you should see a sequence of 3 messages from the startUp() method, the second message will be a 'hello' from HelloWorldService:
+{code}
+========>>>>Client HelloWorld: About to execute a method from the Hello World server
+======>>> A message from the server: Hello World!
+========>>>>Client HelloWorld: ... if you didn't just see a Hello World message something went wrong
+{code}
+If you re-run the services command above it will tell you that the blueprint-helloworldclient bundle is using the blueprint-helloworldservice.
+
+One interesting experiment is to start the blueprint-helloworldclient bundle before the blueprint-helloworldserver bunde. When you do this, you will see no output until the second bundle is started because the 'helloclient' bean cannot be initialised until that point. If you wait more than five minutes by default, there will be a timeout and the client will not be initialised at all.
+
+
+h3. Summary
+
+In the tutorial you have seen how to construct three simple Blueprint bundles. The client bundle depends directly on the api and indirectly on the server bundle. Blueprint takes care of registering a service from the server bundle so that the client bundle can use it. You will have some appreciation of the classes and XML that form a Blueprint application, and you have seen a simple example working. Of course, this tutorial barely touches on many of the features provided by the Aries Blueprint implementation. Anyone keen to explore the features of Blueprint should look at this [article|http://www.ibm.com/developerworks/opensource/library/os-osgiblueprint/index.html] and continue by reading the [OSGi specification|http://www.osgi.org/Download/Release4V42] (see the 4.2 Compendium spec, section 121, "Blueprint Container Specification") and making modifications to the sample code.

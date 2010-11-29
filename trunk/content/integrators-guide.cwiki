@@ -1,0 +1,42 @@
+This page describes things that should be considered when integrating the Apache Aries project into a runtime.
+
+h1. Installing Applications
+
+An application is installed using the AriesApplicationManager service. A client looks up the AriesApplicationManager and calls one of the createApplication methods. There are two createApplication methods. The first takes a URL that identifies the application. When this is called the application is archive is downloaded from the specified URL and stored in a temporary location. The second takes an IDirectory. The application utils project contains two implementations of IDirectory, one that maps onto directories and the other maps onto a zip. This method creates applications with no downloads. The createApplication method will attempt to convert non bundle content into bundles and will resolve the application in order to find all the dependencies. This does not affect the original application. To get a converted, resolved application the returned AriesApplication can be stored elsewhere. Storing the AriesApplication will store an application archive.
+
+Once the AriesApplication has been created it can be installed into a framework using the install method of the AriesApplicationManager. The install method returns an ApplicationContext which represents the runtime state of the application.
+
+h1. Starting and Stopping an Application
+
+The application can be started and stopped by calling the start and stop methods on the ApplicationContext.
+
+h1. Uninstalling an Application
+
+The application can be uninstalled by passing the ApplicationContext to the uninstall method on the AriesApplicationManager.
+
+h1. Felix FileInstall
+
+The aries application project contains an example application installer that hooks into the felix file install project. It automatically installs and uninstalls .eba archives found by FileInstall.
+
+h1. BundleConverters
+
+A BundleConverter is a service that can convert an artefact into an OSGi Bundle. The interface is provided an IFile indicating the artefact in the application and an IDirectory for the root of the aries application. If the artefact can be converted then an InputStream is returned that contains the bytes for the bundle.
+
+The Aries application project contains a converter for turning war files into web application bundles.
+
+h1. AriesApplicationResolvers
+
+The Application-Content header in the application does not denote the full content of the application. When the application is created the runtime will use an AriesApplicationResolver service to work out what extra bundles are needed to run the application.
+
+The aries project contains two resolvers:
+
+# The NoOpResolver. This resolver assumes that all the required bundles are contained by value in the application and simply returns the information about the bundles in the application.
+# The OBRAriesResolver. This resolver makes use of OBR to resolve the applications
+
+The AriesApplicationManager service picks up any resolver in the service registry, so alternatives can be provided if the default resolvers do not provide the desired behaviour.
+
+h1. ApplicationContextManagers
+
+The AriesApplicationManager does not itself know how to put an application into an OSGi framework. To do this it calls out to an ApplicationContextManager. 
+
+The aries project contains a single simple application context manager which installs the application into a flat framework. This does not provide the isolation expected for the application content and is provided as a simple sample.

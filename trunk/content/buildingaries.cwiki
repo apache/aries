@@ -1,0 +1,89 @@
+h1. Extracting and building Aries
+
+There are two ways to do this. The first avoids using the command line but can leave you with some fixing up to do on the projects.
+
+h2. Prereqs
+
+ * Check that Maven is 2.0.10 or higher (mvn --version)
+ * Download and extract eclipse-jee-ganymede-SR2-linux-gtk.tar.gz (this is the 3.4 version)
+ * Install Subversion client http://subclipse.tigris.org/update_1.6.x (Just the Subclipse and Core)
+ * Install m2eclipse http://m2eclipse.sonatype.org/update/ (Maven Integration and Maven optional components)
+
+
+
+h2. Build at the command line then import into Eclipse if you need Eclipse.
+This is the easiest way to build Aries and then work on the modules using Eclipse. If you don't care about Eclipse go to the next section.
+
+ * check out from the command line {{svn co https://svn.apache.org/repos/asf/incubator/aries/trunk aries}}
+ * cd aries
+ * mvn clean
+ * cd parent
+ * mvn install
+ * cd ../eba-maven-plugin
+ * mvn install (*See note below*)
+ * cd ..
+ * mvn install
+ * mvn eclipse:eclipse (should see 'BUILD SUCCESSFUL' message)
+ * fire up eclipse and switch to the Java perspective
+ * import the projects. File->import->General->existing projects into workspace. Import 'blueprint, 'jndi', 'testsupport' and 'transaction'
+
+If everything looks good run a  maven build with the target 'install' (adds jars to your local repository) or 'package' (just creates jars in your workspace). Hit F5 in the package explorer view to refresh and you should see packaged jar files under the *target* directories in the projects.
+
+{note}
+Note: There is currently (September 2010) what appears to be a timing issue that is causing unpredictable test failures during a full build. If you see test failures, try 'mvn install -fae'
+{note}
+
+h2. Just build it - no Eclipse
+ * check out from the command line {{svn co https://svn.apache.org/repos/asf/incubator/aries/trunk aries}}
+ * cd aries
+ * mvn clean
+ * cd parent
+ * mvn install
+ * cd ../eba-maven-plugin
+ * mvn install
+ * cd ..
+ * {{mvn -fn install}} (-fn continues after failures), or {{mvn -fn package}} (alternatively, you can disable the tests with {{mvn -Dmaven.test.skip=true install}} with the side-effect of making the build process much faster)
+
+h2. Eclipse only
+This should work if you are command-line averse. On the other hand it seems to be the best way to get into a mess with the M2Eclipse plugin.
+
+ * In the SVN view, add the aries repository https://svn.apache.org/repos/asf/incubator/aries
+ * Expand the repository, right click on trunk and take 'check out as Maven project'
+There will be errors in the projects. To fix these:
+ * Right click on pom/xml in the aries project, select 'run as Maven build....'
+ * Type 'clean' in as the build goal
+ * Repeat the process using 'eclipse:eclipse' as the build goals'
+ * Close and re-open all the projects
+
+If there are still failures see the "Fixing failures" step below. If everything looks good run a final maven build with the target 'install' (adds jars to your local repository) or 'package' (just creates jars in your workspace). Hit F5 in the package explorer view to refresh and you should see packaged jar files under the *target* directories in the projects.
+
+
+h2. Fixing failures
+
+h5. In Eclipse
+
+You will see some of the blueprint projects don't build. To fix this you need to comment out the following line:
+{code}
+<!-- <classpathentry kind="src"
+path="/Users/linsun/aries/blueprint/blueprint-api/src/main/resources/org/osgi/service/blueprint"
+including="blueprint.xsd" excluding="**/*.java"/> -->
+{code}
+
+in the .classpath file in the aries-blueprint-core project.
+
+If there is a build error in the org.apache.aries.blueprint.itests project then remove this jar:
+{code}
+org/apache/felix/org.osgi.foundation/1.2.0.jar
+{code}
+from the project's classpath.
+
+If there is a build error in the aries-jmx-core project then configure this project's build path to add the JRE System Library to Java Build Path.
+
+There should be no outstanding errors.
+
+h5. Out of memory errors
+You may find that building Aries fails with out of memory exceptions on some systems (eg Mac)  if you use the standard Java settings. Setting the two environment variables as shown below may help.
+{code}
+export MAVEN_OPTS="-XX:MaxPermSize=128m -Xms512m -Xmx512m -XX:+HeapDumpOnOutOfMemoryError"
+export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=128m -XX:+HeapDumpOnOutOfMemoryError"
+{code}

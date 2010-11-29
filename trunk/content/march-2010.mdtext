@@ -1,0 +1,35 @@
+Title: March 2010
+Aries will deliver a set of pluggable Java components enabling an
+enterprise OSGi application programming model.
+
+Aries entered incubation on September 22, 2009.
+
+There are currently no issues requiring IPMC or Board attention .
+
+The following sub-components are actively being developed:
+
+* Application
+* Blueprint
+* JMX
+* JPA
+
+Several new sample applications have been developed to demonstrate the
+Aries functionality.
+
+A new component has been created to feed experience into the OSGi standards
+process.
+
+There has been a lot of activity on the mailing list this year indicating a
+vibrant community is being built.
+
+One new committer, Rex Wang, has been added. Redhat have started to
+participate in the project.
+
+We have begun the process of doing a 0.1.0 release and aim to release
+shortly.
+
+Top 2 or 3 things to resolve before graduation:
+
+* Build community
+* Create a release
+* Address project scope concerns raised during acceptance vote

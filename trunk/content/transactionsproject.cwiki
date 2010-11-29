@@ -1,0 +1,3 @@
+The Aries JTA project will focus on making container managed transactions available as OSGi services.
+
+For more information, check out section "123 JTA Transaction Services Specification 1.0" in the "OSGi Service Platform Enterprise Specification, Release 4, Version 4.2" available for public download from the [OSGi Alliance|http://www.osgi.org/Download/Release4V42].

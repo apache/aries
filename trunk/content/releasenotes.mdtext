@@ -1,0 +1,67 @@
+Title: ReleaseNotes
+<a name="ReleaseNotes-ReleaseNotes"></a>
+# Release Notes
+
+<a name="ReleaseNotes-NewandNoteworthy"></a>
+### New and Noteworthy
+
+Welcome to the 0.2-incubating release. For this release we started running
+the OSGi Enterprise Compliance tests for relevant components. 
+
+ * [Test Results](-http://incubator.apache.org/aries/testresults.html.html)
+ * [JIRA Release Notes ](-https://issues.apache.org/jira/secure/releasenote.jspa?projectid=12310981&stylename=html&version=12314941.html)
+
+<a name="ReleaseNotes-NewComponents"></a>
+### New Components
+Quiesce.
+The Quiesce component co-ordinates a graceful shutdown across a number of
+bundles. Quiesce participants respond to quiesce operations and clean up
+resources. In this release, only the JPA component implements a quiesce
+participant.
+
+<a name="ReleaseNotes-Modulesinthisrelease"></a>
+### Modules in this release
+
+<table>
+<tr><th> Module </th><th> Version </th><th> Depends (build)  on Aries module </th><th> Version</th></tr>
+<tr><td> Application </td><td> 0.2-incubating </td><td> Util </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Blueprint </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Testsupport </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Web </td><td>  0.2-incubating</td></tr>
+<tr><td> Blueprint </td><td> 0.2-incubating </td><td> Util </td><td>  0.2-incubating</td></tr>
+<tr><td> Eba-maven-plugin </td><td> 0.2-incubating </td><td> </td><td> </td></tr>
+<tr><td> JMX </td><td> 0.2-incubating </td><td>  Util </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Blueprint </td><td>  0.2-incubating</td></tr>
+<tr><td> JNDI </td><td> 0.2-incubating </td><td> Util </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Testsupport </td><td>  0.2-incubating</td></tr>
+<tr><td> JPA </td><td> 0.2-incubating </td><td>  Util </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Blueprint </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Testsupport </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Quiesce </td><td>  0.2-incubating</td></tr>
+<tr><td> Quiesce </td><td> 0.2-incubating </td><td>  Util </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Testsupport </td><td>  0.2-incubating</td></tr>
+<tr><td>Transaction </td><td> 0.2-incubating </td><td> Blueprint </td><td>  0.2-incubating</td></tr>
+<tr><td> - </td><td> - </td><td> Testsupport </td><td>  0.2-incubating</td></tr>
+<tr><td>Util</td><td> 0.2-incubating </td><td>  Testsupport </td><td>	0.2-incubating</td></tr>
+</table>
+
+
+<a name="ReleaseNotes-Newsamples"></a>
+### New samples
+No new samples but we changed the Blog Sample and Aries Trader samples so
+that no database initialisation is required prior to running the sample.
+
+<a name="ReleaseNotes-NewTutorials"></a>
+### New Tutorials
+None
+
+<a name="ReleaseNotes-APIbreaking"></a>
+### API breaking
+None.
+
+<a name="ReleaseNotes-KnownIssues"></a>
+### Known Issues
+[JIRA query for known issues in the 0.2-incubating release ](-https://issues.apache.org/jira/secure/issuenavigator.jspa?mode=hide&requestid=12314569.html)
+
+<a name="ReleaseNotes-Importantchangestoconsiderwhenupgrading"></a>
+### Important changes to consider when upgrading

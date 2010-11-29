@@ -1,0 +1,17 @@
+Aries will deliver a set of pluggable Java components enabling an enterprise OSGi application programming model.
+
+Aries entered incubation on September 22, 2009. This is our second board report.
+
+There are currently no issues requiring IPMC or Board attention .
+
+The svn area has been organized with a single trunk for now, though we still need to settle the discussion about components lifecycle and the svn layout.
+
+The application manifest component of the IBM contribution has been moved out into the trunk. The blueprint component has undergone some further enhancement and work is starting on an implementation of the OSGi JMX specification.
+
+The mailing lists was quieter this month, probably due to the apache conference.
+
+Top 2 or 3 things to resolve before graduation:
+
+Build community
+Create a release
+Address project scope concerns raised during acceptance vote

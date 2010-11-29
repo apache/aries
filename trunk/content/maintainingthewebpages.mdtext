@@ -1,0 +1,93 @@
+Title: MaintainingTheWebPages
+<a name="MaintainingTheWebPages-HowtheArieswebsiteworks"></a>
+# How the Aries web site works
+
+The Aries web site is built from a Confluence wiki. A Confluence plug-in,
+the auto-export plug-in, exports the wiki pages to html. The exported html
+is rsync'd once an hour with the web site directory on Minotaur, this in
+turn is rsync'd once an hour with the public facing web servers eos and
+aurora. The style sheet is extracted from SVN and is also applied to the
+web site once an hour. This means that when changes are made to the wiki
+will they may take up to two hours to propagate to the web site.
+
+This page gives a more detailed description of how the process works and
+what you can expect to see. 
+
+<a name="MaintainingTheWebPages-Thedetails"></a>
+### The details
+
+<a name="MaintainingTheWebPages-Thewikipages"></a>
+##### The wiki pages
+Any Aries committer can update the web site, in addition to their Apache
+UID they also need a Confluence user ID and password. Somewhere on the web
+site you will find an 'edit' button, if a committer selects the button it
+will take them to the wiki edit pages, or, if they don't have a Confluence
+ID it will take them to a page where they can request an ID. If you are
+making changes please:
+* Add new pages in a logical place in the site. For example, 'People' is a
+child page of 'Community'
+* Avoid spaces in page names
+* Confluence has a single name space per site - so choose page names which
+stand a good chance of being unique. 
+
+<a name="MaintainingTheWebPages-Savingchanges"></a>
+##### Saving changes
+When you have finished editing the wiki, save the changes and the
+auto-export plugin will take care of exporting the html. If you want to see
+where it is exported to:
+{code}
+ssh people.apache.org
+ls -latr /www/confluence-exports/ARIES
+{code}
+
+<a name="MaintainingTheWebPages-Whydoesthewebsitelooklikeawikistill?"></a>
+##### Why does the web site look like a wiki still?
+Magic. The auto-export plugin needs a template, but only someone with
+Confluence Admin rights can apply it. The templates look like Velocity
+templates - but of course you can't see them unless you have Confluence
+Admin rights :-). However to preserve history and just in case there is an
+issue in Confluence we keep a copy of the auto-export template in svn at 
+https://svn.apache.org/repos/asf/incubator/aries/site/template/ARIES_autoexport_template.xml
+
+These templates are fairly common and projects often copy them when they
+find one they like.  For Aries, we used the template from ServiceMix, but
+we could have used the one from Tuscany or any of the projects that run
+their sites this way. 
+
+Here is a [list](http://cwiki.apache.org/confluence/administrators.action)
+ of people with Confluence Admin rights if you need to update or modify the
+template.  Please be sure to save any future changes in the auto-export
+template at the svn location mentioned.
+
+h5. How do the HTML pages get to their final location - and where is that
+exactly?
+Simple. You or someone on the project, needs to set up a cron job which
+rsyncs the directory that the wiki exports to with the real web site
+directory. For example, on people.apache.org:
+{code}
+'0 * * * * (/usr/local/bin/rsync -r /www/confluence-exports/ARIES/
+/www/incubator.apache.org/aries/)
+{code}
+
+Another cron job will rsync the web site directory om minotaur with the
+public facing Apache web servers (eos and aurora). If this step seems to be
+failing you will need to mail the infra@ list.
+
+<a name="MaintainingTheWebPages-Whataboutstylesheets?"></a>
+##### What about style sheets?
+The style sheet (site.css) is applied to the final minotaur destination,
+/www/incubator.apache.org/aries/ by extracting it from [SVN](https://svn.apache.org/repos/asf/incubator/aries/site/)
+. The style sheet, not the template, provides most of the look and feel of
+the site.
+
+<a name="MaintainingTheWebPages-WhatdoIdowhenitgoeswrong?"></a>
+##### What do I do when it goes wrong?
+Check the content of the wiki export and the web site directories. Make
+sure that your changes were saved and check that the cron job has run. If
+it looks like a Confluence issue or an issue with synching to the public
+facing web servers mail the [infra](mailto:infrastructure@apache.org.html)
+ list and ask for help.
+
+
+
+

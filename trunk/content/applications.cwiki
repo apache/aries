@@ -1,0 +1,87 @@
+h1. Aries Applications
+
+An Aries application is a collection of one or more OSGi modules that together provide a coherent business function. An Aries application can consist of modules of many different types.  For example, a Aries application providing Web banking might consist of bundles with Web content (Web Application Bundles), bundles with Blueprint contexts, and bundles with JPA entities and persistence configuration (Persistence Bundles).  
+
+An Aries application isolates the OSGi services offered by its contained modules so that they are not visible outside the application unless explicitly configured to be exported from the application. Aries applications have several ways of accepting workloads: an Aries applications may include Web bundles for processing HTTP workloads; it may export one or more of the services offered by its contained modules to other Aries applications or for distribution as a Web service.  
+
+With the isolation runtime, each Aries application runs in its own isolated OSGi framework instance with its own OSGi service registry. Bundles in one Aries application cannot see bundles, services, or packages that are defined in another OSGi application, unless the bundles, services, or packages are explicitly shared by both applications. An Aries application can also load packages and consume OSGi services from a shared bundle space, that is, the OSGi framework instance that is the parent of all the isolated framework instances of the OSGi applications.
+
+h2. Structure of an Aries application
+
+An Aries application is packaged as a zip file with a '.eba' suffix. Its structure is as follows:
+
+{code:title=Sample Aries application structure}
+META-INF/APPLICATION.MF
+bundle1.jar
+bundle2.jar
+bundle3.jar
+{code}
+
+The file must contain either an APPLICATION.MF with at least one bundle listed in its Application-Content header (see below), or at least one bundle 'by value' within the .eba. No 'by value' bundles are required if a valid APPLICATION.MF is present. 
+
+Application metadata, APPLICATION.MF,  stored in the .eba file defines the isolation scope of the bundles that the OSGi application uses. An Aries applicaiton can also use metadata to permit some of its constituent bundles to be shared. Sharing in this way can reduce the memory and resource requirements of a system. Shared bundles must be provided by reference rather than contained directly in an application.
+
+h2. Aries Application Manifest
+
+An Aries Application is defined using a Manifest. The Aries manifest is located at META-INF/APPLICATION.MF and describes modularity at the application level. The manifest enumerates the modules that comprise the Aries application along with any OSGi services exported from, or referenced by, those modules.  The following is an example of an Aries manifest:
+
+{code:title=APPLICATION.MF}
+Manifest-Version: 1.0
+Application-ManifestVersion: 1.0
+Application-Name: Bank Account
+Application-SymbolicName: com.mybank.account.app
+Application-Version: 1.0
+Application-Content: 
+	com.mybank.account.bankWeb; version=1.0.0,
+	com.mybank.account.bankAccount; version=1.0.0,
+	com.mybank.account.common; version=1.0.0,
+	com.mybank.account.utility; version=1.0.0
+Use-Bundle: com.mybank.account.admin;version="[1.0.0,2.0.0)"
+Application-ExportService: com.mybank.account.service.AccountService
+Application-ImportService: com.mybank.security.UserAuthService;filter="(security=strong)"
+{code}
+
+The manifest headers are as follows:
+
+* Manifest-Version - a version number for the manifest format.
+* Application-ManifestVersion - identifies the application manifest version to which this manifest conforms
+* Application-Name - a human readable name for the application
+* Application-SymbolicName - a name to uniquely identify the application. Follows the same scheme as Bundle-SymbolicName.
+* Application-Version - uniquely identify the version of the application. The combination of symbolic name and version must be unique within an Aries application runtime.
+* Application-Content - a list of 'root' bundles to provision for the application. 'Version' identifies a version range for the bundle to be provisioned thus allowing flexibility. The version format is identical to that used for OSGi import (e.g. Import-Package).
+* Use-Bundle - a list of bundles bundles to use to satisfy the package dependencies of bundles in the Application-Content list. Each bundle in the Use-Bundle list must provide at least one package to at least one bundle in the Application-Content list. These bundles will be provisioned into the shared bundle space at run time.
+* Application-ExportService - a list of service interface names and optional filters identifying services provided by the application which can be accessed outside the application.
+* Application-ImportService - a list of service interface names and optional filters identifying services which the application would like to consume from outside the application.
+
+Often, you do not require a Use-Bundle header, but there are some situations where it is useful. You can use it to restrict the level at which sharing is possible. For example, you can ensure that an application uses the same bundle for package imports that it was tested with. Alternatively, you can ensure that two applications use the same bundle for package imports. By setting the restriction at application level, the bundle can remain flexible.
+
+h2. Aries Deployment Manifest
+
+The Aries application model allows for the possibility that the bundles listed in APPLICATION.MF's Application-Content header, plus those optionally included within a .eba file, may have unsatisfied package or service dependencies. Such missing dependencies may be obtained ('provisioned') from one or more bundle repositories. Aries will provide a generic 'Resolver' API which may be backed by technology such as [Felix OBR|http://felix.apache.org/site/apache-felix-osgi-bundle-repository.html] or [Equinox p2|http://wiki.eclipse.org/Equinox_p2_Getting_Started]. Although it is possible to re-resolve an application every time it is installed, or even started, this may result in inconsistent behaviour as the contents of an associated bundle repository changes. Aries uses a second file, META-INF/DEPLOYMENT.MF to record a single consistent set of bundles that fully satisfy an application's dependencies. The bundles recorded in DEPLOYMENT.MF will be loaded into the runtime each time the application is installed. A DEPLOYMENT.MF file will be generated if one does not exist, or honoured if provided. Here's an example:
+
+{code:title=DEPLOYMENT.MF}
+Manifest-Version: 1.0
+Application-Version: 1.0
+Application-SymbolicName: com.mybank.account.app
+Deployed-Content: com.mybank.account.bankWeb; deployed-version=1.0.0,
+	com.mybank.account.bankAccount; deployed-version=1.0.0,
+	com.mybank.account.common; deployed-version=1.2.0,
+	com.mybank.account.utility; deployed-version=1.0.0, 
+        com.mybank.utils.logging; deployed-version=1.3.1
+Provision-Bundle: com.mybank.account.delivery;deployed-version=1.0.1
+Import-Package: com.mybank.account.admin.login;version="1.0.1";bundle-symbolic-name="com.mybank.account.admin";bundle-version="[1.0.1,1.0.1]",com.mybank.account.delivery.bycar;version="[1.0.0,2.0.0)",javax.servlet;version="2.5.0"
+Deployed-Use-Bundle: com.mybank.account.admin;deployed-version=1.0.1
+{code}
+The manifest headers are as follows:
+* Manifest-Version - a version number for the manifest format.
+* Application-Version - uniquely identify the version of the application. Must match that in the associated APPLICATION.MF. 
+* Application-SymbolicName - a name to uniquely identify the application. Follows the same scheme as Bundle-SymbolicName. Must match that in the associated APPLICATION.MF. 
+* Deployed-Content: the complete list of bundles, with exact version numbers, that comprise the application and its dependencies. 
+* Deployed-Use-Bundle - a list of bundles that satisfy the package dependencies of bundles in the Deployed-Content list. Each element in the Deployed-Use-Bundle list must provide at least one package to at least one bundle in the Deployed-Content list. The Deployed-Use-Bundle list is an exact subset of the Use-Bundle list in the APPLICATION.MF. These bundles will be loaded into the shared bundle space at run time. Each bundle in the Deployed-Use-Bundle list is guaranteed to be wired to its dependent bundles in the Deployed-Content list at run time. 
+* Provision-Bundle - a list of additional bundles that are required as a result of resolving the OSGi application. Each bundle is loaded into the shared bundle space at run time.
+* Import-Package - a list of the packages that the bundles in the Deployed-Content list consume from the bundles in the Deployed-Use-Bundle and Provision-Bundle lists. For packages that are consumed from the Deployed-Use-Bundle list, the package import has ;bundle-symbolic-name and ;bundle-version attributes. 
+
+Versions in APPLICATION.MF are ranges: in DEPLOYMENT.MF they are exact. Hence we see Application-Content: com.mybank.account.common; version=1.0.0 having been interpreted as '1.0.0 or higher' and so resolved to 1.2.0. Also a common logging bundle at version 1.3.1 will be deployed with the application. 
+  
+
+
