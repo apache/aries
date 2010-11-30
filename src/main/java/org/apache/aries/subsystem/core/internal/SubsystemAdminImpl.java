@@ -28,18 +28,13 @@ import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemEvent;
 import org.apache.aries.subsystem.SubsystemException;
 import org.apache.aries.subsystem.SubsystemListener;
+import org.apache.aries.subsystem.scope.ScopeAdmin;
 import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceResolver;
-import org.apache.felix.utils.manifest.Clause;
-import org.apache.felix.utils.manifest.Parser;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.Constants;
-import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.osgi.service.composite.CompositeAdmin;
-import org.osgi.service.composite.CompositeBundle;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,94 +44,57 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     private static final Version SUBSYSTEM_MANIFEST_VERSION = new Version("1.0");
 
     final BundleContext context;
+    final ScopeAdmin scopeAdmin;
     final Map<Long, Subsystem> subsystems = new HashMap<Long, Subsystem>();
-    final ServiceTracker compositeAdminTracker;
     final ServiceTracker resourceResolverTracker;
     final SubsystemEventDispatcher eventDispatcher;
     final ServiceTracker listenersTracker;
+    final Subsystem subsystem;
+    final Subsystem parentSubsystem;
     
-    public SubsystemAdminImpl(BundleContext context, SubsystemEventDispatcher eventDispatcher) {
-        this.context = context;
-        this.eventDispatcher = eventDispatcher;
-        this.compositeAdminTracker = new ServiceTracker(context, CompositeAdmin.class.getName(), null);
-        this.compositeAdminTracker.open();
+    public SubsystemAdminImpl(ScopeAdmin scopeAdmin, Subsystem subsystem, Subsystem parentSubsystem) {
+        context = Activator.getBundleContext();
+        this.eventDispatcher = Activator.getEventDispatcher();
+        this.scopeAdmin = scopeAdmin;
+        this.subsystem = subsystem;
+        this.parentSubsystem = parentSubsystem;
         this.resourceResolverTracker = new ServiceTracker(context, ResourceResolver.class.getName(), null);
         this.resourceResolverTracker.open();
         this.listenersTracker = new ServiceTracker(context, SubsystemListener.class.getName(), null);
         this.listenersTracker.open();
-        // Track subsystems
-        synchronized (subsystems) {
-            this.context.addBundleListener(new SynchronousBundleListener() {
-                public void bundleChanged(BundleEvent event) {
-                    SubsystemAdminImpl.this.bundleChanged(event);
-                }
-            });
-            loadSubsystems();
-        }
     }
 
     public void dispose() {
-        compositeAdminTracker.close();
         resourceResolverTracker.close();
         listenersTracker.close();
     }
-
-    public void bundleChanged(BundleEvent event) {
-        synchronized (subsystems) {
-            Bundle bundle = event.getBundle();
-            if (event.getType() == BundleEvent.UPDATED || event.getType() == BundleEvent.UNINSTALLED) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Removing bundle symbolic name {} version {} from subsystems map being tracked", bundle.getSymbolicName(), bundle.getVersion());
+    
+    private synchronized void refreshSubsystems() {
+        subsystems.clear();
+        /*for (Subsystem sub : subsystem.getChildrenSubsystems()) {
+            subsystems.put(sub.getSubsystemId(), sub);
+        }*/
+        
+        final String filter = "(SubsystemParentId=" + subsystem.getSubsystemId() + ")";
+                  
+        try {
+            ServiceReference[] srs = context.getServiceReferences(SubsystemAdmin.class.getName(), filter);
+            if (srs != null) {
+                for (ServiceReference sr : srs) {
+                    SubsystemAdmin childSubAdmin = (SubsystemAdmin)context.getService(sr);
+                    Subsystem childSub = childSubAdmin.getSubsystem();
+                    subsystems.put(childSub.getSubsystemId(), childSub);
+                    context.ungetService(sr);
                 }
-                subsystems.remove(bundle.getBundleId());
+                
             }
-            if (event.getType() == BundleEvent.INSTALLED || event.getType() == BundleEvent.UPDATED) {
-                Subsystem s = isSubsystem(bundle);
-                if (s != null) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Adding bundle symbolic name {} version {} to subsystems map being tracked", bundle.getSymbolicName(), bundle.getVersion());
-                    }
-                    subsystems.put(s.getSubsystemId(), s);
-                }
-            }
-            if (event.getType() == BundleEvent.RESOLVED) {
-                Subsystem s = isSubsystem(bundle);
-                if (s != null) {
-                    // emit the subsystem resolved event
-                    eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.RESOLVED, System.currentTimeMillis(), s));
-                }
-            }
+        } catch (InvalidSyntaxException e) {
+            // ignore
         }
     }
-
-    protected void loadSubsystems() {
-        synchronized (subsystems) {
-            subsystems.clear();
-            for (Bundle bundle : context.getBundles()) {
-                Subsystem s = isSubsystem(bundle);
-                if (s != null) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Adding bundle symbolic name {} version {} to subsystems map being tracked", bundle.getSymbolicName(), bundle.getVersion());
-                    }
-                    subsystems.put(s.getSubsystemId(), s);
-                }
-            }
-        }
-    }
-
-    protected Subsystem isSubsystem(Bundle bundle) {
-        if (bundle instanceof CompositeBundle) {
-            // it is important not to use bundle.getSymbolicName() here as that would not contain the directives we need.
-            String bsn = (String) bundle.getHeaders().get(Constants.BUNDLE_SYMBOLICNAME);
-            Clause[] bsnClauses = Parser.parseHeader(bsn);
-            if ("true".equals(bsnClauses[0].getDirective(SubsystemConstants.SUBSYSTEM_DIRECTIVE))) {
-                return new SubsystemImpl(this, (CompositeBundle) bundle, eventDispatcher);
-            }
-        }
-        return null;
-    }
-
+    
     public Subsystem getSubsystem(long id) {
+        refreshSubsystems();
         synchronized (subsystems) {
             for (Subsystem s : subsystems.values()) {
                 if (s.getSubsystemId() == id) {
@@ -148,6 +106,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     }
 
     public Subsystem getSubsystem(String symbolicName, Version version) {
+        refreshSubsystems();
         synchronized (subsystems) {
             for (Subsystem s : subsystems.values()) {
                 if (s.getSymbolicName().equals(symbolicName) && s.getVersion().equals(version)) {
@@ -157,8 +116,9 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
             return null;
         }
     }
-
+    
     public Collection<Subsystem> getSubsystems() {
+        refreshSubsystems();
         synchronized (subsystems) {
             return Collections.unmodifiableCollection(new ArrayList(subsystems.values()));
         }
@@ -191,7 +151,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
             }
         };
         SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
-        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(context);
+        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(this);
         boolean success = false;
         try {
             session.process(subsystemResource);
@@ -256,7 +216,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
             }
         };
         SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
-        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(context);
+        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(this);
         boolean success = false;
         try {
             session.process(subsystemResource);
@@ -279,12 +239,15 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
 
     public void uninstall(Subsystem subsystem) {
         if (subsystem.getState().equals(Subsystem.State.UNINSTALLED)) {
-            throw new IllegalStateException("Unable to uninstall subsystem as subsystem is already uninstalled");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Unable to uninstall subsystem {} as subsystem is already uninstalled", subsystem.getSymbolicName());
+            }
+            return;
         }
         
         Resource subsystemResource = new ResourceImpl(subsystem.getSymbolicName(), subsystem.getVersion(), SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, subsystem.getLocation(), Collections.<String, String>emptyMap());
         SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
-        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(context);
+        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(this);
         boolean success = false;
         try {
             session.dropped(subsystemResource);
@@ -318,4 +281,18 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         }
         return null;
     }
+    
+    // return the scope admin associated with the subsystemadmin.
+    protected ScopeAdmin getScopeAdmin() {
+        return this.scopeAdmin;
+    }
+    
+    public Subsystem getSubsystem() {
+        return this.subsystem;
+    }
+
+    public Subsystem getParentSubsystem() {
+        return this.parentSubsystem;
+    }
 }
+
