@@ -15,7 +15,6 @@ package org.apache.aries.subsystem;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.concurrent.Future;
 
 import org.osgi.framework.Version;
 
@@ -66,22 +65,16 @@ public interface SubsystemAdmin {
      */
     Subsystem getSubsystem(String symbolicName, Version version);
 
-	/**
-	 * Install a new subsystem from the specified location identifier.
-	 * 
-	 * This method performs the same function as calling
-	 * {@link #install(String, InputStream)} with the specified location
-	 * identifier and a null InputStream.
-	 * 
-	 * @param location
-	 * @return a <code>Future</code> for the subsystem to be installed.
-     * @throws SecurityException
-     *             If the caller does not have the appropriate
-     *             AdminPermission[installed subsystem,LIFECYCLE], and the Java
-     *             Runtime Environment supports permissions.
-     *             
+    /**
+     * Install a new subsystem from the specified location identifier.
+     * 
+     * This method performs the same function as calling {@link #install(String, InputStream)} with the specified 
+     * location identifier and a null InputStream.
+     *
+     * @param location
+     * @return
      */
-    Future<Subsystem> install(String location);
+    Subsystem install(String location) throws SubsystemException;
 
     /**
      * Install a new subsystem from the specified <code>InputStream</code>
@@ -100,32 +93,22 @@ public interface SubsystemAdmin {
      * 
      * The following steps are required to install a subsystem:
      * 
-     * A <code>Future</code> is returned. If there is a subsystem containing the
-     * same location identifier then the Subsystem will be immediately available
-     * from the Future. If there is already an install in progress for a
-     * subsystem with the same location identifier, then the Future returned is
-     * the same as the Future returned for the first install and a new install
-     * is not started. If this is a new install, then a new <code>Future</code>
-     * is returned with the installation process started.
-     * 
-     * A <code>Future</code> returned performs the following installation steps:
-     * 
      * <ol>
-     * <li>The subsystem's content is read from the input stream. If this fails
-     * a <code>SubsystemException</code> is set on the <code>Future</code>.</li>
-     * <li>The empty subsystem object is created and assigned a unique id which
-     * is higher than any previous bundle of subsystem identifier.</li>
-     * <li>The subsystem's associated resources are located.</li>
-     * <li>The subsystem's state is set to <code>INSTALLED</code></li>
-     * <li>The subsystem event of type <code>INSTALLED</code> is fired.</li>
-     * <li>Installation of subsystem content is started.</li>
-     * <li>The subsystem object for the newly installed subsystem is made
-     * available from the <code>Future</code>.</li>
+     * <li> If a subsystem containing the same location identifier is already
+     *    installed, the <code>Subsystem</code> object for that subsystem is
+     *    returned. </li>
+     * <li> The subsystem's content is read from the input stream. If
+     *    this fails, a <code>SubsystemException</code> is thrown.</li> 
+     * <li> The empty subsystem object is created and assigned a unique id 
+     *    which is higher than any previous bundle of subsystem identifier.</li> 
+     * <li> The subsystem's associated resources are located. </li>
+     * <li> The subsystem's state is set to <code>INSTALLED</code> </li>
+     * <li> The subsystem event of type <code>INSTALLED</code> is fired.</li> 
+     * <li> Installation of subsystem content is started. </li>
+     * <li> The subsystem object for the newly installed subsystem is returned.</li>
      * </ol>
      * 
-     * TODO: discuss the above steps. Should we change to have the individual
-     * bundle installs also happen synchronously? At the moment you can get the
-     * Subsystem back and it's empty. This was a pain with the itests.
+     * TODO: discuss the above steps.
      * 
      * @param location
      *            The location identifier of the subsystem to be installed.
@@ -133,26 +116,27 @@ public interface SubsystemAdmin {
      *            The <code>InputStream</code> from where the subsystem is to be
      *            installed or <code>null</code> if the location is to be used
      *            to create the <code>InputStream</code>.
-     * @return a <code>Future</code> for the subsystem to be installed.
+     * @return the installed subsystem.
+     * @throws SubsystemException
+     *             If the <code>InputStream</code> cannot be read or the
+     *             installation fails. This exception is not thrown in the event
+     *             of the subsystems contents failing to install.
      * @throws SecurityException
      *             If the caller does not have the appropriate
      *             AdminPermission[installed subsystem,LIFECYCLE], and the Java
      *             Runtime Environment supports permissions.
      */
-    Future<Subsystem> install(String location, InputStream content);
+    Subsystem install(String location, InputStream content) throws SubsystemException;
 
     /**
      * Update the given subsystem.
+     *
+     * This method performs the same function as calling {@link #update(Subsystem, InputStream)} 
+     * with the specified subsystem and a <code>null</code> <code>InputStream</code>.
      * 
-     * This method performs the same function as calling
-     * {@link #update(Subsystem, InputStream)} with the specified subsystem and
-     * a <code>null</code> <code>InputStream</code>.
-     * 
-     * @param subsystem
-     *            The subsystem to be updated.
-     * @return a <code>Future</code> for the subsystem being updated.
+     * @param subsystem The subsystem to be updated.
      */
-    Future<Subsystem> update(Subsystem subsystem) throws SubsystemException;
+    void update(Subsystem subsystem) throws SubsystemException;
 
     /**
      * Update the given subsystem from an <code>InputStream</code>.
@@ -170,7 +154,9 @@ public interface SubsystemAdmin {
      *            subsystem or <code>null</code> if the
      *            {@link SubsystemConstants#SUBSYSTEM_UPDATELOCATION
      *            Subsystem-UpdateLocation} or original location are to be used.
-     * @return a <code>Future</code> for the subsystem being updated.
+     * @throws SubsystemException
+     *             If the <code>InputStream</code> cannot be read of the update
+     *             fails.
      * @throws IllegalStateException
      *             If the subsystem is in the <code>UNINSTALLED</code> state.
      * @throws SecurityException
@@ -179,7 +165,7 @@ public interface SubsystemAdmin {
      *             subsystem and the updated subsystem and the Java Runtime
      *             Environment supports permissions.
      */
-    Future<Subsystem> update(Subsystem subsystem, InputStream content) throws SubsystemException;
+    void update(Subsystem subsystem, InputStream content) throws SubsystemException;
 
     /**
      * Uninstall the given subsystem.
@@ -220,5 +206,17 @@ public interface SubsystemAdmin {
      */
   void uninstall(Subsystem subsystem) throws SubsystemException;
 
+    /**
+     * Cancel the current operation.
+     * 
+     * The installing thread must throw a <code>SubsystemException</code> if the
+     * operation has actually been cancelled and rolled back before completion.
+     * 
+     * @return <code>true</code> if an operation was ongoing and requested to be
+     *         cancelled, <code>false</code> if there was no ongoing operation.
+     * 
+     *         TODO: discuss this. Why is it necessary?
+     */
+    boolean cancel();
 
 }
