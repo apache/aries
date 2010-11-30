@@ -39,6 +39,15 @@ public class Activator implements BundleActivator {
      */
     public void start(BundleContext context) throws Exception {
         System.out.println("bundle helloIsolation start");
+        
+        SecurityManager security = System.getSecurityManager();
+        if (security != null) {
+            System.out.println("HelloIsolationImpl: system manager is not null");
+        } else {
+            System.out.println("HelloIsolationImpl: system manager is still null");
+        }
+
+        
         sr = context.registerService(HelloIsolation.class.getName(),
                 new HelloIsolationImpl(), null);
         
