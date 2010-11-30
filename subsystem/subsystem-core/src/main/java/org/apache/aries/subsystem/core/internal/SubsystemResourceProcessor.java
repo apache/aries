@@ -13,12 +13,23 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import static org.apache.aries.subsystem.SubsystemConstants.SUBSYSTEM_CONTENT;
+import static org.apache.aries.subsystem.SubsystemConstants.SUBSYSTEM_DIRECTIVE;
+import static org.apache.aries.subsystem.SubsystemConstants.SUBSYSTEM_EXPORTPACKAGE;
+import static org.apache.aries.subsystem.SubsystemConstants.SUBSYSTEM_IMPORTPACKAGE;
+import static org.apache.aries.subsystem.SubsystemConstants.SUBSYSTEM_MANIFESTVERSION;
+import static org.apache.aries.subsystem.SubsystemConstants.SUBSYSTEM_RESOURCES;
+import static org.apache.aries.subsystem.SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
+import static org.apache.aries.subsystem.SubsystemConstants.SUBSYSTEM_VERSION;
+import static org.apache.aries.subsystem.core.internal.FileUtils.closeQuietly;
+import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -31,58 +42,57 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
+import org.apache.aries.subsystem.scope.InstallInfo;
+import org.apache.aries.subsystem.scope.ScopeAdmin;
+import org.apache.aries.subsystem.scope.ScopeUpdate;
+import org.apache.aries.subsystem.scope.SharePolicy;
 import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
 import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.apache.felix.utils.manifest.Clause;
 import org.apache.felix.utils.manifest.Parser;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.service.composite.CompositeAdmin;
-import org.osgi.service.composite.CompositeBundle;
-import org.osgi.service.composite.CompositeConstants;
+import org.osgi.framework.wiring.Capability;
 import org.osgi.util.tracker.ServiceTracker;
-
-import static org.apache.aries.subsystem.core.internal.FileUtils.closeQuietly;
-
-import static org.osgi.framework.Constants.*;
-import static org.osgi.service.composite.CompositeConstants.*;
-import static org.apache.aries.subsystem.SubsystemConstants.*;
 
 public class SubsystemResourceProcessor implements ResourceProcessor {
 
     private static final Version SUBSYSTEM_MANIFEST_VERSION = new Version("1.0");
 
-    public SubsystemSession createSession(BundleContext context) {
-        return new SubsystemSession(context);
+    public SubsystemSession createSession(SubsystemAdmin subsystemAdmin) {
+        return new SubsystemSession(subsystemAdmin);
     }
 
     public static class SubsystemSession implements Session {
 
         private static final long TIMEOUT = 30000;
+        private final SubsystemAdmin subsystemAdmin;
 
-        private final BundleContext context;
-        private final Map<Resource, CompositeBundle> installed = new HashMap<Resource, CompositeBundle>();
+        private final Map<Resource, Subsystem> installed = new HashMap<Resource, Subsystem>();
         /*
          * Map to keep track of composite bundle headers before the update and
          * the updated composite bundle. This is needed for rollback
          */
-        private final Map<Dictionary, CompositeBundle> updated = new HashMap<Dictionary, CompositeBundle>();
-        private final Map<Resource, CompositeBundle> removed = new HashMap<Resource, CompositeBundle>();
-        private final List<CompositeBundle> stopped = new ArrayList<CompositeBundle>();
+        private final Map<Map<String, String>, Subsystem> updated = new HashMap<Map<String, String>, Subsystem>();
+        private final Map<Resource, Subsystem> removed = new HashMap<Resource, Subsystem>();
+        private final List<Subsystem> stopped = new ArrayList<Subsystem>();
         private final Map<String, ServiceTracker> trackers = new HashMap<String, ServiceTracker>();
-        private final Map<BundleContext, Map<String, Session>> sessions = new HashMap<BundleContext, Map<String, Session>>();
-
-        public SubsystemSession(BundleContext context) {
-            this.context = context;
+        private final Map<SubsystemAdmin, Map<String, Session>> sessions = new HashMap<SubsystemAdmin, Map<String, Session>>();
+        private final BundleContext context;
+        
+        public SubsystemSession(SubsystemAdmin subsystemAdmin) {
+            this.subsystemAdmin = subsystemAdmin;
+            this.context = Activator.getBundleContext();
         }
 
         /**
@@ -95,8 +105,8 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
         private void process(Resource res, Manifest manifest) {
 
             try {
-
-                CompositeAdmin admin = getService(CompositeAdmin.class);
+                SubsystemAdminImpl adminImpl = (SubsystemAdminImpl)subsystemAdmin;
+                ScopeAdmin admin = adminImpl.getScopeAdmin();
                 ResourceResolver resolver = getService(ResourceResolver.class);
 
                 if (manifest == null) {
@@ -149,40 +159,52 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                         SUBSYSTEM_VERSION);
                 checkManifestHeaders(manifest, ssn, sv);
 
-                Map<String, String> headers = computeCompositeHeaders(manifest,
+                Map<String, String> headers = computeSubsystemHeaders(manifest,
                         ssn, sv);
 
                 // Check existing bundles
-                CompositeBundle composite = findSubsystemComposite(res);
-                if (composite == null) {
+                Subsystem subsystem = findSubsystem(res);
+                ScopeUpdate scopeUpdate = admin.newScopeUpdate();
+                ScopeUpdate childScopeUpdate;
+                if (subsystem == null) {
                     // brand new install
-                    composite = admin.installCompositeBundle(res.getLocation(),
-                            headers, Collections.<String, String> emptyMap());
-                    installed.put(res, composite);
+
+                    childScopeUpdate = scopeUpdate.newChild(headers.get(Constants.BUNDLE_SYMBOLICNAME) + "_" + headers.get(Constants.BUNDLE_VERSION), res.getLocation());
+                    Map<String, List<SharePolicy>> exportSharePolicies = childScopeUpdate.getSharePolicies(SharePolicy.TYPE_EXPORT);
+                    Map<String, List<SharePolicy>> importSharePolicies = childScopeUpdate.getSharePolicies(SharePolicy.TYPE_IMPORT);
+                    
+                    setupSharePolicies(exportSharePolicies, importSharePolicies, headers);
+                    scopeUpdate.commit();
+                    
+                    ScopeAdmin childScopeAdmin = getService(ScopeAdmin.class, "ScopeId=" + childScopeUpdate.getScope().getId());
+                    
+                    subsystem = new SubsystemImpl(childScopeUpdate.getScope(), headers);
+                    SubsystemAdmin childSubsystemAdmin = new SubsystemAdminImpl(childScopeAdmin, subsystem, subsystemAdmin.getSubsystem());
+                    context.registerService(SubsystemAdmin.class.getName(), childSubsystemAdmin, DictionaryBuilder.build("SubsystemParentId", childSubsystemAdmin.getParentSubsystem().getSubsystemId(), "SubsystemId", subsystem.getSubsystemId()));
+                    
+                    installed.put(res, subsystem);
+                    
+                    
                 } else {
                     // update
-                    // capture composite headers before update
-                    Dictionary dictionary = composite.getHeaders();
-
-                    String previousContentHeader = (String) composite
-                            .getHeaders().get(SUBSYSTEM_CONTENT);
+                    // capture data before update
+                    Map<String, String> subsystemHeaders = subsystem.getHeaders();
+                    String previousContentHeader = (String) subsystemHeaders.get(SUBSYSTEM_CONTENT);
                     Clause[] previousContentClauses = Parser
                             .parseHeader(previousContentHeader);
                     for (Clause c : previousContentClauses) {
                         Resource r = resolver.find(c.toString());
                         previous.add(r);
                     }
-                    if (composite.getState() == Bundle.ACTIVE) {
-                        composite.stop();
-                        stopped.add(composite);
-                    }
-                    composite.update(headers);
-                    updated.put(dictionary, composite);
+                    
+                    subsystem.updateHeaders(headers);
+                    updated.put(subsystemHeaders, subsystem);
                 }
-                composite.getSystemBundleContext().registerService(
-                        SubsystemAdmin.class.getName(),
-                        new Activator.SubsystemAdminFactory(), null);
 
+                // content is installed in the scope, so need to find the subsystemAdmin for the scope first
+                long scopeId = subsystem.getSubsystemId();
+                SubsystemAdmin childAdmin = getService(SubsystemAdmin.class, "SubsystemId=" + scopeId);
+                
                 for (Resource r : previous) {
                     boolean stillHere = false;
                     for (Resource r2 : content) {
@@ -193,15 +215,19 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                         }
                     }
                     if (!stillHere) {
-                        getSession(composite.getSystemBundleContext(),
+                        getSession(childAdmin,
                                 r.getType()).dropped(r);
                     }
                 }
+                
+                // additional resource is installed outside of the subsystem.
                 for (Resource r : additional) {
-                    getSession(context, r.getType()).process(r);
+                    getSession(subsystemAdmin, r.getType()).process(r);
                 }
+                
+
                 for (Resource r : content) {
-                    getSession(composite.getSystemBundleContext(), r.getType())
+                    getSession(childAdmin, r.getType())
                             .process(r);
                 }
 
@@ -212,45 +238,97 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
             }
         }
 
+        private void setupSharePolicies(
+                Map<String, List<SharePolicy>> exportSharePolicies,
+                Map<String, List<SharePolicy>> importSharePolicies,
+                Map<String, String> headers) {
+            String importPackage = headers.get(SubsystemConstants.SUBSYSTEM_IMPORTPACKAGE);
+            String exportPackage = headers.get(SubsystemConstants.SUBSYSTEM_EXPORTPACKAGE);
+            String importService = headers.get(SubsystemConstants.SUBSYSTEM_IMPORTSERVICE);
+            String exportService = headers.get(SubsystemConstants.SUBSYSTEM_EXPORTSERVICE);
+            if (importPackage != null && !importPackage.trim().isEmpty()) {
+                List<SharePolicy> importPackagePolicies = importSharePolicies.get(Capability.PACKAGE_CAPABILITY);
+                if (importPackagePolicies == null) {
+                    importPackagePolicies = new ArrayList<SharePolicy>();
+                    importSharePolicies.put(Capability.PACKAGE_CAPABILITY,importPackagePolicies);
+                }
+                
+                importPackagePolicies.add(new SharePolicy(SharePolicy.TYPE_IMPORT, Capability.PACKAGE_CAPABILITY, createFilter(importPackage, Capability.PACKAGE_CAPABILITY)));
+            }
+            
+            if (importService != null && !importService.trim().isEmpty()) {
+                List<SharePolicy> importServicePolicies = importSharePolicies.get("osgi.service");
+                if (importServicePolicies == null) {
+                    importServicePolicies = new ArrayList<SharePolicy>();
+                    importSharePolicies.put("osgi.service",importServicePolicies);
+                }
+                
+                importServicePolicies.add(new SharePolicy(SharePolicy.TYPE_IMPORT, "osgi.service", createFilter(importService, "osgi.service")));
+            }
+            
+        }
+        
+        private Filter createFilter(String packages, String namespace) {
+            if (namespace.equals(Capability.PACKAGE_CAPABILITY)) {
+                // split packages
+                List<String> pkgs = ManifestHeaderProcessor.split(packages, ",");
+                StringBuffer sb = new StringBuffer();
+                sb.append("(|");
+                for (String pkg : pkgs) {
+                    sb.append("(" + Capability.PACKAGE_CAPABILITY + "=" + pkg + ")");
+                }
+                sb.append(")");
+                try {
+                    return FrameworkUtil.createFilter(sb.toString());
+                } catch (InvalidSyntaxException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+            }
+            if (namespace.equals("osgi.service")) {
+                // split packages
+                List<String> pkgs = ManifestHeaderProcessor.split(packages, ",");
+                StringBuffer sb = new StringBuffer();
+                sb.append("(|");
+                for (String pkg : pkgs) {
+                    sb.append("(osgi.service=" + pkg + ")");
+                }
+                sb.append(")");
+                try {
+                    return FrameworkUtil.createFilter(sb.toString());
+                } catch (InvalidSyntaxException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            
+            
+            return null;
+        }
+
         public void process(Resource res) throws SubsystemException {
             process(res, null);
 
         }
 
         public void dropped(Resource res) throws SubsystemException {
-            CompositeBundle composite = findSubsystemComposite(res);
-            if (composite == null) {
+            Subsystem subsystem = findSubsystem(res);
+            if (subsystem == null) {
                 throw new SubsystemException(
                         "Unable to find matching subsystem to uninstall");
             }
-            try {
-                // TODO: iterate through all resources and ask for a removal on
-                // each one
-                composite.uninstall();
-                removed.put(res, composite);
-            } catch (BundleException e) {
-                throw new SubsystemException("Unable to uninstall subsystem", e);
-            }
+            // TODO: iterate through all resources and ask for a removal on
+            // each one
+            subsystemAdmin.uninstall(subsystem);
+            removed.put(res, subsystem);
+
         }
 
-        protected CompositeBundle findSubsystemComposite(Resource resource) {
-            for (Bundle bundle : context.getBundles()) {
-                if (resource.getLocation().equals(bundle.getLocation())) {
-                    if (bundle instanceof CompositeBundle) {
-                        CompositeBundle composite = (CompositeBundle) bundle;
-                        String bsn = (String) bundle.getHeaders().get(
-                                Constants.BUNDLE_SYMBOLICNAME);
-                        Clause[] bsnClauses = Parser.parseHeader(bsn);
-                        if ("true"
-                                .equals(bsnClauses[0]
-                                        .getDirective(SubsystemConstants.SUBSYSTEM_DIRECTIVE))) {
-                            return composite;
-                        } else {
-                            throw new SubsystemException(
-                                    "A bundle with the same location already exists!");
-                        }
-
-                    }
+        protected Subsystem findSubsystem(Resource resource) {
+            for (Subsystem subsystem : this.subsystemAdmin.getSubsystems()) {
+                if (resource.getLocation().equals(subsystem.getLocation())) {
+                    return subsystem;
                 }
             }
             return null;
@@ -262,12 +340,8 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                     s.prepare();
                 }
             }
-            for (CompositeBundle composite : stopped) {
-                try {
-                    composite.start();
-                } catch (BundleException e) {
-                    throw new SubsystemException(e);
-                }
+            for (Subsystem subsystem : stopped) {
+                subsystem.start();  
             }
         }
 
@@ -285,38 +359,32 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
 
         public void rollback() {
 
-            for (CompositeBundle c : installed.values()) {
-                try {
-                    c.uninstall();
-                } catch (BundleException e) {
-                    // Ignore
-                }
+            for (Subsystem subsystem : installed.values()) {
+                subsystemAdmin.uninstall(subsystem);
             }
             installed.clear();
 
             // Handle updated subsystems
-            Set<Map.Entry<Dictionary, CompositeBundle>> updatedSet = updated
+            Set<Map.Entry<Map<String, String>, Subsystem>> updatedSet = updated
                     .entrySet();
-            for (Entry<Dictionary, CompositeBundle> entry : updatedSet) {
-                Dictionary oldDic = entry.getKey();
-                CompositeBundle cb = entry.getValue();
+            for (Entry<Map<String, String>, Subsystem> entry : updatedSet) {
+                Map<String, String> oldHeader = entry.getKey();
+                Subsystem subsystem = entry.getValue();
 
                 // let's build a Manifest from oldDict
                 Manifest manifest = new Manifest();
                 Attributes attributes = manifest.getMainAttributes();
-                Map<String, String> headerMap = new DictionaryAsMap(oldDic);
-
-                attributes.putAll(headerMap);
+                attributes.putAll(oldHeader);
                 String symbolicName = attributes
                         .getValue(Constants.BUNDLE_SYMBOLICNAME);
                 Version v = Version.parseVersion(attributes
                         .getValue(Constants.BUNDLE_VERSION));
                 Resource subsystemResource = new ResourceImpl(symbolicName, v,
-                        SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, cb
+                        SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, subsystem
                                 .getLocation(), Collections
                                 .<String, String> emptyMap());
                 try {
-                    Session session = getSession(context, subsystemResource
+                    Session session = getSession(subsystemAdmin, subsystemResource
                             .getType());
                     if (session instanceof SubsystemSession) {
                         ((SubsystemSession) session).process(subsystemResource,
@@ -335,11 +403,11 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
             }
 
             // handle uninstalled subsystem
-            Set<Map.Entry<Resource, CompositeBundle>> set = removed.entrySet();
-            for (Map.Entry<Resource, CompositeBundle> entry : set) {
+            Set<Map.Entry<Resource, Subsystem>> set = removed.entrySet();
+            for (Map.Entry<Resource, Subsystem> entry : set) {
                 Resource res = entry.getKey();
                 try {
-                    getSession(context, res.getType()).process(res);
+                    getSession(subsystemAdmin, res.getType()).process(res);
                 } catch (SubsystemException e) {
                     throw e;
                 } catch (Exception e) {
@@ -359,16 +427,16 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
             closeTrackers();
         }
 
-        protected Session getSession(BundleContext context, String type)
+        protected Session getSession(SubsystemAdmin admin, String type)
                 throws InvalidSyntaxException, InterruptedException {
-            Map<String, Session> sm = this.sessions.get(context);
+            Map<String, Session> sm = this.sessions.get(admin);
             if (sm == null) {
                 sm = new HashMap<String, Session>();
-                this.sessions.put(context, sm);
+                this.sessions.put(admin, sm);
             }
             Session session = sm.get(type);
             if (session == null) {
-                session = getProcessor(type).createSession(context);
+                session = getProcessor(type).createSession(admin);
                 sm.put(type, session);
             }
             return session;
@@ -452,17 +520,10 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
         // TODO add any other symbolic name to check
         Clause[] ssnClauses = Parser.parseHeader(ssn);
         String ssDirective = ssnClauses[0].getDirective(SUBSYSTEM_DIRECTIVE);
-        String comDirective = ssnClauses[0].getDirective(COMPOSITE_DIRECTIVE);
         if (ssDirective != null && ssDirective.equalsIgnoreCase("false")) {
             throw new SubsystemException("Invalid " + SUBSYSTEM_DIRECTIVE
                     + " directive in " + SUBSYSTEM_SYMBOLICNAME + ": "
                     + ssDirective);
-        }
-
-        if (ssDirective != null && comDirective.equalsIgnoreCase("false")) {
-            throw new SubsystemException("Invalid " + COMPOSITE_DIRECTIVE
-                    + " directive in " + SUBSYSTEM_SYMBOLICNAME + ": "
-                    + comDirective);
         }
 
         if (sv == null || sv.length() == 0) {
@@ -482,24 +543,19 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
     // if the ssn already contains COMPOSITE_DIRECTIVE or SUBSYSTEM_DIRECTIVE
     // directive
     // let's not add them again
-    private static String getCompositeSymbolicName(String ssn) {
+    private static String getSubsystemSymbolicName(String ssn) {
         Clause[] ssnClauses = Parser.parseHeader(ssn);
         String ssDirective = ssnClauses[0].getDirective(SUBSYSTEM_DIRECTIVE);
-        String comDirective = ssnClauses[0].getDirective(COMPOSITE_DIRECTIVE);
 
-        if (ssDirective == null && comDirective == null) {
-            ssn = ssn + ";" + COMPOSITE_DIRECTIVE + ":=true;"
+        if (ssDirective == null ) {
+            ssn = ssn + ";"
                     + SUBSYSTEM_DIRECTIVE + ":=true";
-        } else if (ssDirective == null) {
-            ssn = ssn + ";" + COMPOSITE_DIRECTIVE + ":=true;";
-        } else if (comDirective == null) {
-            ssn = ssn + ";" + SUBSYSTEM_DIRECTIVE + ":=true;";
-        }
+        } 
 
         return ssn;
     }
 
-    private static Map<String, String> computeCompositeHeaders(
+    private static Map<String, String> computeSubsystemHeaders(
             Manifest manifest, String ssn, String sv) {
         // Grab all headers
         Map<String, String> headers = new HashMap<String, String>();
@@ -512,28 +568,22 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
         }
 
         // Create the required composite headers
-        headers.put(BUNDLE_SYMBOLICNAME, getCompositeSymbolicName(ssn));
+        headers.put(BUNDLE_SYMBOLICNAME, getSubsystemSymbolicName(ssn));
         headers.put(BUNDLE_VERSION, sv);
 
         String subImportPkg = headers.get(SUBSYSTEM_IMPORTPACKAGE);
         String subExportPkg = headers.get(SUBSYSTEM_EXPORTPACKAGE);
-        if (subImportPkg != null && subImportPkg.length() > 0) {
-            // use subsystem-importpackage for composite-importpackage
-            headers.put(CompositeConstants.COMPOSITE_PACKAGE_IMPORT_POLICY,
-                    subImportPkg);
-        } else {
-            // TODO: let's compute the import package for the subsystem
-        }
-        if (subExportPkg != null && subExportPkg.length() > 0) {
-            // use subsystem-importpackage for composite-importpackage
-            headers.put(CompositeConstants.COMPOSITE_PACKAGE_EXPORT_POLICY,
-                    subExportPkg);
-        }
+
 
         // TODO: compute other composite manifest entries
         // TODO: compute list of bundles
 
         return headers;
+    }
+
+    public Session createSession(BundleContext arg0) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
