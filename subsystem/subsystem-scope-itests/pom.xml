@@ -51,13 +51,11 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
-            <version>${version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
-            <version>${version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -137,7 +135,6 @@
         <dependency>
             <groupId>org.apache.aries.subsystem.example</groupId>
             <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
-            <version>${version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
