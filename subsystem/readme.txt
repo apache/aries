@@ -1,9 +1,10 @@
-The Subsystems subproject uses RFC 138 which has not been published by the OSGi alliance yet.
-The binaries are available from the OSGi repo if you are an OSGi alliance member.
+The Subsystems subproject uses RFC 138(Framework hooks).
 You need to download the implementation jar at:
-  https://www.osgi.org/members/svn/build/trunk/licensed/repo/org.eclipse.osgi.v43prototype
+    http://download.eclipse.org/equinox/
 You need to copy it in your local m2 repository:
-  ~/.m2/repository/org/eclipse/osgi/v43prototype-3.6.0.201003231329/osgi-v43prototype-3.6.0.201003231329.jar 
+  ~/.m2/repository/org/eclipse/osgi/3.7.0.v20100910/osgi-3.7.0.v20100910.jar
+
+I tested using the 3.7M2 stable builds.
 
 Also, you need to run the following command to index your local m2 repo to ~/.m2/repository/repository.xml file. 
 
