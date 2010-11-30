@@ -49,7 +49,6 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
-            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
