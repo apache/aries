@@ -14,21 +14,31 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
+import org.apache.aries.subsystem.SubsystemException;
+import org.apache.aries.subsystem.scope.ScopeAdmin;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
 import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,18 +50,19 @@ import org.slf4j.LoggerFactory;
 public class Activator implements BundleActivator {
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
     
-    private BundleContext context;
+    private static BundleContext context;
     private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
     private static SubsystemEventDispatcher eventDispatcher;
-
+    private static SubsystemAdminFactory adminFactory;
+    
     public void start(BundleContext context) throws Exception {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("subsystem activator starting");
         }
-        this.context = context;
-        eventDispatcher = new SubsystemEventDispatcher(context);
-        
-        register(SubsystemAdmin.class, new SubsystemAdminFactory(), null);
+        Activator.context = context;
+        Activator.eventDispatcher = new SubsystemEventDispatcher(context);
+        adminFactory = new SubsystemAdminFactory();
+        register(SubsystemAdmin.class, adminFactory, null);
         register(ResourceResolver.class,
                  new NoOpResolver(),
                  DictionaryBuilder.build(Constants.SERVICE_RANKING, Integer.MIN_VALUE));
@@ -86,27 +97,121 @@ public class Activator implements BundleActivator {
             }
         }
         eventDispatcher.destroy();
+        if (adminFactory!= null) {
+            adminFactory.destroy();
+        }
+        
+    }
+    
+    public static BundleContext getBundleContext() {
+        return context;
+    }
+    
+    public static SubsystemEventDispatcher getEventDispatcher() {
+        return eventDispatcher;
     }
 
 
     public static class SubsystemAdminFactory implements ServiceFactory {
+        //private final List<ScopeAdmin> scopeAdmins = new ArrayList<ScopeAdmin>();
+        private final List<SubsystemAdmin> admins = new ArrayList<SubsystemAdmin>();
+        private final Map<SubsystemAdmin, Long> references = new HashMap<SubsystemAdmin, Long>();
+        private ScopeAdmin scopeAdmin; // scope admin for the root scope.
+        private static ServiceTracker serviceTracker;
+        private SubsystemAdmin defaultAdmin;
+        private ServiceRegistration rootAdminReg;
+        
+        public SubsystemAdminFactory() throws InvalidSyntaxException  {
+            context = Activator.getBundleContext();
+            
+            ServiceReference[] reference = Activator.getBundleContext().getServiceReferences(ScopeAdmin.class.getName(), 
+            "(&(ScopeName=root))");
+            if (reference != null && reference.length == 1) {
+                ScopeAdmin scopeAdmin = (ScopeAdmin)Activator.getBundleContext().getService(reference[0]);
+                Subsystem subsystem = new SubsystemImpl(scopeAdmin.getScope(), new HashMap<String, String>());
+                defaultAdmin = new SubsystemAdminImpl(scopeAdmin, subsystem, null);
+                rootAdminReg = context.registerService(SubsystemAdmin.class.getName(), 
+                        defaultAdmin, 
+                        DictionaryBuilder.build("Subsystem", subsystem.getSubsystemId(), "SubsystemParentId", 0));
+                admins.add(defaultAdmin);
+            } else {
+                throw new RuntimeException("Unable to locate service reference for the root scope admin");
+            }
+            
+            Filter filter = FrameworkUtil.createFilter("(&("
+                    + Constants.OBJECTCLASS + "=" + SubsystemAdmin.class.getName() + "))");
+            serviceTracker = new ServiceTracker(context, filter,
+                    new ServiceTrackerCustomizer() {
 
-        private final Map<BundleContext, SubsystemAdminImpl> admins = new HashMap<BundleContext, SubsystemAdminImpl>();
-        private final Map<SubsystemAdminImpl, Long> references = new HashMap<SubsystemAdminImpl, Long>();
+                        public Object addingService(ServiceReference reference) {
+                            // adding new service, update admins map
+                            SubsystemAdmin sa = (SubsystemAdmin) context
+                                    .getService(reference);
+                            admins.add(sa);
 
+                            return sa;
+                        }
+
+                        public void modifiedService(ServiceReference reference,
+                                Object service) {
+                            // TODO Auto-generated method stub
+
+                        }
+
+                        public void removedService(ServiceReference reference,
+                                Object service) {
+                            SubsystemAdmin sa = (SubsystemAdmin) service;
+                            admins.remove(sa);
+                        }
+
+                    });
+        }
+        
+        public void destroy() {
+            serviceTracker.close();
+        }
+        
+        private SubsystemAdmin getSubsystemAdmin(Bundle bundle) {
+            // first check if it is in root framework
+            Bundle[] bundles = Activator.getBundleContext().getBundles();
+            for (Bundle b : bundles) {
+                if (b == bundle) {
+                    return defaultAdmin;
+                }
+            }
+            // check if they are bundles in the 
+            for (SubsystemAdmin admin : admins) {
+                Collection<Subsystem> subsystems = admin.getSubsystems();
+                for (Subsystem subsystem : subsystems) {
+                    Collection<Bundle> subsystemBundles = subsystem.getBundles();
+                    for (Bundle b : subsystemBundles) {
+                        if (b == bundle) {
+                            return admin;
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        }
         public synchronized Object getService(Bundle bundle, ServiceRegistration registration) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Get SubsystemAdmin service from bundle symbolic name {} version {}", bundle.getSymbolicName(), bundle.getVersion());
             }
-            BundleContext systemBundleContext = bundle.getBundleContext().getBundle(0).getBundleContext();
-            SubsystemAdminImpl admin = admins.get(systemBundleContext);
+            
             long ref = 0;
+            
+            // figure out the subsystemAdmin for the bundle           
+            SubsystemAdmin admin = getSubsystemAdmin(bundle);
+            
             if (admin == null) {
-                admin = new SubsystemAdminImpl(systemBundleContext, eventDispatcher);
-                admins.put(systemBundleContext, admin);
-            } else {
-                ref = references.get(admin);
+                throw new SubsystemException("Unable to locate the Subsystem admin for the bundle " + bundle.toString());
             }
+
+            if (references.get(admin) == null) {
+                ref = 0;
+            }
+            
             references.put(admin, ref + 1);
             return admin;
         }
