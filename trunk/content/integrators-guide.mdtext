@@ -1,9 +1,10 @@
 Title: Integrators Guide
+# Integrators guide
 This page describes things that should be considered when integrating the
 Apache Aries project into a runtime.
 
 <a name="IntegratorsGuide-InstallingApplications"></a>
-# Installing Applications
+## Installing Applications
 
 An application is installed using the AriesApplicationManager service. A
 client looks up the AriesApplicationManager and calls one of the
@@ -26,26 +27,26 @@ install method returns an ApplicationContext which represents the runtime
 state of the application.
 
 <a name="IntegratorsGuide-StartingandStoppinganApplication"></a>
-# Starting and Stopping an Application
+## Starting and Stopping an Application
 
 The application can be started and stopped by calling the start and stop
 methods on the ApplicationContext.
 
 <a name="IntegratorsGuide-UninstallinganApplication"></a>
-# Uninstalling an Application
+## Uninstalling an Application
 
 The application can be uninstalled by passing the ApplicationContext to the
 uninstall method on the AriesApplicationManager.
 
 <a name="IntegratorsGuide-FelixFileInstall"></a>
-# Felix FileInstall
+## Felix FileInstall
 
 The aries application project contains an example application installer
 that hooks into the felix file install project. It automatically installs
 and uninstalls .eba archives found by FileInstall.
 
 <a name="IntegratorsGuide-BundleConverters"></a>
-# BundleConverters
+## BundleConverters
 
 A BundleConverter is a service that can convert an artefact into an OSGi
 Bundle. The interface is provided an IFile indicating the artefact in the
@@ -57,7 +58,7 @@ The Aries application project contains a converter for turning war files
 into web application bundles.
 
 <a name="IntegratorsGuide-AriesApplicationResolvers"></a>
-# AriesApplicationResolvers
+## AriesApplicationResolvers
 
 The Application-Content header in the application does not denote the full
 content of the application. When the application is created the runtime
@@ -77,7 +78,7 @@ registry, so alternatives can be provided if the default resolvers do not
 provide the desired behaviour.
 
 <a name="IntegratorsGuide-ApplicationContextManagers"></a>
-# ApplicationContextManagers
+## ApplicationContextManagers
 
 The AriesApplicationManager does not itself know how to put an application
 into an OSGi framework. To do this it calls out to an

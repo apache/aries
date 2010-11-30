@@ -2,11 +2,11 @@ Title: AriesProgrammingModel
 <a name="AriesProgrammingModel-AriesProgrammingModel"></a>
 # Aries Programming Model
 
-The follow describes the programming model provided by the components of
+The following describes the programming model provided by the components of
 Apache Aries.
 
-[Applications](applications.html)
+- [Applications](applications.html)
 
-[Blueprint](blueprint.html)
+- [Blueprint](blueprint.html)
 
-[Transactions](transactions.html)
+- [Transactions](transactions.html)
