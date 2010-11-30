@@ -83,12 +83,14 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
     int modifyEventCount;
     int removeEventCount;
     private final static PermissionInfo[] adminAllowInfo = {
+        new PermissionInfo("java.security.AllPermission", "*", "*"),
         new PermissionInfo("java.lang.RuntimePermission", "loadLibrary.*", "*"),
         new PermissionInfo("java.lang.RuntimePermission", "queuePrintJob", "*"),
         new PermissionInfo("java.net.SocketPermission", "*", "connect"),
         new PermissionInfo("java.util.PropertyPermission", "*", "read"),
         new PermissionInfo("org.osgi.framework.PackagePermission", "*", "exportonly,import"),
         new PermissionInfo("org.osgi.framework.ServicePermission", "*", "get,register"),
+        new PermissionInfo("org.osgi.framework.AdminPermission", "*", "execute,resolve"),
     };
     
     @After
@@ -223,7 +225,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
                 ConditionInfo[] conditionInfo = new ConditionInfo[] {new ConditionInfo("org.osgi.service.condpermadmin.BundleLocationCondition", new String[]{b.getLocation()})}; 
                 // Set up permissions which are common to all applications
                 infos.add(permAdmin.newConditionalPermissionInfo(null, conditionInfo, adminAllowInfo, "allow"));
-
+                update.commit();
             }
             
         }
@@ -378,9 +380,9 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl"),
 
-            //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -Xorg.osgi.framework.security=osgi"),
             // uncomment the following line if you want to turn on security.  the policy file can be found in src/test/resources dir and you want to update the value of -Djava.security.policy to 
             // the exact location of the policy file.
+            //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Declipse.security=osgi -Djava.security.policy=/policy"),
             //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -Declipse.security=osgi -Djava.security.policy=/policy"),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
