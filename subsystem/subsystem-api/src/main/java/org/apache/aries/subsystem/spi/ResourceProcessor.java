@@ -13,9 +13,8 @@
  */
 package org.apache.aries.subsystem.spi;
 
-import org.apache.aries.subsystem.Subsystem;
+import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemException;
-import org.osgi.framework.BundleContext;
 
 /**
  * A ResourceProcessor is an object that can manage a given resource type.
@@ -27,7 +26,7 @@ import org.osgi.framework.BundleContext;
  */
 public interface ResourceProcessor {
 
-    Session createSession(BundleContext context);
+    Session createSession(SubsystemAdmin admin);
 
     public static interface Session {
 
