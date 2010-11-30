@@ -219,4 +219,20 @@ public interface SubsystemAdmin {
      */
     boolean cancel();
 
+    /**
+     * Gets the corresponding subsystem of the subsystemAdmin service.
+     * 
+     * @return
+     */
+    Subsystem getSubsystem();
+
+    /**
+     * Gets the parent subsystem of the subsystem that is managed by the
+     * subsystem admin.
+     * 
+     * @return
+     */
+    Subsystem getParentSubsystem();
+
+
 }

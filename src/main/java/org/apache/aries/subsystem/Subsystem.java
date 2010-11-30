@@ -193,6 +193,16 @@ public interface Subsystem {
      *
      * @return the content of this subsystem.
      */
-    Collection<Bundle> getConstituents();
+    Collection<Bundle> getBundles();
 
+    //long getParentId();
+    
+    public void updateHeaders(Map<String, String> headers);
+    
+    /**
+     * return the subsystem managed by the subsystem
+     * @return
+     */
+    Collection<Subsystem> getChildrenSubsystems();
+    
 }
