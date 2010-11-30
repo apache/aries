@@ -64,6 +64,7 @@ public class ScopeAdminServiceFactory implements ServiceFactory {
     private ServiceTracker serviceTracker;
     private List<ServiceRegistration> srs = new ArrayList<ServiceRegistration>();
     public static final String SERVICE_CAPABILITY = "osgi.service";
+    private ServiceRegistration rootScopeAdminserviceReg;
     
     public void init() throws InvalidSyntaxException {
         context = Activator.getBundleContext();
@@ -96,6 +97,9 @@ public class ScopeAdminServiceFactory implements ServiceFactory {
                 });
         defaultScopeAdmin = new ScopeAdminImpl(null, new ScopeImpl("root",
                 context));
+        rootScopeAdminserviceReg = context.registerService(ScopeAdmin.class.getName(), 
+                defaultScopeAdmin, 
+                DictionaryBuilder.build("ScopeName", defaultScopeAdmin.getScope().getName(), "ScopeId", defaultScopeAdmin.getScope().getId()));
         admins.add(defaultScopeAdmin);
         references.put(defaultScopeAdmin, new Long(0));
         serviceTracker.open();
@@ -115,6 +119,10 @@ public class ScopeAdminServiceFactory implements ServiceFactory {
         
         for (ServiceRegistration sr : srs) {
             sr.unregister();
+        }
+        
+        if (rootScopeAdminserviceReg != null) {
+            rootScopeAdminserviceReg.unregister();
         }
     }
 
