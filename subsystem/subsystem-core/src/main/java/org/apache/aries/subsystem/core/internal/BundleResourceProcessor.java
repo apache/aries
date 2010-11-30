@@ -13,6 +13,7 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,30 +21,36 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
+import org.apache.aries.subsystem.scope.InstallInfo;
+import org.apache.aries.subsystem.scope.Scope;
+import org.apache.aries.subsystem.scope.ScopeAdmin;
+import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.service.composite.CompositeBundle;
 
 public class BundleResourceProcessor implements ResourceProcessor {
 
-    public Session createSession(BundleContext context) {
-        return new BundleSession(context);
+    public Session createSession(SubsystemAdmin subsystemAdmin) {
+        return new BundleSession(subsystemAdmin);
     }
 
     public static class BundleSession implements Session {
 
-        private final BundleContext context;
+        private final ScopeAdmin scopeAdmin;
         private final List<Bundle> installed = new ArrayList<Bundle>();
         private final Map<Resource, Bundle> updated = new HashMap<Resource, Bundle>();
         private final Map<Resource, Bundle> removed = new HashMap<Resource, Bundle>();
+        
 
-        public BundleSession(BundleContext context) {
-            this.context = context;
+        public BundleSession(SubsystemAdmin subsystemAdmin) {
+            SubsystemAdminImpl subsystemAdminImpl = (SubsystemAdminImpl)subsystemAdmin;
+            this.scopeAdmin = subsystemAdminImpl.getScopeAdmin();
         }
 
         public void process(Resource resource) throws SubsystemException {
@@ -52,9 +59,11 @@ public class BundleResourceProcessor implements ResourceProcessor {
                 Bundle bundle = findBundle(resource);
                 
                 if (bundle == null) {
-                    // fresh install
-                    bundle = context.installBundle(resource.getLocation(), resource.open());
-                    installed.add(bundle);
+                    // fresh install 
+                    InstallInfo installInfo = new InstallInfo(new URL(resource.getLocation()), resource.getLocation());
+                    ScopeUpdate scopeUpdate = scopeAdmin.newScopeUpdate();
+                    scopeUpdate.getBundlesToInstall().add(installInfo);
+                    scopeUpdate.commit();
                 } else {
                     // update only if RESOURCE_UPDATE_ATTRIBUTE is set to true
                     String updateAttribute = resource.getAttributes().get(SubsystemConstants.RESOURCE_UPDATE_ATTRIBUTE);
@@ -62,6 +71,11 @@ public class BundleResourceProcessor implements ResourceProcessor {
                         bundle.update(resource.open());
                         updated.put(resource, bundle);
                     }
+                }
+                
+                if (bundle == null) {
+                    bundle = findBundle(resource);
+                    installed.add(bundle);
                 }
 
                 String startAttribute = resource.getAttributes().get(SubsystemConstants.RESOURCE_START_ATTRIBUTE);
@@ -71,8 +85,6 @@ public class BundleResourceProcessor implements ResourceProcessor {
                     startAttribute = "true";
                 }
                 if ("true".equals(startAttribute)) {
-                    // This will only mark the bundle as persistently started as the composite is supposed
-                    // to be stopped
                     bundle.start();
                 }
             } catch (SubsystemException e) {
@@ -126,7 +138,10 @@ public class BundleResourceProcessor implements ResourceProcessor {
                     Bundle bundle = entry.getValue();
                     Resource res = entry.getKey();
                     try {
-                        context.installBundle(res.getLocation(), res.open());
+                        InstallInfo installInfo = new InstallInfo(res.open(), res.getLocation());
+                        ScopeUpdate scopeUpdate = scopeAdmin.newScopeUpdate();
+                        scopeUpdate.getBundlesToInstall().add(installInfo);
+                        scopeUpdate.commit();
                     } catch (Exception e) {
                         // Ignore
                     }
@@ -137,14 +152,10 @@ public class BundleResourceProcessor implements ResourceProcessor {
         }
         
         protected Bundle findBundle(Resource resource) {
-            for (Bundle b : context.getBundles()) {
-                if (resource.getLocation().equals(b.getLocation())) {
-                    if (b instanceof CompositeBundle) {
-                        throw new SubsystemException("A bundle with the same location already exists!");
-                    } else {
-                        return b;
-
-                    }
+            Scope scope = scopeAdmin.getScope();
+            for (Bundle b : scope.getBundles()) {
+                if (resource.getLocation().equals(scope.getLocation())) {
+                    return b;
                 }
             }
             
@@ -156,6 +167,11 @@ public class BundleResourceProcessor implements ResourceProcessor {
             updated.clear();
             removed.clear();
         }
+    }
+
+    public Session createSession(BundleContext arg0) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 
