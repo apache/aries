@@ -14,7 +14,10 @@
 
 package org.apache.aries.subsystem.example.helloIsolation;
 
+import java.security.Permission;
+
 public interface HelloIsolation
 {
   public void hello();
+  public void checkPermission(final Permission permission) throws SecurityException;
 }

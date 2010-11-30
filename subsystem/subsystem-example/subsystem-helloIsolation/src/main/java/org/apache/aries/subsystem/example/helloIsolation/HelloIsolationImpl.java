@@ -14,6 +14,11 @@
 
 package org.apache.aries.subsystem.example.helloIsolation;
 
+import java.security.AccessController;
+import java.security.Permission;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+
 public class HelloIsolationImpl implements HelloIsolation
 {
 
@@ -22,4 +27,28 @@ public class HelloIsolationImpl implements HelloIsolation
     System.out.println("hello from HelloIsolationImpl");
   }
 
+  // test java2 security
+
+  public void checkPermission(final Permission permission) throws SecurityException {
+      System.out.println("HelloIsolationImpl: enter checkpermission");
+
+    try {
+      AccessController.doPrivileged(new PrivilegedExceptionAction() {
+        public Object run() throws SecurityException {
+          SecurityManager security = System.getSecurityManager();
+          if (security != null) {
+              System.out.println("HelloIsolationImpl: system manager is not null");
+
+              security.checkPermission(permission);
+              return null; 
+          }
+          System.out.println("HelloIsolationImpl: system manager is still null");
+
+          return null;
+        }
+      });
+    } catch (PrivilegedActionException e) {
+      throw (SecurityException) e.getException();
+    }
+  }
 }
