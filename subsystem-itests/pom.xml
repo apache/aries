@@ -38,13 +38,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
+            <version>3.7.0.v20100910</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -55,14 +51,22 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
+            <version>${version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.apache.aries.subsystem.executor</artifactId>
-            <scope>test</scope>
-            <version>0.3-incubating-SNAPSHOT</version>
+            <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
+        </dependency>  
+        <dependency>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.executor</artifactId>
+            <version>${version}</version>
+        </dependency>  
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
@@ -135,6 +139,12 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.subsystem.example</groupId>
+            <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
+            <version>${version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
