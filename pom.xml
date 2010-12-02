@@ -103,6 +103,7 @@
         <module>jndi-url</module>
         <module>jndi-rmi</module>
         <module>jndi-bundle</module>
+        <module>jndi-legacy-support</module>
     </modules>
 
 </project>
