@@ -46,6 +46,7 @@
             org.apache.aries.proxy;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
+            org.eclipse.*;resolution:=optional,
             org.objectweb.asm;resolution:=optional,
             org.objectweb.asm.commons;resolution:=optional,
             *
