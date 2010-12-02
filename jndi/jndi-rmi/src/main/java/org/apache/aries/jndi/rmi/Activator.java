@@ -46,7 +46,7 @@ public class Activator implements BundleActivator {
         }
         catch (Exception e)
         {
-            throw new RuntimeException("Unable to register jndi url handler for rmi", e);
+            e.printStackTrace();
         }
     }
 
