@@ -1,3 +1,4 @@
+Fixing /Users/zoe/tempsite/downloads.mdtext 
 Title: Downloads
 <a name="Downloads-ApacheAriesDownloads"></a>
 # Apache Aries Downloads
@@ -28,23 +29,23 @@ source.
 <table class="confluenceTable">
 <tr><th class="confluenceTh"> Sub project </th><th class="confluenceTh"> Module </th><th class="confluenceTh"> Version </th><th class="confluenceTh"> Download </th><th class="confluenceTh"> Comments </th></tr>
 <tr><td class="confluenceTd"> Aries Samples </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:zip}samples-0.2-incubating-source-release{ariesdownload} </td><td class="confluenceTd">
-Source, ready to build </td></tr>
-<tr><td class="confluenceTd"> </td><td class="confluenceTd"> AriesTrader </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> [AriesTrader sample instructions](aries:ariestrader.html)
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/samples-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/samples-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/samples-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/samples-0.2-incubating-source-release.zip.sha1">sha1</A>) 
+</td><td class="confluenceTd">Source, ready to build </td></tr>
+<tr><td class="confluenceTd"> </td><td class="confluenceTd"> AriesTrader </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> - </td><td class="confluenceTd"> <A href="http://incubator.apache.org/aries/ariestrader.html">AriesTrader sample instructions</A>
 </tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> AriesTrader JDBC app </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:eba}org.apache.aries.samples.ariestrader.jdbc-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.ariestrader.jdbc-0.2-incubating.eba">eba</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.ariestrader.jdbc-0.2-incubating.eba.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.ariestrader.jdbc-0.2-incubating.eba.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.ariestrader.jdbc-0.2-incubating.eba.sha1">sha1</A>) 
 </td><td class="confluenceTd"> AriesTrader app with JDBC persistence only </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> AriesTrader JPA & JDBC app </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:eba}org.apache.aries.samples.ariestrader.all-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.ariestrader.all-0.2-incubating.eba">eba</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.ariestrader.all-0.2-incubating.eba.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.ariestrader.all-0.2-incubating.eba.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.ariestrader.all-0.2-incubating.eba.sha1">sha1</A>) 
 </td><td class="confluenceTd"> AriesTrader app with all available persistence methods </td></tr>
-<tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blog </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> [Blog Sample instructions](aries:blog-sample.html)
+<tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blog </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> <A href="http://incubator.apache.org/aries/blog-sample.html">Blog Sample instructions</A>
  </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blog JDBC app </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:eba}org.apache.aries.samples.blog.jdbc.eba-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.blog.jdbc.eba-0.2-incubating.eba">eba</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.blog.jdbc.eba-0.2-incubating.eba.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.blog.jdbc.eba-0.2-incubating.eba.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.blog.jdbc.eba-0.2-incubating.eba.sha1">sha1</A>) 
 </td><td class="confluenceTd"> Blog app based on JDBC </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blog JPA app </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:eba}org.apache.aries.samples.blog.jpa.eba-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.blog.jpa.eba-0.2-incubating.eba">eba</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.blog.jpa.eba-0.2-incubating.eba.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.blog.jpa.eba-0.2-incubating.eba.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.samples.blog.jpa.eba-0.2-incubating.eba.sha1">sha1</A>) 
 </td><td class="confluenceTd"> Blog app based on JPA </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blueprint HelloWorld </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blueprint ID Verifier</td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> </td></tr>
@@ -56,181 +57,192 @@ Source, ready to build </td></tr>
 <table class="confluenceTable">
 <tr><th class="confluenceTh"> Sub project </th><th class="confluenceTh"> Module </th><th class="confluenceTh"> Version </th><th class="confluenceTh"> Binary </th><th class="confluenceTh"> Source </th><th class="confluenceTh"> Comments </th></tr>
 <tr><td class="confluenceTd">Application </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}application-0.2-incubating-source-release{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/application-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/application-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/application-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/application-0.2-incubating-source-release.zip.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> application-api </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.api-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.api-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.api-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.api-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.api-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.api-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.api-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.api-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.api-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.api-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> application-bundle </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> application-converters </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.converters-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.converters-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.converters-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.converters-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.converters-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.converters-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.converters-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.converters-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.converters-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.converters-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> application-install </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.install-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.install-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.install-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.install-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.install-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.install-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.install-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.install-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.install-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.install-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> application-management </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.management-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.management-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.management-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.management-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.management-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.management-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.management-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.management-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.management-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.management-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> application-obr-resolver </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.resolver.obr-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.resolver.obr-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.resolver.obr-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.resolver.obr-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.resolver.obr-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.resolver.obr-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.resolver.obr-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.resolver.obr-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.resolver.obr-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.resolver.obr-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> application-runtime </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.runtime-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.runtime-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.runtime-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.runtime-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.runtime-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.runtime-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.runtime-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.runtime-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.runtime-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.runtime-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> application-utils </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.utils-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.utils-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.utils-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.utils-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.utils-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.application.utils-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.utils-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.utils-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.utils-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.application.utils-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> Blueprint </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}blueprint-0.2-incubating-source-release{ariesdownload} </td><td class="confluenceTd">
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/blueprint-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/blueprint-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/blueprint-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/blueprint-0.2-incubating-source-release.zip.sha1">sha1</A>) 
+</td><td class="confluenceTd">
 </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> blueprint-api </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.blueprint.api-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.api-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.api-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.api-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.api-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.blueprint.api-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.api-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.api-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.api-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.api-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> blueprint-bundle </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.blueprint-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.blueprint-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> An Uber bundle collecting all the required sub-modules that provide the
 blueprint implementation </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> blueprint-cm </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.blueprint.cm-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.cm-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.cm-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.cm-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.cm-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.blueprint.cm-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.cm-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.cm-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.cm-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.cm-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> blueprint-core </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.blueprint.core-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.core-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.core-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.core-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.core-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.blueprint.core-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.core-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.core-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.core-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.blueprint.core-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> eba-maven-plugin </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}eba-maven-plugin-0.2-incubating-source-release{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating-source-release.zip.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}eba-maven-plugin-0.2-incubating{ariesdownload} </td><td class="confluenceTd">
-{ariesdownload:jar}eba-maven-plugin-0.2-incubating-sources{ariesdownload} </td><td class="confluenceTd">
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating.jar.sha1">sha1</A>) 
+</td><td class="confluenceTd">
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/eba-maven-plugin-0.2-incubating-sources.jar.sha1">sha1</A>) 
+</td><td class="confluenceTd">
 </td></tr>
 <tr><td class="confluenceTd"> JMX </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}jmx-0.2-incubating-source-release{ariesdownload} </td><td class="confluenceTd"> </td></tr>
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jmx-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jmx-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jmx-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jmx-0.2-incubating-source-release.zip.sha1">sha1</A>) 
+</td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jmx-api </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.api-0.2-incubating{ariesdownload} </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.api-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.api-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.api-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.api-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.api-0.2-incubating.jar.sha1">sha1</A>) 
+</td><td class="confluenceTd">
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.api-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.api-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.api-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.api-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jmx-blueprint-api </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.blueprint.api-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.api-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.api-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.api-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.api-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.blueprint.api-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.api-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.api-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.api-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.api-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jmx-blueprint-bundle </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.blueprint-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.blueprint-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jmx-blueprint-core </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.blueprint.core-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.core-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.core-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.core-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.core-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.blueprint.core-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.core-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.core-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.core-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.blueprint.core-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jmx-bundle </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx-0.2-incubating{ariesdownload} </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx-0.2-incubating.jar.sha1">sha1</A>) 
+</td><td class="confluenceTd">
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jmx-core </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.core-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.core-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.core-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.core-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.core-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jmx.core-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.core-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.core-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.core-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jmx.core-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> JNDI </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}jndi-0.2-incubating-source-release{ariesdownload} </td><td class="confluenceTd"> </td></tr>
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jndi-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jndi-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jndi-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jndi-0.2-incubating-source-release.zip.sha1">sha1</A>) 
+</td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jndi-bundle </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jndi-0.2-incubating{ariesdownload} </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jndi-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi-0.2-incubating.jar.sha1">sha1</A>) 
+</td><td class="confluenceTd">
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> An Uber bundle that collects the jndi-api, jndi-core and jndi-url bundles
 into one </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jndi-core </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jndi.core-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.core-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.core-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.core-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.core-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jndi.core-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.core-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.core-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.core-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.core-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jndi-url </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jndi.url-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.url-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.url-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.url-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.url-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jndi.url-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.url-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.url-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.url-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jndi.url-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> JPA </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}jpa-0.2-incubating-source-release{ariesdownload} </td><td class="confluenceTd"> </td></tr>
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jpa-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jpa-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jpa-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/jpa-0.2-incubating-source-release.zip.sha1">sha1</A>) 
+</td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jpa-api </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jpa.api-0.2-incubating{ariesdownload} </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jpa.api-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.api-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.api-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.api-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.api-0.2-incubating.jar.sha1">sha1</A>) 
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.api-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.api-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.api-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.api-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jpa-blueprint-aries </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jpa.blueprint.aries-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.blueprint.aries-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.blueprint.aries-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.blueprint.aries-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.blueprint.aries-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jpa.blueprint.aries-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.blueprint.aries-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.blueprint.aries-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.blueprint.aries-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.blueprint.aries-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jpa-container </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jpa.container-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jpa.container-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> jpa-container-context </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jpa.container.context-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container.context-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container.context-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container.context-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container.context-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.jpa.container.context-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container.context-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container.context-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container.context-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.jpa.container.context-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> Quiesce </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}quiesce-0.2-incubating-source-release{ariesdownload} </td><td class="confluenceTd"> </td></tr>
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/quiesce-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/quiesce-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/quiesce-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/quiesce-0.2-incubating-source-release.zip.sha1">sha1</A>) 
+</td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> quiesce-api </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.quiesce.api-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.api-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.api-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.api-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.api-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.quiesce.api-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.api-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.api-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.api-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.api-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> quiesce-manager </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.quiesce.manager-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.manager-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.manager-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.manager-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.manager-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.quiesce.manager-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.manager-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.manager-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.manager-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.quiesce.manager-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> Transaction </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}transaction-0.2-incubating-source-release{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/transaction-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/transaction-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/transaction-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/transaction-0.2-incubating-source-release.zip.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> transaction-blueprint </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.transaction.blueprint-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.blueprint-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.blueprint-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.blueprint-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.blueprint-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.transaction.blueprint-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.blueprint-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.blueprint-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.blueprint-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.blueprint-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> transaction-manager </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.transaction.manager-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.manager-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.manager-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.manager-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.manager-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.transaction.manager-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.manager-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.manager-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.manager-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.manager-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> transaction-wrappers </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.transaction.wrappers-0.2-incubating{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.wrappers-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.wrappers-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.wrappers-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.wrappers-0.2-incubating.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.transaction.wrappers-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.wrappers-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.wrappers-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.wrappers-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.transaction.wrappers-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> Util </td><td class="confluenceTd"> </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd"> \- </td><td class="confluenceTd">
-{ariesdownload:zip}org.apache.aries.util-0.2-incubating-source-release{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating-source-release.zip">zip</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating-source-release.zip.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating-source-release.zip.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating-source-release.zip.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> 0.2 </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.util-0.2-incubating{ariesdownload} </td><td class="confluenceTd">
-{ariesdownload:jar}org.apache.aries.util-0.2-incubating-sources{ariesdownload}
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating.jar.sha1">sha1</A>) 
+</td><td class="confluenceTd">
+<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating-sources.jar">jar</A> (<A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating-sources.jar.asc">asc</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating-sources.jar.md5">md5</A>, <A href="http://www.apache.org/dyn/closer.cgi/incubator/aries/org.apache.aries.util-0.2-incubating-sources.jar.sha1">sha1</A>) 
 </td><td class="confluenceTd"> </td></tr>
