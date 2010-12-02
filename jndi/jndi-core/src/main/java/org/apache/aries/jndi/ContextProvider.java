@@ -10,7 +10,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class ContextProvider {
-    private ServicePair<?> pair;
     private ServiceReference reference;
     private Context context;
     private BundleContext bc;
