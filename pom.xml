@@ -108,7 +108,7 @@
         <artifactId>org.apache.aries.testsupport.unit</artifactId>
       </dependency>            
       <dependency>
-      	<groupId>org.apache.aries</groupId>
+      	<groupId>org.apache.aries.proxy</groupId>
       	<artifactId>org.apache.aries.proxy.api</artifactId>
       </dependency>
   </dependencies>
