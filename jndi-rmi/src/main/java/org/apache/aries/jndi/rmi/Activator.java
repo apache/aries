@@ -19,6 +19,7 @@
 package org.apache.aries.jndi.rmi;
 
 import java.util.Hashtable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.naming.spi.ObjectFactory;
@@ -32,9 +33,11 @@ public class Activator implements BundleActivator {
 
     private ServiceRegistration reg;
 
+    private static final Logger LOGGER = Logger.getLogger(Activator.class.getName());
+
     public void start(BundleContext context) {
 
-        Logger.getLogger("org.apache.aries.jndi.rmi").fine("Registering RMI url handler");
+        LOGGER.fine("Registering RMI url handler");
 
         try {
             Hashtable<Object, Object> props = new Hashtable<Object, Object>();
@@ -46,7 +49,7 @@ public class Activator implements BundleActivator {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            LOGGER.log(Level.INFO, "Could not create the jndi rmi url factory.", e);
         }
     }
 
