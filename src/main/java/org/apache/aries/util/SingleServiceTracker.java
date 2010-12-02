@@ -115,10 +115,13 @@ public final class SingleServiceTracker<T>
     // Make sure we don't try to get a lock on null
     Object lock;
     
+    // we have to choose our lock.
     if (newRef != null) lock = newRef;
     else if (deadRef != null) lock = deadRef;
     else lock = this;
     
+    // This lock is here to ensure that no two threads can set the ref and service
+    // at the same time. 
     synchronized (lock) {
       if (open.get()) {
         result = this.ref.compareAndSet(deadRef, newRef);
