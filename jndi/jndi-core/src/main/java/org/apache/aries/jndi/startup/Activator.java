@@ -78,7 +78,7 @@ public class Activator implements BundleActivator {
         } catch (NamingException e) {
             LOGGER.log(Level.INFO, "Cannot set the InitialContextFactoryBuilder.", e);
         } catch (IllegalStateException e) {
-            LOGGER.log(Level.INFO, "Cannot set the InitialContextFactoryBuilder. Another builder is already installed", e);
+            LOGGER.log(Level.INFO, "Cannot set the InitialContextFactoryBuilder. Another builder " + getClassName(InitialContextFactoryBuilder.class) + " is already installed", e);
         }
     
         try {
@@ -88,7 +88,7 @@ public class Activator implements BundleActivator {
         } catch (NamingException e) {
             LOGGER.log(Level.INFO, "Cannot set the ObjectFactoryBuilder.", e);
         } catch (IllegalStateException e) {
-            LOGGER.log(Level.INFO, "Cannot set the ObjectFactoryBuilder. Another builder is already installed", e);
+            LOGGER.log(Level.INFO, "Cannot set the ObjectFactoryBuilder. Another builder " + getClassName(InitialContextFactoryBuilder.class) + " is already installed", e);
         }
         
         context.registerService(JNDIProviderAdmin.class.getName(), 
@@ -102,6 +102,22 @@ public class Activator implements BundleActivator {
         context.registerService(JNDIContextManager.class.getName(), 
                                 new ContextManagerServiceFactory(),
                                 null);
+    }
+
+    private String getClassName(Class<?> expectedType) 
+    {
+      try {
+        for (Field field : NamingManager.class.getDeclaredFields()) {
+            if (expectedType.equals(field.getType())) {
+                field.setAccessible(true);
+                Object icf = field.get(null);
+                return icf.getClass().getName();
+            }
+        }
+      } catch (Throwable t) {
+          // Ignore
+      }
+      return "";
     }
 
     private ServiceTracker initServiceTracker(BundleContext context,
