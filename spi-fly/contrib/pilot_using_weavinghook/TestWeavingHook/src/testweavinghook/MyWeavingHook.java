@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.framework.wiring.BundleWiring;
@@ -30,7 +32,17 @@ public class MyWeavingHook implements WeavingHook {
 
 	@Override
 	public void weave(WovenClass wovenClass) {
-	    System.out.println("*** WovenClass: " + wovenClass.getClassName());
+	    if (wovenClass.getBundleWiring().getBundle().getSymbolicName().equals("MyTestBundle"))
+	    {
+	        System.out.println("*** WovenClass: " + wovenClass.getClassName());
+	        
+	        ClassReader cr = new ClassReader(wovenClass.getBytes());
+	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw);
+	        cr.accept(tsv, 0);
+	        wovenClass.setBytes(cw.toByteArray());
+	    }
+	    /*
 		if (wovenClass.getClassName().startsWith("mytestbundle")) {
 			BundleWiring bw = wovenClass.getBundleWiring();
 			String fileName = wovenClass.getClassName().replace('.', '/') + ".class";
@@ -47,6 +59,6 @@ public class MyWeavingHook implements WeavingHook {
 					e.printStackTrace();
 				}
 			}				
-		}			
+		}*/			
 	}
 }
