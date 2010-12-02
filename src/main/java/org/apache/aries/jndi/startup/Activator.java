@@ -20,6 +20,8 @@ package org.apache.aries.jndi.startup;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
@@ -50,7 +52,9 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  * driven so they can do their magic stuff properly.
  */
 public class Activator implements BundleActivator {
-    
+
+    private static final Logger LOGGER = Logger.getLogger(Activator.class.getName());
+
     private OSGiInitialContextFactoryBuilder icfBuilder;
     private OSGiObjectFactoryBuilder ofBuilder;
     private static ServiceTracker icfBuilders;
@@ -72,9 +76,9 @@ public class Activator implements BundleActivator {
             NamingManager.setInitialContextFactoryBuilder(builder);
             icfBuilder = builder;
         } catch (NamingException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.INFO, "Cannot set the InitialContextFactoryBuilder.", e);
         } catch (IllegalStateException e) {
-            System.err.println("Cannot set the InitialContextFactoryBuilder. Another builder is already installed");
+            LOGGER.log(Level.INFO, "Cannot set the InitialContextFactoryBuilder. Another builder is already installed", e);
         }
     
         try {
@@ -82,9 +86,9 @@ public class Activator implements BundleActivator {
             NamingManager.setObjectFactoryBuilder(builder);
             ofBuilder = builder;
         } catch (NamingException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.INFO, "Cannot set the ObjectFactoryBuilder.", e);
         } catch (IllegalStateException e) {
-            System.err.println("Cannot set the ObjectFactoryBuilder. Another builder is already installed");
+            LOGGER.log(Level.INFO, "Cannot set the ObjectFactoryBuilder. Another builder is already installed", e);
         }
         
         context.registerService(JNDIProviderAdmin.class.getName(), 
@@ -141,7 +145,7 @@ public class Activator implements BundleActivator {
             }
         } catch (Throwable t) {
             // Ignore
-          t.printStackTrace();
+            LOGGER.log(Level.FINE, "Error setting field.", t);
         }
     }
 
