@@ -24,9 +24,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import javax.naming.Binding;
 import javax.naming.Context;
@@ -40,7 +46,9 @@ import javax.sql.DataSource;
 
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.unittest.mocks.MethodCall;
+import org.apache.aries.unittest.mocks.MethodCallHandler;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
 import org.junit.Before;
@@ -77,6 +85,7 @@ public class ServiceRegistryContextTest
   public void registerService() throws NamingException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException 
   {
     bc =  Skeleton.newMock(new BundleContextMock(), BundleContext.class);
+    registerProxyManager();
     new org.apache.aries.jndi.startup.Activator().start(bc);
     new Activator().start(bc);
         
@@ -85,6 +94,43 @@ public class ServiceRegistryContextTest
     registerService(service);
   }
   
+  private void registerProxyManager() 
+  {
+    ProxyManager mgr = Skeleton.newMock(ProxyManager.class);
+    
+    //   public Object createProxy(Bundle clientBundle, Collection<Class<?>> classes, Callable<Object> dispatcher) throws UnableToProxyException;
+
+    Skeleton.getSkeleton(mgr).registerMethodCallHandler(new MethodCall(ProxyManager.class, "createProxy", Bundle.class, Collection.class, Callable.class),
+        new MethodCallHandler() 
+        {
+          public Object handle(MethodCall methodCall, Skeleton skeleton) throws Exception 
+          {
+            @SuppressWarnings("unchecked")
+            Collection<Class<?>> interfaceClasses = (Collection<Class<?>>) methodCall.getArguments()[1];
+            Class<?>[] classes = new Class<?>[interfaceClasses.size()];
+            
+            Iterator<Class<?>> it = interfaceClasses.iterator(); 
+            for (int i = 0; it.hasNext(); i++) {
+              classes[i] = it.next();
+            }
+            
+            @SuppressWarnings("unchecked")
+            final Callable<Object> target = (Callable<Object>) methodCall.getArguments()[2];
+            
+            return Proxy.newProxyInstance(this.getClass().getClassLoader(), classes, new InvocationHandler() 
+            {
+              public Object invoke(Object mock, Method method, Object[] arguments)
+                  throws Throwable 
+              {
+                return method.invoke(target.call(), arguments);
+              }
+            });
+          }
+        });
+    
+    bc.registerService(ProxyManager.class.getName(), mgr, null);
+  }
+
   /**
    * Register a service in our map.
    * 

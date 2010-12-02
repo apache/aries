@@ -33,7 +33,10 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.naming.NamingException;
 
+import org.apache.aries.jndi.url.Activator;
 import org.apache.aries.jndi.url.OsgiName;
+import org.apache.aries.proxy.ProxyManager;
+import org.apache.aries.proxy.UnableToProxyException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -194,8 +197,6 @@ public final class ServiceHelper
   private static final ConcurrentMap<ServiceKey, WeakReference<Object>> proxyCache = new ConcurrentHashMap<ServiceKey, WeakReference<Object>>();
   private static final CacheClearoutListener cacheClearoutListener = new CacheClearoutListener(proxyCache);
 
-  private static ProxyFactory proxyFactory;
-
   public static Object getService(BundleContext ctx, OsgiName lookupName, String id,
                                   boolean dynamicRebind, Map<String, Object> env, boolean requireProxy) throws NamingException
   {    
@@ -311,7 +312,7 @@ public final class ServiceHelper
     Bundle serviceProviderBundle = pair.ref.getBundle();
     Bundle owningBundle = ctx.getBundle();
 
-    ProxyFactory proxyFactory = getProxyFactory();
+    ProxyManager proxyManager = Activator.getProxyManager();
 
     for (String interfaceName : interfaces) {
       try {
@@ -335,9 +336,9 @@ public final class ServiceHelper
     // on this adapter.
 
     try {
-      return proxyFactory.createProxy(serviceProviderBundle, clazz, ih);
-    } catch (IllegalArgumentException e) {
-      throw e;
+      return proxyManager.createProxy(serviceProviderBundle, clazz, ih);
+    } catch (UnableToProxyException e) {
+      throw new IllegalArgumentException(e);
     } catch (RuntimeException e) {
       throw new IllegalArgumentException("Unable to create proxy for " + pair.ref, e);
     }
@@ -426,20 +427,6 @@ public final class ServiceHelper
     }
 
     return result;
-  }
-
-  protected static synchronized ProxyFactory getProxyFactory() {
-    if (proxyFactory == null) {
-      try {
-        // Try load load a cglib class (to make sure it's actually available
-        // then create the cglib factory
-        Class.forName("net.sf.cglib.proxy.Enhancer");
-        proxyFactory = new CgLibProxyFactory();
-      } catch (Throwable t) {
-        proxyFactory = new JdkProxyFactory();
-      }
-    }
-    return proxyFactory;
   }
  
 }
