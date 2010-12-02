@@ -22,23 +22,53 @@ import java.util.Hashtable;
 
 import javax.naming.spi.ObjectFactory;
 
+import org.apache.aries.proxy.ProxyManager;
+import org.apache.aries.util.SingleServiceTracker;
+import org.apache.aries.util.SingleServiceTracker.SingleServiceListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jndi.JNDIConstants;
 
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, SingleServiceListener 
+{
+    private BundleContext ctx;
+    private volatile ServiceRegistration reg;
+    private static SingleServiceTracker<ProxyManager> proxyManager;
 
-    private ServiceRegistration reg;
-
-    public void start(BundleContext context) {
-        Hashtable<Object, Object> props = new Hashtable<Object, Object>();
-        props.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
-        reg = context.registerService(ObjectFactory.class.getName(), new OsgiURLContextServiceFactory(), props);
+    public void start(BundleContext context) 
+    {
+        ctx = context;
+        proxyManager = new SingleServiceTracker<ProxyManager>(context, ProxyManager.class, this);
+        proxyManager.open();
     }
 
-    public void stop(BundleContext context) {
-        reg.unregister();
+    public void stop(BundleContext context) 
+    {
+        proxyManager.close();
+        if (reg != null) reg.unregister();
     }
 
+    public void serviceFound() 
+    {
+      Hashtable<Object, Object> props = new Hashtable<Object, Object>();
+      props.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
+      reg = ctx.registerService(ObjectFactory.class.getName(), new OsgiURLContextServiceFactory(), props);
+    }
+
+    public void serviceLost() 
+    {
+      if (reg != null) reg.unregister();
+      reg = null;
+    }
+
+    public void serviceReplaced() 
+    {
+      
+    }
+    
+    public static ProxyManager getProxyManager()
+    {
+      return proxyManager == null ? null : proxyManager.getService();
+    }
 }
