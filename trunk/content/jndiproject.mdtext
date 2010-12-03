@@ -25,51 +25,43 @@ The osgi:service lookup scheme is defined by the JNDI Service Specification
 and follows the scheme:
 
 
-{code}
-osgi:service/<interface>[/<filter>](/<filter>.html)
-{code}
+    osgi:service/<interface>[/<filter>](/<filter>.html)
+
 The interface part is an interface name, like javax.sql.DataSource, or
 javax.jms.ConnectionFactory. The filter allows selection based on the
 properties of the service.
 
 This example:
 
-{code}
-Context ctx = new InitialContext();
+    Context ctx = new InitialContext();
+    
+    Runnable r = (Runnable)ctx.lookup("osgi:service/java.lang.Runnable");
 
-Runnable r = (Runnable)ctx.lookup("osgi:service/java.lang.Runnable");
-{code}
 is equivalent to this code written to the OSGi service registry API.
 
-{code}
-BundleContext ctx = getABundleContext();
-ServiceReference ref = ctx.getServiceReference("java.lang.Runnable");
-if (ref != null) {
-  Runnable r = ctx.getService(ref);
-}
-{code}
+    BundleContext ctx = getABundleContext();
+    ServiceReference ref = ctx.getServiceReference("java.lang.Runnable");
+    if (ref != null) {
+        Runnable r = ctx.getService(ref);
+    }
 
 Lets say you wanted to filter for a Runnable with a property called _fred_
 which was mapped to _wilma_. You could write
 
-{code}
-Context ctx = new InitialContext();
-
-Runnable r =
-(Runnable)ctx.lookup("osgi:service/java.lang.Runnable/(fred=wilma)");
-{code}
+    Context ctx = new InitialContext();
+    
+    Runnable r =
+    (Runnable)ctx.lookup("osgi:service/java.lang.Runnable/(fred=wilma)");
 
 which is equivalent to:
 
-{code}
-BundleContext ctx = getABundleContext();
-ServiceReference[](.html)
- refs = ctx.getServiceReference("java.lang.Runnable", "(fred=wilma)");
-if (refs != null) {
-  Runnable r = ctx.getService(refs[refs.length - 1](refs.length---1.html)
-);
+    BundleContext ctx = getABundleContext();
+    ServiceReference[](.html)
+     refs = ctx.getServiceReference("java.lang.Runnable", "(fred=wilma)");
+    if (refs != null) {
+      Runnable r = ctx.getService(refs[refs.length - 1](refs.length---1.html)
+    );
 }
-{code}
 
 The osgi:service namepsace returns proxies, so if the Runnable was
 unregistered the proxy would switch to an equivalent alternative. If no

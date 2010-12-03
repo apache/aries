@@ -4,7 +4,7 @@ Title: Modules
 
  - [Samples](samples.html)
  - [Blueprint](blueprint.html)
- ** [Blueprint annotations](blueprintannotation.html)
+  - [Blueprint annotations](blueprintannotation.html)
  - [JNDI](jndiproject.html)
  - [JPA](jpaproject.html)
  - [Transactions](transactionsproject.html)

@@ -33,11 +33,12 @@ An Aries application is packaged as a zip file with a '.eba' suffix. Its
 structure is as follows:
 
 <DIV class="code panel" style="border-style: solid;border-width: 1px;"><DIV class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;"><B>Sample Aries application structure</B></DIV><DIV class="codeContent panelContent">
-    META-INF/APPLICATION.MF
-    bundle1.jar
-    bundle2.jar
-    bundle3.jar
-
+    META-INF/APPLICATION.MF<br>
+    bundle1.jar<br>
+    bundle2.jar<br>
+    bundle3.jar<br>
+</DIV>
+</DIV>
 
 The file must contain either an APPLICATION.MF with at least one bundle
 listed in its Application-Content header (see below), or at least one
@@ -61,21 +62,22 @@ Aries application along with any OSGi services exported from, or referenced
 by, those modules.  The following is an example of an Aries manifest:
 
 <DIV class="code panel" style="border-style: solid;border-width: 1px;"><DIV class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;"><B>APPLICATION.MF</B></DIV><DIV class="codeContent panelContent">
-    Manifest-Version: 1.0
-    Application-ManifestVersion: 1.0
-    Application-Name: Bank Account
-    Application-SymbolicName: com.mybank.account.app
-    Application-Version: 1.0
-    Application-Content: 
-    	com.mybank.account.bankWeb; version=1.0.0,
-    	com.mybank.account.bankAccount; version=1.0.0,
-    	com.mybank.account.common; version=1.0.0,
-    	com.mybank.account.utility; version=1.0.0
-    Use-Bundle: com.mybank.account.admin;version="[1.0.0,2.0.0)"
-    Application-ExportService: com.mybank.account.service.AccountService
-    Application-ImportService:
-com.mybank.security.UserAuthService;filter="(security=strong)"
-
+    Manifest-Version: 1.0<br>
+    Application-ManifestVersion: 1.0<br>
+    Application-Name: Bank Account<br>
+    Application-SymbolicName: com.mybank.account.app<br>
+    Application-Version: 1.0<br>
+    Application-Content: <br>
+    	com.mybank.account.bankWeb; version=1.0.0,<br>
+    	com.mybank.account.bankAccount; version=1.0.0,<br>
+    	com.mybank.account.common; version=1.0.0,<br>
+    	com.mybank.account.utility; version=1.0.0<br>
+    Use-Bundle: com.mybank.account.admin;version="[1.0.0,2.0.0)"<br>
+    Application-ExportService: com.mybank.account.service.AccountService<br>
+    Application-ImportService:<br>
+com.mybank.security.UserAuthService;filter="(security=strong)"<br>
+</DIV>
+</DIV>
 
 The manifest headers are as follows:
 
@@ -132,20 +134,22 @@ application is installed. A DEPLOYMENT.MF file will be generated if one
 does not exist, or honoured if provided. Here's an example:
 
 <DIV class="code panel" style="border-style: solid;border-width: 1px;"><DIV class="codeHeader panelHeader" style="border-bottom-width: 1px;border-bottom-style: solid;"><B>DEPLOYMENT.MF</B></DIV><DIV class="codeContent panelContent">
-    Manifest-Version: 1.0
-    Application-Version: 1.0
-    Application-SymbolicName: com.mybank.account.app
-    Deployed-Content: com.mybank.account.bankWeb; deployed-version=1.0.0,
-    	com.mybank.account.bankAccount; deployed-version=1.0.0,
-    	com.mybank.account.common; deployed-version=1.2.0,
-    	com.mybank.account.utility; deployed-version=1.0.0, 
-    	com.mybank.utils.logging; deployed-version=1.3.1
-    Provision-Bundle: com.mybank.account.delivery;deployed-version=1.0.1
-    Import-Package: com.mybank.account.admin.login;version="1.0.1";bundle-symbolic-name="com.mybank.account.admin";bundle-version="[1.0.1,1.0.1]
-",com.mybank.account.delivery.bycar;version="[1.0.0,2.0.0)",javax.servlet;version="2.5.0"
-    Deployed-Use-Bundle: com.mybank.account.admin;deployed-version=1.0.1
+    Manifest-Version: 1.0<br>
+    Application-Version: 1.0<br>
+    Application-SymbolicName: com.mybank.account.app<br>
+    Deployed-Content: com.mybank.account.bankWeb; deployed-version=1.0.0,<br>
+    	com.mybank.account.bankAccount; deployed-version=1.0.0,<br>
+    	com.mybank.account.common; deployed-version=1.2.0,<br>
+    	com.mybank.account.utility; deployed-version=1.0.0, <br>
+    	com.mybank.utils.logging; deployed-version=1.3.1<br>
+    Provision-Bundle: com.mybank.account.delivery;deployed-version=1.0.1<br>
+    Import-Package: com.mybank.account.admin.login;version="1.0.1";bundle-symbolic-name="com.mybank.account.admin";bundle-version="[1.0.1,1.0.1]",com.mybank.account.delivery.bycar;version="[1.0.0,2.0.0)",javax.servlet;version="2.5.0"<br>
+    Deployed-Use-Bundle: com.mybank.account.admin;deployed-version=1.0.1<br>
+</DIV>
+</DIV>
 
 The manifest headers are as follows:
+
 * Manifest-Version - a version number for the manifest format.
 * Application-Version - uniquely identify the version of the application.
 Must match that in the associated APPLICATION.MF. 
