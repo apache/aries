@@ -651,6 +651,8 @@ public class QuiesceJPATest {
         // Bundles
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.cglib"),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.api"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.core"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
