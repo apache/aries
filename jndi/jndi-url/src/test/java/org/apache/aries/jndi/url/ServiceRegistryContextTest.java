@@ -44,6 +44,7 @@ import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 
+import org.apache.aries.jndi.api.JNDIConstants;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.proxy.ProxyManager;
@@ -178,6 +179,37 @@ public class ServiceRegistryContextTest
      Runnable r2 = (Runnable) ctx.lookup("aries:services/java.lang.Runnable");
      assertNotNull(r2);
      assertTrue("expected non-proxied service class", r2 == service);
+  }
+  
+  @Test
+  public void testLookupWithPause() throws NamingException
+  {
+     BundleMock mock = new BundleMock("scooby.doo", new Properties());
+        
+     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
+     Hashtable<Object, Object> env = new Hashtable<Object, Object>();
+     env.put(JNDIConstants.REBIND_TIMEOUT, 1000);
+     
+     InitialContext ctx = new InitialContext(env);
+     
+     Context ctx2 = (Context) ctx.lookup("osgi:service");
+     
+     Runnable r1 = (Runnable) ctx2.lookup("java.lang.Runnable");   
+     
+     reg.unregister();
+     
+     long startTime = System.currentTimeMillis();
+     
+     try {
+       r1.run();
+       fail("Should have received an exception");
+     } catch (ServiceException e) {
+       long endTime = System.currentTimeMillis();
+       long diff = endTime - startTime;
+       
+       assertTrue("The run method did not fail in the expected time (1s): " + diff, diff >= 1000);
+     }
   }
   
   /**
