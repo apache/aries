@@ -67,6 +67,7 @@ import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
@@ -76,7 +77,7 @@ import org.slf4j.LoggerFactory;
 public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 {
 
-  private Logger _logger = LoggerFactory.getLogger(DeploymentManifestManagerImpl.class);
+  private final Logger _logger = LoggerFactory.getLogger(DeploymentManifestManagerImpl.class);
   private AriesApplicationResolver resolver;
   private PostResolveTransformer postResolveTransformer = null;
 
@@ -130,7 +131,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
    * @throws ResolverException
    */
   @Override
-  public Manifest generateDeploymentManifest( AriesApplication app,  ResolveConstraint... constraints ) throws ResolverException
+  public Manifest generateDeploymentManifest(AriesApplication app,  ResolveConstraint... constraints ) throws ResolverException
   {
 
     _logger.debug(LOG_ENTRY, "generateDeploymentManifest", new Object[]{app, constraints});
@@ -332,6 +333,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
         throw (rx);
       }
     }
+    
+    checkForIsolatedContentInProvisionBundle(appSymbolicName, deployedBundles);
       
     if (postResolveTransformer != null) try {  
       deployedBundles = postResolveTransformer.postResolveProcess (appMetadata, deployedBundles);
@@ -525,6 +528,61 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     _logger.debug(LOG_EXIT, "findSuspects", new Object[]{suspects});
 
     return suspects;
+  }
+  
+  /**
+   * Check whether there are isolated bundles deployed into both deployed content and provision bundles. This almost
+   * always indicates a resolution problem hence we throw a ResolverException.
+   * Note that we check provision bundles rather than provision bundles and deployed use bundles. So in any corner case
+   * where the rejected deployment is actually intended, it can still be achieved by introducing a use bundle clause.
+   * 
+   * @param applicationSymbolicName
+   * @param appContentBundles
+   * @param provisionBundles
+   * @throws ResolverException
+   */
+  private void checkForIsolatedContentInProvisionBundle(String applicationSymbolicName, DeployedBundles db)
+    throws ResolverException
+  {
+    for (ModelledResource isolatedBundle : db.getDeployedContent()) {
+      for (ModelledResource provisionBundle : db.getDeployedProvisionBundle()) {
+        if (isolatedBundle.getSymbolicName().equals(provisionBundle.getSymbolicName()) 
+            && providesPackage(provisionBundle, db.getImportPackage())) {
+          
+          throw new ResolverException(
+              MessageUtil.getMessage("ISOLATED_CONTENT_PROVISIONED", 
+                  applicationSymbolicName,
+                  isolatedBundle.getSymbolicName(),
+                  isolatedBundle.getVersion(),
+                  provisionBundle.getVersion()));
+        }
+      }
+    }
+  }
+  
+  /**
+   * Can the modelled resource provide a package against the given import specificiation
+   * @param bundle
+   * @param importPackages
+   * @return
+   */
+  private boolean providesPackage(ModelledResource bundle, String importPackages)
+  {
+    Map<String, NameValueMap<String, String>> imports = ManifestHeaderProcessor.parseImportString(importPackages);
+    
+    try {
+      for (Map.Entry<String, NameValueMap<String,String>> e : imports.entrySet()) {
+        ImportedPackage importPackage = modellingManager.getImportedPackage(e.getKey(), e.getValue());
+        
+        for (ExportedPackage export : bundle.getExportedPackages()) {
+          if (importPackage.isSatisfied(export)) return true;
+        }
+      }
+    } catch (InvalidAttributeException iae) {
+      _logger.error(MessageUtil.getMessage("UNEXPECTED_EXCEPTION_PARSING_IMPORTS", iae, importPackages), iae);
+    }
+    
+    return false;
   }
 
   /**
