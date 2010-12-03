@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -211,9 +212,10 @@ public class DeploymentGeneratorTest
     ModelledResource mb = createModelledResource(bundleName, bundleVersion,
         Arrays.asList(importedPackages) , Arrays.asList(exportedPackages));
     
-   return mb.getExportedPackages().iterator().next();
-
+    
+    return mb.getExportedPackages().iterator().next();
   }
+  
   static {
     try {
       CAPABILITY_A = createExportedPackage ("aries.test.a", "1.0.0", new String[] {"aries.test.a"}, 
@@ -252,11 +254,11 @@ public class DeploymentGeneratorTest
     Attributes attrs = man.getMainAttributes();
     
     assertEquals("aries.test", attrs.getValue(AppConstants.APPLICATION_SYMBOLIC_NAME));
-    assertEquals("1.0.0", (String)attrs.getValue(AppConstants.APPLICATION_VERSION));
+    assertEquals("1.0.0", attrs.getValue(AppConstants.APPLICATION_VERSION));
     
-    String content = (String)attrs.getValue(AppConstants.DEPLOYMENT_CONTENT);
-    String useBundle = (String) attrs.getValue(AppConstants.DEPLOYMENT_USE_BUNDLE);
-    String provisioned =(String)attrs.getValue(AppConstants.DEPLOYMENT_PROVISION_BUNDLE);
+    String content = attrs.getValue(AppConstants.DEPLOYMENT_CONTENT);
+    String useBundle = attrs.getValue(AppConstants.DEPLOYMENT_USE_BUNDLE);
+    String provisioned =attrs.getValue(AppConstants.DEPLOYMENT_PROVISION_BUNDLE);
     
     assertTrue(content.contains("aries.test.a;deployed-version=1.0.0"));
     assertTrue(content.contains("aries.test.b;deployed-version=1.1.0"));
@@ -368,6 +370,114 @@ public class DeploymentGeneratorTest
         assertTrue(unsatisfiedReq + " is not an expected msg", checkMessages.contains(unsatisfiedReq.trim()));
       }
     }
+  }
+  
+  @Test
+  public void checkBundleInAppContentAndProvisionContent() throws Exception
+  {
+    List<ModelledResource> cmr = new ArrayList<ModelledResource>();
+    cmr.add(createModelledResource("test.api", "1.1.0", Collections.<String>emptyList(), Arrays.asList("test.api.pack;version=1.1.0")));
+    cmr.add(createModelledResource("test.api", "1.0.0", Collections.<String>emptyList(), Arrays.asList("test.api.pack;version=1.0.0")));
+    cmr.add(createModelledResource("test.consumer", "1.0.0", Arrays.asList("test.api.pack;version=\"[1.0.0,2.0.0)\""), Collections.<String>emptyList()));
+    cmr.add(createModelledResource("test.provider", "1.0.0", Arrays.asList("test.api.pack;version=\"[1.0.0,1.1.0)\""), Collections.<String>emptyList()));
+
+    // The second time DeploymentGenerator calls the Resolver, it will provide just 
+    // test.shared. The resolver will return test.shared _plus_ test.isolated. 
+    _resolver.addResult(cmr);
+    Skeleton.getSkeleton(appMetadata).setReturnValue(
+        new MethodCall(ApplicationMetadata.class, "getApplicationContents"), 
+        Arrays.asList(
+            mockContent("test.api" , "1.1.0"),
+            mockContent("test.consumer" , "1.0.0"),
+            mockContent("test.provider", "1.0.0")));
+
+    app = Skeleton.newMock(AriesApplication.class);
+    Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
+    
+    try {
+      DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata, 
+          Arrays.asList(new ModelledResource[] {cmr.get(0), cmr.get(2), cmr.get(3)}), 
+          new ArrayList<Content>());
+      deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+          appMetadata.getApplicationVersion().toString(), deployedBundles);
+      
+      fail("Expected exception because we can't provision an isolated bundle twice");
+    } catch (ResolverException rx) {}
+  }
+  
+  /**
+   * Similar to the checkBundleInAppContentAndProvisionContent scenario. However, this time the provisioned bundle does not provide
+   * a package or service to the isolated content, so there is no problem.
+   * @throws Exception
+   */
+  @Test
+  public void checkBundleInAppContentAndProvisionContentButNothingSharedToIsolatedContent() throws Exception
+  {
+    List<ModelledResource> cmr = new ArrayList<ModelledResource>();
+    cmr.add(createModelledResource("test.util", "1.1.0", Collections.<String>emptyList(), Arrays.asList("test.api.pack;version=1.1.0")));
+    cmr.add(createModelledResource("test.bundle", "1.0.0", Arrays.asList("test.api.pack;version=\"[1.1.0,2.0.0)\""), Collections.<String>emptyList()));
+    cmr.add(createModelledResource("test.provisioned", "1.0.0", Arrays.asList("test.api.pack;version=\"[1.0.0,1.1.0)\""), Collections.<String>emptyList()));
+    cmr.add(createModelledResource("test.util", "1.0.0", Collections.<String>emptyList(), Arrays.asList("test.api.pack;version=1.0.0")));
+
+    // The second time DeploymentGenerator calls the Resolver, it will provide just 
+    // test.shared. The resolver will return test.shared _plus_ test.isolated. 
+    _resolver.addResult(cmr);
+    Skeleton.getSkeleton(appMetadata).setReturnValue(
+        new MethodCall(ApplicationMetadata.class, "getApplicationContents"), 
+        Arrays.asList(
+            mockContent("test.util" , "1.1.0"),
+            mockContent("test.bundle", "1.0.0")));
+
+    app = Skeleton.newMock(AriesApplication.class);
+    Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
+    
+    DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata, 
+        Arrays.asList(new ModelledResource[] {cmr.get(0), cmr.get(1)}), 
+        new ArrayList<Content>());
+    Manifest mf = deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+        appMetadata.getApplicationVersion().toString(), deployedBundles);
+    
+    assertTrue(mf.getMainAttributes().getValue("Deployed-Content").contains("test.util;deployed-version=1.1.0"));
+    assertTrue(mf.getMainAttributes().getValue("Provision-Bundle").contains("test.util;deployed-version=1.0.0"));
+  }
+  
+  @Test
+  public void checkBundleInAppContentAndUseContent() throws Exception
+  {
+    List<ModelledResource> cmr = new ArrayList<ModelledResource>();
+    cmr.add(createModelledResource("test.api", "1.1.0", Collections.<String>emptyList(), Arrays.asList("test.api.pack;version=1.1.0")));
+    cmr.add(createModelledResource("test.api", "1.0.0", Collections.<String>emptyList(), Arrays.asList("test.api.pack;version=1.0.0")));
+    cmr.add(createModelledResource("test.consumer", "1.0.0", Arrays.asList("test.api.pack;version=\"[1.0.0,2.0.0)\""), Collections.<String>emptyList()));
+    cmr.add(createModelledResource("test.provider", "1.0.0", Arrays.asList("test.api.pack;version=\"[1.0.0,1.1.0)\""), Collections.<String>emptyList()));
+
+    // The second time DeploymentGenerator calls the Resolver, it will provide just 
+    // test.shared. The resolver will return test.shared _plus_ test.isolated. 
+    _resolver.addResult(cmr);
+    
+    Skeleton.getSkeleton(appMetadata).setReturnValue(
+        new MethodCall(ApplicationMetadata.class, "getApplicationContents"), 
+        Arrays.asList(
+            mockContent("test.api" , "1.1.0"),
+            mockContent("test.consumer" , "1.0.0"),
+            mockContent("test.provider", "1.0.0")));
+    
+    Skeleton.getSkeleton(appMetadata).setReturnValue(
+        new MethodCall(ApplicationMetadata.class, "getUseBundles"),
+        Arrays.asList(mockContent("test.api", "1.0.0")));
+
+    app = Skeleton.newMock(AriesApplication.class);
+    Skeleton.getSkeleton(app).setReturnValue(new MethodCall(AriesApplication.class, "getApplicationMetadata"), appMetadata);
+    
+    DeployedBundles deployedBundles = deplMFMgr.generateDeployedBundles (appMetadata, 
+        Arrays.asList(new ModelledResource[] {cmr.get(0), cmr.get(2), cmr.get(3)}), 
+        new ArrayList<Content>());
+    
+    Manifest mf = deplMFMgr.generateDeploymentManifest(appMetadata.getApplicationSymbolicName(),
+        appMetadata.getApplicationVersion().toString(), deployedBundles);
+    
+    mf.write(System.out);
+    assertTrue(mf.getMainAttributes().getValue("Deployed-Content").contains("test.api;deployed-version=1.1.0"));
+    assertTrue(mf.getMainAttributes().getValue("Deployed-Use-Bundle").contains("test.api;deployed-version=1.0.0"));
   }
   
   public static ModelledResource createModelledResource(String bundleName, String bundleVersion, 
