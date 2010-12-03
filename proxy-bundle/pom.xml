@@ -86,7 +86,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-        	<groupId>org.apache.aries</groupId>
+        	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
         	<version>${project.version}</version>
         </dependency>
