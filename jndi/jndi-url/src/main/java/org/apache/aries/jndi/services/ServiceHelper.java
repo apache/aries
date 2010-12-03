@@ -160,21 +160,33 @@ public final class ServiceHelper
     private String interfaceName;
     private String filter;
     private boolean dynamic;
+    private int rebindTimeout;
 
     public JNDIServiceDamper(BundleContext context, String i, String f, ServicePair service,
-        boolean d)
+        boolean d, int timeout)
     {
       ctx = context;
       pair = service;
       interfaceName = i;
       filter = f;
       dynamic = d;
+      rebindTimeout = timeout;
     }
 
     public Object call() throws NamingException {
       if (pair == null || pair.ref.getBundle() == null) {
         if (dynamic) {
           pair = findService(ctx, interfaceName, filter);
+          if (pair == null && rebindTimeout > 0) {
+            long startTime = System.currentTimeMillis();
+            try {
+              while (pair == null && System.currentTimeMillis() - startTime < rebindTimeout) {
+                Thread.sleep(100);
+                pair = findService(ctx, interfaceName, filter);
+              }
+            } catch (InterruptedException e) {
+            }
+          }
         } else {
           pair = null;
         }
@@ -233,7 +245,15 @@ public final class ServiceHelper
     
     if (pair != null) {
       if (requireProxy) {
-        result = proxy(interfaceName, filter, dynamicRebind, ctx, pair);
+        Object obj = env.get(org.apache.aries.jndi.api.JNDIConstants.REBIND_TIMEOUT);
+        int timeout = 0;
+        if (obj instanceof String) {
+          timeout = Integer.parseInt((String)obj);
+        } else if (obj instanceof Integer) {
+          timeout = (Integer)obj;
+        }
+        
+        result = proxy(interfaceName, filter, dynamicRebind, ctx, pair, timeout);
       } else {
         result = pair.service;
       }
@@ -243,7 +263,7 @@ public final class ServiceHelper
   }
 
   private static Object proxy(final String interface1, final String filter, final boolean rebind,
-                              final BundleContext ctx, final ServicePair pair)
+                              final BundleContext ctx, final ServicePair pair, final int timeout)
   {
     Object result = null;
     Bundle owningBundle = ctx.getBundle();
@@ -262,7 +282,7 @@ public final class ServiceHelper
       result = AccessController.doPrivileged(new PrivilegedAction<Object>() {
         public Object run()
         {
-          return proxyPriviledged(interface1, filter, rebind, ctx, pair);
+          return proxyPriviledged(interface1, filter, rebind, ctx, pair, timeout);
         }
       });
 
@@ -276,7 +296,7 @@ public final class ServiceHelper
     return result;
   }
 
-  private static Object proxyPriviledged(String interface1, String filter, boolean dynamicRebind, BundleContext ctx, ServicePair pair)
+  private static Object proxyPriviledged(String interface1, String filter, boolean dynamicRebind, BundleContext ctx, ServicePair pair, int timeout)
   {
     String[] interfaces = null;
     if (interface1 != null) {
@@ -328,7 +348,7 @@ public final class ServiceHelper
       throw new IllegalArgumentException(Arrays.asList(interfaces).toString());
     }
 
-    Callable<Object> ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind);
+    Callable<Object> ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind, timeout);
 
     // The ClassLoader needs to be able to load the service interface
     // classes so it needs to be
@@ -423,7 +443,7 @@ public final class ServiceHelper
       pair.ref = ref;
       pair.service = service;
 
-      result = proxy(null, null, false, ctx, pair);
+      result = proxy(null, null, false, ctx, pair, 0);
     }
 
     return result;
