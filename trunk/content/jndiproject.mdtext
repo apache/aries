@@ -1,6 +1,6 @@
 Title: JNDIProject
 <a name="JNDIProject-Overview"></a>
-##### Overview
+# JNDI
 
 The Aries JNDI project aims to provide a fully compliant implementation of
 the OSGi Alliance JNDI Service Specification. This specification details
@@ -9,7 +9,7 @@ environment. It also defines how to obtain services from the service
 registry via JNDI.
 
 <a name="JNDIProject-ServiceRegistryaccessfromJNDI"></a>
-##### Service Registry access from JNDI
+## Service Registry access from JNDI
 
 The OSGi service registry provides a centralised register/query capability
 for OSGi services. A common pattern outside of OSGi is to make use of the
@@ -19,7 +19,7 @@ project provides two URL lookup mechanisms via JNDI that can be used to
 access the service registry.
 
 <a name="JNDIProject-osgi:service"></a>
-###### osgi:service
+## osgi:service
 
 The osgi:service lookup scheme is defined by the JNDI Service Specification
 and follows the scheme:
@@ -77,14 +77,14 @@ such alternative exists then an org.osgi.framework.ServiceException with a
 type of ServiceException.UNREGISTERED.
 
 <a name="JNDIProject-osgi:servicelist"></a>
-###### osgi:servicelist
+## osgi:servicelist
 
 It is possible that there are multiple services in the registry that match.
 In this case the osgi:servicelist lookup scheme can be used. It has the
 same format as osgi:service, but it is designed to return multiple.
 
 <a name="JNDIProject-aries:services"></a>
-###### aries:services
+## aries:services
 
 The aries:services scheme works in the same way as the osgi:service scheme,
 but does not perform proxying. You get the actual object back. Care must be
@@ -97,7 +97,7 @@ up cannot occur.
 
 
 <a name="JNDIProject-MoreInformation"></a>
-##### More Information
+## More Information
 
 
 

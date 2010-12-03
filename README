@@ -1,11 +1,13 @@
 This is the new Apache Aries site content
 ==========================================
 
-Here is what I did to create it.
+Here is what I did to create it. Steps 1 and 2 should never need to br repeated so they are just here for reference.
+Go straight to step 3 if you want to build the site and test it.
 
-1) Branched the old site and created the new site structure as specififed
+1) Branched the old site and created the new site structure as specififed on the cms pages:
+http://www.apache.org/dev/cms.html, look under adption constraints.
 
-2) Extracted the cwiki contenet using the export-site.pl tool.
+2) Extracted the cwiki content using the export-site.pl tool.
  To run this I had to install some extra perl modules:
 
    sudo port install p5-crypt-ssleay
@@ -14,25 +16,58 @@ Here is what I did to create it.
 
 These are Mac specific Darwin ports commands, could also have installed from CPAN.
 
-This generates the site content as *.mdtext files - but also leaves the cwiki files for reference
+This generates the site content as *.mdtext files - but also leaves the cwiki files for reference.
+The results of all of this are currently checked in here:
+https://svn.apache.org/repos/asf/incubator/aries/branches/site/.
 
-3) Next step is to build the site using the build tools.
+After the initial creation I had to:
+(a) Create a site template
+(b) Workout how to fix teh navigation panes (look at the templates directory)
+(c) Fix a lot of places where the wiki conversion had't worked right
+(d) In particular the downloads page - which we used to handle with a confluenece Macro
+
+There is still more fixing up to be done!
+
+At this point anyone should be able to check out, build and test the site. The tool used to build the site is
+build_site.pl and can be found here: https://svn.apache.org/repos/infra/websites/cms/build/
+
+3) To build the site using the build tools.
 
 First check the cms build tools out of SVN.
-To run the build_site.pl script I had to:
+To run the build_site.pl script I had to remove a library:
 
-rm lib/Dotiac/DTL/Addon/markup.pl from teh build tools directory, then install:
+rm lib/Dotiac/DTL/Addon/markup.pl 
 
+from the build tools directory.
+
+Install two other libraries:
 sudo perl -MCPAN -e "install Dotiac::DTL"
 sudo cpan Dotiac::DTL::Addon::markup
 
-Also need to take a guess at what the site template shoudl be like. I copied comdev's.
+Then to build the site:
+
+perl build_site.pl --source-base /path/to/newsite/trunk/ --target-base /path/to/output/
 
 4) Check the site on a local server.
 
-The template needed a lot of fixing.
-The navigation needed some very specific fixing of the mdtext file.
-The site (mainly links) also still need a lot of fixing.
+I have a vhost to check the site. On a Mac this means that I add teh following stanza to /etc/apache2/extra/httpd-vhosts.conf
+
+<VirtualHost *:80>
+    ServerAdmin zoe.slattery@googlemail.com
+    DocumentRoot "/Users/zoe/Sites/zaries/www"
+    ServerName zaries
+    ErrorLog "/Users/zoe/Sites/zaries/error.log"
+    CustomLog "/Users/zoe/Sites/zaries/access.log" custom
+
+    LogLevel debug
+</VirtualHost>
+
+So to test the site I move it, like this:
+
+mv /path/to/output/content /Users/zoe/Sites/zaries/www
+
+Then navigate to http://zaries in a browser.
+
 
 
 

@@ -1,4 +1,5 @@
 Title: JPAProject
+# JPA 
 The Aries JPA project will make it easy for JPA persistence providers such
 as [Apache OpenJPA](http://openjpa.apache.org/)
  to be used in an OSGi environment and will provide container managed
