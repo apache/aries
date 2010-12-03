@@ -1,4 +1,0 @@
-The Aries JPA project will make it easy for JPA persistence providers such as [Apache OpenJPA|http://openjpa.apache.org/] to be used in an OSGi environment and will provide container managed persistence for the Blueprint container.
-
-For more information, check out section "127 JPA Service Specification Version 1.0" in the "OSGi Service Platform Enterprise Specification, Release 4, Version 4.2" available for public download from the [OSGi Alliance|http://www.osgi.org/Download/Release4V42].
-
