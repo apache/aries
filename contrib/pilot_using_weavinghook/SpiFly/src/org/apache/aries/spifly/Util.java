@@ -34,11 +34,15 @@ public class Util {
         classLoaders.set(null);
     }
     
-    public static void fixContextClassloader() {
+    public static void fixContextClassloader(String cls, String method, ClassLoader loader) {
+        System.out.println("~~~ cls: " + cls + " method: " + method + " cl:" + loader);
+        
         Thread.currentThread().setContextClassLoader(findClassLoader());
     }
     
     private static ClassLoader findClassLoader() {
+//        Activator.activator.getClassloaderAdvice()
+        
         ClassLoader cl = Activator.class.getClassLoader();
         if (!(cl instanceof BundleReference)) {
             return null;
