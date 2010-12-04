@@ -18,18 +18,12 @@
  */
 package testweavinghook;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
-import org.osgi.framework.wiring.BundleWiring;
 
 public class MyWeavingHook implements WeavingHook {
-
 	@Override
 	public void weave(WovenClass wovenClass) {
 	    if (wovenClass.getBundleWiring().getBundle().getSymbolicName().equals("MyTestBundle"))
@@ -41,24 +35,6 @@ public class MyWeavingHook implements WeavingHook {
 	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw);
 	        cr.accept(tsv, 0);
 	        wovenClass.setBytes(cw.toByteArray());
-	    }
-	    /*
-		if (wovenClass.getClassName().startsWith("mytestbundle")) {
-			BundleWiring bw = wovenClass.getBundleWiring();
-			String fileName = wovenClass.getClassName().replace('.', '/') + ".class";
-			URL res = bw.getBundle().getResource("/altclasses/" + fileName);
-			if (res != null) {
-				System.out.println("*** Found an alternative class: " + res);
-				try {
-					wovenClass.setBytes(Streams.suck(res.openStream()));
-					List<String> imports = wovenClass.getDynamicImports();
-					imports.add("org.apache.aries.spifly.util");
-					imports.add("org.osgi.util.tracker");
-					imports.add("org.osgi.framework.wiring");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}				
-		}*/			
+	    }			
 	}
 }

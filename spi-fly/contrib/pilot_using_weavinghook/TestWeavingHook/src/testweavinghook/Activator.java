@@ -24,18 +24,14 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 
 public class Activator implements BundleActivator {
-	private ServiceRegistration<WeavingHook> reg;
+	private ServiceRegistration<WeavingHook> weavingHookService;
 
-	public void start(BundleContext context) throws Exception {
-		System.out.println("Hello World!!");
-		
+	public synchronized void start(BundleContext context) throws Exception {
 		WeavingHook wh = new MyWeavingHook();
-		reg = context.registerService(WeavingHook.class, wh, null);
+		weavingHookService = context.registerService(WeavingHook.class, wh, null);
 	}
 	
-	public void stop(BundleContext context) throws Exception {
-		reg.unregister();
-		
-		System.out.println("Goodbye World!!");
+	public synchronized void stop(BundleContext context) throws Exception {
+		weavingHookService.unregister();
 	}
 }
