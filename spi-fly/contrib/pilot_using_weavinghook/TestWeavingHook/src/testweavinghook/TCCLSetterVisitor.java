@@ -57,12 +57,18 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 "load".equals(name)) {
                 System.out.println("+++ Gotcha!");
                 
-                mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                mv.visitLdcInsn("Bleeeeeh");
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
+                mv.visitMethodInsn(INVOKESTATIC, "testweavinghook/Util",
+                        "storeContextClassloader", "()V");
+                mv.visitMethodInsn(INVOKESTATIC, "testweavinghook/Util",
+                        "fixContextClassloader", "()V");
+
+                super.visitMethodInsn(opcode, owner, name, desc);
+
+                mv.visitMethodInsn(INVOKESTATIC, "testweavinghook/Util",
+                        "restoreContextClassloader", "()V");
+            } else {                
+                super.visitMethodInsn(opcode, owner, name, desc);
             }
-                
-            super.visitMethodInsn(opcode, owner, name, desc);
         }
     }
 }
