@@ -21,14 +21,12 @@ import javax.naming.spi.InitialContextFactoryBuilder;
  */
 public class LegacyInitialContextFinder implements InitialContextFactoryBuilder {
 
-	@Override
 	public InitialContextFactory createInitialContextFactory(
 			Hashtable<?, ?> environment) throws NamingException 
 	{
 		String icf = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
 		if (icf != null) {
 			ClassLoader cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-				@Override
 				public ClassLoader run() {
 					return Thread.currentThread().getContextClassLoader();
 				}
