@@ -32,6 +32,8 @@ import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
+    static Activator activator;
+    
     private ServiceRegistration<WeavingHook> weavingHookService;
     private LogServiceTracker lst;
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
@@ -41,16 +43,19 @@ public class Activator implements BundleActivator {
         lst = new LogServiceTracker(context);
         lst.open();
 
-        WeavingHook wh = new MyWeavingHook();
+        WeavingHook wh = new MyWeavingHook(context);
         weavingHookService = context.registerService(WeavingHook.class, wh,
                 null);
 
         bt = new BundleTracker<List<ServiceRegistration<?>>>(context,
                 Bundle.ACTIVE, new SPIBundleTrackerCustomizer(this, context.getBundle()));
         bt.open();
+        
+        activator = this;
     }
 
     public synchronized void stop(BundleContext context) throws Exception {
+        activator = null;
         bt.close();
         weavingHookService.unregister();
         lst.close();
