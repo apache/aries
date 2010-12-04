@@ -27,6 +27,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opcodes {
+    private static final String UTIL_CLASS = Util.class.getName().replace('.', '/'); 
+    private static final String VOID_RETURN_TYPE = "()V";
 
     public TCCLSetterVisitor(ClassVisitor cv) {
         super(cv);
@@ -56,16 +58,16 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 "java/util/ServiceLoader".equals(owner) &&
                 "load".equals(name)) {
                 System.out.println("+++ Gotcha!");
-                
-                mv.visitMethodInsn(INVOKESTATIC, "testweavinghook/Util",
-                        "storeContextClassloader", "()V");
-                mv.visitMethodInsn(INVOKESTATIC, "testweavinghook/Util",
-                        "fixContextClassloader", "()V");
+                                
+                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
+                        "storeContextClassloader", VOID_RETURN_TYPE);
+                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
+                        "fixContextClassloader", VOID_RETURN_TYPE);
 
                 super.visitMethodInsn(opcode, owner, name, desc);
 
-                mv.visitMethodInsn(INVOKESTATIC, "testweavinghook/Util",
-                        "restoreContextClassloader", "()V");
+                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
+                        "restoreContextClassloader", VOID_RETURN_TYPE);
             } else {                
                 super.visitMethodInsn(opcode, owner, name, desc);
             }

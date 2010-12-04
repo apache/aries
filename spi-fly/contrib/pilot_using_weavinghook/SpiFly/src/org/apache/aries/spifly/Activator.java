@@ -18,20 +18,75 @@
  */
 package org.apache.aries.spifly;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.weaving.WeavingHook;
+import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
-	private ServiceRegistration<WeavingHook> weavingHookService;
+    private ServiceRegistration<WeavingHook> weavingHookService;
+    private LogServiceTracker lst;
+    private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
+    private BundleTracker<List<ServiceRegistration<?>>> bt;
 
-	public synchronized void start(BundleContext context) throws Exception {
-		WeavingHook wh = new MyWeavingHook();
-		weavingHookService = context.registerService(WeavingHook.class, wh, null);
-	}
-	
-	public synchronized void stop(BundleContext context) throws Exception {
-		weavingHookService.unregister();
-	}
+    public synchronized void start(BundleContext context) throws Exception {
+        lst = new LogServiceTracker(context);
+        lst.open();
+
+        WeavingHook wh = new MyWeavingHook();
+        weavingHookService = context.registerService(WeavingHook.class, wh,
+                null);
+
+        bt = new BundleTracker<List<ServiceRegistration<?>>>(context,
+                Bundle.ACTIVE, new SPIBundleTrackerCustomizer(this, context.getBundle()));
+        bt.open();
+    }
+
+    public synchronized void stop(BundleContext context) throws Exception {
+        bt.close();
+        weavingHookService.unregister();
+        lst.close();
+    }
+
+    void log(int level, String message) {
+        synchronized (logServices) {
+            for (LogService log : logServices) {
+                log.log(level, message);
+            }
+        }
+    }
+
+    void log(int level, String message, Throwable th) {
+        synchronized (logServices) {
+            for (LogService log : logServices) {
+                log.log(level, message, th);
+            }
+        }
+    }
+
+    private class LogServiceTracker extends ServiceTracker<LogService, LogService> {
+        public LogServiceTracker(BundleContext context) {
+            super(context, LogService.class, null);
+        }
+
+        public LogService addingService(ServiceReference<LogService> reference) {
+            LogService svc = super.addingService(reference);
+            if (svc != null)
+                logServices.add(svc);
+            return svc;
+        }
+
+        @Override
+        public void removedService(ServiceReference<LogService> reference, LogService service) {
+            logServices.remove(service);
+        }        
+    }
 }
