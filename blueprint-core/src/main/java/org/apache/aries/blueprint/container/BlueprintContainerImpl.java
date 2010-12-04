@@ -263,7 +263,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             }
                         }
                         if (missing.size() > 0) {
-                            LOGGER.warn("Bundle " + bundleContext.getBundle().getSymbolicName() + " is waiting for namespace handlers " + missing);
+                            LOGGER.info("Bundle {} is waiting for namespace handlers ", bundleContext.getBundle().getSymbolicName(), missing);
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
@@ -302,6 +302,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         if (waitForDependencies) {
                             String[] missingDependencies = getMissingDependencies();
                             if (missingDependencies.length > 0) {
+                                LOGGER.info("Bundle {} is waiting for dependencies {}", bundleContext.getBundle().getSymbolicName(), Arrays.asList(missingDependencies));
                                 eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missingDependencies));
                                 return;
                             }
@@ -317,6 +318,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         if (waitForDependencies) {
                             String[] missingDependencies = getMissingDependencies();
                             if (missingDependencies.length > 0) {
+                                LOGGER.info("Bundle {} is waiting for dependencies {}", bundleContext.getBundle().getSymbolicName(), Arrays.asList(missingDependencies));
                                 eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missingDependencies));
                                 return;
                             }
