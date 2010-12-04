@@ -1,0 +1,3 @@
+SPI-Provider: true
+
+SPI-Consumer: true
