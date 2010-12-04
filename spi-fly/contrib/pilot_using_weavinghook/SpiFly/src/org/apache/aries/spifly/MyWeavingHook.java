@@ -20,21 +20,37 @@ package org.apache.aries.spifly;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
 public class MyWeavingHook implements WeavingHook {
+    private final String addedImport;
+    
+    MyWeavingHook(BundleContext context) {
+        Bundle b = context.getBundle();
+        String bver = b.getVersion().toString();
+        String bsn = b.getSymbolicName();
+        
+        addedImport = Util.class.getPackage().getName() + 
+            ";bundle-symbolic-name=" + bsn + 
+            ";bundle-version=" + bver;
+    }
+    
 	@Override
 	public void weave(WovenClass wovenClass) {
+	    // TODO base this on SPI-Consumer header
 	    if (wovenClass.getBundleWiring().getBundle().getSymbolicName().equals("MyTestBundle"))
 	    {
 	        System.out.println("*** WovenClass: " + wovenClass.getClassName());
 	        
 	        ClassReader cr = new ClassReader(wovenClass.getBytes());
 	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw);
+	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw, wovenClass.getClassName());
 	        cr.accept(tsv, 0);
 	        wovenClass.setBytes(cw.toByteArray());
+	        wovenClass.getDynamicImports().add(addedImport);
 	    }			
 	}
 }
