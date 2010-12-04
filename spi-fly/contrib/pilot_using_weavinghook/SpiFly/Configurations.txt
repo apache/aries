@@ -1,3 +1,6 @@
 SPI-Provider: true
 
+register service in registry
+register classloader with advice service
+
 SPI-Consumer: true
