@@ -7,10 +7,9 @@ Title: BlueprintHelloWorldTutorial
 
 This tutorial is designed for people who are starting to use the Apache
 Aries Blueprint implementation. After you have worked through the tutorial
-you will
-* be able to run a very simple piece of code in the Aries Blueprint
-container
-* understand bean, service and reference definitions in Blueprint
+you will 
+- be able to run a very simple piece of code in the Aries Blueprint container 
+- understand bean, service and reference definitions in Blueprint
 
 The tutorial assumes a basic working knowledge of Java development, Eclipse
 and some understanding of OSGi.
@@ -34,12 +33,21 @@ samples/helloworld projects into Eclipse.
 
 When you have checked out and built the Aries code your workspace will
 contain the four projects highlighted in the picture below. This is a
-screen shot taken from my Eclipse package explorer:!HW1.png|align=center!
+screen shot taken from my Eclipse package explorer: <br>
+<br>
+![hw1](HW1.png)
+<br>
+<br>
 The project called org.apache.aries.samples.helloworld.blueprint.assembly
 contains no Java code and is just used to pull together the minimal OSGi
 platform that is needed to run the sample.
 Expanding the org.apache.aries.samples.helloworld.blueprint.api project
-shows this:!HW2.png|align=center!
+shows this:
+<br>
+<br>
+![hh2](HW2.png)
+<br>
+<br>
 There are two interesting features of this project, the
 HelloWorldService.java interface and empty META-INF directory.
 HelloWorldService.java is the interface for the Helloworld service. It is
@@ -53,7 +61,12 @@ automatically.
   
   
 Expanding the org.apache.aries.samples.helloworld.blueprint.server project
-shows !HW3.png|align=center!
+shows 
+<br>
+<br>
+![hw3](HW3.png)
+<br>
+<br>
 There are again two interesting files. HelloWorldServiceImpl.java is an
 implementation of the HelloWorldService interface in the first
 blueprint-helloworld-api project. The file config.xml is the Blueprint
@@ -62,7 +75,12 @@ configuration for this package.
   
   
 The org.apache.aries.samples.helloworld.blueprint.client project looks like
-this !HW4.png|align=center!
+this
+<br>
+<br>
+![hw4](HW4.png)
+<br>
+<br>
 The client implementation is in HelloWorldClient.java. The file config.xml
 contains the Blueprint for the client.
   
@@ -85,9 +103,11 @@ interactions between bundles.
   
   
 This is a view of what the xml in the two config.xml files is describing:
-!BPTutorial5F.png|align=center!
-
-  
+<br>
+<br>
+![hw5](BPTutorial5F.png)
+<br>
+<br>
   
 The client configuration file has one bean definition which names the Java
 class that it requires and gives the name of the method that will be run
@@ -96,7 +116,11 @@ property, helloWorldService, which points (see the arrow) to the reference
 definition. This is telling Blueprint that the bean (helloclient) needs the
 container to supply a service matched by the 'helloservice' reference,
 which in turns specifies the interface to be implemented by that service.
-!BPTutorial6F.png|align=center!
+<br>
+<br>
+![hw6](BPTutorial6F.png)
+<br>
+<br>
 
   
   
@@ -104,7 +128,12 @@ The server configuration file is similar - with one bean definition which
 points to the Java class that implements HelloWorldService. The second
 element in this file is the service definition. This registers a service
 under the HelloWorldService interface, implemented by the 'helloservice'
-bean. !BPTutorial7F.png|align=center!
+bean. 
+<br>
+<br>
+![hw7](BPTutorial7F.png)
+<br>
+<br>
 
   
   
@@ -116,7 +145,12 @@ bean. !BPTutorial7F.png|align=center!
 
 Both the Java classes are very simple, there are just a couple of minor
 points to make about each one. The HelloWorldClient class looks like
-this:!BPTutorial8F.png|align=center!
+this:
+<br>
+<br>
+![hw8](BPTutorial8F.png)
+<br>
+<br>
 1. The setHelloWorldService() method will be called by the Blueprint
 container in order to inject an object implementing the HelloWorldService
 interface.
@@ -131,7 +165,12 @@ been injected. This is the default Blueprint behaviour.
   
   
 The HelloWorldServiceImpl class is even simpler. It has two
-methods:!BPTutorial9F.png|align=center!
+methods:
+<br>
+<br>
+![hw9](BPTutorial9F.png)
+<br>
+<br>
 1. A startUp() method which writes a message to say that the bundle is being
 started
 1. A hello() method which writes a 'hello' message
@@ -158,7 +197,12 @@ java -jar osgi-3.5.0.v20090520.jar -console
 {code}
 You will see some messages, after which you should get the 'osgi>' prompt;
 sometimes you will need to press return to see it. At the prompt, type 'ss'
-to see the status of the bundles:!BPTutorial10.png|align=center!
+to see the status of the bundles:
+<br>
+<br>
+![hw10](BPTutorial10.png)
+<br>
+<br>
 Next, start the Blueprint container bundle by typing 'start 5' at the osgi
 prompt.  You will see many debug messages in the code, this is because the
 target/configuration/config.ini specifies the message level to be DEBUG, if

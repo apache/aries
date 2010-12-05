@@ -8,4 +8,4 @@ module you will find that you need to have built (or have available)
 parent, testsupport, util, blueprint, quiesce and transaction at the level
 specified in the pom.xml for the JPA module.
 
-!AriseBuildDeps.png!
+!AriesBuildDeps.png!
