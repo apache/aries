@@ -48,10 +48,14 @@ public final class SingleServiceTracker<T>
   {
     public void serviceChanged(ServiceEvent event) 
     {
-      if (open.get() && event.getType() == ServiceEvent.UNREGISTERING) {
-        ServiceReference deadRef = event.getServiceReference();
-        if (deadRef.equals(ref.get())) {
-          findMatchingReference(deadRef);
+      if (open.get()) {
+        if (event.getType() == ServiceEvent.UNREGISTERING) {
+          ServiceReference deadRef = event.getServiceReference();
+          if (deadRef.equals(ref.get())) {
+            findMatchingReference(deadRef);
+          }
+        } else if (event.getType() == ServiceEvent.REGISTERED && ref.get() == null) {
+          findMatchingReference(null);
         }
       }
     }
