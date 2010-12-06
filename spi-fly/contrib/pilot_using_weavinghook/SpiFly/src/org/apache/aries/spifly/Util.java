@@ -18,45 +18,65 @@
  */
 package org.apache.aries.spifly;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.wiring.BundleWiring;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.service.log.LogService;
+
+/** 
+ * Methods used from ASM-generated code. They store, change and reset the thread context classloader.
+ * The methods are static to make it easy to access them from generated code.
+ */
 public class Util {
-    static ThreadLocal<ClassLoader> classLoaders = new ThreadLocal<ClassLoader>();
+    static ThreadLocal<ClassLoader> storedClassLoaders = new ThreadLocal<ClassLoader>();
     
     public static void storeContextClassloader() {
-        classLoaders.set(Thread.currentThread().getContextClassLoader());
+        storedClassLoaders.set(Thread.currentThread().getContextClassLoader());
     }
     
     public static void restoreContextClassloader() {
-        Thread.currentThread().setContextClassLoader(classLoaders.get());
-        classLoaders.set(null);
+        Thread.currentThread().setContextClassLoader(storedClassLoaders.get());
+        storedClassLoaders.set(null);
+    }
+        
+    public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
+        System.out.println("~~~ cls: " + cls + " method: " + method + " clarg:" + clsArg + " cl:" + bundleLoader);
+        
+        ClassLoader cl = findClassloader(clsArg);
+        if (cl != null) {
+            Activator.activator.log(LogService.LOG_INFO, "Temporarily setting Thread Context Classloader to: " + cl);
+            Thread.currentThread().setContextClassLoader(cl);
+        } else {
+            Activator.activator.log(LogService.LOG_WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
+        }
     }
     
-    public static void fixContextClassloader(String cls, String method, ClassLoader loader) {
-        System.out.println("~~~ cls: " + cls + " method: " + method + " cl:" + loader);
+    private static ClassLoader findClassloader(Class<?> cls) {
+        Activator activator = Activator.activator;
         
-        Thread.currentThread().setContextClassLoader(findClassLoader());
-    }
-    
-    private static ClassLoader findClassLoader() {
-//        Activator.activator.getClassloaderAdvice()
+        Collection<Bundle> bundles = activator.findSPIProviderBundles(cls.getName());
+        activator.log(LogService.LOG_DEBUG, "Found bundles providing " + cls + ": " + bundles);
         
-        ClassLoader cl = Activator.class.getClassLoader();
-        if (!(cl instanceof BundleReference)) {
+        if (bundles == null)
             return null;
-        }
         
-        BundleReference br = (BundleReference) cl;      
-        for (Bundle b : br.getBundle().getBundleContext().getBundles()) {
-            // TODO find the appropriate bundle
-            if ("MyServiceImpl".equals(b.getSymbolicName())) {
+        switch (bundles.size()) {
+        case 0:
+            return null;
+        case 1:
+            Bundle bundle = bundles.iterator().next();
+            BundleWiring wiring = bundle.adapt(BundleWiring.class);
+            return wiring.getClassLoader();            
+        default:
+            List<ClassLoader> loaders = new ArrayList<ClassLoader>();
+            for (Bundle b : bundles) {
                 BundleWiring bw = b.adapt(BundleWiring.class);
-                if (bw != null)
-                    return bw.getClassLoader();
-            }           
+                loaders.add(bw.getClassLoader());
+            }
+            return new MultiDelegationClassloader(loaders.toArray(new ClassLoader[loaders.size()]));
         }
-        return null;
     }
 }

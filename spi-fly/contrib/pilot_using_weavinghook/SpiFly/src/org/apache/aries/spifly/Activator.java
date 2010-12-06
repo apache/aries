@@ -18,8 +18,12 @@
  */
 package org.apache.aries.spifly;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -38,6 +42,9 @@ public class Activator implements BundleActivator {
     private LogServiceTracker lst;
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
     private BundleTracker<List<ServiceRegistration<?>>> bt;
+
+    private final ConcurrentMap<String, Collection<Bundle>>registeredSPIs = 
+            new ConcurrentHashMap<String, Collection<Bundle>>();
 
     public synchronized void start(BundleContext context) throws Exception {
         lst = new LogServiceTracker(context);
@@ -93,5 +100,15 @@ public class Activator implements BundleActivator {
         public void removedService(ServiceReference<LogService> reference, LogService service) {
             logServices.remove(service);
         }        
+    }
+
+    public void registerSPIProviderBundle(String registrationClassName, Bundle bundle) {
+        registeredSPIs.putIfAbsent(registrationClassName, new CopyOnWriteArraySet<Bundle>());
+        Collection<Bundle> bl = registeredSPIs.get(registrationClassName);
+        bl.add(bundle);
+    }
+
+    public Collection<Bundle> findSPIProviderBundles(String name) {
+        return registeredSPIs.get(name);
     }
 }
