@@ -35,10 +35,10 @@ extracted the file you will find:
 The tests are run using bnd, the command line used to run a set of tests
 looks like this:
 
-{code}
-java -jar jar/bnd.jar runtests -title osgi.ct
-org.osgi.test.cases.blueprint.bnd
-{code}
+
+    java -jar jar/bnd.jar runtests -title osgi.ct
+    org.osgi.test.cases.blueprint.bnd
+
 
 The command above would, for example, run the blueprint tests.
 
@@ -53,9 +53,9 @@ components to be tested. The [Felix](http://felix.apache.org/site/using-the-osgi
 If you want to debug the code then you need to add the following line to
 the .bnd file:
 
-{code}
--runvm=-Xdebug,"-Xrunjdwp:transport=dt_socket,server=y,address=localhost:7777"
-{code}
+
+    -runvm=-Xdebug,"-Xrunjdwp:transport=dt_socket,server=y,address=localhost:7777"
+
 
 You can change 7777 to any number you want.
 
@@ -66,18 +66,18 @@ You can change 7777 to any number you want.
 
 First, it is necessary to add a couple of lines, like this:
 
-{code}
--runpath = \
-    commonjars/osgi-3.5.0.v20090520.jar;version=file, \
+
+    -runpath = \
+        commonjars/osgi-3.5.0.v20090520.jar;version=file, \
    
-commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
-{code}
+    commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
+
 
 Secondly, if you are using the Eclipse Framework, it is necessary to remove
 the line
-{code}
-osgi.resolverMode="strict", \
-{code} 
+
+    osgi.resolverMode="strict", \
+
 from the 'runproperties' section.
 
 It's convenient (but not necessary) to keep the the jars required to run
@@ -115,34 +115,34 @@ from Maven and put them in commonjars.
 After modifications the bnd configuration file to run the blueprint tests
 will look like this:
 
-{code}
--include= ~shared.inc
-build=.
 
--target = \
-    jar/org.osgi.test.cases.blueprint-4.2.0.jar;version=file,
+    -include= ~shared.inc
+    build=.
 
--runpath = \
-    commonjars/osgi-3.5.0.v20090520.jar;version=file, \
+    -target = \
+        jar/org.osgi.test.cases.blueprint-4.2.0.jar;version=file,
+
+    -runpath = \
+        commonjars/osgi-3.5.0.v20090520.jar;version=file, \
    
-commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
+    commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
 
 
--runbundles = \
+    -runbundles = \
    
-commonjars/org.osgi.compendium-4.2.0.jar;version=file;strategy="lowest", \
-    commonjars/pax-logging-api-1.4.jar;version=file, \
-    commonjars/pax-logging-service-1.4.jar;version=file, \
-    commonjars/cm-3.2.0-v20070116.jar;version=file, \
-    commonjars/org.eclipse.equinox.event-1.1.100.jar;version=file, \
-    commonjars/org.apache.felix.configadmin-1.2.4.jar;version=file, \
-    ariesjars/org.apache.aries.blueprint-0.2-incubating.jar;version=file
+        commonjars/org.osgi.compendium-4.2.0.jar;version=file;strategy="lowest", \
+        commonjars/pax-logging-api-1.4.jar;version=file, \
+        commonjars/pax-logging-service-1.4.jar;version=file, \
+        commonjars/cm-3.2.0-v20070116.jar;version=file, \
+        commonjars/org.eclipse.equinox.event-1.1.100.jar;version=file, \
+        commonjars/org.apache.felix.configadmin-1.2.4.jar;version=file, \
+        ariesjars/org.apache.aries.blueprint-0.2-incubating.jar;version=file
 
--runproperties = \
-    report="true", \
-    osgi.compatibility.bootdelegation="false", \
-    osgi.support.multipleHosts="true"
-{code}
+    -runproperties = \
+        report="true", \
+        osgi.compatibility.bootdelegation="false", \
+        osgi.support.multipleHosts="true"
+
 
 <a name="HowtoruntheOSGiEnterpriseCT-JNDI"></a>
 ### JNDI
@@ -156,31 +156,29 @@ which can be found at the [OSGi Alliance](http://www.osgi.org/Main/HomePage)
 
 The .bnd file required to run the JNDI tests looks like this:
 
-{code}
-1. bnd pack for project org.osgi.test.cases.jndi
-1. Fri Apr 30 12:38:46 EDT 2010
--include= ~shared.inc
-build=.
 
--target = \
-    jar/org.osgi.test.cases.jndi-4.2.0.jar;version=file,
+    -include= ~shared.inc
+    build=.
 
--runpath = \
-    commonjars/osgi-3.5.0.v20090520.jar;version=file, \
+    -target = \
+        jar/org.osgi.test.cases.jndi-4.2.0.jar;version=file,
+
+    -runpath = \
+        commonjars/osgi-3.5.0.v20090520.jar;version=file, \
    
-commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
+    commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
 
--runbundles = \
-    commonjars/osgi.enterprise-4.2.0.jar;version=file;strategy="lowest", \
-    ariesjars/org.apache.aries.util-0.2-incubating.jar;version=file, \
-    ariesjars/org.apache.aries.jndi-0.2-incubating.jar;version=file
+    -runbundles = \
+        commonjars/osgi.enterprise-4.2.0.jar;version=file;strategy="lowest", \
+        ariesjars/org.apache.aries.util-0.2-incubating.jar;version=file, \
+        ariesjars/org.apache.aries.jndi-0.2-incubating.jar;version=file
 
--runproperties = \
-    report="true", \
-    osgi.compatibility.bootdelegation="false", \
-    osgi.support.multipleHosts="true", \
-    org.osgi.framework.bootdelegation="com.sun.*"
-{code}
+    -runproperties = \
+        report="true", \
+        osgi.compatibility.bootdelegation="false", \
+        osgi.support.multipleHosts="true", \
+        org.osgi.framework.bootdelegation="com.sun.*"
+
 
 <a name="HowtoruntheOSGiEnterpriseCT-JMX"></a>
 ### JMX
@@ -197,44 +195,40 @@ http://www.knopflerfish.org/releases/3.0.0/osgi/jars/log/log_api-3.0.1.jar
 and use them to replace the three org.osgi.impl* jars in the runbundles
 section.
 
-{code}
-1. bnd pack for project org.osgi.test.cases.jmx
-1. Fri Apr 30 12:38:46 EDT 2010
--include= ~shared.inc
-build=.
 
--target = \
-    jar/org.osgi.test.cases.jmx-4.2.0.jar;version=file,
+    -include= ~shared.inc
+    build=.
 
--runpath = \
-    commonjars/osgi-3.5.0.v20090520.jar;version=file, \
+    -target = \
+        jar/org.osgi.test.cases.jmx-4.2.0.jar;version=file,
+
+    -runpath = \
+        commonjars/osgi-3.5.0.v20090520.jar;version=file, \
    
-commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
+    commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
 
--runbundles = \
-    commonjars/osgi.enterprise-4.2.0.jar;version=file;strategy="lowest", \
-    commonjars/org.apache.felix.configadmin-1.2.4.jar;version=file, \
-    ariesjars/org.apache.aries.jmx-0.2-incubating.jar;version=file, \
-    commonjars/useradmin_all-3.0.1.jar;version=file, \
-    commonjars/log_api-3.0.1.jar;version=file, \
-    commonjars/org.apache.felix.log-1.0.0.jar;version=file, \
-    commonjars/org.osgi.compendium-4.2.0.jar;version=file, \
-    commonjars/org.eclipse.equinox.ip_1.1.100.v20100503.jar;version=file, \
-    commonjars/org.eclipse.equinox.util_1.0.200.v20100503.jar;version=file,
-\
-    commonjars/org.apache.felix.http.bundle-2.0.4.jar;version=file
+    -runbundles = \
+        commonjars/osgi.enterprise-4.2.0.jar;version=file;strategy="lowest", \
+        commonjars/org.apache.felix.configadmin-1.2.4.jar;version=file, \
+        ariesjars/org.apache.aries.jmx-0.2-incubating.jar;version=file, \
+        commonjars/useradmin_all-3.0.1.jar;version=file, \
+        commonjars/log_api-3.0.1.jar;version=file, \
+        commonjars/org.apache.felix.log-1.0.0.jar;version=file, \
+        commonjars/org.osgi.compendium-4.2.0.jar;version=file, \
+        commonjars/org.eclipse.equinox.ip_1.1.100.v20100503.jar;version=file, \
+        commonjars/org.eclipse.equinox.util_1.0.200.v20100503.jar;version=file, \
+        commonjars/org.apache.felix.http.bundle-2.0.4.jar;version=file
 
--runproperties = \
-    report="true", \
-    osgi.compatibility.bootdelegation="false", \
-    osgi.support.multipleHosts="true", \
-    osgi.console="1111", \
+    -runproperties = \
+        report="true", \
+        osgi.compatibility.bootdelegation="false", \
+        osgi.support.multipleHosts="true", \
+        osgi.console="1111", \
    
-org.osgi.test.cases.jmx.system.packages.extra="junit.framework;version=3.8",
-\
+        org.osgi.test.cases.jmx.system.packages.extra="junit.framework;version=3.8", \
    
-org.osgi.test.cases.jmx.bundles="jar/osgi.enterprise-4.2.0.jar,jar/org.apache.aries.jmx-0.2-incubating.jar"
-{code}
+        org.osgi.test.cases.jmx.bundles="jar/osgi.enterprise-4.2.0.jar,jar/org.apache.aries.jmx-0.2-incubating.jar"
+
 
 
 
@@ -244,44 +238,37 @@ org.osgi.test.cases.jmx.bundles="jar/osgi.enterprise-4.2.0.jar,jar/org.apache.ar
 
 Nothing more to download here. Here is the configuration file:
 
-{code}
-1. bnd pack for project org.osgi.test.cases.transaction
-1. Fri Apr 30 12:38:47 EDT 2010
--include= ~shared.inc
-build=.
 
--target = \
-    jar/org.osgi.test.cases.transaction-4.2.0.jar;version=file,
+    -include= ~shared.inc
+    build=.
 
--runpath = \
-    commonjars/osgi-3.5.0.v20090520.jar;version=file, \
-   
-commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
+    -target = \
+        jar/org.osgi.test.cases.transaction-4.2.0.jar;version=file,
 
--runbundles = \
-    commonjars/osgi.enterprise-4.2.0.jar;version=file;strategy="lowest", \
-    commonjars/pax-logging-api-1.4.jar;version=file, \
-    commonjars/pax-logging-service-1.4.jar;version=file, \
-    commonjars/geronimo-jta_1.1_spec-1.1.1.jar;version=file, \
-    commonjars/geronimo-transaction-2.1.3.jar;version=file, \
-    commonjars/geronimo-j2ee-connector_1.5_spec-2.0.0.jar;version=file, \
-    commonjars/org.apache.felix.configadmin-1.2.4.jar;version=file, \
-    ariesjars/org.apache.aries.blueprint-0.2-incubating.jar;version=file, \
-   
-ariesjars/org.apache.aries.transaction.blueprint-0.2-incubating.jar;version=file,
-\
-   
-ariesjars/org.apache.aries.transaction.manager-0.2-incubating.jar;version=file,
-\
-   
-ariesjars/org.apache.aries.transaction.wrappers-0.2-incubating.jar;version=file
+    -runpath = \
+        commonjars/osgi-3.5.0.v20090520.jar;version=file, \
+       
+    commonjars/com.springsource.junit-3.8.2.jar;version=file;export="junit.framework;version=3.8",
 
--runproperties = \
-    report="true", \
-    osgi.compatibility.bootdelegation="false", \
-    osgi.support.multipleHosts="true", \
-    org.osgi.test.cases.transaction.waittime="30"
-{code}
+    -runbundles = \
+        commonjars/osgi.enterprise-4.2.0.jar;version=file;strategy="lowest", \
+        commonjars/pax-logging-api-1.4.jar;version=file, \
+        commonjars/pax-logging-service-1.4.jar;version=file, \
+        commonjars/geronimo-jta_1.1_spec-1.1.1.jar;version=file, \
+        commonjars/geronimo-transaction-2.1.3.jar;version=file, \
+        commonjars/geronimo-j2ee-connector_1.5_spec-2.0.0.jar;version=file, \
+        commonjars/org.apache.felix.configadmin-1.2.4.jar;version=file, \
+        ariesjars/org.apache.aries.blueprint-0.2-incubating.jar;version=file, \
+        ariesjars/org.apache.aries.transaction.blueprint-0.2-incubating.jar;version=file, \
+        ariesjars/org.apache.aries.transaction.manager-0.2-incubating.jar;version=file, \
+        ariesjars/org.apache.aries.transaction.wrappers-0.2-incubating.jar;version=file
+    
+    -runproperties = \
+        report="true", \
+        osgi.compatibility.bootdelegation="false", \
+        osgi.support.multipleHosts="true", \
+        org.osgi.test.cases.transaction.waittime="30"
+
 
 
 

@@ -54,12 +54,12 @@ bundle is stopped.
 The Blueprint XML file is identified by a top-level blueprint element, as
 shown below:
 
-{code:xml|title=blueprint.xml|borderStyle=solid}
-<?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-    ...
-</blueprint>
-{code} 
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+        ...
+    </blueprint>
+
 
 The XML namespace identifies the document as conforming to the Blueprint
 version 1.0.0.	The top-level blueprint element identifies the document as
@@ -75,12 +75,12 @@ Beans are declared using the bean element.  The following defines a single
 bean called *accountOne* implemented by the POJO
 *org.apache.aries.simple.Account*.
 
-{code:xml|title=bean.xml|borderStyle=solid}
-<?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-   <bean id="accountOne" class="org.apache.aries.simple.Account" />
-</blueprint>
-{code} 
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+       <bean id="accountOne" class="org.apache.aries.simple.Account" />
+    </blueprint>
+
 
 <a name="Blueprint-BeanConstruction"></a>
 ###  Bean Construction
@@ -105,20 +105,20 @@ example, the *class* attribute specifies the name of the Java class to
 instantiate. The Blueprint Container will create the *Account* object by
 passing *1* as the argument to the constructor. 
 
-{code:java|title=Account.java|borderStyle=solid}
+
    public class Account {      
        public Account(long number) {
 	  ...
        }
        ...
    }
-{code} 
 
-{code:xml|title=constructor.xml|borderStyle=solid}
-   <bean id="accountOne" class="org.apache.aries.simple.Account">
-       <argument value="1"/>
-   </bean>
-{code} 
+
+
+       <bean id="accountOne" class="org.apache.aries.simple.Account">
+           <argument value="1"/>
+       </bean>
+
 
 
 A bean can be constructed using a static factory method.  In this example,
@@ -128,21 +128,21 @@ by the *factory-method*  attribute. The Blueprint Container will call the
 *createAccount()* static method on the *StaticAccountFactory* class and
 pass 2 as the argument to create the Account object. 
 
-{code:java|title=StaticAccountFactory.java|borderStyle=solid}
-   public class StaticAccountFactory {	    
-       public static Account createAccount(long number) {
-	  return new Account(number);
-       }
-   }
-{code} 
 
-{code:xml|title=staticfactory.xml|borderStyle=solid}
-   <bean id="accountTwo"
-class="org.apache.aries.simple.StaticAccountFactory" 
-	 factory-method="createAccount">   
-       <argument value="2"/>
-   </bean>
-{code} 
+       public class StaticAccountFactory {	    
+           public static Account createAccount(long number) {
+	      return new Account(number);
+           }
+       }
+
+
+
+       <bean id="accountTwo"
+        class="org.apache.aries.simple.StaticAccountFactory" 
+	     factory-method="createAccount">   
+           <argument value="2"/>
+       </bean>
+
 
 A bean can be constructed using an instance factory method.  In the
 example, the *accountFactory* bean is the factory. The Blueprint
@@ -152,7 +152,7 @@ specified: the factory name. The Blueprint Container will then call the
 *createAccount()* method on the *AccountFactory* instance and pass 3 as
 the argument to create the Account object.
 
-{code:java|title=AccountFactory.java|borderStyle=solid}
+
    public class AccountFactory {      
        public AccountFactory(String factoryName) {
 	  ...
@@ -162,20 +162,20 @@ the argument to create the Account object.
        }
    }
 
-{code} 
 
-{code:xml|title=instancefactory.xml|borderStyle=solid}
-   <bean id="accountFactory"
-class="org.apache.aries.simple.AccountFactory">  
-       <argument value="account factory"/>	
-   </bean>
 
-   <bean id="accountThree"
-	 factory-ref="accountFactory" 
-	 factory-method="createAccount">   
-       <argument value="3"/>
-   </bean>
-{code} 
+
+       <bean id="accountFactory"
+        class="org.apache.aries.simple.AccountFactory">  
+           <argument value="account factory"/>	
+       </bean>
+
+       <bean id="accountThree"
+	     factory-ref="accountFactory" 
+	     factory-method="createAccount">   
+           <argument value="3"/>
+       </bean>
+
 
 <a name="Blueprint-BeanProperties"></a>
 ###  Bean Properties
@@ -186,7 +186,7 @@ the Account bean and then sets the description property using the Java
 Beans naming convention.
 
 
-{code:java|title=Account.java|borderStyle=solid}
+
    public class Account {      
        public Account(long number) {
 	  ...
@@ -195,14 +195,14 @@ Beans naming convention.
 	  ...
        }
    }
-{code} 
 
-{code:xml|title=constructor.xml|borderStyle=solid}
-   <bean id="accountOne" class="org.apache.aries.simple.Account">
-       <argument value="1"/>
-       <property name="description" value="#1 account"/>
-   </bean>
-{code}
+
+
+       <bean id="accountOne" class="org.apache.aries.simple.Account">
+           <argument value="1"/>
+           <property name="description" value="#1 account"/>
+       </bean>
+
 
 <a name="Blueprint-BeanWiring"></a>
 #### Bean Wiring
@@ -210,32 +210,32 @@ Beans naming convention.
 Property injection is used for wiring beans together.  In the following
 example *accountOne* is injected with a *Currency* bean.
 
-{code:java|title=Account.java|borderStyle=solid}
-   public class Account {      
-       public Account() {
-	  ...
-       }
-       public void setCurrency(Currency currency) {
-	  ...
-       }
-   }
-{code} 
 
-{code:java|title=Currency.java|borderStyle=solid}
-   public class Currency {	
-       public Currency() {
-	  ...
+       public class Account {      
+           public Account() {
+	      ...
+           }
+           public void setCurrency(Currency currency) {
+	      ...
+           }
        }
-   }
-{code} 
 
-{code:xml|title=properties.xml|borderStyle=solid}
-   <bean id="accountOne" class="org.apache.aries.simple.Account">
-       <property name="currency" ref="currency" />
-   </bean>
 
-   <bean id="currency" class="org.apache.aries.simple.Currency" />
-{code}
+
+       public class Currency {	
+           public Currency() {
+	      ...
+           }
+       }
+
+
+
+       <bean id="accountOne" class="org.apache.aries.simple.Account">
+           <property name="currency" ref="currency" />
+       </bean>
+
+       <bean id="currency" class="org.apache.aries.simple.Currency" />
+
 
 
 
@@ -249,42 +249,42 @@ The bean that provides the service object can be referenced using the
 *ref* attribute.  The interfaces under which the service is registered
 can be specified using the *interface* attribute:
 
-{code:java|title=AccountImpl.java|borderStyle=solid}
-   public class AccountImpl implements Account {      
-       public Account() {
-	  ...
-       }
-       public void setCurrency(Currency currency) {
-	  ...
-       }
-   }
-{code} 
 
-{code:xml|title=service.xml|borderStyle=solid}
-   <service id="serviceOne" ref="account"
-interface="org.apache.aries.simple.Account" />
+       public class AccountImpl implements Account {      
+           public Account() {
+	      ...
+           }
+           public void setCurrency(Currency currency) {
+	      ...
+           }
+       }
 
-   <bean id="account" class="org.apache.aries.simple.AccountImpl" />
-{code}
+
+
+       <service id="serviceOne" ref="account"
+        interface="org.apache.aries.simple.Account" />
+
+       <bean id="account" class="org.apache.aries.simple.AccountImpl" />
+
 
 The bean that provides the service object can be inlined in the service
 element as follows:
 
-{code:xml|title=service.xml|borderStyle=solid}
-   <service id="serviceTwo"  interface="org.apache.aries.simple.Account">
-      <bean class="org.apache.aries.simple.AccountImpl" />
-   </service>
-{code}
+
+       <service id="serviceTwo"  interface="org.apache.aries.simple.Account">
+          <bean class="org.apache.aries.simple.AccountImpl" />
+       </service>
+
 
 The interfaces under which a service is registered can be determined by
 Blueprint using *auto-export*.  The following registers the service under
 all the bean's interfaces:
 
-{code:xml|title=service.xml|borderStyle=solid}
-   <service id="serviceOne" ref="account" auto-export="interfaces" />
 
-   <bean id="account" class="org.apache.aries.simple.AccountImpl" />
-{code}
+       <service id="serviceOne" ref="account" auto-export="interfaces" />
+
+       <bean id="account" class="org.apache.aries.simple.AccountImpl" />
+
 
 Other values for *auto-export* are *disabled* (the default)
 *class-hierarchy* and *all-classes*.
@@ -307,16 +307,16 @@ properties. The *active* service property has type of
 *java.lang.Boolean*. The *mode* property is of the default type,
 *String*. 
 
-{code:xml|title=serviceproperties.xml|borderStyle=solid}
-   <service id="serviceFour" ref="account" autoExport="all-classes">
-      <service-properties>
-	  <entry key="active">
-	      <value type="java.lang.Boolean">true</value>
-	  </entry>
-	  <entry key="mode" value="shared"/>
-      </service-properties>
-   </service>
-{code}
+
+       <service id="serviceFour" ref="account" autoExport="all-classes">
+          <service-properties>
+	      <entry key="active">
+	          <value type="java.lang.Boolean">true</value>
+	      </entry>
+	      <entry key="mode" value="shared"/>
+          </service-properties>
+       </service>
+
 
 <a name="Blueprint-ServiceRanking"></a>
 ### Service Ranking
@@ -328,9 +328,9 @@ service will be returned ahead of the lower.  The default ranking value is
 follows:
 
 {code:xml|title=serviceranking.xml|borderStyle=solid}
-   <service id="serviceFive" ref="account" auto-export="all-classes"
-ranking="3" />
-{code}
+       <service id="serviceFive" ref="account" auto-export="all-classes"
+        ranking="3" />
+
 
 
 <a name="Blueprint-References"></a>
@@ -342,13 +342,13 @@ following shows a reference named *accountRef* to an *Account* service.
 it is set on the *accountClient* bean through the *account* property.
 
 {code:xml|title=servicereference.xml|borderStyle=solid}
-   <bean id="accountClient" class="...">
-       <property name="account" ref="accountRef" />
-   </bean>
+       <bean id="accountClient" class="...">
+           <property name="account" ref="accountRef" />
+       </bean>
 
-   <reference id="accountRef" interface="org.apache.aries.simple.Account"
-/> 
-{code}
+       <reference id="accountRef" interface="org.apache.aries.simple.Account"
+    /> 
+
 
 <a name="Blueprint-ReferenceDynamism"></a>
 ### Reference Dynamism
@@ -361,12 +361,12 @@ backing service will block until a service becomes available or a timeout
 occurs at which point a ServiceUnavailableException will be thrown.
 
 {code:java|title=AccountClient.java|borderStyle=solid}
-   try {
-      balance = account.getBalance();
-   } catch (ServiceUnavailableException e) {
-      ...
-   }
-{code} 
+       try {
+          balance = account.getBalance();
+       } catch (ServiceUnavailableException e) {
+          ...
+       }
+
 
 The default timeout Blueprint will wait for is 300000 milliseconds (5
 minutes).  This value can be changed on a per bundle basis using directives
@@ -374,25 +374,25 @@ on the Bundle-SymbolicName.  The following switches the timeout off
 completely (the default is true):
 
 {code:java|title=MANIFEST.MF|borderStyle=solid}
-   Bundle-SymbolicName: org.apache.aries.simple.account;
-blueprint.graceperiod:=false
-{code} 
+       Bundle-SymbolicName: org.apache.aries.simple.account;
+        blueprint.graceperiod:=false
+
 
 The following sets the timeout to 10000 milliseconds (10 seconds):
 
 {code:java|title=MANIFEST.MF|borderStyle=solid}
-   Bundle-SymbolicName: org.apache.aries.simple.account;
-blueprint.graceperiod:=false; blueprint.timeout=10000;
-{code} 
+       Bundle-SymbolicName: org.apache.aries.simple.account;
+        blueprint.graceperiod:=false; blueprint.timeout=10000;
+
 
 The timeout can also be set on an individual reference using the
 *timeout* attribute.	The following sets the timeout for the account
 reference to 20000 milliseconds (20 seconds).
 
 {code:xml|title=servicereference.xml|borderStyle=solid}
-   <reference id="accountRef" timeout="20000"
-interface="org.apache.aries.simple.Account" /> 
-{code}
+       <reference id="accountRef" timeout="20000"
+        interface="org.apache.aries.simple.Account" /> 
+
 
 In all cases, a value of 0 means wait indefinitely for the reference to
 become satisfied.
@@ -418,17 +418,17 @@ objects (proxies).  This is the default value for the *member-type*
 attribute
 
 {code:xml|title=referencelist.xml|borderStyle=solid}
-   <reference-list id="accountRefs" member-type="service-object"
-interface="org.apache.aries.simple.Account" /> 
-{code}
+       <reference-list id="accountRefs" member-type="service-object"
+        interface="org.apache.aries.simple.Account" /> 
+
 
 The following shows an example of a reference-list that returns a list of
 ServiceReferences:
 
 {code:xml|title=referencelist.xml|borderStyle=solid}
-   <reference-list id="accountRefs" member-type="service-reference"
-interface="org.apache.aries.simple.Account" /> 
-{code}
+       <reference-list id="accountRefs" member-type="service-reference"
+        interface="org.apache.aries.simple.Account" /> 
+
 
 Example showing mandatory or optional references (availability)
 

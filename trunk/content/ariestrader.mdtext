@@ -22,10 +22,10 @@ the sample itself (see instructions below).
 Download and unzip the source zip for the [latest release](aries:downloads.html)
  of Aries Samples and build the equinox-test-harness module under
 ariestrader:
-{code}
-cd samples-0.2-incubating/ariestrader/assemblies/equinox-test-harness
-mvn install
-{code}
+
+    cd samples-0.2-incubating/ariestrader/assemblies/equinox-test-harness
+    mvn install
+
 This procedure will pull in the binaries from the latest release and its
 dependencies.
 

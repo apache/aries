@@ -23,19 +23,19 @@ sample is also provided in trunk/blueprint/blueprint-sample-annotation.
 ### @Inject Annotation
 @Inject annotation can be used to inject fields or methods.
 
-{code:java|title=Bar.java|borderStyle=solid}
 
-@Bean(id="bar")
-public class Bar {
+
+    @Bean(id="bar")
+    public class Bar {
     
-    @Inject(value="Hello FooBar")
-    private String value;
+        @Inject(value="Hello FooBar")
+        private String value;
 
-    @Inject(ref="blueprintBundleContext")
-    private BundleContext context;
-    ...
-}
-{code}
+        @Inject(ref="blueprintBundleContext")
+        private BundleContext context;
+        ...
+    }
+
 
 <a name="BlueprintAnnotation-@BeanAnnotation"></a>
 ### @Bean Annotation
@@ -47,50 +47,50 @@ activation, dependsOn, description, scope, factoryRef, factoryMethod and
 args of the bean.
 
 \* Example of using args property for the @Bean annotation.
-{code:java|title=Account.java|borderStyle=solid}
-@Bean(id="accountOne", args=@Arg(value="1"))
-public class Account {
 
-    private long accountNumber;
+    @Bean(id="accountOne", args=@Arg(value="1"))
+    public class Account {
 
-    public Account(long number) {
-	this.accountNumber = number;
+        private long accountNumber;
+
+        public Account(long number) {
+	    this.accountNumber = number;
+        }
     }
-}
-{code}
+
 
 \* Example of using factoryMethod and args properties for the @Bean
 annotation
-{code:java|title=StaticAccountFactory.java|borderStyle=solid}
-@Bean(id="accountTwo",
-      factoryMethod="createAccount",
-      args = @Arg(value="2"))
-public class StaticAccountFactory {
 
-    public static Account createAccount(long number) {
-	return new Account(number);
-     }
-}
-{code}
+    @Bean(id="accountTwo",
+          factoryMethod="createAccount",
+          args = @Arg(value="2"))
+    public class StaticAccountFactory {
+
+        public static Account createAccount(long number) {
+    	return new Account(number);
+         }
+    }
+
 
 
 \* Example of using factoryRef, factoryMethod, and args properties for the
 @Bean annotation
-{code:java|title=NewAccount.java|borderStyle=solid}
-@Bean(id="accountThree",
-      factoryRef="accountFactory",
-      factoryMethod="createAccount",
-      args=@Arg(value="3"))
-public class NewAccount {
 
-    private long accountNumber;
+    @Bean(id="accountThree",
+          factoryRef="accountFactory",
+          factoryMethod="createAccount",
+          args=@Arg(value="3"))
+    public class NewAccount {
 
-    public NewAccount(long number) {
-	this.accountNumber = number;
+        private long accountNumber;
+
+        public NewAccount(long number) {
+    	this.accountNumber = number;
+        }
+        ...
     }
-    ...
-}
-{code}
+
 
 <a name="BlueprintAnnotation-@Service,@RegistrationListener,@Register,@UnregisterAnnotations"></a>
 ### @Service, @RegistrationListener, @Register, @Unregister Annotations
@@ -98,43 +98,43 @@ If you want to register a bean as a service, you can use @Service
 annotation to do so.  You can specify ranking, autoExport, interfaces,
 serviceProperties and registrationListeners for the service.
 
-{code:java|title=Foo.java|borderStyle=solid}
-@Bean(id="foo")
-@Service(autoExport="all-classes",
-	serviceProperties =
-@ServiceProperty(key="blueprint.annotation.sample", value="true"),
-	registerationListeners =
-@RegistrationListener(ref="fooRegistrationListener"), 
-	ranking=0)
-public class Foo implements Serializable {
-   ...
-}
-{code}
+
+    @Bean(id="foo")
+    @Service(autoExport="all-classes",
+    	serviceProperties =
+    @ServiceProperty(key="blueprint.annotation.sample", value="true"),
+    	registerationListeners =
+    @RegistrationListener(ref="fooRegistrationListener"), 
+    	ranking=0)
+    public class Foo implements Serializable {
+       ...
+    }
+
 
 
 To annotation a class as registration listener, you can use the
 @RegistrationListener annotation.  @Register can be used to annotate the
 register-method for the registration listener and @Unregister annotation
 can be used on the unregister-method for the registration listener.
-{code:java|title=FooRegistrationListener.java|borderStyle=solid}
-@Bean(id="fooRegistrationListener")
-@RegistrationListener
-public class FooRegistrationListener {
+
+    @Bean(id="fooRegistrationListener")
+    @RegistrationListener
+    public class FooRegistrationListener {
         
-    @Register
-    public void serviceRegistered(Serializable foo, Map props) {
-	System.out.println("Service registration notification: " + foo + "
-" + props);
-    }
+        @Register
+        public void serviceRegistered(Serializable foo, Map props) {
+    	System.out.println("Service registration notification: " + foo + "
+        " + props);
+        }
     
-    @Unregister
-    public void serviceUnregistered(Foo foo, Map props) {
-	System.out.println("Service unregistration notification: " + foo +
-" " + props);
+        @Unregister
+        public void serviceUnregistered(Foo foo, Map props) {
+    	System.out.println("Service unregistration notification: " + foo +
+        " " + props);
+        }
+
     }
 
-}
-{code}
 
 <a name="BlueprintAnnotation-@Reference,@ReferenceList,@ReferenceListenerAnnotations"></a>
 ### @Reference, @ReferenceList, @ReferenceListener Annotations
@@ -146,54 +146,54 @@ For the service that you want to inject the reference, you can use the
 @Inject and @Reference annotation, with the id, serviceInterface, timeout
 and referenceListeners properties specified for the reference.	 
 
-{code:java|title=BindingListener.java|borderStyle=solid}
-@Bean(id="bindingListener")
-@ReferenceListener
-public class BindingListener {
 
-    @Inject @Reference (id="ref2", 
-	    serviceInterface = InterfaceA.class,
-	    timeout=100,
-referenceListeners=@ReferenceListener(ref="bindingListener"))
-    private InterfaceA a;
-    ...
-    @Init
-    public void init() {
+    @Bean(id="bindingListener")
+    @ReferenceListener
+    public class BindingListener {
+
+        @Inject @Reference (id="ref2", 
+    	    serviceInterface = InterfaceA.class,
+    	    timeout=100,
+    referenceListeners=@ReferenceListener(ref="bindingListener"))
+        private InterfaceA a;
+        ...
+        @Init
+        public void init() {
+        }
+
+        @Bind
+        public void bind(InterfaceA a, Map props) {
+    	this.a = a;
+    	this.props = props;
+        }
+
+        @Unbind
+        public void unbind(InterfaceA a, Map props) {
+    	this.a = null;
+    	this.props = null;
+        }
+
     }
 
-    @Bind
-    public void bind(InterfaceA a, Map props) {
-	this.a = a;
-	this.props = props;
-    }
-
-    @Unbind
-    public void unbind(InterfaceA a, Map props) {
-	this.a = null;
-	this.props = null;
-    }
-
-}
-{code}
 
 
 @ReferenceList is very similar as @Reference, except that the timeout
 property is not supported in @ReferenceList, while the memberType property
 is supported in @ReferenceList.  This is same as the blueprint XML schema.
 
-{code:java|title=ListBindingListener.java|borderStyle=solid}
-@Bean(id="listBindingListener")
-@ReferenceListener
-public class ListBindingListener {
 
-    @Inject @ReferenceList (id="ref-list", 
-	    serviceInterface = InterfaceA.class,
+    @Bean(id="listBindingListener")
+    @ReferenceListener
+    public class ListBindingListener {
+
+        @Inject @ReferenceList (id="ref-list", 
+	        serviceInterface = InterfaceA.class,
 	   
-referenceListeners=@ReferenceListener(ref="listBindingListener"))
-    private InterfaceA a;
-    ...
-}
-{code}
+    referenceListeners=@ReferenceListener(ref="listBindingListener"))
+        private InterfaceA a;
+        ...
+    }
+
 
 <a name="BlueprintAnnotation-@Blueprintannotation"></a>
 ### @Blueprint annotation
@@ -201,14 +201,14 @@ referenceListeners=@ReferenceListener(ref="listBindingListener"))
 property of the blueprint bundle, such as defaultActivation,
 defaultTimeout, defaultAvailability.
 
-{code:java|title=Bar.java|borderStyle=solid}
-@Blueprint(defaultActivation="eager", defaultTimeout=300,
-defaultAvailability="optional")
-@Bean(id="bar")
-public class Bar {
-    ...
-}
-{code}
+
+    @Blueprint(defaultActivation="eager", defaultTimeout=300,
+    defaultAvailability="optional")
+    @Bean(id="bar")
+    public class Bar {
+        ...
+    }
+
 
 <a name="BlueprintAnnotation-Typeconverters"></a>
 ### Type converters
@@ -217,15 +217,15 @@ The blueprint annotation service will recognize it as a type converter if
 it implements the *org.osgi.service.blueprint.container.Converter*
 interface
 
-{code:java|title=DateTypeConverter.java|borderStyle=solid}
-@Bean(id="converter1")
-public class DateTypeConverter implements Converter {
 
-    @Inject(name="format", value="yyyy.MM.dd")
-    DateFormat dateFormat;
-    ...
-}
-{code}
+    @Bean(id="converter1")
+    public class DateTypeConverter implements Converter {
+    
+        @Inject(name="format", value="yyyy.MM.dd")
+        DateFormat dateFormat;
+        ...
+    }
+
 
 <a name="BlueprintAnnotation-Limitation"></a>
 ### Limitation

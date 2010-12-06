@@ -97,19 +97,19 @@ projects.
 
 You will see some of the blueprint projects don't build. To fix this you
 need to comment out the following line:
-{code}
-<!-- <classpathentry kind="src"
-path="/Users/linsun/aries/blueprint/blueprint-api/src/main/resources/org/osgi/service/blueprint"
-including="blueprint.xsd" excluding="**/*.java"/> -->
-{code}
+
+    <!-- <classpathentry kind="src"
+    path="/Users/linsun/aries/blueprint/blueprint-api/src/main/resources/org/osgi/service/blueprint"
+    including="blueprint.xsd" excluding="**/*.java"/> -->
+
 
 in the .classpath file in the aries-blueprint-core project.
 
 If there is a build error in the org.apache.aries.blueprint.itests project
 then remove this jar:
-{code}
-org/apache/felix/org.osgi.foundation/1.2.0.jar
-{code}
+
+    org/apache/felix/org.osgi.foundation/1.2.0.jar
+
 from the project's classpath.
 
 If there is a build error in the aries-jmx-core project then configure this
@@ -122,9 +122,9 @@ There should be no outstanding errors.
 You may find that building Aries fails with out of memory exceptions on
 some systems (eg Mac)  if you use the standard Java settings. Setting the
 two environment variables as shown below may help.
-{code}
-export MAVEN_OPTS="-XX:MaxPermSize=128m -Xms512m -Xmx512m
--XX:+HeapDumpOnOutOfMemoryError"
-export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=128m
--XX:+HeapDumpOnOutOfMemoryError"
-{code}
+
+    export MAVEN_OPTS="-XX:MaxPermSize=128m -Xms512m -Xmx512m
+    -XX:+HeapDumpOnOutOfMemoryError"
+    export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=128m
+    -XX:+HeapDumpOnOutOfMemoryError"
+

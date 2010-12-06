@@ -26,10 +26,10 @@ will not work. See [ARIES-317](https://issues.apache.org/jira/browse/ARIES-317)
 
 Download and unzip the source zip for the [latest release](aries:downloads.html)
  of Aries Samples and build the blog-assembly module:
-{code}
-cd samples-0.1-incubating/blog/blog-assembly
-mvn install
-{code}
+
+    cd samples-0.1-incubating/blog/blog-assembly
+    mvn install
+
 This procedure will pull in the binaries from the latest release and its
 dependencies.
 
@@ -40,17 +40,17 @@ Download the JDBC based Blog sample application (.eba file) from the [latest rel
 .
 
 Create the database
-{code}
-cd samples-0.1-incubating/blog-sample/blog-assembly/target
-export
-CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
-java org.apache.derby.tools.ij blogDB.sql
-{code}
+
+    cd samples-0.1-incubating/blog-sample/blog-assembly/target
+    export
+    CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
+    java org.apache.derby.tools.ij blogDB.sql
+
 now start Aries in an OSGi framework (we're using Eclipse Equinox in this
 case)
-{code}
-java -jar osgi-3.5.0.v20090520.jar -console
-{code}
+
+    java -jar osgi-3.5.0.v20090520.jar -console
+
 
 The OSGi console should start up, the 'ss' command should show all of the
 Blog bundles in state 'ACTIVE'.
