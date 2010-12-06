@@ -28,7 +28,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opcodes {
-    private static final String GENERATED_METHOD_NAME = "$$fixContextClassLoader$$";
+    private static final String GENERATED_METHOD_NAME = "$$FCCL$$";
 
     private static final String UTIL_CLASS = Util.class.getName().replace('.', '/'); 
     private static final String VOID_RETURN_TYPE = "()V";
@@ -48,54 +48,88 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         return new TCCLSetterMethodVisitor(mv);
     }
-    
+
     @Override
     public void visitEnd() {
         // Add generated static method
-        MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC,
-                GENERATED_METHOD_NAME, "()V", null, null);
+
+        /* Equivalent to:
+         * private static void SomeMethodName(Class<?> cls) {
+         *   Util.fixContextClassLoader("java.util.ServiceLoader", "load", cls, WovenClass.class.getClassLoader());
+         * }
+         */
+        MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, GENERATED_METHOD_NAME, 
+                "(Ljava/lang/Class;)V", "(Ljava/lang/Class<*>;)V", null);
         mv.visitCode();
         mv.visitLdcInsn("java.util.ServiceLoader");
         mv.visitLdcInsn("load");
+        mv.visitVarInsn(ALOAD, 0);
         String typeIdentifier = "L" + targetClass + ";";
         mv.visitLdcInsn(Type.getType(typeIdentifier));
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class",
                 "getClassLoader", "()Ljava/lang/ClassLoader;");
-        mv.visitMethodInsn(INVOKESTATIC, "org/apache/aries/spifly/Util",
+        mv.visitMethodInsn(
+                INVOKESTATIC,
+                "org/apache/aries/spifly/Util",
                 "fixContextClassloader",
-                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/ClassLoader;)V");
+                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;Ljava/lang/ClassLoader;)V");
         mv.visitInsn(RETURN);
-        mv.visitMaxs(3, 0);
+        mv.visitMaxs(4, 1);
         mv.visitEnd();
-        
+
         super.visitEnd();
     }
     
-
-
     private class TCCLSetterMethodVisitor extends MethodAdapter implements MethodVisitor
     {
+        Type lastLDCType;
+        
         public TCCLSetterMethodVisitor(MethodVisitor mv) {
             super(mv);
         }
 
+        
+        /**
+         * Store the last LDC call. When ServiceLoader.load(Class cls) is called
+         * the last LDC call before the ServiceLoader.load() visitMethodInsn call
+         * contains the class being passed in. We need to pass this class to $$FCCL$$ as well
+         * so we can copy the value found in here.
+         */
         @Override
-        public void visitMethodInsn(int opcode, String owner, String name,
-                String desc) {
+        public void visitLdcInsn(Object cst) {
+            if (cst instanceof Type) {
+                lastLDCType = ((Type) cst);
+            }
+            super.visitLdcInsn(cst);
+        }
+
+        /**
+         * Wrap selected method calls with
+         *  Util.storeContextClassloader();
+         *  $$FCCL$$(<class>)
+         *  Util.restoreContextClassloader(); 
+         */
+        @Override
+        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
             System.out.println("### " + opcode + ": " + owner + "#" + name + "#" + desc);
             
             if (opcode == INVOKESTATIC &&
                 "java/util/ServiceLoader".equals(owner) &&
                 "load".equals(name)) {
                 System.out.println("+++ Gotcha!");
-                                
+          
+                // Add: Util.storeContextClassloader();                
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "storeContextClassloader", VOID_RETURN_TYPE);
+                // Add: MyClass.$$FCCL$$(<class>);
+                // The class is the same class as the one passed into the ServiceLoader.load() api.
+                mv.visitLdcInsn(lastLDCType);
                 mv.visitMethodInsn(INVOKESTATIC, targetClass,
-                        GENERATED_METHOD_NAME, VOID_RETURN_TYPE);
+                        GENERATED_METHOD_NAME, "(Ljava/lang/Class;)V");
 
                 super.visitMethodInsn(opcode, owner, name, desc);
 
+                // Add: Util.restoreContextClassloader();
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "restoreContextClassloader", VOID_RETURN_TYPE);
             } else {                

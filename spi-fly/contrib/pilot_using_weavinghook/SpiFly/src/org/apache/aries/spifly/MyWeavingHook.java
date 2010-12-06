@@ -18,12 +18,14 @@
  */
 package org.apache.aries.spifly;
 
+import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.service.log.LogService;
 
 public class MyWeavingHook implements WeavingHook {
     private final String addedImport;
@@ -40,9 +42,8 @@ public class MyWeavingHook implements WeavingHook {
     
 	@Override
 	public void weave(WovenClass wovenClass) {
-	    // TODO base this on SPI-Consumer header
-	    if (wovenClass.getBundleWiring().getBundle().getSymbolicName().equals("MyTestBundle"))
-	    {
+	    if (wovenClass.getBundleWiring().getBundle().getHeaders().get(SpiFlyConstants.SPI_CONSUMER_HEADER) != null) {
+	        Activator.activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());
 	        System.out.println("*** WovenClass: " + wovenClass.getClassName());
 	        
 	        ClassReader cr = new ClassReader(wovenClass.getBytes());

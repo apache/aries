@@ -25,10 +25,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.StringTokenizer;
 
-import org.apache.aries.spifly.HeaderParser.PathElement;
-import org.apache.aries.spifly.api.SPIClassloaderAdviceService;
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
@@ -43,6 +40,9 @@ public class SPIBundleTrackerCustomizer implements BundleTrackerCustomizer<List<
     public SPIBundleTrackerCustomizer(Activator a, Bundle b) {
         activator = a;
         spiBundle = b;
+        
+        
+        // TODO handle pre-existing bundles.
     }
 
     public List<ServiceRegistration<?>> addingBundle(Bundle bundle, BundleEvent event) {
@@ -97,12 +97,15 @@ public class SPIBundleTrackerCustomizer implements BundleTrackerCustomizer<List<
                 ServiceRegistration<?> reg = bundle.getBundleContext()
                         .registerService(registrationClassName, o, props);
                 registrations.add(reg);
-                log(LogService.LOG_INFO, "Registered service: " + reg);
+
+                activator.registerSPIProviderBundle(registrationClassName, bundle);
+                log(LogService.LOG_INFO, "Registered service: " + reg);                
             } catch (Exception e) {
                 log(LogService.LOG_WARNING,
                         "Could not load SPI implementation referred from " + url, e);
             }
         }
+        
 
         /*
         // the new approach - services are being registered based on contents of
@@ -195,21 +198,6 @@ public class SPIBundleTrackerCustomizer implements BundleTrackerCustomizer<List<
             reg.unregister();
             log(LogService.LOG_INFO, "Unregistered: " + reg);            
         }
-    }
-
-    private String trimQuotes(String input) {
-        if (input == null) {
-            return input;
-        }
-        if (input.startsWith("\"")) {
-            input = input.substring(1);
-        }
-
-        if (input.endsWith("\"")) {
-            input = input.substring(0, input.length() - 1);
-        }
-
-        return input;
     }
 
     private void log(int level, String message) {
