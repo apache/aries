@@ -43,12 +43,15 @@ jars to your local repository) or 'package' (just creates jars in your
 workspace). Hit F5 in the package explorer view to refresh and you should
 see packaged jar files under the *target* directories in the projects.
 
-{note}
+<br>
+
+- - - 
+**Note:**
 Note: There is currently (September 2010) what appears to be a timing issue
 that is causing unpredictable test failures during a full build. If you see
 test failures, try 'mvn install -fae'
-{note}
 
+- - - 
 <a name="BuildingAries-Justbuildit-noEclipse"></a>
 ## Just build it - no Eclipse
  * check out from the command line {{svn co

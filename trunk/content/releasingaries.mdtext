@@ -42,7 +42,7 @@ release.
 
 
 <a name="ReleasingAries-Discussionofthereleaseandit'scontentontheAriesmailinglist"></a>
-### Discussion of the release and it's content on the Aries mailing list
+### Discussion of the release and its content on the Aries mailing list
 Before starting off the release process it is essential to gain concensus
 on the aries-dev list that this is the right time for a release and to
 agree its content. Allow at least a week for this discussion. 

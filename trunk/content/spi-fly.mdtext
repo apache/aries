@@ -7,6 +7,7 @@ The code can be found in
 http://svn.apache.org/repos/asf/incubator/aries/trunk/spi-fly
 
 Currently the implementation does the following:
+
 * It only considers bundles that have the following Manifest (opt-in)
 header: *SPI-Provider* (the value is not used at the moment).
 * For every new bundle being installed that has the opt-in header, it
@@ -16,6 +17,7 @@ following property
  *spi.provider.url = <the URL to the associated META-INF/services file>*
 
 Additional ideas/concerns:
+
 * We need to find a mechanism to find any SPI implementations that are part
 of the JRE itself and register these in the Service Registry. Since there
 is typically not a META-INF/services file for these mechanisms nor do they

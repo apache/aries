@@ -13,13 +13,19 @@ Title: BlogSample-0.1-incubating
 Follow the instructions [here](http://db.apache.org/derby/papers/DerbyTut/install_software.html#derby)
  to complete the following actions: Download Derby, Install Derby, Set
 DERBY_INSTALL, Configure Embedded Derby and then Verify Derby. 
-{note}
+
+<br>
+
+- - -
+**Note:**
 The version of Derby used by the current release and development versions
 of the Blog Sample is 10.5.3.0. Since May 2010 the Derby tutorial points to
 the latest Derby release (10.6.x) - if this is installed the Blog sample
 will not work. See [ARIES-317](https://issues.apache.org/jira/browse/ARIES-317)
 . For the present the best solution is to install Derby 10.5.3.
-{note}
+
+- - - 
+
 
 <a name="BlogSample-0.1-incubating-CreatetheOSGiplatformfortheBlogsample"></a>
 ### Create the OSGi platform for the Blog sample

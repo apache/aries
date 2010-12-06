@@ -5,7 +5,11 @@ Title: AriesTrader
 
 <a name="AriesTrader-Prereqs"></a>
 ### Prereqs 
-{note}
+<br>
+
+- - -
+**Note:** 
+
 These instructions are for the 0.2-incubating release of Aries.
 Instructions for older releases can be found [here](archiveinstructions.html)
 . In the 0.2-incubating release the AriesTrader sample was changed such
@@ -14,8 +18,8 @@ Derby version included in the sample is fully leveraged internally in the
 sample and therefore no additional Derby installation is required. 
 However, there are steps required to initialize the Database from within
 the sample itself (see instructions below).  
-{note}
-
+ 
+- - -
 
 <a name="AriesTrader-CreatingtheOSGiplatform(equinox-test-harness)forAriesTrader"></a>
 ### Creating the OSGi platform (equinox-test-harness) for AriesTrader 
@@ -127,4 +131,4 @@ support the Apache Aries programming model.
 
 The AriesTrader sample bundles are organized like this:
 
-!ariesTraderOverview2.png!
+![at2](ariesTraderOverview2.png)

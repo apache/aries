@@ -5,7 +5,10 @@ Title: AriesTrader-0.1-incubating
 
 <a name="AriesTrader-0.1-incubating-Prereqs"></a>
 ### Prereqs 
-{note}
+<br>
+
+- - -
+**Note**:
 The Derby installation prereq is only required when using the
 0.1-incubating released version of the sample.	Subsequent releases will
 not require the installation of Derby.	
@@ -15,7 +18,8 @@ development versions of the AriesTrader Sample is 10.5.3.0. Since May 2010
 the Derby tutorial points to the latest Derby release (10.6.x) - if this is
 installed the AriesTrader sample will not work. See [ARIES-317](https://issues.apache.org/jira/browse/ARIES-317)
 . For the present the best solution is to install Derby 10.5.3.
-{note}
+
+- - -
 
 Follow the instructions [here](http://db.apache.org/derby/papers/DerbyTut/install_software.html#derby)
  to complete the following actions: Download Derby, Install Derby, Set
@@ -140,4 +144,4 @@ support the Apache Aries programming model.
 
 The AriesTrader sample bundles are organized like this:
 
-!ariesTraderOverview2.png!
+![at1](ariesTraderOverview2.png)

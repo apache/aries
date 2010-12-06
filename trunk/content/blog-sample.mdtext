@@ -7,7 +7,10 @@ Title: Blog Sample
 ## Running the Blog Sample
 
 
-{note}
+<br>
+
+- - -
+**Note:**
 These instructions are for the 0.2-incubating release of Aries.
 Instructions for older releases can be found [here](archiveinstructions.html)
 . In the 0.2-incubating release the sample was changed to use an in-memory
@@ -15,7 +18,9 @@ database to avoid dependency on an explicit version of Derby. If you would
 prefer to use a database on disk check the instructions for the
 0.1-incubating release. You will also need to modify datasource.xml (under
 blog-datasource) as indicated in the comments and then rebuild the sample.
-{note}
+
+- - - 
+
 
 <a name="BlogSample-CreatetheOSGiplatformfortheBlogsample"></a>
 ### Create the OSGi platform for the Blog sample

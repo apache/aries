@@ -151,10 +151,11 @@ this:
 ![hw8](BPTutorial8F.png)
 <br>
 <br>
-1. The setHelloWorldService() method will be called by the Blueprint
+
+ 1.  The setHelloWorldService() method will be called by the Blueprint
 container in order to inject an object implementing the HelloWorldService
-interface.
-1. The startUp() method will be run when the bundle is started: remember
+interface. 
+ 1.  The startUp() method will be run when the bundle is started: remember
 that this was specified in the Blueprint. This method executes a hello()
 method which must be supplied by an implementation of HelloWorldService.
 The startUp() method in this case will only be run after dependencies have
@@ -171,9 +172,10 @@ methods:
 ![hw9](BPTutorial9F.png)
 <br>
 <br>
-1. A startUp() method which writes a message to say that the bundle is being
-started
-1. A hello() method which writes a 'hello' message
+
+ 1.  A startUp() method which writes a message to say that the bundle is being
+started 
+ 1.  A hello() method which writes a 'hello' message
 
   
   

@@ -7,8 +7,8 @@ All Aries documentation is linked from here.
 <a name="Documentation-Ariesdeveloperdocumentation"></a>
 ## Aries developer documentation
  - [Programming Model](ariesprogrammingmodel.html)
- ** [Applications](applications.html)
- ** [Blueprint](blueprint.html)
+   - [Applications](applications.html)
+   - [Blueprint](blueprint.html)
  - [Pointers to OSGi specifications](pointerstoosgispecifications.html)
  - [Integrators Guide](integrators-guide.html)
 

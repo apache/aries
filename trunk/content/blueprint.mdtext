@@ -327,7 +327,6 @@ service will be returned ahead of the lower.  The default ranking value is
 0. Service ranking is specified using the *ranking* attributes as
 follows:
 
-{code:xml|title=serviceranking.xml|borderStyle=solid}
        <service id="serviceFive" ref="account" auto-export="all-classes"
         ranking="3" />
 
@@ -341,7 +340,6 @@ following shows a reference named *accountRef* to an *Account* service.
  If a service matching this reference is found in the service registry then
 it is set on the *accountClient* bean through the *account* property.
 
-{code:xml|title=servicereference.xml|borderStyle=solid}
        <bean id="accountClient" class="...">
            <property name="account" ref="accountRef" />
        </bean>
@@ -360,7 +358,6 @@ replaced with another service. Calls on a proxy that does not have a
 backing service will block until a service becomes available or a timeout
 occurs at which point a ServiceUnavailableException will be thrown.
 
-{code:java|title=AccountClient.java|borderStyle=solid}
        try {
           balance = account.getBalance();
        } catch (ServiceUnavailableException e) {
@@ -373,14 +370,12 @@ minutes).  This value can be changed on a per bundle basis using directives
 on the Bundle-SymbolicName.  The following switches the timeout off
 completely (the default is true):
 
-{code:java|title=MANIFEST.MF|borderStyle=solid}
        Bundle-SymbolicName: org.apache.aries.simple.account;
         blueprint.graceperiod:=false
 
 
 The following sets the timeout to 10000 milliseconds (10 seconds):
 
-{code:java|title=MANIFEST.MF|borderStyle=solid}
        Bundle-SymbolicName: org.apache.aries.simple.account;
         blueprint.graceperiod:=false; blueprint.timeout=10000;
 
@@ -389,7 +384,6 @@ The timeout can also be set on an individual reference using the
 *timeout* attribute.	The following sets the timeout for the account
 reference to 20000 milliseconds (20 seconds).
 
-{code:xml|title=servicereference.xml|borderStyle=solid}
        <reference id="accountRef" timeout="20000"
         interface="org.apache.aries.simple.Account" /> 
 
@@ -417,7 +411,6 @@ The following example shows a reference-list that returns a list of service
 objects (proxies).  This is the default value for the *member-type*
 attribute
 
-{code:xml|title=referencelist.xml|borderStyle=solid}
        <reference-list id="accountRefs" member-type="service-object"
         interface="org.apache.aries.simple.Account" /> 
 
@@ -425,7 +418,6 @@ attribute
 The following shows an example of a reference-list that returns a list of
 ServiceReferences:
 
-{code:xml|title=referencelist.xml|borderStyle=solid}
        <reference-list id="accountRefs" member-type="service-reference"
         interface="org.apache.aries.simple.Account" /> 
 
