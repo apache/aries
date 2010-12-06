@@ -192,9 +192,9 @@ Equinox based platform that contains all of the OSGi bundles you need. To
 start it up go to the target directory in 
 org.apache.aries.samples.helloworld.blueprint.assembly, and from command
 line, type:
-{code}
-java -jar osgi-3.5.0.v20090520.jar -console
-{code}
+
+    java -jar osgi-3.5.0.v20090520.jar -console
+
 You will see some messages, after which you should get the 'osgi>' prompt;
 sometimes you will need to press return to see it. At the prompt, type 'ss'
 to see the status of the bundles:
@@ -218,15 +218,14 @@ prompt.
 The next step is to  start the blueprint-helloworld-server bundle. In
 amongst the DEBUG messages you should see the single line of output from
 the startUp() method if the HelloWorldServiceImpl class:
-{code}
-======>>> Starting HelloWorld Server
-{code}
+
+    ======>>> Starting HelloWorld Server
+
 At this point it is possible to see if the HelloWorldService is registered,
 like this:
-{code}
-osgi> services
-(objectClass=org.apache.aries.samples.blueprint.helloworld.api.HelloWorldService)
-{code}
+
+    osgi> services (objectClass=org.apache.aries.samples.blueprint.helloworld.api.HelloWorldService)
+
 running this command will tell you that a service is registered but that
 nothing is using it.
 
@@ -234,13 +233,11 @@ Finally, start the blueprint-helloworld-client bundle. If things have gone
 according to plan you should see a sequence of 3 messages from the
 startUp() method, the second message will be a 'hello' from
 HelloWorldService:
-{code}
-========>>>>Client HelloWorld: About to execute a method from the Hello
-World server
-======>>> A message from the server: Hello World!
-========>>>>Client HelloWorld: ... if you didn't just see a Hello World
-message something went wrong
-{code}
+
+    ========>>>>Client HelloWorld: About to execute a method from the Hello World server
+    ======>>> A message from the server: Hello World!
+    ========>>>>Client HelloWorld: ... if you didn't just see a Hello World message something went wrong
+
 If you re-run the services command above it will tell you that the
 blueprint-helloworldclient bundle is using the blueprint-helloworldservice.
 

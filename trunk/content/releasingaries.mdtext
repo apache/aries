@@ -7,7 +7,7 @@ To create a release you will need to create the release artifacts and move
 then to various places (ultimately the Maven central repository). The Maven
 commands and general outline of the process looks like this:
 
-!AriesRelease.png!
+![rel](AriesRelease.png)
 
 The picture assumes that you are releasing from a branch rather than from
 trunk. The full maven commands are not shown - the intention is just to
@@ -67,35 +67,35 @@ especially if you have to revert anything. This is much easier if you are
 working in your own branch and not in trunk where other people may be
 committing code.
 
-{code}
-svn copy https://svn.apache.org/repos/asf/incubator/aries/trunk \
+
+    svn copy https://svn.apache.org/repos/asf/incubator/aries/trunk \
 	  
-https://svn.apache.org/repos/asf/incubator/aries/branches/0.X-incubating-RCx
-\
+    https://svn.apache.org/repos/asf/incubator/aries/branches/0.X-incubating-RCx
+    \
       -m "Creating a release branch of /aries/trunk."
-{code}
+
 
 Where '0.X' is the number of the release.
 
 Checkout the new branch, for example, for the 0.2-incubating  release:
 
-{code}
-svn co
-https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx
-aries-rc2-candidate
-{code}
+
+    svn co
+    https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx
+    aries-rc2-candidate
+
 
 *IMPORTANT* If you are using a branch to release you *must* edit the top
 level pom.xml for each module to change the SCM references to point to the
 branch and to to trunk. For example:
 
-{code}
-<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/parent</connection>
+
+    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/parent</connection>
        
-<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/parent</developerConnection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/parent</developerConnection>
        
-<url>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/parent</url>
-{code}
+    <url>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/parent</url>
+
 
 The consequence of forgetting this is that the commands that create the
 release (mvn release:prepare, mvn release:perform) will declare SUCCESS but
@@ -113,9 +113,9 @@ Maven repo. For linux/Mac users you will find this under ~/.m2/repository/.
 Check that the code builds using the usual [sequence ](-buildingaries.html)
  of commands, but add the following arguments to the 'mvn install' command:
 
-{code}
-mvn install -Papache-release -DcreateChecksum=true
-{code}
+
+    mvn install -Papache-release -DcreateChecksum=true
+
 
 This should build and install release artifacts in your local repo. 
 
@@ -123,17 +123,17 @@ Check the [0.1 release](https://repository.apache.org/content/repositories/relea
  to understand what files should be created.
 
 To perform legal checks, in each subproject, run:
-{code}
-mvn rat:check -fn
-{code}
+
+    mvn rat:check -fn
+
 
 This will run through the project and its sub projects generating a file
 called rat.txt in each target directory.
 The 'fn' means it will carry on even if it find a failure. To inspect the
 failures, the easiest way I've found so far is:
-{code}
-find . -name rat.txt | xargs grep \!\?\?
-{code}
+
+    find . -name rat.txt | xargs grep \!\?\?
+
 
 This will pick out the failing file names. Some of the files that rat fails
 do not require an Apache license, eg MANIFEST.MF, but any *.java or *.js
@@ -161,18 +161,18 @@ Short summary: Use a wired ether net connection and allow about 4 hours for
 the next few steps.
 
 From the top level directory in your branch run:
-{code}
-mvn clean
-{code}
+
+    mvn clean
+
 
 Then, change directory to 'parent'. It is necessary to release parent first
 because everything else depends on it. Run the following commands:
 
-{code}
-mvn install -Papache-release
-mvn release:prepare -Papache-release
-mvn release:perform -Papache-release
-{code}
+
+    mvn install -Papache-release
+    mvn release:prepare -Papache-release
+    mvn release:perform -Papache-release
+
 
 *Note* The prepare step will make some assumptions about the version of the
 development steam that is left after the release has been made. When
@@ -184,8 +184,7 @@ The install command is required to make sure that you have a copy of the
 parent in your local repository - it's required for releasing the
 eba-maven-plugin.
 
-This _should _ start to put release artifacts into an Apache [staging repository ](-https://repository.apache.org/index.html#view-repositories;staging.html)
-. You will need to log in to see it.
+This _should _ start to put release artifacts into an Apache [staging repository ](https://repository.apache.org/index.html#view-repositories;staging.html). You will need to log in to see it.
 If nothing appears in a staging repo you should stop here and work out why
 :-). If you have made a mistake it's quite easy to revert. The release
 commands make and commit changes to the project's pom.xml files and they
@@ -195,18 +194,18 @@ pom.xml files and delete the tag from svn.
 If you are in Europe the mvn release:prepare command almost always fails at
 the last step, with a message like:
 
-{code}
-[ERROR](error.html)
- BUILD FAILURE
-[INFO](info.html)
- ------------------------------------------------------------------------
-[INFO](info.html)
- Unable to tag SCM
-Provider message:
-The svn tag command failed.
-Command output:
-svn: No such revision 936951
-{code}
+
+    [ERROR](error.html)
+     BUILD FAILURE
+    [INFO](info.html)
+     ------------------------------------------------------------------------
+    [INFO](info.html)
+     Unable to tag SCM
+    Provider message:
+    The svn tag command failed.
+    Command output:
+    svn: No such revision 936951
+
 This is due to the SVN mirroring in place between Europe and the master in
 the US. When you make a commit, it isn't immediately available in Europe to
 svn up to. Just wait 10 secs and repeat the mvn release:prepare command for
@@ -214,14 +213,14 @@ it to restart where it left off.
 
 
 The next step is to release the eba-maven-plugin.
-{code}
-cd ../eba/maven-plugin
-mvn versions:update-parent
-mvn versions:use-releases
-svn commit -m "updated to latest releases"
-mvn release:prepare -Papache-release
-mvn release:perform -Papache-release
-{code}
+
+    cd ../eba/maven-plugin
+    mvn versions:update-parent
+    mvn versions:use-releases
+    svn commit -m "updated to latest releases"
+    mvn release:prepare -Papache-release
+    mvn release:perform -Papache-release
+
 
 Then for each project, in the order given below:
 
@@ -238,14 +237,14 @@ jpa
 samples *See Note 1 below*
 
 Run the following commands:
-{code}
-mvn versions:update-parent
-mvn versions:use-releases
-svn commit -m "updated to latest releases"
-mvn release:prepare -Papache-release -DpreparationGoals="clean install"
-*See Note 2 below*
-mvn release:perform -Papache-release
-{code}
+
+    mvn versions:update-parent
+    mvn versions:use-releases
+    svn commit -m "updated to latest releases"
+    mvn release:prepare -Papache-release -DpreparationGoals="clean install"
+    *See Note 2 below*
+    mvn release:perform -Papache-release
+
 
   * Note 1: when doing mvn versions:* actions in samples, you must also
 manually change the version properties that are hard coded in the top level
@@ -340,14 +339,14 @@ The first step is to revert the changes to the poms in the problem modules.
 The following steps work on a *ix like platform:
 
 Determine which revision you want to go back to (eg XXXXX)
-{code}
-svn up -r XXXXXX
-find . -name pom.xml | xargs -I {} mv {} {}_old
-svn up
-find . -name pom.xml | xargs -I {} mv {}_old {}
-svn status #Check what you have changed!
-svn commit -m "reverting release changes"
-{code}
+
+    svn up -r XXXXXX
+    find . -name pom.xml | xargs -I {} mv {} {}_old
+    svn up
+    find . -name pom.xml | xargs -I {} mv {}_old {}
+    svn status #Check what you have changed!
+    svn commit -m "reverting release changes"
+
 
 Next - delete the tag relating to the module from SVN
 
@@ -359,20 +358,20 @@ through the release process again.
 
 In some cases you may also want to merge from trunk into the release
 branch. The syntax to do this is:
-{code}
-svn merge -c ZZZZZZ https://svn.apache.org/repos/asf/incubator/aries/trunk
-{code}
+
+    svn merge -c ZZZZZZ https://svn.apache.org/repos/asf/incubator/aries/trunk
+
 Where ZZZZZZ is the revision associated with the fix.
 Note that you will be creating a new staging repository. The commands are
 repeated here for convenience:
 
-{code}
-mvn versions:update-parent
-mvn versions:use-releases
-svn commit -m "<version> RC<#>: updated to latest releases"
-mvn release:prepare -Papache-release -DpreparationGoals="clean install"
-mvn release:perform -Papache-release
-{code}
+
+    mvn versions:update-parent
+    mvn versions:use-releases
+    svn commit -m "<version> RC<#>: updated to latest releases"
+    mvn release:prepare -Papache-release -DpreparationGoals="clean install"
+    mvn release:perform -Papache-release
+
 
 
 
