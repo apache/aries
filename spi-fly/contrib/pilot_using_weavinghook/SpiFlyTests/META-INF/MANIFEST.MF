@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SpiFlyTests
+Bundle-SymbolicName: SpiFlyTests
+Bundle-Version: 1.0.0.qualifier
+Fragment-Host: SpiFly
+Import-Package: org.junit;version="[4.8.1,5.0.0)",
+ org.osgi.framework;version="[1.3.0,2.0.0)"
