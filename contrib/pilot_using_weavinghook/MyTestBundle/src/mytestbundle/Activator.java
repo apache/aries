@@ -25,19 +25,26 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
-	public void start(BundleContext context) throws Exception {
-		callSPI();
-	}
 
-	private void callSPI() {
-		System.out.println("*** Loading the SPI...");
-		ServiceLoader<SPIProvider> ldr = ServiceLoader.load(SPIProvider.class);
+    public void start(BundleContext context) throws Exception {
+        callSPI();
+    }
+
+    private void callSPI() {
+        System.out.println("*** Loading the SPI...");
+
+        ServiceLoader<SPIProvider> ldr = ServiceLoader.load(SPIProvider.class);
         for (SPIProvider spiObject : ldr) {
-        	System.out.println("*** Invoking the SPI...");
+            System.out.println("*** Invoking the SPI...");
             spiObject.doit(); // invoke the SPI object
         }
-	}
-	
-	public void stop(BundleContext context) throws Exception {
-	}
+    }
+
+    public void stop(BundleContext context) throws Exception {
+    }
+
+// This method is automatically generated in by SPI-Fly
+//    private static void $$FCCL$$(Class<?> cls) {
+//        Util.fixContextClassloader("java.util.ServiceLoader", "load", cls, Activator.class.getClassLoader());
+//    }
 }
