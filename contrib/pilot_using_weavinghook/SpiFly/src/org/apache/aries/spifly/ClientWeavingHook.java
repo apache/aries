@@ -27,10 +27,10 @@ import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.service.log.LogService;
 
-public class MyWeavingHook implements WeavingHook {
+public class ClientWeavingHook implements WeavingHook {
     private final String addedImport;
     
-    MyWeavingHook(BundleContext context) {
+    ClientWeavingHook(BundleContext context) {
         Bundle b = context.getBundle();
         String bver = b.getVersion().toString();
         String bsn = b.getSymbolicName();

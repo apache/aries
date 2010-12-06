@@ -50,12 +50,12 @@ public class Activator implements BundleActivator {
         lst = new LogServiceTracker(context);
         lst.open();
 
-        WeavingHook wh = new MyWeavingHook(context);
+        WeavingHook wh = new ClientWeavingHook(context);
         weavingHookService = context.registerService(WeavingHook.class, wh,
                 null);
 
         bt = new BundleTracker<List<ServiceRegistration<?>>>(context,
-                Bundle.ACTIVE, new SPIBundleTrackerCustomizer(this, context.getBundle()));
+                Bundle.ACTIVE, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
         bt.open();
         
         activator = this;
