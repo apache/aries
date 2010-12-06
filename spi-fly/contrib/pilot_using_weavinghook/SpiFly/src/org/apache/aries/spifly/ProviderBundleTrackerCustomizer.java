@@ -33,11 +33,11 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
-public class SPIBundleTrackerCustomizer implements BundleTrackerCustomizer<List<ServiceRegistration<?>>> {
+public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<List<ServiceRegistration<?>>> {
     final Activator activator;
     final Bundle spiBundle;
 
-    public SPIBundleTrackerCustomizer(Activator a, Bundle b) {
+    public ProviderBundleTrackerCustomizer(Activator a, Bundle b) {
         activator = a;
         spiBundle = b;
         
