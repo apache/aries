@@ -19,6 +19,7 @@
 package org.apache.aries.spifly;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -109,6 +110,7 @@ public class Activator implements BundleActivator {
     }
 
     public Collection<Bundle> findSPIProviderBundles(String name) {
-        return registeredSPIs.get(name);
+        Collection<Bundle> bundles = registeredSPIs.get(name);
+        return bundles == null ? Collections.<Bundle>emptyList() : bundles;
     }
 }
