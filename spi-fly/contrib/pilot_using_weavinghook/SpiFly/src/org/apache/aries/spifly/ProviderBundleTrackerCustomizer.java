@@ -64,14 +64,14 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<
                     + bundle.getSymbolicName());
         }
 
-        Enumeration<?> entries = bundle.findEntries("META-INF/services", "*", false);
+        Enumeration<URL> entries = bundle.findEntries("META-INF/services", "*", false);
         if (entries == null) {
             return null;
         }
 
         List<ServiceRegistration<?>> registrations = new ArrayList<ServiceRegistration<?>>();
         while (entries.hasMoreElements()) {
-            URL url = (URL) entries.nextElement();
+            URL url = entries.nextElement();
             log(LogService.LOG_INFO, "Found SPI resource: " + url);
 
             try {
