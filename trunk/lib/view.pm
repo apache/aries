@@ -21,6 +21,7 @@ push @Dotiac::DTL::TEMPLATE_DIRS, "templates";
 # like foo.page/bar.mdtext will be parsed and
 # passed to the template in the "bar" (hash)
 # variable.
+
 sub normal_page {
     my %args = @_;
     my $file = "content$args{path}";
@@ -48,6 +49,7 @@ sub normal_page {
 }
 
 # Generates cwiki-style breadcrumbs
+
 sub breadcrumbs {
     my ($fullpath, $headerref) = @_;
     my @titles = split m!/!, $fullpath;
