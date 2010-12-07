@@ -1,24 +1,14 @@
-- 
-### [Overview](overview.html)
-  - 
-####[Board Reports](boardreports.html)
-  - 
-####[Site Map](sitemap.html)
+- <h3>[Overview](overview.html)</h3>
+  - <h4>[Board Reports](boardreports.html)</h4>
+  - <h4>[Site Map](sitemap.html)</h4>
 
-- 
-### [Documentation](documentation.html)
-  - 
-#### [Programming Model](ariesprogrammingmodel.html)
-  - 
-#### [Pointers to OSGi specs](pointerstoosgispecifications.html)
-  - 
-#### [Integrators Guide](integrators-guide.html)
-  - 
-#### [Articles](articles.html)
-  - 
-#### [Slides](https://svn.apache.org/repos/asf/incubator/aries/slides/)
-  - 
-#### [Tutorials](tutorials.html)
+- <h3>[Documentation](documentation.html)</h3>
+  - <h4>[Programming Model](ariesprogrammingmodel.html)</h4>
+  - <h4>[Pointers to OSGi specs](pointerstoosgispecifications.html)</h4>
+  - <h4>[Integrators Guide](integrators-guide.html)</h4>
+  - <h4>[Articles](articles.html)</h4>
+  - <h4>[Slides](https://svn.apache.org/repos/asf/incubator/aries/slides/)</h4>
+  - <h4>[Tutorials](tutorials.html)</h4>
 
 - 
 ### [Downloads](downloads.html)
