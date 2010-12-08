@@ -33,9 +33,11 @@ import org.osgi.service.jndi.JNDIConstants;
 public class Activator implements BundleActivator, SingleServiceListener 
 {
     private BundleContext ctx;
-    private volatile ServiceRegistration reg;
+    private volatile ServiceRegistration osgiUrlReg = null;
+    private volatile ServiceRegistration blueprintUrlReg = null;
     private static SingleServiceTracker<ProxyManager> proxyManager;
 
+    @Override
     public void start(BundleContext context) 
     {
         ctx = context;
@@ -43,24 +45,44 @@ public class Activator implements BundleActivator, SingleServiceListener
         proxyManager.open();
     }
 
-    public void stop(BundleContext context) 
-    {
-        proxyManager.close();
-        if (reg != null) reg.unregister();
+    @Override
+    public void stop(BundleContext context) {
+      proxyManager.close();
+      if (osgiUrlReg != null) osgiUrlReg.unregister();
+      if (blueprintUrlReg != null) blueprintUrlReg.unregister();
     }
+  
 
+  @Override
     public void serviceFound() 
     {
-      Hashtable<Object, Object> props = new Hashtable<Object, Object>();
-      props.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
-      reg = ctx.registerService(ObjectFactory.class.getName(), new OsgiURLContextServiceFactory(), props);
-    }
+    Hashtable<Object, Object> osgiUrlprops = new Hashtable<Object, Object>();
+    osgiUrlprops.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
+    osgiUrlReg = ctx.registerService(ObjectFactory.class.getName(),
+        new OsgiURLContextServiceFactory(), osgiUrlprops);
 
-    public void serviceLost() 
-    {
-      if (reg != null) reg.unregister();
-      reg = null;
+    // Blueprint URL scheme requires access to the BlueprintContainer service.
+    // We have an optional import
+    // on org.osgi.service.blueprint.container: only register the blueprint:comp/URL
+    // scheme if it's present
+    try {
+      ctx.getBundle().loadClass("org.osgi.service.blueprint.container.BlueprintContainer");
+      Hashtable<Object, Object> blueprintURlSchemeProps = new Hashtable<Object, Object>();
+      blueprintURlSchemeProps.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "blueprint" });
+      blueprintUrlReg = ctx.registerService(ObjectFactory.class.getName(),
+          new BlueprintURLContextServiceFactory(), blueprintURlSchemeProps);
+    } catch (ClassNotFoundException cnfe) {
+      // The blueprint packages aren't available, so do nothing. That's fine.
     }
+  }
+
+  public void serviceLost() 
+  {
+    if (osgiUrlReg != null) osgiUrlReg.unregister();
+    osgiUrlReg = null;
+    if (blueprintUrlReg != null) blueprintUrlReg.unregister();
+    blueprintUrlReg = null;
+  }
 
     public void serviceReplaced() 
     {
