@@ -36,16 +36,17 @@ import java.util.regex.Pattern;
 
 import junit.framework.AssertionFailedError;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Version;
-
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.MethodCallHandler;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.apache.aries.unittest.mocks.annotations.Singleton;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
+import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Version;
 
 @Singleton
 public class BundleMock
@@ -387,5 +388,17 @@ public class BundleMock
   public ClassLoader getClassLoader()
   {
     return cl;
+  }
+  
+  // This is good enough for Mocks' needs in unit test, but isn't how it works in the real world!
+  public ServiceReference[] getRegisteredServices() 
+  {
+    ServiceReference[] result = null;
+    try { 
+      result = bc.getServiceReferences(null, null);
+    } catch (InvalidSyntaxException isx) { 
+      // no-op: Swallow exception
+    }
+    return result;
   }
 }
