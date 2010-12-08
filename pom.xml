@@ -41,6 +41,10 @@
         <aries.osgi.activator>
             org.apache.aries.jndi.url.Activator
         </aries.osgi.activator>
+        <aries.osgi.import.pkg>
+          org.osgi.service.blueprint.container;resolution:=optional,
+          *
+        </aries.osgi.import.pkg>
     </properties>
 
     <dependencies>
@@ -63,6 +67,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.core</artifactId>
             <scope>test</scope>
@@ -72,11 +81,7 @@
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
 
 </project>
