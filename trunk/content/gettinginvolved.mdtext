@@ -4,6 +4,7 @@ Title: GettingInvolved
 Getting involved with Aries is easy. First, any help is welcome and we
 welcome you on board. Here are some suggestions for how you can get
 involved in Aries:
+
 * Take a look at the existing [Modules](modules.html)
  to identify what areas you are interested in.
 * Take a look at the [Aries proposal](http://wiki.apache.org/incubator/AriesProposal)
@@ -25,7 +26,7 @@ mailing list and share your thoughts.
 * Contribute to feature development. Just let the community know what you'd
 like to work on. It is as easy as that.
 * Identify [JIRA](resources.html)
-s and browse the [source|Resources]
+s and browse the [source](resources.html)
  in the area that you are interested in and provide patches.
 * If in doubt about where to start, send a note to the mailing list and
 mention your area of interest. Any questions is welcomed. We'd like you to

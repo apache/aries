@@ -8,27 +8,27 @@
     - <h4>[Articles](articles.html)</h4>
     - <h4>[Slides](https://svn.apache.org/repos/asf/incubator/aries/slides/)</h4>
     - <h4>[Tutorials](tutorials.html)</h4>
-- <h3>[Downloads](downloads.html)
-- <h3>[Community](community.html)
-    - <h4>[Getting Involved](gettinginvolved.html)
-    - <h4>[Who we are](people.html)
-    - <h4>[Mailing lists](mailinglists.html)
-    - <h4>[Aries Group Blog](http://blogs.apache.org/aries/)
-- <h3>[Development](development.html)
-    - <h4>[Source Control ](https://svn.apache.org/repos/asf/incubator/aries/.html)
-    - <h4>[Bug Tracking](https://issues.apache.org/jira/browse/aries.html)
-    - <h4>[Building Aries ](buildingaries.html)
-    - <h4>[Releasing Aries ](releasingaries.html)
-    - <h4>[OSGi Compliance Tests ](compliancetesting.html)
-    - <h4>[Build System](http://hudson.zones.apache.org/hudson/.html)
-    - <h4>[Web Site Maintenance ](maintainingthewebpages.html)
-- <h3>[Modules](modules.html)
-    - <h4>[Samples](samples.html)
-    - <h4>[Blueprint](blueprint.html)
-    - <h4>[JNDI](jndiproject.html)
-    - <h4>[JPA](jpaproject.html)
-    - <h4>[Applications](applications.html)
-    - <h4>[Transactions](transactionsproject.html)
-    - <h4>[EBA Maven Plugin ](-ebamavenpluginproject.html)
-    - <h4>[SPI Fly](spi-fly.html)
-- <h3> [Sponsorship](sponsorship.html)
+- <h3>[Downloads](downloads.html)</h3>
+- <h3>[Community](community.html)</h3>
+    - <h4>[Getting Involved](gettinginvolved.html)</h4>
+    - <h4>[Who we are](people.html)</h4>
+    - <h4>[Mailing lists](mailinglists.html)</h4>
+    - <h4>[Aries Group Blog](http://blogs.apache.org/aries/)</h4>
+- <h3>[Development](development.html)</h3>
+    - <h4>[Source Control ](https://svn.apache.org/repos/asf/incubator/aries/.html)</h4>
+    - <h4>[Bug Tracking](https://issues.apache.org/jira/browse/aries.html)</h4>
+    - <h4>[Building Aries ](buildingaries.html)</h4>
+    - <h4>[Releasing Aries ](releasingaries.html)</h4>
+    - <h4>[OSGi Compliance Tests ](compliancetesting.html)</h4>
+    - <h4>[Build System](http://hudson.zones.apache.org/hudson/.html)</h4>
+    - <h4>[Web Site Maintenance ](maintainingthewebpages.html)</h4>
+- <h3>[Modules](modules.html)</h3>
+    - <h4>[Samples](samples.html)</h4>
+    - <h4>[Blueprint](blueprint.html)</h4>
+    - <h4>[JNDI](jndiproject.html)</h4>
+    - <h4>[JPA](jpaproject.html)</h4>
+    - <h4>[Applications](applications.html)</h4>
+    - <h4>[Transactions](transactionsproject.html)</h4>
+    - <h4>[EBA Maven Plugin ](-ebamavenpluginproject.html)</h4>
+    - <h4>[SPI Fly](spi-fly.html)</h4>
+- <h3> [Sponsorship](sponsorship.html)</h3>
