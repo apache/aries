@@ -54,8 +54,8 @@ public class Activator implements BundleActivator, SingleServiceListener
   
 
   @Override
-    public void serviceFound() 
-    {
+  public void serviceFound() 
+  {
     Hashtable<Object, Object> osgiUrlprops = new Hashtable<Object, Object>();
     osgiUrlprops.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
     osgiUrlReg = ctx.registerService(ObjectFactory.class.getName(),
@@ -76,6 +76,7 @@ public class Activator implements BundleActivator, SingleServiceListener
     }
   }
 
+  @Override
   public void serviceLost() 
   {
     if (osgiUrlReg != null) osgiUrlReg.unregister();
@@ -84,13 +85,14 @@ public class Activator implements BundleActivator, SingleServiceListener
     blueprintUrlReg = null;
   }
 
-    public void serviceReplaced() 
-    {
-      
-    }
+  @Override
+  public void serviceReplaced() 
+  {
     
-    public static ProxyManager getProxyManager()
-    {
-      return proxyManager == null ? null : proxyManager.getService();
-    }
+  }
+    
+  public static ProxyManager getProxyManager()
+  {
+    return proxyManager == null ? null : proxyManager.getService();
+  }
 }
