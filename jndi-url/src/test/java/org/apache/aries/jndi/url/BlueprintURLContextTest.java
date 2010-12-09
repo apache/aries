@@ -22,20 +22,31 @@ package org.apache.aries.jndi.url;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 
+import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
-import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.NoSuchComponentException;
 
 public class BlueprintURLContextTest {
 
@@ -51,22 +62,71 @@ public class BlueprintURLContextTest {
     }
   }
   
+  static class AnotherComponent extends SimpleComponent { 
+    public AnotherComponent (String i) { 
+      super(i);
+    }
+    @Override
+    public String getIdMessage () { 
+      return "AnotherComponent with id " + id;
+    }
+  }
+  
+  static class BlueprintContainerStub 
+  { 
+    SimpleComponent comp1 = new SimpleComponent ("comp1");
+    AnotherComponent comp2 = new AnotherComponent ("comp2");
+    
+    public Object getComponentInstance (String compId) throws NoSuchComponentException { 
+      if (compId.equals("comp1")) { 
+        return comp1;
+      } else if (compId.equals("comp2")) { 
+        return comp2;
+      }
+      throw new NoSuchComponentException("Component does not exist", compId);
+    }
+    
+    public Set<String> getComponentIds() { 
+      return new HashSet<String>(Arrays.asList("comp1", "comp2"));
+    }
+  }
+  
   
   @BeforeClass
   public static void setup() { 
     bundle = Skeleton.newMock(new BundleMock("aBundle", new Hashtable<String, String>()), Bundle.class);
     BundleContext bc = bundle.getBundleContext();
     new org.apache.aries.jndi.startup.Activator().start(bc);
-    new Activator().start(bc);
+    Activator a = new Activator();
+    a.start(bc);
+    a.serviceFound();
     
     // Register a BlueprintContainer mock that will answer getComponentInstance(String id) calls
-    SimpleComponent comp1 = new SimpleComponent ("comp1");
-    BlueprintContainer bpc = Skeleton.newMock(BlueprintContainer.class);
-    Skeleton.getSkeleton(bpc).setReturnValue(new MethodCall(BlueprintContainer.class, "getComponentInstance", String.class), comp1);
+    BlueprintContainer bpc = Skeleton.newMock(new BlueprintContainerStub(), BlueprintContainer.class);
     bc.registerService("org.osgi.service.blueprint.container.BlueprintContainer", bpc, new Hashtable<String, String>());
     
   }
   
+  @AfterClass
+  public static void teardown() { 
+    BundleContextMock.clear();
+  }
+  
+  @Before
+  public void setupClassLoader() { 
+    BundleMock mock = new BundleMock("bundle.for.new.initial.context", new Properties());
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+  }
+  
+  @After
+  public void restoreClassLoader() { 
+    Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+  }
+  
+
+  /**
+   * Check that we can directly address a blueprint component
+   */
   @Test
   public void simpleComponentLookupTest () throws Exception { 
     BlueprintURLContext bpURLc = new BlueprintURLContext (bundle, new Hashtable<String, String>());
@@ -76,17 +136,56 @@ public class BlueprintURLContextTest {
     assertEquals ("comp1 message wrong", "comp1_message", msg);
   }
   
+  /**
+   * Validate that we can create an InitialContext at blueprint:comp scope, and then 
+   * look components up within it
+   */
   @Test
   public void twoLevelComponentLookupTest() throws Exception { 
-    BundleMock mock = new BundleMock("bundle.for.new.initial.context", new Properties());
-    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
-    
     InitialContext ctx = new InitialContext();
     Context ctx2 = (Context) ctx.lookup("blueprint:comp");
-    SimpleComponent sc = (SimpleComponent) ctx2.lookup("comp1"); 
+    SimpleComponent sc = (SimpleComponent) ctx2.lookup("comp2"); 
     assertNotNull (sc);
     String msg = sc.getIdMessage();
-    assertEquals ("comp1 message wrong", "comp1_message", msg);
+    assertEquals ("comp2 message wrong", "AnotherComponent with id comp2", msg);
   }
+  
+  /**
+   * Check that we get a NameNotFoundException if we lookup something not in the
+   * registry.
+   * 
+   * @throws NamingException
+   */
+  @Test(expected=NameNotFoundException.class)
+  public void testLookupForServiceWeNeverHad() throws NamingException
+  {
+    InitialContext ctx = new InitialContext();
+    ctx.lookup("blueprint:comp/this.is.not.a.component");
+  }
+  
+
+  /**
+   * Validate that list() function works for BlueprintURLContext
+   */
+  @Test
+  public void checkList() throws Exception { 
+    InitialContext ctx = new InitialContext();
+    NamingEnumeration<NameClassPair> compList = ctx.list("blueprint:comp");
+    
+    Set<String> expectedCompIds = new BlueprintContainerStub().getComponentIds();
+    while (compList.hasMore()) { 
+      NameClassPair ncp = compList.next();
+      String compId = ncp.getName();
+      String compClass = ncp.getClassName();
+      if (compId.equals("comp1")) { 
+        assertEquals ("comp1 class wrong in list", SimpleComponent.class.getName(), compClass);
+      } else if (compId.equals("comp2")) { 
+        assertEquals ("comp2 class wrong in list", AnotherComponent.class.getName(), compClass);
+      }
+      expectedCompIds.remove(ncp.getName());
+    }
+    assertEquals ("Not all expected components were found", expectedCompIds.size(), 0);
+  }
+  
   
 }

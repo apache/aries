@@ -30,6 +30,7 @@ import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NameClassPair;
+import javax.naming.NameNotFoundException;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -303,7 +304,7 @@ public class BlueprintURLContext implements Context {
       try { 
         result = bpc.getComponentInstance(componentId);
       } catch (NoSuchComponentException nsce) { 
-        throw new NamingException (nsce.getMessage());
+        throw new NameNotFoundException (nsce.getMessage());
       } finally {
         _callersBundle.getBundleContext().ungetService(bpContainerRef);
      } 
