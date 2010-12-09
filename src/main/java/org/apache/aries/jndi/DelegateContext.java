@@ -35,17 +35,21 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.ExtendedRequest;
+import javax.naming.ldap.ExtendedResponse;
+import javax.naming.ldap.LdapContext;
 
 import org.osgi.framework.BundleContext;
 
-public class DelegateContext implements DirContext {
+public class DelegateContext implements DirContext, LdapContext {
     
-    private Hashtable<Object, Object> env = new Hashtable<Object, Object>();
+    private final Hashtable<Object, Object> env = new Hashtable<Object, Object>();
 
-    private BundleContext bundleContext;
+    private final BundleContext bundleContext;
     private ContextProvider contextProvider;
-    private Map<String, ContextProvider> urlContexts = new HashMap<String, ContextProvider>();
-    private boolean rebind;
+    private final Map<String, ContextProvider> urlContexts = new HashMap<String, ContextProvider>();
+    private final boolean rebind;
 
     public DelegateContext(BundleContext bundleContext, Hashtable<?, ?> theEnv) {
         this.bundleContext = bundleContext;
@@ -373,5 +377,36 @@ public class DelegateContext implements DirContext {
                                     Object[] filterArgs,
                                     SearchControls cons) throws NamingException {
         return ((DirContext) findContext(name)).search(name, filterExpr, filterArgs, cons);
+    }
+
+    public ExtendedResponse extendedOperation(ExtendedRequest request)
+        throws NamingException {
+      return ((LdapContext) getDefaultContext()).extendedOperation(request);
+    }
+
+    public Control[] getConnectControls() throws NamingException {
+      return ((LdapContext) getDefaultContext()).getConnectControls();
+    }
+
+    public Control[] getRequestControls() throws NamingException {
+      return ((LdapContext) getDefaultContext()).getRequestControls();
+    }
+
+    public Control[] getResponseControls() throws NamingException {
+      return ((LdapContext) getDefaultContext()).getResponseControls();
+    }
+
+    public LdapContext newInstance(Control[] requestControls)
+        throws NamingException {
+      return ((LdapContext) getDefaultContext()).newInstance(requestControls);
+    }
+
+    public void reconnect(Control[] connCtls) throws NamingException {
+      ((LdapContext) getDefaultContext()).reconnect(connCtls);
+    }
+
+    public void setRequestControls(Control[] requestControls)
+        throws NamingException {
+      ((LdapContext) getDefaultContext()).setRequestControls(requestControls);
     }
 }
