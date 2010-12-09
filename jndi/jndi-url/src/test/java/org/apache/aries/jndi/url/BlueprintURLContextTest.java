@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameClassPair;
@@ -128,7 +129,7 @@ public class BlueprintURLContextTest {
    * Check that we can directly address a blueprint component
    */
   @Test
-  public void simpleComponentLookupTest () throws Exception { 
+  public void testSimpleComponentLookup() throws Exception { 
     BlueprintURLContext bpURLc = new BlueprintURLContext (bundle, new Hashtable<String, String>());
     SimpleComponent sc = (SimpleComponent) bpURLc.lookup("blueprint:comp/comp1");
     assertNotNull (sc);
@@ -141,7 +142,7 @@ public class BlueprintURLContextTest {
    * look components up within it
    */
   @Test
-  public void twoLevelComponentLookupTest() throws Exception { 
+  public void testTwoLevelComponentLookup() throws Exception { 
     InitialContext ctx = new InitialContext();
     Context ctx2 = (Context) ctx.lookup("blueprint:comp");
     SimpleComponent sc = (SimpleComponent) ctx2.lookup("comp2"); 
@@ -165,10 +166,11 @@ public class BlueprintURLContextTest {
   
 
   /**
-   * Validate that list() function works for BlueprintURLContext
+   * Validate that list() function works for BlueprintURLContext. 
+   * This returns an enumeration of component id -> component class name pairs
    */
   @Test
-  public void checkList() throws Exception { 
+  public void testList() throws Exception { 
     InitialContext ctx = new InitialContext();
     NamingEnumeration<NameClassPair> compList = ctx.list("blueprint:comp");
     
@@ -182,10 +184,35 @@ public class BlueprintURLContextTest {
       } else if (compId.equals("comp2")) { 
         assertEquals ("comp2 class wrong in list", AnotherComponent.class.getName(), compClass);
       }
-      expectedCompIds.remove(ncp.getName());
+      expectedCompIds.remove(compId);
     }
     assertEquals ("Not all expected components were found", expectedCompIds.size(), 0);
   }
   
+  /**
+   * Test BlueprintURLContext.listBindings() 
+   * This returns an enumeration of component id -> component pairs
+   */
+  @Test
+  public void testListBindings() throws Exception { 
+    InitialContext ctx = new InitialContext();
+    NamingEnumeration<Binding> bindings = ctx.listBindings("blueprint:comp");
+    
+    Set<String> expectedCompIds = new BlueprintContainerStub().getComponentIds();
+    while (bindings.hasMore()) { 
+      Binding b = bindings.next();
+      String compId = b.getName();
+      Object component = b.getObject();
+      if (compId.equals("comp1")) { 
+        SimpleComponent sc = (SimpleComponent) component;
+        assertEquals ("comp1 message wrong", "comp1_message", sc.getIdMessage());
+      } else if (compId.equals("comp2")) { 
+        AnotherComponent ac = (AnotherComponent) component;
+        assertEquals ("comp2 message wrong", "AnotherComponent with id comp2", ac.getIdMessage());
+      }
+      expectedCompIds.remove(compId);
+    }
+    assertEquals ("Not all expected components were found", expectedCompIds.size(), 0);
+  }
   
 }
