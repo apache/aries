@@ -11,7 +11,12 @@ import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.ExtendedRequest;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
 import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.ObjectFactory;
 
 import org.apache.aries.jndi.startup.Activator;
@@ -100,5 +105,29 @@ public class InitialContextTest
     
     Object someObject = initialCtx.lookup("testURL:somedata");
     assertEquals("Expected to be given a string, but got something else.", "someText", someObject);
+  }
+  
+  @Test
+  public void testLookFromLdapICF() throws Exception
+  {
+    InitialContextFactoryBuilder icf = Skeleton.newMock(InitialContextFactoryBuilder.class);
+    bc.registerService(new String[] {InitialContextFactoryBuilder.class.getName(), icf.getClass().getName()}, icf, new Properties());
+    
+    LdapContext backCtx = Skeleton.newMock(LdapContext.class);
+    InitialContextFactory fac = Skeleton.newMock(InitialContextFactory.class);
+    Skeleton.getSkeleton(fac).setReturnValue(
+        new MethodCall(InitialContextFactory.class, "getInitialContext", Hashtable.class), 
+        backCtx);
+    Skeleton.getSkeleton(icf).setReturnValue(
+        new MethodCall(InitialContextFactoryBuilder.class, "createInitialContextFactory", Hashtable.class), 
+        fac);
+    
+    Properties props = new Properties();
+    props.put(JNDIConstants.BUNDLE_CONTEXT, bc);
+    InitialLdapContext ilc = new InitialLdapContext(props, new Control[0]);
+    
+    ExtendedRequest req = Skeleton.newMock(ExtendedRequest.class);
+    ilc.extendedOperation(req);
+    Skeleton.getSkeleton(backCtx).assertCalled(new MethodCall(LdapContext.class, "extendedOperation", req));
   }
 }
