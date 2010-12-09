@@ -29,10 +29,10 @@
 
 	<properties>
 <!--
-    	This downloads a pre-released version. Needs fixing as soon as release is available.
+	Set the Tuscany version and site
 -->
     	<tuscany-version>2.0-Beta1</tuscany-version> 
-    	<tuscany-site>http://people.apache.org/~slaws/tuscany/2.0-beta1-RC3/</tuscany-site>
+    	<tuscany-site>http://www.apache.org/dist/tuscany/java/sca/</tuscany-site>
     </properties>
 
 
@@ -163,6 +163,19 @@
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
          </dependency>
+
+        <dependency>
+             <groupId>asm</groupId>
+             <artifactId>asm-all</artifactId>
+             <version>3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+            <version>2.1_3_4</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>
@@ -185,16 +198,13 @@
 		           <configuration>
 		            <tasks>
 		            <!-- Uncomment this to download the Tuscany distro. Altenatively - make a copy in the reources dir of the project -->
-					<!--
-		                <get src="${tuscany-site}/apache-tuscany-sca-all-${tuscany-version}.zip" dest="${project.build.directory}/tuscany-${tuscany-version}.zip" />
+		                <get src="${tuscany-site}${tuscany-version}/apache-tuscany-sca-all-${tuscany-version}.zip" dest="${project.build.directory}/tuscany-${tuscany-version}.zip" /> 
 		                <unzip src="${project.build.directory}/tuscany-${tuscany-version}.zip" dest="${project.build.directory}/" overwrite="true"/>
-		            -->
-						<get src="${tuscany-site}/apache-tuscany-sca-all-${tuscany-version}.zip" dest="${project.build.directory}/tuscany-${tuscany-version}.zip" />
 					<!-- Or you may find it easier just to put the Tuscany distro somewhere local and copy/unzip -->
 					<!--
 						<copy file="src/main/resources/apache-tuscany-sca-all-2.0-Beta1.zip" todir="${project.build.directory}/" />
-					-->
 		                <unzip src="${project.build.directory}/tuscany-2.0-Beta1.zip" dest="${project.build.directory}/" overwrite="true"/>
+					-->
 		            </tasks>
 		            </configuration>
 		         </execution>
