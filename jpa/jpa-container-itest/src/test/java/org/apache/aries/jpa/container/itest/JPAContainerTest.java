@@ -21,14 +21,9 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
-import java.util.Hashtable;
-
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.spi.PersistenceProvider;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
@@ -44,7 +39,6 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(JUnit4TestRunner.class)
@@ -57,6 +51,23 @@ public class JPAContainerTest {
   @Test
   public void findEntityManagerFactory() throws Exception {
     EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+  }
+  
+  @Test
+  public void findEntityManagerFactory2() throws Exception {
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=bp-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+  }
+  
+  @Test
+  public void findEntityManager() throws Exception {
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    emf.createEntityManager();
+  }
+  
+  @Test
+  public void findEntityManager2() throws Exception {
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=bp-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    emf.createEntityManager();
   }
 
   @org.ops4j.pax.exam.junit.Configuration
@@ -77,18 +88,27 @@ public class JPAContainerTest {
         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
         // Bundles
-        mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
         mavenBundle("commons-lang", "commons-lang"),
         mavenBundle("commons-collections", "commons-collections"),
         mavenBundle("commons-pool", "commons-pool"),
-        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
+        mavenBundle("org.apache.aries", "org.apache.aries.util"),
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.api"),
+        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.core"),
+        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
+        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
+        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
+        mavenBundle("org.apache.derby", "derby"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
         mavenBundle("org.apache.openjpa", "openjpa"),
+        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
+        mavenBundle("org.osgi", "org.osgi.compendium"),
 
+        //vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
+        //waitForFrameworkStartup(),
+        
+       
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa"),
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core"),
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm"),
