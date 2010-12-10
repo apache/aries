@@ -26,6 +26,8 @@ import javax.naming.Name;
 import javax.naming.spi.ObjectFactory;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.jndi.JNDIConstants;
 
 public class BlueprintURLContextFactory implements ObjectFactory {
 
@@ -37,13 +39,17 @@ public class BlueprintURLContextFactory implements ObjectFactory {
 
   @Override
   public Object getObjectInstance(Object obj, Name name, Context callersCtx, Hashtable<?, ?> envmt) throws Exception {
+    BundleContext bc = (BundleContext) envmt.get(JNDIConstants.BUNDLE_CONTEXT);
+    Bundle b = (bc != null)? bc.getBundle() : null;
     Object result = null;
     if (obj == null) {
-      result = new BlueprintURLContext(_callersBundle, envmt);
+      result = new BlueprintURLContext((b == null) ? _callersBundle : b,
+          envmt);
     } else if (obj instanceof String) {
       Context ctx = null;
       try {
-        ctx = new BlueprintURLContext(_callersBundle, envmt);
+        ctx = new BlueprintURLContext((b == null) ? _callersBundle : b,
+            envmt);
         result = ctx.lookup((String) obj);
       } finally {
         if (ctx != null) {
