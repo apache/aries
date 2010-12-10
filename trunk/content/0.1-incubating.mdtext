@@ -22,7 +22,8 @@ source.
 <A href="http://archive.apache.org/dist/incubator/aries/samples-0.1-incubating-source-release.zip">zip</A> (<A href="http://archive.apache.org/dist/incubator/aries/samples-0.1-incubating-source-release.zip.asc">asc</A>, <A href="http://archive.apache.org/dist/incubator/aries/samples-0.1-incubating-source-release.zip.md5">md5</A>, <A href="http://archive.apache.org/dist/incubator/aries/samples-0.1-incubating-source-release.zip.sha1">sha1</A>) 
 </td><td class="confluenceTd">
 Source, ready to build </td></tr>
-<tr><td class="confluenceTd"> </td><td class="confluenceTd"> AriesTrader </td><td class="confluenceTd"> 0.1 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> [AriesTrader sample instructions](aries:ariestrader.html)
+<tr><td class="confluenceTd"> </td><td class="confluenceTd"> AriesTrader </td><td class="confluenceTd"> 0.1 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> 
+<a href="http://incubator.apache.org/aries/ariestrader.html">AriesTrader sample instructions</a>
 </tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> AriesTrader JDBC app </td><td class="confluenceTd"> 0.1 </td><td class="confluenceTd">
 <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.ariestrader.jdbc-0.1-incubating.eba">eba</A> (<A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.ariestrader.jdbc-0.1-incubating.eba.asc">asc</A>, <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.ariestrader.jdbc-0.1-incubating.eba.md5">md5</A>, <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.ariestrader.jdbc-0.1-incubating.eba.sha1">sha1</A>) 
@@ -30,7 +31,8 @@ Source, ready to build </td></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> AriesTrader JPA & JDBC app </td><td class="confluenceTd"> 0.1 </td><td class="confluenceTd">
 <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.ariestrader.all-0.1-incubating.eba">eba</A> (<A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.ariestrader.all-0.1-incubating.eba.asc">asc</A>, <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.ariestrader.all-0.1-incubating.eba.md5">md5</A>, <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.ariestrader.all-0.1-incubating.eba.sha1">sha1</A>) 
 </td><td class="confluenceTd"> AriesTrader app with all available persistence methods </td></tr>
-<tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blog </td><td class="confluenceTd"> 0.1 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> [Blog Sample instructions](aries:blog-sample.html)
+<tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blog </td><td class="confluenceTd"> 0.1 </td><td class="confluenceTd"> \- </td><td class="confluenceTd"> 
+<a href="http://incubator.apache.org/aries/blog-sample.html">Blog Sample instructions</a>
  </th></tr>
 <tr><td class="confluenceTd"> </td><td class="confluenceTd"> Blog JDBC app </td><td class="confluenceTd"> 0.1 </td><td class="confluenceTd">
 <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.blog.jdbc.eba-0.1-incubating.eba">eba</A> (<A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.blog.jdbc.eba-0.1-incubating.eba.asc">asc</A>, <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.blog.jdbc.eba-0.1-incubating.eba.md5">md5</A>, <A href="http://archive.apache.org/dist/incubator/aries/org.apache.aries.samples.blog.jdbc.eba-0.1-incubating.eba.sha1">sha1</A>) 
