@@ -26,8 +26,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
@@ -434,12 +434,21 @@ public class PersistenceContextManager extends ServiceTracker{
       //Find the ManagedFactories for the persistence unit
       List<ManagedPersistenceContextFactory> factoriesToQuiesce = new ArrayList<ManagedPersistenceContextFactory>();
       synchronized (this) {
-        for(String name : units) {
-          ServiceRegistration reg = entityManagerRegistrations.get(name);
+        Iterator<String> it = units.iterator();
+        while(it.hasNext()) {
+          ServiceRegistration reg = entityManagerRegistrations.get(it.next());
+          //If there's no managed factory then we don't need to quiesce this unit
+          boolean needsQuiesce = false;
           if(reg != null) {
             ManagedPersistenceContextFactory fact = (ManagedPersistenceContextFactory) bundleToQuiesce.getBundleContext().getService(reg.getReference());
-            if(fact != null)
+            if(fact != null) {
               factoriesToQuiesce.add(fact);
+              needsQuiesce = true;
+            }
+          }
+          //If the unit doesn't need quiescing then remove it from our check
+          if(!!!needsQuiesce) {
+            it.remove();
           }
         }
       }
