@@ -21,11 +21,14 @@ package org.apache.aries.jpa.container.unit.impl;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Hashtable;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +42,16 @@ public class DelayedLookupDataSource implements DataSource {
   private DataSource getDs() {
     if(ds == null) {
       try {
-        InitialContext ctx = new InitialContext();
+        
+        Hashtable<String, Object> props = new Hashtable<String, Object>();
+        
+        BundleContext bCtx = persistenceBundle.getBundleContext();
+        if(bCtx == null)
+          throw new IllegalStateException("The bundle " + 
+              persistenceBundle.getSymbolicName() + "_" + persistenceBundle.getVersion() + 
+              " is not started.");
+        props.put("osgi.service.jndi.bundleContext", bCtx);
+        InitialContext ctx = new InitialContext(props);
         ds = (DataSource) ctx.lookup(jndiName);
       } catch (NamingException e) {
         _logger.error("No JTA datasource could be located using the JNDI name " + jndiName,
@@ -51,9 +63,11 @@ public class DelayedLookupDataSource implements DataSource {
   }
 
   private final String jndiName;
+  private final Bundle persistenceBundle;
   
-  public DelayedLookupDataSource (String jndi) {
+  public DelayedLookupDataSource (String jndi, Bundle persistenceBundle) {
     jndiName = jndi;
+    this.persistenceBundle = persistenceBundle;
   }
   
   public Connection getConnection() throws SQLException {

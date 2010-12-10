@@ -94,7 +94,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
-      toReturn = new DelayedLookupDataSource(jndiString);
+      toReturn = new DelayedLookupDataSource(jndiString, bundle);
     }
     return toReturn;
   }
@@ -126,7 +126,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
-      toReturn = new DelayedLookupDataSource(jndiString);
+      toReturn = new DelayedLookupDataSource(jndiString, bundle);
     }
     return toReturn;
   }

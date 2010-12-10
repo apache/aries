@@ -55,6 +55,7 @@
                         <Export-Package>
                             org.apache.aries.jpa.container.itest.entities;version="${pom.version}",
                         </Export-Package>
+                        <Private-Package>org.apache.aries.jpa.container.itest</Private-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                         <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>

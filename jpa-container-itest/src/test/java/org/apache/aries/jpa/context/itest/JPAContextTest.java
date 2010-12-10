@@ -25,7 +25,6 @@ import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
@@ -105,10 +104,13 @@ public class JPAContextTest {
         // Bundles
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
+        // Adding blueprint to the runtime is a hack to placate the maven bundle plugin. 
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.context"),
+        mavenBundle("org.apache.derby", "derby"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
         mavenBundle("commons-lang", "commons-lang"),
         mavenBundle("commons-collections", "commons-collections"),
