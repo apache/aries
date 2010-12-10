@@ -40,16 +40,11 @@ Continuous builds of Aries are available for download from [http://hudson.zones.
 <a name="Index-ApacheIncubatorDisclaimer"></a>
 # Apache Incubator Disclaimer
 
-{panel}
-Apache Aries is an effort undergoing incubation at the Apache Software
-Foundation (ASF), sponsored by the Apache Incubator PMC.
+<DIV class="panel" style="border-width: 1px;"><DIV class="panelContent">
+<P>Apache Aries is an effort undergoing incubation at the Apache Software Foundation (ASF), sponsored by the Apache Incubator PMC.</P>
 
-Incubation is required of all newly accepted projects until a further
-review indicates that the infrastructure, communications, and decision
-making process have stabilized in a manner consistent with other successful
-ASF projects.
+<P>Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects.</P>
 
-While incubation status is not necessarily a reflection of the completeness
-or stability of the code, it does indicate that the project has yet to be
-fully endorsed by the ASF.
-{panel}
+<P>While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.</P>
+</DIV>
+
