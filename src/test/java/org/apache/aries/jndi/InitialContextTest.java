@@ -124,6 +124,7 @@ public class InitialContextTest
     
     Properties props = new Properties();
     props.put(JNDIConstants.BUNDLE_CONTEXT, bc);
+    props.put(Context.INITIAL_CONTEXT_FACTORY, "dummy.factory");
     InitialLdapContext ilc = new InitialLdapContext(props, new Control[0]);
     
     ExtendedRequest req = Skeleton.newMock(ExtendedRequest.class);
