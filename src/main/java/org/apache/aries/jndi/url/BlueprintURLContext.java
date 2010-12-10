@@ -131,7 +131,7 @@ public class BlueprintURLContext implements Context {
     }
   }
   
-  public BlueprintURLContext (Bundle callersBundle, BlueprintName parentName, Map<String, Object> env, 
+  private BlueprintURLContext (Bundle callersBundle, BlueprintName parentName, Map<String, Object> env, 
       BlueprintContainer bpc) { 
     _callersBundle = callersBundle;
     _parentName = parentName;
