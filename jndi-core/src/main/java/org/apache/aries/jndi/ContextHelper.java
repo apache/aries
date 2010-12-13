@@ -134,7 +134,7 @@ public final class ContextHelper {
           if (contextFactoryClass == null) {
             return new DelegateContext(context, environment);
           } else {
-            throw new NoInitialContextException("We could not find an InitialContextFactory to use");
+            throw new NoInitialContextException("We could not find a provider for the InitialContextFactory " + contextFactoryClass);
           }
         }
     }
@@ -212,17 +212,21 @@ public final class ContextHelper {
             for (ServiceReference ref : refs) {                    
                 InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) context.getService(ref);
                 try {
-                    factory = builder.createInitialContextFactory(environment);
-                    if (factory != null) {
-                      provider = new ContextProvider(context, ref, factory.getInitialContext(environment));
-                      break;
-                    } else {
-                      context.ungetService(ref); // we didn't get something back, so this was no good.
-                    }
-                } catch (NamingException e) {
-                    // TODO: log
-                    // ignore
-                    context.ungetService(ref);
+                  factory = builder.createInitialContextFactory(environment);
+                } catch (NamingException ne) {
+                  // TODO: log
+                  // ignore this, if the builder fails we want to move onto the next one
+                }
+                
+                if (factory != null) {
+                  try {
+                    provider = new ContextProvider(context, ref, factory.getInitialContext(environment));
+                  } finally {
+                    context.ungetService(ref); // we didn't get something back, so this was no good.
+                  }
+                  break;
+                } else {
+                  context.ungetService(ref); // we didn't get something back, so this was no good.
                 }
             }
         }
