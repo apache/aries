@@ -21,13 +21,13 @@ Title: Navigation
 
 
 * h3. [Development](development.html)
-** h4. [Source Control ](-https://svn.apache.org/repos/asf/incubator/aries/.html)
-** h4. [Bug Tracking](-https://issues.apache.org/jira/browse/aries.html)
-** h4. [Building Aries ](-buildingaries.html)
-** h4. [Releasing Aries ](-releasingaries.html)
-** h4. [OSGi Compliance Tests ](-compliancetesting.html)
-** h4. [Build System](-http://hudson.zones.apache.org/hudson/.html)
-** h4. [Web Site Maintenance ](-maintainingthewebpages.html)
+** h4. [Source Control ](https://svn.apache.org/repos/asf/incubator/aries)
+** h4. [Bug Tracking](https://issues.apache.org/jira/browse/ARIES)
+** h4. [Building Aries ](buildingaries.html)
+** h4. [Releasing Aries ](releasingaries.html)
+** h4. [OSGi Compliance Tests ](compliancetesting.html)
+** h4. [Build System](https://hudson.apache.org/hudson/job/Aries/)
+** h4. [Web Site Maintenance ](maintainingthewebpages.html)
 
 * h3. [Modules](modules.html)
 ** h4. [Samples](samples.html)
