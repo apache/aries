@@ -2,3 +2,18 @@ Title: MaintainingTheWebPages
 <a name="MaintainingTheWebPages-HowtheArieswebsiteworks"></a>
 # How the Aries web site works
 
+The Aries site is built using CMS. To edit the site you must be an Aries committer, the 
+ID and password are the same ones as you use for Aries SVN.
+
+The easiest way to edit pages is to install the CMS bookmarklet as described [here](https://cms.apache.org/#bookmark)
+
+The steps in making a change to the site are:
+
+  - Edit
+  - Submit
+
+The Wiki syntax is called Markdown and is documented [here](http://www.freewisdom.org/projects/python-markdown/). Some extensions are installed in 
+the CMS system (eg tables, syntax highlighting). 
+
+More information on CMS is 
+available [here](http://wiki.apache.org/general/ApacheCms2010)
