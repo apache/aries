@@ -1,8 +1,9 @@
 Title: Samples
+
 <a name="Samples-Samples"></a>
 # Samples
 
-### [BlogSample](blogsample.html)
+### [BlogSample](blog-sample.html)
 Includes Blueprint, WAB and JPA concepts delivered in a EBA.
 
 ### [AriesTraderSample](ariestrader.html)
