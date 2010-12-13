@@ -11,6 +11,9 @@ The steps in making a change to the site are:
 
   - Edit
   - Submit
+  - Commit your changes
+  - Check the 'staged' site
+  - If the content looks good, publish the site
 
 The Wiki syntax is called Markdown and is documented [here](http://www.freewisdom.org/projects/python-markdown/). Some extensions are installed in 
 the CMS system (eg tables, syntax highlighting). 
