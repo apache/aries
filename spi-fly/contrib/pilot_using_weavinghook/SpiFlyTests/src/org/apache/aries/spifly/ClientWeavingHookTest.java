@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
@@ -54,7 +55,7 @@ public class ClientWeavingHookTest {
                 
         // ok the weaving is done, now prepare the registry for the call
         Bundle providerBundle = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");        
-        Activator.activator.registerSPIProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
         
         // Invoke the woven class and check that it propertly sets the TCCL so that the 
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
@@ -66,26 +67,23 @@ public class ClientWeavingHookTest {
 
     @Test
     public void testClientWeavingHookMultipleProviders() throws Exception {
-        BundleContext spiFlyBundleContext = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"));               
-        
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
         Bundle consumerBundle = mockConsumerBundle(headers);
 
-        WeavingHook wh = new ClientWeavingHook(spiFlyBundleContext);
+        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle());
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
         WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
         Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI");
         
         // Register in reverse order to make sure the order in which bundles are sorted is correct
-        Activator.activator.registerSPIProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
-        Activator.activator.registerSPIProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the 
         // META-INF/services/org.apache.aries.mytest.MySPI files from impl1 and impl2 are visible.
@@ -95,14 +93,47 @@ public class ClientWeavingHookTest {
         Assert.assertEquals("All three services should be invoked in the correct order", "ollehHELLO5", result);        
     }
     
-    private BundleContext mockSpiFlyBundle(String bsn, Version version) {
+    @Test
+    public void testClientSpecifyingProvider() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2");
+        Bundle consumerBundle = mockConsumerBundle(headers);
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI");
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+
+        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2));
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);        
+    }
+    
+    private BundleContext mockSpiFlyBundle(Bundle ... bundles) {
+        return mockSpiFlyBundle("spifly", new Version(1, 0, 0), bundles);
+    }
+    
+    private BundleContext mockSpiFlyBundle(String bsn, Version version, Bundle ... bundles) {
         Bundle spiFlyBundle = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(spiFlyBundle.getSymbolicName()).andReturn(bsn);
+        EasyMock.expect(spiFlyBundle.getSymbolicName()).andReturn(bsn).anyTimes();
         EasyMock.expect(spiFlyBundle.getVersion()).andReturn(version);
         EasyMock.replay(spiFlyBundle);
 
         BundleContext spiFlyBundleContext = EasyMock.createMock(BundleContext.class);
         EasyMock.expect(spiFlyBundleContext.getBundle()).andReturn(spiFlyBundle);
+        List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(bundles));
+        allBundles.add(spiFlyBundle);
+        EasyMock.expect(spiFlyBundleContext.getBundles()).andReturn(allBundles.toArray(new Bundle [] {}));
         EasyMock.replay(spiFlyBundleContext);
         return spiFlyBundleContext;
     }
@@ -119,6 +150,7 @@ public class ClientWeavingHookTest {
         
         Bundle providerBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(providerBundle.adapt(BundleWiring.class)).andReturn(bw);
+        EasyMock.expect(providerBundle.getSymbolicName()).andReturn(subdir).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(id);
         EasyMock.replay(providerBundle);
         return providerBundle;
@@ -127,7 +159,7 @@ public class ClientWeavingHookTest {
     private Bundle mockConsumerBundle(Dictionary<String, String> headers) {
         // Create a mock object for the client bundle which holds the code that uses ServiceLoader.load().
         Bundle consumerBundle = EasyMock.createMock(Bundle.class);
-
+        EasyMock.expect(consumerBundle.getSymbolicName()).andReturn("testConsumer").anyTimes();
         EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers);
         EasyMock.replay(consumerBundle);        
         
@@ -211,7 +243,7 @@ public class ClientWeavingHookTest {
         public Class<?> getDefinedClass() {
             try {
                 weavingComplete = true;
-                return new MyWovenClassClassLoader(className, getBytes(), getClass().getClassLoader()).loadClass(className);
+                return new MyWovenClassClassLoader(className, getBytes(), getClass().getClassLoader(), bundleContainingOriginalClass).loadClass(className);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
                 return null;
@@ -227,14 +259,16 @@ public class ClientWeavingHookTest {
         }
     }
     
-    private static class MyWovenClassClassLoader extends ClassLoader {
+    private static class MyWovenClassClassLoader extends ClassLoader implements BundleReference {
         private final String className;
+        private final Bundle bundle;
         private final byte [] bytes;
         
-        public MyWovenClassClassLoader(String className, byte[] bytes, ClassLoader parent) {
+        public MyWovenClassClassLoader(String className, byte[] bytes, ClassLoader parent, Bundle bundle) {
             super(parent);
             
             this.className = className;
+            this.bundle = bundle;
             this.bytes = bytes;            
         }
         
@@ -251,6 +285,11 @@ public class ClientWeavingHookTest {
         @Override
         public Class<?> loadClass(String name) throws ClassNotFoundException {
             return loadClass(name, false);
+        }
+
+        @Override
+        public Bundle getBundle() {
+            return bundle;
         }
     }    
 }

@@ -58,10 +58,10 @@ public class ProviderBundleTrackerCustomizerTest {
         
         EasyMock.replay(implBundle);
         
-        Assert.assertEquals("Precondition", 0, a.findSPIProviderBundles("org.apache.aries.mytest.MySPI").size());
+        Assert.assertEquals("Precondition", 0, a.findProviderBundles("org.apache.aries.mytest.MySPI").size());
         // Call addingBundle();
         List<ServiceRegistration<?>> registrations = customizer.addingBundle(implBundle, null);
-        Collection<Bundle> bundles = a.findSPIProviderBundles("org.apache.aries.mytest.MySPI");
+        Collection<Bundle> bundles = a.findProviderBundles("org.apache.aries.mytest.MySPI");
         Assert.assertEquals(1, bundles.size());
         Assert.assertSame(implBundle, bundles.iterator().next());
         
