@@ -18,6 +18,11 @@
  */
 package org.apache.aries.spifly;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.aries.spifly.HeaderParser.PathElement;
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -28,9 +33,12 @@ import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.service.log.LogService;
 
 public class ClientWeavingHook implements WeavingHook {
+    private final BundleContext bundleContext;
     private final String addedImport;
     
     ClientWeavingHook(BundleContext context) {
+        bundleContext = context;
+        
         Bundle b = context.getBundle();
         String bver = b.getVersion().toString();
         String bsn = b.getSymbolicName();
@@ -42,9 +50,15 @@ public class ClientWeavingHook implements WeavingHook {
     
 	@Override
 	public void weave(WovenClass wovenClass) {
-	    if (wovenClass.getBundleWiring().getBundle().getHeaders().get(SpiFlyConstants.SPI_CONSUMER_HEADER) != null) {
-	        Activator.activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());
-	        System.out.println("*** WovenClass: " + wovenClass.getClassName());
+	    Bundle consumerBundle = wovenClass.getBundleWiring().getBundle();
+        String consumerHeader = consumerBundle.getHeaders().get(SpiFlyConstants.SPI_CONSUMER_HEADER);
+        if (consumerHeader != null) {
+	        Activator activator = Activator.activator;
+            activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());            
+            
+	        if (!"true".equalsIgnoreCase(consumerHeader)) {
+	             activator.registerConsumerBundle(consumerBundle, parseHeader(consumerHeader));	            
+	        }
 	        
 	        ClassReader cr = new ClassReader(wovenClass.getBytes());
 	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
@@ -54,4 +68,22 @@ public class ClientWeavingHook implements WeavingHook {
 	        wovenClass.getDynamicImports().add(addedImport);
 	    }			
 	}
+
+    private Collection<Bundle> parseHeader(String consumerHeader) {
+        List<Bundle> selectedBundles = new ArrayList<Bundle>();
+
+        for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
+            String bsn = element.getAttribute("bundle");
+            if (bsn != null) {
+                for (Bundle b : bundleContext.getBundles()) {
+                    if (b.getSymbolicName().equals(bsn)) {
+                        selectedBundles.add(b);
+                        break;                        
+                    }
+                }
+            }
+        }
+        
+        return selectedBundles;
+    }
 }

@@ -20,9 +20,11 @@ package org.apache.aries.spifly;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleReference;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.log.LogService;
 
@@ -43,9 +45,15 @@ public class Util {
     }
         
     public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
-        System.out.println("~~~ cls: " + cls + " method: " + method + " clarg:" + clsArg + " cl:" + bundleLoader);
+        if (!(bundleLoader instanceof BundleReference)) {
+            Activator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            return;
+        }
+
+        BundleReference br = ((BundleReference) bundleLoader);
+        System.out.println("~~~ cls: " + cls + " method: " + method + " clarg:" + clsArg + " cl:" + bundleLoader + " clientBundle: " + br.getBundle().getSymbolicName());        
         
-        ClassLoader cl = findClassloader(clsArg);
+        ClassLoader cl = findContextClassloader(clsArg, br.getBundle());
         if (cl != null) {
             Activator.activator.log(LogService.LOG_INFO, "Temporarily setting Thread Context Classloader to: " + cl);
             Thread.currentThread().setContextClassLoader(cl);
@@ -54,14 +62,20 @@ public class Util {
         }
     }
     
-    private static ClassLoader findClassloader(Class<?> cls) {
+    private static ClassLoader findContextClassloader(Class<?> cls, Bundle consumerBundle) {
         Activator activator = Activator.activator;
         
-        Collection<Bundle> bundles = activator.findSPIProviderBundles(cls.getName());
+        Collection<Bundle> bundles = new ArrayList<Bundle>(activator.findProviderBundles(cls.getName()));
         activator.log(LogService.LOG_DEBUG, "Found bundles providing " + cls + ": " + bundles);
-        
-        if (bundles == null)
-            return null;
+                
+        Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle);
+        if (allowedBundles != null) {
+            for (Iterator<Bundle> it = bundles.iterator(); it.hasNext(); ) {
+                if (!allowedBundles.contains(it.next())) {
+                    it.remove();
+                }
+            }
+        }
         
         switch (bundles.size()) {
         case 0:

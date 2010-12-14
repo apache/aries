@@ -98,7 +98,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<
                         .registerService(registrationClassName, o, props);
                 registrations.add(reg);
 
-                activator.registerSPIProviderBundle(registrationClassName, bundle);
+                activator.registerProviderBundle(registrationClassName, bundle);
                 log(LogService.LOG_INFO, "Registered service: " + reg);                
             } catch (Exception e) {
                 log(LogService.LOG_WARNING,
