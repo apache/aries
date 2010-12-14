@@ -31,7 +31,7 @@ public class ClientWeavingHookTest {
     }
         
     @Test
-    public void testClientWeavingHook() throws Exception {
+    public void testClientWeavingHookBasicServiveLoaderUsage() throws Exception {
         // Set up the classloader that will be used by the ASM-generated code as the TCCL. 
         // It can load a META-INF/services file
         ClassLoader cl = new TestImplClassLoader("impl1", "META-INF/services/org.apache.aries.mytest.MySPI");
@@ -79,6 +79,11 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(inst, "hello");
         Assert.assertEquals("olleh", result);
+    }
+    
+    @Test
+    public void testClientWeavingHookMultipleProviders() throws Exception {
+        
     }
         
     private class TestImplClassLoader extends URLClassLoader {
