@@ -29,7 +29,7 @@
    
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
-    <name>Second test bundle for Aries jndi-url iTests</name>
+    <name>Apache Aries JNDI "business logic" test bundle for Aries jndi-url iTests</name>
     <packaging>bundle</packaging>
     
     <build>
