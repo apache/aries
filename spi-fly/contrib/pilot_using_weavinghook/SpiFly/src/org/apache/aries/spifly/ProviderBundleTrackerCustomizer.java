@@ -106,88 +106,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<
             }
         }
         
-
-        /*
-        // the new approach - services are being registered based on contents of
-        // the SPI-Provider header
-        if (bundleClassloader == null) {
-            log(LogService.LOG_INFO, "Unable to identify classloader. "
-                    + "Skipping SPIClassloaderAdviceService(s) registeration.");
-        } else {
-
-            // Register SPIClassloaderAdviceService services for APIs mentioned
-            // in the header
-            String spiProviderHeader = (String) bundle.getHeaders().get(
-                    SpiFlyConstants.SPI_PROVIDER_HEADER);
-            List<PathElement> parsedHeader = HeaderParser
-                    .parseHeader(spiProviderHeader);
-            for (PathElement pe : parsedHeader) {
-
-                // Format of each path element:
-                // api1Name;provider-name="myimpl2";service-ids="myserviceId"
-
-                // An example below.
-                // Please note:
-                // 1. The service-ids attribute holds a list of ids that will be
-                // used when searching META-INF/services/. In other words
-                // this will be the name of the class that will be passed to
-                // ServiceLoader.load().
-                // 2. A single bundle can provide implementations for many APIs
-                // - there might be many api names in a single SPI-Provider
-                // header.
-
-                // Sample:
-                // jaxb;provider-name="xerces123";service-ids="javax.xml.bind.JAXBContext"
-
-                // the clause begins with a name of the API for which this
-                // bundle provides an impl
-                String apiName = pe.getName();
-                // unique name of the provider
-                String providerName = pe
-                        .getAttribute(SpiFlyConstants.PROVIDER_NAME_ATTRIBUTE);
-                providerName = trimQuotes(providerName);
-
-                // 
-                String serviceIds = pe
-                        .getAttribute(SpiFlyConstants.SERVICE_IDS_ATTRIBUTE);
-                serviceIds = trimQuotes(serviceIds);
-
-                if (apiName == null || providerName == null
-                        || serviceIds == null) {
-                    log(LogService.LOG_INFO, "Skipping: " + apiName + " "
-                            + providerName + " " + serviceIds
-                            + ". Null values are not allowed.");
-                }
-
-                StringTokenizer tokenizer = new StringTokenizer(serviceIds, ",");
-                while (tokenizer.hasMoreTokens()) {
-                    String serviceId = tokenizer.nextToken().trim();
-                    SPIClassloaderAdviceServiceImpl service = new SPIClassloaderAdviceServiceImpl(
-                            bundleClassloader);
-                    Hashtable<String, Object> props = new Hashtable<String, Object>();
-                    props.put(SpiFlyConstants.API_NAME_SERVICE_ATTRIBUTE,
-                            apiName);
-                    props.put(SpiFlyConstants.PROVIDER_NAME_SERVICE_ATTRIBUTE,
-                            providerName);
-                    props.put(SpiFlyConstants.SERVICE_ID_SERVICE_ATTRIBUTE,
-                            serviceId);
-                    ServiceRegistration reg = bundle
-                            .getBundleContext()
-                            .registerService(
-                                    SPIClassloaderAdviceService.class.getName(),
-                                    service, props);
-                    registrations.add(reg);
-                    log(LogService.LOG_INFO, "Registered service: " + reg);
-                }
-            }
-            
-        } */
-
         return registrations;
     }
 
     public void modifiedBundle(Bundle bundle, BundleEvent event, List<ServiceRegistration<?>> registrations) {
-        // nothing to do here
+        // should really be doing something here...
     }
 
     public void removedBundle(Bundle bundle, BundleEvent event, List<ServiceRegistration<?>> registrations) {

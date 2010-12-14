@@ -32,60 +32,108 @@ public class ClientWeavingHookTest {
         
     @Test
     public void testClientWeavingHookBasicServiveLoaderUsage() throws Exception {
+        BundleContext spiFlyBundleContext = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"));               
+       
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
+        Bundle consumerBundle = mockConsumerBundle(headers);
+
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundleContext);
+        
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        Assert.assertNotNull("precondition", clsUrl);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+        Assert.assertEquals(1, wc.getDynamicImports().size());
+        String di1 = "org.apache.aries.spifly;bundle-symbolic-name=spifly;bundle-version=1.9.4";
+        String di2 = "org.apache.aries.spifly;bundle-version=1.9.4;bundle-symbolic-name=spifly";
+        String di = wc.getDynamicImports().get(0);
+        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di) || di2.equals(di));        
+                
+        // ok the weaving is done, now prepare the registry for the call
+        Bundle providerBundle = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");        
+        Activator.activator.registerSPIProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
+        
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("olleh", result);
+    }
+
+    @Test
+    public void testClientWeavingHookMultipleProviders() throws Exception {
+        BundleContext spiFlyBundleContext = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"));               
+        
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
+        Bundle consumerBundle = mockConsumerBundle(headers);
+
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundleContext);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI");
+        
+        // Register in reverse order to make sure the order in which bundles are sorted is correct
+        Activator.activator.registerSPIProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        Activator.activator.registerSPIProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI files from impl1 and impl2 are visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("All three services should be invoked in the correct order", "ollehHELLO5", result);        
+    }
+    
+    private BundleContext mockSpiFlyBundle(String bsn, Version version) {
+        Bundle spiFlyBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(spiFlyBundle.getSymbolicName()).andReturn(bsn);
+        EasyMock.expect(spiFlyBundle.getVersion()).andReturn(version);
+        EasyMock.replay(spiFlyBundle);
+
+        BundleContext spiFlyBundleContext = EasyMock.createMock(BundleContext.class);
+        EasyMock.expect(spiFlyBundleContext.getBundle()).andReturn(spiFlyBundle);
+        EasyMock.replay(spiFlyBundleContext);
+        return spiFlyBundleContext;
+    }
+
+    private Bundle mockProviderBundle(String subdir, long id, String ... resources) {
         // Set up the classloader that will be used by the ASM-generated code as the TCCL. 
         // It can load a META-INF/services file
-        ClassLoader cl = new TestImplClassLoader("impl1", "META-INF/services/org.apache.aries.mytest.MySPI");
+        ClassLoader cl = new TestImplClassLoader(subdir, resources);
         
         // The BundleWiring API is used on the bundle by the generated code to obtain its classloader
         BundleWiring bw = EasyMock.createMock(BundleWiring.class);
         EasyMock.expect(bw.getClassLoader()).andReturn(cl);
         EasyMock.replay(bw);
         
+        Bundle providerBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(providerBundle.adapt(BundleWiring.class)).andReturn(bw);
+        EasyMock.expect(providerBundle.getBundleId()).andReturn(id);
+        EasyMock.replay(providerBundle);
+        return providerBundle;
+    }
+
+    private Bundle mockConsumerBundle(Dictionary<String, String> headers) {
         // Create a mock object for the client bundle which holds the code that uses ServiceLoader.load().
-        Bundle testBundle = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(testBundle.getSymbolicName()).andReturn("mytestbundle");
-        EasyMock.expect(testBundle.getVersion()).andReturn(Version.parseVersion("1.2.3"));
-        Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
-        EasyMock.expect(testBundle.getHeaders()).andReturn(headers);
-        EasyMock.expect(testBundle.adapt(BundleWiring.class)).andReturn(bw);
-        EasyMock.replay(testBundle);
+        Bundle consumerBundle = EasyMock.createMock(Bundle.class);
+
+        EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers);
+        EasyMock.replay(consumerBundle);        
         
-        BundleContext bc = EasyMock.createMock(BundleContext.class);
-        EasyMock.expect(bc.getBundle()).andReturn(testBundle);
-        EasyMock.replay(bc);
-        
-        WeavingHook wh = new ClientWeavingHook(bc);
-        
-        // Weave the TestClient class.
-        URL clsUrl = getClass().getResource("TestClient.class");
-        Assert.assertNotNull("precondition", clsUrl);
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", testBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
-        wh.weave(wc);
-        Assert.assertEquals(1, wc.getDynamicImports().size());
-        String di1 = "org.apache.aries.spifly;bundle-symbolic-name=mytestbundle;bundle-version=1.2.3";
-        String di2 = "org.apache.aries.spifly;bundle-version=1.2.3;bundle-symbolic-name=mytestbundle";
-        String di = wc.getDynamicImports().get(0);
-        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di) || di2.equals(di));        
-        
-        // ok the weaving is done, now prepare the registry for the call
-        Activator.activator.registerSPIProviderBundle("org.apache.aries.mytest.MySPI", testBundle);
-        
-        // Invoke the woven class and check that it propertly sets the TCCL so that the 
-        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
-        Class<?> cls = wc.getDefinedClass();
-        Object inst = cls.newInstance();
-        Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(inst, "hello");
-        Assert.assertEquals("olleh", result);
+        return consumerBundle;
     }
-    
-    @Test
-    public void testClientWeavingHookMultipleProviders() throws Exception {
-        
-    }
-        
+            
     private class TestImplClassLoader extends URLClassLoader {
         private final List<String> resources;
         private final String prefix;
