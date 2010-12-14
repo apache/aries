@@ -21,10 +21,11 @@ package org.apache.aries.spifly;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -44,8 +45,8 @@ public class Activator implements BundleActivator {
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
     private BundleTracker<List<ServiceRegistration<?>>> bt;
 
-    private final ConcurrentMap<String, Collection<Bundle>>registeredSPIs = 
-            new ConcurrentHashMap<String, Collection<Bundle>>();
+    private final ConcurrentMap<String, SortedMap<Long, Bundle>>registeredSPIs = 
+            new ConcurrentHashMap<String, SortedMap<Long, Bundle>>();
 
     public synchronized void start(BundleContext context) throws Exception {
         lst = new LogServiceTracker(context);
@@ -103,14 +104,14 @@ public class Activator implements BundleActivator {
         }        
     }
 
-    public void registerSPIProviderBundle(String registrationClassName, Bundle bundle) {
-        registeredSPIs.putIfAbsent(registrationClassName, new CopyOnWriteArraySet<Bundle>());
-        Collection<Bundle> bl = registeredSPIs.get(registrationClassName);
-        bl.add(bundle);
+    public void registerSPIProviderBundle(String registrationClassName, Bundle bundle) {        
+        registeredSPIs.putIfAbsent(registrationClassName, Collections.synchronizedSortedMap(new TreeMap<Long, Bundle>()));
+        SortedMap<Long, Bundle> map = registeredSPIs.get(registrationClassName);
+        map.put(bundle.getBundleId(), bundle);
     }
 
     public Collection<Bundle> findSPIProviderBundles(String name) {
-        Collection<Bundle> bundles = registeredSPIs.get(name);
-        return bundles == null ? Collections.<Bundle>emptyList() : bundles;
+        SortedMap<Long, Bundle> map = registeredSPIs.get(name);
+        return map == null ? Collections.<Bundle>emptyList() : map.values();
     }
 }
