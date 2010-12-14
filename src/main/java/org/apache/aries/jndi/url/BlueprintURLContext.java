@@ -382,15 +382,17 @@ public class BlueprintURLContext implements Context {
   {
     ServiceReference[] refs = b.getRegisteredServices();
     ServiceReference result = null;
-    outer: for (ServiceReference r : refs) { 
-      String[] objectClasses = (String[]) r.getProperty(Constants.OBJECTCLASS);
-      for (String objectClass : objectClasses) { 
-        if (objectClass.equals(BlueprintContainer.class.getName())) { 
-          // Arguably we could put an r.isAssignableTo(jndi-url-bundle, BlueprintContainer.class.getName()) 
-          // check here. But if you've got multiple, class-space inconsistent instances of blueprint in 
-          // your environment, you've almost certainly got other problems. 
-          result = r;
-          break outer;
+    if (refs != null) { 
+      outer: for (ServiceReference r : refs) { 
+        String[] objectClasses = (String[]) r.getProperty(Constants.OBJECTCLASS);
+        for (String objectClass : objectClasses) { 
+          if (objectClass.equals(BlueprintContainer.class.getName())) { 
+            // Arguably we could put an r.isAssignableTo(jndi-url-bundle, BlueprintContainer.class.getName()) 
+            // check here. But if you've got multiple, class-space inconsistent instances of blueprint in 
+            // your environment, you've almost certainly got other problems. 
+            result = r;
+            break outer;
+          }
         }
       }
     }
