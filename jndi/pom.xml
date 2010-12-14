@@ -41,7 +41,11 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jndi</developerConnection>
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jndi</url>
     </scm>
-    
+
+    <properties>
+        <ariesBlueprintVersion>0.3-incubating-SNAPSHOT</ariesBlueprintVersion>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <!-- internal dependencies -->
@@ -70,6 +74,16 @@
                 <artifactId>org.apache.aries.jndi</artifactId>
                 <version>${version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jndi</groupId>
+                <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
+                <version>${version}</version>
+            </dependency>
+                       <dependency>
+                <groupId>org.apache.aries.jndi</groupId>
+                <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
+                <version>${version}</version>
+            </dependency>
             <!-- external dependencies -->
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
@@ -86,6 +100,41 @@
 	            <artifactId>org.apache.aries.proxy.api</artifactId>
 	            <version>0.3-incubating-SNAPSHOT</version>
 	        </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-servlet_2.5_spec</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+                <version>2.1_3_4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.web</groupId>
+                <artifactId>pax-web-extender-war</artifactId>
+                <version>0.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.web</groupId>
+                <artifactId>pax-web-jetty-bundle</artifactId>
+                <version>0.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.fileinstall</artifactId>
+                <version>2.0.8</version>
+            </dependency>
+
+            <!-- other aries subproject dependency management -->
+             <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>blueprint</artifactId>
+                <version>${ariesBlueprintVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     
@@ -104,6 +153,9 @@
         <module>jndi-rmi</module>
         <module>jndi-bundle</module>
         <module>jndi-legacy-support</module>
+        <module>jndi-url-itest-biz</module>
+        <module>jndi-url-itest-web</module>
+        <module>jndi-url-itest</module>
     </modules>
 
 </project>
