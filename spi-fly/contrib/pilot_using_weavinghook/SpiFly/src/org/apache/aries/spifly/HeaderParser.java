@@ -29,7 +29,8 @@ import java.util.Map;
  * Stolen from Aries Blueprint Core (blueprint.utils). Need to give it back! 
  */
 public class HeaderParser  {
-
+    private HeaderParser() {}
+    
     /**
      * Parse a given OSGi header into a list of paths
      *

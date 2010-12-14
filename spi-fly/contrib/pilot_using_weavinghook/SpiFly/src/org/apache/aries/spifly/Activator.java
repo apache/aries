@@ -18,6 +18,7 @@
  */
 package org.apache.aries.spifly;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -45,8 +46,11 @@ public class Activator implements BundleActivator {
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
     private BundleTracker<List<ServiceRegistration<?>>> bt;
 
-    private final ConcurrentMap<String, SortedMap<Long, Bundle>>registeredSPIs = 
+    private final ConcurrentMap<String, SortedMap<Long, Bundle>>registeredProviders = 
             new ConcurrentHashMap<String, SortedMap<Long, Bundle>>();
+
+    private final ConcurrentMap<Bundle, Collection<Bundle>> registeredConsumers = 
+            new ConcurrentHashMap<Bundle, Collection<Bundle>>();
 
     public synchronized void start(BundleContext context) throws Exception {
         lst = new LogServiceTracker(context);
@@ -104,14 +108,26 @@ public class Activator implements BundleActivator {
         }        
     }
 
-    public void registerSPIProviderBundle(String registrationClassName, Bundle bundle) {        
-        registeredSPIs.putIfAbsent(registrationClassName, Collections.synchronizedSortedMap(new TreeMap<Long, Bundle>()));
-        SortedMap<Long, Bundle> map = registeredSPIs.get(registrationClassName);
+    public void registerProviderBundle(String registrationClassName, Bundle bundle) {        
+        registeredProviders.putIfAbsent(registrationClassName, Collections.synchronizedSortedMap(new TreeMap<Long, Bundle>()));
+        SortedMap<Long, Bundle> map = registeredProviders.get(registrationClassName);
         map.put(bundle.getBundleId(), bundle);
     }
 
-    public Collection<Bundle> findSPIProviderBundles(String name) {
-        SortedMap<Long, Bundle> map = registeredSPIs.get(name);
+    public Collection<Bundle> findProviderBundles(String name) {
+        SortedMap<Long, Bundle> map = registeredProviders.get(name);
         return map == null ? Collections.<Bundle>emptyList() : map.values();
     }
+    
+    // TODO unRegisterProviderBundle();
+    
+    public void registerConsumerBundle(Bundle consumer, Collection<Bundle> spiProviders) {
+        registeredConsumers.put(consumer, spiProviders);
+    }
+    
+    public Collection<Bundle> findConsumerRestrictions(Bundle consumer) {
+        return registeredConsumers.get(consumer);
+    }
+    
+    // TODO unRegisterConsumerBundle();
 }
