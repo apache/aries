@@ -134,38 +134,80 @@ public class JTAEntityManager implements EntityManager {
 
   public boolean contains(Object arg0)
   {
-    return getPersistenceContext(false).contains(arg0);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.contains(arg0);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public Query createNamedQuery(String arg0)
   {
-    return getPersistenceContext(false).createNamedQuery(arg0);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.createNamedQuery(arg0);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public Query createNativeQuery(String arg0)
   {
-    return getPersistenceContext(false).createNativeQuery(arg0);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.createNativeQuery(arg0);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   @SuppressWarnings("unchecked")
   public Query createNativeQuery(String arg0, Class arg1)
   {
-    return getPersistenceContext(false).createNativeQuery(arg0, arg1);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.createNativeQuery(arg0, arg1);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public Query createNativeQuery(String arg0, String arg1)
   {
-    return getPersistenceContext(false).createNativeQuery(arg0, arg1);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.createNativeQuery(arg0, arg1);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public Query createQuery(String arg0)
   {
-    return getPersistenceContext(false).createQuery(arg0);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.createQuery(arg0);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public <T> T find(Class<T> arg0, Object arg1)
   {
-    return getPersistenceContext(false).find(arg0, arg1);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.find(arg0, arg1);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   /**
@@ -188,7 +230,13 @@ public class JTAEntityManager implements EntityManager {
 
   public <T> T getReference(Class<T> arg0, Object arg1)
   {
-    return getPersistenceContext(false).getReference(arg0, arg1);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.getReference(arg0, arg1);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public EntityTransaction getTransaction()
@@ -248,32 +296,66 @@ public class JTAEntityManager implements EntityManager {
 
   public void setFlushMode(FlushModeType arg0)
   {
-    getPersistenceContext(false).setFlushMode(arg0);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      em.setFlushMode(arg0);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public <T> TypedQuery<T> createNamedQuery(String arg0, Class<T> arg1)
   {
-    return getPersistenceContext(false).createNamedQuery(arg0, arg1);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.createNamedQuery(arg0, arg1);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public <T> TypedQuery<T> createQuery(CriteriaQuery<T> arg0)
   {
-    return getPersistenceContext(false).createQuery(arg0);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.createQuery(arg0);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public <T> TypedQuery<T> createQuery(String arg0, Class<T> arg1)
   {
-    return getPersistenceContext(false).createQuery(arg0, arg1);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.createQuery(arg0, arg1);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public void detach(Object arg0)
   {
-    getPersistenceContext(false).detach(arg0);
+    EntityManager em = getPersistenceContext(false);
+    //The detatched manager auto-detaches everything, so only
+    //detach from a "real" entity manager
+    if(em != detachedManager)
+      em.detach(arg0);
   }
 
   public <T> T find(Class<T> arg0, Object arg1, Map<String, Object> arg2)
   {
-    return getPersistenceContext(false).find(arg0, arg1, arg2);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.find(arg0, arg1, arg2);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   /**
@@ -281,7 +363,13 @@ public class JTAEntityManager implements EntityManager {
    */
   public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2)
   {
-    return getPersistenceContext(arg2 != LockModeType.NONE).find(arg0, arg1, arg2);
+    EntityManager em = getPersistenceContext(arg2 != LockModeType.NONE);
+    try {
+      return em.find(arg0, arg1, arg2);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   /**
@@ -289,7 +377,13 @@ public class JTAEntityManager implements EntityManager {
    */
   public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2, Map<String, Object> arg3)
   {
-    return getPersistenceContext(arg2 != LockModeType.NONE).find(arg0, arg1, arg2, arg3);
+    EntityManager em = getPersistenceContext(arg2 != LockModeType.NONE);
+    try {
+      return em.find(arg0, arg1, arg2, arg3);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public CriteriaBuilder getCriteriaBuilder()
@@ -354,11 +448,23 @@ public class JTAEntityManager implements EntityManager {
 
   public void setProperty(String arg0, Object arg1)
   {
-    getPersistenceContext(false).setProperty(arg0, arg1);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      em.setProperty(arg0, arg1);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 
   public <T> T unwrap(Class<T> arg0)
   {
-    return getPersistenceContext(false).unwrap(arg0);
+    EntityManager em = getPersistenceContext(false);
+    try {
+      return em.unwrap(arg0);
+    } finally {
+      if(em == detachedManager)
+        em.clear();
+    }
   }
 }
