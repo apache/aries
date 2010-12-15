@@ -37,14 +37,29 @@ import org.osgi.framework.Bundle;
 @RunWith(JUnit4TestRunner.class)
 public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
+  /**
+   * This test exercises the blueprint:comp/ jndi namespace by driving
+   * a Servlet which then looks up some blueprint components from its own
+   * bundle, including a reference which it uses to call a service from a 
+   * second bundle.  
+   * @throws Exception
+   */
   @Test
-  public void sniffTest() throws Exception { 
+  public void testBlueprintCompNamespaceWorks() throws Exception { 
+
+    Bundle bBiz = getInstalledBundle("org.apache.aries.jndi.url.itest.biz");
+    assertNotNull(bBiz);
+    bBiz.start();
     
     Bundle bweb = getInstalledBundle("org.apache.aries.jndi.url.itest.web");
     assertNotNull(bweb);
+    bweb.start();
 
-    Bundle bBiz = getInstalledBundle("org.apache.aries.jndi.url.itest.web");
-    assertNotNull(bBiz);
+    // Short wait in order to give the blueprint and web containers a chance
+    // to initialise
+    try { 
+      Thread.sleep(5000);
+    } catch (InterruptedException ix) {}
     
     System.out.println("In test and trying to get connection....");
     HttpURLConnection conn = makeConnection("http://localhost:8080/org.apache.aries.jndi.url.itest.web/ITestServlet");
