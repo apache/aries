@@ -33,11 +33,17 @@
     </properties>
   </persistence-unit>
   
-  <persistence-unit name="bp-test-unit" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="bp-test-unit" transaction-type="JTA">
     <description>Test persistence unit for the JPA Container and Context iTests</description>
     <jta-data-source>blueprint:comp/jta</jta-data-source>
     <non-jta-data-source>blueprint:comp/nonjta</non-jta-data-source>
     <class>org.apache.aries.jpa.container.itest.entities.Car</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+     <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
+          to create a database  -->
+     <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+     <property name="openjpa.jdbc.DBDictionary" value="derby"/>
+    </properties>
   </persistence-unit>
 </persistence>
