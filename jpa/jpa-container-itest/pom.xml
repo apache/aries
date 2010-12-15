@@ -196,6 +196,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+			<groupId>org.apache.aries.transaction</groupId>
+			<artifactId>org.apache.aries.transaction.wrappers</artifactId>
+            <scope>test</scope>
+		</dependency>
+        <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
             <scope>test</scope>
