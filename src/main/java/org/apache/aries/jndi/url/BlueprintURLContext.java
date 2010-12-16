@@ -441,6 +441,7 @@ public class BlueprintURLContext implements Context
         }
       }
       result = bpcRef.get();
+      st.close();
     }
     if (result == null) { 
       throw new ServiceUnavailableException ("The BlueprintContainer service could not be located");
