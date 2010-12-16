@@ -469,9 +469,7 @@ public class BlueprintURLContext implements Context
     Matcher m = graceP.matcher(bundleSymbolicName);
     if (m.matches()) { 
       String gracePeriod = m.group(1);
-      if (gracePeriod != null) { 
-        gracePeriodSet = !gracePeriod.equalsIgnoreCase("false"); // See OSGi Enterprise spec 4.2 section 121.3.2.1 step 6
-      }
+      gracePeriodSet = !gracePeriod.equalsIgnoreCase("false"); // See OSGi Enterprise spec 4.2 section 121.3.2.1 step 6
     }
     if (!gracePeriodSet) { 
       result = -1;
