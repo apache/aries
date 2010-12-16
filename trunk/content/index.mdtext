@@ -1,4 +1,5 @@
 Title: Index
+
 <a name="Index-ApacheAries"></a>
 # Apache Aries
 
@@ -19,6 +20,9 @@ proposal document on the [incubator wiki](http://wiki.apache.org/incubator/Aries
 .
 
 <a name="Index-BuildingandUsingAriesComponents"></a>
+
+## Breaking news!!
+On 15th December 2010, Aries has graduated from the Incubator and is now a Top Level Project at the ASF. Congratulations to everyone in the Aries community in achieving this milestone.
 ## Building and Using Aries Components
 
 To understand how to _use_ Aries components, take a look at the [BlueprintHelloWorldTutorial](blueprinthelloworldtutorial.html)
