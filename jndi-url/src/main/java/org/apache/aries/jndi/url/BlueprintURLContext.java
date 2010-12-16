@@ -56,14 +56,11 @@ public class BlueprintURLContext implements Context
   private Bundle _callersBundle;
   private Map<String, Object> _env;
   private NameParser _parser = new BlueprintNameParser();
-  //private BlueprintContainer _blueprintContainer;
-  //private ServiceReference _blueprintContainerRef;
   private BlueprintName _parentName;
   
   // listBindings wants a NamingEnumeration<Binding>
   // list wants a NamingEnumeration<NameClassPair>
   // Both are very similar. As per ServiceRegistryListContext we delegate to a closure to do the final processing
-  
   private interface ComponentProcessor<T> { 
     T get (Binding b);
   }
@@ -453,6 +450,7 @@ public class BlueprintURLContext implements Context
   
   static final Pattern graceP = Pattern.compile(".*;\\s*blueprint.graceperiod\\s*:=\\s*\"?([A-Za-z]+).*");
   static final Pattern timeoutP = Pattern.compile(".*;\\s*blueprint.timeout\\s*:=\\s*\"?([0-9]+).*");
+  
   /**
    * Determine the blueprint.timeout set for a given bundle
    * @param b The bundle to inspect
@@ -521,5 +519,4 @@ public class BlueprintURLContext implements Context
     public void removedService(ServiceReference reference, Object service) {}
   }
 
-  
 }
