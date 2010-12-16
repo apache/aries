@@ -25,6 +25,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.Binding;
 import javax.naming.Context;
@@ -42,13 +47,17 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-public class BlueprintURLContext implements Context {
+public class BlueprintURLContext implements Context 
+{
   private static final String BLUEPRINT_NAMESPACE = "blueprint:comp/";
   private Bundle _callersBundle;
   private Map<String, Object> _env;
   private NameParser _parser = new BlueprintNameParser();
-  private BlueprintContainer _blueprintContainer;
+  //private BlueprintContainer _blueprintContainer;
+  //private ServiceReference _blueprintContainerRef;
   private BlueprintName _parentName;
   
   // listBindings wants a NamingEnumeration<Binding>
@@ -65,18 +74,24 @@ public class BlueprintURLContext implements Context {
     private int position = 0;
     private ComponentProcessor<T> processor;
     
-    public BlueprintComponentNamingEnumeration (BlueprintContainer bpc, ComponentProcessor<T> p) 
+    public BlueprintComponentNamingEnumeration (Bundle callersBundle, ComponentProcessor<T> p) throws ServiceUnavailableException 
     { 
-      @SuppressWarnings("unchecked")
-      Set<String> componentIds = bpc.getComponentIds();
-      blueprintIdToComponentBindings = new Binding[componentIds.size()];
-      Iterator<String> idIterator= componentIds.iterator();
-      for (int i=0; i < blueprintIdToComponentBindings.length; i++) { 
-        String id = idIterator.next();
-        Object o = bpc.getComponentInstance(id);
-        blueprintIdToComponentBindings[i] = new Binding (id, o);
+      ServiceReference blueprintContainerRef = getBlueprintContainerRef(callersBundle);
+      try { 
+        BlueprintContainer blueprintContainer = (BlueprintContainer) callersBundle.getBundleContext().getService(blueprintContainerRef);
+        @SuppressWarnings("unchecked")
+        Set<String> componentIds = blueprintContainer.getComponentIds();
+        blueprintIdToComponentBindings = new Binding[componentIds.size()];
+        Iterator<String> idIterator= componentIds.iterator();
+        for (int i=0; i < blueprintIdToComponentBindings.length; i++) { 
+          String id = idIterator.next();
+          Object o = blueprintContainer.getComponentInstance(id);
+          blueprintIdToComponentBindings[i] = new Binding (id, o);
+        }
+        processor = p;
+      } finally {
+        callersBundle.getBundleContext().ungetService(blueprintContainerRef);
       }
-      processor = p;
     }
     
 
@@ -117,27 +132,23 @@ public class BlueprintURLContext implements Context {
   }
   
   @SuppressWarnings("unchecked")
-  public BlueprintURLContext(Bundle callersBundle, Hashtable<?, ?> env) throws ServiceUnavailableException 
+  public BlueprintURLContext(Bundle callersBundle, Hashtable<?, ?> env)
   {
     _callersBundle = callersBundle;
     _env = new HashMap<String, Object>();
     _env.putAll((Map<? extends String, ? extends Object>) env);
     _parentName = null;
-    ServiceReference bpContainerRef = getBlueprintContainerRef(_callersBundle);
-    if (bpContainerRef != null) { 
-      _blueprintContainer = (BlueprintContainer) _callersBundle.getBundleContext().getService(bpContainerRef);
-    } else { 
-      throw new ServiceUnavailableException ();
-    }
   }
   
-  private BlueprintURLContext (Bundle callersBundle, BlueprintName parentName, Map<String, Object> env, 
-      BlueprintContainer bpc) { 
+  private BlueprintURLContext (Bundle callersBundle, BlueprintName parentName, Map<String, Object> env) { 
     _callersBundle = callersBundle;
     _parentName = parentName;
     _env = env;
-    _blueprintContainer = bpc;
-    
+  }
+  
+  @Override
+  protected void finalize() throws NamingException {
+    close();
   }
 
   @Override
@@ -163,7 +174,7 @@ public class BlueprintURLContext implements Context {
   public void close() throws NamingException
   {
     _env = null;
-  }
+   }
 
   @Override
   public Name composeName(Name name, Name prefix) throws NamingException
@@ -247,7 +258,7 @@ public class BlueprintURLContext implements Context {
   @Override
   public NamingEnumeration<NameClassPair> list(String s) throws NamingException
   {
-    NamingEnumeration<NameClassPair> result = new BlueprintComponentNamingEnumeration<NameClassPair>(_blueprintContainer, new ComponentProcessor<NameClassPair>() {
+    NamingEnumeration<NameClassPair> result = new BlueprintComponentNamingEnumeration<NameClassPair>(_callersBundle, new ComponentProcessor<NameClassPair>() {
       @Override
       public NameClassPair get(Binding b)
       {
@@ -268,7 +279,7 @@ public class BlueprintURLContext implements Context {
   public NamingEnumeration<Binding> listBindings(String name)
       throws NamingException
   {
-    NamingEnumeration<Binding> result = new BlueprintComponentNamingEnumeration<Binding>(_blueprintContainer, new ComponentProcessor<Binding>() {
+    NamingEnumeration<Binding> result = new BlueprintComponentNamingEnumeration<Binding>(_callersBundle, new ComponentProcessor<Binding>() {
       @Override
       public Binding get(Binding b)
       {
@@ -279,39 +290,36 @@ public class BlueprintURLContext implements Context {
   }
 
   @Override
-  public Object lookup(Name name) throws NamingException
+  public Object lookup(Name name) throws NamingException, ServiceUnavailableException
   {
-    BlueprintName bpName;
-    if (name instanceof BlueprintName) { 
-      bpName = (BlueprintName) name; 
-    } else if (_parentName != null) { 
-      bpName = new BlueprintName (_parentName.toString() + "/" + name.toString());
-    } else { 
-      bpName = (BlueprintName) _parser.parse(name.toString());
-    }
-
+    ServiceReference blueprintContainerRef = getBlueprintContainerRef(_callersBundle);
     Object result;
-    if (bpName.hasComponent()) { 
-      String componentId = bpName.getComponentId();
-      ServiceReference bpContainerRef = getBlueprintContainerRef(_callersBundle);
-      BlueprintContainer bpc; 
-      if (bpContainerRef != null) { 
-        bpc = (BlueprintContainer) _callersBundle.getBundleContext().getService(bpContainerRef);
-      } else { 
-        throw new NamingException();
+    try {
+      BlueprintContainer blueprintContainer = (BlueprintContainer) 
+          _callersBundle.getBundleContext().getService(blueprintContainerRef);
+      BlueprintName bpName;
+      if (name instanceof BlueprintName) {
+        bpName = (BlueprintName) name;
+      } else if (_parentName != null) {
+        bpName = new BlueprintName(_parentName.toString() + "/" + name.toString());
+      } else {
+        bpName = (BlueprintName) _parser.parse(name.toString());
       }
-      
-      try { 
-        result = bpc.getComponentInstance(componentId);
-      } catch (NoSuchComponentException nsce) { 
-        throw new NameNotFoundException (nsce.getMessage());
-      } finally {
-        _callersBundle.getBundleContext().ungetService(bpContainerRef);
-     } 
-   } else { 
-     result = new BlueprintURLContext (_callersBundle, bpName, _env, _blueprintContainer);
-   }
-   return result;
+
+      if (bpName.hasComponent()) {
+        String componentId = bpName.getComponentId();
+        try {
+          result = blueprintContainer.getComponentInstance(componentId);
+        } catch (NoSuchComponentException nsce) {
+          throw new NameNotFoundException(nsce.getMessage());
+        }
+      } else {
+        result = new BlueprintURLContext(_callersBundle, bpName, _env);
+      }
+    } finally {
+      _callersBundle.getBundleContext().ungetService(blueprintContainerRef);
+    }
+    return result;
   }
 
   @Override
@@ -378,18 +386,23 @@ public class BlueprintURLContext implements Context {
     throw new OperationNotSupportedException();
   }
   
-  private ServiceReference getBlueprintContainerRef(Bundle b)
+  /**
+   * Look for a BluepintContainer service in a given bundle
+   * @param b Bundle to look in
+   * @return BlueprintContainer service, or null if none available
+   */
+  private static ServiceReference findBPCRef (Bundle b) 
   {
     ServiceReference[] refs = b.getRegisteredServices();
     ServiceReference result = null;
-    if (refs != null) { 
-      outer: for (ServiceReference r : refs) { 
+    if (refs != null) {
+      outer: for (ServiceReference r : refs) {
         String[] objectClasses = (String[]) r.getProperty(Constants.OBJECTCLASS);
-        for (String objectClass : objectClasses) { 
-          if (objectClass.equals(BlueprintContainer.class.getName())) { 
-            // Arguably we could put an r.isAssignableTo(jndi-url-bundle, BlueprintContainer.class.getName()) 
+        for (String objectClass : objectClasses) {
+          if (objectClass.equals(BlueprintContainer.class.getName())) {
+            // Arguably we could put an r.isAssignableTo(jndi-url-bundle, BlueprintContainer.class.getName())
             // check here. But if you've got multiple, class-space inconsistent instances of blueprint in 
-            // your environment, you've almost certainly got other problems. 
+            // your environment, you've almost certainly got other problems.
             result = r;
             break outer;
           }
@@ -398,5 +411,115 @@ public class BlueprintURLContext implements Context {
     }
     return result;
   }
+  
+  /**
+   * Obtain a BlueprintContainerService for the given bundle. If the service isn't there, wait for up 
+   * to the blueprint.graceperiod defined for that bundle for one to be published. 
+   * @param b The Bundle to look in
+   * @return BlueprintContainerService instance for that bundle
+   * @throws ServiceUnavailableException If no BlueprinContainerService found
+   */
+  private static ServiceReference getBlueprintContainerRef(Bundle b) throws ServiceUnavailableException 
+  {
+    ServiceReference result = findBPCRef(b);
+    if (result == null) { 
+      Semaphore s = new Semaphore(0);
+      AtomicReference<ServiceReference> bpcRef = new AtomicReference<ServiceReference>();
+      ServiceTracker st = new ServiceTracker (b.getBundleContext(), BlueprintContainer.class.getName(), 
+          new BlueprintContainerServiceTrackerCustomizer (b, s, bpcRef));
+      st.open();
+      
+      // Make another check for the BlueprintContainer service in case it came up just before our tracker engaged
+      int graceperiod = getGracePeriod(b);
+      result = findBPCRef(b);
+      if (result == null && graceperiod >= 0) {
+        if (graceperiod == 0) { // Wait for an unlimited period
+          try { 
+            s.acquire();
+          } catch (InterruptedException ix) {}
+        } else { 
+          try { 
+            s.tryAcquire(graceperiod, TimeUnit.MILLISECONDS);
+          } catch (InterruptedException ix) {}
+        }
+      }
+      result = bpcRef.get();
+    }
+    if (result == null) { 
+      throw new ServiceUnavailableException ("The BlueprintContainer service could not be located");
+    }
+    return result;
+  }
+  
+  static final Pattern graceP = Pattern.compile(".*;\\s*blueprint.graceperiod\\s*:=\\s*\"?([A-Za-z]+).*");
+  static final Pattern timeoutP = Pattern.compile(".*;\\s*blueprint.timeout\\s*:=\\s*\"?([0-9]+).*");
+  /**
+   * Determine the blueprint.timeout set for a given bundle
+   * @param b The bundle to inspect
+   * @return -1 if blueprint.graceperiod is false, otherwise the value of blueprint.timeout, 
+   *         or 300000 if blueprint.graceperiod is true and no value is given for 
+   *         blueprint.timeout. 
+   */
+  public static int getGracePeriod (Bundle b) {
+    int result = 300000;            // Blueprint default
+    boolean gracePeriodSet = true;  // Blueprint default
+    String bundleSymbolicName = (String)b.getHeaders().get(Constants.BUNDLE_SYMBOLICNAME);
+    
+    // I'd like to use ManifestHeaderProcessor here but as of December 15th 2010 it lives
+    // application-utils, and I don't want to make that a dependency of jndi-url
 
+    Matcher m = graceP.matcher(bundleSymbolicName);
+    if (m.matches()) { 
+      String gracePeriod = m.group(1);
+      if (gracePeriod != null) { 
+        gracePeriodSet = gracePeriod.equalsIgnoreCase("true");
+      }
+    }
+    if (!gracePeriodSet) { 
+      result = -1;
+    } else { 
+      m = timeoutP.matcher(bundleSymbolicName);
+      if (m.matches()) { 
+        String timeout = m.group(1);
+        try { 
+          result = Integer.valueOf(timeout);
+        } catch (NumberFormatException nfx) { 
+          // Noop: result stays at its default value
+        }
+      }
+    }
+    return result;
+  }
+  
+  private static class BlueprintContainerServiceTrackerCustomizer implements ServiceTrackerCustomizer 
+  {
+    Bundle bundleToFindBPCServiceIn = null;
+    Semaphore semaphore;
+    AtomicReference<ServiceReference> atomicRef = null;
+    public BlueprintContainerServiceTrackerCustomizer (Bundle b, Semaphore s, AtomicReference<ServiceReference> aref) { 
+      bundleToFindBPCServiceIn = b;
+      semaphore = s;
+      atomicRef = aref;
+    }
+    
+    @Override
+    public Object addingService(ServiceReference reference)
+    {
+      Object result = null;
+      if (bundleToFindBPCServiceIn.equals(reference.getBundle())) { 
+        atomicRef.set(reference);
+        semaphore.release();
+        result = reference.getBundle().getBundleContext().getService(reference);
+      }
+      return result;
+    }
+
+    @Override
+    public void modifiedService(ServiceReference reference, Object service) {}
+
+    @Override
+    public void removedService(ServiceReference reference, Object service) {}
+  }
+
+  
 }

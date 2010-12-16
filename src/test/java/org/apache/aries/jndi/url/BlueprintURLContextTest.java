@@ -46,6 +46,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
 
@@ -215,4 +216,39 @@ public class BlueprintURLContextTest {
     assertEquals ("Not all expected components were found", expectedCompIds.size(), 0);
   }
   
+  @Test 
+  public void testBlueprintTimeoutExtractionBothSpecified() { 
+    Bundle b = bundleMock ("bundle.name;x=y;p:=q;blueprint.graceperiod:=true;blueprint.timeout:=10000;a=b;c:=d");
+    int timeout = BlueprintURLContext.getGracePeriod(b);
+    assertEquals ("graceperiod wrong", 10000, timeout);
+  }
+  
+  @Test
+  public void testGracePeriodFalseHandled() throws Exception  { 
+    Bundle b = bundleMock ("bundle.name;x=y;p:=q;blueprint.graceperiod:=false;blueprint.timeout:=10000;a=b;c:=d");
+    int timeout = BlueprintURLContext.getGracePeriod(b);
+    assertEquals ("graceperiod wrong", -1, timeout);
+    
+    b = bundleMock ("bundle.name;x=y;p:=q;blueprint.graceperiod:=false;a=b;c:=d");
+    timeout = BlueprintURLContext.getGracePeriod(b);
+    assertEquals ("graceperiod wrong", -1, timeout);
+  }
+  
+  @Test 
+  public void testDefaultsReturnedByDefault() throws Exception { 
+    Bundle b = bundleMock("bundle.name;x=y;p:=q;blueprint.graceperiod:=true;a=b;c:=d");
+    int timeout = BlueprintURLContext.getGracePeriod(b);
+    assertEquals ("graceperiod wrong", 300000, timeout);
+    
+    b = bundleMock ("bundle.name;x=y;p:=q;a=b;c:=d");
+    timeout = BlueprintURLContext.getGracePeriod(b);
+    assertEquals ("graceperiod wrong", 300000, timeout);
+  }
+  
+  Bundle bundleMock (String bundleSymbolicNameHeader) { 
+    Hashtable<String, String> props = new Hashtable<String, String>();
+    props.put(Constants.BUNDLE_SYMBOLICNAME, bundleSymbolicNameHeader);
+    Bundle result = Skeleton.newMock(new BundleMock("aBundle", props), Bundle.class);
+    return result;
+  }
 }
