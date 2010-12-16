@@ -470,7 +470,7 @@ public class BlueprintURLContext implements Context
     if (m.matches()) { 
       String gracePeriod = m.group(1);
       if (gracePeriod != null) { 
-        gracePeriodSet = gracePeriod.equalsIgnoreCase("true");
+        gracePeriodSet = !gracePeriod.equalsIgnoreCase("false"); // See OSGi Enterprise spec 4.2 section 121.3.2.1 step 6
       }
     }
     if (!gracePeriodSet) { 
