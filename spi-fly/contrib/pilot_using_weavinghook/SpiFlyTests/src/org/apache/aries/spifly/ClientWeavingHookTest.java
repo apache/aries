@@ -33,13 +33,13 @@ public class ClientWeavingHookTest {
         
     @Test
     public void testClientWeavingHookBasicServiveLoaderUsage() throws Exception {
-        BundleContext spiFlyBundleContext = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"));               
+        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"));               
        
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
-        Bundle consumerBundle = mockConsumerBundle(headers);
+        Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
 
-        WeavingHook wh = new ClientWeavingHook(spiFlyBundleContext);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
         
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
@@ -67,11 +67,13 @@ public class ClientWeavingHookTest {
 
     @Test
     public void testClientWeavingHookMultipleProviders() throws Exception {
+        Bundle spiFlyBundle = mockSpiFlyBundle();
+
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
-        Bundle consumerBundle = mockConsumerBundle(headers);
+        Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
 
-        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle());
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
@@ -97,14 +99,15 @@ public class ClientWeavingHookTest {
     public void testClientSpecifyingProvider() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2");
-        Bundle consumerBundle = mockConsumerBundle(headers);
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
         Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI");
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
 
-        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2));
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2);
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2);        
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
@@ -125,12 +128,14 @@ public class ClientWeavingHookTest {
     }
     
     @Test
-    public void testJAXPClientWantsJREImplementation() throws Exception {
-        Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "todo");
-        Bundle consumerBundle = mockConsumerBundle(headers);
+    public void testJAXPClientWantsJREImplementation1() throws Exception {
+        Bundle systembundle = mockSystemBundle();
 
-        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle));
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance()");
+        Bundle consumerBundle = mockConsumerBundle(headers, systembundle);
+
+        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, systembundle).getBundleContext());
 
         URL clsUrl = getClass().getResource("JaxpClient.class");
         WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
@@ -142,16 +147,65 @@ public class ClientWeavingHookTest {
         Assert.assertEquals("JAXP implementation from JRE", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", result.getName());                
     }
     
+    // If there is an alternate implementation it should always be favoured over the JRE one
     @Test
-    public void testJAXPClientWantsAltImplementation() throws Exception {
+    public void testJAXPClientWantsAltImplementation1() throws Exception {
+        Bundle systembundle = mockSystemBundle();
+
+        Bundle providerBundle = mockProviderBundle("impl3", 1, "META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
+        Activator.activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
+
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=impl3");
-        Bundle consumerBundle = mockConsumerBundle(headers);
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance()");
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
+
+        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext());
+
+        URL clsUrl = getClass().getResource("JaxpClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        wh.weave(wc);
+        
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {});
+        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+        Assert.assertEquals("JAXP implementation from JRE", "org.apache.aries.spifly.impl3.MyAltDocumentBuilderFactory", result.getName());                
+    }
+
+    @Test
+    public void testJAXPClientWantsJREImplementation2() throws Exception {
+        Bundle systembundle = mockSystemBundle();
         
         Bundle providerBundle = mockProviderBundle("impl3", 1, "META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
         Activator.activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
 
-        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle));
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundleId=0");
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
+
+        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext());
+
+        URL clsUrl = getClass().getResource("JaxpClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        wh.weave(wc);
+        
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {});
+        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+        Assert.assertEquals("JAXP implementation from JRE", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", result.getName());                
+    }
+
+    @Test
+    public void testJAXPClientWantsAltImplementation2() throws Exception {
+        Bundle systembundle = mockSystemBundle();
+
+        Bundle providerBundle = mockProviderBundle("impl3", 1, "META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
+        Activator.activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
+
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=impl3");
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
+        
+        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext());
 
         URL clsUrl = getClass().getResource("JaxpClient.class");
         WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
@@ -163,15 +217,12 @@ public class ClientWeavingHookTest {
         Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.impl3.MyAltDocumentBuilderFactory", result.getName());                        
     }
     
-    private BundleContext mockSpiFlyBundle(Bundle ... bundles) {
+    private Bundle mockSpiFlyBundle(Bundle ... bundles) {
         return mockSpiFlyBundle("spifly", new Version(1, 0, 0), bundles);
     }
     
-    private BundleContext mockSpiFlyBundle(String bsn, Version version, Bundle ... bundles) {
+    private Bundle mockSpiFlyBundle(String bsn, Version version, Bundle ... bundles) {
         Bundle spiFlyBundle = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(spiFlyBundle.getSymbolicName()).andReturn(bsn).anyTimes();
-        EasyMock.expect(spiFlyBundle.getVersion()).andReturn(version);
-        EasyMock.replay(spiFlyBundle);
 
         BundleContext spiFlyBundleContext = EasyMock.createMock(BundleContext.class);
         EasyMock.expect(spiFlyBundleContext.getBundle()).andReturn(spiFlyBundle);
@@ -179,7 +230,13 @@ public class ClientWeavingHookTest {
         allBundles.add(spiFlyBundle);
         EasyMock.expect(spiFlyBundleContext.getBundles()).andReturn(allBundles.toArray(new Bundle [] {}));
         EasyMock.replay(spiFlyBundleContext);
-        return spiFlyBundleContext;
+
+        EasyMock.expect(spiFlyBundle.getSymbolicName()).andReturn(bsn).anyTimes();
+        EasyMock.expect(spiFlyBundle.getVersion()).andReturn(version);
+        EasyMock.expect(spiFlyBundle.getBundleContext()).andReturn(spiFlyBundleContext).anyTimes();
+        EasyMock.replay(spiFlyBundle);
+
+        return spiFlyBundle;
     }
 
     private Bundle mockProviderBundle(String subdir, long id, String ... resources) {
@@ -195,19 +252,37 @@ public class ClientWeavingHookTest {
         Bundle providerBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(providerBundle.adapt(BundleWiring.class)).andReturn(bw);
         EasyMock.expect(providerBundle.getSymbolicName()).andReturn(subdir).anyTimes();
-        EasyMock.expect(providerBundle.getBundleId()).andReturn(id);
+        EasyMock.expect(providerBundle.getBundleId()).andReturn(id).anyTimes();
         EasyMock.replay(providerBundle);
         return providerBundle;
     }
 
-    private Bundle mockConsumerBundle(Dictionary<String, String> headers) {
-        // Create a mock object for the client bundle which holds the code that uses ServiceLoader.load().
+    private Bundle mockConsumerBundle(Dictionary<String, String> headers, Bundle ... otherBundles) {
+        // Create a mock object for the client bundle which holds the code that uses ServiceLoader.load() 
+        // or another SPI invocation.
+        BundleContext bc = EasyMock.createMock(BundleContext.class);
+        
         Bundle consumerBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(consumerBundle.getSymbolicName()).andReturn("testConsumer").anyTimes();
         EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers);
+        EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc);
+        EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
         EasyMock.replay(consumerBundle);        
-        
+
+        List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(otherBundles));
+        allBundles.add(consumerBundle);
+        EasyMock.expect(bc.getBundles()).andReturn(allBundles.toArray(new Bundle [] {}));
+        EasyMock.replay(bc);
+
         return consumerBundle;
+    }
+    
+    private Bundle mockSystemBundle() {
+        Bundle systemBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(systemBundle.getBundleId()).andReturn(0L).anyTimes();
+        EasyMock.replay(systemBundle);
+        
+        return systemBundle;
     }
             
     private class TestImplClassLoader extends URLClassLoader {

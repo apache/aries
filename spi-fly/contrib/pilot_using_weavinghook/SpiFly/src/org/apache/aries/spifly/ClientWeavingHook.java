@@ -34,12 +34,9 @@ import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.service.log.LogService;
 
 public class ClientWeavingHook implements WeavingHook {
-    private final BundleContext bundleContext;
     private final String addedImport;
     
     ClientWeavingHook(BundleContext context) {
-        bundleContext = context;
-        
         Bundle b = context.getBundle();
         String bver = b.getVersion().toString();
         String bsn = b.getSymbolicName();
@@ -95,12 +92,23 @@ public class ClientWeavingHook implements WeavingHook {
                 
             String bsn = element.getAttribute("bundle");
             if (bsn != null) {
-                for (Bundle b : bundleContext.getBundles()) {
+                for (Bundle b : consumerBundle.getBundleContext().getBundles()) {
                     if (b.getSymbolicName().equals(bsn)) {
                         selectedBundles.add(b);
                         break;                        
                     }
                 }
+            }
+            
+            String bid = element.getAttribute("bundleId");
+            if (bid != null) {
+                bid = bid.trim();
+                for (Bundle b : consumerBundle.getBundleContext().getBundles()) {
+                    if (("" + b.getBundleId()).equals(bid)) {
+                        selectedBundles.add(b);
+                        break;                        
+                    }
+                }                
             }
             
             Activator.activator.log(LogService.LOG_INFO, "Weaving " + className + "#" + methodName + " from bundle " + 
