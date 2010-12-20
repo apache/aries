@@ -4,6 +4,7 @@ var show = null;
 var children = null;
 
 function init() {
+  console.log("here I am");
   /* Search form initialization */
   var form = document.forms['search'];
   if (form != null) {
