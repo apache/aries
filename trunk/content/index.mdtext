@@ -3,7 +3,7 @@ Title: Index
 <a name="Index-ApacheAries"></a>
 # Apache Aries
 
-The Aries project is delivering a set of pluggable Java components enabling
+The Aries project delivers a set of pluggable Java components enabling
 an enterprise OSGi application programming model. This includes
 implementations and extensions of application-focused specifications
 defined by the OSGi Alliance Enterprise Expert Group (EEG) and an assembly
