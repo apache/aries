@@ -1,4 +1,4 @@
-<div onclick="SwitchMenu('menu_1.1', '/')" id="menu_1.1Title" class="menutitle">Overview</div>
+<div onclick="SwitchMenu('menu_1.1', '')" id="menu_1.1Title" class="menutitle">Overview</div>
 <div id="menu_1.1" class="menuitemgroup">
 	<div class="menuitem">
 		<a href="boardreports.html">Board Reports</a> 
