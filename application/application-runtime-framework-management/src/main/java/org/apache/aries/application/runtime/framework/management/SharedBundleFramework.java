@@ -75,7 +75,7 @@ public class SharedBundleFramework
       
       sharedFramework = bundleFrameworkFactory.createBundleFramework(bc, config);
 
-      sharedFramework.init();
+      sharedFramework.start();
 
     } catch (BundleException e) {
       LOGGER.debug(LOG_EXIT, "createSharedBundleFramework", e);
