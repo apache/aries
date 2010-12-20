@@ -32,11 +32,17 @@ public interface BundleFramework
   public static final String SHARED_BUNDLE_FRAMEWORK = "shared.bundle.framework";
   
   /**
-   * Initialises the framework
+   * Initialises the framework (but does not start the framework bundle)
    * @throws BundleException
    */
   public void init() throws BundleException;
-  
+ 
+  /**
+   * Starts the framework and the framework bundle
+   * @throws BundleException
+   */
+  public void start() throws BundleException;
+
   /**
    * Closes the framework and any associated resource
    * @throws BundleException
