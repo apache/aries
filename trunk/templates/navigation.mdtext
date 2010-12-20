@@ -7,7 +7,7 @@
 		<a href="sitemap.html">Site Map</a> 
 	</div>
 </div>
-<div onclick="SwitchMenu('menu_1.2', '/')" id="menu_1.2Title" class="menutitle">Documentation</div>
+<div onclick="SwitchMenu('menu_1.2', '')" id="menu_1.2Title" class="menutitle">Documentation</div>
 <div id="menu_1.2" class="menuitemgroup">
 	<div class="menuitem">
 		<a href="ariesprogrammingmodel.html">Programming Model</a> 
@@ -28,13 +28,13 @@
 		<a href="tutorials.html">Tutorials</a> 
 	</div>
 </div>
-<div onclick="SwitchMenu('menu_1.3', '/')" id="menu_1.3Title" class="menutitle">Downloads</div>
+<div onclick="SwitchMenu('menu_1.3', '')" id="menu_1.3Title" class="menutitle">Downloads</div>
 <div id="menu_1.3" class="menuitemgroup">
 	<div class="menuitem">
 		<a href="downloads.html">Downloads</a> 
 	</div>
 </div>
-<div onclick="SwitchMenu('menu_1.4', '/')" id="menu_1.4Title" class="menutitle">Community</div>
+<div onclick="SwitchMenu('menu_1.4', '')" id="menu_1.4Title" class="menutitle">Community</div>
 <div id="menu_1.4" class="menuitemgroup">
 	<div class="menuitem">
 		<a href="community.html">Community</a> 
@@ -52,7 +52,7 @@
 		<a href="http://blogs.apache.org/aries/">Aries Group Blog</a> 
 	</div>
 </div>
-<div onclick="SwitchMenu('menu_1.5', '/')" id="menu_1.5Title" class="menutitle">Development</div>
+<div onclick="SwitchMenu('menu_1.5', '')" id="menu_1.5Title" class="menutitle">Development</div>
 <div id="menu_1.5" class="menuitemgroup">
 	<div class="menuitem">
 		<a href="https://svn.apache.org/repos/asf/incubator/aries/">Source Control</a> 
@@ -76,7 +76,7 @@
 		<a href="maintainingthewebpages.html">Web Site Maintenance </a> 
 	</div>
 </div>
-<div onclick="SwitchMenu('menu_1.6', '/')" id="menu_1.6Title" class="menutitle">Modules</div>
+<div onclick="SwitchMenu('menu_1.6', '')" id="menu_1.6Title" class="menutitle">Modules</div>
 <div id="menu_1.6" class="menuitemgroup">
 	<div class="menuitem">
 		<a href="samples.html">Samples</a> 
@@ -103,7 +103,7 @@
 		<a href="spi-fly.html">SPI Fly</a> 
 	</div>
 </div>
-<div onclick="SwitchMenu('menu_1.7', '/')" id="menu_1.7Title" class="menutitle">Sponsorship</div>
+<div onclick="SwitchMenu('menu_1.7', '')" id="menu_1.7Title" class="menutitle">Sponsorship</div>
 <div id="menu_1.7" class="menuitemgroup">
 	<div class="menuitem">
 		<a href="http://www.apache.org/foundation/thanks.html">Thanks</a> 
