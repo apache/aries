@@ -18,7 +18,6 @@
  */
 package org.apache.aries.spifly;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -120,14 +119,16 @@ public class Activator implements BundleActivator {
     }
     
     // TODO unRegisterProviderBundle();
-    
     public void registerConsumerBundle(Bundle consumer, Collection<Bundle> spiProviders) {
+        if (spiProviders == null)
+            return;
+        
         registeredConsumers.put(consumer, spiProviders);
     }
     
     public Collection<Bundle> findConsumerRestrictions(Bundle consumer) {
         return registeredConsumers.get(consumer);
     }
-    
+
     // TODO unRegisterConsumerBundle();
 }

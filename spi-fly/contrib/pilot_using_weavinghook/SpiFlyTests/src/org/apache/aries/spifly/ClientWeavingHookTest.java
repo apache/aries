@@ -119,6 +119,50 @@ public class ClientWeavingHookTest {
         Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);        
     }
     
+    @Test
+    public void testServiceProviderOverloadUnprocessed() {
+        Assert.fail("Test that ServiceLoader.load(2) doesn't get affected");
+    }
+    
+    @Test
+    public void testJAXPClientWantsJREImplementation() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "todo");
+        Bundle consumerBundle = mockConsumerBundle(headers);
+
+        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle));
+
+        URL clsUrl = getClass().getResource("JaxpClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        wh.weave(wc);
+        
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {});
+        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+        Assert.assertEquals("JAXP implementation from JRE", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", result.getName());                
+    }
+    
+    @Test
+    public void testJAXPClientWantsAltImplementation() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=impl3");
+        Bundle consumerBundle = mockConsumerBundle(headers);
+        
+        Bundle providerBundle = mockProviderBundle("impl3", 1, "META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
+        Activator.activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
+
+        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle));
+
+        URL clsUrl = getClass().getResource("JaxpClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        wh.weave(wc);
+        
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {});
+        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+        Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.impl3.MyAltDocumentBuilderFactory", result.getName());                        
+    }
+    
     private BundleContext mockSpiFlyBundle(Bundle ... bundles) {
         return mockSpiFlyBundle("spifly", new Version(1, 0, 0), bundles);
     }
