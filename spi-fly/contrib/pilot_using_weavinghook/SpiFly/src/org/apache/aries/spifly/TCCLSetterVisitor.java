@@ -19,6 +19,7 @@
 package org.apache.aries.spifly;
 
 import java.util.Arrays;
+import java.util.ServiceLoader;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
@@ -38,10 +39,12 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     private static final String VOID_RETURN_TYPE = "()V";
     
     private final String targetClass;
+    private final WeavingData weavingData;
 
-    public TCCLSetterVisitor(ClassVisitor cv, String className) {
+    public TCCLSetterVisitor(ClassVisitor cv, String className, WeavingData weavingData) {
         super(cv);
         this.targetClass = className.replace('.', '/');
+        this.weavingData = weavingData;
     }
 
     @Override
@@ -58,15 +61,15 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         // Add generated static method
 
         /* Equivalent to:
-         * private static void SomeMethodName(Class<?> cls) {
+         * private static void $$FCCL$$(Class<?> cls) {
          *   Util.fixContextClassLoader("java.util.ServiceLoader", "load", cls, WovenClass.class.getClassLoader());
          * }
          */
         MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, GENERATED_METHOD_NAME, 
                 "(Ljava/lang/Class;)V", "(Ljava/lang/Class<*>;)V", null);
         mv.visitCode();
-        mv.visitLdcInsn("java.util.ServiceLoader");
-        mv.visitLdcInsn("load");
+        mv.visitLdcInsn(weavingData.getClassName());
+        mv.visitLdcInsn(weavingData.getMethodName());
         mv.visitVarInsn(ALOAD, 0);
         String typeIdentifier = "L" + targetClass + ";";
         mv.visitLdcInsn(Type.getType(typeIdentifier));
@@ -91,7 +94,6 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         public TCCLSetterMethodVisitor(MethodVisitor mv) {
             super(mv);
         }
-
         
         /**
          * Store the last LDC call. When ServiceLoader.load(Class cls) is called
@@ -118,16 +120,23 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
             System.out.println("### " + opcode + ": " + owner + "#" + name + "#" + desc);
             
             if (opcode == INVOKESTATIC &&
-                "java/util/ServiceLoader".equals(owner) &&
-                "load".equals(name)) {
+                weavingData.getClassName().replace('.', '/').equals(owner) &&
+                weavingData.getMethodName().equals(name)) {
                 System.out.println("+++ Gotcha!");
           
                 // Add: Util.storeContextClassloader();                
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "storeContextClassloader", VOID_RETURN_TYPE);
                 // Add: MyClass.$$FCCL$$(<class>);
+                
                 // The class is the same class as the one passed into the ServiceLoader.load() api.
-                mv.visitLdcInsn(lastLDCType);
+                if (ServiceLoader.class.getName().equals(weavingData.getClassName()) &&
+                    "load".equals(weavingData.getMethodName())) {
+                    mv.visitLdcInsn(lastLDCType);
+                } else {
+                    Type type = Type.getType("L" + owner + ";");
+                    mv.visitLdcInsn(type);
+                }
                 mv.visitMethodInsn(INVOKESTATIC, targetClass,
                         GENERATED_METHOD_NAME, "(Ljava/lang/Class;)V");
 
