@@ -21,6 +21,7 @@ package org.apache.aries.spifly;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import org.apache.aries.spifly.HeaderParser.PathElement;
 import org.apache.aries.spifly.api.SpiFlyConstants;
@@ -53,26 +54,45 @@ public class ClientWeavingHook implements WeavingHook {
 	    Bundle consumerBundle = wovenClass.getBundleWiring().getBundle();
         String consumerHeader = consumerBundle.getHeaders().get(SpiFlyConstants.SPI_CONSUMER_HEADER);
         if (consumerHeader != null) {
-	        Activator activator = Activator.activator;
-            activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());            
+	        Activator.activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());            
             
-	        if (!"true".equalsIgnoreCase(consumerHeader)) {
-	             activator.registerConsumerBundle(consumerBundle, parseHeader(consumerHeader));	            
-	        }
+            WeavingData wd = parseHeader(consumerBundle, consumerHeader);
 	        
 	        ClassReader cr = new ClassReader(wovenClass.getBytes());
 	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw, wovenClass.getClassName());
+	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw, wovenClass.getClassName(), wd);
 	        cr.accept(tsv, 0);
 	        wovenClass.setBytes(cw.toByteArray());
 	        wovenClass.getDynamicImports().add(addedImport);
 	    }			
 	}
 
-    private Collection<Bundle> parseHeader(String consumerHeader) {
+    private WeavingData parseHeader(Bundle consumerBundle, String consumerHeader) {
         List<Bundle> selectedBundles = new ArrayList<Bundle>();
 
         for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
+            String name = element.getName().trim();
+            String className;
+            String methodName;
+            int hashIdx = name.indexOf('#');
+            if (hashIdx > 0) {
+                className = name.substring(0, hashIdx);
+                int braceIdx = name.substring(hashIdx).indexOf('(');
+                if (braceIdx > 0) {
+                    methodName = name.substring(hashIdx + 1, hashIdx + braceIdx);
+                } else {
+                    methodName = name.substring(hashIdx + 1);                    
+                }
+            } else {
+                if ("true".equalsIgnoreCase(name)) {
+                    className = ServiceLoader.class.getName();
+                    methodName = "load";
+                } else {
+                    className = name;
+                    methodName = null;
+                }
+            }            
+                
             String bsn = element.getAttribute("bundle");
             if (bsn != null) {
                 for (Bundle b : bundleContext.getBundles()) {
@@ -82,8 +102,16 @@ public class ClientWeavingHook implements WeavingHook {
                     }
                 }
             }
+            
+            Activator.activator.log(LogService.LOG_INFO, "Weaving " + className + "#" + methodName + " from bundle " + 
+                consumerBundle.getSymbolicName() + " to " + (selectedBundles.size() == 0 ? " any provider" : selectedBundles));
+            
+            if (selectedBundles.size() > 0)
+                Activator.activator.registerConsumerBundle(consumerBundle, selectedBundles);
+           
+            // TODO support more than one definition
+            return new WeavingData(className, methodName, 1);
         }
-        
-        return selectedBundles;
+        return null;
     }
 }
