@@ -98,6 +98,8 @@ public abstract class AbstractIntegrationTest {
                 mavenBundle("org.apache.derby", "derby"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+                mavenBundle("asm", "asm-all"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers"),
