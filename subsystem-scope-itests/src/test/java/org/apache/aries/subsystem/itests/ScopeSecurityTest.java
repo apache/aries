@@ -112,8 +112,8 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         
         // build up installInfo object for the scope
-        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-incubating-SNAPSHOT"), "helloIsolation");
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-incubating-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-SNAPSHOT"), "helloIsolation");
+        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info1);
@@ -262,8 +262,8 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         servicePolicies.add(new SharePolicy(SharePolicy.TYPE_EXPORT, ScopeAdminServiceFactory.SERVICE_CAPABILITY, filter2));
 
         // build up installInfo object for the scope
-        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-incubating-SNAPSHOT"), "helloIsolation");
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-incubating-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-SNAPSHOT"), "helloIsolation");
+        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info1);

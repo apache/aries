@@ -41,8 +41,8 @@ public class JarCreator
   }
 
   private static void createJar(String version) throws Exception {
-    createJarFromFile("../subsystem-example/subsystem-helloIsolation/target/org.apache.aries.subsystem.example.helloIsolation-0.3-incubating-SNAPSHOT.jar", version);
-    createJarFromFile("../subsystem-example/subsystem-helloIsolationRef/target/org.apache.aries.subsystem.example.helloIsolationRef-0.3-incubating-SNAPSHOT.jar", version);
+    createJarFromFile("../subsystem-example/subsystem-helloIsolation/target/org.apache.aries.subsystem.example.helloIsolation-0.3-SNAPSHOT.jar", version);
+    createJarFromFile("../subsystem-example/subsystem-helloIsolationRef/target/org.apache.aries.subsystem.example.helloIsolationRef-0.3-SNAPSHOT.jar", version);
   }
   private static void createJarFromFile(String fileName, String version) throws Exception {
     JarOutputStream jos = null;
