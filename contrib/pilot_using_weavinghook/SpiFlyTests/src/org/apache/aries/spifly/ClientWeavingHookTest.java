@@ -153,6 +153,84 @@ public class ClientWeavingHookTest {
         Object result = method.invoke(cls.newInstance(), "hello");
         Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);        
     }
+    
+    @Test
+    public void testClientSpecifyingProviderVersion() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2;version=1.2.3");
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI");
+        Bundle providerBundle3 = mockProviderBundle("impl2", 3, new Version(1, 2, 3),  "META-INF/services/org.apache.aries.mytest.MySPI");
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle3);
+
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle3);
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle3);        
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("Only the services from bundle impl2 should be selected", "Updated!Hello!Updated", result);        
+    }
+
+    @Test
+    public void testClientSpecificProviderLoadArgument() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, 
+                "java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.MySPI])," +
+                "java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.AltSPI]);bundle=impl4");
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI", "META-INF/services/org.apache.aries.mytest.AltSPI");
+        Bundle providerBundle4 = mockProviderBundle("impl4", 4, "META-INF/services/org.apache.aries.mytest.MySPI", "META-INF/services/org.apache.aries.mytest.AltSPI");
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);        
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);        
+
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);        
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("Only the services from bundle impl2 should be selected", "ollehHELLO5", result);        
+
+        // Weave the AltTestClient class.
+        URL cls2Url = getClass().getResource("AltTestClient.class");
+        WovenClass wc2 = new MyWovenClass(cls2Url, "org.apache.aries.spifly.AltTestClient", consumerBundle);
+        wh.weave(wc2);
+
+        // Invoke the AltTestClient
+        Class<?> cls2 = wc2.getDefinedClass();
+        Method method2 = cls2.getMethod("test", new Class [] {long.class});
+        Object result2 = method2.invoke(cls2.newInstance(), 4096);
+        Assert.assertEquals("Only the services from bundle impl4 should be selected", 8192, result2);        
+    }
+    
+    @Test
+    public void testClientSpecifyingTwoDifferentMethodsLimitedToDifferentProviders() {
+        Assert.fail();
+    }
         
     @Test
     public void testJAXPClientWantsJREImplementation1() throws Exception {
@@ -267,6 +345,10 @@ public class ClientWeavingHookTest {
     }
 
     private Bundle mockProviderBundle(String subdir, long id, String ... resources) {
+        return mockProviderBundle(subdir, id, Version.emptyVersion, resources);
+    }
+    
+    private Bundle mockProviderBundle(String subdir, long id, Version version, String ... resources) {
         // Set up the classloader that will be used by the ASM-generated code as the TCCL. 
         // It can load a META-INF/services file
         ClassLoader cl = new TestImplClassLoader(subdir, resources);
@@ -280,6 +362,7 @@ public class ClientWeavingHookTest {
         EasyMock.expect(providerBundle.adapt(BundleWiring.class)).andReturn(bw);
         EasyMock.expect(providerBundle.getSymbolicName()).andReturn(subdir).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(id).anyTimes();
+        EasyMock.expect(providerBundle.getVersion()).andReturn(version).anyTimes();
         EasyMock.replay(providerBundle);
         return providerBundle;
     }

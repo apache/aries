@@ -68,7 +68,7 @@ public class Util {
         Collection<Bundle> bundles = new ArrayList<Bundle>(activator.findProviderBundles(cls.getName()));
         activator.log(LogService.LOG_DEBUG, "Found bundles providing " + cls + ": " + bundles);
                 
-        Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle);
+        Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle, 0, cls.getName());
         if (allowedBundles != null) {
             for (Iterator<Bundle> it = bundles.iterator(); it.hasNext(); ) {
                 if (!allowedBundles.contains(it.next())) {
