@@ -41,6 +41,10 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     private final String targetClass;
     private final WeavingData weavingData;
 
+    // Set to true when the weaving code has changed the client such that an additional import 
+    // (to the Util.class.getPackage()) is needed.
+    private boolean additionalImportRequired = false;
+
     public TCCLSetterVisitor(ClassVisitor cv, String className, WeavingData weavingData) {
         super(cv);
         this.targetClass = className.replace('.', '/');
@@ -119,22 +123,37 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
             System.out.println("### " + opcode + ": " + owner + "#" + name + "#" + desc);
             
+            Type[] argTypes = Type.getArgumentTypes(desc);
+            String [] argClassNames = new String[argTypes.length];
+            for (int i = 0; i < argTypes.length; i++) {
+                argClassNames[i] = argTypes[i].getClassName();
+            }
+            
             if (opcode == INVOKESTATIC &&
                 weavingData.getClassName().replace('.', '/').equals(owner) &&
-                weavingData.getMethodName().equals(name)) {
+                weavingData.getMethodName().equals(name) && 
+                (weavingData.getArgClasses() != null ? Arrays.equals(argClassNames, weavingData.getArgClasses()) : true)) {
                 System.out.println("+++ Gotcha!");
           
+                additionalImportRequired = true;
+
                 // Add: Util.storeContextClassloader();                
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "storeContextClassloader", VOID_RETURN_TYPE);
-                // Add: MyClass.$$FCCL$$(<class>);
-                
-                // The class is the same class as the one passed into the ServiceLoader.load() api.
+
+                // Add: MyClass.$$FCCL$$(<class>);                
                 if (ServiceLoader.class.getName().equals(weavingData.getClassName()) &&
-                    "load".equals(weavingData.getMethodName())) {
+                    "load".equals(weavingData.getMethodName()) &&
+                    Arrays.equals(new String [] {Class.class.getName()}, weavingData.getArgClasses())) {
+                    // ServiceLoader.load() is a special case because it's a general-purpose service loader, 
+                    // therefore, the target class it the class being passed in to the ServiceLoader.load() 
+                    // call itself.
                     mv.visitLdcInsn(lastLDCType);
                 } else {
-                    Type type = Type.getType("L" + owner + ";");
+                    // In any other case, we're not dealing with a general-purpose service loader, but rather
+                    // with a specific one, such as DocumentBuilderFactory.newInstance(). In that case the 
+                    // target class is the class that is being invoked on (i.e. DocumentBuilderFactory).
+                    Type type = Type.getObjectType(owner);
                     mv.visitLdcInsn(type);
                 }
                 mv.visitMethodInsn(INVOKESTATIC, targetClass,
@@ -149,5 +168,9 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 super.visitMethodInsn(opcode, owner, name, desc);
             }
         }
+    }
+
+    public boolean additionalImportRequired() {
+        return additionalImportRequired ;
     }
 }

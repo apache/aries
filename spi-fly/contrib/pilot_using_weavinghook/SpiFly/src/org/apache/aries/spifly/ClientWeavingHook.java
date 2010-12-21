@@ -19,7 +19,6 @@
 package org.apache.aries.spifly;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -58,12 +57,21 @@ public class ClientWeavingHook implements WeavingHook {
 	        ClassReader cr = new ClassReader(wovenClass.getBytes());
 	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw, wovenClass.getClassName(), wd);
-	        cr.accept(tsv, 0);
+	        cr.accept(tsv, 0);	        
 	        wovenClass.setBytes(cw.toByteArray());
-	        wovenClass.getDynamicImports().add(addedImport);
+	        if (tsv.additionalImportRequired())
+	            wovenClass.getDynamicImports().add(addedImport);
 	    }			
 	}
 
+	/**
+	 * Parses headers of the following syntax:
+	 * <ul>
+	 * </ul>
+	 * @param consumerBundle
+	 * @param consumerHeader
+	 * @return
+	 */
     private WeavingData parseHeader(Bundle consumerBundle, String consumerHeader) {
         List<Bundle> selectedBundles = new ArrayList<Bundle>();
 
@@ -71,22 +79,37 @@ public class ClientWeavingHook implements WeavingHook {
             String name = element.getName().trim();
             String className;
             String methodName;
+            String[] argClasses;
             int hashIdx = name.indexOf('#');
             if (hashIdx > 0) {
                 className = name.substring(0, hashIdx);
                 int braceIdx = name.substring(hashIdx).indexOf('(');
                 if (braceIdx > 0) {
                     methodName = name.substring(hashIdx + 1, hashIdx + braceIdx);
+                    int closeIdx = name.substring(hashIdx).indexOf(')');
+                    if (closeIdx > 0) {
+                        String classes = name.substring(hashIdx + braceIdx + 1, hashIdx + closeIdx).trim();
+                        if (classes.length() > 0) {
+                            argClasses = classes.split(",");
+                        } else { 
+                            argClasses = null;
+                        }
+                    } else {
+                        argClasses = null;
+                    }
                 } else {
-                    methodName = name.substring(hashIdx + 1);                    
+                    methodName = name.substring(hashIdx + 1);
+                    argClasses = null;
                 }
             } else {
                 if ("true".equalsIgnoreCase(name)) {
                     className = ServiceLoader.class.getName();
                     methodName = "load";
+                    argClasses = new String [] { Class.class.getName() };
                 } else {
                     className = name;
                     methodName = null;
+                    argClasses = null; 
                 }
             }            
                 
@@ -118,7 +141,7 @@ public class ClientWeavingHook implements WeavingHook {
                 Activator.activator.registerConsumerBundle(consumerBundle, selectedBundles);
            
             // TODO support more than one definition
-            return new WeavingData(className, methodName, 1);
+            return new WeavingData(className, methodName, argClasses);
         }
         return null;
     }
