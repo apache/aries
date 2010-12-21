@@ -444,7 +444,7 @@ public class BlueprintURLContext implements Context
       st.close();
     }
     if (result == null) { 
-      throw new ServiceUnavailableException ("The BlueprintContainer service could not be located");
+      throw new ServiceUnavailableException ("The BlueprintContainer service for bundle: " + b.getSymbolicName() + '_' + b.getVersion() + " not be located");
     }
     return result;
   }

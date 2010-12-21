@@ -43,6 +43,20 @@ public class Activator implements BundleActivator, SingleServiceListener
         ctx = context;
         proxyManager = new SingleServiceTracker<ProxyManager>(context, ProxyManager.class, this);
         proxyManager.open();
+        // Blueprint URL scheme requires access to the BlueprintContainer service.
+        // We have an optional import
+        // on org.osgi.service.blueprint.container: only register the blueprint:comp/URL
+        // scheme if it's present
+        try {
+          ctx.getBundle().loadClass("org.osgi.service.blueprint.container.BlueprintContainer");
+          Hashtable<Object, Object> blueprintURlSchemeProps = new Hashtable<Object, Object>();
+          blueprintURlSchemeProps.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "blueprint" });
+          blueprintUrlReg = ctx.registerService(ObjectFactory.class.getName(),
+              new BlueprintURLContextServiceFactory(), blueprintURlSchemeProps);
+        } catch (ClassNotFoundException cnfe) {
+          // The blueprint packages aren't available, so do nothing. That's fine.
+          cnfe.printStackTrace();
+        }
     }
 
     @Override
@@ -60,20 +74,6 @@ public class Activator implements BundleActivator, SingleServiceListener
     osgiUrlprops.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
     osgiUrlReg = ctx.registerService(ObjectFactory.class.getName(),
         new OsgiURLContextServiceFactory(), osgiUrlprops);
-
-    // Blueprint URL scheme requires access to the BlueprintContainer service.
-    // We have an optional import
-    // on org.osgi.service.blueprint.container: only register the blueprint:comp/URL
-    // scheme if it's present
-    try {
-      ctx.getBundle().loadClass("org.osgi.service.blueprint.container.BlueprintContainer");
-      Hashtable<Object, Object> blueprintURlSchemeProps = new Hashtable<Object, Object>();
-      blueprintURlSchemeProps.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "blueprint" });
-      blueprintUrlReg = ctx.registerService(ObjectFactory.class.getName(),
-          new BlueprintURLContextServiceFactory(), blueprintURlSchemeProps);
-    } catch (ClassNotFoundException cnfe) {
-      // The blueprint packages aren't available, so do nothing. That's fine.
-    }
   }
 
   @Override
@@ -81,8 +81,6 @@ public class Activator implements BundleActivator, SingleServiceListener
   {
     if (osgiUrlReg != null) osgiUrlReg.unregister();
     osgiUrlReg = null;
-    if (blueprintUrlReg != null) blueprintUrlReg.unregister();
-    blueprintUrlReg = null;
   }
 
   @Override
