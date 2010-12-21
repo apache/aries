@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries.samples.blog</groupId>
         <artifactId>blog</artifactId>
-        <version>0.3-incubating-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.samples.blog.itests</artifactId>
@@ -406,14 +406,14 @@
 		<dependency>
       		<groupId>org.apache.aries.quiesce</groupId>
       		<artifactId>org.apache.aries.quiesce.api</artifactId>
-      		<version>0.3-incubating-SNAPSHOT</version>
+      		<version>0.3-SNAPSHOT</version>
       		<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
       		<groupId>org.apache.aries.quiesce</groupId>
       		<artifactId>org.apache.aries.quiesce.manager</artifactId>
-      		<version>0.3-incubating-SNAPSHOT</version>
+      		<version>0.3-SNAPSHOT</version>
       		<scope>provided</scope>
 		</dependency>
 		

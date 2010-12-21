@@ -131,8 +131,8 @@ public class ScopeAdminTest extends AbstractIntegrationTest {
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         
         // build up installInfo object for the scope
-        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-incubating-SNAPSHOT"), "helloIsolation");
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-incubating-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-SNAPSHOT"), "helloIsolation");
+        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info1);
@@ -232,8 +232,8 @@ public class ScopeAdminTest extends AbstractIntegrationTest {
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         
         // build up installInfo object for the scope
-        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-incubating-SNAPSHOT"), "helloIsolation");
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-incubating-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-SNAPSHOT"), "helloIsolation");
+        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info1);
@@ -329,8 +329,8 @@ public class ScopeAdminTest extends AbstractIntegrationTest {
 
 
         // build up installInfo object for the scope
-        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-incubating-SNAPSHOT"), "helloIsolation");
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-incubating-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-SNAPSHOT"), "helloIsolation");
+        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info1);
@@ -425,7 +425,7 @@ public class ScopeAdminTest extends AbstractIntegrationTest {
 
 
         // build up installInfo object for the scope
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-incubating-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info2);
@@ -478,7 +478,7 @@ public class ScopeAdminTest extends AbstractIntegrationTest {
 
         // install helloIsolation 0.3 in scope_test1
         Scope scope1 = createScope(scopeAdmin, "scope_test1", 
-                "mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-incubating-SNAPSHOT",
+                "mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-SNAPSHOT",
                 "0.3");
         
         // install helloIsolation 2.0 in scope_test2
@@ -523,7 +523,7 @@ public class ScopeAdminTest extends AbstractIntegrationTest {
 
 
         // build up installInfo object for the scope
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-incubating-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info2);
