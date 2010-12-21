@@ -60,6 +60,8 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
+                mavenBundle("asm", "asm-all"),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"), 
                 mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint"),
