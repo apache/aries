@@ -28,8 +28,8 @@ public class Activator implements BundleActivator {
     public Activator() {
         this.activators = new BundleActivator[]{
                 new org.apache.aries.jndi.startup.Activator(),
-                new org.apache.aries.jndi.url.Activator(),
-                new org.apache.aries.jndi.rmi.Activator()
+                new org.apache.aries.jndi.url.Activator()
+		//                new org.apache.aries.jndi.rmi.Activator()
         };
     }
 
