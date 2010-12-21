@@ -96,6 +96,8 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
 
             // Bundles
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
+            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+            mavenBundle("asm", "asm-all"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
             mavenBundle("org.osgi", "org.osgi.compendium"),
