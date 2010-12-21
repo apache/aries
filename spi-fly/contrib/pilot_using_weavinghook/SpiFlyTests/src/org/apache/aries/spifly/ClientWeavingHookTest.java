@@ -43,7 +43,7 @@ public class ClientWeavingHookTest {
         
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        Assert.assertNotNull("precondition", clsUrl);
+        Assert.assertNotNull("Precondition", clsUrl);
         WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
         Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
@@ -63,6 +63,38 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
         Assert.assertEquals("olleh", result);
+    }
+
+    @Test
+    public void testClientWeavingHookAltServiceLoaderLoadUnprocessed() throws Exception {
+        Bundle spiFlyBundle = mockSpiFlyBundle();               
+       
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
+        Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
+
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
+        
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("UnaffectedTestClient.class");
+        Assert.assertNotNull("Precondition", clsUrl);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.UnaffectedTestClient", consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+
+        Assert.assertEquals("The client is not affected so no additional imports should have been added", 
+            0, wc.getDynamicImports().size());
+                
+        // ok the weaving is done, now prepare the registry for the call
+        Bundle providerBundle = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");        
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
+        
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("impl4", result);
     }
 
     @Test
@@ -121,12 +153,7 @@ public class ClientWeavingHookTest {
         Object result = method.invoke(cls.newInstance(), "hello");
         Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);        
     }
-    
-    @Test
-    public void testServiceProviderOverloadUnprocessed() {
-        Assert.fail("Test that ServiceLoader.load(2) doesn't get affected");
-    }
-    
+        
     @Test
     public void testJAXPClientWantsJREImplementation1() throws Exception {
         Bundle systembundle = mockSystemBundle();
@@ -285,7 +312,7 @@ public class ClientWeavingHookTest {
         return systemBundle;
     }
             
-    private class TestImplClassLoader extends URLClassLoader {
+    public static class TestImplClassLoader extends URLClassLoader {
         private final List<String> resources;
         private final String prefix;
         
