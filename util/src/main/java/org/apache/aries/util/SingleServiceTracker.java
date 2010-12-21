@@ -104,7 +104,9 @@ public final class SingleServiceTracker<T>
           ctx.ungetService(ref);
         }
       }
-    } 
+    } else if (original == null){
+      clear = false;
+    }
     
     if (clear) {
       update(original, null, null);
