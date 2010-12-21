@@ -35,12 +35,11 @@
             ${project.artifactId};blueprint.graceperiod:=false
         </aries.osgi.symbolic.name>
         <aries.osgi.activator>
-            org.apache.aries.blueprint.uberbundle.UberActivator
+            org.apache.aries.blueprint.container.BlueprintExtender
         </aries.osgi.activator>
         <aries.osgi.import>
             !org.apache.aries.blueprint*,
             !org.osgi.service.blueprint*,
-            !org.objectweb.asm*,
             org.eclipse.osgi.internal.loader;resolution:=optional,
             org.eclipse.osgi.framework.internal.core;resolution:=optional,
             org.eclipse.osgi.framework.adaptor;resolution:=optional,
@@ -57,13 +56,9 @@
             org.osgi.service.blueprint.container;version="1.0.1",
             org.osgi.service.blueprint.reflect;version="1.0.1",
             !org.apache.aries.blueprint.annotation*,
-            org.apache.aries.blueprint*;version="${pom.version}",
-            org.apache.aries.proxy;version=0.3-incubating-SNAPSHOT
+            org.apache.aries.blueprint*;version="${pom.version}"
         </aries.osgi.export>
         <aries.osgi.private.pkg>
-            org.apache.aries.proxy*,
-            org.objectweb.asm*,
-            org.apache.aries.util*,
             OSGI-INF*
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
@@ -97,11 +92,12 @@
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
+            <scope>test</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
