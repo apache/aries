@@ -67,10 +67,27 @@ public class ClientWeavingHook implements WeavingHook {
 	/**
 	 * Parses headers of the following syntax:
 	 * <ul>
+	 * <li><tt>org.acme.MyClass#myMethod</tt> - apply the weaving to all overloads of <tt>myMethod()</tt> 
+	 * in <tt>MyClass</tt>
+	 * <li><tt>org.acme.MyClass#myMethod(java.lang.String, java.util.List)</tt> - apply the weaving only 
+	 * to the <tt>myMethod(String, List)</tt> overload in <tt>MyClass</tt>
+	 * <li><tt>org.acme.MyClass#myMethod()</tt> - apply the weaving only to the noarg overload of 
+	 * <tt>myMethod()</tt>
+	 * <li><b>true</b> - equivalend to <tt>java.util.ServiceLoader#load(java.lang.Class)</tt>
 	 * </ul>
-	 * @param consumerBundle
-	 * @param consumerHeader
-	 * @return
+	 * Additionally, it registers the consumer's contraints with the consumer registry in the activator, if the 
+	 * consumer is only constrained to a certain set of bundles.<p/>
+	 * 
+	 * The following attributes are supported:
+	 * <ul>
+	 * <li><tt>bundle</tt> - restrict wiring to the bundle with the specifies Symbolic Name.
+	 * <li><tt>bundleId</tt> - restrict wiring to the bundle with the specified bundle ID. Typically used when 
+	 * the service should be forceably picked up from the system bundle (<tt>bundleId=0</tt>).
+	 * </ul>
+	 * 
+	 * @param consumerBundle the consuming bundle.
+	 * @param consumerHeader the <tt>SPI-Consumer</tt> header.
+	 * @return an instance of the {@link WeavingData} class.
 	 */
     private WeavingData parseHeader(Bundle consumerBundle, String consumerHeader) {
         List<Bundle> selectedBundles = new ArrayList<Bundle>();
@@ -107,9 +124,7 @@ public class ClientWeavingHook implements WeavingHook {
                     methodName = "load";
                     argClasses = new String [] { Class.class.getName() };
                 } else {
-                    className = name;
-                    methodName = null;
-                    argClasses = null; 
+                    throw new IllegalArgumentException("Must at least specify class name and method name: " + name);
                 }
             }            
                 
