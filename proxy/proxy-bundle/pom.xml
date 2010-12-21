@@ -47,13 +47,9 @@
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
             org.eclipse.*;resolution:=optional,
-            org.objectweb.asm;resolution:=optional,
-            org.objectweb.asm.commons;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
-            org.apache.aries.util*,
-            org.objectweb.asm*,
             org.apache.aries.proxy.impl*
         </aries.osgi.private.pkg>
     </properties>

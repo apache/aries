@@ -679,19 +679,6 @@ public class BeanRecipe extends AbstractRecipe {
         List<Interceptor> interceptors = reg.getInterceptors(interceptorLookupKey);
         if (interceptors != null && interceptors.size() > 0) {
             try {
-                // Try load load an asm class (to make sure it's actually
-                // available)
-                getClass().getClassLoader().loadClass(
-                        "org.objectweb.asm.ClassVisitor");
-                LOGGER.debug("asm available for interceptors");
-            } catch (Throwable t) {
-                throw new ComponentDefinitionException(
-                        "Interceptors have been configured but asm is not available",
-                        t);
-            }
-            // if asm is available we can proxy the original object with the
-            // AsmInterceptorWrapper
-            try {
               intercepted = BlueprintExtender.getProxyManager().createProxy(FrameworkUtil.getBundle(original.getClass()), 
                   ProxyUtils.asList(original.getClass()), ProxyUtils.passThrough(original), 
                   new Collaborator(interceptorLookupKey, interceptors));

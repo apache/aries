@@ -430,6 +430,8 @@ public class JPAContextTest {
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         // Adding blueprint to the runtime is a hack to placate the maven bundle plugin. 
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+        mavenBundle("asm", "asm-all"),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.api"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.core"),

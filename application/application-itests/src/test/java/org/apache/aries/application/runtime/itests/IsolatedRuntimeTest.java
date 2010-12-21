@@ -244,6 +244,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         systemProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP).value("true"),
         // Bundles
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+        mavenBundle("asm", "asm-all"),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),

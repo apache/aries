@@ -80,6 +80,8 @@ public class BlueprintContainer2Test extends AbstractIntegrationTest {
             // Bundles
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
+            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+            mavenBundle("asm", "asm-all"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").noStart(),
             mavenBundle("org.osgi", "org.osgi.compendium"),
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),

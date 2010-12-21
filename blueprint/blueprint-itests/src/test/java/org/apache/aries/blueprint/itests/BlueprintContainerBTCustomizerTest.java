@@ -125,6 +125,8 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
 
             // Bundles
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
+            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+            mavenBundle("asm", "asm-all"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
             //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
