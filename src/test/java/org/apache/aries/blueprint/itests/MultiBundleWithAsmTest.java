@@ -50,7 +50,8 @@ public class MultiBundleWithAsmTest extends AbstractMultiBundleTest{
 
             // Bundles
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("asm","asm-all"),
+            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+            mavenBundle("asm", "asm-all"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart(),

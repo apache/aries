@@ -111,6 +111,8 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
         
         mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+        mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart(),
@@ -118,7 +120,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
         //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.cm"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         
-        //new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+//        new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
         
         equinox().version("3.5.0"));
     options = updateOptions(options);
@@ -181,7 +183,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
 	    List<Bundle> bundles = new ArrayList<Bundle>();
 	    bundles.add(bundle);
 	    
-	    Thread t = new Thread(new TestBeanClient((TestBean)obj, 1500));
+	    Thread t = new Thread(new TestBeanClient((TestBean)obj, 2000));
 	    t.start();
 
 	    System.out.println("Thread Started");
