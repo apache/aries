@@ -30,14 +30,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.filesystem.IDirectory;
@@ -155,7 +152,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
    * @throws OpenFailureException
    */
   private Collection<IFile> findBlueprints (IDirectory oneBundle) 
-  throws  IOException
+  throws  IOException, URISyntaxException
   {
     _logger.debug(LOG_ENTRY, "findBlueprints", oneBundle);
     Set<IDirectory> archiveSet = new HashSet<IDirectory>();
@@ -176,14 +173,13 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
    * @throws OpenFailureException
    */
   private Collection<IFile> findBlueprints(Collection<IDirectory> applicationBundles)
-  throws IOException
+  throws IOException, URISyntaxException
   {
     _logger.debug(LOG_ENTRY, "findBlueprints", applicationBundles);
     Collection<IFile> blueprints = new ArrayList<IFile>();
     for (IDirectory appBundle : applicationBundles) {
       if (appBundle != null) {
-        File bundleFile = new File(appBundle.toString());
-        BundleManifest bundleMf = BundleManifest.fromBundle(bundleFile);
+        BundleManifest bundleMf = BundleManifest.fromBundle(appBundle);
         BundleBlueprintParser bpParser = new BundleBlueprintParser(bundleMf);
         List<IFile> files = appBundle.listAllFiles();
         Iterator<IFile> it = files.iterator();
