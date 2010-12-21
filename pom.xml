@@ -45,6 +45,7 @@
         <ariesJndiVersion>0.3-incubating-SNAPSHOT</ariesJndiVersion>
         <ariesJpaVersion>0.3-incubating-SNAPSHOT</ariesJpaVersion>
         <ariesTransactionVersion>0.3-incubating-SNAPSHOT</ariesTransactionVersion>
+        <ariesProxyVersion>0.3-incubating-SNAPSHOT</ariesProxyVersion>
         <ariesUtilVersion>0.3-incubating-SNAPSHOT</ariesUtilVersion>
         <ariesWebVersion>0.3-incubating-SNAPSHOT</ariesWebVersion>
         <openjpaVersion>2.0.0</openjpaVersion>
@@ -202,6 +203,13 @@
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>blueprint</artifactId>
                 <version>${ariesBlueprintVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.proxy</groupId>
+                <artifactId>org.apache.aries.proxy</artifactId>
+                <version>${ariesProxyVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

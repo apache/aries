@@ -135,6 +135,7 @@ public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
                 mavenBundle("commons-pool", "commons-pool"),
                 mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint" ),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util" ),
                 mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi" ),
                 mavenBundle("org.apache.felix", "org.apache.felix.fileinstall" ),
