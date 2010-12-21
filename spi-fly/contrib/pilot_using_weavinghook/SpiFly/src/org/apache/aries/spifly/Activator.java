@@ -18,9 +18,12 @@
  */
 package org.apache.aries.spifly;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +42,8 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
     static Activator activator;
-    
+
+    private BundleContext bundleContext;
     private ServiceRegistration<WeavingHook> weavingHookService;
     private LogServiceTracker lst;
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
@@ -48,10 +52,15 @@ public class Activator implements BundleActivator {
     private final ConcurrentMap<String, SortedMap<Long, Bundle>>registeredProviders = 
             new ConcurrentHashMap<String, SortedMap<Long, Bundle>>();
 
-    private final ConcurrentMap<Bundle, Collection<Bundle>> registeredConsumers = 
-            new ConcurrentHashMap<Bundle, Collection<Bundle>>();
+    private final ConcurrentMap<Bundle, Collection<String>> consumerProviders = 
+            new ConcurrentHashMap<Bundle, Collection<String>>();
+
+    private Map<Bundle, Map<Integer, String>> consumerArgRestrictions =
+            new ConcurrentHashMap<Bundle, Map<Integer,String>>();
 
     public synchronized void start(BundleContext context) throws Exception {
+        bundleContext = context;
+        
         lst = new LogServiceTracker(context);
         lst.open();
 
@@ -119,15 +128,53 @@ public class Activator implements BundleActivator {
     }
     
     // TODO unRegisterProviderBundle();
-    public void registerConsumerBundle(Bundle consumer, Collection<Bundle> spiProviders) {
-        if (spiProviders == null)
-            return;
+    public void registerConsumerBundle(Bundle consumer, Collection<String> spiProviders, String className, String methodName, Map<Integer, String> argRestrictions) {
+        if (spiProviders != null)
+            consumerProviders.put(consumer, spiProviders);
         
-        registeredConsumers.put(consumer, spiProviders);
+        if (className != null) {            
+            Map<String, Map<String, Map<Integer, String>>> restrictions = new HashMap<String, Map<String, Map<Integer, String>>>();
+            Map<String, Map<Integer, String>> restriction = null;
+            if (methodName != null) {
+                restriction = new HashMap<String, Map<Integer,String>>();
+                restriction.put(methodName, argRestrictions);
+            }
+            restrictions.put(className, restriction);
+            // TODO consumerRestrictions.put(consumer, restrictions);
+        }
+        if (argRestrictions != null)
+            consumerArgRestrictions.put(consumer, argRestrictions);
     }
     
-    public Collection<Bundle> findConsumerRestrictions(Bundle consumer) {
-        return registeredConsumers.get(consumer);
+    public Collection<Bundle> findConsumerRestrictions(Bundle consumer, int argIdx, String argVal) {
+        List<Bundle> result = new ArrayList<Bundle>();
+        for (String allowedBundle : findComsumerRestrictions2(consumer, argIdx)) {
+            for (Bundle b : bundleContext.getBundles()) {
+                if (b.getSymbolicName().equals(allowedBundle)) {
+                    result.add(b);
+                }
+            }
+        }
+        return result;
+    }
+
+    private Collection<String> findComsumerRestrictions2(Bundle consumer, int argIdx) {
+        Collection<String> providers = consumerProviders.get(consumer);
+        Map<Integer, String> argRestrictions = consumerArgRestrictions.get(consumer);
+
+        if (providers != null) { 
+            if (argRestrictions != null) {
+                // Clone providers because we're going to modify it...
+                providers = new ArrayList<String>(providers);
+                providers.retainAll(Collections.singleton(argRestrictions.get(argIdx)));
+            }
+            return providers;
+        } else {
+            if (argRestrictions != null) {
+                return Collections.singleton(argRestrictions.get(argIdx));
+            }
+            return null;
+        }
     }
 
     // TODO unRegisterConsumerBundle();

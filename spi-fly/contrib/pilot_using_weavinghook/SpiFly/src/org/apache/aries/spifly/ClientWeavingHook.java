@@ -19,7 +19,9 @@
 package org.apache.aries.spifly;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.apache.aries.spifly.HeaderParser.PathElement;
@@ -90,13 +92,15 @@ public class ClientWeavingHook implements WeavingHook {
 	 * @return an instance of the {@link WeavingData} class.
 	 */
     private WeavingData parseHeader(Bundle consumerBundle, String consumerHeader) {
-        List<Bundle> selectedBundles = new ArrayList<Bundle>();
+        List<String> allowedBundles = new ArrayList<String>();
 
         for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
             String name = element.getName().trim();
             String className;
             String methodName;
             String[] argClasses;
+            Map<Integer, String> argValues = null;
+            
             int hashIdx = name.indexOf('#');
             if (hashIdx > 0) {
                 className = name.substring(0, hashIdx);
@@ -107,7 +111,25 @@ public class ClientWeavingHook implements WeavingHook {
                     if (closeIdx > 0) {
                         String classes = name.substring(hashIdx + braceIdx + 1, hashIdx + closeIdx).trim();
                         if (classes.length() > 0) {
-                            argClasses = classes.split(",");
+                            if (classes.indexOf('[') > 0) {
+                                List<String> argClsList = new ArrayList<String>();
+                                argValues = new HashMap<Integer, String>();
+                                int argNumber = 0;
+                                for (String s : classes.split(",")) {
+                                    int idx = s.indexOf('[');
+                                    int end = s.indexOf(idx, ']');
+                                    if (idx > 0 && end > idx) {
+                                        argClsList.add(s.substring(0, idx));
+                                        argValues.put(argNumber, s.substring(idx + 1, end));
+                                    } else {
+                                        argClsList.add(s);
+                                    }
+                                    argNumber++;
+                                }
+                                argClasses = argClsList.toArray(new String[] {});
+                            } else {
+                                argClasses = classes.split(",");
+                            }
                         } else { 
                             argClasses = null;
                         }
@@ -130,30 +152,26 @@ public class ClientWeavingHook implements WeavingHook {
                 
             String bsn = element.getAttribute("bundle");
             if (bsn != null) {
-                for (Bundle b : consumerBundle.getBundleContext().getBundles()) {
-                    if (b.getSymbolicName().equals(bsn)) {
-                        selectedBundles.add(b);
-                        break;                        
-                    }
-                }
+                allowedBundles.add(bsn);
             }
+            
+            // TODO bundle version
             
             String bid = element.getAttribute("bundleId");
             if (bid != null) {
                 bid = bid.trim();
                 for (Bundle b : consumerBundle.getBundleContext().getBundles()) {
-                    if (("" + b.getBundleId()).equals(bid)) {
-                        selectedBundles.add(b);
+                    if (("" + b.getBundleId()).equals(bid)) {                       
+                        allowedBundles.add(b.getSymbolicName());
                         break;                        
                     }
                 }                
             }
             
             Activator.activator.log(LogService.LOG_INFO, "Weaving " + className + "#" + methodName + " from bundle " + 
-                consumerBundle.getSymbolicName() + " to " + (selectedBundles.size() == 0 ? " any provider" : selectedBundles));
-            
-            if (selectedBundles.size() > 0)
-                Activator.activator.registerConsumerBundle(consumerBundle, selectedBundles);
+                consumerBundle.getSymbolicName() + " to " + (allowedBundles.size() == 0 ? " any provider" : allowedBundles));
+                        
+            Activator.activator.registerConsumerBundle(consumerBundle, allowedBundles, className, methodName, argValues);
            
             // TODO support more than one definition
             return new WeavingData(className, methodName, argClasses);
