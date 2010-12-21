@@ -18,15 +18,17 @@
  */
 package org.apache.aries.spifly;
 
+import java.util.Map;
+
 public class WeavingData {
     private final String className;
     private final String methodName;
     private final String[] argClasses;
     
-    public WeavingData(String className, String methodName, String[] argClasses2) {
+    public WeavingData(String className, String methodName, String[] argClasses) {
         this.className = className;
         this.methodName = methodName;
-        this.argClasses = argClasses2;
+        this.argClasses = argClasses;
     }
 
     public String getClassName() {
@@ -39,5 +41,5 @@ public class WeavingData {
 
     public String[] getArgClasses() {
         return argClasses;
-    }
+    }    
 }
