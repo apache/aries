@@ -540,6 +540,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+        mavenBundle("asm", "asm-all"),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
         /* For debugging, uncomment the next two lines  */
