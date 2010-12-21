@@ -418,14 +418,12 @@ public class ServiceRecipe extends AbstractRecipe {
     	private ComponentMetadata cm;
     	private ServiceMetadata sm;
         private boolean isQuiesceAvailable;
-        private boolean isAsmAvailable;
     	public TriggerServiceFactory(ServiceRecipe serviceRecipe, ServiceMetadata cm)
     	{
     		this.serviceRecipe = serviceRecipe;
     		this.cm = cm;
     		this.sm = cm;
             this.isQuiesceAvailable = isClassAvailable("org.apache.aries.quiesce.participant.QuiesceParticipant");
-            this.isAsmAvailable = isClassAvailable("org.objectweb.asm.ClassVisitor");
     	}
     	
         public Object getService(Bundle bundle, ServiceRegistration registration) {
@@ -445,12 +443,6 @@ public class ServiceRecipe extends AbstractRecipe {
             }
             // Exit if no interceptors configured
             if (interceptors.isEmpty()) {
-                return original;
-            }
-            // If asm is not available, exit
-            if (!isAsmAvailable) {
-                LOGGER.info("ASM is not available to create a proxy object. Returning the original object instead.");
-                LOGGER.debug(LOG_EXIT, "getService", original);
                 return original;
             }
 

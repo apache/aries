@@ -91,19 +91,16 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
         mavenBundle("org.ops4j.pax.web", "pax-web-extender-war"),
         mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+        mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
         mavenBundle("org.apache.felix", "org.apache.felix.fileinstall"),
         
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.web"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.biz"),
         /* For debugging, uncomment the next two lines */
-        /*
-         * vmOption
-         * ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-         * waitForFrameworkStartup(),
-         */
+//        vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
         /*
          * For debugging, add these imports: import static
          * org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; import static
