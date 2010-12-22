@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,14 +50,17 @@ public class Activator implements BundleActivator {
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
     private BundleTracker<List<ServiceRegistration<?>>> bt;
 
-    private final ConcurrentMap<String, SortedMap<Long, Bundle>>registeredProviders = 
+    private final ConcurrentMap<String, SortedMap<Long, Bundle>> registeredProviders = 
             new ConcurrentHashMap<String, SortedMap<Long, Bundle>>();
 
-    private final ConcurrentMap<Bundle, Collection<String>> consumerProviders = 
-            new ConcurrentHashMap<Bundle, Collection<String>>();
+    private final ConcurrentMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>> consumerRestrictions = 
+            new ConcurrentHashMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>>(); 
 
-    private final ConcurrentMap<Bundle, Map<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>>> consumerRestrictions =
-            new ConcurrentHashMap<Bundle, Map<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>>>();
+//    private final ConcurrentMap<Bundle, Collection<String>> consumerProviders = 
+//            new ConcurrentHashMap<Bundle, Collection<String>>();
+//
+//    private final ConcurrentMap<Bundle, Map<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>>> consumerRestrictions =
+//            new ConcurrentHashMap<Bundle, Map<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>>>();
     
     public synchronized void start(BundleContext context) throws Exception {
         bundleContext = context;
@@ -129,10 +133,12 @@ public class Activator implements BundleActivator {
     
     // TODO unRegisterProviderBundle();
     public void registerConsumerBundle( Bundle consumerBundle,
-            Map<String, Map<String, Map<Integer, Map<String, String>>>> restrictions, List<BundleDescriptor> allowedBundles) {
-        consumerRestrictions.putIfAbsent(consumerBundle, 
-                new HashMap<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>>());
-        consumerRestrictions.get(consumerBundle).put(restrictions, allowedBundles);
+            Set<ConsumerRestriction> restrictions, List<BundleDescriptor> allowedBundles) {
+        consumerRestrictions.putIfAbsent(consumerBundle, new HashMap<ConsumerRestriction, List<BundleDescriptor>>());
+        Map<ConsumerRestriction, List<BundleDescriptor>> map = consumerRestrictions.get(consumerBundle);
+        for (ConsumerRestriction restriction : restrictions) {
+            map.put(restriction, allowedBundles);
+        }
     }
 
     /* public void registerConsumerBundle(Bundle consumer, Collection<String> spiProviders, String className, String methodName, Map<Integer, String> argRestrictions) {
@@ -153,18 +159,63 @@ public class Activator implements BundleActivator {
             consumerArgRestrictions.put(consumer, argRestrictions);
     } */
     
-    public Collection<Bundle> findConsumerRestrictions(Bundle consumer, int argIdx, String argVal) {
-        List<Bundle> result = new ArrayList<Bundle>();
-        for (String allowedBundle : findComsumerRestrictions2(consumer, argIdx)) {
-            for (Bundle b : bundleContext.getBundles()) {
-                if (b.getSymbolicName().equals(allowedBundle)) {
-                    result.add(b);
-                }
+    public Collection<Bundle> findConsumerRestrictions(Bundle consumer, String className, String methodName,
+            Map<Pair<Integer, String>, String> args) {
+        Map<ConsumerRestriction, List<BundleDescriptor>> restrictions = consumerRestrictions.get(consumer);
+        if (restrictions == null) {
+            return null;
+        }
+        
+        for (Map.Entry<ConsumerRestriction, List<BundleDescriptor>> entry : restrictions.entrySet()) {
+            if (entry.getKey().matches(className, methodName, args)) {
+                return getBundles(entry.getValue());
             }
         }
-        return result;
+        
+        return Collections.emptySet();
+        /*
+        ConsumerRestriction consumerRestriction = new ConsumerRestriction(className, methodName, args);
+        
+        Map<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>> res = 
+                consumerRestrictions.get(consumer);
+        if (res == null) {
+            return null;
+        }
+        
+        Map<String, Map<String, Map<Integer, Map<String, String>>>> classNameMap = 
+                new HashMap<String, Map<String,Map<Integer,Map<String,String>>>>();
+        Map<String, Map<Integer, Map<String, String>>> methodNameMap = 
+                new HashMap<String, Map<Integer,Map<String,String>>>();
+        methodNameMap.put(methodName, args);
+        classNameMap.put(className, methodNameMap);
+        List<BundleDescriptor> bundles = res.get(classNameMap);
+        if (bundles != null) {
+            return getBundles(bundles);
+        }
+        return null;//... process wildcarding ...
+        */
+//        List<Bundle> result = new ArrayList<Bundle>();
+//        for (String allowedBundle : findComsumerRestrictions2(consumer, argIdx)) {
+//            for (Bundle b : bundleContext.getBundles()) {
+//                if (b.getSymbolicName().equals(allowedBundle)) {
+//                    result.add(b);
+//                }
+//            }
+//        }
+//        return result;
     }
 
+    private Collection<Bundle> getBundles(List<BundleDescriptor> descriptors) {
+        List<Bundle> bundles = new ArrayList<Bundle>();
+        for (Bundle b : bundleContext.getBundles()) {
+            for (BundleDescriptor desc : descriptors) {
+                
+            }
+        }
+        return null;
+    }
+
+    /*
     private Collection<String> findComsumerRestrictions2(Bundle consumer, int argIdx) {
         Collection<String> providers = consumerProviders.get(consumer);
         Map<Integer, String> argRestrictions = consumerRestrictions.get(consumer);
@@ -182,7 +233,7 @@ public class Activator implements BundleActivator {
             }
             return null;
         }
-    }
+    } */
 
     // TODO unRegisterConsumerBundle();
 }
