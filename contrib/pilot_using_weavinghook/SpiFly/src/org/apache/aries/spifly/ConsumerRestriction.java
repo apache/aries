@@ -18,26 +18,29 @@
  */
 package org.apache.aries.spifly;
 
-import org.osgi.framework.Version;
+import java.util.Map;
 
-class BundleDescriptor {
-    final String symbolicName;
-    final Version version;
-    
-    BundleDescriptor(String symbolicName) {
-        this(symbolicName, null);
+public class ConsumerRestriction {
+    private final String className;
+    private final MethodRestriction methodRestriction;
+
+    public ConsumerRestriction(String className, MethodRestriction methodRestriction) {
+        this.className = className;
+        this.methodRestriction = methodRestriction;
     }
 
-    BundleDescriptor(String symbolicName, Version version) {
-        this.symbolicName = symbolicName;
-        this.version = version;
+    public MethodRestriction getMethodRestriction(String methodName) {
+        if (methodName.equals(methodRestriction.getMethodName())) {
+            return methodRestriction;
+        } else {
+            return null;
+        }
     }
 
-    public String getSymbolicName() {
-        return symbolicName;
-    }
-
-    public Version getVersion() {
-        return version;
+    public boolean matches(String clsName, String mtdName, Map<Pair<Integer, String>, String> args) {
+        if (!className.equals(clsName))
+            return false;
+        
+        return methodRestriction.matches(mtdName, args);
     }
 }
