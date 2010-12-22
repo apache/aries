@@ -100,51 +100,68 @@ body {
   line-height: 1em;
 }
 
-.menutitle {
-        cursor:pointer;
-        text-transform: lowercase;
-        color: #7b5d94;
-        padding: 10px 22px;
-        margin-left: 5px;
-        letter-spacing: 0.15em;
-        background-image: url('../images/BigBullet.png');
-        background-repeat: no-repeat;
-        background-position: center left;
-        font-family: Verdana, arial, sans-serif;
-        font-weight : bold;
-		font-size: 70%;
+#menu-page ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 200px;
 }
 
-.menutitle:hover{text-decoration:underline;cursor: pointer;}
+#menu-page ul li {
+  position: relative;
+} 
 
-#menu-page .menuitemgroup {
-        margin: 0px 0px 6px 8px;
-        padding: 0px;
-        font-weight : bold;
-        }
-
-#menu-page .selectedmenuitemgroup{
-        margin: 0px 0px 0px 8px;
-        padding: 0px;
-        font-weight : normal;
-        }
-
-#menu-page .menuitem {
-        padding: 2px 0px 1px 13px;
-        background-image: url('../images/LittleBullet.png');
-        background-repeat: no-repeat;
-        background-position: center left;
-        font-weight : normal;
-        margin-left: 10px;
+#menu-page li ul {
+  /*position: relative;*/
+  position: absolute;
+  left: 170px;
+  top: 0;
+  outline-style: groove;
+  outline-color: #bfaecd;
+  background-color: #ffffff;
+  display: none;
+}
+#menu-page li:hover ul {
+  display: block;
 }
 
-#menu-page a:link, #menu-page a:visited {
+#menu-page h3 {
+  font-size: 75%;
+  text-transform: lowercase;
+  margin: 1em 0 0.3em 0;
+  color: #bfaecd;
+  letter-spacing: 0.15em;
+  background: url('../images/BigBullet.png') no-repeat 0pt;
+  background-position:left center;
+  margin-left:15px;
+  padding-left: 20px;
+  font-family: Verdana, arial, sans-serif;
+  font-weight: bold;	
+  line-height: 250%;
+}
+#menu-page  ul li h4 a:link, #menu-page  ul li h4 a:visited {
+  color: #380b61; 
+}
+#menu-page  li h4 {
+  line-height: 10%;
+}
+#menu-page h4 {
   font-size: 60%;
+  text-transform: lowercase;
+  margin: 1em 0 0.3em 0; 
+  font-weight: normal;
+  letter-spacing: 0.15em;
+  background: url('../images/LittleBullet.png') no-repeat 0pt;
+  background-position:left center;
+  margin-left:15px;
+  padding-left: 20px;
+  font-family: Verdana, arial, sans-serif;
+}
+#menu-page a:link, #menu-page a:visited {
   color: #7b5d94; 
 }
 
 #menu-page a:hover {
-   font-size: 60%;
    color: #bfaecd; 
 }
 
@@ -1562,3 +1579,4 @@ div.auto_complete ul strong.highlight {
 .leftnav li a:active {color:white;}
 .leftnav li a:visited {color:white;}
 .leftnav li a:hover {background-color: #3c4672; color:white;}
+

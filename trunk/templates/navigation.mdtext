@@ -1,114 +1,34 @@
-<div onclick="SwitchMenu('menu_1.1', '')" id="menu_1.1Title" class="menutitle">Overview</div>
-<div id="menu_1.1" class="menuitemgroup">
-	<div class="menuitem">
-		<a href="boardreports.html">Board Reports</a> 
-	</div>
-	<div class="menuitem">
-		<a href="sitemap.html">Site Map</a> 
-	</div>
-</div>
-<div onclick="SwitchMenu('menu_1.2', '')" id="menu_1.2Title" class="menutitle">Documentation</div>
-<div id="menu_1.2" class="menuitemgroup">
-	<div class="menuitem">
-		<a href="ariesprogrammingmodel.html">Programming Model</a> 
-	</div>
-	<div class="menuitem">
-		<a href="pointerstoosgispecifications.html">Pointers to OSGi specs</a> 
-	</div>
-	<div class="menuitem">
-		<a href="integrators-guide.html">Integrators Guide</a> 
-	</div>
-	<div class="menuitem">
-		<a href="articles.html">Articles</a> 
-	</div>
-	<div class="menuitem">
-		<a href="https://svn.apache.org/repos/asf/incubator/aries/slides/">Slides</a> 
-	</div>
-	<div class="menuitem">
-		<a href="tutorials.html">Tutorials</a> 
-	</div>
-</div>
-<div onclick="SwitchMenu('menu_1.3', '')" id="menu_1.3Title" class="menutitle">Downloads</div>
-<div id="menu_1.3" class="menuitemgroup">
-	<div class="menuitem">
-		<a href="downloads.html">Downloads</a> 
-	</div>
-</div>
-<div onclick="SwitchMenu('menu_1.4', '')" id="menu_1.4Title" class="menutitle">Community</div>
-<div id="menu_1.4" class="menuitemgroup">
-	<div class="menuitem">
-		<a href="community.html">Community</a> 
-	</div>
-	<div class="menuitem">
-		<a href="gettinginvolved.html">Getting Involved</a> 
-	</div>
-	<div class="menuitem">
-		<a href="people.html">Who we are</a> 
-	</div>
-	<div class="menuitem">
-		<a href="mailinglists.html">Mailing lists</a> 
-	</div>
-	<div class="menuitem">
-		<a href="http://blogs.apache.org/aries/">Aries Group Blog</a> 
-	</div>
-</div>
-<div onclick="SwitchMenu('menu_1.5', '')" id="menu_1.5Title" class="menutitle">Development</div>
-<div id="menu_1.5" class="menuitemgroup">
-	<div class="menuitem">
-		<a href="https://svn.apache.org/repos/asf/incubator/aries/">Source Control</a> 
-	</div>
-	<div class="menuitem">
-		<a href="https://issues.apache.org/jira/browse/ARIES">Bug Tracking</a> 
-	</div>
-	<div class="menuitem">
-		<a href="buildingaries.html">Building Aries </a> 
-	</div>
-	<div class="menuitem">
-		<a href="releasingaries.html">Releasing Aries </a> 
-	</div>
-	<div class="menuitem">
-		<a href="compliancetesting.html">OSGi Compliance Tests </a> 
-	</div>
-	<div class="menuitem">
-		<a href="http://hudson.zones.apache.org/hudson/">Build System</a> 
-	</div>
-	<div class="menuitem">
-		<a href="maintainingthewebpages.html">Web Site Maintenance </a> 
-	</div>
-</div>
-<div onclick="SwitchMenu('menu_1.6', '')" id="menu_1.6Title" class="menutitle">Modules</div>
-<div id="menu_1.6" class="menuitemgroup">
-	<div class="menuitem">
-		<a href="samples.html">Samples</a> 
-	</div>
-	<div class="menuitem">
-		<a href="blueprint.html">Blueprint</a> 
-	</div>
-	<div class="menuitem">
-		<a href="jndiproject.html">JNDI</a> 
-	</div>
-	<div class="menuitem">
-		<a href="jpaproject.html">JPA</a> 
-	</div>
-	<div class="menuitem">
-		<a href="applications.html">Applications</a> 
-	</div>
-	<div class="menuitem">
-		<a href="transactionsproject.html">Transactions</a> 
-	</div>
-	<div class="menuitem">
-		<a href="-ebamavenpluginproject.html">EBA Maven Plugin </a> 
-	</div>
-	<div class="menuitem">
-		<a href="spi-fly.html">SPI Fly</a> 
-	</div>
-</div>
-<div onclick="SwitchMenu('menu_1.7', '')" id="menu_1.7Title" class="menutitle">Sponsorship</div>
-<div id="menu_1.7" class="menuitemgroup">
-	<div class="menuitem">
-		<a href="http://www.apache.org/foundation/thanks.html">Thanks</a> 
-	</div>
-	<div class="menuitem">
-		<a href="http://www.apache.org/foundation/sponsorship.html">Sponsoring Apache</a> 
-	</div>
-</div>
+- <h3>[Overview](overview.html)</h3>
+    - <h4>[Board Reports](boardreports.html)</h4>
+    - <h4>[Site Map](sitemap.html)</h4>
+- <h3>[Documentation](documentation.html)</h3>
+    - <h4>[Programming Model](ariesprogrammingmodel.html)</h4>
+    - <h4>[Pointers to OSGi specs](pointerstoosgispecifications.html)</h4>
+    - <h4>[Integrators Guide](integrators-guide.html)</h4>
+    - <h4>[Articles](articles.html)</h4>
+    - <h4>[Slides](https://svn.apache.org/repos/asf/incubator/aries/slides/)</h4>
+    - <h4>[Tutorials](tutorials.html)</h4>
+- <h3>[Downloads](downloads.html)</h3>
+- <h3>[Community](community.html)</h3>
+    - <h4>[Getting Involved](gettinginvolved.html)</h4>
+    - <h4>[Who we are](people.html)</h4>
+    - <h4>[Mailing lists](mailinglists.html)</h4>
+    - <h4>[Aries Group Blog](http://blogs.apache.org/aries/)</h4>
+- <h3>[Development](development.html)</h3>
+    - <h4>[Source Control ](https://svn.apache.org/repos/asf/incubator/aries/)</h4>
+    - <h4>[Bug Tracking](https://issues.apache.org/jira/browse/ARIES)</h4>
+    - <h4>[Building Aries ](buildingaries.html)</h4>
+    - <h4>[Releasing Aries ](releasingaries.html)</h4>
+    - <h4>[OSGi Compliance Tests ](compliancetesting.html)</h4>
+    - <h4>[Build System](http://hudson.zones.apache.org/hudson/)</h4>
+    - <h4>[Web Site Maintenance ](maintainingthewebpages.html)</h4>
+- <h3>[Modules](modules.html)</h3>
+    - <h4>[Samples](samples.html)</h4>
+    - <h4>[Blueprint](blueprint.html)</h4>
+    - <h4>[JNDI](jndiproject.html)</h4>
+    - <h4>[JPA](jpaproject.html)</h4>
+    - <h4>[Applications](applications.html)</h4>
+    - <h4>[Transactions](transactionsproject.html)</h4>
+    - <h4>[EBA Maven Plugin ](-ebamavenpluginproject.html)</h4>
+    - <h4>[SPI Fly](spi-fly.html)</h4>
+- <h3> [Sponsorship](sponsorship.html)</h3>
