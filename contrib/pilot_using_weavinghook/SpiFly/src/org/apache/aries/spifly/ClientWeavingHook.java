@@ -92,67 +92,82 @@ public class ClientWeavingHook implements WeavingHook {
 	 * @return an instance of the {@link WeavingData} class.
 	 */
     private WeavingData parseHeader(Bundle consumerBundle, String consumerHeader) {
-        List<String> allowedBundles = new ArrayList<String>();
+        List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
 
         for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
+            /* This map has the following structure:
+             *   ClassName -> MethodName -> Argument# -> ArgClassName -> ArgValue
+             * Anything except from the ClassName and MethodName can be null which means any
+             * value is allowed there.
+             */
+            Map<String, Map<String, Map<Integer, Map<String, String>>>> restrictions = 
+                new HashMap<String, Map<String,Map<Integer,Map<String,String>>>>();
+            Map<String, Map<Integer, Map<String, String>>> methods = 
+                new HashMap<String, Map<Integer,Map<String,String>>>();
+
             String name = element.getName().trim();
             String className;
             String methodName;
-            String[] argClasses;
-            Map<Integer, String> argValues = null;
             
             int hashIdx = name.indexOf('#');
-            if (hashIdx > 0) {
+            if (hashIdx > 0) {                
                 className = name.substring(0, hashIdx);
                 int braceIdx = name.substring(hashIdx).indexOf('(');
                 if (braceIdx > 0) {
                     methodName = name.substring(hashIdx + 1, hashIdx + braceIdx);
-                    int closeIdx = name.substring(hashIdx).indexOf(')');
+                    Map<Integer, Map<String, String>> args = new HashMap<Integer, Map<String,String>>();                  int closeIdx = name.substring(hashIdx).indexOf(')');
                     if (closeIdx > 0) {
                         String classes = name.substring(hashIdx + braceIdx + 1, hashIdx + closeIdx).trim();
                         if (classes.length() > 0) {
                             if (classes.indexOf('[') > 0) {
-                                List<String> argClsList = new ArrayList<String>();
-                                argValues = new HashMap<Integer, String>();
                                 int argNumber = 0;
                                 for (String s : classes.split(",")) {
                                     int idx = s.indexOf('[');
                                     int end = s.indexOf(idx, ']');
                                     if (idx > 0 && end > idx) {
-                                        argClsList.add(s.substring(0, idx));
-                                        argValues.put(argNumber, s.substring(idx + 1, end));
+                                        Map<String, String> argVals = new HashMap<String, String>();
+                                        argVals.put(s.substring(0, idx), s.substring(idx + 1, end));
+                                        args.put(argNumber, argVals);
                                     } else {
-                                        argClsList.add(s);
+                                        Map<String, String> argVals = new HashMap<String, String>();
+                                        argVals.put(s, null);
+                                        args.put(argNumber, argVals);
                                     }
                                     argNumber++;
                                 }
-                                argClasses = argClsList.toArray(new String[] {});
                             } else {
-                                argClasses = classes.split(",");
+                                String[] classNames = classes.split(",");
+                                for (int i = 0; i < classNames.length; i++) {
+                                    Map<String, String> argTypes = new HashMap<String, String>();
+                                    argTypes.put(classNames[i], null);
+                                    args.put(i, argTypes);
+                                }
                             }
-                        } else { 
-                            argClasses = null;
                         }
-                    } else {
-                        argClasses = null;
                     }
+                    methods.put(methodName, args);
                 } else {
                     methodName = name.substring(hashIdx + 1);
-                    argClasses = null;
+                    methods.put(methodName, null);
                 }
             } else {
                 if ("true".equalsIgnoreCase(name)) {
                     className = ServiceLoader.class.getName();
+                    Map<Integer, Map<String, String>> args = new HashMap<Integer, Map<String,String>>();
+                    Map<String, String> argTypes = new HashMap<String, String>();
+                    argTypes.put(Class.class.getName(), null);
+                    args.put(1, argTypes);
                     methodName = "load";
-                    argClasses = new String [] { Class.class.getName() };
+                    methods.put(methodName, args);
                 } else {
                     throw new IllegalArgumentException("Must at least specify class name and method name: " + name);
                 }
             }            
+            restrictions.put(className, methods);
                 
             String bsn = element.getAttribute("bundle");
             if (bsn != null) {
-                allowedBundles.add(bsn);
+                allowedBundles.add(new BundleDescriptor(bsn));
             }
             
             // TODO bundle version
@@ -162,18 +177,26 @@ public class ClientWeavingHook implements WeavingHook {
                 bid = bid.trim();
                 for (Bundle b : consumerBundle.getBundleContext().getBundles()) {
                     if (("" + b.getBundleId()).equals(bid)) {                       
-                        allowedBundles.add(b.getSymbolicName());
+                        allowedBundles.add(new BundleDescriptor(b.getSymbolicName()));
                         break;                        
                     }
                 }                
             }
             
-            Activator.activator.log(LogService.LOG_INFO, "Weaving " + className + "#" + methodName + " from bundle " + 
-                consumerBundle.getSymbolicName() + " to " + (allowedBundles.size() == 0 ? " any provider" : allowedBundles));
+            // TODO fix log message
+            // Activator.activator.log(LogService.LOG_INFO, "Weaving " + className + "#" + methodName + " from bundle " + 
+            //    consumerBundle.getSymbolicName() + " to " + (allowedBundles.size() == 0 ? " any provider" : allowedBundles));
                         
-            Activator.activator.registerConsumerBundle(consumerBundle, allowedBundles, className, methodName, argValues);
+            Activator.activator.registerConsumerBundle(consumerBundle, restrictions, allowedBundles);
            
-            // TODO support more than one definition
+            // TODO support more than one definition            
+            String[] argClasses;
+            Map<Integer, Map<String, String>> args = restrictions.get(className).get(methodName);
+            if (args != null) {
+                argClasses = args.keySet().toArray(new String [args.size()]);
+            } else {
+                argClasses = null;
+            }
             return new WeavingData(className, methodName, argClasses);
         }
         return null;

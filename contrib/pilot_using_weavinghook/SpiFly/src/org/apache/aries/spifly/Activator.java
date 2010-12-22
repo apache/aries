@@ -55,9 +55,9 @@ public class Activator implements BundleActivator {
     private final ConcurrentMap<Bundle, Collection<String>> consumerProviders = 
             new ConcurrentHashMap<Bundle, Collection<String>>();
 
-    private Map<Bundle, Map<Integer, String>> consumerArgRestrictions =
-            new ConcurrentHashMap<Bundle, Map<Integer,String>>();
-
+    private final ConcurrentMap<Bundle, Map<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>>> consumerRestrictions =
+            new ConcurrentHashMap<Bundle, Map<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>>>();
+    
     public synchronized void start(BundleContext context) throws Exception {
         bundleContext = context;
         
@@ -128,7 +128,14 @@ public class Activator implements BundleActivator {
     }
     
     // TODO unRegisterProviderBundle();
-    public void registerConsumerBundle(Bundle consumer, Collection<String> spiProviders, String className, String methodName, Map<Integer, String> argRestrictions) {
+    public void registerConsumerBundle( Bundle consumerBundle,
+            Map<String, Map<String, Map<Integer, Map<String, String>>>> restrictions, List<BundleDescriptor> allowedBundles) {
+        consumerRestrictions.putIfAbsent(consumerBundle, 
+                new HashMap<Map<String, Map<String, Map<Integer, Map<String, String>>>>, List<BundleDescriptor>>());
+        consumerRestrictions.get(consumerBundle).put(restrictions, allowedBundles);
+    }
+
+    /* public void registerConsumerBundle(Bundle consumer, Collection<String> spiProviders, String className, String methodName, Map<Integer, String> argRestrictions) {
         if (spiProviders != null)
             consumerProviders.put(consumer, spiProviders);
         
@@ -144,7 +151,7 @@ public class Activator implements BundleActivator {
         }
         if (argRestrictions != null)
             consumerArgRestrictions.put(consumer, argRestrictions);
-    }
+    } */
     
     public Collection<Bundle> findConsumerRestrictions(Bundle consumer, int argIdx, String argVal) {
         List<Bundle> result = new ArrayList<Bundle>();
@@ -160,7 +167,7 @@ public class Activator implements BundleActivator {
 
     private Collection<String> findComsumerRestrictions2(Bundle consumer, int argIdx) {
         Collection<String> providers = consumerProviders.get(consumer);
-        Map<Integer, String> argRestrictions = consumerArgRestrictions.get(consumer);
+        Map<Integer, String> argRestrictions = consumerRestrictions.get(consumer);
 
         if (providers != null) { 
             if (argRestrictions != null) {
