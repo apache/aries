@@ -68,7 +68,7 @@ public final class ProxyHandler implements InvocationHandler {
             && method.getDeclaringClass() == Object.class) {
         Object targetObject = args[0];
         if (proxyManager.isProxy(targetObject)) {
-          args[0] = proxyManager.unwrap(proxy).call();
+          args[0] = proxyManager.unwrap(targetObject).call();
         }
     } else if (method.getName().equals("finalize") && method.getParameterTypes().length == 0) {
         // special case finalize, don't route through to delegate because that will get its own call
