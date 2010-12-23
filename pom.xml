@@ -50,7 +50,8 @@
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
-            org.apache.aries.proxy.impl*
+            org.apache.aries.proxy.impl*,
+            org.apache.aries.proxy.nls
         </aries.osgi.private.pkg>
     </properties>
 
