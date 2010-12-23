@@ -18,6 +18,9 @@
  */
 package org.apache.aries.spifly;
 
+/**
+ * A simple holder object for a pair of objects.
+ */
 public class Pair <A, B> {
     private final A left;
     private final B right;

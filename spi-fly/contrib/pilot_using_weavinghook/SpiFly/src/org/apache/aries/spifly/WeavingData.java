@@ -20,12 +20,21 @@ package org.apache.aries.spifly;
 
 import java.util.Arrays;
 
-
+/** Contains information needed for the byte code weaver.
+ */
 public class WeavingData {
     private final String className;
     private final String methodName;
     private final String[] argClasses;
-    
+
+    /**
+     * Constructor.
+     * @param className The class name of the call that needs to be woven.
+     * @param methodName The method name of the call that needs to be woven.
+     * @param argClasses The overload (class names of the signature) of the call
+     * that needs to be woven. If <code>null</code> then all overloads of the method
+     * need to be woven.
+     */
     public WeavingData(String className, String methodName, String[] argClasses) {
         this.className = className;
         this.methodName = methodName;
