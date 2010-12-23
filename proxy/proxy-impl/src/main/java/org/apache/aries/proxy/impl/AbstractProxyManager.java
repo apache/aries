@@ -27,6 +27,7 @@ import org.apache.aries.proxy.InvocationHandlerWrapper;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.util.AriesFrameworkUtil;
+import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
 
 public abstract class AbstractProxyManager implements ProxyManager
@@ -80,7 +81,7 @@ public abstract class AbstractProxyManager implements ProxyManager
   protected synchronized ClassLoader getClassLoader(final Bundle clientBundle, Collection<Class<?>> classes) 
   {
     if (clientBundle.getState() == Bundle.UNINSTALLED) {
-      throw new IllegalStateException("The bundle " + clientBundle.getBundleId() + " has been uninstalled");
+      throw new IllegalStateException(NLS.MESSAGES.getMessage("bundle.uninstalled", clientBundle.getSymbolicName(), clientBundle.getVersion(), clientBundle.getBundleId()));
     }
     
     ClassLoader cl = null;
