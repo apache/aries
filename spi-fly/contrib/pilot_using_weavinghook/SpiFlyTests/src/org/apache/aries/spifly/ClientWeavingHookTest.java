@@ -213,6 +213,70 @@ public class ClientWeavingHookTest {
     }
 
     @Test
+    public void testClientMultipleTargetBundles() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, 
+                "java.util.ServiceLoader#load(java.lang.Class);bundle=impl1|impl4");
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
+        Bundle providerBundle4 = mockProviderBundle("impl4", 4);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);        
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);        
+
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);        
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("All providers should be selected for this one", "ollehimpl4", result);        
+    }
+    
+    @Test
+    public void testClientMultipleTargetBundles2() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, 
+                "java.util.ServiceLoader#load(java.lang.Class);bundleId=1|4");
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
+        Bundle providerBundle4 = mockProviderBundle("impl4", 4);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);        
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);        
+
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);        
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("All providers should be selected for this one", "ollehimpl4", result);        
+    }
+
+    @Test
     public void testClientSpecificProviderLoadArgument() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, 
