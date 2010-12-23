@@ -18,6 +18,8 @@
  */
 package org.apache.aries.proxy;
 
+import org.apache.aries.util.nls.MessageUtil;
+
 
 public class FinalModifierException extends UnableToProxyException
 {
@@ -26,7 +28,8 @@ public class FinalModifierException extends UnableToProxyException
    * 
    */
   private static final long serialVersionUID = -3139392096074404448L;
-  public String finalMethods = null;
+  private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(FinalModifierException.class, "org.apache.aries.proxy.nls.ProxyMessages");
+  private String finalMethods = null;
 
   public FinalModifierException(Class<?> clazz)
   {
@@ -49,4 +52,12 @@ public class FinalModifierException extends UnableToProxyException
     return finalMethods;
   }
 
+  public String getMessage()
+  {
+    if (isFinalClass()) {
+      return MESSAGES.getMessage("final.class", getClassName());
+    } else {
+      return MESSAGES.getMessage("final.methods", finalMethods, getClassName());
+    }
+  }
 }
