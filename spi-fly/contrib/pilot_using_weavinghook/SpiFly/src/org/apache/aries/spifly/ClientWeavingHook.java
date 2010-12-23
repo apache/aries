@@ -54,7 +54,7 @@ public class ClientWeavingHook implements WeavingHook {
         if (consumerHeader != null) {
 	        Activator.activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());            
             
-            WeavingData wd = processHeader(consumerBundle, consumerHeader);
+            WeavingData[] wd = processHeader(consumerBundle, consumerHeader);
 	        
 	        ClassReader cr = new ClassReader(wovenClass.getBytes());
 	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
@@ -91,10 +91,11 @@ public class ClientWeavingHook implements WeavingHook {
 	 * @param consumerHeader the <tt>SPI-Consumer</tt> header.
 	 * @return an instance of the {@link WeavingData} class.
 	 */
-    private WeavingData processHeader(Bundle consumerBundle, String consumerHeader) {
-        List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
-
+    private WeavingData[] processHeader(Bundle consumerBundle, String consumerHeader) {
+        Set<WeavingData> weavingData = new HashSet<WeavingData>();
+        
         for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
+            List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
             String name = element.getName().trim();
 
             String className;
@@ -179,9 +180,8 @@ public class ClientWeavingHook implements WeavingHook {
                     allowedBundles.size() == 0 ? null : allowedBundles);           
             String[] argClasses = restriction.getMethodRestriction(methodName).getArgClasses();
 
-            // TODO support more than one definition            
-            return new WeavingData(className, methodName, argClasses);
+            weavingData.add(new WeavingData(className, methodName, argClasses));
         }
-        return null;
+        return weavingData.toArray(new WeavingData [weavingData.size()]);
     }
 }

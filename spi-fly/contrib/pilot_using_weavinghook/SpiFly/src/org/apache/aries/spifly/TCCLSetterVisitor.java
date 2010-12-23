@@ -39,13 +39,13 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     private static final String VOID_RETURN_TYPE = "()V";
     
     private final String targetClass;
-    private final WeavingData weavingData;
+    private final WeavingData [] weavingData;
 
     // Set to true when the weaving code has changed the client such that an additional import 
     // (to the Util.class.getPackage()) is needed.
     private boolean additionalImportRequired = false;
 
-    public TCCLSetterVisitor(ClassVisitor cv, String className, WeavingData weavingData) {
+    public TCCLSetterVisitor(ClassVisitor cv, String className, WeavingData [] weavingData) {
         super(cv);
         this.targetClass = className.replace('.', '/');
         this.weavingData = weavingData;
@@ -64,31 +64,47 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     public void visitEnd() {
         // Add generated static method
 
-        /* Equivalent to:
-         * private static void $$FCCL$$(Class<?> cls) {
-         *   Util.fixContextClassLoader("java.util.ServiceLoader", "load", cls, WovenClass.class.getClassLoader());
-         * }
-         */
-        MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, GENERATED_METHOD_NAME, 
-                "(Ljava/lang/Class;)V", "(Ljava/lang/Class<*>;)V", null);
-        mv.visitCode();
-        mv.visitLdcInsn(weavingData.getClassName());
-        mv.visitLdcInsn(weavingData.getMethodName());
-        mv.visitVarInsn(ALOAD, 0);
-        String typeIdentifier = "L" + targetClass + ";";
-        mv.visitLdcInsn(Type.getType(typeIdentifier));
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class",
-                "getClassLoader", "()Ljava/lang/ClassLoader;");
-        mv.visitMethodInsn(
-                INVOKESTATIC,
-                "org/apache/aries/spifly/Util",
-                "fixContextClassloader",
-                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;Ljava/lang/ClassLoader;)V");
-        mv.visitInsn(RETURN);
-        mv.visitMaxs(4, 1);
-        mv.visitEnd();
+        for (WeavingData wd : weavingData) {
+            /* Equivalent to:
+             * private static void $$FCCL$$<className>$<methodName>(Class<?> cls) {
+             *   Util.fixContextClassLoader("java.util.ServiceLoader", "load", cls, WovenClass.class.getClassLoader());
+             * }
+             */
+             MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, getGeneratedMethodName(wd), 
+                     "(Ljava/lang/Class;)V", "(Ljava/lang/Class<*>;)V", null);
+             mv.visitCode();
+             mv.visitLdcInsn(wd.getClassName());
+             mv.visitLdcInsn(wd.getMethodName());
+             mv.visitVarInsn(ALOAD, 0);
+             String typeIdentifier = "L" + targetClass + ";";
+             mv.visitLdcInsn(Type.getType(typeIdentifier));
+             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class",
+                     "getClassLoader", "()Ljava/lang/ClassLoader;");
+             mv.visitMethodInsn(
+                     INVOKESTATIC,
+                     "org/apache/aries/spifly/Util",
+                     "fixContextClassloader",
+                     "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;Ljava/lang/ClassLoader;)V");
+             mv.visitInsn(RETURN);
+             mv.visitMaxs(4, 1);
+             mv.visitEnd();            
+        }
 
         super.visitEnd();
+    }
+
+    private String getGeneratedMethodName(WeavingData wd) {
+        StringBuilder name = new StringBuilder(GENERATED_METHOD_NAME);
+        name.append(wd.getClassName().replace('.', '#'));
+        name.append("$");
+        name.append(wd.getMethodName());
+        if (wd.getArgClasses() != null) {
+            for (String cls : wd.getArgClasses()) {
+                name.append("$");
+                name.append(cls.replace('.', '#'));
+            }
+        }
+        return name.toString();
     }
     
     private class TCCLSetterMethodVisitor extends MethodAdapter implements MethodVisitor
@@ -122,17 +138,9 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
             System.out.println("### " + opcode + ": " + owner + "#" + name + "#" + desc);
-            
-            Type[] argTypes = Type.getArgumentTypes(desc);
-            String [] argClassNames = new String[argTypes.length];
-            for (int i = 0; i < argTypes.length; i++) {
-                argClassNames[i] = argTypes[i].getClassName();
-            }
-            
-            if (opcode == INVOKESTATIC &&
-                weavingData.getClassName().replace('.', '/').equals(owner) &&
-                weavingData.getMethodName().equals(name) && 
-                (weavingData.getArgClasses() != null ? Arrays.equals(argClassNames, weavingData.getArgClasses()) : true)) {
+                        
+            WeavingData wd = findWeavingData(owner, name, desc);            
+            if (opcode == INVOKESTATIC && wd != null) {
                 System.out.println("+++ Gotcha!");
           
                 additionalImportRequired = true;
@@ -141,10 +149,10 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "storeContextClassloader", VOID_RETURN_TYPE);
 
-                // Add: MyClass.$$FCCL$$(<class>);                
-                if (ServiceLoader.class.getName().equals(weavingData.getClassName()) &&
-                    "load".equals(weavingData.getMethodName()) &&
-                    Arrays.equals(new String [] {Class.class.getName()}, weavingData.getArgClasses())) {
+                // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);                
+                if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
+                    "load".equals(wd.getMethodName()) &&
+                    Arrays.equals(new String [] {Class.class.getName()}, wd.getArgClasses())) {
                     // ServiceLoader.load() is a special case because it's a general-purpose service loader, 
                     // therefore, the target class it the class being passed in to the ServiceLoader.load() 
                     // call itself.
@@ -157,7 +165,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                     mv.visitLdcInsn(type);
                 }
                 mv.visitMethodInsn(INVOKESTATIC, targetClass,
-                        GENERATED_METHOD_NAME, "(Ljava/lang/Class;)V");
+                        getGeneratedMethodName(wd), "(Ljava/lang/Class;)V");
 
                 super.visitMethodInsn(opcode, owner, name, desc);
 
@@ -167,6 +175,25 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
             } else {                
                 super.visitMethodInsn(opcode, owner, name, desc);
             }
+        }
+
+        private WeavingData findWeavingData(String owner, String methodName, String methodDesc) {
+            owner = owner.replace('/', '.');
+
+            Type[] argTypes = Type.getArgumentTypes(methodDesc);
+            String [] argClassNames = new String[argTypes.length];
+            for (int i = 0; i < argTypes.length; i++) {
+                argClassNames[i] = argTypes[i].getClassName();
+            }
+
+            for (WeavingData wd : weavingData) {
+                if (wd.getClassName().equals(owner) &&
+                    wd.getMethodName().equals(methodName) &&
+                    (wd.getArgClasses() != null ? Arrays.equals(argClassNames, wd.getArgClasses()) : true)) {
+                    return wd;
+                }
+            }
+            return null;
         }
     }
 

@@ -238,7 +238,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All providers should be selected for this one", "ollehHELLO5", result);        
+        Assert.assertEquals("All providers should be selected for this one", "ollehHELLO5impl4", result);        
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
@@ -249,7 +249,7 @@ public class ClientWeavingHookTest {
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {long.class});
         Object result2 = method2.invoke(cls2.newInstance(), 4096);
-        Assert.assertEquals("Only the services from bundle impl4 should be selected", 8192, result2);        
+        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L*4096L, result2);        
     }
     
     @Test
@@ -385,11 +385,11 @@ public class ClientWeavingHookTest {
         
         // The BundleWiring API is used on the bundle by the generated code to obtain its classloader
         BundleWiring bw = EasyMock.createMock(BundleWiring.class);
-        EasyMock.expect(bw.getClassLoader()).andReturn(cl);
+        EasyMock.expect(bw.getClassLoader()).andReturn(cl).anyTimes();
         EasyMock.replay(bw);
         
         Bundle providerBundle = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(providerBundle.adapt(BundleWiring.class)).andReturn(bw);
+        EasyMock.expect(providerBundle.adapt(BundleWiring.class)).andReturn(bw).anyTimes();
         EasyMock.expect(providerBundle.getSymbolicName()).andReturn(subdir).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(id).anyTimes();
         EasyMock.expect(providerBundle.getVersion()).andReturn(version).anyTimes();
@@ -404,14 +404,14 @@ public class ClientWeavingHookTest {
         
         Bundle consumerBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(consumerBundle.getSymbolicName()).andReturn("testConsumer").anyTimes();
-        EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers);
-        EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc);
+        EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
         EasyMock.replay(consumerBundle);        
 
         List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(otherBundles));
         allBundles.add(consumerBundle);
-        EasyMock.expect(bc.getBundles()).andReturn(allBundles.toArray(new Bundle [] {}));
+        EasyMock.expect(bc.getBundles()).andReturn(allBundles.toArray(new Bundle [] {})).anyTimes();
         EasyMock.replay(bc);
 
         return consumerBundle;
