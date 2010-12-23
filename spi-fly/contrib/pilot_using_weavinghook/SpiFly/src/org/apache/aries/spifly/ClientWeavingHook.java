@@ -95,11 +95,11 @@ public class ClientWeavingHook implements WeavingHook {
         List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
 
         for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
-            Set<ConsumerRestriction> restrictions = new HashSet<ConsumerRestriction>();
-            MethodRestriction methodRestriction = null;
             String name = element.getName().trim();
+
             String className;
             String methodName;
+            MethodRestriction methodRestriction;
             
             int hashIdx = name.indexOf('#');
             if (hashIdx > 0) {                
@@ -107,7 +107,6 @@ public class ClientWeavingHook implements WeavingHook {
                 int braceIdx = name.substring(hashIdx).indexOf('(');
                 if (braceIdx > 0) {
                     methodName = name.substring(hashIdx + 1, hashIdx + braceIdx);
-                    // Map<Integer, Map<String, String>> args = new HashMap<Integer, Map<String,String>>();
                     ArgRestrictions argRestrictions = new ArgRestrictions();
                     int closeIdx = name.substring(hashIdx).indexOf(')');
                     if (closeIdx > 0) {
@@ -117,7 +116,7 @@ public class ClientWeavingHook implements WeavingHook {
                                 int argNumber = 0;
                                 for (String s : classes.split(",")) {
                                     int idx = s.indexOf('[');
-                                    int end = s.indexOf(idx, ']');
+                                    int end = s.indexOf(']', idx);
                                     if (idx > 0 && end > idx) {
                                         argRestrictions.addRestriction(argNumber, s.substring(0, idx), s.substring(idx + 1, end));
                                     } else {
@@ -143,13 +142,15 @@ public class ClientWeavingHook implements WeavingHook {
                     className = ServiceLoader.class.getName();
                     methodName = "load";
                     ArgRestrictions argRestrictions = new ArgRestrictions();
-                    argRestrictions.addRestriction(1, Class.class.getName());
+                    argRestrictions.addRestriction(0, Class.class.getName());
                     methodRestriction = new MethodRestriction(methodName, argRestrictions);
                 } else {
                     throw new IllegalArgumentException("Must at least specify class name and method name: " + name);
                 }
             }  
             ConsumerRestriction restriction = new ConsumerRestriction(className, methodRestriction);
+
+            Set<ConsumerRestriction> restrictions = new HashSet<ConsumerRestriction>();
             restrictions.add(restriction);
                 
             String bsn = element.getAttribute("bundle");

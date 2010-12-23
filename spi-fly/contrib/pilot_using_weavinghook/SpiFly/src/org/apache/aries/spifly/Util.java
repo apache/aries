@@ -78,7 +78,7 @@ public class Util {
         activator.log(LogService.LOG_DEBUG, "Found bundles providing " + requestedClass + ": " + bundles);
                 
         Map<Pair<Integer, String>, String> args = new HashMap<Pair<Integer,String>, String>();
-        args.put(new Pair<Integer, String>(1, Class.class.getName()), clsArg.getName());
+        args.put(new Pair<Integer, String>(0, Class.class.getName()), clsArg.getName());
         Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle, className, methodName, args);
 
         if (allowedBundles != null) {
