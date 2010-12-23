@@ -19,10 +19,8 @@
 package org.apache.aries.spifly;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -205,7 +203,7 @@ public class ClientWeavingHook implements WeavingHook {
             // Activator.activator.log(LogService.LOG_INFO, "Weaving " + className + "#" + methodName + " from bundle " + 
             //    consumerBundle.getSymbolicName() + " to " + (allowedBundles.size() == 0 ? " any provider" : allowedBundles));
                         
-            Activator.activator.registerConsumerBundle(consumerBundle, restrictions, allowedBundles);
+            Activator.activator.registerConsumerBundle(consumerBundle, restrictions, allowedBundles.size() == 0 ? null : allowedBundles);
            
             String[] argClasses = restriction.getMethodRestriction(methodName).getArgClasses();
             // TODO support more than one definition            

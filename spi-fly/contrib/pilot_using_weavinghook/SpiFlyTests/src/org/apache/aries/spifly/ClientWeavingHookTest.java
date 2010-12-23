@@ -19,6 +19,7 @@
 package org.apache.aries.spifly;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,14 +50,23 @@ public class ClientWeavingHookTest {
     public void setUp() {
         Activator.activator = new Activator();
     }
+    
+    @After
+    public void tearDown() {
+        Activator.activator = null;
+    }
         
     @Test
     public void testClientWeavingHookBasicServiveLoaderUsage() throws Exception {
-        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"));               
-       
-        Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
-        Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
+
+        // Register the bundle that provides the SPI implementation.
+        Bundle providerBundle = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");        
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
+
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);                      
 
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
         
@@ -70,11 +81,7 @@ public class ClientWeavingHookTest {
         String di2 = "org.apache.aries.spifly;bundle-version=1.9.4;bundle-symbolic-name=spifly";
         String di = wc.getDynamicImports().get(0);
         Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di) || di2.equals(di));        
-                
-        // ok the weaving is done, now prepare the registry for the call
-        Bundle providerBundle = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");        
-        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
-        
+                        
         // Invoke the woven class and check that it propertly sets the TCCL so that the 
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
@@ -340,25 +347,30 @@ public class ClientWeavingHookTest {
         Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.impl3.MyAltDocumentBuilderFactory", result.getName());                        
     }
     
-    private Bundle mockSpiFlyBundle(Bundle ... bundles) {
+    private Bundle mockSpiFlyBundle(Bundle ... bundles) throws Exception {
         return mockSpiFlyBundle("spifly", new Version(1, 0, 0), bundles);
     }
     
-    private Bundle mockSpiFlyBundle(String bsn, Version version, Bundle ... bundles) {
+    private Bundle mockSpiFlyBundle(String bsn, Version version, Bundle ... bundles) throws Exception {
         Bundle spiFlyBundle = EasyMock.createMock(Bundle.class);
 
         BundleContext spiFlyBundleContext = EasyMock.createMock(BundleContext.class);
-        EasyMock.expect(spiFlyBundleContext.getBundle()).andReturn(spiFlyBundle);
+        EasyMock.expect(spiFlyBundleContext.getBundle()).andReturn(spiFlyBundle).anyTimes();
         List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(bundles));
         allBundles.add(spiFlyBundle);
-        EasyMock.expect(spiFlyBundleContext.getBundles()).andReturn(allBundles.toArray(new Bundle [] {}));
+        EasyMock.expect(spiFlyBundleContext.getBundles()).andReturn(allBundles.toArray(new Bundle [] {})).anyTimes();
         EasyMock.replay(spiFlyBundleContext);
 
         EasyMock.expect(spiFlyBundle.getSymbolicName()).andReturn(bsn).anyTimes();
-        EasyMock.expect(spiFlyBundle.getVersion()).andReturn(version);
+        EasyMock.expect(spiFlyBundle.getVersion()).andReturn(version).anyTimes();
         EasyMock.expect(spiFlyBundle.getBundleContext()).andReturn(spiFlyBundleContext).anyTimes();
         EasyMock.replay(spiFlyBundle);
 
+        // Set the bundle context for testing purposes
+        Field bcField = Activator.class.getDeclaredField("bundleContext");
+        bcField.setAccessible(true);
+        bcField.set(Activator.activator, spiFlyBundle.getBundleContext());
+        
         return spiFlyBundle;
     }
 
