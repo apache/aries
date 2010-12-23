@@ -420,6 +420,7 @@ public class ClientWeavingHookTest {
     private Bundle mockSystemBundle() {
         Bundle systemBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(systemBundle.getBundleId()).andReturn(0L).anyTimes();
+        EasyMock.expect(systemBundle.getSymbolicName()).andReturn("system.bundle").anyTimes();
         EasyMock.replay(systemBundle);
         
         return systemBundle;

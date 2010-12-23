@@ -131,6 +131,8 @@ public class ClientWeavingHook implements WeavingHook {
                                     argRestrictions.addRestriction(i, classNames[i]);
                                 }
                             }
+                        } else {
+                            argRestrictions = null;
                         }
                     }
                     methodRestriction = new MethodRestriction(methodName, argRestrictions);
