@@ -508,6 +508,7 @@ public class ClientWeavingHookTest {
         Bundle testBundle = ((BundleReference) getClass().getClassLoader()).getBundle();
         
         Set<String> resources = new HashSet<String>(); // findEntries happens to sometimes return duplicates in Eclipse
+        // This findEntries call is quite slow, can we do something that's a bit faster?
         Enumeration<URL> entries = testBundle.findEntries("/", null, true);
         for (URL entry : Collections.list(entries)) {
             String s = entry.toExternalForm();

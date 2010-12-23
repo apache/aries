@@ -42,13 +42,14 @@ import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
+    // Provide static access to this activator. The bundle must therefore be a singleton.
     static Activator activator;
 
     private BundleContext bundleContext;
     private ServiceRegistration<WeavingHook> weavingHookService;
-    private LogServiceTracker lst;
+    private LogServiceTracker logServiceTracker;
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
-    private BundleTracker<List<ServiceRegistration<?>>> bt;
+    private BundleTracker<List<ServiceRegistration<?>>> bundleTracker;
 
     private final ConcurrentMap<String, SortedMap<Long, Bundle>> registeredProviders = 
             new ConcurrentHashMap<String, SortedMap<Long, Bundle>>();
@@ -59,25 +60,25 @@ public class Activator implements BundleActivator {
     public synchronized void start(BundleContext context) throws Exception {
         bundleContext = context;
         
-        lst = new LogServiceTracker(context);
-        lst.open();
+        logServiceTracker = new LogServiceTracker(context);
+        logServiceTracker.open();
 
         WeavingHook wh = new ClientWeavingHook(context);
         weavingHookService = context.registerService(WeavingHook.class, wh,
                 null);
 
-        bt = new BundleTracker<List<ServiceRegistration<?>>>(context,
+        bundleTracker = new BundleTracker<List<ServiceRegistration<?>>>(context,
                 Bundle.ACTIVE, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
-        bt.open();
+        bundleTracker.open();
         
         activator = this;
     }
 
     public synchronized void stop(BundleContext context) throws Exception {
         activator = null;
-        bt.close();
+        bundleTracker.close();
         weavingHookService.unregister();
-        lst.close();
+        logServiceTracker.close();
     }
 
     void log(int level, String message) {
@@ -94,24 +95,6 @@ public class Activator implements BundleActivator {
                 log.log(level, message, th);
             }
         }
-    }
-
-    private class LogServiceTracker extends ServiceTracker<LogService, LogService> {
-        public LogServiceTracker(BundleContext context) {
-            super(context, LogService.class, null);
-        }
-
-        public LogService addingService(ServiceReference<LogService> reference) {
-            LogService svc = super.addingService(reference);
-            if (svc != null)
-                logServices.add(svc);
-            return svc;
-        }
-
-        @Override
-        public void removedService(ServiceReference<LogService> reference, LogService service) {
-            logServices.remove(service);
-        }        
     }
 
     public void registerProviderBundle(String registrationClassName, Bundle bundle) {        
@@ -139,6 +122,7 @@ public class Activator implements BundleActivator {
             Map<Pair<Integer, String>, String> args) {
         Map<ConsumerRestriction, List<BundleDescriptor>> restrictions = consumerRestrictions.get(consumer);
         if (restrictions == null) {
+            // Null means: no restrictions
             return null;
         }
         
@@ -148,6 +132,7 @@ public class Activator implements BundleActivator {
             }
         }
         
+        // Empty collection: nothing matches
         return Collections.emptySet();
     }
 
@@ -170,4 +155,22 @@ public class Activator implements BundleActivator {
     }
 
     // TODO unRegisterConsumerBundle();
+    
+    private class LogServiceTracker extends ServiceTracker<LogService, LogService> {
+        public LogServiceTracker(BundleContext context) {
+            super(context, LogService.class, null);
+        }
+
+        public LogService addingService(ServiceReference<LogService> reference) {
+            LogService svc = super.addingService(reference);
+            if (svc != null)
+                logServices.add(svc);
+            return svc;
+        }
+
+        @Override
+        public void removedService(ServiceReference<LogService> reference, LogService service) {
+            logServices.remove(service);
+        }        
+    }
 }
