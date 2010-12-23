@@ -186,11 +186,11 @@ public class ClientWeavingHookTest {
     @Test
     public void testClientSpecifyingProviderVersion() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2;version=1.2.3");
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2:version=1.2.3");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
-        Bundle providerBundle3 = mockProviderBundle("impl2", 3, new Version(1, 2, 3));
+        Bundle providerBundle3 = mockProviderBundle("impl2_123", 3, new Version(1, 2, 3));
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle3);
@@ -209,7 +209,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("Only the services from bundle impl2 should be selected", "Updated!Hello!Updated", result);        
+        Assert.assertEquals("Only the services from bundle impl2 should be selected", "Updated!hello!Updated", result);        
     }
 
     @Test
@@ -532,7 +532,12 @@ public class ClientWeavingHookTest {
         
         Bundle providerBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(providerBundle.adapt(BundleWiring.class)).andReturn(bw).anyTimes();
-        EasyMock.expect(providerBundle.getSymbolicName()).andReturn(subdir).anyTimes();
+        String bsn = subdir;
+        int idx = bsn.indexOf('_');
+        if (idx > 0) {
+            bsn = bsn.substring(0, idx);
+        }
+        EasyMock.expect(providerBundle.getSymbolicName()).andReturn(bsn).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(id).anyTimes();
         EasyMock.expect(providerBundle.getVersion()).andReturn(version).anyTimes();
         EasyMock.replay(providerBundle);

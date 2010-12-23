@@ -30,6 +30,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Version;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.service.log.LogService;
@@ -82,9 +83,12 @@ public class ClientWeavingHook implements WeavingHook {
 	 * 
 	 * The following attributes are supported:
 	 * <ul>
-	 * <li><tt>bundle</tt> - restrict wiring to the bundle with the specifies Symbolic Name.
+	 * <li><tt>bundle</tt> - restrict wiring to the bundle with the specifies Symbolic Name. The attribute value 
+	 * is a list of bundle identifiers separated by a '|' sign. The bundle identifier starts with the Symbolic name
+	 * and can optionally contain a version suffix. E.g. bundle=impl2:version=1.2.3 or bundle=impl2|impl4.  
 	 * <li><tt>bundleId</tt> - restrict wiring to the bundle with the specified bundle ID. Typically used when 
-	 * the service should be forceably picked up from the system bundle (<tt>bundleId=0</tt>).
+	 * the service should be forceably picked up from the system bundle (<tt>bundleId=0</tt>). Multiple bundle IDs 
+	 * can be specified separated by a '|' sign. 
 	 * </ul>
 	 * 
 	 * @param consumerBundle the consuming bundle.
@@ -161,13 +165,23 @@ public class ClientWeavingHook implements WeavingHook {
                 bsn = bsn.trim();
                 if (bsn.length() > 0) {
                     for (String s : bsn.split("\\|")) {
-                        allowedBundles.add(new BundleDescriptor(s));                        
+                        int colonIdx = s.indexOf(':');
+                        if (colonIdx > 0) {
+                            String sn = s.substring(0, colonIdx);
+                            String versionSfx = s.substring(colonIdx + 1);
+                            if (versionSfx.startsWith("version=")) {
+                                allowedBundles.add(new BundleDescriptor(sn, 
+                                        Version.parseVersion(versionSfx.substring("version=".length()))));
+                            } else {
+                                allowedBundles.add(new BundleDescriptor(sn));
+                            }
+                        } else {
+                            allowedBundles.add(new BundleDescriptor(s));
+                        }
                     }
                 }
             }
-            
-            // TODO bundle version
-            
+                        
             String bid = element.getAttribute("bundleId");
             if (bid != null) {
                 bid = bid.trim();
