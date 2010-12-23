@@ -30,7 +30,7 @@ import org.objectweb.asm.Type;
 
 /**
  * This class implements an ASM ClassVisitor which puts the appropriate ThreadContextClassloader
- * calls around applicable method invocations. 
+ * calls around applicable method invocations. It does the actual bytecode weaving.
  */
 public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opcodes {
     private static final String GENERATED_METHOD_NAME = "$$FCCL$$";

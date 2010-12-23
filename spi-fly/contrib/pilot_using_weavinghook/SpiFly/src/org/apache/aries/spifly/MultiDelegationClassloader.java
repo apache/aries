@@ -26,6 +26,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+/** A classloader that delegates to a number of other classloaders.
+ * This classloader can be used if a single classloader is needed that has
+ * vibisility of a number of other classloaders. For example if a Thread Context
+ * Classloader is needed that has visibility of a number of bundles so that 
+ * ServiceLoader.load() can find all the services provided by these bundles.
+ */
 public class MultiDelegationClassloader extends ClassLoader {
     private final ClassLoader[] delegates;
     
