@@ -206,13 +206,21 @@ public class Activator implements BundleActivator {
     }
 
     private Collection<Bundle> getBundles(List<BundleDescriptor> descriptors) {
+        if (descriptors == null) {
+            return null;
+        }
+        
         List<Bundle> bundles = new ArrayList<Bundle>();
         for (Bundle b : bundleContext.getBundles()) {
             for (BundleDescriptor desc : descriptors) {
-                
+                if (b.getSymbolicName().equals(desc.getSymbolicName())) {
+                    if (desc.getVersion() == null || b.getVersion().equals(desc.getVersion())) {
+                        bundles.add(b);
+                    }
+                }
             }
         }
-        return null;
+        return bundles;
     }
 
     /*

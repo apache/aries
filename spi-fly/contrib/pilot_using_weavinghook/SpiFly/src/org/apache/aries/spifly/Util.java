@@ -20,8 +20,11 @@ package org.apache.aries.spifly;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
@@ -53,7 +56,7 @@ public class Util {
         BundleReference br = ((BundleReference) bundleLoader);
         System.out.println("~~~ cls: " + cls + " method: " + method + " clarg:" + clsArg + " cl:" + bundleLoader + " clientBundle: " + br.getBundle().getSymbolicName());        
         
-        ClassLoader cl = findContextClassloader(clsArg, br.getBundle());
+        ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
             Activator.activator.log(LogService.LOG_INFO, "Temporarily setting Thread Context Classloader to: " + cl);
             Thread.currentThread().setContextClassLoader(cl);
@@ -62,13 +65,22 @@ public class Util {
         }
     }
     
-    private static ClassLoader findContextClassloader(Class<?> cls, Bundle consumerBundle) {
+    private static ClassLoader findContextClassloader(Bundle consumerBundle, String className, String methodName, Class<?> clsArg) {
         Activator activator = Activator.activator;
         
-        Collection<Bundle> bundles = new ArrayList<Bundle>(activator.findProviderBundles(cls.getName()));
-        activator.log(LogService.LOG_DEBUG, "Found bundles providing " + cls + ": " + bundles);
+        String requestedClass;
+        if (ServiceLoader.class.getName().equals(className) && "load".equals(methodName)) {
+            requestedClass = clsArg.getName();
+        } else {
+            requestedClass = className;
+        }
+        Collection<Bundle> bundles = new ArrayList<Bundle>(activator.findProviderBundles(requestedClass));
+        activator.log(LogService.LOG_DEBUG, "Found bundles providing " + requestedClass + ": " + bundles);
                 
-        Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle, 0, cls.getName());
+        Map<Pair<Integer, String>, String> args = new HashMap<Pair<Integer,String>, String>();
+        args.put(new Pair<Integer, String>(1, Class.class.getName()), clsArg.getName());
+        Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle, className, methodName, args);
+
         if (allowedBundles != null) {
             for (Iterator<Bundle> it = bundles.iterator(); it.hasNext(); ) {
                 if (!allowedBundles.contains(it.next())) {

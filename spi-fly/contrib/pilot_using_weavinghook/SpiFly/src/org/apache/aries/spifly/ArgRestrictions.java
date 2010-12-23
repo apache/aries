@@ -19,27 +19,29 @@
 package org.apache.aries.spifly;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class ArgRestrictions {
-    private final SortedMap<Pair<Integer, String>, List<String>> restrictions = 
-            new TreeMap<Pair<Integer, String>, List<String>>();
+    private final Map<Pair<Integer, String>, List<String>> restrictions = 
+            new HashMap<Pair<Integer, String>, List<String>>();
     
     public void addRestriction(int argNumber, String className) {
         addRestriction(argNumber, className, null);
     }
 
-    public void addRestriction(int argNumber, String className, String value) {
+    public void addRestriction(int argNumber, String className, String allowedArgValue) {
         Pair<Integer, String> key = new Pair<Integer, String>(argNumber, className);
-        List<String> values = restrictions.get(key);
-        if (values == null && value != null) {
-            values = new ArrayList<String>();
-            restrictions.put(key, values);
+        List<String> allowedValues = restrictions.get(key);
+        if (allowedArgValue != null) {
+            if (allowedValues == null) {
+                allowedValues = new ArrayList<String>();
+                restrictions.put(key, allowedValues);
+            }            
+            allowedValues.add(allowedArgValue);            
         }
-        values.add(value);
+        restrictions.put(key, allowedValues);
     }
 
     public String[] getArgClasses() {
