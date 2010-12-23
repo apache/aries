@@ -54,7 +54,7 @@ public class ClientWeavingHook implements WeavingHook {
         if (consumerHeader != null) {
 	        Activator.activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());            
             
-            WeavingData wd = parseHeader(consumerBundle, consumerHeader);
+            WeavingData wd = processHeader(consumerBundle, consumerHeader);
 	        
 	        ClassReader cr = new ClassReader(wovenClass.getBytes());
 	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
@@ -91,19 +91,10 @@ public class ClientWeavingHook implements WeavingHook {
 	 * @param consumerHeader the <tt>SPI-Consumer</tt> header.
 	 * @return an instance of the {@link WeavingData} class.
 	 */
-    private WeavingData parseHeader(Bundle consumerBundle, String consumerHeader) {
+    private WeavingData processHeader(Bundle consumerBundle, String consumerHeader) {
         List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
 
         for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
-            /* This map has the following structure:
-             *   ClassName -> MethodName -> Argument# -> ArgClassName -> ArgValue
-             * Anything except from the ClassName and MethodName can be null which means any
-             * value is allowed there.
-             */
-            /* Map<String, Map<String, Map<Integer, Map<String, String>>>> restrictions = 
-                new HashMap<String, Map<String,Map<Integer,Map<String,String>>>>();
-            Map<String, Map<Integer, Map<String, String>>> methods = 
-                new HashMap<String, Map<Integer,Map<String,String>>>(); */
             Set<ConsumerRestriction> restrictions = new HashSet<ConsumerRestriction>();
             MethodRestriction methodRestriction = null;
             String name = element.getName().trim();
@@ -128,14 +119,8 @@ public class ClientWeavingHook implements WeavingHook {
                                     int idx = s.indexOf('[');
                                     int end = s.indexOf(idx, ']');
                                     if (idx > 0 && end > idx) {
-//                                        Map<String, String> argVals = new HashMap<String, String>();
-//                                        argVals.put(s.substring(0, idx), s.substring(idx + 1, end));
-//                                        args.put(argNumber, argVals);
                                         argRestrictions.addRestriction(argNumber, s.substring(0, idx), s.substring(idx + 1, end));
                                     } else {
-//                                        Map<String, String> argVals = new HashMap<String, String>();
-//                                        argVals.put(s, null);
-//                                        args.put(argNumber, argVals);
                                         argRestrictions.addRestriction(argNumber, s);
                                     }
                                     argNumber++;
@@ -144,30 +129,17 @@ public class ClientWeavingHook implements WeavingHook {
                                 String[] classNames = classes.split(",");
                                 for (int i = 0; i < classNames.length; i++) {
                                     argRestrictions.addRestriction(i, classNames[i]);
-//                                    Map<String, String> argTypes = new HashMap<String, String>();
-//                                    argTypes.put(classNames[i], null);
-//                                    args.put(i, argTypes);
                                 }
                             }
                         }
                     }
-                    // methods.put(methodName, args);
-                    
                     methodRestriction = new MethodRestriction(methodName, argRestrictions);
                 } else {
                     methodName = name.substring(hashIdx + 1);
-                    // methods.put(methodName, null);
                     methodRestriction = new MethodRestriction(methodName);
                 }
             } else {
                 if ("true".equalsIgnoreCase(name)) {
-                    /*
-                    Map<Integer, Map<String, String>> args = new HashMap<Integer, Map<String,String>>();
-                    Map<String, String> argTypes = new HashMap<String, String>();
-                    argTypes.put(Class.class.getName(), null);
-                    args.put(1, argTypes);
-                    methods.put(methodName, args);
-                    */
                     className = ServiceLoader.class.getName();
                     methodName = "load";
                     ArgRestrictions argRestrictions = new ArgRestrictions();
@@ -179,7 +151,6 @@ public class ClientWeavingHook implements WeavingHook {
             }  
             ConsumerRestriction restriction = new ConsumerRestriction(className, methodRestriction);
             restrictions.add(restriction);
-            // restrictions.put(className, methods);
                 
             String bsn = element.getAttribute("bundle");
             if (bsn != null) {
@@ -203,9 +174,10 @@ public class ClientWeavingHook implements WeavingHook {
             // Activator.activator.log(LogService.LOG_INFO, "Weaving " + className + "#" + methodName + " from bundle " + 
             //    consumerBundle.getSymbolicName() + " to " + (allowedBundles.size() == 0 ? " any provider" : allowedBundles));
                         
-            Activator.activator.registerConsumerBundle(consumerBundle, restrictions, allowedBundles.size() == 0 ? null : allowedBundles);
-           
+            Activator.activator.registerConsumerBundle(consumerBundle, restrictions, 
+                    allowedBundles.size() == 0 ? null : allowedBundles);           
             String[] argClasses = restriction.getMethodRestriction(methodName).getArgClasses();
+
             // TODO support more than one definition            
             return new WeavingData(className, methodName, argClasses);
         }
