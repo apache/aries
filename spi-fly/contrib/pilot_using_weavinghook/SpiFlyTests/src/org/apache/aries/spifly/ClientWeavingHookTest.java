@@ -238,7 +238,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("Only the services from bundle impl2 should be selected", "ollehHELLO5", result);        
+        Assert.assertEquals("All providers should be selected for this one", "ollehHELLO5", result);        
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
