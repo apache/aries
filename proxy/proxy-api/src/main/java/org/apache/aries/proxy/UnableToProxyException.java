@@ -20,7 +20,6 @@ package org.apache.aries.proxy;
 
 public class UnableToProxyException extends Exception
 {
-
   /**
    * 
    */
@@ -29,6 +28,7 @@ public class UnableToProxyException extends Exception
 
   public UnableToProxyException(Class<?> clazz)
   {
+    super(clazz.getName());
     className = clazz.getName();
   }
 

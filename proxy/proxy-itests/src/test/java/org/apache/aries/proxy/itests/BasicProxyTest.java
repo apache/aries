@@ -18,6 +18,7 @@
  */
 package org.apache.aries.proxy.itests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
@@ -31,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.junit.Test;
@@ -54,6 +56,7 @@ public class BasicProxyTest
       return list;
     }
   }
+
   @SuppressWarnings("unchecked")
   @Test
   public void testEquals() throws Exception
@@ -73,8 +76,53 @@ public class BasicProxyTest
     assertTrue("The object is not equal to itself", proxy.equals(proxy));
     assertTrue("The object is not equal to another proxy of itself", proxy.equals(otherProxy));
     assertFalse("The object is equal to proxy to another object", proxy.equals(totallyOtherProxy));
-    
   }
+  
+  /**
+   * This test does two things. First of all it checks that we throw a FinalModifierException if we
+   * try to proxy a final class. It also validates that the message and toString in the exception
+   * works as expected.
+   */
+  @Test
+  public void checkProxyFinalClass() throws UnableToProxyException
+  {
+    ProxyManager mgr = getService(ProxyManager.class);
+    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Callable<Object> c = new TestCallable();
+    Collection<Class<?>> classes = new ArrayList<Class<?>>();
+    classes.add(TestCallable.class);
+    try {
+      mgr.createProxy(b, classes, c);
+    } catch (FinalModifierException e) {
+      String msg = e.getMessage();
+      assertEquals("The message didn't look right", "The class " + TestCallable.class.getName() + " is final.", msg);
+      assertTrue("The message didn't appear in the toString", e.toString().endsWith(msg));
+    }
+  }
+  
+  /**
+   * This method checks that we correctly fail to proxy a class with final methods.
+   * It also does a quick validation on the exception message.
+   */
+  @Test
+  public void checkProxyFinalMethods() throws UnableToProxyException
+  {
+    ProxyManager mgr = getService(ProxyManager.class);
+    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Callable<Object> c = new TestCallable();
+    Collection<Class<?>> classes = new ArrayList<Class<?>>();
+    Runnable r = new Runnable() {
+      public final void run() {
+      }
+    };
+    classes.add(r.getClass());
+    try {
+      mgr.createProxy(b, classes, c);
+    } catch (FinalModifierException e) {
+      assertTrue("The methods didn't appear in the message", e.getMessage().contains("run"));
+    }
+  }
+  
   private <T> T getService(Class<T> clazz) 
   {
     BundleContext ctx = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
