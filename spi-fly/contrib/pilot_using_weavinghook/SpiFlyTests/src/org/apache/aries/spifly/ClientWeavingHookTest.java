@@ -20,16 +20,20 @@ package org.apache.aries.spifly;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.easymock.EasyMock;
@@ -62,7 +66,7 @@ public class ClientWeavingHookTest {
         consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
 
         // Register the bundle that provides the SPI implementation.
-        Bundle providerBundle = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");        
+        Bundle providerBundle = mockProviderBundle("impl1", 1);        
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
 
         Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
@@ -111,7 +115,7 @@ public class ClientWeavingHookTest {
             0, wc.getDynamicImports().size());
                 
         // ok the weaving is done, now prepare the registry for the call
-        Bundle providerBundle = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");        
+        Bundle providerBundle = mockProviderBundle("impl1", 1);        
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
         
         // Invoke the woven class and check that it propertly sets the TCCL so that the 
@@ -137,8 +141,8 @@ public class ClientWeavingHookTest {
         WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
         wh.weave(wc);
 
-        Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
-        Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI");
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         
         // Register in reverse order to make sure the order in which bundles are sorted is correct
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
@@ -157,8 +161,8 @@ public class ClientWeavingHookTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2");
 
-        Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
-        Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI");
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
 
@@ -184,9 +188,9 @@ public class ClientWeavingHookTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2;version=1.2.3");
 
-        Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
-        Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI");
-        Bundle providerBundle3 = mockProviderBundle("impl2", 3, new Version(1, 2, 3),  "META-INF/services/org.apache.aries.mytest.MySPI");
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
+        Bundle providerBundle3 = mockProviderBundle("impl2", 3, new Version(1, 2, 3));
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle3);
@@ -215,9 +219,9 @@ public class ClientWeavingHookTest {
                 "java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.MySPI])," +
                 "java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.AltSPI]);bundle=impl4");
 
-        Bundle providerBundle1 = mockProviderBundle("impl1", 1, "META-INF/services/org.apache.aries.mytest.MySPI");
-        Bundle providerBundle2 = mockProviderBundle("impl2", 2, "META-INF/services/org.apache.aries.mytest.MySPI", "META-INF/services/org.apache.aries.mytest.AltSPI");
-        Bundle providerBundle4 = mockProviderBundle("impl4", 4, "META-INF/services/org.apache.aries.mytest.MySPI", "META-INF/services/org.apache.aries.mytest.AltSPI");
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
+        Bundle providerBundle4 = mockProviderBundle("impl4", 4);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
         Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
@@ -253,8 +257,65 @@ public class ClientWeavingHookTest {
     }
     
     @Test
-    public void testClientSpecifyingTwoDifferentMethodsLimitedToDifferentProviders() {
-        Assert.fail();
+    public void testClientSpecifyingDifferentMethodsLimitedToDifferentProviders() throws Exception {
+        Dictionary<String, String> headers1 = new Hashtable<String, String>();
+        headers1.put(SpiFlyConstants.SPI_CONSUMER_HEADER, 
+                "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=impl3," +
+                "java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.MySPI]);bundle=impl4");
+
+        Dictionary<String, String> headers2 = new Hashtable<String, String>();
+        headers2.put(SpiFlyConstants.SPI_CONSUMER_HEADER, 
+                "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=system.bundle," +
+                "java.util.ServiceLoader#load;bundle=impl1");
+
+        Dictionary<String, String> headers3 = new Hashtable<String, String>();
+        headers3.put(SpiFlyConstants.SPI_CONSUMER_HEADER, 
+                "org.acme.blah#someMethod();bundle=mybundle");
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
+        Bundle providerBundle3 = mockProviderBundle("impl3", 3);
+        Bundle providerBundle4 = mockProviderBundle("impl4", 4);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
+        Activator.activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle3);
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);        
+        Activator.activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
+        
+        Bundle consumerBundle1 = mockConsumerBundle(headers1, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
+        Bundle consumerBundle2 = mockConsumerBundle(headers2, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
+        Bundle consumerBundle3 = mockConsumerBundle(headers3, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle1, consumerBundle2, consumerBundle3,
+                providerBundle1, providerBundle2, providerBundle3, providerBundle4);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
+        
+        testConsumerBundleWeaving(consumerBundle1, wh, "impl4", "org.apache.aries.spifly.impl3.MyAltDocumentBuilderFactory");                
+        testConsumerBundleWeaving(consumerBundle2, wh, "olleh", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");                
+        testConsumerBundleWeaving(consumerBundle3, wh, "", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");                
+    }
+
+    private void testConsumerBundleWeaving(Bundle consumerBundle, WeavingHook wh, String testClientResult, String jaxpClientResult) throws Exception {
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        wh.weave(wc);
+        
+        // Invoke the woven class and check that it propertly sets the TCCL so that the 
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals(testClientResult, result);        
+        
+        URL clsUrl2 = getClass().getResource("JaxpClient.class");
+        WovenClass wc2 = new MyWovenClass(clsUrl2, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        wh.weave(wc2);
+        
+        Class<?> cls2 = wc2.getDefinedClass();
+        Method method2 = cls2.getMethod("test", new Class [] {});
+        Class<?> result2 = (Class<?>) method2.invoke(cls2.newInstance());
+        Assert.assertEquals(jaxpClientResult, result2.getName());
     }
         
     @Test
@@ -282,7 +343,7 @@ public class ClientWeavingHookTest {
     public void testJAXPClientWantsAltImplementation1() throws Exception {
         Bundle systembundle = mockSystemBundle();
 
-        Bundle providerBundle = mockProviderBundle("impl3", 1, "META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
+        Bundle providerBundle = mockProviderBundle("impl3", 1);
         Activator.activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -305,7 +366,7 @@ public class ClientWeavingHookTest {
     public void testJAXPClientWantsJREImplementation2() throws Exception {
         Bundle systembundle = mockSystemBundle();
         
-        Bundle providerBundle = mockProviderBundle("impl3", 1, "META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
+        Bundle providerBundle = mockProviderBundle("impl3", 1);
         Activator.activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -328,7 +389,7 @@ public class ClientWeavingHookTest {
     public void testJAXPClientWantsAltImplementation2() throws Exception {
         Bundle systembundle = mockSystemBundle();
 
-        Bundle providerBundle = mockProviderBundle("impl3", 1, "META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
+        Bundle providerBundle = mockProviderBundle("impl3", 1);
         Activator.activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -374,14 +435,31 @@ public class ClientWeavingHookTest {
         return spiFlyBundle;
     }
 
-    private Bundle mockProviderBundle(String subdir, long id, String ... resources) {
-        return mockProviderBundle(subdir, id, Version.emptyVersion, resources);
+    private Bundle mockProviderBundle(String subdir, long id) {
+        return mockProviderBundle(subdir, id, Version.emptyVersion);
     }
     
-    private Bundle mockProviderBundle(String subdir, long id, Version version, String ... resources) {
+    private Bundle mockProviderBundle(String subdir, long id, Version version) {
+        // Discover all the relevant resources in the META-INF/services directory of specified subdir
+        String location = getClass().getPackage().getName().replace('.', '/') + "/" + subdir + "/META-INF/services";
+        Bundle testBundle = ((BundleReference) getClass().getClassLoader()).getBundle();
+        
+        Set<String> resources = new HashSet<String>(); // findEntries happens to sometimes return duplicates in Eclipse
+        Enumeration<URL> entries = testBundle.findEntries("/", null, true);
+        for (URL entry : Collections.list(entries)) {
+            String s = entry.toExternalForm();
+            if (s.contains(location)) {
+                int idx = s.lastIndexOf("META-INF/services");
+                String resource = s.substring(idx);
+                if (!resource.endsWith("META-INF/services") && !resource.endsWith("META-INF/services/") && 
+                    !resource.substring("META-INF/services/".length()).contains("/")) {
+                    resources.add(resource);
+                }
+            }
+        }
         // Set up the classloader that will be used by the ASM-generated code as the TCCL. 
         // It can load a META-INF/services file
-        ClassLoader cl = new TestImplClassLoader(subdir, resources);
+        ClassLoader cl = new TestImplClassLoader(subdir, resources.toArray(new String [] {}));
         
         // The BundleWiring API is used on the bundle by the generated code to obtain its classloader
         BundleWiring bw = EasyMock.createMock(BundleWiring.class);
