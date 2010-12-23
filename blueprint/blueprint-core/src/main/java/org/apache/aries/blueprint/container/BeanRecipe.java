@@ -44,6 +44,7 @@ import org.apache.aries.blueprint.proxy.Collaborator;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ReifiedType;
@@ -683,7 +684,8 @@ public class BeanRecipe extends AbstractRecipe {
                   ProxyUtils.asList(original.getClass()), ProxyUtils.passThrough(original), 
                   new Collaborator(interceptorLookupKey, interceptors));
             } catch (org.apache.aries.proxy.UnableToProxyException e) {
-                throw new ComponentDefinitionException("Unable to create asm proxy", e);
+                  Bundle b = blueprintContainer.getBundleContext().getBundle();
+                  throw new ComponentDefinitionException("Unable to create proxy for bean " + name + " in bundle " + b.getSymbolicName() + " version " + b.getVersion(), e);
             }
         } else {
             intercepted = original;
