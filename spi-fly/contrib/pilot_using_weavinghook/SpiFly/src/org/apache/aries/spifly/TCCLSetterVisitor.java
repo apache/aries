@@ -152,7 +152,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);                
                 if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
                     "load".equals(wd.getMethodName()) &&
-                    Arrays.equals(new String [] {Class.class.getName()}, wd.getArgClasses())) {
+                    (wd.getArgClasses() == null || Arrays.equals(new String [] {Class.class.getName()}, wd.getArgClasses()))) {
                     // ServiceLoader.load() is a special case because it's a general-purpose service loader, 
                     // therefore, the target class it the class being passed in to the ServiceLoader.load() 
                     // call itself.

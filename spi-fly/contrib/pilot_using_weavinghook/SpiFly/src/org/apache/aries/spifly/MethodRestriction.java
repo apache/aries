@@ -52,6 +52,9 @@ public class MethodRestriction {
         if (args == null) 
             return true;
         
+        if (argRestrictions == null)
+            return true;
+        
         return argRestrictions.matches(args);
     }
 }
