@@ -449,6 +449,10 @@ public class ServiceRecipe extends AbstractRecipe {
             Object intercepted;
             try {
                 Bundle b = FrameworkUtil.getBundle(original.getClass());
+                if (b == null) {
+                  // we have a class from the framework parent, so use our bundle for proxying.
+                  b = blueprintContainer.getBundleContext().getBundle();
+                }
                 Callable<Object> target = ProxyUtils.passThrough(original);
                 InvocationHandlerWrapper collaborator = new Collaborator(cm, interceptors);
                 try {
@@ -464,7 +468,8 @@ public class ServiceRecipe extends AbstractRecipe {
                         classes, target, collaborator);
                 }
             } catch (Throwable u) {
-                LOGGER.info("A problem occurred trying to create a proxy object. Returning the original object instead.", u);
+                Bundle b = blueprintContainer.getBundleContext().getBundle();
+                LOGGER.info("Unable to create a proxy object for the service " + getName() + " defined in bundle " + b.getSymbolicName() + " at version " + b.getVersion() + " with id " + b.getBundleId() + ". Returning the original object instead.", u);
                 LOGGER.debug(LOG_EXIT, "getService", original);
                 return original;
             }
