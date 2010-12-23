@@ -158,7 +158,12 @@ public class ClientWeavingHook implements WeavingHook {
                 
             String bsn = element.getAttribute("bundle");
             if (bsn != null) {
-                allowedBundles.add(new BundleDescriptor(bsn));
+                bsn = bsn.trim();
+                if (bsn.length() > 0) {
+                    for (String s : bsn.split("\\|")) {
+                        allowedBundles.add(new BundleDescriptor(s));                        
+                    }
+                }
             }
             
             // TODO bundle version
@@ -166,12 +171,16 @@ public class ClientWeavingHook implements WeavingHook {
             String bid = element.getAttribute("bundleId");
             if (bid != null) {
                 bid = bid.trim();
-                for (Bundle b : consumerBundle.getBundleContext().getBundles()) {
-                    if (("" + b.getBundleId()).equals(bid)) {                       
-                        allowedBundles.add(new BundleDescriptor(b.getSymbolicName()));
-                        break;                        
+                if (bid.length() > 0) {
+                    for (String s : bid.split("\\|")) {
+                        for (Bundle b : consumerBundle.getBundleContext().getBundles()) {
+                            if (("" + b.getBundleId()).equals(s)) {                       
+                                allowedBundles.add(new BundleDescriptor(b.getSymbolicName()));
+                                break;                        
+                            }
+                        }                        
                     }
-                }                
+                }
             }
             
             // TODO fix log message
