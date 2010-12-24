@@ -26,6 +26,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import org.junit.Test;
@@ -55,17 +56,23 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     assertNotNull(bweb);
     bweb.start();
 
-    // Short wait in order to give the blueprint and web containers a chance
-    // to initialise
+    // We've had intermittent problems in which Jetty only seems to start after a bundle
+    // receives an HTTP request. This next block is here to prevent Hudson failures. 
     try { 
-      Thread.sleep(5000);
+      Thread.sleep(2000);
+      getTestServletResponse();
+      Thread.sleep(3000);
     } catch (InterruptedException ix) {}
     
     System.out.println("In test and trying to get connection....");
+    String response = getTestServletResponse();
+    assertEquals("ITest servlet response wrong", "Mark.2.0.three", response);
+  }
+  
+  private String getTestServletResponse() throws IOException { 
     HttpURLConnection conn = makeConnection("http://localhost:8080/org.apache.aries.jndi.url.itest.web/ITestServlet");
     String response = getHTTPResponse(conn).trim();
-    
-    assertEquals("ITest servlet response wrong", "Mark.2.0.three", response);
+    return response;
   }
   
   @org.ops4j.pax.exam.junit.Configuration
