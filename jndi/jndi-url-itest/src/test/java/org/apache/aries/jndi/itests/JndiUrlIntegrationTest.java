@@ -61,8 +61,13 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     try { 
       Thread.sleep(2000);
       getTestServletResponse();
+    } 
+    catch (InterruptedException ix) {}
+    catch (IOException iox) {}
+    try { 
       Thread.sleep(3000);
-    } catch (InterruptedException ix) {}
+    } catch (InterruptedException iox) {}
+    
     
     System.out.println("In test and trying to get connection....");
     String response = getTestServletResponse();
