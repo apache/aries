@@ -50,28 +50,51 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
     Bundle bBiz = getInstalledBundle("org.apache.aries.jndi.url.itest.biz");
     assertNotNull(bBiz);
-    bBiz.start();
     
     Bundle bweb = getInstalledBundle("org.apache.aries.jndi.url.itest.web");
     assertNotNull(bweb);
-    bweb.start();
+    
+    // Let's see what's going on
+    printBundleStatus("Before first request");
 
     // We've had intermittent problems in which Jetty only seems to start after a bundle
     // receives an HTTP request. This next block is here to prevent Hudson failures. 
     try { 
-      Thread.sleep(2000);
       getTestServletResponse();
-    } 
-    catch (InterruptedException ix) {}
-    catch (IOException iox) {}
+    } catch (IOException iox) {}
     try { 
-      Thread.sleep(3000);
+      Thread.sleep(5000);
     } catch (InterruptedException iox) {}
     
+    printBundleStatus ("After workaround, before test proper");
     
     System.out.println("In test and trying to get connection....");
     String response = getTestServletResponse();
     assertEquals("ITest servlet response wrong", "Mark.2.0.three", response);
+  }
+  
+  private void printBundleStatus (String msg) { 
+    System.out.println("-----\nprintBundleStatus: " + msg + "\n-----");
+    for (Bundle b : bundleContext.getBundles()) { 
+      System.out.println (b.getSymbolicName() + " " + "state=" + formatState(b.getState()));
+    }
+    System.out.println();
+  }
+  
+  private String formatState (int state) {
+    String result = Integer.toString(state);
+    switch (state) { 
+    case Bundle.ACTIVE: 
+      result = "Active";
+      break;
+    case Bundle.INSTALLED: 
+      result = "Installed";
+      break;
+    case Bundle.RESOLVED: 
+      result = "Resolved";
+      break;
+    }
+    return result;
   }
   
   private String getTestServletResponse() throws IOException { 
@@ -107,7 +130,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
         mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi"),
-        mavenBundle("org.apache.felix", "org.apache.felix.fileinstall"),
+        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
         
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.web"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.biz"),
