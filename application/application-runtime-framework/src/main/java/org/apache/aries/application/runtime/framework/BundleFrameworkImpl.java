@@ -56,20 +56,27 @@ public class BundleFrameworkImpl implements BundleFramework
   @Override
   public void init() throws BundleException
   {
-    if (_compositeBundle.getCompositeFramework().getState() != Framework.ACTIVE)
-    {
-    	_compositeBundle.getCompositeFramework().start();
-        _packageAdminTracker = new ServiceTracker(_compositeBundle.getCompositeFramework().getBundleContext(),
-                PackageAdmin.class.getName(), null);
-          _packageAdminTracker.open();
-   }
+        _compositeBundle.start(Bundle.START_ACTIVATION_POLICY);
+  if ( _packageAdminTracker == null)
+  {
+      _packageAdminTracker = new ServiceTracker(_compositeBundle.getCompositeFramework().getBundleContext(),
+          PackageAdmin.class.getName(), null);
+      _packageAdminTracker.open();
   }
-
+    
+  }
+  
   @Override
   public void start() throws BundleException
   {
-	  init();
-    _compositeBundle.start(Bundle.START_ACTIVATION_POLICY);
+    if (_compositeBundle.getCompositeFramework().getState() != Framework.ACTIVE)
+    {
+      _compositeBundle.getCompositeFramework().start();
+  
+      _packageAdminTracker = new ServiceTracker(_compositeBundle.getCompositeFramework().getBundleContext(),
+          PackageAdmin.class.getName(), null);
+      _packageAdminTracker.open();
+    }
   }
 
   public void close() throws BundleException
@@ -158,3 +165,4 @@ public class BundleFrameworkImpl implements BundleFramework
     _bundles.remove(b);
   }
 }
+

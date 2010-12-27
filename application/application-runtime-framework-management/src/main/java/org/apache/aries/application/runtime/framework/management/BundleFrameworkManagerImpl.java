@@ -159,8 +159,14 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     // We should now have a bundleFramework
     if (bundleFramework != null) {
 
-       // Start the empty framework (but not the bundle)
-       bundleFramework.init();
+      boolean frameworkStarted = false;
+      try {
+        // Start the empty framework bundle
+        bundleFramework.start();
+        frameworkStarted = true;
+      } catch (BundleException e) {
+        // This may fail if the framework bundle has exports but we will retry later
+      }
 
       /**
        * Install the bundles into the new framework
@@ -174,7 +180,8 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
       }
       
       // Finally, start the whole lot
-      bundleFramework.start();
+      if (!frameworkStarted)
+        bundleFramework.start();
     }
 
     LOGGER.debug(LOG_EXIT, "isolatedInstall", bundleFramework);
@@ -307,3 +314,4 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   }
 
 }
+
