@@ -28,10 +28,11 @@ if (document.getElementById){
 
 // Keep the navigation menu open if the page is a sub directory of that area.
 function SetMenu() {
-	var open = 'url("/images/BigBulletOpen.png")';
+	var open = 'url("http://incubator.apache.org/aries/images/BigBulletOpen.png")';
 	var path = document.location.href;
 	var fields = path.split("/"); 
-	var ident = fields[3];
+        //will need to switch to 3 when website changes on graduation
+	var ident = fields[4];
     if(ident != "") {
     	var docel = document.getElementById(ident);
         var title = document.getElementById(ident+'Title');
@@ -43,8 +44,8 @@ function SetMenu() {
 //Switch navigation pane menu between open and closed on click.
 function SwitchMenu(obj)
 {
-var open = 'url("/images/BigBulletOpen.png")';
-var close = 'url("/images/BigBullet.png")';
+var open = 'url("http://incubator.apache.org/aries/images/BigBulletOpen.png")';
+var close = 'url("http://incubator.apache.org/aries/images/BigBullet.png")';
   if(document.getElementById)  {
     var el = document.getElementById(obj);
     var title = document.getElementById(obj+'Title');
