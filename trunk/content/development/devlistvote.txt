@@ -1,0 +1,61 @@
+I've staged a release candidate for Aries 0.2-incubating. The
+following Aries top level modules are staged and tagged in
+https://svn.apache.org/repos/asf/incubator/aries/tags/ 
+
+The artifacts are in two staged repos. Links to the *.zip files for each module are provided below. The source should be built in the order given below because there are dependencies between some of the modules.
+
+Modules staged at
+https://repository.apache.org/content/repositories/orgapachearies-113/
+are:
+
+parent 
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/parent/0.2-incubating/parent-0.2-incubating-source-release.zip
+
+eba-maven-plugin
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/eba-maven-plugin/0.2-incubating/eba-maven-plugin-0.2-incubating-source-release.zip
+
+testsupport
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/testsupport/testsupport/0.2-incubating/testsupport-0.2-incubating-source-release.zip
+
+org.apache.aries.util
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/org.apache.aries.util/0.2-incubating/org.apache.aries.util-0.2-incubating-source-release.zip
+
+blueprint
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/blueprint/blueprint/0.2-incubating/blueprint-0.2-incubating-source-release.zip
+
+web
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/web/web/0.2-incubating/web-0.2-incubating-source-release.zip
+
+jmx
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/jmx/jmx/0.2-incubating/jmx-0.2-incubating-source-release.zip
+
+
+Modules staged at
+https://repository.apache.org/content/repositories/orgapachearies-129/
+are:
+
+quiesce
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/quiesce/quiesce/0.2-incubating/quiesce-0.2-incubating-source-release.zip
+
+jndi
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/jndi/jndi/0.2-incubating/jndi-0.2-incubating-source-release.zip
+
+transaction
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/transaction/transaction/0.2-incubating/transaction-0.2-incubating-source-release.zip
+
+jpa
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/jpa/jpa/0.2-incubating/jpa-0.2-incubating-source-release.zip
+
+application
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/application/application/0.2-incubating/application-0.2-incubating-source-release.zip
+
+samples
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/samples/samples/0.2-incubating/samples-0.2-incubating-source-release.zip
+
+The RAT and IANAL build checks passed. Note that, although RAT is configured to ignore *.MF and other files that do not require the ASF licence, theses files are still reported incorrectly as RAT failures.
+
+The vote will be open for 72 hours.
+
+[ ] +1
+[ ]  0
+[ ] -1

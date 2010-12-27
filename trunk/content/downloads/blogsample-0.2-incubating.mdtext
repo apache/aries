@@ -12,7 +12,7 @@ Title: Blog Sample
 - - -
 **Note:**
 These instructions are for the 0.2-incubating release of Aries.
-Instructions for older releases can be found [here](archiveinstructions.html)
+Instructions for older releases can be found [here](archived-releases/blogsample-0.1-incubating.html)
 . In the 0.2-incubating release the sample was changed to use an in-memory
 database to avoid dependency on an explicit version of Derby. If you would
 prefer to use a database on disk check the instructions for the

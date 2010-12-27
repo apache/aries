@@ -14,7 +14,7 @@ trunk. The full maven commands are not shown - the intention is just to
 give an indication of which maven commands you will need to use to create
 assets in different places.
 
-Performing a release is described in detail [here ](-http://apache.org/dev/publishing-maven-artifacts.html.html)
+Performing a release is described in detail [here](http://apache.org/dev/publishing-maven-artifacts.html.html)
 . This document It covers all the steps listed above so on these pages we
 will only add things which are specific to the Apache Aries release. Note:
 the document has not been release and this link will need to be updated
@@ -35,7 +35,7 @@ release:perform)
 1. Making the release artifacts available from the Aries web pages
 1. What to do when people find problems with the release artifacts
 
-The best current documentation for releases is [here ](-http://apache.org/dev/publishing-maven-artifacts.html.html)
+The best current documentation for releases is [here](http://apache.org/dev/publishing-maven-artifacts.html)
  - but this isn't released yet. It covers all the steps listed above so on
 these pages we will only add things which are specific to the Apache Aries
 release.
@@ -110,7 +110,7 @@ After taking the branch, change the pom versions in trunk to, say,
 I recommend deleting everything under ...org/apache/aries in your local
 Maven repo. For linux/Mac users you will find this under ~/.m2/repository/.
 
-Check that the code builds using the usual [sequence ](-buildingaries.html)
+Check that the code builds using the usual [sequence](buildingaries.html)
  of commands, but add the following arguments to the 'mvn install' command:
 
 
@@ -195,11 +195,11 @@ If you are in Europe the mvn release:prepare command almost always fails at
 the last step, with a message like:
 
 
-    [ERROR](error.html)
+    [ERROR]
      BUILD FAILURE
-    [INFO](info.html)
+    [INFO]
      ------------------------------------------------------------------------
-    [INFO](info.html)
+    [INFO]
      Unable to tag SCM
     Provider message:
     The svn tag command failed.
@@ -272,17 +272,17 @@ After all the modules are present in the staging repository you will need
 to close the repository so that reviewers can access the modules. At this
 point you should write two notes to the aries-dev mailing list.
 
- * Subject \[VOTE\](vote\.html)
+ * Subject \[VOTE\]
  Apache Aries (Incubating) version 0.X-incubating release candidate 02
 
 The the source archive files should be explicitly called out by release
 manager in any release vote. From an Apache legal standpoint, this is what
 the project is "releasing" and what the community should be voting on. In
-this [sample note](-http://people.apache.org/~zoe/devlistvote.txt.html)
+this [sample note](devlistvote.txt)
 , there is a link to each modules' source*.zip file.
 
 
- * Subject \[DISCUSS\](discuss\.html)
+ * Subject \[DISCUSS\]
  Apache Aries (Incubating) version 0.X-incubating release candidate 0X
 
 The content should just indicate that the note starts a thread to discuss
@@ -294,7 +294,7 @@ the aries-dev vote can be summarised and closed. Note that at least three
 +1 votes from Aries IPMC members are required. 
 
 After closing the vote on the aries-dev list, the second vote (on the
-general@) can be started. Here is a [sample note](http://people.apache.org/~zoe/generallistvote.txt)
+general@) can be started. Here is a [sample note](generallistvote.txt)
 , the subject of the note is \[VOTE\]Approval to release Apache Aries
 (Incubating) version 0.X-incubating
 
@@ -316,15 +316,14 @@ Anything that is to be downloaded must be put in
 archived here /www/archive.apache.org/dist/incubator/aries.
 
 First, delete the previous distribution from the distribution directory.
-Download the release artifacts using a script like [this](-http://people.apache.org/~zoe/release-0.2-.html)
+Download the release artifacts using a script like [this](release-0.2)
 . Next, update the Aries Downloads pages to refer to the new artifacts.
 
 
 
 <a name="ReleasingAries-Whattodowhenpeoplefindproblemswiththerelease"></a>
 ### What to do when people find problems with the release
- * Cancel the vote \[CANCELLED\](cancelled\.html)
-\[VOTE\]
+ * Cancel the vote \[CANCELLED\] \[VOTE\]
  * Clean up, fix and re-release.
 The good news here is that it isn't necessarily essential to re-release
 every module. 

@@ -1,0 +1,71 @@
+The Aries community has voted on its second release. From the Aries home page:
+
+"The Aries project is delivering a set of pluggable Java components
+enabling an enterprise OSGi application programming model. This
+includes implementations and extensions of application-focused
+specifications defined by the OSGi Alliance Enterprise Expert Group
+(EEG) and an assembly format for multi-bundle applications, for
+deployment to a variety of OSGi based runtimes."
+
+Aries is a multi-module project. The vote thread on aries-dev for RC05:
+
+http://mail-archives.apache.org/mod_mbox/incubator-aries-dev/201008.mbox/%3C4C77E9EF.30303@gmail.com%3E
+
+
+concluded with 10 votes (all of them +1) three of which were binding
+IPMC votes from Jarek Gawor, Kevan Miller and Guillaume Nodet.
+
+The following Aries top level modules are staged and tagged in
+https://svn.apache.org/repos/asf/incubator/aries/tags/.
+
+There are 13  Aries modules in the release, staged as follows:
+
+Modules staged at https://repository.apache.org/content/repositories/orgapachearies-113/ are: parent, eba-maven-plugin, testsupport, org.apache.aries.util,web. Links to the source releases are given below:
+
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/parent/0.2-incubating/parent-0.2-incubating-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/eba-maven-plugin/0.2-incubating/eba-maven-plugin-0.2-incubating-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/testsupport/testsupport/0.2-incubating/testsupport-0.2-incubating-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/org.apache.aries.util/0.2-incubating/org.apache.aries.util-0.2-incubating-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapachearies-113/org/apache/aries/web/web/0.2-incubating/web-0.2-incubating-source-release.zip
+
+Modules staged at https://repository.apache.org/content/repositories/orgapachearies-129/ are: quiesce, jndi, transaction, application, samples. Links to the source releases are given below:
+
+
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/quiesce/quiesce/0.2-incubating/quiesce-0.2-incubating-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/jndi/jndi/0.2-incubating/jndi-0.2-incubating-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/transaction/transaction/0.2-incubating/transaction-0.2-incubating-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/application/application/0.2-incubating/application-0.2-incubating-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapachearies-129/org/apache/aries/samples/samples/0.2-incubating/samples-0.2-incubating-source-release.zip
+
+Modules staged at https://repository.apache.org/content/repositories/orgapachearies-138/ are: jpa
+
+https://repository.apache.org/content/repositories/orgapachearies-138/org/apache/aries/jpa/jpa/0.2-incubating/jpa-0.2-incubating-source-release.zip
+
+Modules staged at https://repository.apache.org/content/repositories/orgapachearies-152/ are: blueprint
+https://repository.apache.org/content/repositories/orgapachearies-152/org/apache/aries/blueprint/blueprint/0.2-incubating/blueprint-0.2-incubating-source-release.zip
+
+Modules staged at https://repository.apache.org/content/repositories/orgapachearies-153/ are: jmx
+https://repository.apache.org/content/repositories/orgapachearies-153/org/apache/aries/jmx/jmx/0.2-incubating/jmx-0.2-incubating-source-release.zip
+
+
+The RAT and IANAL build checks passed.
+
+The KEYS file located here:
+
+https://svn.apache.org/repos/asf/incubator/aries/KEYS
+
+contains the code signing key for myself, Zoe Slattery, the release
+manager for this release.
+
+We have 3 binding +1 IPMC votes on the aries-dev list, and I'm
+opening up this thread for 72 hours for any further feedback on the
+staged artifacts for release.
+

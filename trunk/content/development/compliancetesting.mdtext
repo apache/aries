@@ -1,9 +1,30 @@
-Title: How to run the OSGi Enterprise CT
-h1. Instructions for obtaining and running the Enterprise OSGi Compliance
-Tests against Aries Components.
+Title: ComplianceTesting
+<a name="ComplianceTesting-Runningthetests"></a>
+## Enterprise OSGi Compliance Tests
+
+The Enterprise OSGi compliance tests are provided byt the [OSGi Alliance](http://www.osgi.org)
+ to Apache committers who have signed the appropriate Non Disclosure
+Agreement.
+
+The tests are supplied with the BND configuration files used to run the
+tests against the OSGi implementation of the Enterprise Specification. The
+configuration files require some modification to run the tests against
+Aries components.
+
+Instructions for obtaining and running the tests are given [here](how-to-run-the-osgi-enterprise-ct.html)
+.
+
+<a name="ComplianceTesting-Testresults"></a>
+## Test results
+
+At each Aries release the tests are run against Aries components. The
+results for the most recent release can be found [here](/downloads/ct/current-release/testresults.html)
+.
+<a name="ComplianceTesting-Runningthetests"></a>
+## How to run the tests for Aries components
 
 <a name="HowtoruntheOSGiEnterpriseCT-Legalstuff"></a>
-## Legal stuff
+### Legal stuff
 Complete an Apache [Non Disclosure Agreement](-http://apache.org/jcp/apachenda.pdf.html)
  and email it to secretary@apache.org
 
@@ -17,7 +38,7 @@ Note: You should subscribe to jcp-open@apache.org first. If you don't your
 note will languish in 'moderation' forever :-)
 
 <a name="HowtoruntheOSGiEnterpriseCT-Getthetests"></a>
-## Get the tests
+### Get the tests
 
 Anyone with an NDA on file should be able to get access to the tests [here ](-https://svn.apache.org/repos/tck/osgi-cts.html)
 .
@@ -27,7 +48,7 @@ osgi.enterprise.tests. Download the jar for the appropriate level -
 currently 4.2.0.
 
 <a name="HowtoruntheOSGiEnterpriseCT-Runningthetests"></a>
-## Running the tests
+### Running the tests
 Extract the jar into a test directory, say ~/AriesTests. After you have
 extracted the file you will find:
  * A subdirectory call 'jar' which contains all the tests
@@ -48,7 +69,7 @@ components to be tested. The [Felix](http://felix.apache.org/site/using-the-osgi
  pages give a good indication of what is necessary.
 
 <a name="HowtoruntheOSGiEnterpriseCT-Debuggingthetests"></a>
-## Debugging the tests
+### Debugging the tests
 
 If you want to debug the code then you need to add the following line to
 the .bnd file:
@@ -60,9 +81,9 @@ the .bnd file:
 You can change 7777 to any number you want.
 
 <a name="HowtoruntheOSGiEnterpriseCT-Modifyingthebndfiles"></a>
-## Modifying the bnd files
+### Modifying the bnd files
 <a name="HowtoruntheOSGiEnterpriseCT-General"></a>
-### General
+#### General
 
 First, it is necessary to add a couple of lines, like this:
 
@@ -101,7 +122,7 @@ usually be found in either [Felix](http://felix.apache.org/site/downloads.cgi)
 .
 
 <a name="HowtoruntheOSGiEnterpriseCT-Blueprint"></a>
-### Blueprint
+#### Blueprint
 
 There are four other dependencies needed to run the tests, download these:
 
@@ -145,7 +166,7 @@ will look like this:
 
 
 <a name="HowtoruntheOSGiEnterpriseCT-JNDI"></a>
-### JNDI
+#### JNDI
 
 The only additional bundle required for these tests is:
 
@@ -181,7 +202,7 @@ The .bnd file required to run the JNDI tests looks like this:
 
 
 <a name="HowtoruntheOSGiEnterpriseCT-JMX"></a>
-### JMX
+#### JMX
 
 It is necessary to download the following:
 
@@ -233,7 +254,7 @@ section.
 
 
 <a name="HowtoruntheOSGiEnterpriseCT-Transaction"></a>
-### Transaction
+#### Transaction
 
 
 Nothing more to download here. Here is the configuration file:

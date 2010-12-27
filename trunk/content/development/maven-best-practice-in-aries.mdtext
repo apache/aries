@@ -7,7 +7,7 @@ Title: Maven best practice in Aries
 ### Overall structure
 
 The Aries project is a collection of loosely couple sub-projects, therefore
-it must be possible to build each project on it's own. This implies:
+it must be possible to build each project on its own. This implies:
 
 1. A parent pom that isn't at the root of the SVN trunk
 1. Each sub-project has enough pom info so that it can be released
@@ -20,9 +20,9 @@ testing)
 1. Each subproject has dependency management for everything included in it. 
 In addition, it has its subprojects listed in dependency management.  This
 means that
-1. # modules in a subproject don't need to include versions for use of other
+1. modules in a subproject don't need to include versions for use of other
 modules
-1. # you can get dependency management for all the modules in a subproject by
+1. you can get dependency management for all the modules in a subproject by
 depending on the subproject pom with scope import  (see the samples pom for
 an example).
 1. As a result of the above, modules don't have any versions in any

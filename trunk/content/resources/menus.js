@@ -18,22 +18,35 @@
  * This script, when included in a html file, can be used to make collapsible menus
  *
  * Typical usage:
- * <script type="text/javascript" language="JavaScript" src="getMenu.js"></script>
+ * <script type="text/javascript" language="JavaScript" src="menus.js"></script>
  */
 
+// Collapse all navigation bar menus
 if (document.getElementById){ 
-  document.write('<style type="text/css">.menuitemgroup{display: none;}</style>')
+  	document.write('<style type="text/css">.menuitemgroup{display: none;}</style>')
 }
 
+// Keep the navigation menu open if the page is a sub directory of that area.
+function SetMenu() {
+	var open = 'url("/images/BigBulletOpen.png")';
+	var path = document.location.href;
+	var fields = path.split("/"); 
+	var ident = fields[3];
+    if(ident != "") {
+    	var docel = document.getElementById(ident);
+        var title = document.getElementById(ident+'Title');
+        title.style.backgroundImage = open;
+		docel.style.display = "block";
+    }
+}
 
-function SwitchMenu(obj, thePath)
+//Switch navigation pane menu between open and closed on click.
+function SwitchMenu(obj)
 {
-var open = 'url("'+thePath + 'images/BigBulletOpen.png")';
-var close = 'url("'+thePath + 'images/BigBullet.png")';
+var open = 'url("/images/BigBulletOpen.png")';
+var close = 'url("/images/BigBullet.png")';
   if(document.getElementById)  {
-	console.log(document);
     var el = document.getElementById(obj);
-	console.log(el);
     var title = document.getElementById(obj+'Title');
 
     if(el.style.display != "block"){ 

@@ -5,14 +5,14 @@ Getting involved with Aries is easy. First, any help is welcome and we
 welcome you on board. Here are some suggestions for how you can get
 involved in Aries:
 
-* Take a look at the existing [Modules](modules.html)
+* Take a look at the existing modules 
  to identify what areas you are interested in.
 * Take a look at the [Aries proposal](http://wiki.apache.org/incubator/AriesProposal)
  to see if there are things there that you are interested in but we haven't
 created subprojects for yet. If you're not sure whether something is in
 scope for Aries or not, send a mail to the developers [mailing list|MailingLists]
  and ask. 
-* Try out the [tutorials](blueprinthelloworldtutorial.html)
+* Try out the [tutorials](/documentation/tutorials/blueprinthelloworldtutorial.html)
  to get a feel for what Aries is about.
 * Subscribe to one (or more) of the [mailing lists](mailinglists.html)
 . If you want to get involved as a _user_, subscribe to user mailing list.
@@ -25,9 +25,9 @@ users as well as developers on the project.
 mailing list and share your thoughts.
 * Contribute to feature development. Just let the community know what you'd
 like to work on. It is as easy as that.
-* Identify [JIRA](resources.html)
-s and browse the [source](resources.html)
+* Identify [JIRA](https://issues.apache.org/jira/browse/ARIES)
+s and browse the [source](https://svn.apache.org/repos/asf/incubator/aries/)
  in the area that you are interested in and provide patches.
 * If in doubt about where to start, send a note to the mailing list and
-mention your area of interest. Any questions is welcomed. We'd like you to
+mention your area of interest. Any question is welcomed. We'd like you to
 be involved!
