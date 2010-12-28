@@ -1,10 +1,10 @@
 <div onclick="SwitchMenu('overview')" id="overviewTitle" class="menutitle">Overview</div>
 <div id="overview" class="menuitemgroup">
 	<div class="menuitem">
-		<a href="/overview/boardreports.html">Board Reports</a> 
+		<a href="/aries/overview/boardreports.html">Board Reports</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/overview/news.html">News</a> 
+		<a href="/aries/overview/news.html">News</a> 
 	</div>
 </div>
 <div onclick="SwitchMenu('documentation')" id="documentationTitle" class="menutitle">Documentation</div>
