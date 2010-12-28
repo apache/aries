@@ -1,5 +1,6 @@
 Title: TestResults
-These are the test results for the most recent Aries release.
+
+These are the test results for the current Aries release.
 
 ### Blueprint
  * [Blueprint ](ct/current-release/org.osgi.test.cases.blueprint.html)
