@@ -54,7 +54,7 @@ public class BundleFrameworkImpl implements BundleFramework
   }
 
   @Override
-  public void init() throws BundleException
+  public void start() throws BundleException
   {
         _compositeBundle.start(Bundle.START_ACTIVATION_POLICY);
   if ( _packageAdminTracker == null)
@@ -67,7 +67,7 @@ public class BundleFrameworkImpl implements BundleFramework
   }
   
   @Override
-  public void start() throws BundleException
+  public void init() throws BundleException
   {
     if (_compositeBundle.getCompositeFramework().getState() != Framework.ACTIVE)
     {
