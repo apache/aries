@@ -10,52 +10,52 @@
 <div onclick="SwitchMenu('documentation')" id="documentationTitle" class="menutitle">Documentation</div>
 <div id="documentation" class="menuitemgroup">
 	<div class="menuitem">
-		<a href="/documentation/ariesprogrammingmodel.html">Programming Model</a> 
+		<a href="/aries/documentation/ariesprogrammingmodel.html">Programming Model</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/documentation/pointerstoosgispecifications.html">Pointers to OSGi specs</a> 
+		<a href="/aries/documentation/pointerstoosgispecifications.html">Pointers to OSGi specs</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/documentation/integrators-guide.html">Integrators Guide</a> 
+		<a href="/aries/documentation/integrators-guide.html">Integrators Guide</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/documentation/articles.html">Articles</a> 
+		<a href="/aries/documentation/articles.html">Articles</a> 
 	</div>
 	<div class="menuitem">
 		<a href="https://svn.apache.org/repos/asf/incubator/aries/slides/">Slides</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/documentation/tutorials.html">Tutorials</a> 
+		<a href="/aries/documentation/tutorials.html">Tutorials</a> 
 	</div>
 </div>
 <div onclick="SwitchMenu('downloads')" id="downloadsTitle" class="menutitle">Downloads</div>
 <div id="downloads" class="menuitemgroup">
 	<div class="menuitem">
-		<a href="/downloads/currentrelease.html">Current Release</a> 
+		<a href="/aries/downloads/currentrelease.html">Current Release</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/downloads/ct/current-release/testresults.html">Compliance Tests</a> 
+		<a href="/aries/downloads/ct/current-release/testresults.html">Compliance Tests</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/downloads/releasenotes.html">Release Notes</a> 
+		<a href="/aries/downloads/releasenotes.html">Release Notes</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/downloads/archived-releases.html">Archived Releases</a> 
+		<a href="/aries/downloads/archived-releases.html">Archived Releases</a> 
 	</div>
 </div>
 <div onclick="SwitchMenu('community')" id="communityTitle" class="menutitle">Community</div>
 <div id="community" class="menuitemgroup">
 	<div class="menuitem">
-		<a href="/community/overview.html">Community</a> 
+		<a href="/aries/community/overview.html">Community</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/community/gettinginvolved.html">Getting Involved</a> 
+		<a href="/aries/community/gettinginvolved.html">Getting Involved</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/community/people.html">Who we are</a> 
+		<a href="/aries/community/people.html">Who we are</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/community/mailinglists.html">Mailing lists</a> 
+		<a href="/aries/community/mailinglists.html">Mailing lists</a> 
 	</div>
 	<div class="menuitem">
 		<a href="http://blogs.apache.org/aries/">Aries Group Blog</a> 
@@ -70,52 +70,52 @@
 		<a href="https://issues.apache.org/jira/browse/ARIES">Bug Tracking</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/development/buildingaries.html">Building Aries </a> 
+		<a href="/aries/development/buildingaries.html">Building Aries </a> 
 	</div>
 	<div class="menuitem">
-		<a href="/development/maven-best-practice-in-aries.html">Maven best practice</a> 
+		<a href="/aries/development/maven-best-practice-in-aries.html">Maven best practice</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/development/moduledependencies.html">Module Dependencies</a> 
+		<a href="/aries/development/moduledependencies.html">Module Dependencies</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/development/releasingaries.html">Releasing Aries </a> 
+		<a href="/aries/development/releasingaries.html">Releasing Aries </a> 
 	</div>
 	<div class="menuitem">
-		<a href="/development/compliancetesting.html">OSGi Compliance Tests </a> 
+		<a href="/aries/development/compliancetesting.html">OSGi Compliance Tests </a> 
 	</div>
 	<div class="menuitem">
 		<a href="http://hudson.zones.apache.org/hudson/">Build System</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/development/maintainingthewebpages.html">Web Site Maintenance </a> 
+		<a href="/aries/development/maintainingthewebpages.html">Web Site Maintenance </a> 
 	</div>
 </div>
 <div onclick="SwitchMenu('modules')" id="modulesTitle" class="menutitle">Modules</div>
 <div id="modules" class="menuitemgroup">
 	<div class="menuitem">
-		<a href="/modules/samples.html">Samples</a> 
+		<a href="/aries/modules/samples.html">Samples</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/modules/blueprint.html">Blueprint</a> 
+		<a href="/aries/modules/blueprint.html">Blueprint</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/modules/jndiproject.html">JNDI</a> 
+		<a href="/aries/modules/jndiproject.html">JNDI</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/modules/jpaproject.html">JPA</a> 
+		<a href="/aries/modules/jpaproject.html">JPA</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/modules/applications.html">Applications</a> 
+		<a href="/aries/modules/applications.html">Applications</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/modules/transactionsproject.html">Transactions</a> 
+		<a href="/aries/modules/transactionsproject.html">Transactions</a> 
 	</div>
 	<div class="menuitem">
-		<a href="/modules/ebamavenpluginproject.html">EBA Maven Plugin </a> 
+		<a href="/aries/modules/ebamavenpluginproject.html">EBA Maven Plugin </a> 
 	</div>
 	<div class="menuitem">
-		<a href="/modules/spi-fly.html">SPI Fly</a> 
+		<a href="/aries/modules/spi-fly.html">SPI Fly</a> 
 	</div>
 </div>
 <div onclick="SwitchMenu('sponsorship')" id="sponsorshipTitle" class="menutitle">Sponsorship</div>
