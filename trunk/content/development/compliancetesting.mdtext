@@ -1,4 +1,5 @@
 Title: ComplianceTesting
+
 <a name="ComplianceTesting-Runningthetests"></a>
 ## Enterprise OSGi Compliance Tests
 
@@ -18,7 +19,7 @@ Instructions for obtaining and running the tests are given [here](how-to-run-the
 ## Test results
 
 At each Aries release the tests are run against Aries components. The
-results for the most recent release can be found [here](/downloads/ct/current-release/testresults.html)
+results for the most recent release can be found [here](/aries/downloads/testresults.html)
 .
 <a name="ComplianceTesting-Runningthetests"></a>
 ## How to run the tests for Aries components
