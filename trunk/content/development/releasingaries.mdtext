@@ -1,4 +1,5 @@
 Title: ReleasingAries
+
 <a name="ReleasingAries-HowtodoanAriesRelease"></a>
 # How to do an Aries Release
 
@@ -21,19 +22,20 @@ the document has not been release and this link will need to be updated
 when it has.
 
 There are a few steps to the process:
-1. Discussion of the release and its content on the aries-dev mailing list.
-1. Creating and storing GPG keys
-1. Setting up your environment
-1. Creating a branch to release from
-1. Checking release artifacts on your local system
-1. Creating a snapshot release (optional - not really part of the release
+
+ 1. Discussion of the release and its content on the aries-dev mailing list.
+ 1. Creating and storing GPG keys
+ 1. Setting up your environment
+ 1. Creating a branch to release from
+ 1. Checking release artifacts on your local system
+ 1. Creating a snapshot release (optional - not really part of the release
 process, uses mvn deploy)
-1. Releasing to a staging repository (uses mvn release:prepare and mvn
+ 1. Releasing to a staging repository (uses mvn release:prepare and mvn
 release:perform)
-1. Running a vote
-1. Promoting the release artifacts to the Apache release repository
-1. Making the release artifacts available from the Aries web pages
-1. What to do when people find problems with the release artifacts
+ 1. Running a vote
+ 1. Promoting the release artifacts to the Apache release repository
+ 1. Making the release artifacts available from the Aries web pages
+ 1. What to do when people find problems with the release artifacts
 
 The best current documentation for releases is [here](http://apache.org/dev/publishing-maven-artifacts.html)
  - but this isn't released yet. It covers all the steps listed above so on
