@@ -72,8 +72,8 @@ committing code.
 
     svn copy https://svn.apache.org/repos/asf/incubator/aries/trunk \
 	  
-    https://svn.apache.org/repos/asf/incubator/aries/branches/0.X-incubating-RCx
-    \
+    https://svn.apache.org/repos/asf/incubator/aries/branches/0.X-incubating-RCx \
+  
       -m "Creating a release branch of /aries/trunk."
 
 
@@ -82,9 +82,7 @@ Where '0.X' is the number of the release.
 Checkout the new branch, for example, for the 0.2-incubating  release:
 
 
-    svn co
-    https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx
-    aries-rc2-candidate
+    svn co https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx aries-0.2-candidate
 
 
 *IMPORTANT* If you are using a branch to release you *must* edit the top
