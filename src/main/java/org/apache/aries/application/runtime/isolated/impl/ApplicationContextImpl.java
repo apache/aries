@@ -23,6 +23,10 @@ import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,10 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
+import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkManager;
 import org.apache.aries.application.management.spi.repository.BundleRepositoryManager;
@@ -49,11 +55,11 @@ public class ApplicationContextImpl implements AriesApplicationContext
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContextImpl.class);
 
-  private AriesApplication _application;
-  private Set<Bundle> _bundles;
+  private final AriesApplication _application;
+  private final Set<Bundle> _bundles;
   private ApplicationState _state = ApplicationState.UNINSTALLED;
-  private BundleRepositoryManager _bundleRepositoryManager;
-  private BundleFrameworkManager _bundleFrameworkManager;
+  private final BundleRepositoryManager _bundleRepositoryManager;
+  private final BundleFrameworkManager _bundleFrameworkManager;
 
   /** deployment metadata associated with aries application */
   private DeploymentMetadata _deploymentMF;
@@ -202,9 +208,9 @@ public class ApplicationContextImpl implements AriesApplicationContext
        */
       try {
         if (shared) _bundles.addAll(_bundleFrameworkManager.installSharedBundles(
-            new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
+            new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), makeAppProxy()));
         else _bundles.add(_bundleFrameworkManager.installIsolatedBundles(
-            new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), _application));
+            new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), makeAppProxy()));
 
       } catch (BundleException e) {
         LOGGER.debug(LOG_EXCEPTION, e);
@@ -212,7 +218,38 @@ public class ApplicationContextImpl implements AriesApplicationContext
       }
     }
     LOGGER.debug(LOG_EXIT, "install");
-
+  }
+  
+  /**
+   * Create a proxy for the AriesApplication we pass on so as to respect the correct current deployment metadata.
+   */
+  private AriesApplication makeAppProxy() {
+    return new AriesApplication() {
+      
+      public void store(OutputStream out) throws FileNotFoundException, IOException {
+        throw new UnsupportedOperationException();
+      }
+      
+      public void store(File f) throws FileNotFoundException, IOException {
+        throw new UnsupportedOperationException();
+      }
+      
+      public boolean isResolved() {
+        return true;
+      }
+      
+      public DeploymentMetadata getDeploymentMetadata() {
+        return _deploymentMF;
+      }
+      
+      public Set<BundleInfo> getBundleInfo() {
+        return _application.getBundleInfo();
+      }
+      
+      public ApplicationMetadata getApplicationMetadata() {
+        return _application.getApplicationMetadata();
+      }
+    };
   }
 
   private Map<DeploymentContent, BundleSuggestion> findBundleSuggestions(
