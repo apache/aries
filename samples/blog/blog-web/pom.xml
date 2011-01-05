@@ -56,8 +56,8 @@
                             javax.servlet*;version=2.5,
                             *
                         </Import-Package>
-                        <_wab/>
-                    </instructions>
+                        <_wab>src/main/webapp/</_wab>
+                   </instructions>
                 </configuration>
             </plugin>
         </plugins>
