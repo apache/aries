@@ -32,14 +32,4 @@ public class ContextProvider {
     public Context getContext() {
       return context;
     }
-    
-    @Override
-    public void finalize()
-    {
-      try {
-        close();
-      } catch (NamingException e) {
-        // we are just being nice here, so we ignore this if it happens.
-      }
-    }
 }
