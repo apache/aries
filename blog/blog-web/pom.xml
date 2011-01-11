@@ -50,6 +50,7 @@
                     <instructions>
                         <Web-ContextPath>/blog</Web-ContextPath>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-ClassPath>.</Bundle-ClassPath>
                         <Private-Package>org.apache.aries.samples.blog.web.*</Private-Package>
                         <Export-Package>!org.apache.aries.samples.blog.web.*</Export-Package>
                         <Import-Package>
