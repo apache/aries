@@ -222,7 +222,7 @@ public final class ContextHelper {
                   try {
                     provider = new ContextProvider(context, ref, factory.getInitialContext(environment));
                   } finally {
-                    context.ungetService(ref); // we didn't get something back, so this was no good.
+                    if (provider == null) context.ungetService(ref); // we didn't get something back, so this was no good.
                   }
                   break;
                 } else {
