@@ -192,7 +192,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
       List<String> unsatisfiedRequirements = new LinkedList<String>();
 
       for (Map.Entry<String, Set<String>> filterEntry : refinedReqs.entrySet()) {
-        log.debug("unable to satisfied the filter , filter = " + filterEntry.getKey() + "required by "+filterEntry.getValue());
+        log.debug("unable to satisfy the filter , filter = " + filterEntry.getKey() + "required by "+filterEntry.getValue());
        
         String reason = extractConsumableMessageInfo(filterEntry.getKey(),filterEntry.getValue());
 
