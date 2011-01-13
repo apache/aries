@@ -98,7 +98,7 @@ public class JpaBlogSampleWithEbaTest extends AbstractIntegrationTest {
 	System.out.println("In test and trying to get connection....");
 	*/
 
-	HttpURLConnection conn = makeConnection("http://localhost:8080/org.apache.aries.samples.blog.web/ViewBlog");
+	HttpURLConnection conn = makeConnection("http://localhost:8080/blog/ViewBlog");
     String response = getHTTPResponse(conn);
 
 	/* Uncomment for additional debug */
@@ -146,6 +146,7 @@ bootDelegationPackages("javax.transaction", "javax.transaction.*"),
 
             mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
             mavenBundle("org.apache.geronimo.specs", "geronimo-j2ee-connector_1.5_spec"),
+            mavenBundle("org.apache.geronimo.specs", "geronimo-servlet_2.5_spec"),
             mavenBundle("org.apache.geronimo.components", "geronimo-transaction"),
             mavenBundle("org.apache.openjpa", "openjpa"),
             mavenBundle("commons-lang", "commons-lang"),
