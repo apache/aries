@@ -98,13 +98,13 @@ public class TradeBuildDB {
                 out.println("<BR>TradeBuildDB: **** Database Product detected: "
                     + dbProductName + " ****</BR>");
                 if (dbProductName.startsWith("DB2/")) { // if db is DB2
-                    fileLocation = File.separatorChar + "db2" + File.separatorChar + "Table.ddl";
+                    fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "db2" + File.separatorChar + "Table.ddl";
                 } else if (dbProductName.startsWith("Apache Derby")) { // if db is Derby
-                    fileLocation = File.separatorChar + "derby" + File.separatorChar + "Table.ddl";
+                    fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "derby" + File.separatorChar + "Table.ddl";
                 } else if (dbProductName.startsWith("Oracle")) { // if the Db is Oracle
-                    fileLocation = File.separatorChar + "oracle" + File.separatorChar + "Table.ddl";
+                    fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "oracle" + File.separatorChar + "Table.ddl";
                 } else { // Unsupported "Other" Database
-                    fileLocation = File.separatorChar + "other" + File.separatorChar + "Table.ddl";
+                    fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "other" + File.separatorChar + "Table.ddl";
                     out.println("<BR>TradeBuildDB: **** This Database is "
                         + "unsupported/untested use at your own risk ****</BR>");
                 }
