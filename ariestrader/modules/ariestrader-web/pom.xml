@@ -70,6 +70,7 @@
                 <instructions>
                   <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                   <Bundle-Version>${pom.version}</Bundle-Version>
+                  <Bundle-ClassPath>dbscripts</Bundle-ClassPath>
                   <Web-ContextPath>/ariestrader</Web-ContextPath>
                   <Web-JSPExtractLocation>/</Web-JSPExtractLocation>
                   <Private-Package>org.apache.aries.samples.ariestrader.web.*</Private-Package>
