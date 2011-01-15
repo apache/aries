@@ -63,6 +63,7 @@ import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.convert.BundleConversion;
 import org.apache.aries.application.management.spi.convert.BundleConverter;
 import org.apache.aries.application.management.spi.convert.ConversionException;
+import org.apache.aries.application.management.spi.repository.PlatformRepository;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.management.spi.resolve.DeploymentManifestManager;
 import org.apache.aries.application.management.spi.runtime.AriesApplicationContextManager;
@@ -185,6 +186,15 @@ public class AriesApplicationManagerImplTest {
       
       return byValueBundles;
     }
+    
+	   public Collection<ModelledResource> resolve(String appName, String appVersion,
+		       Collection<ModelledResource> byValueBundles, Collection<Content> inputs, PlatformRepository platformRepository)
+		       throws ResolverException
+		   {
+		     
+		     return byValueBundles;
+		   }
+
   }
   
   static class DummyLocalPlatform implements LocalPlatform {
