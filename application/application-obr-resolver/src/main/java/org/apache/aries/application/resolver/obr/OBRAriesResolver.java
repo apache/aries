@@ -130,7 +130,14 @@ public class OBRAriesResolver implements AriesApplicationResolver
     return returnOptionalResources;
   }
   
-  /**
+	public Collection<ModelledResource> resolve(String appName,
+			String appVersion, Collection<ModelledResource> byValueBundles,
+			Collection<Content> inputs) throws ResolverException {
+		return resolve(appName, appVersion, byValueBundles,
+				inputs, this.platformRepository);
+	}
+
+/**
    * Resolve a list of resources from the OBR bundle repositories by OBR
    * resolver.
    * 
@@ -138,18 +145,19 @@ public class OBRAriesResolver implements AriesApplicationResolver
    * @param appVersion - application version
    * @param byValueBundles - by value bundles
    * @param inputs - other constraints
+   * @param platformRepository - a platform repository to use instead of the one provided as a service
    * @return a collection of modelled resources required by this application
    * @throws ResolverException
    */
   @Override
-   public Collection<ModelledResource> resolve(String appName, String appVersion,
-      Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException
-  {
+  public Collection<ModelledResource> resolve(String appName, String appVersion,
+			Collection<ModelledResource> byValueBundles, Collection<Content> inputs, PlatformRepository platformRepository)
+			throws ResolverException {
      log.debug(LOG_ENTRY, "resolve", new Object[]{appName, appVersion,byValueBundles, inputs});
     Collection<ImportedBundle> importedBundles = toImportedBundle(inputs);
     Collection<ModelledResource> toReturn = new ArrayList<ModelledResource>();
     
-    Resolver obrResolver = getConfiguredObrResolver(appName, appVersion, byValueBundles);
+    Resolver obrResolver = getConfiguredObrResolver(appName, appVersion, byValueBundles, platformRepository);
     // add a resource describing the requirements of the application metadata.
     obrResolver.add(createApplicationResource( appName, appVersion, importedBundles));
     
@@ -212,7 +220,14 @@ public class OBRAriesResolver implements AriesApplicationResolver
   }
 
   private Resolver getConfiguredObrResolver(String appName, String appVersion,
-      Collection<ModelledResource> byValueBundles) throws ResolverException
+	      Collection<ModelledResource> byValueBundles) throws ResolverException
+	      {
+	 
+	  return getConfiguredObrResolver(appName, appVersion, byValueBundles, platformRepository);
+	      }
+
+  private Resolver getConfiguredObrResolver(String appName, String appVersion,
+      Collection<ModelledResource> byValueBundles, PlatformRepository platformRepository) throws ResolverException
   {
     log.debug(LOG_ENTRY, "getConfiguredObrResolver", new Object[]{appName, appVersion,byValueBundles });
     DataModelHelper helper = repositoryAdmin.getHelper();
@@ -241,7 +256,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
       resolveRepos.add(r);      
     }     
     Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
-    addPlatformRepositories (obrResolver, appName);
+    addPlatformRepositories (obrResolver, appName, platformRepository);
     log.debug(LOG_EXIT, "getConfiguredObrResolver", obrResolver);
     return obrResolver;
   }
@@ -339,7 +354,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
    * These should be added to the resolver without being listed as coming from a particular 
    * repository or bundle.  
    */
-  private void addPlatformRepositories (Resolver obrResolver, String appName)
+  private void addPlatformRepositories (Resolver obrResolver, String appName, PlatformRepository platformRepository)
   { 
     log.debug(LOG_ENTRY, "addPlatformRepositories", new Object[]{obrResolver, appName});
     DataModelHelper helper = repositoryAdmin.getHelper();
@@ -360,7 +375,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
               }
             }
           } catch (Exception e) {
-            // no a big problem
+            // not a big problem
             log.error(MessageUtil.getMessage("RESOLVER_UNABLE_TO_READ_REPOSITORY_EXCEPTION", new Object[]{appName, uri}) );
           } finally { 
             IOUtils.close(is);
