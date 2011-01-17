@@ -9,15 +9,13 @@ import javax.naming.NamingException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class ContextProvider {
-    private ServiceReference reference;
-    private Context context;
-    private BundleContext bc;
+public abstract class ContextProvider {
+    private final ServiceReference reference;
+    private final BundleContext bc;
     
-    public ContextProvider(BundleContext ctx, ServiceReference reference, Context context) {
+    public ContextProvider(BundleContext ctx, ServiceReference reference) {
         bc = ctx;
         this.reference = reference;
-        this.context = context;
     }
     
     public boolean isValid() {
@@ -26,10 +24,7 @@ public class ContextProvider {
 
     public void close() throws NamingException {
        if (bc != null) bc.ungetService(reference);
-       context.close();
     }
 
-    public Context getContext() {
-      return context;
-    }
+    public abstract Context getContext() throws NamingException;
 }
