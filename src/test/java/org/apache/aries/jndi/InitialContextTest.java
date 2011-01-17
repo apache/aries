@@ -2,9 +2,11 @@ package org.apache.aries.jndi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -18,6 +20,8 @@ import javax.naming.ldap.LdapContext;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.ObjectFactory;
+
+import junit.framework.Assert;
 
 import org.apache.aries.jndi.startup.Activator;
 import org.apache.aries.mocks.BundleContextMock;
@@ -33,6 +37,7 @@ public class InitialContextTest
 {
   private Activator activator;
   private BundleContext bc;
+  private InitialContext ic;
   
   /**
    * This method does the setup .
@@ -130,5 +135,98 @@ public class InitialContextTest
     ExtendedRequest req = Skeleton.newMock(ExtendedRequest.class);
     ilc.extendedOperation(req);
     Skeleton.getSkeleton(backCtx).assertCalled(new MethodCall(LdapContext.class, "extendedOperation", req));
+  }
+  
+  @Test
+  public void testURLLookup() throws Exception {
+      ObjectFactory of = new ObjectFactory() {
+          public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
+              return dummyContext("result");
+          }
+      };
+      
+      registerURLObjectFactory(of, "test");      
+      ic = initialContext();      
+      
+      assertEquals("result", ic.lookup("test:something"));
+  }
+  
+  @Test
+  public void testNoURLContextCaching() throws Exception {
+      final AtomicBoolean second = new AtomicBoolean(false);
+      final Context ctx = dummyContext("one");
+      final Context ctx2 = dummyContext("two");
+      
+      ObjectFactory of = new ObjectFactory() {
+          public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
+              if (second.get()) return ctx2;
+              else {
+                  second.set(true);
+                  return ctx;
+              }
+          }          
+      };
+      
+      registerURLObjectFactory(of, "test");
+      ic = initialContext();
+      
+      assertEquals("one", ic.lookup("test:something"));
+      assertEquals("two", ic.lookup("test:something"));
+  }
+  
+  @Test
+  public void testURLContextErrorPropagation() throws Exception {
+      ObjectFactory of = new ObjectFactory() {        
+        public Object getObjectInstance(Object obj, Name name, Context nameCtx,
+                Hashtable<?, ?> environment) throws Exception {
+            throw new Exception("doh");
+        }
+      };
+      
+      registerURLObjectFactory(of, "test");
+      ic = initialContext();
+      
+      try {
+          ic.lookup("test:something");
+          Assert.fail("Expected NamingException");
+      } catch (NamingException ne) {
+          assertNotNull(ne.getCause());
+          assertEquals("doh", ne.getCause().getMessage());
+      }
+  }
+  
+  /**
+   * Create a minimal initial context with just the bundle context in the environment
+   * @return
+   * @throws Exception
+   */
+  private InitialContext initialContext() throws Exception {
+      Properties props = new Properties();
+      props.put(JNDIConstants.BUNDLE_CONTEXT, bc);
+      InitialContext ic = new InitialContext(props);
+      return ic;
+  }
+  
+  /**
+   * Registers an ObjectFactory to be used for creating URLContexts for the given scheme
+   * @param of
+   * @param scheme
+   */
+  private void registerURLObjectFactory(ObjectFactory of, String scheme) {
+      Properties props = new Properties();
+      props.setProperty(JNDIConstants.JNDI_URLSCHEME, "test");
+      bc.registerService(ObjectFactory.class.getName(), of, props);      
+  }
+  
+  /**
+   * Creates a context that always returns the given object
+   * @param toReturn
+   * @return
+   */
+  private Context dummyContext(Object toReturn) {
+      Context ctx = Skeleton.newMock(Context.class);
+      Skeleton.getSkeleton(ctx).setReturnValue(new MethodCall(Context.class, "lookup", String.class), toReturn);
+      Skeleton.getSkeleton(ctx).setReturnValue(new MethodCall(Context.class, "lookup", Name.class), toReturn);
+      return ctx;
   }
 }
