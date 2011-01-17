@@ -74,16 +74,7 @@ public final class ContextHelper {
             ObjectFactory factory = urlObjectFactory.get();
             
             if (factory != null) {
-                try {
-                    Context ctx = (Context) factory.getObjectInstance(null, null, null, env);
-                    
-                    return new ContextProvider(context, urlObjectFactory.getReference(), ctx);
-                } catch (Exception e) {
-                    urlObjectFactory.unget();
-                    NamingException e2 = new NamingException();
-                    e2.initCause(e);
-                    throw e2;
-                }
+                return new URLContextProvider(context, urlObjectFactory.getReference(), factory, env);
             }
         }
 
@@ -168,7 +159,7 @@ public final class ContextHelper {
                         try {
                             initialContext = factory.getInitialContext(environment);
                             if (initialContext != null) {
-                              provider = new ContextProvider(context, reference, initialContext);
+                              provider = new SingleContextProvider(context, reference, initialContext);
                               break;
                           }
                         } finally {
@@ -186,7 +177,7 @@ public final class ContextHelper {
               if (factory != null) {
                 try {
                     initialContext = factory.getInitialContext(environment);
-                    provider = new ContextProvider(context, ref, initialContext);
+                    provider = new SingleContextProvider(context, ref, initialContext);
                 } finally {
                     if (provider == null) context.ungetService(ref);
                 }
@@ -220,7 +211,7 @@ public final class ContextHelper {
                 
                 if (factory != null) {
                   try {
-                    provider = new ContextProvider(context, ref, factory.getInitialContext(environment));
+                    provider = new SingleContextProvider(context, ref, factory.getInitialContext(environment));
                   } finally {
                     if (provider == null) context.ungetService(ref); // we didn't get something back, so this was no good.
                   }
