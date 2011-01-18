@@ -54,18 +54,6 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     Bundle bweb = getInstalledBundle("org.apache.aries.jndi.url.itest.web");
     assertNotNull(bweb);
     
-    // Let's see what's going on
-    /*printBundleStatus("Before first request");
-
-    // We've had intermittent problems in which Jetty only seems to start after a bundle
-    // receives an HTTP request. This next block is here to prevent Hudson failures. 
-    try { 
-      getTestServletResponse();
-    } catch (IOException iox) {}
-    try { 
-      Thread.sleep(5000);
-    } catch (InterruptedException iox) {}
-    */
     printBundleStatus ("Before making web request");
     
     System.out.println("In test and trying to get connection....");
