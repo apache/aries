@@ -55,7 +55,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     assertNotNull(bweb);
     
     // Let's see what's going on
-    printBundleStatus("Before first request");
+    /*printBundleStatus("Before first request");
 
     // We've had intermittent problems in which Jetty only seems to start after a bundle
     // receives an HTTP request. This next block is here to prevent Hudson failures. 
@@ -65,11 +65,12 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     try { 
       Thread.sleep(5000);
     } catch (InterruptedException iox) {}
-    
-    printBundleStatus ("After workaround, before test proper");
+    */
+    printBundleStatus ("Before making web request");
     
     System.out.println("In test and trying to get connection....");
     String response = getTestServletResponse();
+    System.out.println("Got response `" + response + "`");
     assertEquals("ITest servlet response wrong", "Mark.2.0.three", response);
   }
   
@@ -98,7 +99,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
   }
   
   private String getTestServletResponse() throws IOException { 
-    HttpURLConnection conn = makeConnection("http://localhost:8080/org.apache.aries.jndi.url.itest.web/ITestServlet");
+    HttpURLConnection conn = makeConnection("http://localhost:8080/jndiUrlItest/ITestServlet");
     String response = getHTTPResponse(conn).trim();
     return response;
   }
@@ -114,32 +115,33 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
         // Felix mvn url handler - do we need this?
         mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 
-        // this is how you set the default log level when using pax
-        // logging (logProfile)
         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
         // Bundles
         mavenBundle("org.eclipse.equinox", "cm"),
         mavenBundle("org.eclipse.osgi", "services"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-servlet_2.5_spec"),
 
-        mavenBundle("org.apache.felix", "org.apache.felix.fileinstall" ),
         mavenBundle("org.ops4j.pax.web", "pax-web-extender-war"),
         mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle"),
+        
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-        mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
-        
+      
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.web"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.biz"),
+        mavenBundle("asm", "asm-all"),
+        
         /* For debugging, uncomment the next two lines */
-//        vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+        // vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+        // waitForFrameworkStartup(),
         /*
-         * For debugging, add these imports: import static
-         * org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; import static
-         * org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+         * For debugging, add these imports: 
+         * import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; 
+         * import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
          */
         equinox().version("3.5.0"));
     options = updateOptions(options);
