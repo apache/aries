@@ -118,12 +118,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- ><dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.configadmin</artifactId>
-            <scope>test</scope>
-        </dependency> -->
-
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
@@ -172,6 +166,12 @@
             <scope>test</scope>
 		</dependency>
 
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_2.5_spec</artifactId>
+            <scope>test</scope>
+        </dependency>
+            
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-extender-war</artifactId>
@@ -183,30 +183,12 @@
             <scope>test</scope>
 		</dependency>
 
-		<!-- <dependency>
-			<groupId>org.ops4j.pax.web</groupId>
-			<artifactId>pax-web-jsp</artifactId>
-            <scope>test</scope>
-		</dependency> -->
-
-		<!-- <dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
-            <scope>test</scope>
-		</dependency> -->
-
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.fileinstall</artifactId>
             <scope>test</scope>
 		</dependency>
         
-        <!-- ><dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.serp</artifactId>
-            <scope>test</scope>
-        </dependency> -->
-		
 		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
 			<artifactId>org.apache.aries.blueprint</artifactId>
