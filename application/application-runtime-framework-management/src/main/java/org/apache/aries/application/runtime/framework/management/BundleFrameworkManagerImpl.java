@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   BundleFrameworkFactory _bundleFrameworkFactory;
   BundleFrameworkConfigurationFactory _bundleFrameworkConfigurationFactory;
   Map<Bundle, BundleFramework> _frameworks = new HashMap<Bundle, BundleFramework>();
-  Map<AriesApplication, BundleFramework> _frameworksByApp = new HashMap<AriesApplication, BundleFramework>();
+  Map<String, BundleFramework> _frameworksByAppScope = new HashMap<String, BundleFramework>();
   private List<UpdateStrategy> _updateStrategies = Collections.emptyList();
 
   public void setUpdateStrategies(List<UpdateStrategy> updateStrategies)
@@ -116,7 +117,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
           .getIsolatedBundleContext(), app);
 
       _frameworks.put(isolatedFramework.getFrameworkBundle(), isolatedFramework);
-      _frameworksByApp.put(app, isolatedFramework);
+      _frameworksByAppScope.put(app.getApplicationMetadata().getApplicationScope(), isolatedFramework);
 
       frameworkBundle = isolatedFramework.getFrameworkBundle();
     }
@@ -172,16 +173,24 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
        * Install the bundles into the new framework
        */
       
-      List<Bundle> installedBundles = new ArrayList<Bundle>();
-      BundleContext frameworkBundleContext = bundleFramework.getIsolatedBundleContext();
-      if (frameworkBundleContext != null) {
-        for (BundleSuggestion suggestion : bundlesToBeInstalled)
-          installedBundles.add(bundleFramework.install(suggestion, app));
+      try {
+        List<Bundle> installedBundles = new ArrayList<Bundle>();
+        BundleContext frameworkBundleContext = bundleFramework.getIsolatedBundleContext();
+        if (frameworkBundleContext != null) {
+          for (BundleSuggestion suggestion : bundlesToBeInstalled)
+            installedBundles.add(bundleFramework.install(suggestion, app));
+        }
+        
+        // Finally, start the whole lot
+        if (!frameworkStarted)
+          bundleFramework.start();
+      } catch (BundleException be) {
+        bundleFramework.close();
+        throw be;
+      } catch (RuntimeException re) {
+        bundleFramework.close();
+        throw re;
       }
-      
-      // Finally, start the whole lot
-      if (!frameworkStarted)
-        bundleFramework.start();
     }
 
     LOGGER.debug(LOG_EXIT, "isolatedInstall", bundleFramework);
@@ -200,7 +209,16 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   {
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       BundleFramework framework = getBundleFramework(b);
-      if (framework != null) framework.close();
+      if (framework != null) {
+        framework.close();
+        
+        // clean up our maps so we don't leak memory
+        _frameworks.remove(b);
+        Iterator<BundleFramework> it = _frameworksByAppScope.values().iterator();
+        while (it.hasNext()) {
+          if (it.next().equals(framework)) it.remove();
+        }
+      }
     }
   }
 
@@ -260,7 +278,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
           "No UpdateStrategy supports the supplied DeploymentMetadata changes.");
 
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
-      final BundleFramework appFwk = _frameworksByApp.get(app);
+      final BundleFramework appFwk = _frameworksByAppScope.get(app.getApplicationMetadata().getApplicationScope());
 
       strategy.update(new UpdateStrategy.UpdateInfo() {
 

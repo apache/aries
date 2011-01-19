@@ -45,6 +45,7 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.spi.repository.PlatformRepository;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.management.spi.runtime.LocalPlatform;
 import org.apache.aries.application.modelling.DeployedBundles;
@@ -127,6 +128,15 @@ public class DeploymentGeneratorTest
       }
       _nextResults.add(result);
     }
+
+		public Collection<ModelledResource> resolve(String appName,
+				String appVersion, Collection<ModelledResource> byValueBundles,
+				Collection<Content> inputs,
+				PlatformRepository platformRepository) throws ResolverException 
+		{
+
+			return resolve(appName, appVersion, byValueBundles, inputs);
+		}
 
     public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
     {

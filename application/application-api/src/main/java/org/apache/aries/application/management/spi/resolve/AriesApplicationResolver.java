@@ -29,6 +29,7 @@ import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.spi.repository.PlatformRepository;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.osgi.framework.Version;
 
@@ -93,5 +94,21 @@ public interface AriesApplicationResolver {
    * @throws ResolverException
    */
   Collection<ModelledResource> resolve(String appName, String appVersion, Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException;
+
+  /**
+   * Resolve an AriesApplication against a given platform repository. The resolving process will build a repository from by-value bundles. 
+   * It then scans all the required bundles and pull the dependencies required to resolve the bundles.
+   * 
+   * 
+   * Return a collect of modelled resources. This method is called when installing an application
+   * @param appName Application name
+   * @param appVersion application version
+   * @param byValueBundles by value bundles
+   * @param inputs bundle requirement
+   * @param platformRepository a platform repository to resolve against instead of the default
+   * @return a collection of modelled resource required by this application.
+   * @throws ResolverException
+   */
+  Collection<ModelledResource> resolve(String appName, String appVersion, Collection<ModelledResource> byValueBundles, Collection<Content> inputs, PlatformRepository platformRepository) throws ResolverException;
 
 }

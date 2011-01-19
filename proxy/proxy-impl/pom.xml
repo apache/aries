@@ -98,7 +98,6 @@
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
         	<version>0.3-SNAPSHOT</version>
-        	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
         <dependency>

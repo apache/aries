@@ -27,6 +27,7 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.spi.repository.PlatformRepository;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.osgi.framework.Version;
@@ -71,6 +72,14 @@ public class NoOpResolver implements AriesApplicationResolver {
 	     
 	     return byValueBundles;
 	   }
+	   
+	   public Collection<ModelledResource> resolve(String appName, String appVersion,
+		       Collection<ModelledResource> byValueBundles, Collection<Content> inputs, PlatformRepository platformRepository)
+		       throws ResolverException
+		   {
+		     
+		     return byValueBundles;
+		   }
 
 }
 

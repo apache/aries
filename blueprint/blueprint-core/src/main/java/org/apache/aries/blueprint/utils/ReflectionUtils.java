@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.security.AccessControlContext;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -39,8 +40,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.container.GenericType;
 import org.apache.aries.blueprint.di.ExecutionContext;
+import org.osgi.framework.BundleReference;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
@@ -280,36 +283,36 @@ public class ReflectionUtils {
         public abstract boolean allowsGet();
         public abstract boolean allowsSet();
         
-        protected abstract Object internalGet(Object instance) throws Exception;
-        protected abstract void internalSet(Object instance, Object value) throws Exception;        
+        protected abstract Object internalGet(ExtendedBlueprintContainer container, Object instance) throws Exception;
+        protected abstract void internalSet(ExtendedBlueprintContainer container, Object instance, Object value) throws Exception;        
         
-        public Object get(final Object instance, AccessControlContext acc) throws Exception {            
-            if (acc == null) {
-                return internalGet(instance);
+        public Object get(final Object instance, final ExtendedBlueprintContainer container) throws Exception {            
+            if (container.getAccessControlContext() == null) {
+                return internalGet(container, instance);
             } else {
                 try {
                     return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
                         public Object run() throws Exception {
-                            return internalGet(instance);
+                            return internalGet(container, instance);
                         }            
-                    }, acc);
+                    }, container.getAccessControlContext());
                 } catch (PrivilegedActionException e) {
                     throw e.getException();
                 }
             }
         }
 
-        public void set(final Object instance, final Object value, AccessControlContext acc) throws Exception {
-            if (acc == null) {
-                internalSet(instance, value);
+        public void set(final Object instance, final Object value, final ExtendedBlueprintContainer container) throws Exception {
+            if (container.getAccessControlContext() == null) {
+                internalSet(container, instance, value);
             } else {
                 try {
                     AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
                         public Object run() throws Exception {
-                            internalSet(instance, value);
+                            internalSet(container, instance, value);
                             return null;
                         }            
-                    }, acc);
+                    }, container.getAccessControlContext());
                 } catch (PrivilegedActionException e) {
                     throw e.getException();
                 }
@@ -342,16 +345,16 @@ public class ReflectionUtils {
         }
 
         @Override
-        protected Object internalGet(Object instance) throws Exception {
-            if (mpd.allowsGet()) return mpd.internalGet(instance);
-            else if (fpd.allowsGet()) return fpd.internalGet(instance);
+        protected Object internalGet(ExtendedBlueprintContainer container, Object instance) throws Exception {
+            if (mpd.allowsGet()) return mpd.internalGet(container, instance);
+            else if (fpd.allowsGet()) return fpd.internalGet(container, instance);
             else throw new UnsupportedOperationException();
         }
 
         @Override
-        protected void internalSet(Object instance, Object value) throws Exception {
-            if (mpd.allowsSet()) mpd.internalSet(instance, value);
-            else if (fpd.allowsSet()) fpd.internalSet(instance, value);
+        protected void internalSet(ExtendedBlueprintContainer container, Object instance, Object value) throws Exception {
+            if (mpd.allowsSet()) mpd.internalSet(container, instance, value);
+            else if (fpd.allowsSet()) fpd.internalSet(container, instance, value);
             else throw new UnsupportedOperationException();
         }
     }
@@ -372,14 +375,69 @@ public class ReflectionUtils {
             return true;
         }
 
-        protected Object internalGet(Object instance) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-            field.setAccessible(true);
-            return field.get(instance);
+        protected Object internalGet(ExtendedBlueprintContainer container, final Object instance) throws IllegalArgumentException, IllegalAccessException {
+            if (useContainersPermission(container)) {
+                try {
+                    return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                        public Object run() throws Exception {
+                            field.setAccessible(true);
+                            return field.get(instance);
+                        }                        
+                    });
+                } catch (PrivilegedActionException pae) {
+                    Exception e = pae.getException();
+                    if (e instanceof IllegalAccessException) throw (IllegalAccessException) e;
+                    else throw (RuntimeException) e;
+                }
+            } else {
+                field.setAccessible(true);
+                return field.get(instance);
+            }
         }
 
-        protected void internalSet(Object instance, Object value) throws Exception {
-            field.setAccessible(true);
-            field.set(instance, convert(value, field.getGenericType()));
+        protected void internalSet(ExtendedBlueprintContainer container, final Object instance, Object value) throws Exception {
+            final Object convertedValue = convert(value, field.getGenericType());
+            if (useContainersPermission(container)) {
+                try {
+                    AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                        public Object run() throws Exception {
+                            field.setAccessible(true);
+                            field.set(instance, convertedValue);
+                            return null;
+                        }                        
+                    });
+                } catch (PrivilegedActionException pae) {
+                    throw pae.getException();
+                }
+            } else {
+                field.setAccessible(true);
+                field.set(instance, convertedValue);
+            }
+        }
+        
+        /**
+         * Determine whether the field access (in particular the call to {@link Field#setAccessible(boolean)} should be done with the Blueprint extender's
+         * permissions, rather than the joint (more restrictive) permissions of the extender plus the Blueprint bundle.
+         * 
+         * We currently only allow this for classes that originate from inside the Blueprint bundle. Otherwise this would open a potential security hole.
+         * @param container
+         * @return
+         */
+        private boolean useContainersPermission(ExtendedBlueprintContainer container) {
+            ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                public ClassLoader run() {
+                    return field.getDeclaringClass().getClassLoader();
+                }
+            });            
+            
+            if (loader == null) return false;
+            
+            if (loader instanceof BundleReference) {
+                BundleReference ref = (BundleReference) loader;
+                return ref.getBundle().equals(container.getBundleContext().getBundle());                
+            }
+            
+            return false;
         }
     }
     
@@ -401,7 +459,7 @@ public class ReflectionUtils {
             return !!!setters.isEmpty();
         }
         
-        protected Object internalGet(Object instance) 
+        protected Object internalGet(ExtendedBlueprintContainer container, Object instance) 
                 throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
             if (getter != null) {
                 return getter.invoke(instance);
@@ -410,7 +468,7 @@ public class ReflectionUtils {
             }
         }
         
-        protected void internalSet(Object instance, Object value) throws Exception {
+        protected void internalSet(ExtendedBlueprintContainer container, Object instance, Object value) throws Exception {
             
             Method setterMethod = findSetter(value);
 
