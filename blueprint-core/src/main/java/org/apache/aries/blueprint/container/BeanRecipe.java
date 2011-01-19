@@ -571,11 +571,11 @@ public class BeanRecipe extends AbstractRecipe {
      */
     private static class BeanCreatorChain implements BeanProcessor.BeanCreator {
         public enum ChainType{Before,After};
-        private BeanProcessor.BeanCreator parentBeanCreator;
-        private BeanProcessor parentBeanProcessor;
-        private BeanMetadata beanData;
-        private String beanName;        
-        private ChainType when;
+        private final BeanProcessor.BeanCreator parentBeanCreator;
+        private final BeanProcessor parentBeanProcessor;
+        private final BeanMetadata beanData;
+        private final String beanName;        
+        private final ChainType when;
         public BeanCreatorChain(BeanProcessor.BeanCreator parentBeanCreator, 
                                 BeanProcessor parentBeanProcessor,
                                 BeanMetadata beanData,
@@ -781,7 +781,7 @@ public class BeanRecipe extends AbstractRecipe {
             PropertyDescriptor pd = getPropertyDescriptor(clazz, names[i]);
             if (pd.allowsGet()) {
                 try {
-                    instance = pd.get(instance, blueprintContainer.getAccessControlContext());
+                    instance = pd.get(instance, blueprintContainer);
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), getRealCause(e));
                 }
@@ -802,7 +802,7 @@ public class BeanRecipe extends AbstractRecipe {
         final PropertyDescriptor pd = getPropertyDescriptor(clazz, names[names.length - 1]);
         if (pd.allowsSet()) {
             try {
-                pd.set(instance, propertyValue, blueprintContainer.getAccessControlContext());
+                pd.set(instance, propertyValue, blueprintContainer);
             } catch (Exception e) {
                 throw new ComponentDefinitionException("Error setting property: " + pd, getRealCause(e));
             }
@@ -832,8 +832,8 @@ public class BeanRecipe extends AbstractRecipe {
 
     private class ArgumentMatcher {
 
-        private List<TypeEntry> entries;
-        private boolean convert;
+        private final List<TypeEntry> entries;
+        private final boolean convert;
 
         public ArgumentMatcher(Type[] types, boolean convert) {
             entries = new ArrayList<TypeEntry>();
