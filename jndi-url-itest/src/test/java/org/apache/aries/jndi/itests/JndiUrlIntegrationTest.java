@@ -55,6 +55,9 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     assertNotNull(bweb);
     
     printBundleStatus ("Before making web request");
+    try { 
+      Thread.sleep(5000);
+    } catch (InterruptedException ix) {}
     
     System.out.println("In test and trying to get connection....");
     String response = getTestServletResponse();
