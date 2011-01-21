@@ -34,9 +34,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/util</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/util</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/util</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/util</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/util</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/0.3-RCx/util</url>
     </scm>
 
     <properties>
