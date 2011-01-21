@@ -25,12 +25,12 @@ under the License.
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.3</version>
+        <version>0.3-SNAPSHOT</version>
         <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
     </parent>
     
     <artifactId>eba-maven-plugin</artifactId>
-    <version>0.3</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Aries Maven EBA Plugin</name>
@@ -38,9 +38,9 @@ under the License.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/eba-maven-plugin-0.3</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/0.3-RCx/eba-maven-plugin/tags/eba-maven-plugin-0.3</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/eba-maven-plugin-0.3</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/eba-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/eba-maven-plugin</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/0.3-RCx/eba-maven-plugin</url>
     </scm>
     
     <dependencies>
