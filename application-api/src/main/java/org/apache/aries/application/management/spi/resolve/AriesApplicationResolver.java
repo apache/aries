@@ -36,7 +36,7 @@ import org.osgi.framework.Version;
 /**
  * An {@code AriesApplicationResolver} is a service used by the {@link AriesApplicationManager} when one of the
  * {@code createApplication} methods are called. It is used to "deploy" the application. The "deploy" process
- * generates an Aries Deployment manifest <a href="http://incubator.apache.org/aries/applications.html"/>See
+ * generates an Aries Deployment manifest <a href="http://aries.apache.org/applications.html"/>See
  * the design documentation</a>.
  * 
  * <p>The {@code AriesApplicationManager} calls the resolve method in order to determine which bundles are required.

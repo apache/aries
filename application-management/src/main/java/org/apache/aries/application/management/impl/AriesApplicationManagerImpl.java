@@ -121,7 +121,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   
   /**
    * Create an AriesApplication from a .eba file: a zip file with a '.eba' extension
-   * as per http://incubator.apache.org/aries/applications.html 
+   * as per http://aries.apache.org/applications.html 
    */
   public AriesApplication createApplication(IDirectory ebaFile) throws ManagementException {
     ApplicationMetadata applicationMetadata = null;
