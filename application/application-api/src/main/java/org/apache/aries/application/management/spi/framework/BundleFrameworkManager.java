@@ -43,14 +43,14 @@ public interface BundleFrameworkManager
   /**
    * Gets the BundleFramework object associated with the given bundle
    * @param frameworkBundle - The bundle representing the bundle framework
-   * @return
+   * @return the bundle framework
    */
   public BundleFramework getBundleFramework(Bundle frameworkBundle);
   
   /**
    * Gets a reference to the single shared bundle framework. The Shared Bundle 
    * Framework contains bundle shared between applications
-   * @return
+   * @return the shared bundle framework
    */
   public BundleFramework getSharedBundleFramework();
   
@@ -59,7 +59,7 @@ public interface BundleFrameworkManager
    * collection of bundles into the framework.
    * @param bundlesToInstall The collection of bundles to be installed
    * @param app The application associated with this install
-   * @return
+   * @return the bundle of the framework
    * @throws BundleException
    */
   public Bundle installIsolatedBundles(
@@ -71,7 +71,7 @@ public interface BundleFrameworkManager
    * Installs a collection of shared bundles to the shared bundle framework
    * @param bundlesToInstall
    * @param app
-   * @return
+   * @return the collection of installed bundles.
    * @throws BundleException
    */
   public Collection<Bundle> installSharedBundles(

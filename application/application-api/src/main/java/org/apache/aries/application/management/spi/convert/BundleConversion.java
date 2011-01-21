@@ -37,8 +37,6 @@ public interface BundleConversion {
 	public InputStream getInputStream() throws IOException;
 	
 	/** 
-	 * @param The ApplicationMetadataFactory used to parse the content of 
-	 * the converted bundle into a BundleInfo object
 	 * @return The bundle information for the converted bundle.
 	 */
 	public BundleInfo getBundleInfo() throws IOException;

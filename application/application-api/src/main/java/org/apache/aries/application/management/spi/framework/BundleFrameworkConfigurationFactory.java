@@ -27,7 +27,7 @@ public interface BundleFrameworkConfigurationFactory
   /**
    * Create a BundleFrameworkConfiguration with basic config
    * @param parentCtx
-   * @return
+   * @return the framework config
    */
   public BundleFrameworkConfiguration createBundleFrameworkConfig(String frameworkId,
       BundleContext parentCtx);
@@ -37,7 +37,7 @@ public interface BundleFrameworkConfigurationFactory
    * on a given AriesApplication.
    * @param parentCtx
    * @param app
-   * @return
+   * @return the framework config
    */
   public BundleFrameworkConfiguration createBundleFrameworkConfig(String frameworkId,
       BundleContext parentCtx, AriesApplication app);

@@ -71,7 +71,7 @@ public interface ModelledResource extends DeploymentMFElement
 
   /**
    * Return the bundle that represents the resource object.
-   * @return
+   * @return the exported bundle
    */
   ExportedBundle getExportedBundle();
 
@@ -89,7 +89,7 @@ public interface ModelledResource extends DeploymentMFElement
 
   /**
    * Whether the resource is fragment.
-   * @return
+   * @return true if it is a fragment.
    */
   boolean isFragment();
 

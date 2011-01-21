@@ -55,20 +55,20 @@ public interface DeploymentMetadata {
   
   /**
    * get the value of the Provision-Bundle header
-   * @return
+   * @return the list of non-app bundles to provision.
    */
   public List<DeploymentContent> getApplicationProvisionBundles();
   
   /**
    * get the value of Deployed-UseBundle header
    * 
-   * @return
+   * @return the list of bundles to use from the deployment.
    */
   public Collection<DeploymentContent> getDeployedUseBundle();
   
   /**
    * get the value of Import-Package
-   * @return
+   * @return all the packages to import from non-app content.
    */
   public Collection<Content> getImportPackage();
 

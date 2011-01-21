@@ -77,7 +77,7 @@ public interface ApplicationMetadata
   
   /**
    * get the list of use-bundle content including bundle symbolic name and version range
-   * @return
+   * @return the collection of use bundles.
    */
   public Collection<Content> getUseBundles();
   

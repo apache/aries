@@ -26,13 +26,13 @@ public abstract class AriesApplicationEvent {
 
   /**
    * Get the type of the event
-   * @return
+   * @return the event type.
    */
   abstract public AriesApplicationContext.ApplicationState getType();
   
   /**
    * Get the associated AriesApplication
-   * @return
+   * @return the application
    */
   abstract public AriesApplication getApplication();
   
