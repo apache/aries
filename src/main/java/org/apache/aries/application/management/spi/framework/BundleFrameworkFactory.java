@@ -28,7 +28,7 @@ public interface BundleFrameworkFactory
    * Creates a new isolated bundle framework with the properties provided. 
    * @param bc The context in which to install the new framework
    * @param config The BundleFrameworkConfiguration object used to configure the returned framework
-   * @return
+   * @return the bundle framework
    * @throws BundleException
    */
   public BundleFramework createBundleFramework(BundleContext bc, BundleFrameworkConfiguration config)

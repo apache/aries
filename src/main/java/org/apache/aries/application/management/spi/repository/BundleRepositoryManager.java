@@ -32,14 +32,14 @@ public interface BundleRepositoryManager
    * the given application scope.
    * @param applicationName
    * @param applicationVersion
-   * @return
+   * @return the collection of bundle repositories for an app.
    */
   public Collection<BundleRepository> getBundleRepositoryCollection(
       String applicationName, String applicationVersion);
   
   /**
    * Gets all known bundle repositories
-   * @return
+   * @return all known bundle repositories.
    */
   public Collection<BundleRepository> getAllBundleRepositories();
   
@@ -49,7 +49,7 @@ public interface BundleRepositoryManager
    * @param applicationName
    * @param applicationVersion
    * @param content
-   * @return
+   * @return the bundle suggestions
    * @throws ContextException
    */
   public Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(
@@ -61,7 +61,7 @@ public interface BundleRepositoryManager
    * Get a collection of bundle installation suggestions from all 
    * known repositories
    * @param content
-   * @return
+   * @return the bundle suggestions
    * @throws ContextException
    */
   public Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(
@@ -72,7 +72,7 @@ public interface BundleRepositoryManager
    * given repositories
    * @param brs
    * @param content
-   * @return
+   * @return the bundle suggestions
    * @throws ContextException
    */
   public Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(

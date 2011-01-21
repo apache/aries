@@ -45,7 +45,7 @@ public interface ModellingHelper {
   /**
    * Create an ImportedBundle from a Fragment-Host string
    * @param fragmentHostHeader
-   * @return
+   * @return the imported bundle
    * @throws InvalidAttributeException
    */
   ImportedBundle buildFragmentHost(String fragmentHostHeader) throws InvalidAttributeException;

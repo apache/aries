@@ -53,7 +53,7 @@ public interface BundleFramework
    * Installs a bundle to this framework.
    * @param suggestion The information required to install the bundle
    * @param app The application with which this install is associated
-   * @return
+   * @return the bundle that was installed
    * @throws BundleException
    */
   public Bundle install(BundleSuggestion suggestion, AriesApplication app) throws BundleException;
@@ -67,33 +67,33 @@ public interface BundleFramework
   
   /**
    * Start a previously installed bundle in this framework. 
-   * @param b
+   * @param b the bundle to start
    * @throws BundleException
    */
   public void start(Bundle b) throws BundleException;
 
   /**
    * Stop a previously installed bundle in this framework. 
-   * @param b
+   * @param b the bundle to stop
    * @throws BundleException
    */
   public void stop(Bundle b) throws BundleException;
 
   /**
    * Returns the bundle context for the framework.
-   * @return
+   * @return a bundle context representing the framework
    */
   public BundleContext getIsolatedBundleContext();
 
   /**
    * Returns the OSGi bundle representing the framework
-   * @return
+   * @return a bundle representing the framework
    */
   public Bundle getFrameworkBundle();
   
   /**
    * Returns a list of bundles currently installed in this framework
-   * @return
+   * @return the bundles in the framework.
    */
   public List<Bundle> getBundles();
   

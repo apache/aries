@@ -36,7 +36,7 @@ public interface ExportedBundle extends Provider, DeploymentMFElement
   
   /**
    * Whether the bundle is fragment
-   * @return
+   * @return true if it is a fragment.
    */
   boolean isFragment();
   

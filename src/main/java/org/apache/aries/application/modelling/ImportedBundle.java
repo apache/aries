@@ -27,7 +27,7 @@ public interface ImportedBundle extends Consumer
 
   /**
    * The imported bundle symbolic name
-   * @return
+   * @return the symbolic name
    */
   String getSymbolicName();
   /**
