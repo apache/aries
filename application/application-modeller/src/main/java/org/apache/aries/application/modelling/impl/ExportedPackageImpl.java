@@ -17,13 +17,14 @@
  * under the License.
  */
 package org.apache.aries.application.modelling.impl;
+import static org.apache.aries.application.modelling.ResourceType.PACKAGE;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-import static org.apache.aries.application.modelling.ResourceType.PACKAGE;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ModelledResource;
@@ -32,9 +33,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
 
 public class ExportedPackageImpl implements ExportedPackage
 {
@@ -152,6 +150,73 @@ public class ExportedPackageImpl implements ExportedPackage
   @Override
   public String toString() {
     return toDeploymentString();
+  }
+  
+	@Override
+	public boolean equals(Object thing) {
+		if (thing == this) {
+			return true;
+		} else {
+			if (thing instanceof ExportedPackage) {
+				ExportedPackage otherPackage = (ExportedPackage) thing;
+				if (!this.getPackageName()
+						.equals(otherPackage.getPackageName())) {
+					return false;
+				}
+				if (!this.getVersion().equals(otherPackage.getVersion())) {
+					return false;
+				}
+				if (!this.getPackageName()
+						.equals(otherPackage.getPackageName())) {
+					return false;
+				}
+				
+				// We'll pick up the bundle comparisons in the attributes
+				Map<String, Object> otherAttributes = otherPackage
+						.getAttributes();
+
+				if (!attributesAreEqual(otherAttributes)) {
+					return false;
+				}
+			}
+			return true;
+
+		}
+	}
+
+	private boolean attributesAreEqual(Map<String, Object> otherAttributes) {
+		// We better have the same number of attributes
+		if (this.getAttributes().size() != otherAttributes.size()) {
+			return false;
+		}
+
+		for (Entry<String, Object> entry : getAttributes().entrySet()) {
+			String key = entry.getKey();
+			if (otherAttributes != null && otherAttributes.containsKey(key)) {
+				Object otherValue = otherAttributes.get(key);
+				Object value = entry.getValue();
+				if (value == null) {
+					if (otherValue != null) {
+						return false;
+					}
+				} else {
+					if (!value.equals(otherValue)) {
+						return false;
+					}
+				}
+			} else {
+				// We insist every value be present on both sides
+				return false;
+			}
+		}
+
+		return true;
+	}
+  
+  @Override
+  public int hashCode()
+  {
+	  return getPackageName().hashCode();
   }
 
 }
