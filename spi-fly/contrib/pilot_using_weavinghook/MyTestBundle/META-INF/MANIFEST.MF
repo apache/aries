@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: MyTestBundle
-Bundle-SymbolicName: MyTestBundle
-Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: mytestbundle.Activator
-Import-Package: org.apache.aries.spifly.mysvc,
- org.osgi.framework;version="1.3.0"
-SPI-Consumer: true

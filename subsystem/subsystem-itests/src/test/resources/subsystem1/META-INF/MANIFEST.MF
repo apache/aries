@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Subsystem-ManifestVersion: 1.0
-Subsystem-SymbolicName: felix-file-install
-Subsystem-Version: 2.0.8
-Subsystem-Content: org.apache.felix.fileinstall;version=2.0.8;location=mvn:org.apache.felix/org.apache.felix.fileinstall/2.0.8
-

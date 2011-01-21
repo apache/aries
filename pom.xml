@@ -17,52 +17,216 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!-- This file was based on the Geronimo Genesis Parent Pom -->
+
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>6</version>
+        <version>7</version>
     </parent>
 
-    <!-- This pom is for convenience in building several aries subprojects at once.
-     Do not try to use it to deploy or release.-->
-
-    <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries</groupId>
-    <artifactId>aries</artifactId>
-    <name>Apache Aries</name>
-    <version>0.3-SNAPSHOT</version>
+    <artifactId>parent</artifactId>
+    <name>Aries :: Top Parent POM</name>
+    <version>0.3</version>
     <packaging>pom</packaging>
 
+    <description>
+        Aries top-level parent pom
+    </description>
+
+    <url>http://aries.apache.org/</url>
+
+    <organization>
+        <name>The Apache Software Foundation</name>
+        <url>http://www.apache.org</url>
+    </organization>
+
+    <inceptionYear>2009</inceptionYear>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/parent-0.3</developerConnection>
+        <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.3</url>
+    </scm>
+
+    <issueManagement>
+        <system>jira</system>
+        <url>https://issues.apache.org/jira/browse/ARIES</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>Aries User List</name>
+            <subscribe>user-subscribe@aries.apache.org</subscribe>
+            <unsubscribe>user-unsubscribe@aries.apache.org</unsubscribe>
+            <post>mailto:user@aries.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/aries-user/</archive>
+        </mailingList>
+
+        <mailingList>
+            <name>Aries Developer List</name>
+            <subscribe>dev-subscribe@aries.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@aries.apache.org</unsubscribe>
+            <post>mailto:dev@aries.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/aries-dev/</archive>
+        </mailingList>
+
+        <mailingList>
+            <name>Aries Commits List</name>
+            <subscribe>commits-subscribe@aries.apache.org</subscribe>
+            <unsubscribe>commits-unsubscribe@aries.apache.org</unsubscribe>
+            <post>mailto:commits@aries.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/aries-commits/</archive>
+        </mailingList>
+    </mailingLists>
+
+    <repositories>
+        <repository>
+            <id>codehaus.snapshots</id>
+            <name>Codehaus Snapshots Repository</name>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>https://repository.apache.org/content/groups/snapshots-group</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+
+        <pluginRepository>
+            <id>codehaus.snapshots</id>
+            <name>Codehaus Snapshots Repository</name>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
     <modules>
-        <module>parent</module>
-        <module>eba-maven-plugin</module>
-        <module>testsupport</module>
-        <module>util</module>
-        <module>quiesce</module>
-        <module>blueprint</module>
-        <module>jndi</module>
-        <module>transaction</module>
-        <module>web</module>
-        <module>application</module>
-        <module>jmx</module>
-        <module>jpa</module>
-        <module>spi-fly</module>
-        <module>samples</module>
-        <module>proxy</module>
+        <module>default-parent</module>
     </modules>
 
     <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+        <defaultGoal>install</defaultGoal>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build> 
 
+    <profiles>
+        <profile>
+            <id>strict-enforcement</id>
+            <activation>
+                <property>
+                    <name>enforce</name>
+                    <value>strict</value>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requirePluginVersions>
+                                            <banLatest>true</banLatest>
+                                            <banRelease>true</banRelease>
+                                            <banSnapshots>true</banSnapshots>
+                                            <banTimestamps>true</banTimestamps>
+                                        </requirePluginVersions>
+                                        <requireReleaseDeps>
+                                            <searchTransitive>true</searchTransitive>
+                                        </requireReleaseDeps>
+                                    </rules>
+                                    <fail>true</fail>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>rat</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <version>0.6</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <reportFile>${project.build.directory}/${project.build.finalName}.rat</reportFile>
+                            <excludeSubProjects>false</excludeSubProjects>
+                            <excludes>
+                                <exclude>**/target/**/*</exclude>
+                                <exclude>**/appended-resources/**/*</exclude>
+                                <exclude>**/dependency-reduced-pom.xml</exclude> 
+                                <exclude>**/velocity.log</exclude>
+                                <!-- manifest files don't support comments so don't contain the ASL2.0 header -->
+                                <exclude>**/*.MF</exclude>
+                                <!--RAT doesn't seem to recognize MIT style licenses-->
+                                <exclude>manual/src/styles/print.css</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 </project>
+
