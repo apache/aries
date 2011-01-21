@@ -78,60 +78,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <quiet>true</quiet>
-                    <source>1.5</source>
-                    <links>
-                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                    </links>
-                    <tags>
-                        <tag>
-                            <name>goal</name>
-                            <placement>Xt</placement>
-                        </tag>
-                        <tag>
-                            <name>phase</name>
-                            <placement>Xt</placement>
-                        </tag>
-                        <tag>
-                            <name>execute</name>
-                            <placement>Xt</placement>
-                        </tag>
-                        <tag>
-                            <name>requiresDependencyResolution</name>
-                            <placement>Xt</placement>
-                        </tag>
-                        <tag>
-                            <name>parameter</name>
-                            <placement>Xf</placement>
-                        </tag>
-                        <tag>
-                            <name>required</name>
-                            <placement>Xf</placement>
-                        </tag>
-                        <tag>
-                            <name>readonly</name>
-                            <placement>Xf</placement>
-                        </tag>
-                        <tag>
-                            <name>component</name>
-                            <placement>Xf</placement>
-                        </tag>
-                        <tag>
-                            <name>plexus.component</name>
-                            <placement>Xf</placement>
-                        </tag>
-                        <tag>
-                            <name>plexus.requirement</name>
-                            <placement>Xf</placement>
-                        </tag>
-                    </tags>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
                 <configuration>
                     <targetJdk>1.5</targetJdk>
