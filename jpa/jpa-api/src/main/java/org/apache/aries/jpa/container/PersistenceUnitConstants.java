@@ -26,7 +26,7 @@ import javax.persistence.spi.PersistenceProvider;
 public interface PersistenceUnitConstants {
   /** The service property key mapped to the persistence unit name */
   public static final String OSGI_UNIT_NAME = "osgi.unit.name";
-  /** The version of the persistence bundle as a {@link Version} object*/
+  /** The version of the persistence bundle. */
   public static final String OSGI_UNIT_VERSION = "osgi.unit.version";
   /** The service property key mapped to the {@link PersistenceProvider} implementation class name */
   public static final String OSGI_UNIT_PROVIDER = "osgi.unit.provider";
