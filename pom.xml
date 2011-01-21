@@ -48,8 +48,8 @@
     <inceptionYear>2009</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx</developerConnection>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/parent</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/parent</developerConnection>
         <url>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/parent</url>
     </scm>
 
