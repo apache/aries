@@ -26,17 +26,10 @@
 
     <artifactId>org.apache.aries.proxy</artifactId>
     <packaging>bundle</packaging>
-    <version>0.3-SNAPSHOT</version>
     <name>Apache Aries Proxy Bundle</name>
     <description>
         This bundle contains the Apache Aries Proxy Service.
     </description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/proxy</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/proxy</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/proxy</url>
-    </scm>
 
     <properties>
         <aries.osgi.activator>
