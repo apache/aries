@@ -28,8 +28,10 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.aries.application.InvalidAttributeException;
+import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.Provider;
 import org.apache.aries.application.modelling.ResourceType;
@@ -205,5 +207,73 @@ public class ImportedPackageImpl implements ImportedPackage
   @Override
   public String toString() {
     return toDeploymentString();
+  }
+  
+	@Override
+	public boolean equals(Object thing) {
+		if (thing == this) {
+			return true;
+		} else {
+			if (thing instanceof ImportedPackage) {
+				ImportedPackage otherPackage = (ImportedPackage) thing;
+				if (!this.getPackageName()
+						.equals(otherPackage.getPackageName())) {
+					return false;
+				}
+				if (!this.getVersionRange().equals(otherPackage.getVersionRange())) {
+					return false;
+				}
+				if (!this.getPackageName()
+						.equals(otherPackage.getPackageName())) {
+					return false;
+				}
+				Map<String, String> otherAttributes = otherPackage
+						.getAttributes();
+
+				// Ignore the bundle, since the same package imported from
+				// different bundles should count as the same
+
+				if (!attributesAreEqual(otherAttributes)) {
+					return false;
+				}
+			}
+			return true;
+
+		}
+	}
+
+	private boolean attributesAreEqual(Map<String, String> otherAttributes) {
+		// We better have the same number of attributes
+		if (this.getAttributes().size() != otherAttributes.size()) {
+			return false;
+		}
+
+		for (Entry<String, String> entry : getAttributes().entrySet()) {
+			String key = entry.getKey();
+			if (otherAttributes != null && otherAttributes.containsKey(key)) {
+				Object otherValue = otherAttributes.get(key);
+				Object value = entry.getValue();
+				if (value == null) {
+					if (otherValue != null) {
+						return false;
+					}
+				} else {
+					if (!value.equals(otherValue)) {
+						return false;
+					}
+				}
+			} else {
+				// We insist every value be present on both sides
+				return false;
+			}
+		}
+
+		return true;
+	}
+  
+  @Override
+  public int hashCode()
+  {
+	  return getPackageName().hashCode();
   }
 }
