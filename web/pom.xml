@@ -32,9 +32,9 @@
     <version>0.3-SNAPSHOT</version>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/web</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/web</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/web</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/web</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/web</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/web</url>
     </scm>
 
     <modules>

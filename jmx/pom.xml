@@ -35,9 +35,9 @@
 
     <description>Implementation of the JMX Management Model Specification</description>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/jmx</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jmx</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jmx</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jmx</url>
     </scm>
     
     <dependencyManagement>
