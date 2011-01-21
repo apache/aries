@@ -27,7 +27,7 @@ import org.osgi.framework.Version;
 import org.osgi.util.tracker.BundleTracker;
 
 /**
- * this is the factory for BundleTracker
+ * This is the factory for BundleTracker
  */
 public class BundleTrackerFactory {
     private static ConcurrentHashMap<String, List<BundleTracker>> btMap = new ConcurrentHashMap<String, List<BundleTracker>>();
@@ -46,9 +46,9 @@ public class BundleTrackerFactory {
     /**
      * get bundle tracker based on composite bundle's symbolicName and version
      * 
-     * @param bundleSymbolicName
+     * @param symbolicName
      *            composite bundle's symbolicName
-     * @param bundleVersion
+     * @param version
      *            composite bundle's version
      * @return the list of bundle tracker associated with the bundle scope
      */
@@ -61,7 +61,7 @@ public class BundleTrackerFactory {
     /**
      * get all bundle tracker registered in this factory
      * 
-     * @return
+     * @return all the trackers registered. The collection contains a List<BundleTracker> for each bundle scope.
      */
     public static Collection<List<BundleTracker>> getAllBundleTracker() {
         return btMap.values();
