@@ -29,7 +29,7 @@
     <groupId>org.apache.aries.testsupport</groupId>
     <artifactId>testsupport</artifactId>
     <name>Apache Aries Test Support</name>
-    <version>0.3</version>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -37,9 +37,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/testsupport-0.3</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/testsupport-0.3</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/testsupport-0.3</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/testsupport</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/testsupport</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/0.3-RCx/testsupport</url>
     </scm>
 
     <modules>
