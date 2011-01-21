@@ -22,8 +22,6 @@ import org.osgi.framework.Filter;
 
 /**
  * Represents a service imported or exported by an Aries application. 
- * @see <a href="http://aries.apache.org/applications.html">
- * http://aries.apache.org/applications.html</a>. 
  */
 public interface ServiceDeclaration {
 

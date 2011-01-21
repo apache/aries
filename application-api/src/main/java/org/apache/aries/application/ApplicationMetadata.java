@@ -28,8 +28,6 @@ import org.osgi.framework.Version;
 
 /**
  * A representation of an APPLICATION.MF file. 
- * @see <a href="http://aries.apache.org/applications.html">
- * http://aries.apache.org/applications.html</a>. 
  *
  */
 public interface ApplicationMetadata
