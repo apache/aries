@@ -39,15 +39,15 @@
     </scm>
 
     <properties>
-        <ariesApplicationVersion>0.3-SNAPSHOT</ariesApplicationVersion>
-        <ariesBlueprintVersion>0.3-SNAPSHOT</ariesBlueprintVersion>
-        <ariesJmxVersion>0.3-SNAPSHOT</ariesJmxVersion>
-        <ariesJndiVersion>0.3-SNAPSHOT</ariesJndiVersion>
-        <ariesJpaVersion>0.3-SNAPSHOT</ariesJpaVersion>
-        <ariesProxyVersion>0.3-SNAPSHOT</ariesProxyVersion>
-        <ariesTransactionVersion>0.3-SNAPSHOT</ariesTransactionVersion>
-        <ariesUtilVersion>0.3-SNAPSHOT</ariesUtilVersion>
-        <ariesWebVersion>0.3-SNAPSHOT</ariesWebVersion>
+        <ariesApplicationVersion>0.3</ariesApplicationVersion>
+        <ariesBlueprintVersion>0.3</ariesBlueprintVersion>
+        <ariesJmxVersion>0.3</ariesJmxVersion>
+        <ariesJndiVersion>0.3</ariesJndiVersion>
+        <ariesJpaVersion>0.3</ariesJpaVersion>
+        <ariesProxyVersion>0.3</ariesProxyVersion>
+        <ariesTransactionVersion>0.3</ariesTransactionVersion>
+        <ariesUtilVersion>0.3</ariesUtilVersion>
+        <ariesWebVersion>0.3</ariesWebVersion>
         <openjpaVersion>2.0.0</openjpaVersion>
         <geronimoJpaSpecVersion>1.1</geronimoJpaSpecVersion>
         <geronimoJtaSpecVersion>1.1.1</geronimoJtaSpecVersion>
