@@ -21,7 +21,7 @@ package org.apache.aries.application;
 import org.osgi.framework.Version;
 
 /**
- * A representation of a Version Range. @see <a href="http://www.osgi.org/Release4/HomePage">
+ * A representation of a Version Range. See <a href="http://www.osgi.org/Release4/HomePage">
  * section 3.2.6</a> of the OSGi Service Platform Core Specification. 
  */
 public interface VersionRange
@@ -30,7 +30,7 @@ public interface VersionRange
    * this method returns the exact version from the versionInfo obj.
    * this is used for DeploymentContent only to return a valid exact version
    * otherwise, null is returned.
-   * @return
+   * @return the exact version
    */
   public abstract Version getExactVersion();
 
@@ -48,25 +48,25 @@ public interface VersionRange
 
   /**
    * is the maximum version exclusive
-   * @return  
+   * @return is the max version in the range.
    */
   public abstract boolean isMaximumExclusive();
 
   /**
    * is the maximum version unbounded
-   * @return
+   * @return true if no upper bound was specified.
    */
   public abstract boolean isMaximumUnbounded();
 
   /**
    * is the minimum version exclusive
-   * @return
+   * @return true if the min version is in range.
    */
   public abstract boolean isMinimumExclusive();
 
   /**
    * check if the versioninfo is the exact version
-   * @return
+   * @return true if the range will match 1 exact version.
    */
   public abstract boolean isExactVersion();
   /**

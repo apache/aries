@@ -96,7 +96,7 @@ public interface DeployedBundles {
   /**
    * A local environment extension to Apache Aries may manipulate a DeployedBundles object. 
    * This method returns the extra headers and their values. 
-   * @return
+   * @return the extra headers
    */
   Map<String, String> getExtraHeaders();
 }

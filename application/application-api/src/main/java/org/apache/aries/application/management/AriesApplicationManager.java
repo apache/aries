@@ -49,7 +49,7 @@ public interface AriesApplicationManager
    * archive does not contain a deployment manifest.
    *
    * @param url
-   * @return
+   * @return the application.
    * @throws ManagementException
    */
   public AriesApplication createApplication(URL url) throws ManagementException;

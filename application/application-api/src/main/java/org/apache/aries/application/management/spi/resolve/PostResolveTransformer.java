@@ -27,7 +27,7 @@ public interface PostResolveTransformer
 /**
  *  This method is to perform any post process after the resolver returns back a collection of bundles. It returns the updated manifest map.
  * @param appMetaData The application that was resolved
- * @param bundles A collection of bundles required by this application. 
+ * @param deployedBundles A collection of bundles required by this application. 
  * @return Modified collection of bundles
  * @throws ResolverException
  */

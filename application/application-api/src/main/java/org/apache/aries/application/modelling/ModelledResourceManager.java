@@ -26,7 +26,7 @@ public interface ModelledResourceManager
    * Obtain a ModelledResource object
    * @param uri the file uri
    * @param bundle the bundle file
-   * @return
+   * @return the modelled resource.
    */
   ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException;
 

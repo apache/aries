@@ -48,7 +48,7 @@ public interface BundleRepository {
 	    /**
 	     * Install the bundle represented by this suggestion via the given context
 	     * 
-	     * @param ctx The context of the framework where the bundle is to be install
+	     * @param framework The context of the framework where the bundle is to be install
 	     * @param app The AriesApplication being installed
 	     * @return the installed bundle
 	     * @throws BundleException
@@ -58,13 +58,13 @@ public interface BundleRepository {
 	    
 	    /**
 	     * Get the imports of the bundle 
-	     * @return 
+	     * @return the imported packages
 	     */
 	    public Set<Content> getImportPackage();
 	    
 	    /**
 	     * Get the exports of the bundle
-	     * @return
+	     * @return the packages to export
 	     */
 	    public Set<Content> getExportPackage();
 	    
