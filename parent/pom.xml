@@ -31,7 +31,7 @@
     <groupId>org.apache.aries</groupId>
     <artifactId>parent</artifactId>
     <name>Aries :: Top Parent POM</name>
-    <version>0.3</version>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -48,9 +48,9 @@
     <inceptionYear>2009</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.3</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/parent-0.3</developerConnection>
-        <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.3</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/parent</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/parent</developerConnection>
+        <url>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/parent</url>
     </scm>
 
     <issueManagement>
