@@ -37,9 +37,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/proxy</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/proxy</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/proxy</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/proxy</url>
     </scm>
     
     <dependencyManagement>
