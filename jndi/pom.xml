@@ -37,9 +37,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/jndi</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jndi</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jndi</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jndi</url>
     </scm>
 
     <properties>

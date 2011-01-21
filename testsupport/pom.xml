@@ -37,9 +37,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/testsupport</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/testsupport</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/testsupport</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/testsupport</url>
     </scm>
 
     <modules>

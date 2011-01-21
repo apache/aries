@@ -35,9 +35,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/application</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/application</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/application</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application</url>
     </scm>
 
     <dependencyManagement>

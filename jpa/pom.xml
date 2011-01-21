@@ -31,9 +31,9 @@
     <name>Aries JPA Component</name>
     <version>0.3-SNAPSHOT</version>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/jpa</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jpa</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jpa</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jpa</url>
     </scm>
     <dependencyManagement>
         <dependencies>
