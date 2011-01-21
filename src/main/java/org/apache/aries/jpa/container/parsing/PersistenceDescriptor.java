@@ -33,7 +33,7 @@ public interface PersistenceDescriptor {
    * Get the location of the persistence descriptor as it appears in the
    * Meta-Persistence header. The default location should be returned as
    * "META-INF/persistence.xml".
-   * @return
+   * @return the location
    */
   public String getLocation();
 

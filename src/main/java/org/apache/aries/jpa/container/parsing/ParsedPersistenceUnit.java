@@ -77,14 +77,14 @@ public interface ParsedPersistenceUnit {
 
   /**
    * Return the persistence bundle that defines this persistence unit
-   * @return
+   * @return the defining bundle
    */
   public Bundle getDefiningBundle();
 
   /**
    * Returns a deep copy of the persistence metadata, modifications to the
    * returned {@link Map} will not be reflected in future calls. 
-   * @return
+   * @return the metadata
    */
   public Map<String, Object> getPersistenceXmlMetadata();
 }
