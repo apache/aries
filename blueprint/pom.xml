@@ -48,57 +48,57 @@
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.core</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.cm</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.annotation.impl</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.sample</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.testbundlea</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.itests</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- external dependencies -->
