@@ -139,21 +139,21 @@
         <dependency>
         	<groupId>org.apache.aries.blueprint</groupId>
         	<artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
-        	<version>${version}</version>
+        	<version>${project.version}</version>
         	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.blueprint</groupId>
         	<artifactId>org.apache.aries.blueprint.core</artifactId>
-        	<version>${version}</version>
+        	<version>${project.version}</version>
         	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.blueprint</groupId>
         	<artifactId>org.apache.aries.blueprint.cm</artifactId>
-        	<version>${version}</version>
+        	<version>${project.version}</version>
         	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
