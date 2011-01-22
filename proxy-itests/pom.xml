@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
-            <version>${project.version}</version>
+            <version>${version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
