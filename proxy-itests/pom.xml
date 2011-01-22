@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries.proxy</groupId>
         <artifactId>proxy</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3</version>
     </parent>
 
     <artifactId>org.apache.aries.proxy.itests</artifactId>
@@ -32,9 +32,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/proxy/proxy-itests</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/proxy/proxy-itests</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/proxy/proxy-itests</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/proxy-0.3/proxy-itests</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/proxy-0.3/proxy-itests</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/proxy-0.3/proxy-itests</url>
     </scm>
 
     <dependencies>
