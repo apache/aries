@@ -26,17 +26,10 @@
 
     <artifactId>org.apache.aries.proxy.itests</artifactId>
     
-    <version>0.3-SNAPSHOT</version>
     <name>Apache Aries Proxy iTests</name>
     <description>
         Integration tests using the standalone proxy-bundle.
     </description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/proxy/proxy-itests</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/proxy/proxy-itests</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/proxy/proxy-itests</url>
-    </scm>
 
     <dependencies>
         <dependency>
