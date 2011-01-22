@@ -107,6 +107,14 @@
                 <artifactId>org.apache.aries.util</artifactId>
                 <version>0.3-SNAPSHOT</version> 
             </dependency>
+            <dependency>
+                <groupId>org.apache.aries.quiesce</groupId>
+                <artifactId>org.apache.aries.quiesce.api</artifactId>
+                <version>0.3-SNAPSHOT</version>
+                <type>bundle</type>
+                <scope>provided</scope>
+            </dependency>
+
             <!-- TODO: We need felix 2.0.0 which is not supported by pax exam yet,
                  so tests are only enabled on equinox for now
             <dependency>
@@ -138,13 +146,6 @@
                 <groupId>org.apache.xbean</groupId>
                 <artifactId>xbean-finder</artifactId>
                 <version>3.7</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.apache.aries.blueprint</groupId>
-            	<artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
-            	<version>0.3-SNAPSHOT</version>
-            	<type>bundle</type>
-            	<scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
