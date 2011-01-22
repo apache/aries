@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.3</version>
+        <version>0.3-SNAPSHOT</version>
         <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
     </parent>  
 
@@ -105,7 +105,7 @@
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>0.3</version> 
+                <version>0.3-SNAPSHOT</version> 
             </dependency>
             <!-- TODO: We need felix 2.0.0 which is not supported by pax exam yet,
                  so tests are only enabled on equinox for now
@@ -140,13 +140,6 @@
                 <version>3.7</version>
             </dependency>
             <dependency>
-            	<groupId>org.apache.aries.blueprint</groupId>
-            	<artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
-            	<version>0.3-SNAPSHOT</version>
-            	<type>bundle</type>
-            	<scope>compile</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
                 <artifactId>org.apache.aries.quiesce.api</artifactId>
                 <version>0.3-SNAPSHOT</version>
@@ -154,17 +147,17 @@
             <dependency>
               <groupId>org.apache.aries.testsupport</groupId>
               <artifactId>org.apache.aries.testsupport.unit</artifactId>
-              <version>0.3</version>
+              <version>0.3-SNAPSHOT</version>
             </dependency>            
             <dependency>
             	<groupId>org.apache.aries.proxy</groupId>
             	<artifactId>org.apache.aries.proxy.api</artifactId>
-            	<version>0.3</version>
+            	<version>0.3-SNAPSHOT</version>
             </dependency>
             <dependency>
               <groupId>org.apache.aries.proxy</groupId>
         	  <artifactId>org.apache.aries.proxy</artifactId>
-        	  <version>0.3</version>
+        	  <version>0.3-SNAPSHOT</version>
         	  <scope>test</scope>
             </dependency>
         </dependencies>
