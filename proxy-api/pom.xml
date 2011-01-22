@@ -59,12 +59,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <version>0.3-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -74,5 +68,4 @@
             <artifactId>org.apache.aries.util</artifactId>
         </dependency>
     </dependencies>
-
 </project>
