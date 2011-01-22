@@ -70,12 +70,6 @@
             	<artifactId>org.apache.aries.util</artifactId>
             	<version>0.3</version>
             </dependency>
-             <dependency>
-                 <groupId>org.apache.aries.testsupport</groupId>
-                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                 <version>0.3</version>
-                 <scope>test</scope>
-            </dependency>
 
         </dependencies>
     </dependencyManagement>
