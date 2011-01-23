@@ -23,10 +23,10 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
-import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.spi.repository.PlatformRepository;
 import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ModelledResource;
 
@@ -55,6 +55,22 @@ public interface DeploymentManifestManager
       Collection<ModelledResource> byValueBundles, 
       Collection<Content> otherBundles) throws ResolverException;
 
+  /**
+   * Generate the deployment manifest map. The method can be used for some advanced scenarios.
+   * @param appMeta The Aries application metadata
+   * @param byValueBundles By value bundles
+   * @param useBundleSet Use Bundle set
+   * @param otherBundles Other bundles to be used to narrow the resolved bundles
+   * @param platformRepository a platform repository to use instead of the default
+   * @return DeployedBundles model of the deployed application
+   * @throws ResolverException
+   */
+  DeployedBundles generateDeployedBundles( 
+      ApplicationMetadata appMetadata, 
+      Collection<ModelledResource> byValueBundles, 
+      Collection<Content> otherBundles,
+      PlatformRepository platformRepository) throws ResolverException;
+  
   /**
    * Generate a Manifest representation of a DEPLOYMENT.MF, 
    * suitable for example to writing to disk
