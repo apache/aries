@@ -45,6 +45,7 @@
         <ariesJndiVersion>0.3-SNAPSHOT</ariesJndiVersion>
         <ariesJpaVersion>0.3-SNAPSHOT</ariesJpaVersion>
         <ariesProxyVersion>0.3-SNAPSHOT</ariesProxyVersion>
+        <ariesQuiesceVersion>0.3-SNAPSHOT</ariesQuiesceVersion>
         <ariesTransactionVersion>0.3-SNAPSHOT</ariesTransactionVersion>
         <ariesUtilVersion>0.3-SNAPSHOT</ariesUtilVersion>
         <ariesWebVersion>0.3-SNAPSHOT</ariesWebVersion>
@@ -216,6 +217,18 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.apache.aries.quiesce</groupId>
+                <artifactId>org.apache.aries.quiesce.api</artifactId>
+                <version>${ariesQuiesceVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.quiesce</groupId>
+                <artifactId>org.apache.aries.quiesce.manager</artifactId>
+                <version>${ariesQuiesceVersion}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>jmx</artifactId>
                 <version>${ariesJmxVersion}</version>
@@ -255,17 +268,17 @@
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>ariestrader</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blog</groupId>
                 <artifactId>blog</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blueprint</groupId>
                 <artifactId>blueprint</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
 
         </dependencies>
