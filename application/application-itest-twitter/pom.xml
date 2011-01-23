@@ -37,12 +37,12 @@
             <dependency>
                 <groupId>org.apache.aries.application.itest.twitter</groupId>
                 <artifactId>org.apache.aries.application.itest.twitter.bundle</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application.itest.twitter</groupId>
                 <artifactId>org.apache.aries.application.itest.twitter.eba</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
