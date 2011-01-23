@@ -202,8 +202,6 @@
         <dependency>
         	<groupId>org.apache.aries.transaction</groupId>
         	<artifactId>org.apache.aries.transaction.blueprint</artifactId>
-        	<version>0.3-SNAPSHOT</version>
-        	<type>bundle</type>
         	<scope>test</scope>
         </dependency>
         <dependency>
