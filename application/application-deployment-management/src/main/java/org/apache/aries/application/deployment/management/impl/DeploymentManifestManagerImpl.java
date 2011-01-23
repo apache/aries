@@ -49,6 +49,7 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.spi.repository.PlatformRepository;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.management.spi.resolve.DeploymentManifestManager;
 import org.apache.aries.application.management.spi.resolve.PostResolveTransformer;
@@ -181,9 +182,19 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       Collection<ModelledResource> provideByValueBundles, 
       Collection<Content> otherBundles) throws ResolverException {  
     
-    _logger.debug(LOG_ENTRY, "generateDeployedBundles", new Object[]{appMetadata,
-        provideByValueBundles,otherBundles });
+		_logger.debug(LOG_ENTRY, "generateDeployedBundles", new Object[] {
+				appMetadata, provideByValueBundles, otherBundles });
+		DeployedBundles bundles = generateDeployedBundles(appMetadata,
+				provideByValueBundles, otherBundles, null);
+		_logger.debug(LOG_EXIT, "generateDeploymentManifest",
+				new Object[] { bundles });
+		return bundles;
+  }
     
+    public DeployedBundles generateDeployedBundles(ApplicationMetadata appMetadata,
+            Collection<ModelledResource> provideByValueBundles, Collection<Content> otherBundles, PlatformRepository platformRepository)
+            throws ResolverException {
+     
     Collection<Content> useBundleSet = appMetadata.getUseBundles();
     Collection<Content> appContent = appMetadata.getApplicationContents();
     
@@ -233,7 +244,13 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       bundlesToResolve.addAll(appContent);
       Collection<ImportedBundle> slimmedDownUseBundle = narrowUseBundles(useBundleIB, requiredUseBundle);
       bundlesToResolve.addAll(toContent(slimmedDownUseBundle));
-      bundlesToBeProvisioned = resolver.resolve(appSymbolicName, appVersion, byValueBundles, bundlesToResolve);
+      if (platformRepository != null) {
+        bundlesToBeProvisioned = resolver.resolve(appSymbolicName, appVersion,
+            byValueBundles, bundlesToResolve, platformRepository);
+      } else {
+        bundlesToBeProvisioned = resolver.resolve(appSymbolicName, appVersion,
+            byValueBundles, bundlesToResolve);
+      }
       pruneFakeBundleFromResults (bundlesToBeProvisioned);
       for (ModelledResource rbm : bundlesToBeProvisioned)
       {
