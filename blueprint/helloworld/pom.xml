@@ -35,22 +35,22 @@
             <dependency>
                 <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.helloworld.api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.helloworld.server</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.helloworld.client</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.helloworld.assembly</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
 	</dependencyManagement>
