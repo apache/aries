@@ -33,14 +33,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>transaction</artifactId>
-    <version>0.3</version>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Apache Aries Transaction</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/transaction-0.3</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/transaction-0.3</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/transaction-0.3</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/transaction</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/transaction</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/0.3-RCx/transaction</url>
     </scm>
 
     <dependencyManagement>
