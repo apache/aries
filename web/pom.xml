@@ -29,12 +29,12 @@
     <artifactId>web</artifactId>
     <packaging>pom</packaging>
     <name>Apache Aries Web Component</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/web</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/web</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/0.3-RCx/web</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/web-0.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/web-0.3</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/web-0.3</url>
     </scm>
 
     <modules>
