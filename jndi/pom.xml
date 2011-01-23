@@ -42,9 +42,6 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/jndi</url>
     </scm>
 
-    <properties>
-        <ariesBlueprintVersion>0.3-SNAPSHOT</ariesBlueprintVersion>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -52,37 +49,37 @@
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.core</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.url</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.rmi</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
                        <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <!-- external dependencies -->
             <dependency>
@@ -135,7 +132,7 @@
              <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>blueprint</artifactId>
-                <version>${ariesBlueprintVersion}</version>
+                <version>0.3-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
