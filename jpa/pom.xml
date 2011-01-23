@@ -29,11 +29,11 @@
     <artifactId>jpa</artifactId>
     <packaging>pom</packaging>
     <name>Aries JPA Component</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/jpa</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/jpa</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/0.3-RCx/jpa</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/jpa-0.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/jpa-0.3</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/jpa-0.3</url>
     </scm>
     <dependencyManagement>
         <dependencies>
