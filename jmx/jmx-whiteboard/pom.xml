@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.aries.jmx</groupId>
         <artifactId>jmx</artifactId>
-        <version>0.3</version>
+        <version>0.3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.jmx.whiteboard</artifactId>
@@ -33,9 +33,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/jmx-0.3/jmx-whiteboard</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/jmx-0.3/jmx-whiteboard</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/tags/jmx-0.3/jmx-whiteboard</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/jmx/jmx-whiteboard</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jmx/jmx-whiteboard</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jmx/jmx-whiteboard</url>
     </scm>
 
 

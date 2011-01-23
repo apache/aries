@@ -29,15 +29,15 @@
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>jmx</artifactId>
     <name>Apache Aries JMX</name>
-    <version>0.3</version>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
     <description>Implementation of the JMX Management Model Specification</description>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/jmx-0.3</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/jmx-0.3</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/jmx-0.3</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/jmx</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/jmx</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/0.3-RCx/jmx</url>
     </scm>
     
     <dependencyManagement>
