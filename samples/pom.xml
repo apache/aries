@@ -45,6 +45,7 @@
         <ariesJndiVersion>0.3</ariesJndiVersion>
         <ariesJpaVersion>0.3</ariesJpaVersion>
         <ariesProxyVersion>0.3</ariesProxyVersion>
+        <ariesQuiesceVersion>0.3</ariesQuiesceVersion>
         <ariesTransactionVersion>0.3</ariesTransactionVersion>
         <ariesUtilVersion>0.3</ariesUtilVersion>
         <ariesWebVersion>0.3</ariesWebVersion>
@@ -250,22 +251,35 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+               <groupId>org.apache.aries.quiesce</groupId>
+               <artifactId>org.apache.aries.quiesce.api</artifactId>
+               <version>${ariesQuiesceVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+               <groupId>org.apache.aries.quiesce</groupId>
+               <artifactId>org.apache.aries.quiesce.manager</artifactId>
+               <version>${ariesQuiesceVersion}</version>
+            </dependency>
+
 
             <!-- internal dependencies -->
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>ariestrader</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blog</groupId>
                 <artifactId>blog</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blueprint</groupId>
                 <artifactId>blueprint</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
 
         </dependencies>
