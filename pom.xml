@@ -29,7 +29,7 @@
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>jndi</artifactId>
     <name>Apache Aries JNDI</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <packaging>pom</packaging>
 
     <description>
@@ -37,9 +37,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/0.3-RCx/jndi</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/0.3-RCx/jndi</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/0.3-RCx/jndi</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/jndi-0.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/jndi-0.3</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/jndi-0.3</url>
     </scm>
 
     <dependencyManagement>
