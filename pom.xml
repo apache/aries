@@ -130,8 +130,8 @@
             <!-- other aries subproject dependency management -->
              <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>blueprint</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <artifactId>org.apache.aries.blueprint</artifactId>
+                <version>0.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
