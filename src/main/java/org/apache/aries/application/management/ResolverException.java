@@ -18,8 +18,12 @@
  */
 package org.apache.aries.application.management;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.aries.application.modelling.ModellingConstants;
 
 /**
  * Exception thrown by the AriesApplicationResolver interface
@@ -27,7 +31,7 @@ import java.util.ArrayList;
 public class ResolverException extends Exception {
 
   private static final long serialVersionUID = 8176120468577397671L;
-  private List<String> _unsatisfiedRequirementMessages = new ArrayList<String>();
+  private Map<String, String> _unsatisfiedRequirementMessages = new HashMap<String, String>();
   
   /**
    * Construct from an Exception
@@ -45,9 +49,22 @@ public class ResolverException extends Exception {
   }
   
   public void setUnsatisfiedRequirements (List<String> reqts) { 
-    _unsatisfiedRequirementMessages = reqts;
+    // Assume the type is unknown if we don't get told it
+    for (String reqt : reqts)
+    {
+      _unsatisfiedRequirementMessages.put(reqt, ModellingConstants.OBR_UNKNOWN);
+    }
   }
   public List<String> getUnsatisfiedRequirements() { 
-    return _unsatisfiedRequirementMessages;
+    return new ArrayList<String>(_unsatisfiedRequirementMessages.keySet());
+  }
+
+  public void setUnsatisfiedRequirementsAndReasons(
+      Map<String, String> unsatisfiedRequirements) {
+    _unsatisfiedRequirementMessages = unsatisfiedRequirements;
+  }
+  
+  public Map<String, String> getUnsatisfiedRequirementsAndReasons() {
+      return _unsatisfiedRequirementMessages;
   }
 }
