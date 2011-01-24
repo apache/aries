@@ -362,7 +362,7 @@ public class DeploymentGeneratorTest
       // Get the unsatisfied Requirements
       List<String> unsatisfiedReqs = rx.getUnsatisfiedRequirements();
       // Ensure we've got 4 unsatisfied Requirements
-      assertEquals ("4 unsatisfied requirements expected, not " + unsatisfiedReqs.size(), unsatisfiedReqs.size(), 4);
+      assertEquals ("4 unsatisfied requirements expected, but got " + Arrays.toString(unsatisfiedReqs.toArray()), 4, unsatisfiedReqs.size());
       List<String> checkMessages = new ArrayList<String>();
       // Now load an array with the expected messages.
       checkMessages.add("Shared bundle test.shared1_1.0.0 has a dependency for package test.isolated1 which " +

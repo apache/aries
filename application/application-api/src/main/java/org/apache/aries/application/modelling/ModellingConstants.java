@@ -29,5 +29,6 @@ public class ModellingConstants
   public static final String OBR_PACKAGE = "package";
   public static final String OBR_SERVICE = "service";
   public static final String OBR_COMPOSITE_BUNDLE = "composite-bundle";
+  public static final String OBR_UNKNOWN = "unknown";
   public static final String OPTIONAL_KEY = Constants.RESOLUTION_DIRECTIVE + ":";
 }

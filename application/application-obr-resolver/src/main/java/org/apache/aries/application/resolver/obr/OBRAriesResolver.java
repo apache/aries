@@ -197,21 +197,16 @@ public class OBRAriesResolver implements AriesApplicationResolver
       // let's refine the list by removing the indirect unsatisfied bundles that are caused by unsatisfied packages or other bundles
       Map<String,Set<String>> refinedReqs = refineUnsatisfiedRequirements(obrResolver, reasons);
       StringBuffer reqList = new StringBuffer();
-      List<String> unsatisfiedRequirements = new LinkedList<String>();
+      Map<String, String> unsatisfiedRequirements = extractConsumableMessageInfo(refinedReqs);
 
-      for (Map.Entry<String, Set<String>> filterEntry : refinedReqs.entrySet()) {
-        log.debug("unable to satisfy the filter , filter = " + filterEntry.getKey() + "required by "+filterEntry.getValue());
-       
-        String reason = extractConsumableMessageInfo(filterEntry.getKey(),filterEntry.getValue());
-
+      for (String reason : unsatisfiedRequirements.values()) {
         reqList.append('\n');
         reqList.append(reason);
-        unsatisfiedRequirements.add(reason);
       }
 
       ResolverException re = new ResolverException(MessageUtil.getMessage("RESOLVER_UNABLE_TO_RESOLVE", 
           new Object[] { appName, reqList }));
-      re.setUnsatisfiedRequirements(unsatisfiedRequirements);
+      re.setUnsatisfiedRequirementsAndReasons(unsatisfiedRequirements);
       log.debug(LOG_EXIT, "resolve", re);
       
       throw re;
@@ -307,21 +302,16 @@ public class OBRAriesResolver implements AriesApplicationResolver
       //refine the list by removing the indirect unsatisfied bundles that are caused by unsatisfied packages or other bundles
       Map<String,Set<String>> refinedReqs = refineUnsatisfiedRequirements(obrResolver, reasons);
       StringBuffer reqList = new StringBuffer();
-      List<String> unsatisfiedRequirements = new LinkedList<String>();
+      Map<String, String> unsatisfiedRequirements = extractConsumableMessageInfo(refinedReqs);
 
-      for (Map.Entry<String, Set<String>> filterEntry : refinedReqs.entrySet()) {
-        log.debug("unable to satisfied the filter , filter = " + filterEntry.getKey() + "required by "+filterEntry.getValue());
-       
-        String reason = extractConsumableMessageInfo(filterEntry.getKey(),filterEntry.getValue());
-
+      for (String reason : unsatisfiedRequirements.values()) {
         reqList.append('\n');
         reqList.append(reason);
-        unsatisfiedRequirements.add(reason);
       }
 
       ResolverException re = new ResolverException(MessageUtil.getMessage("RESOLVER_UNABLE_TO_RESOLVE", 
           new Object[] { app.getApplicationMetadata().getApplicationName(), reqList }));
-      re.setUnsatisfiedRequirements(unsatisfiedRequirements);
+      re.setUnsatisfiedRequirementsAndReasons(unsatisfiedRequirements);
       log.debug(LOG_EXIT, "resolve", re);
       
       throw re;
@@ -528,71 +518,92 @@ public class OBRAriesResolver implements AriesApplicationResolver
    * @param bundlesFailing For problems with a bundle, the set of bundles that have a problem
    * @return human readable form
    */
-  private String extractConsumableMessageInfo(String filter, Set<String> bundlesFailing)
-  {
-    log.debug(LOG_ENTRY, "extractConsumableMessageInfo", new Object[] {filter, bundlesFailing});
-    
-    Map<String, String> attrs = ManifestHeaderProcessor.parseFilter(filter);
-    Map<String, String> customAttrs = new HashMap<String, String>();
-    for (Map.Entry<String, String> e : attrs.entrySet()) {
-      if (!SPECIAL_FILTER_ATTRS.contains(e.getKey())) {
-        customAttrs.put(e.getKey(), e.getValue());
-      }
-    }
+  private Map<String, String> extractConsumableMessageInfo(
+      Map<String, Set<String>> refinedReqs) {
+    log.debug(LOG_ENTRY, "extractConsumableMessageInfo", refinedReqs);
 
-    StringBuilder msgKey = new StringBuilder();
-    List<Object> inserts = new ArrayList<Object>();
+    Map<String, String> unsatisfiedRequirements = new HashMap<String, String>();
 
-    boolean unknownType = false;
-    if (attrs.containsKey(ModellingConstants.OBR_PACKAGE)) {
-      msgKey.append("RESOLVER_UNABLE_TO_RESOLVE_PACKAGE");
-      inserts.add(attrs.get(ModellingConstants.OBR_PACKAGE));
-    } else if (attrs.containsKey(ModellingConstants.OBR_SYMBOLIC_NAME)) {
-      msgKey.append("RESOLVER_UNABLE_TO_RESOLVE_BUNDLE");
-      inserts.add(attrs.get(ModellingConstants.OBR_SYMBOLIC_NAME));
-    } else if (attrs.containsKey(ModellingConstants.OBR_SERVICE)) {
-      msgKey.append("RESOLVER_UNABLE_TO_RESOLVE_SERVICE");
-      //No insert for service name as the name must be "*" to match any Service capability
-    } else {
-      unknownType = true;
-      msgKey.append("RESOLVER_UNABLE_TO_RESOLVE_FILTER");
-      inserts.add(filter);
-    }
+    for (Map.Entry<String, Set<String>> filterEntry : refinedReqs.entrySet()) {
 
-    if (bundlesFailing != null && bundlesFailing.size() != 0) {
-      msgKey.append("_REQUIRED_BY_BUNDLE");
-      if (bundlesFailing.size() == 1)
-        inserts.add(bundlesFailing.iterator().next()); // Just take the string if there's only one of them
-      else
-        inserts.add(bundlesFailing.toString()); // Add the whole set if there isn't exactly one
-    }
-    if (!unknownType && !customAttrs.isEmpty()) {
-      msgKey.append("_WITH_ATTRS");
-      inserts.add(customAttrs);
-    }
+      String filter = filterEntry.getKey();
+      Set<String> bundlesFailing = filterEntry.getValue();
 
-    if (!unknownType && attrs.containsKey(Constants.VERSION_ATTRIBUTE)) {
-      msgKey.append("_WITH_VERSION");
-      VersionRange vr = ManifestHeaderProcessor.parseVersionRange(attrs
-          .get(Constants.VERSION_ATTRIBUTE));
-      inserts.add(vr.getMinimumVersion());
+      log.debug("unable to satisfy the filter , filter = "
+          + filter + "required by " + Arrays.toString(bundlesFailing.toArray()));
 
-      if (!!!vr.isExactVersion()) {
-        msgKey.append(vr.isMinimumExclusive() ? "_LOWEX" : "_LOW");
-        if (vr.getMaximumVersion() != null) {
-          msgKey.append(vr.isMaximumExclusive() ? "_UPEX" : "_UP");
-          inserts.add(vr.getMaximumVersion());
+      Map<String, String> attrs = ManifestHeaderProcessor.parseFilter(filter);
+      Map<String, String> customAttrs = new HashMap<String, String>();
+      for (Map.Entry<String, String> e : attrs.entrySet()) {
+        if (!SPECIAL_FILTER_ATTRS.contains(e.getKey())) {
+          customAttrs.put(e.getKey(), e.getValue());
         }
       }
+
+      StringBuilder msgKey = new StringBuilder();
+      List<Object> inserts = new ArrayList<Object>();
+
+      final String type;
+      boolean unknownType = false;
+      if (attrs.containsKey(ModellingConstants.OBR_PACKAGE)) {
+        type = ModellingConstants.OBR_PACKAGE;
+        msgKey.append("RESOLVER_UNABLE_TO_RESOLVE_PACKAGE");
+        inserts.add(attrs.get(ModellingConstants.OBR_PACKAGE));
+      } else if (attrs.containsKey(ModellingConstants.OBR_SYMBOLIC_NAME)) {
+        type = ModellingConstants.OBR_SYMBOLIC_NAME;
+        msgKey.append("RESOLVER_UNABLE_TO_RESOLVE_BUNDLE");
+        inserts.add(attrs.get(ModellingConstants.OBR_SYMBOLIC_NAME));
+      } else if (attrs.containsKey(ModellingConstants.OBR_SERVICE)) {
+        type = ModellingConstants.OBR_SERVICE;
+        msgKey.append("RESOLVER_UNABLE_TO_RESOLVE_SERVICE");
+        // No insert for service name as the name must be "*" to match any
+        // Service capability
+      } else {
+        type = ModellingConstants.OBR_UNKNOWN;
+        unknownType = true;
+        msgKey.append("RESOLVER_UNABLE_TO_RESOLVE_FILTER");
+        inserts.add(filter);
+      }
+
+      if (bundlesFailing != null && bundlesFailing.size() != 0) {
+        msgKey.append("_REQUIRED_BY_BUNDLE");
+        if (bundlesFailing.size() == 1)
+          inserts.add(bundlesFailing.iterator().next()); // Just take the string
+                                                         // if there's only one
+                                                         // of them
+        else
+          inserts.add(bundlesFailing.toString()); // Add the whole set if there
+                                                  // isn't exactly one
+      }
+      if (!unknownType && !customAttrs.isEmpty()) {
+        msgKey.append("_WITH_ATTRS");
+        inserts.add(customAttrs);
+      }
+
+      if (!unknownType && attrs.containsKey(Constants.VERSION_ATTRIBUTE)) {
+        msgKey.append("_WITH_VERSION");
+        VersionRange vr = ManifestHeaderProcessor.parseVersionRange(attrs
+            .get(Constants.VERSION_ATTRIBUTE));
+        inserts.add(vr.getMinimumVersion());
+
+        if (!!!vr.isExactVersion()) {
+          msgKey.append(vr.isMinimumExclusive() ? "_LOWEX" : "_LOW");
+          if (vr.getMaximumVersion() != null) {
+            msgKey.append(vr.isMaximumExclusive() ? "_UPEX" : "_UP");
+            inserts.add(vr.getMaximumVersion());
+          }
+        }
+      }
+
+      String msgKeyStr = msgKey.toString();
+
+      String msg = MessageUtil.getMessage(msgKeyStr, inserts.toArray());
+      unsatisfiedRequirements.put(msg, type);
     }
 
-    String msgKeyStr = msgKey.toString();
-    
-    String msg = MessageUtil.getMessage(msgKeyStr, inserts.toArray());
+    log.debug(LOG_EXIT, "extractConsumableMessageInfo", unsatisfiedRequirements);
 
-    log.debug(LOG_EXIT, "extractConsumableMessageInfo", msg);
-    
-    return msg;
+    return unsatisfiedRequirements;
   }
   
   /**
