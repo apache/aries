@@ -78,7 +78,7 @@ public final class RepositoryDescriptorGenerator
     requirement.setAttribute("multiple", "false");
     requirement.setAttribute("optional", "false");
     
-    requirement.setAttribute("filter", ManifestHeaderProcessor.generateFilter("bundle", p.getContentName(), p.getAttributes()));
+    requirement.setAttribute("filter", ManifestHeaderProcessor.generateFilter("symbolicname", p.getContentName(), p.getAttributes()));
     
     resource.appendChild(requirement);
   }
