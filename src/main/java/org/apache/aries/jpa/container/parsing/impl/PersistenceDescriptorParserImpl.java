@@ -103,7 +103,7 @@ public class PersistenceDescriptorParserImpl implements PersistenceDescriptorPar
           newLength += bufferGrowthSize;
         }
         bytes = new byte[newLength];
-        System.arraycopy(tmp, 0, bytes, 0, pos);
+        System.arraycopy(tmp, 0, bytes, 0, (maxRead >= pos) ? maxRead + 1 : pos);
       }
     }
 
