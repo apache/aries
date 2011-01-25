@@ -266,6 +266,87 @@ public class PersistenceXMLParsingTest
         is.close();
     }
   }
+  
+  
+  /**
+   * Test parsing a persistence descriptor with several entries
+   * @throws Exception
+   */
+  @Test
+  public void testReallyBigFile() throws Exception
+  {
+    InputStream is = null;
+    try {
+      String location = "file24/META-INF/persistence.xml"; 
+      is = getClass().getClassLoader().getResourceAsStream(location);
+      PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
+      
+      Bundle b = Skeleton.newMock(Bundle.class);
+      
+      Collection<ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+      assertEquals("An incorrect number of persistence units has been returned.", 33, parsedUnits.size());
+      
+      List<ParsedPersistenceUnit> units = getList(parsedUnits);
+      
+      Collections.sort(units, new Comparator<ParsedPersistenceUnit>() {
+
+        public int compare(ParsedPersistenceUnit p1,
+            ParsedPersistenceUnit p2) {
+          
+          return Integer.valueOf((String)p1.getPersistenceXmlMetadata().
+              get(ParsedPersistenceUnit.UNIT_NAME)).compareTo(
+                  Integer.valueOf((String)p2.getPersistenceXmlMetadata().
+                      get(ParsedPersistenceUnit.UNIT_NAME)));
+        }
+      });
+      
+      for(int i = 0; i < units.size() ; i++)
+        checkParsedUnit(b, units.get(i), Integer.valueOf(i + 1).toString());
+      
+    } finally {
+      if(is != null)
+        is.close();
+    }
+  }
+
+  private void checkParsedUnit(Bundle b, ParsedPersistenceUnit unit, String number) {
+    assertEquals("The schema version was incorrect", "1.0",
+        unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.SCHEMA_VERSION));
+    assertEquals("The unit name was incorrect", number,
+        unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.UNIT_NAME));
+    assertEquals("The transaction type was incorrect", "JTA",
+        unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.TRANSACTION_TYPE));
+    assertEquals("The provider class name was incorrect", "provider." + number,
+        unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.PROVIDER_CLASSNAME));
+    assertEquals("The jta datasource jndi name was wrong", "jtaDS." + number,
+        unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JTA_DATASOURCE));
+    assertEquals("The non jta datasource jndi name was wrong", "nonJtaDS." + number,
+        unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE));
+    assertEquals("An incorrect number of mapping files were specified", 1,
+        ((Collection)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MAPPING_FILES)).size());
+    assertTrue("Incorrect mapping files were listed",
+        ((Collection)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MAPPING_FILES)).contains("mappingFile." + number));
+    assertEquals("An incorrect number of jar files were specified", 1,
+        ((Collection)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JAR_FILES)).size());
+    assertTrue("Incorrect jar URLs were listed", ((Collection<String>)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JAR_FILES)).contains("jarFile." + number));
+        
+    assertEquals("An incorrect number of managed classes were specified", 1,
+        ((Collection)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MANAGED_CLASSES)).size());
+    assertTrue("Incorrect managed classes were listed",
+        ((Collection)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MANAGED_CLASSES)).contains("class." + number));
+    
+    //In the schema this defaults to false. There is a separate test (testFile1b)
+    //for the spec behaviour, which defaults to true
+    assertFalse("We should exclude any classes not listed",
+        (Boolean)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.EXCLUDE_UNLISTED_CLASSES));
+    assertNotNull("The properties should never be null",
+        unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.PROPERTIES));
+    assertEquals("The wrong number of properties were specified", 1,
+        ((Properties)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.PROPERTIES)).size());
+    assertEquals("The property had the wrong value", "prop.value." + number,
+        ((Properties)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.PROPERTIES)).getProperty("some.prop." + number));
+    assertSame("The persistence unit was associated with the wrong bundle", b, unit.getDefiningBundle());
+  }
 
   /**
    * Sort a Collection of ParsedPersistenceUnit into alphabetical order (by unit name)
