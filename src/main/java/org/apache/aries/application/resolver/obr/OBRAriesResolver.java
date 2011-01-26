@@ -199,7 +199,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
       StringBuffer reqList = new StringBuffer();
       Map<String, String> unsatisfiedRequirements = extractConsumableMessageInfo(refinedReqs);
 
-      for (String reason : unsatisfiedRequirements.values()) {
+      for (String reason : unsatisfiedRequirements.keySet()) {
         reqList.append('\n');
         reqList.append(reason);
       }
@@ -304,7 +304,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
       StringBuffer reqList = new StringBuffer();
       Map<String, String> unsatisfiedRequirements = extractConsumableMessageInfo(refinedReqs);
 
-      for (String reason : unsatisfiedRequirements.values()) {
+      for (String reason : unsatisfiedRequirements.keySet()) {
         reqList.append('\n');
         reqList.append(reason);
       }
