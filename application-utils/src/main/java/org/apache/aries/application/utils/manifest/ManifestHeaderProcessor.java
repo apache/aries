@@ -467,21 +467,27 @@ public class ManifestHeaderProcessor
 				VersionRange vr = ManifestHeaderProcessor
 						.parseVersionRange(attrib.getValue());
 
-				filter.append("(" + attribName + ">=" + vr.getMinimumVersion());
+				// The RFC of OSGi Bundle Repository (OBR) is still under discussion.
+				// According to section "5.11.3 Require-Bundle" in the current version 
+				// of this RFC (Jan. 2011), we need use version rather than bundle-version
+				// in the filter for the "require-bundle" requirement.
+				String versionAttribName = "version";
+				
+				filter.append("(" + versionAttribName + ">=" + vr.getMinimumVersion());
 
 				if (vr.getMaximumVersion() != null) {
-					filter.append(")(" + attribName + "<=");
+					filter.append(")(" + versionAttribName + "<=");
 					filter.append(vr.getMaximumVersion());
 				}
 
 				if (vr.getMaximumVersion() != null && vr.isMinimumExclusive()) {
-					filter.append(")(!(" + attribName + "=");
+					filter.append(")(!(" + versionAttribName + "=");
 					filter.append(vr.getMinimumVersion());
 					filter.append(")");
 				}
 
 				if (vr.getMaximumVersion() != null && vr.isMaximumExclusive()) {
-					filter.append(")(!(" + attribName + "=");
+					filter.append(")(!(" + versionAttribName + "=");
 					filter.append(vr.getMaximumVersion());
 					filter.append(")");
 				}
