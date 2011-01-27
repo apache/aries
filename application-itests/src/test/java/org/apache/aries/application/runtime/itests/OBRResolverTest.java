@@ -71,6 +71,9 @@ public class OBRResolverTest extends AbstractIntegrationTest
   public static final String TRANSITIVE_BUNDLE_BY_REFERENCE = "transitive.bundle.by.reference";
   public static final String BUNDLE_IN_FRAMEWORK = "org.apache.aries.util";
   
+  public static final String CORE_BUNDLE1_BY_VALUE = "core.bundle1.by.value";
+  public static final String CORE_BUNDLE2_BY_VALUE = "core.bundle2.by.value";
+  
   
   /* Use @Before not @BeforeClass so as to ensure that these resources
    * are created in the paxweb temp directory, and not in the svn tree
@@ -78,14 +81,17 @@ public class OBRResolverTest extends AbstractIntegrationTest
   @Before
   public static void createApplications() throws Exception 
   {
-    ZipFixture bundle = ArchiveFixture.newJar().manifest()
+    ZipFixture bundle; 
+    FileOutputStream fout;
+    
+    bundle = ArchiveFixture.newJar().manifest()
                             .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
                             .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
                             .attribute(Constants.IMPORT_PACKAGE, "p.q.r, x.y.z, javax.naming, " + BUNDLE_IN_FRAMEWORK)
                             .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
 
     
-    FileOutputStream fout = new FileOutputStream(CORE_BUNDLE_BY_VALUE + ".jar");
+    fout = new FileOutputStream(CORE_BUNDLE_BY_VALUE + ".jar");
     bundle.writeOut(fout);
     fout.close();
 
@@ -138,6 +144,47 @@ public class OBRResolverTest extends AbstractIntegrationTest
     fout = new FileOutputStream("blog.eba");
     testEba.writeOut(fout);
     fout.close();
+    
+    
+    // prepare bundles for require-bundle header test
+    // bundle1
+    bundle = ArchiveFixture.newJar().manifest()
+    .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE1_BY_VALUE)
+    .attribute(Constants.BUNDLE_NAME, "Bundle1")
+    .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+    .attribute(Constants.REQUIRE_BUNDLE, CORE_BUNDLE2_BY_VALUE+";bundle-version=\"0.0.0\"")
+    .attribute(Constants.BUNDLE_VERSION, "1.0.0")
+    .end();
+
+
+    fout = new FileOutputStream(CORE_BUNDLE1_BY_VALUE + ".jar");
+    bundle.writeOut(fout);
+    fout.close();
+    
+    // bundle2
+    bundle = ArchiveFixture.newJar().manifest()
+    .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE2_BY_VALUE)
+    .attribute(Constants.BUNDLE_NAME, "Bundle2")
+    .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+    .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+
+
+    fout = new FileOutputStream(CORE_BUNDLE2_BY_VALUE + ".jar");
+    bundle.writeOut(fout);
+    fout.close();
+    
+    //eba that made up of bundle1 and bundle2
+    ZipFixture testRequireBundle = ArchiveFixture.newZip()
+    .binary("META-INF/APPLICATION.MF",
+       OBRResolverTest.class.getClassLoader().getResourceAsStream("obr/APPLICATION2.MF"))
+       .end()
+     .binary(CORE_BUNDLE1_BY_VALUE + ".jar", new FileInputStream(CORE_BUNDLE1_BY_VALUE + ".jar")).end()
+     .binary(CORE_BUNDLE2_BY_VALUE + ".jar", new FileInputStream(CORE_BUNDLE2_BY_VALUE + ".jar")).end();
+
+   fout = new FileOutputStream("testRequireBundle.eba");
+   testRequireBundle.writeOut(fout);
+   fout.close();
+
   }
 
   @Test(expected=ResolverException.class)
@@ -167,16 +214,19 @@ public class OBRResolverTest extends AbstractIntegrationTest
   public void testBlogApp() throws Exception 
   {
     startApplicationRuntimeBundle();
-
+    
+    //generate the repository.xml for this test
     generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
     
+    //clear all other repo info
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
       repositoryAdmin.removeRepository(repo.getURI());
     }
     
+    //add our generated repository.xml
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
@@ -212,6 +262,40 @@ public class OBRResolverTest extends AbstractIntegrationTest
     manager.uninstall(ctx);
   }
 
+  @Test
+  public void testRequireBundleResolve() throws Exception 
+  {
+    startApplicationRuntimeBundle();
+
+
+    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    
+    //clear all other repo info
+    Repository[] repos = repositoryAdmin.listRepositories();
+    for (Repository repo : repos) {
+      repositoryAdmin.removeRepository(repo.getURI());
+    }
+
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("testRequireBundle.eba")));
+    
+    app = manager.resolve(app);
+    
+    DeploymentMetadata depMeta = app.getDeploymentMetadata();
+    
+    List<DeploymentContent> depContents = depMeta.getApplicationDeploymentContents();
+
+    List<String> bundleSymbolicNames = new ArrayList<String>();
+    
+    for (DeploymentContent dep : depContents) {
+      bundleSymbolicNames.add(dep.getContentName());
+    }
+    
+    assertTrue("Bundle " + CORE_BUNDLE1_BY_VALUE + " not found.", bundleSymbolicNames.contains(CORE_BUNDLE1_BY_VALUE));
+    assertTrue("Bundle " + CORE_BUNDLE2_BY_VALUE + " not found.", bundleSymbolicNames.contains(CORE_BUNDLE2_BY_VALUE));
+    
+    
+  }
 
   private void generateOBRRepoXML(String ... bundleFiles) throws Exception
   {
@@ -273,11 +357,10 @@ public class OBRResolverTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
         /* For debugging, uncomment the next two lines */
-//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-//        waitForFrameworkStartup(),
+        //vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+        //waitForFrameworkStartup(),
 
-        /* For debugging, uncomment the next two lines
-        and add these imports:
+        /* For debugging, and add these imports:
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
         */
