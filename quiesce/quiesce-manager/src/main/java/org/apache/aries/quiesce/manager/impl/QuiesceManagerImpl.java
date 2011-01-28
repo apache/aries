@@ -222,15 +222,18 @@ public class QuiesceManagerImpl implements QuiesceManager {
 						
 						ScheduledFuture<?> timeoutFuture = timeoutExecutor.schedule(new Runnable() {
 						    public void run() {
-						        LOGGER.warn("Quiesce timed out");
-						        synchronized (bundlesToQuiesce) {
-						            for (Bundle b : new ArrayList<Bundle>(bundlesToQuiesce)) {
-    						            LOGGER.warn("Could not quiesce within timeout, so stopping bundle "+ b.getSymbolicName());
-    						            stopBundle(b, bundlesToQuiesce);
-						            }
+						        try {
+						          LOGGER.warn("Quiesce timed out");
+  						        synchronized (bundlesToQuiesce) {
+  						            for (Bundle b : new ArrayList<Bundle>(bundlesToQuiesce)) {
+      						            LOGGER.warn("Could not quiesce within timeout, so stopping bundle "+ b.getSymbolicName());
+      						            stopBundle(b, bundlesToQuiesce);
+  						            }
+  						        }
+						        } finally { 
+						          future.registerDone();
+						          LOGGER.debug("Quiesce complete");
 						        }
-						        future.registerDone();
-						        LOGGER.debug("Quiesce complete");
 						    }
 						}, timeout, TimeUnit.MILLISECONDS);
 
