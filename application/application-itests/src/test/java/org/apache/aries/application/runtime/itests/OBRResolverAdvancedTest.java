@@ -131,6 +131,15 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     bundle.writeOut(fout);
     fout.close();
 
+    bundle = ArchiveFixture.newJar().manifest()
+    .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
+    .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+    .attribute(Constants.EXPORT_PACKAGE, "d.e.f").end();
+
+    fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
+    bundle.writeOut(fout);
+    fout.close();
+
     
     
     // jar up a use bundle
