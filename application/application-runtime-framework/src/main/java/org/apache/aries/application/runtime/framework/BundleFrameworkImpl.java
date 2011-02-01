@@ -23,16 +23,20 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
 import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
+import org.eclipse.osgi.framework.internal.core.BundleHost;
+import org.eclipse.osgi.framework.internal.core.InternalSystemBundle;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.osgi.service.framework.CompositeBundle;
+import org.osgi.service.framework.SurrogateBundle;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
@@ -42,7 +46,6 @@ public class BundleFrameworkImpl implements BundleFramework
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(BundleFrameworkImpl.class);
 
-  List<Bundle> _bundles;
   CompositeBundle _compositeBundle;
 
   ServiceTracker _packageAdminTracker;
@@ -50,7 +53,6 @@ public class BundleFrameworkImpl implements BundleFramework
   BundleFrameworkImpl(CompositeBundle cb)
   {
     _compositeBundle = cb;
-    _bundles = new ArrayList<Bundle>();
   }
 
   @Override
@@ -97,13 +99,13 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public void start(Bundle b) throws BundleException
   {
-    if (b.getState() != Bundle.ACTIVE && !isFragment(b)) 
+    if (b.getState() != Bundle.ACTIVE && !isFragment(b) && !(b instanceof SurrogateBundle) && !(b instanceof InternalSystemBundle)) 
       b.start(Bundle.START_ACTIVATION_POLICY);
   }
 
   public void stop(Bundle b) throws BundleException
   {
-    if (!isFragment(b))
+    if (!isFragment(b) && !(b instanceof SurrogateBundle) && !(b instanceof InternalSystemBundle))
       b.stop();
   }
 
@@ -119,7 +121,7 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public List<Bundle> getBundles()
   {
-    return _bundles;
+    return Arrays.asList(getIsolatedBundleContext().getBundles());
   }
 
   /**
@@ -153,16 +155,12 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public Bundle install(BundleSuggestion suggestion, AriesApplication app) throws BundleException
   {
-    Bundle installedBundle = suggestion.install(this, app);
-    _bundles.add(installedBundle);
-    
-    return installedBundle;
+    return suggestion.install(this, app);
   }
 
   public void uninstall(Bundle b) throws BundleException
   {
     b.uninstall();
-    _bundles.remove(b);
   }
 }
 
