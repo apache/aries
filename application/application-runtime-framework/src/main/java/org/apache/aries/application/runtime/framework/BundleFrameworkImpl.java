@@ -23,13 +23,11 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
 import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
-import org.eclipse.osgi.framework.internal.core.BundleHost;
 import org.eclipse.osgi.framework.internal.core.InternalSystemBundle;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -46,13 +44,17 @@ public class BundleFrameworkImpl implements BundleFramework
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(BundleFrameworkImpl.class);
 
+  List<Bundle> _bundles;
   CompositeBundle _compositeBundle;
+  Framework _framework;
 
   ServiceTracker _packageAdminTracker;
 
   BundleFrameworkImpl(CompositeBundle cb)
   {
     _compositeBundle = cb;
+    _framework = cb.getCompositeFramework();
+    _bundles = new ArrayList<Bundle>();
   }
 
   @Override
@@ -99,13 +101,13 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public void start(Bundle b) throws BundleException
   {
-    if (b.getState() != Bundle.ACTIVE && !isFragment(b) && !(b instanceof SurrogateBundle) && !(b instanceof InternalSystemBundle)) 
+    if (b.getState() != Bundle.ACTIVE && !isFragment(b)) 
       b.start(Bundle.START_ACTIVATION_POLICY);
   }
 
   public void stop(Bundle b) throws BundleException
   {
-    if (!isFragment(b) && !(b instanceof SurrogateBundle) && !(b instanceof InternalSystemBundle))
+    if (!isFragment(b))
       b.stop();
   }
 
@@ -121,7 +123,30 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public List<Bundle> getBundles()
   {
-    return Arrays.asList(getIsolatedBundleContext().getBundles());
+    // Ensure our bundle list is refreshed
+    ArrayList latestBundles = new ArrayList<Bundle>();
+    for (Bundle appBundle : _framework.getBundleContext().getBundles())
+    {
+      for (Bundle cachedBundle : _bundles)
+      {
+        // Look for a matching name and version (this doesnt make it the same bundle
+        // but it means we find the one we want)
+        if (cachedBundle.getSymbolicName().equals(appBundle.getSymbolicName()) &&
+            cachedBundle.getVersion().equals(appBundle.getVersion()))
+        {
+          // Now check if it has changed - the equals method will check more thoroughly
+          // to ensure this is the exact bundle we cached.
+          if (!cachedBundle.equals(appBundle))
+            latestBundles.add(appBundle); // bundle updated
+          else
+            latestBundles.add(cachedBundle); // bundle has not changed
+        }
+      }
+    }
+    
+    _bundles = latestBundles;
+    
+    return _bundles;
   }
 
   /**
@@ -155,12 +180,16 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public Bundle install(BundleSuggestion suggestion, AriesApplication app) throws BundleException
   {
-    return suggestion.install(this, app);
+    Bundle installedBundle = suggestion.install(this, app);
+    _bundles.add(installedBundle);
+    
+    return installedBundle;
   }
 
   public void uninstall(Bundle b) throws BundleException
   {
     b.uninstall();
+    _bundles.remove(b);
   }
 }
 
