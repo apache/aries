@@ -19,8 +19,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.3-SNAPSHOT</version>
-        <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
+        <version>0.3</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -42,17 +41,35 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- On this module's sub components -->
+            <dependency>
+                <groupId>org.apache.aries.quiesce</groupId>
+                <artifactId>org.apache.aries.quiesce.api</artifactId>
+                <version>0.3</version>
+           </dependency>
+            <dependency>
+                <groupId>org.apache.aries.quiesce</groupId>
+                <artifactId>org.apache.aries.quiesce.manager</artifactId>
+                <version>0.3-SNAPSHOT</version>
+           </dependency>
+            <dependency>
+                <groupId>org.apache.aries.quiesce</groupId>
+                <artifactId>org.apache.aries.quiesce.itest</artifactId>
+                <version>0.3-SNAPSHOT</version>
+           </dependency>
+
+            <!-- On other Aries modules -->
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>0.3</version>
             </dependency>
-
+            <!-- On other projects -->
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.configadmin</artifactId>
@@ -92,7 +109,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>quiesce-api</module>
+     <!--   <module>quiesce-api</module> -->
         <module>quiesce-manager</module>
 	    <module>quiesce-manager-itest</module>
     </modules>
