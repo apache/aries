@@ -82,7 +82,7 @@ public class SimpleExecutorTest extends AbstractIntegrationTest {
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 
-            equinox().version("v43prototype-3.6.0.201003231329")
+            equinox().version("3.7.0.v20110110")
         );
         options = updateOptions(options);
         return options;
