@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/subsystem</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/subsystem</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/subsystem</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/subsystem</url>
     </scm>
 
 
