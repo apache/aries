@@ -47,6 +47,7 @@ import org.osgi.framework.Version;
 import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.hooks.bundle.FindHook;
 import org.osgi.framework.hooks.resolver.ResolverHook;
+import org.osgi.framework.hooks.resolver.ResolverHookFactory;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.Capability;
 import org.osgi.util.tracker.ServiceTracker;
@@ -105,7 +106,7 @@ public class ScopeAdminServiceFactory implements ServiceFactory {
         serviceTracker.open();
         
         ScopeAdminBundleHooks bundleHooks = new ScopeAdminBundleHooks();
-        srs.add(context.registerService(new String[]{FindHook.class.getName(), EventHook.class.getName(), ResolverHook.class.getName()}, bundleHooks, null));
+        srs.add(context.registerService(new String[]{FindHook.class.getName(), EventHook.class.getName(), ResolverHookFactory.class.getName()}, bundleHooks, null));
         ScopeAdminEventHooks eventHooks = new ScopeAdminEventHooks();
         srs.add(context.registerService(new String[]{org.osgi.framework.hooks.service.FindHook.class.getName(), org.osgi.framework.hooks.service.EventHook.class.getName()}, eventHooks, null));
 
@@ -199,7 +200,7 @@ public class ScopeAdminServiceFactory implements ServiceFactory {
     }
 
 
-    private class ScopeAdminBundleHooks implements FindHook, EventHook, ResolverHook {
+    private class ScopeAdminBundleHooks implements FindHook, EventHook, ResolverHookFactory {
 
         public void find(BundleContext context, Collection<Bundle> bundles) {
             Bundle b = context.getBundle();
@@ -238,61 +239,58 @@ public class ScopeAdminServiceFactory implements ServiceFactory {
             
         }
 
-        public void begin() {
-            // TODO Auto-generated method stub
-            
+        public ResolverHook begin(Collection<BundleRevision> arg0) {
+			return new ResolverHook() {
+		        public void end() {
+		            // do nothing
+		        }
+		
+		        public void filterMatches(BundleRevision requirer, Collection<Capability> candidates) {
+		            // obtain requirer bundle
+		            Bundle bundle = requirer.getBundle();
+		            
+		            // figure out if the requirer bundle in any scope
+		            // obtain bundle associated scopeAdmin
+		            ScopeAdmin scopeAdmin = getScopeAdmin(bundle);
+		            
+		            if (scopeAdmin != null) {
+		                // able to obtain the correct scope otherwise, we don't need to do anything
+		                Collection<Bundle> buns = scopeAdmin.getScope().getBundles();
+		                
+		                Collection<Scope> childrenScopes = scopeAdmin.getScope().getChildren();
+		                List<SharePolicy> exportPackagePolicies = new ArrayList<SharePolicy>();
+		                for (Scope childScope : childrenScopes) {
+		                    Map<String, List<SharePolicy>> exportPolicies = childScope.getSharePolicies(SharePolicy.TYPE_EXPORT);
+		                    if (exportPolicies.get(Capability.PACKAGE_CAPABILITY) != null) {
+		                        exportPackagePolicies.addAll(exportPolicies.get(Capability.PACKAGE_CAPABILITY));
+		                    }
+		                }
+		                
+		                List<SharePolicy> importPackagePolicies = new ArrayList<SharePolicy>();
+		                Map<String, List<SharePolicy>> importPolicies = scopeAdmin.getScope().getSharePolicies(SharePolicy.TYPE_IMPORT);
+		                if (importPolicies.get(Capability.PACKAGE_CAPABILITY) != null) {
+		                    importPackagePolicies.addAll(importPolicies.get(Capability.PACKAGE_CAPABILITY));
+		                }
+		
+		                trimCapabilityCollections(candidates, buns, exportPackagePolicies, importPackagePolicies);
+		            }
+		            // simple filter candidates
+		          
+		        }
+		
+		        public void filterResolvable(Collection candidates) {
+		            // TODO Auto-generated method stub
+		            
+		        }
+		
+		        public void filterSingletonCollisions(Capability singleton, Collection collisionCandidates) {
+		            // TODO Auto-generated method stub
+		            
+		        }
+		        
+		    };
         }
-
-        public void end() {
-            // TODO Auto-generated method stub
-            
-        }
-
-        public void filterMatches(BundleRevision requirer, Collection<Capability> candidates) {
-            // obtain requirer bundle
-            Bundle bundle = requirer.getBundle();
-            
-            // figure out if the requirer bundle in any scope
-            // obtain bundle associated scopeAdmin
-            ScopeAdmin scopeAdmin = getScopeAdmin(bundle);
-            
-            if (scopeAdmin != null) {
-                // able to obtain the correct scope otherwise, we don't need to do anything
-                Collection<Bundle> buns = scopeAdmin.getScope().getBundles();
-                
-                Collection<Scope> childrenScopes = scopeAdmin.getScope().getChildren();
-                List<SharePolicy> exportPackagePolicies = new ArrayList<SharePolicy>();
-                for (Scope childScope : childrenScopes) {
-                    Map<String, List<SharePolicy>> exportPolicies = childScope.getSharePolicies(SharePolicy.TYPE_EXPORT);
-                    if (exportPolicies.get(Capability.PACKAGE_CAPABILITY) != null) {
-                        exportPackagePolicies.addAll(exportPolicies.get(Capability.PACKAGE_CAPABILITY));
-                    }
-                }
-                
-                List<SharePolicy> importPackagePolicies = new ArrayList<SharePolicy>();
-                Map<String, List<SharePolicy>> importPolicies = scopeAdmin.getScope().getSharePolicies(SharePolicy.TYPE_IMPORT);
-                if (importPolicies.get(Capability.PACKAGE_CAPABILITY) != null) {
-                    importPackagePolicies.addAll(importPolicies.get(Capability.PACKAGE_CAPABILITY));
-                }
-
-                trimCapabilityCollections(candidates, buns, exportPackagePolicies, importPackagePolicies);
-            }
-            // simple filter candidates
-          
-        }
-
-        public void filterResolvable(Collection candidates) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        public void filterSingletonCollisions(Capability singleton, Collection collisionCandidates) {
-            // TODO Auto-generated method stub
-            
-        }
-        
     }
-    
     // based on event hooks
     private class ScopeAdminEventHooks implements org.osgi.framework.hooks.service.FindHook, org.osgi.framework.hooks.service.EventHook {
 
