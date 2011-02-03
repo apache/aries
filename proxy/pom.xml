@@ -61,11 +61,6 @@
             </dependency>
             <dependency>
             	<groupId>org.apache.aries.proxy</groupId>
-            	<artifactId>org.apache.aries.proxy.bundle</artifactId>
-            	<version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.apache.aries.proxy</groupId>
             	<artifactId>org.apache.aries.proxy.itests</artifactId>
             	<version>0.4-SNAPSHOT</version>
             </dependency>
