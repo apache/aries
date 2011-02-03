@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.apache.aries.samples</groupId>
         <artifactId>samples</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.aries.samples.bank</groupId>
     <artifactId>bank</artifactId>
     <name>Apache Aries Bank Sample</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <dependencyManagement>

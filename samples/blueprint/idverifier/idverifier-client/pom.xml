@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.aries.samples.blueprint.idverifier</groupId>
         <artifactId>idverifier</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.samples.blueprint.idverifier.client</artifactId>
