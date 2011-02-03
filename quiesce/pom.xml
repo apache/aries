@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.3</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -32,12 +32,13 @@
     <description>
         Quiesce support for Aries
     </description>
-
+<!--
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/quiesce</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/quiesce</developerConnection>
         <url>http://svn.apache.org/viewvc/aries/trunk/quiesce</url>
     </scm>
+    -->
 
     <dependencyManagement>
         <dependencies>
@@ -45,7 +46,7 @@
             <!-- internal dependencies on other Aries modules -->
                 <groupId>org.apache.aries.quiesce</groupId>
                 <artifactId>org.apache.aries.quiesce.api</artifactId>
-                <version>0.4-SNAPSHOT</version>
+                <version>0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
@@ -62,12 +63,12 @@
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>0.4-SNAPSHOT</version>
+                <version>0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.4-SNAPSHOT</version>
+                <version>0.3</version>
             </dependency>
 
             <!-- external dependencies -->		    
@@ -111,7 +112,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>quiesce-api</module>
+       <!-- <module>quiesce-api</module> -->
         <module>quiesce-manager</module>
 	    <module>quiesce-manager-itest</module>
     </modules>
