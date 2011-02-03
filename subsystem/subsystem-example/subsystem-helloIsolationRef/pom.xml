@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.aries.subsystem.example</groupId>
         <artifactId>example</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.subsystem.example.helloIsolationRef</artifactId>

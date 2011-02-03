@@ -18,14 +18,14 @@
 	<parent>
 		<groupId>org.apache.aries</groupId>
 		<artifactId>java5-parent</artifactId>
-		<version>0.3-SNAPSHOT</version>
+		<version>0.4-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.aries.subsystem</groupId>
 	<artifactId>subsystem</artifactId>
 	<name>Apache Aries Subsystem</name>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -104,11 +104,6 @@
                         <artifactId>org.osgi.core</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse</groupId>
-                <artifactId>osgi</artifactId>
-                <version>v43prototype-3.6.0.201003231329</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>

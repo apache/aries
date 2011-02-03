@@ -21,14 +21,14 @@
   <parent>
     <groupId>org.apache.aries.tutorials.blueprint</groupId>
     <artifactId>blueprint</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.apache.aries.tutorials.blueprint</groupId>
   <artifactId>tutorial-modules</artifactId>
   <name>Greeter Modules</name>
   <packaging>pom</packaging>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.4-SNAPSHOT</version>
 
   <modules>
   	<module>greeter-api</module>

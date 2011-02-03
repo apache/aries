@@ -23,12 +23,12 @@
     <artifactId>cxf-api</artifactId>
     <packaging>bundle</packaging>
     <name>Distributed OSGI Greeter Interface Bundle</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
 
     <parent>
       <groupId>org.apache.aries.samples.dgoat</groupId>
       <artifactId>dgoat</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     </parent>
 
     <properties>

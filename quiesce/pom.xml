@@ -19,14 +19,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.3</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.quiesce</groupId>
     <artifactId>quiesce</artifactId>
     <name>Apache Aries Quiesce</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -41,35 +41,36 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- On this module's sub components -->
             <dependency>
+            <!-- internal dependencies on other Aries modules -->
                 <groupId>org.apache.aries.quiesce</groupId>
                 <artifactId>org.apache.aries.quiesce.api</artifactId>
-                <version>0.3</version>
-           </dependency>
+                <version>0.4-SNAPSHOT</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
                 <artifactId>org.apache.aries.quiesce.manager</artifactId>
-                <version>0.3-SNAPSHOT</version>
-           </dependency>
+                <version>0.4-SNAPSHOT</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
-                <artifactId>org.apache.aries.quiesce.itest</artifactId>
-                <version>0.3-SNAPSHOT</version>
-           </dependency>
+                <artifactId>org.apache.aries.quiesce.manager.itest</artifactId>
+                <version>0.4-SNAPSHOT</version>
+            </dependency>
 
-            <!-- On other Aries modules -->
+            <!-- dependencies on other Aries modules -->
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>0.3</version>
+                <version>0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.3</version>
+                <version>0.4-SNAPSHOT</version>
             </dependency>
-            <!-- On other projects -->
+
+            <!-- external dependencies -->		    
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.configadmin</artifactId>
@@ -85,6 +86,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
@@ -109,7 +111,7 @@
     </dependencyManagement>
 
     <modules>
-     <!--   <module>quiesce-api</module> -->
+        <module>quiesce-api</module>
         <module>quiesce-manager</module>
 	    <module>quiesce-manager-itest</module>
     </modules>

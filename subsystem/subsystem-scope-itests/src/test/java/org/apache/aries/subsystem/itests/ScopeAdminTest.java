@@ -591,7 +591,7 @@ public class ScopeAdminTest extends AbstractIntegrationTest {
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 
-            equinox().version("3.7.0.v20100910")
+            equinox().version("3.7.0.v20101022")
         );
         options = updateOptions(options);
         return options;

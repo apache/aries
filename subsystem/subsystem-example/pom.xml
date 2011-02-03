@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.apache.aries.subsystem</groupId>
         <artifactId>subsystem</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.subsystem.example</groupId>
     <artifactId>example</artifactId>
     <name>Apache Aries Subsystem Example</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/subsystem</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/subsystem</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/subsystem</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/subsystem</url>
     </scm>
 
 

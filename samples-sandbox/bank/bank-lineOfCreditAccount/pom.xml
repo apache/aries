@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries.samples.bank</groupId>
         <artifactId>bank</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>lineOfCreditAccount</artifactId>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.apache.aries.samples.bank</groupId>
             <artifactId>bank-api</artifactId>
-        	<version>0.3-SNAPSHOT</version>
+        	<version>0.4-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
