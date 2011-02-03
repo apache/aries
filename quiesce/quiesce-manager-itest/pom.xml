@@ -32,13 +32,11 @@
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.api</artifactId>
             <scope>provided</scope>
-		    <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.manager</artifactId>
             <scope>provided</scope>
-		    <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -80,7 +78,7 @@
             <artifactId>pax-url-mvn</artifactId>
             <scope>test</scope>
         </dependency> 
-                <dependency>
+        <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
