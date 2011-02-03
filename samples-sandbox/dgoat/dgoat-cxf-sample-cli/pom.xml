@@ -23,12 +23,12 @@
     <artifactId>cxf-client</artifactId>
     <packaging>bundle</packaging>
     <name>Distributed OSGI Greeter Bundle Client</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
 
     <parent>
       <groupId>org.apache.aries.samples.dgoat</groupId>
       <artifactId>dgoat</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -40,7 +40,7 @@
         <dependency> 
             <groupId>org.apache.aries.samples.dgoat.cxf-api</groupId>
             <artifactId>cxf-api</artifactId>
-            <version>0.3-SNAPSHOT</version>
+            <version>0.4-SNAPSHOT</version>
         </dependency> 
        <dependency> 
             <groupId>org.apache.felix</groupId>
