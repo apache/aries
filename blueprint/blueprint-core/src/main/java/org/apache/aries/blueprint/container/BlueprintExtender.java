@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ParserService;
@@ -54,8 +53,6 @@ import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
-import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -313,7 +310,14 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 if (compatible) {
                     final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, pathList);
                     containers.put(bundle, blueprintContainer);
-                    blueprintContainer.schedule();
+                    String val = context.getProperty("org.apache.aries.blueprint.synchronous");
+                    if (Boolean.parseBoolean(val)) {
+                        LOGGER.debug("Starting creation of blueprint bundle {} synchronously", bundle.getSymbolicName());
+                        blueprintContainer.run();
+                    } else {
+                        LOGGER.debug("Scheduling creation of blueprint bundle {} asynchronously", bundle.getSymbolicName());
+                        blueprintContainer.schedule();
+                    }
                 } else {
                     LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
                 }
