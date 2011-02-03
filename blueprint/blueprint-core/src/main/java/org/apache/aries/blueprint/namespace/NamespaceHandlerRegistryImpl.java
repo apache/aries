@@ -214,7 +214,14 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         // If it contains additional namespaces, it should not be a problem since
         // they won't be used at all
         for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
-            if (key.equals(handlers)) {
+            boolean found = true;
+            for (URI uri : handlers.keySet()) {
+                if (!handlers.get(uri).equals(key.get(uri))) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
                 schema = schemas.get(key).get();
                 break;
             }
@@ -234,6 +241,22 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     }
                 }
                 schema = getSchemaFactory().newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+                // Remove schemas that are fully included
+                for (Iterator<Map<URI, NamespaceHandler>> iterator = schemas.keySet().iterator(); iterator.hasNext();) {
+                    Map<URI, NamespaceHandler> key = iterator.next();
+                    boolean found = true;
+                    for (URI uri : key.keySet()) {
+                        if (!key.get(uri).equals(handlers.get(uri))) {
+                            found = false;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        iterator.remove();
+                        break;
+                    }
+                }
+                // Add our new schema
                 schemas.put(handlers, new SoftReference<Schema>(schema));
             } finally {
                 for (StreamSource s : schemaSources) {
