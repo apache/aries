@@ -43,7 +43,13 @@ import static org.junit.Assert.*;
 
 public class ReflectionUtilsTest {
     private PropertyDescriptor[] sut;
-    private final ExtendedBlueprintContainer mockBlueprint = Skeleton.newMock(ExtendedBlueprintContainer.class);
+    private final ExtendedBlueprintContainer mockBlueprint = Skeleton.newMock(
+            new Object() {
+                public Class<?> loadClass(String name) throws ClassNotFoundException {
+                    return Thread.currentThread().getContextClassLoader().loadClass(name);
+                }
+            },            
+            ExtendedBlueprintContainer.class);
     
     static class GetterOnly {
         public String getValue() { return "test"; }
