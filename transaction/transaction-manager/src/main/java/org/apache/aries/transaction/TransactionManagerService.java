@@ -31,6 +31,7 @@ import javax.transaction.UserTransaction;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
@@ -166,9 +167,8 @@ public class TransactionManagerService {
     }
 
     public void close() throws Exception {
-        if (serviceRegistration != null) {
-            serviceRegistration.unregister();
-        }
+        AriesFrameworkUtil.safeUnregisterService(serviceRegistration);
+      
         if (transactionLog instanceof HOWLLog) {
             ((HOWLLog) transactionLog).doStop();
         }

@@ -23,8 +23,9 @@ import java.util.Hashtable;
 import javax.naming.spi.ObjectFactory;
 
 import org.apache.aries.proxy.ProxyManager;
-import org.apache.aries.util.SingleServiceTracker;
-import org.apache.aries.util.SingleServiceTracker.SingleServiceListener;
+import org.apache.aries.util.AriesFrameworkUtil;
+import org.apache.aries.util.tracker.SingleServiceTracker;
+import org.apache.aries.util.tracker.SingleServiceTracker.SingleServiceListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -62,8 +63,8 @@ public class Activator implements BundleActivator, SingleServiceListener
     @Override
     public void stop(BundleContext context) {
       proxyManager.close();
-      if (osgiUrlReg != null) osgiUrlReg.unregister();
-      if (blueprintUrlReg != null) blueprintUrlReg.unregister();
+      AriesFrameworkUtil.safeUnregisterService(osgiUrlReg);
+      AriesFrameworkUtil.safeUnregisterService(blueprintUrlReg);
     }
   
 
@@ -79,7 +80,7 @@ public class Activator implements BundleActivator, SingleServiceListener
   @Override
   public void serviceLost() 
   {
-    if (osgiUrlReg != null) osgiUrlReg.unregister();
+    AriesFrameworkUtil.safeUnregisterService(osgiUrlReg);
     osgiUrlReg = null;
   }
 

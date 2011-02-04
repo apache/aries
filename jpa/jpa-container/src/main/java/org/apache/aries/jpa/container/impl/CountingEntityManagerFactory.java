@@ -31,6 +31,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.aries.jpa.container.impl.EntityManagerFactoryManager.NamedCallback;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -100,7 +101,7 @@ public class CountingEntityManagerFactory implements EntityManagerFactory, Destr
     this.reg.compareAndSet(null, reg);
     this.callback.compareAndSet(null, callback);
     if(count.get() == 0) {
-      PersistenceBundleManager.unregister(this.reg.getAndSet(null));
+      AriesFrameworkUtil.safeUnregisterService(this.reg.getAndSet(null));
       this.callback.set(null);
       callback.callback(name);
     }
@@ -111,7 +112,7 @@ public class CountingEntityManagerFactory implements EntityManagerFactory, Destr
     if(count.decrementAndGet() == 0) {
       NamedCallback c = callback.getAndSet(null);
       if(c != null) {
-        PersistenceBundleManager.unregister(reg.getAndSet(null));
+        AriesFrameworkUtil.safeUnregisterService(reg.getAndSet(null));
         c.callback(name);
       }
     }

@@ -45,6 +45,7 @@ import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
 import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
 import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactoryImpl;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.osgi.framework.Bundle;
@@ -636,23 +637,10 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
 
   public void stop(BundleContext context) throws Exception {
     close();
-    unregister(parserReg);
-    unregister(quiesceReg);
+    AriesFrameworkUtil.safeUnregisterService(parserReg);
+    AriesFrameworkUtil.safeUnregisterService(quiesceReg);
     if(quiesceParticipant != null)
       quiesceParticipant.callback();
-  }
-  
-  /**
-   * Clean up a registration without throwing an exception
-   * @param reg
-   */
-  static void unregister(ServiceRegistration reg) {
-    if(reg != null)
-      try {
-        reg.unregister();
-      } catch (IllegalStateException ise) {
-        //we don't care
-      }
   }
   
   public BundleContext getCtx() {
@@ -665,7 +653,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     
     if(thisBundle) {
       quiesce.compareAndSet(false, true);
-      unregister(quiesceReg);
+      AriesFrameworkUtil.safeUnregisterService(quiesceReg);
     }
     
     Collection<EntityManagerFactoryManager> toDestroyNow = new ArrayList<EntityManagerFactoryManager>();

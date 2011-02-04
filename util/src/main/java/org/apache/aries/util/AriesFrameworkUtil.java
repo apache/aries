@@ -24,6 +24,7 @@ import org.apache.aries.util.internal.FelixWorker;
 import org.apache.aries.util.internal.FrameworkUtilWorker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 
 public final class AriesFrameworkUtil 
 {
@@ -90,5 +91,23 @@ public final class AriesFrameworkUtil
     } catch (ClassNotFoundException e) {
     }
     return worker.getClassLoader(b);
+  }
+  
+  /**
+   * Safely unregister the supplied ServiceRegistration, for when you don't
+   * care about the potential IllegalStateException and don't want
+   * it to run wild through your code
+   * 
+   * @param reg The {@link ServiceRegistration}, may be null
+   */
+  public static void safeUnregisterService(ServiceRegistration reg) 
+  {
+    if(reg != null) {
+      try {
+        reg.unregister();
+      } catch (IllegalStateException e) {
+        //This can be safely ignored
+      }
+    }
   }
 }
