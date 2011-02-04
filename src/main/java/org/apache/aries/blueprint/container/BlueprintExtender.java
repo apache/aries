@@ -39,9 +39,10 @@ import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
 import org.apache.aries.proxy.ProxyManager;
-import org.apache.aries.util.SingleServiceTracker;
-import org.apache.aries.util.SingleServiceTracker.SingleServiceListener;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.aries.util.tracker.RecursiveBundleTracker;
+import org.apache.aries.util.tracker.SingleServiceTracker;
+import org.apache.aries.util.tracker.SingleServiceTracker.SingleServiceListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -154,10 +155,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         	bt.close();
         }
         
-        parserServiceReg.unregister();
-        
-        if (quiesceParticipantReg != null) 
-          	quiesceParticipantReg.unregister();
+        AriesFrameworkUtil.safeUnregisterService(parserServiceReg);
+
+        AriesFrameworkUtil.safeUnregisterService(quiesceParticipantReg);
 
         // Orderly shutdown of containers
         while (!containers.isEmpty()) {

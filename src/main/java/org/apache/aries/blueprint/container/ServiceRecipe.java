@@ -44,6 +44,7 @@ import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.proxy.InvocationHandlerWrapper;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
@@ -197,9 +198,7 @@ public class ServiceRecipe extends AbstractRecipe {
                     listener.unregister(service, registrationProperties);
                 }
             }
-            if (reg != null) {
-                reg.unregister();
-            }
+            AriesFrameworkUtil.safeUnregisterService(reg);
             
             registration.compareAndSet(reg, null);
         }
