@@ -19,9 +19,9 @@
 
 package org.apache.aries.util.tracker;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -40,7 +40,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
 {
   private final int mask;
 
-  private final Set<BundleContext> alreadyRecursedContexts = new HashSet<BundleContext>();
+  private final ConcurrentMap<String,String> alreadyRecursedContexts = new ConcurrentHashMap<String, String>();
 
   private final BundleTrackerCustomizer customizer;
 
@@ -126,9 +126,9 @@ public class InternalRecursiveBundleTracker extends BundleTracker
         if (event.getType() == BundleEvent.STOPPED) {
           // if CompositeBundle is being stopped, let's remove the bundle
           // tracker(s) associated with the composite bundle
-          BundleContext compositeBundleContext = ((CompositeBundle) b).getCompositeFramework()
-              .getBundleContext();
-          alreadyRecursedContexts.remove(compositeBundleContext);
+          String bundleId = b.getSymbolicName()+"/"+b.getVersion();
+          alreadyRecursedContexts.remove(bundleId);
+          
           if (btList != null) {
             // unregister the bundlescope off the factory and close
             // bundle trackers
@@ -147,8 +147,9 @@ public class InternalRecursiveBundleTracker extends BundleTracker
   {
     // let's process each of the bundle in the CompositeBundle
     BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
-    if (!alreadyRecursedContexts.contains(compositeBundleContext)) {
-      alreadyRecursedContexts.add(compositeBundleContext);
+    
+    String bundleId = cb.getSymbolicName()+"/"+cb.getVersion();
+    if (alreadyRecursedContexts.putIfAbsent(bundleId, bundleId) == null) {
 
       // let's track each of the bundle in the CompositeBundle
       BundleTracker bt = new InternalRecursiveBundleTracker(compositeBundleContext, stateMask,
