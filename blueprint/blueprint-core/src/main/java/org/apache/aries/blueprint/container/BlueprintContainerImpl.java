@@ -62,6 +62,7 @@ import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -812,9 +813,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         if (timeoutFuture != null) {
             timeoutFuture.cancel(false);
         }
-        if (registration != null) {
-            registration.unregister();
-        }
+        AriesFrameworkUtil.safeUnregisterService(registration);
         if (handlerSet != null) {
             handlerSet.removeListener(this);
             handlerSet.destroy();
@@ -845,9 +844,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         if (timeoutFuture != null) {
             timeoutFuture.cancel(false);
         }
-        if (registration != null) {
-            registration.unregister();
-        }
+        AriesFrameworkUtil.safeUnregisterService(registration);
         if (handlerSet != null) {
             handlerSet.removeListener(this);
             handlerSet.destroy();

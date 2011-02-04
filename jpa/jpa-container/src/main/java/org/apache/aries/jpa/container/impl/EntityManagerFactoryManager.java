@@ -36,6 +36,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -177,12 +178,7 @@ public class EntityManagerFactoryManager {
     //If we have registrations then unregister them
     if(registrations != null) {
       for(Entry<String, ServiceRegistration> entry : registrations.entrySet()) {
-        try {
-          entry.getValue().unregister();
-        } catch (Exception e) {
-          _logger.error("There was an error unregistering the EntityManagerFactory services for bundle " 
-              + bundle.getSymbolicName() + "_" + bundle.getVersion() , e);
-        }
+        AriesFrameworkUtil.safeUnregisterService(entry.getValue());
         emfs.get(entry.getKey()).clearQuiesce();
       }
       // remember to set registrations to be null

@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import javax.naming.spi.ObjectFactory;
 
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -54,7 +55,7 @@ public class Activator implements BundleActivator {
     }
 
     public void stop(BundleContext context) {
-        reg.unregister();
+        AriesFrameworkUtil.safeUnregisterService(reg);
     }
 
 }

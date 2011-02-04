@@ -35,6 +35,7 @@ import org.apache.aries.blueprint.ServiceProcessor;
 import org.apache.aries.blueprint.container.ServiceListener;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -100,9 +101,7 @@ public class CmManagedServiceFactory {
     }
 
     public void destroy() {
-        if (registration != null) {
-            registration.unregister();
-        }
+        AriesFrameworkUtil.safeUnregisterService(registration);
         for (Map.Entry<ServiceRegistration, Object> entry : services.entrySet()) {
             destroy(entry.getValue(), entry.getKey(), BUNDLE_STOPPING);
         }
@@ -119,7 +118,7 @@ public class CmManagedServiceFactory {
             }
         }
         destroyComponent(component, code);
-        registration.unregister();
+        AriesFrameworkUtil.safeUnregisterService(registration);
     }
     
     public Map<ServiceRegistration, Object> getServiceMap() {

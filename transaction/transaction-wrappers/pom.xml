@@ -47,6 +47,10 @@
             <artifactId>org.apache.aries.transaction.manager</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>

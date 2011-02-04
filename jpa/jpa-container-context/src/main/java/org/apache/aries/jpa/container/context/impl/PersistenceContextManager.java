@@ -36,6 +36,7 @@ import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -103,11 +104,7 @@ public class PersistenceContextManager extends ServiceTracker{
   public void close() {
     super.close();
     for (ServiceRegistration reg : entityManagerRegistrations.values()) {
-      try {
-        reg.unregister();
-      } catch (IllegalStateException ise) {
-        //This is no worry, the framework has done our job for us
-      }
+      AriesFrameworkUtil.safeUnregisterService(reg);
     }
   }
 
@@ -325,7 +322,7 @@ public class PersistenceContextManager extends ServiceTracker{
       }
       //If we were live-locked then unregister the registration here
       if(recoverFromLiveLock)
-        reg.unregister();
+        AriesFrameworkUtil.safeUnregisterService(reg);
     }
   }
   
@@ -384,7 +381,7 @@ public class PersistenceContextManager extends ServiceTracker{
     }
     //If we found the registration then unregister it outside the synchronized.
     if (reg != null) {
-      reg.unregister();
+      AriesFrameworkUtil.safeUnregisterService(reg);
     }
   }
 

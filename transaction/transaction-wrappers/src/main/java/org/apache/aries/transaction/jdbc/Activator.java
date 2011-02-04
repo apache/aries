@@ -18,6 +18,7 @@
  */
 package org.apache.aries.transaction.jdbc;
 
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -105,7 +106,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
 
   public void removedService(ServiceReference ref, Object service)
   {
-    ((ServiceRegistration)service).unregister();
+    AriesFrameworkUtil.safeUnregisterService((ServiceRegistration)service);
   }
 
   public void serviceChanged(ServiceEvent event)

@@ -38,6 +38,7 @@ import javax.management.openmbean.TabularDataSupport;
 
 import org.apache.aries.jmx.blueprint.BlueprintStateMBean;
 import org.apache.aries.jmx.blueprint.codec.OSGiBlueprintEvent;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintEvent;
@@ -107,11 +108,8 @@ public class BlueprintState extends NotificationBroadcasterSupport implements Bl
 
     public void postDeregister() {
         if (registrations.decrementAndGet() < 1) {
-            try {
-                listenerReg.unregister();
-            } catch(Exception e) {
-                // ignore
-            }
+            AriesFrameworkUtil.safeUnregisterService(listenerReg); 
+          
             if (eventDispatcher != null) {
                 eventDispatcher.shutdown(); 
             }
