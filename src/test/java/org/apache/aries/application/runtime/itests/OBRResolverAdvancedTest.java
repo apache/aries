@@ -50,6 +50,7 @@ import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
+import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
@@ -259,6 +260,13 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     app = manager.resolve(app);
     
     
+  }
+  
+  @Test(expected=ModellerException.class)
+  public void testModellerException() throws Exception
+  {
+    //aa.jar does not exist
+    generateOBRRepoXML(false, "aa.jar");
   }
   
   @Test
