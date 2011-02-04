@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
@@ -60,7 +61,7 @@ public class ManagedObjectManager {
             reg.remove(cm);
             if (reg.isEmpty()) {
                 map.remove(key);
-                reg.getRegistration().unregister();
+                AriesFrameworkUtil.safeUnregisterService(reg.getRegistration());
             }
         }
     }
