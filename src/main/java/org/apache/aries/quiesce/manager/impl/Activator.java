@@ -17,6 +17,7 @@
 package org.apache.aries.quiesce.manager.impl;
 
 import org.apache.aries.quiesce.manager.QuiesceManager;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -30,10 +31,8 @@ public class Activator implements BundleActivator {
         serviceReg = bundleContext.registerService(QuiesceManager.class.getName(), manager, null);
     }
 
-
     public void stop(BundleContext bundleContext) throws Exception {
-    	if (serviceReg != null)
-    		serviceReg.unregister();
+      AriesFrameworkUtil.safeUnregisterService(serviceReg);
     }
 
 }
