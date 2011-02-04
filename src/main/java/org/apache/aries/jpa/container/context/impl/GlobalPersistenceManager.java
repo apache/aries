@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -189,7 +190,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
   public void quiesceBundle(Bundle bundleToQuiesce, final DestroyCallback callback) {
     //If this is our bundle then get all the managers to clean up everything
     if(bundleToQuiesce == bundle) {
-      unregister(pcpReg);
+      AriesFrameworkUtil.safeUnregisterService(pcpReg);
       pcpReg = null;
       final Collection<Entry<Bundle, PersistenceContextManager>> mgrs = new ArrayList<Entry<Bundle, PersistenceContextManager>>();
       synchronized (this) {
@@ -255,8 +256,8 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
 
   public void stop(BundleContext context) throws Exception {
     //Clean up
-    unregister(pcpReg);
-    unregister(quiesceReg);
+    AriesFrameworkUtil.safeUnregisterService(pcpReg);
+    AriesFrameworkUtil.safeUnregisterService(quiesceReg);
     if(quiesceTidyUp != null)
       quiesceTidyUp.callback();
     Collection<PersistenceContextManager> mgrs = new ArrayList<PersistenceContextManager>();
@@ -268,19 +269,6 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
       mgr.close();
     
     registry.close();
-  }
-
-  /**
-   * Clean up a registration without throwing an exception
-   * @param reg
-   */
-  private void unregister(ServiceRegistration reg) {
-    if(reg != null)
-      try {
-        reg.unregister();
-      } catch (IllegalStateException ise) {
-        //we don't care
-      }
   }
   
   public Bundle getBundle() {
