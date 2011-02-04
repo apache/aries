@@ -34,6 +34,15 @@
     <properties>
         <aries.osgi.export.pkg>
         </aries.osgi.export.pkg>
+        <aries.osgi.import.pkg>
+            org.apache.aries.quiesce.manager;version="[0.3, 1.0)",
+            org.apache.aries.quiesce.participant;version="[0.3, 1.0)",
+            org.apache.aries.*;version="[$(version;==;0.4.0.SNAPSHOT),$(version;=+;0.4.0.SNAPSHOT))",
+            ,
+            ,
+            ,
+            *
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.quiesce.manager.impl
         </aries.osgi.private.pkg>
@@ -44,6 +53,27 @@
             org.apache.aries.quiesce.manager.QuiesceManager
         </aries.osgi.export.service>
     </properties>
+    <build>
+    <plugins>
+    <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+            <execution>
+            <phase>compile</phase>
+            <configuration>
+            <tasks>
+            <echo message="wtf: ${aries.osgi.import.pkg}"/>
+            <echo message="wtf: $(version;==;0.4.0.SNAPSHOT)"/>
+            </tasks>
+            </configuration>
+            <goals>
+               <goal>run</goal>
+            </goals>
+            </execution>
+            </executions>
+    </plugin>
+    </plugins>
+    </build>
 
     <dependencies>
         <dependency>
