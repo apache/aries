@@ -58,12 +58,12 @@
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam</artifactId>
-                <version>1.2.0</version>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-container-default</artifactId>
-                <version>1.2.0</version>
+                <version>1.2.3</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -74,12 +74,12 @@
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-junit</artifactId>
-                <version>1.2.0</version>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-junit-extender-impl</artifactId>
-                <version>1.2.0</version>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
@@ -247,7 +247,7 @@
                 <plugin>
                     <groupId>org.ops4j.pax.exam</groupId>
                     <artifactId>maven-paxexam-plugin</artifactId>
-                    <version>1.2.1</version>
+                    <version>1.2.3</version>
                 </plugin>
                 
                 <plugin>
