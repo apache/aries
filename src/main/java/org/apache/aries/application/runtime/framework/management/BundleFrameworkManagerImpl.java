@@ -159,31 +159,21 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
     // We should now have a bundleFramework
     if (bundleFramework != null) {
-
-      boolean frameworkStarted = false;
-      try {
-        // Start the empty framework bundle
-        bundleFramework.start();
-        frameworkStarted = true;
-      } catch (BundleException e) {
-        // This may fail if the framework bundle has exports but we will retry later
-      }
-
-      /**
-       * Install the bundles into the new framework
-       */
       
-      try {
-        List<Bundle> installedBundles = new ArrayList<Bundle>();
+      try {  
+        // Initialise the framework (this does not start anything)
+        bundleFramework.init();
+  
+        /**
+         * Install the bundles into the new framework
+         */
+        
         BundleContext frameworkBundleContext = bundleFramework.getIsolatedBundleContext();
         if (frameworkBundleContext != null) {
           for (BundleSuggestion suggestion : bundlesToBeInstalled)
-            installedBundles.add(bundleFramework.install(suggestion, app));
-        }
+            bundleFramework.install(suggestion, app);
+        }   
         
-        // Finally, start the whole lot
-        if (!frameworkStarted)
-          bundleFramework.start();
       } catch (BundleException be) {
         bundleFramework.close();
         throw be;
@@ -226,10 +216,16 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   {
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       BundleFramework framework = getBundleFramework(b);
+            
+      // Start all bundles inside the framework
       if (framework != null) // App Content
       {
+        // Start the framework in case not already started
+        framework.start();
+        
         for (Bundle bundle : framework.getBundles())
           framework.start(bundle);
+        
       } else // Shared bundle
       _sharedBundleFramework.start(b);
     }
@@ -239,11 +235,17 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   {
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       BundleFramework framework = getBundleFramework(b);
+      
+      // Stop all bundles inside the framework
       if (framework != null) // App Content
       {
         for (Bundle bundle : framework.getBundles())
           framework.stop(bundle);
+        
+        // Stop the framework
+        framework.getFrameworkBundle().stop();
       }
+      
       // Do not stop shared bundles
     }
   }
