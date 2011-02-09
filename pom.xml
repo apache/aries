@@ -27,7 +27,6 @@
     <artifactId>org.apache.aries.proxy.itests</artifactId>
     
     <name>Apache Aries Proxy iTests</name>
-    <version>0.4-SNAPSHOT</version>
     <description>
         Integration tests using the standalone proxy-bundle.
     </description>
