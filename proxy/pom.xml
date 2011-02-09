@@ -62,7 +62,7 @@
             <dependency>
             	<groupId>org.apache.aries.proxy</groupId>
             	<artifactId>org.apache.aries.proxy.itests</artifactId>
-            	<version>0.4-SNAPSHOT</version> 
+            	<version>0.4.3-SNAPSHOT</version> 
             </dependency>
             <!-- dependencies on other aries modules -->
             <dependency>
