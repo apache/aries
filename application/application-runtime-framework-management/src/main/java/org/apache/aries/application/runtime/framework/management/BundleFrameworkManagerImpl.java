@@ -161,8 +161,15 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     if (bundleFramework != null) {
       
       try {  
-        // Initialise the framework (this does not start anything)
-        bundleFramework.init();
+        boolean frameworkStarted = false;
+        try {
+          // Start the empty framework bundle
+          bundleFramework.start();
+          frameworkStarted = true;
+        } catch (BundleException e) {
+          // This may fail if the framework bundle has exports but we will retry later
+        }
+
   
         /**
          * Install the bundles into the new framework
@@ -173,6 +180,9 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
           for (BundleSuggestion suggestion : bundlesToBeInstalled)
             bundleFramework.install(suggestion, app);
         }   
+        
+        if (!frameworkStarted)
+          bundleFramework.start();
         
       } catch (BundleException be) {
         bundleFramework.close();
@@ -219,10 +229,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
             
       // Start all bundles inside the framework
       if (framework != null) // App Content
-      {
-        // Start the framework in case not already started
-        framework.start();
-        
+      {        
         for (Bundle bundle : framework.getBundles())
           framework.start(bundle);
         
@@ -242,8 +249,6 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
         for (Bundle bundle : framework.getBundles())
           framework.stop(bundle);
         
-        // Stop the framework
-        framework.getFrameworkBundle().stop();
       }
       
       // Do not stop shared bundles
