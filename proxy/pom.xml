@@ -43,7 +43,7 @@
     
     <dependencyManagement>
         <dependencies>
-            <!-- internal dependencies -->
+            <!-- internal Aries dependencies -->
              <dependency>
                 <groupId>org.apache.aries.proxy</groupId>
                 <artifactId>org.apache.aries.proxy</artifactId>
