@@ -21,12 +21,13 @@
     <parent>
         <groupId>org.apache.aries.proxy</groupId>
         <artifactId>proxy</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.proxy.itests</artifactId>
     
     <name>Apache Aries Proxy iTests</name>
+    <version>0.4-SNAPSHOT</version>
     <description>
         Integration tests using the standalone proxy-bundle.
     </description>
