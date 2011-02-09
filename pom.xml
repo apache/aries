@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.proxy</groupId>
     <artifactId>proxy</artifactId>
     <name>Apache Aries Class Proxy</name>
-    <version>0.4.3</version>
+    <version>0.4.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
