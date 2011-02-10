@@ -38,7 +38,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  */
 public final class RecursiveBundleTracker  {
     private static final int COMPOSITE_BUNDLE_MASK =
-      Bundle.INSTALLED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING;
+      Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING;
     
     private final BundleTracker tracker;
         
