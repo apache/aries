@@ -32,13 +32,13 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.service.framework.CompositeBundle;
-import org.osgi.service.framework.CompositeBundleFactory;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 import static org.junit.Assert.*;
 
 public class RecursiveBundleTrackerTest {
     BundleContext context;
+    InternalRecursiveBundleTracker sut;
     
     @Before
     public void setup() {
@@ -55,27 +55,40 @@ public class RecursiveBundleTrackerTest {
     
     @Test
     public void testCompositeLifeCycle() {
-        BundleTrackerCustomizer customizer = Skeleton.newMock(BundleTrackerCustomizer.class);
-
-        InternalRecursiveBundleTracker sut = new InternalRecursiveBundleTracker(context, 
-                Bundle.INSTALLED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, customizer);
+        makeSUT();
+        CompositeBundle  cb = composite("test.composite", "1.0.0");
+        assertNoTrackers();
         
-        sut.open();
-        
-        CompositeBundle cb = Skeleton.newMock(CompositeBundle.class);
-        Skeleton cbSkel = Skeleton.getSkeleton(cb);
-        cbSkel.setReturnValue(new MethodCall(CompositeBundle.class, "getSymbolicName"), "test.composite");
-        cbSkel.setReturnValue(new MethodCall(CompositeBundle.class, "getVersion"), new Version("1.0.0"));
-        
-        assertTrue(BundleTrackerFactory.getAllBundleTracker().isEmpty());
+        // full lifecycle
         
         sut.addingBundle(cb, new BundleEvent(BundleEvent.INSTALLED, cb));
-        assertEquals(1, BundleTrackerFactory.getAllBundleTracker().size());
-        assertEquals(1, BundleTrackerFactory.getBundleTrackerList("test.composite_1.0.0").size());
-        
+        assertTracker(cb);
+
+        sut.modifiedBundle(cb, new BundleEvent(BundleEvent.RESOLVED, cb), cb);
+        sut.modifiedBundle(cb, new BundleEvent(BundleEvent.STARTING, cb), cb);
+        sut.modifiedBundle(cb, new BundleEvent(BundleEvent.STARTED, cb), cb);
+        sut.modifiedBundle(cb, new BundleEvent(BundleEvent.STOPPING, cb), cb);
         sut.removedBundle(cb, new BundleEvent(BundleEvent.STOPPED, cb), cb);
-        assertTrue(BundleTrackerFactory.getAllBundleTracker().isEmpty());        
+        assertNoTrackers();
+        
+        // short lifecycle
+        
+        sut.addingBundle(cb, new BundleEvent(BundleEvent.INSTALLED, cb));
+        assertTracker(cb);
+        
+        sut.modifiedBundle(cb, new BundleEvent(BundleEvent.RESOLVED, cb), cb);        
+        sut.removedBundle(cb, new BundleEvent(BundleEvent.UNRESOLVED, cb), cb);
+        assertNoTrackers();
+        
+        // shortest lifecycle
+        
+        sut.addingBundle(cb, new BundleEvent(BundleEvent.INSTALLED, cb));
+        assertTracker(cb);
+        
+        sut.removedBundle(cb, new BundleEvent(BundleEvent.UNINSTALLED, cb), cb);
+        assertNoTrackers();
     }
+    
     
     @Test(expected=IllegalArgumentException.class)
     public void testMissingStopping() {
@@ -90,5 +103,31 @@ public class RecursiveBundleTrackerTest {
     @Test(expected=IllegalArgumentException.class)
     public void testMissingInstalled() {
         new RecursiveBundleTracker(null, Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, null);        
+    }
+    
+    private void assertNoTrackers() {
+        assertTrue(BundleTrackerFactory.getAllBundleTracker().isEmpty());        
+    }
+    
+    private void assertTracker(CompositeBundle cb) {
+        assertEquals(1, BundleTrackerFactory.getAllBundleTracker().size());
+        assertEquals(1, BundleTrackerFactory.getBundleTrackerList(cb.getSymbolicName()+"_"+cb.getVersion()).size());        
+    }
+    
+    private void makeSUT() {
+        BundleTrackerCustomizer customizer = Skeleton.newMock(BundleTrackerCustomizer.class);
+
+        sut = new InternalRecursiveBundleTracker(context, 
+                Bundle.INSTALLED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, customizer);
+        
+        sut.open();
+    }
+    
+    private CompositeBundle composite(String symbolicName, String version) {
+        CompositeBundle cb = Skeleton.newMock(CompositeBundle.class);
+        Skeleton cbSkel = Skeleton.getSkeleton(cb);
+        cbSkel.setReturnValue(new MethodCall(CompositeBundle.class, "getSymbolicName"), symbolicName);
+        cbSkel.setReturnValue(new MethodCall(CompositeBundle.class, "getVersion"), new Version(version));
+        return cb;
     }
 }

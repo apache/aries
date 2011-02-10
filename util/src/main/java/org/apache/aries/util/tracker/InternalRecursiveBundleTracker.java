@@ -123,7 +123,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
           openTracker(btc, cb, bundleScope, mask);
         }
       } else {
-        if (event.getType() == BundleEvent.STOPPED) {
+        if (event.getType() == BundleEvent.STOPPED || event.getType() == BundleEvent.UNRESOLVED || event.getType() == BundleEvent.UNINSTALLED) {
           // if CompositeBundle is being stopped, let's remove the bundle
           // tracker(s) associated with the composite bundle
           String bundleId = b.getSymbolicName()+"/"+b.getVersion();
@@ -134,8 +134,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
             // bundle trackers
             BundleTrackerFactory.unregisterAndCloseBundleTracker(bundleScope);
           }
-        } else if (event.getType() == BundleEvent.INSTALLED
-            || event.getType() == BundleEvent.STARTING) {
+        } else if (event.getType() == BundleEvent.INSTALLED || event.getType() == BundleEvent.RESOLVED || event.getType() == BundleEvent.STARTING) {
           openTracker(btc, cb, bundleScope, mask);
         }
       }
