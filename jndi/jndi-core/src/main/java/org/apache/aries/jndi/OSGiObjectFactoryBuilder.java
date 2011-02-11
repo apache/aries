@@ -71,9 +71,9 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
     }
 
     private BundleContext getCallerBundleContext(Hashtable<?, ?> environment) throws NamingException {
-        BundleContext context = Utils.getBundleContext(environment, NamingManager.class.getName());        
+        BundleContext context = Utils.getBundleContext(environment, NamingManager.class);        
         if (context == null) {
-            context = Utils.getBundleContext(environment, DirectoryManager.class.getName());
+            context = Utils.getBundleContext(environment, DirectoryManager.class);
         }
         return context;
     }

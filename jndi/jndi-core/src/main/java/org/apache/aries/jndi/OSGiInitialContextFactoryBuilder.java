@@ -24,7 +24,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
-import javax.naming.directory.InitialDirContext;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 
@@ -42,15 +41,11 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
 	    
 	    Utils.augmentEnvironment(environment);
 	  
-	    BundleContext context = Utils.getBundleContext(environment, InitialContext.class.getName());	    
+	    BundleContext context = Utils.getBundleContext(environment, InitialContext.class);	    
 	    if (context == null) {
-	        context = Utils.getBundleContext(environment, InitialDirContext.class.getName());
-	        if (context == null) {
-	            throw new NoInitialContextException("Unable to determine caller's BundleContext");
-	        }
+            throw new NoInitialContextException("Unable to determine caller's BundleContext");
 	    }
 	    	    
 	    return ContextHelper.getInitialContext(context, environment);
 	}
-	
 }

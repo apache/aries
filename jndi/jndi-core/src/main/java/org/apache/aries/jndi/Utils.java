@@ -59,7 +59,7 @@ public final class Utils {
      * @throws NamingException
      */
     public static BundleContext getBundleContext(final Map<?, ?> env, 
-                                                 final String namingClass) {
+                                                 final Class<?> namingClass) {
         return AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
             public BundleContext run() {
                 return doGetBundleContext(env, namingClass);
@@ -67,7 +67,7 @@ public final class Utils {
         });
     }
     
-    private static BundleContext doGetBundleContext(Map<?, ?> env, String namingClass) {
+    private static BundleContext doGetBundleContext(Map<?, ?> env, Class<?> namingClass) {
         BundleContext result = null;
 
         Object bc = (env == null) ? null : env.get(JNDIConstants.BUNDLE_CONTEXT);
@@ -83,18 +83,17 @@ public final class Utils {
             StackFinder finder = new StackFinder();
             Class<?>[] classStack = finder.getClassContext();
 
-            // find constructor of given naming class
-            int indexOfConstructor = -1;
-            for (int i = 0 ; i < classStack.length; i++) {
-                if (classStack[i].getName().equals(namingClass)) {
-                    indexOfConstructor = i;
-                }
+            // working from the root of the stack look for the first instance in the stack of this class
+            int i = classStack.length - 1;
+            for (; i >= 0; i--) {
+              if (namingClass.isAssignableFrom(classStack[i])) {
+                break;
+              }
             }
             
-            // get the caller of the constructor
-            if (indexOfConstructor >= 0 && (indexOfConstructor + 1) < classStack.length) {
-                Class<?> callerClass = classStack[indexOfConstructor + 1];
-                result = getBundleContext(callerClass.getClassLoader());
+            // then go to the parent of the namingClass down the stack until we find a BundleContext
+            for (i++; i < classStack.length && result == null; i++) {
+              result = getBundleContext(classStack[i].getClassLoader());
             }
         }
 
