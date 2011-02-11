@@ -155,13 +155,6 @@ public class AriesApplicationManagerImplTest {
       return null;
     }
 
-    public DeployedBundles generateDeployedBundles(ApplicationMetadata appMetadata,
-            Collection<ModelledResource> byValueBundles, Collection<Content> otherBundles, PlatformRepository platformRepository)
-            throws ResolverException {
-          // Not required or used in this test
-          return null;
-        }
-
     public Manifest generateDeploymentManifest(String appSymbolicName,
         String appVersion, DeployedBundles deployedBundles)
         throws ResolverException {
@@ -193,15 +186,6 @@ public class AriesApplicationManagerImplTest {
       
       return byValueBundles;
     }
-    
-	   public Collection<ModelledResource> resolve(String appName, String appVersion,
-		       Collection<ModelledResource> byValueBundles, Collection<Content> inputs, PlatformRepository platformRepository)
-		       throws ResolverException
-		   {
-		     
-		     return byValueBundles;
-		   }
-
   }
   
   static class DummyLocalPlatform implements LocalPlatform {
