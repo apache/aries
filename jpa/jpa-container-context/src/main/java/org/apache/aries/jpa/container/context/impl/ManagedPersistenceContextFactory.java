@@ -18,6 +18,8 @@
  */
 package org.apache.aries.jpa.container.context.impl;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -77,7 +79,14 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
       _logger.debug("Creating a container managed entity manager for the perstence unit {} with the following properties {}",
           new Object[] {emf, properties});
     }
-    EntityManagerFactory factory = (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
+    //Getting the BundleContext is a privileged operation that the 
+    //client might not be able to do.
+    EntityManagerFactory factory = AccessController.doPrivileged(
+        new PrivilegedAction<EntityManagerFactory>() {
+          public EntityManagerFactory run() {
+            return (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
+          }
+        });
     
     if(type == PersistenceContextType.TRANSACTION || type == null)
       return new JTAEntityManager(factory, properties, registry, activeCount, this);
