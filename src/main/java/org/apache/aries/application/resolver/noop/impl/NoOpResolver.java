@@ -72,14 +72,6 @@ public class NoOpResolver implements AriesApplicationResolver {
 	     
 	     return byValueBundles;
 	   }
-	   
-	   public Collection<ModelledResource> resolve(String appName, String appVersion,
-		       Collection<ModelledResource> byValueBundles, Collection<Content> inputs, PlatformRepository platformRepository)
-		       throws ResolverException
-		   {
-		     
-		     return byValueBundles;
-		   }
 
 }
 
