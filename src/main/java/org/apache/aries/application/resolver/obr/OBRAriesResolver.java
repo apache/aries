@@ -56,8 +56,8 @@ import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.application.resolver.internal.MessageUtil;
+import org.apache.aries.application.resolver.obr.ext.ModelledBundleResource;
 import org.apache.aries.application.resolver.obr.impl.ApplicationResourceImpl;
-import org.apache.aries.application.resolver.obr.impl.ModelledBundleResource;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
 import org.apache.aries.application.resolver.obr.impl.RepositoryGeneratorImpl;
 import org.apache.aries.application.resolver.obr.impl.ResourceWrapper;
@@ -130,13 +130,6 @@ public class OBRAriesResolver implements AriesApplicationResolver
     return returnOptionalResources;
   }
   
-	public Collection<ModelledResource> resolve(String appName,
-			String appVersion, Collection<ModelledResource> byValueBundles,
-			Collection<Content> inputs) throws ResolverException {
-		return resolve(appName, appVersion, byValueBundles,
-				inputs, this.platformRepository);
-	}
-
 /**
    * Resolve a list of resources from the OBR bundle repositories by OBR
    * resolver.
@@ -151,13 +144,13 @@ public class OBRAriesResolver implements AriesApplicationResolver
    */
   @Override
   public Collection<ModelledResource> resolve(String appName, String appVersion,
-			Collection<ModelledResource> byValueBundles, Collection<Content> inputs, PlatformRepository platformRepository)
+			Collection<ModelledResource> byValueBundles, Collection<Content> inputs)
 			throws ResolverException {
      log.debug(LOG_ENTRY, "resolve", new Object[]{appName, appVersion,byValueBundles, inputs});
     Collection<ImportedBundle> importedBundles = toImportedBundle(inputs);
     Collection<ModelledResource> toReturn = new ArrayList<ModelledResource>();
     
-    Resolver obrResolver = getConfiguredObrResolver(appName, appVersion, byValueBundles, platformRepository);
+    Resolver obrResolver = getConfiguredObrResolver(appName, appVersion, byValueBundles);
     // add a resource describing the requirements of the application metadata.
     obrResolver.add(createApplicationResource( appName, appVersion, importedBundles));
     
@@ -215,14 +208,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
   }
 
   private Resolver getConfiguredObrResolver(String appName, String appVersion,
-	      Collection<ModelledResource> byValueBundles) throws ResolverException
-	      {
-	 
-	  return getConfiguredObrResolver(appName, appVersion, byValueBundles, platformRepository);
-	      }
-
-  private Resolver getConfiguredObrResolver(String appName, String appVersion,
-      Collection<ModelledResource> byValueBundles, PlatformRepository platformRepository) throws ResolverException
+      Collection<ModelledResource> byValueBundles) throws ResolverException
   {
     log.debug(LOG_ENTRY, "getConfiguredObrResolver", new Object[]{appName, appVersion,byValueBundles });
     DataModelHelper helper = repositoryAdmin.getHelper();
@@ -250,6 +236,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     for (Repository r : repos) {
       resolveRepos.add(r);      
     }     
+
     Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
     addPlatformRepositories (obrResolver, appName, platformRepository);
     log.debug(LOG_EXIT, "getConfiguredObrResolver", obrResolver);
