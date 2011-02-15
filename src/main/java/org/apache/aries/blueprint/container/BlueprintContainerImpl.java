@@ -287,16 +287,16 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                 synchronized (scheduled) {
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
+                                    String[] missingDependecies = getMissingDependencies();
                                     unregisterServices();
                                     untrackServiceReferences();
                                     destroyComponents();
-                                    String[] missingDependecies = getMissingDependencies();
                                     LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName() + " due to unresolved dependencies " + Arrays.asList(missingDependecies), t);
                                     eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), missingDependecies, t));
                                 }
                             }
                         };
-                        timeoutFuture = executors.schedule(r, timeout, TimeUnit.MILLISECONDS);
+                        timeoutFuture = executors.schedule(r, 10, TimeUnit.SECONDS);
                         state = State.WaitForInitialReferences;
                         break;
                     case WaitForInitialReferences:
