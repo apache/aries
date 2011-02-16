@@ -18,8 +18,11 @@
  */
 package org.apache.aries.transaction.parsing;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +33,7 @@ import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.slf4j.Logger;
@@ -38,6 +42,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class TxElementHandler implements NamespaceHandler {
+    public static final String DEFAULT_INTERCEPTOR_ID = "txinterceptor";
+    public static final String INTERCEPTOR_BLUEPRINT_ID = "interceptor.blueprint.id";
+
     private static final Logger LOGGER =
         LoggerFactory.getLogger(TxElementHandler.class);
 
@@ -110,14 +117,32 @@ public class TxElementHandler implements NamespaceHandler {
         this.metaDataHelper = transactionEnhancer;
     }
 
-    public final void setTransactionInterceptor(Interceptor itx)
+    public final void setBlueprintContainer(BlueprintContainer container) 
     {
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("parser having interceptor set " + itx);
+        String id = DEFAULT_INTERCEPTOR_ID;
+        InputStream is = TxElementHandler.class.getResourceAsStream("/provider.properties");
         
-        this.interceptor = itx;
+        if (is != null) {
+            try {
+                Properties props = new Properties();
+                props.load(is);
+                if (props.containsKey(INTERCEPTOR_BLUEPRINT_ID)) {
+                    id = props.getProperty(INTERCEPTOR_BLUEPRINT_ID);
+                }
+            } catch (IOException e) {
+                LOGGER.error("IOException while loading provider properties. Using default provider", e);
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException e2) {
+                    LOGGER.error("Unexpected exception while closing stream", e2);
+                }
+            }
+        }
+        
+        this.interceptor = (Interceptor) container.getComponentInstance(id);
     }
-
+    
     public Set<Class> getManagedClasses()
     {
         // TODO Auto-generated method stub
