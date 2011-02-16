@@ -25,63 +25,16 @@ import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
-import javax.transaction.TransactionManager;
-
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.NamespaceHandler;
-import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry.NamespaceHandlerSet;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
-import org.apache.aries.mocks.BundleMock;
-import org.apache.aries.transaction.parsing.TxElementHandler;
-import org.apache.aries.unittest.mocks.Skeleton;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
-public class BundleWideNameSpaceHandlerTest {
-    
-	Bundle b;
-	private NamespaceHandlerRegistry nhri;
-	private TxComponentMetaDataHelperImpl txenhancer;
-	
-    @Before
-    public void setUp() {
-        b = Skeleton.newMock(new BundleMock("org.apache.aries.tx", new Properties()), Bundle.class);
-        BundleContext ctx = b.getBundleContext();
-        nhri = new NamespaceHandlerRegistryImpl(ctx);
-        
-        TransactionManager tm = Skeleton.newMock(TransactionManager.class);
-        
-        txenhancer = new TxComponentMetaDataHelperImpl();
-        
-        TxInterceptorImpl txinterceptor = new TxInterceptorImpl();
-        txinterceptor.setTransactionManager(tm);
-        txinterceptor.setTxMetaDataHelper(txenhancer);
-        
-        TxElementHandler namespaceHandler = new TxElementHandler();
-        namespaceHandler.setTransactionInterceptor(txinterceptor);
-        namespaceHandler.setTxMetaDataHelper(txenhancer);
-            
-        Properties props = new Properties();
-        props.put("osgi.service.blueprint.namespace", new String[]{"http://aries.apache.org/xmlns/transactions/v1.0.0", "http://aries.apache.org/xmlns/transactions/v1.1.0"});
-        ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
-    }
-    
-    @After
-    public void tearDown() throws Exception{
-    	b = null;
-        nhri = null;
-        txenhancer = null;
-    }
+public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     
     @Test
     public void testMultipleElements() throws Exception
