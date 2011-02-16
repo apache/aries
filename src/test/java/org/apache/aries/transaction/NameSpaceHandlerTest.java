@@ -24,68 +24,16 @@ import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
-import javax.transaction.TransactionManager;
-
-import org.apache.aries.mocks.BundleMock;
-
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.NamespaceHandler;
-import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry.NamespaceHandlerSet;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.BeanProperty;
 
-import org.apache.aries.transaction.TxComponentMetaDataHelperImpl;
-import org.apache.aries.transaction.TxInterceptorImpl;
-import org.apache.aries.transaction.parsing.TxElementHandler;
-import org.apache.aries.unittest.mocks.Skeleton;
-
-public class NameSpaceHandlerTest {
-    
-	Bundle b;
-	private NamespaceHandlerRegistry nhri;
-	private TxComponentMetaDataHelperImpl txenhancer;
-	
-    @Before
-    public void setUp() {
-        b = Skeleton.newMock(new BundleMock("org.apache.aries.tx", new Properties()), Bundle.class);
-        BundleContext ctx = b.getBundleContext();
-        nhri = new NamespaceHandlerRegistryImpl(ctx);
-        
-        TransactionManager tm = Skeleton.newMock(TransactionManager.class);
-        
-        txenhancer = new TxComponentMetaDataHelperImpl();
-        
-        TxInterceptorImpl txinterceptor = new TxInterceptorImpl();
-        txinterceptor.setTransactionManager(tm);
-        txinterceptor.setTxMetaDataHelper(txenhancer);
-        
-        TxElementHandler namespaceHandler = new TxElementHandler();
-        namespaceHandler.setTransactionInterceptor(txinterceptor);
-        namespaceHandler.setTxMetaDataHelper(txenhancer);
-            
-        Properties props = new Properties();
-        props.put("osgi.service.blueprint.namespace", new String[]{"http://aries.apache.org/xmlns/transactions/v1.0.0", "http://aries.apache.org/xmlns/transactions/v1.1.0"});
-        ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
-    }
-    
-    @After
-    public void tearDown() throws Exception{
-    	b = null;
-        nhri = null;
-        txenhancer = null;
-    }
+public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     
     @Test
     public void testMultipleElements_100() throws Exception
@@ -106,8 +54,8 @@ public class NameSpaceHandlerTest {
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
-      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
-      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+      BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
@@ -133,8 +81,8 @@ public class NameSpaceHandlerTest {
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
-      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
-      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+      BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
@@ -160,8 +108,8 @@ public class NameSpaceHandlerTest {
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
-      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
-      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+      BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
@@ -187,8 +135,8 @@ public class NameSpaceHandlerTest {
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
-      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
-      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+      BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
@@ -214,8 +162,8 @@ public class NameSpaceHandlerTest {
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
-      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
-      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+      BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
@@ -241,8 +189,8 @@ public class NameSpaceHandlerTest {
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
-      BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
-      BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
+      BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
+      BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));

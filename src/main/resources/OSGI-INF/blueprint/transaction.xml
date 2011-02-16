@@ -33,7 +33,7 @@
         </service-properties>
         <bean class="org.apache.aries.transaction.parsing.TxElementHandler">
             <property ref="txenhancer" name="txMetaDataHelper"/>
-            <property ref="txinterceptor" name="transactionInterceptor"/>
+            <property name="blueprintContainer" ref="blueprintContainer" />
         </bean>
   </service>              
   
