@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Stack;
 
@@ -130,7 +131,8 @@ class Collaborator implements InvocationHandler, Serializable {
             if (args[0] instanceof WrapperedObject) {
                 // unwrap in the WrapperedObject case
                 args[0] = ((WrapperedObject) args[0]).unwrapObject();
-            } else if (AsmInterceptorWrapper.isProxyClass(args[0].getClass())) {
+            } else if (AsmInterceptorWrapper.isProxyClass(args[0].getClass())
+	                    || Proxy.isProxyClass(args[0].getClass())) {
                 // unwrap in the asm case
                 args[0] = AsmInterceptorWrapper.unwrapObject(args[0]);
             }
