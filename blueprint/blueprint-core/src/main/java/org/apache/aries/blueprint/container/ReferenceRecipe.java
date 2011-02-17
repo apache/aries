@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.osgi.framework.ServiceReference;
@@ -55,6 +56,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     private volatile ServiceReference trackedServiceReference;
     private volatile Object trackedService;
+    private Object defaultBean;
     private final Object monitor = new Object();
 
     public ReferenceRecipe(String name,
@@ -168,21 +170,44 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 blueprintContainer.getEventDispatcher().blueprintEvent(new BlueprintEvent(BlueprintEvent.WAITING, blueprintContainer.getBundleContext().getBundle(), blueprintContainer.getExtenderBundle(), new String[] { getOsgiFilter() }));
                 monitor.wait(metadata.getTimeout());
             }
+            Object result = null;
             if (trackedServiceReference == null) {
                 if (isStarted()) {
+                  boolean failed = true;
+                  if (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL && 
+                      metadata instanceof ExtendedReferenceMetadata) {
+                     if (defaultBean == null) {
+                         String defaultBeanId = ((ExtendedReferenceMetadata)metadata).getDefaultBean();
+                         if (defaultBeanId != null) {
+                           defaultBean = blueprintContainer.getComponentInstance(defaultBeanId);
+                           failed = false;
+                         }
+                     } else {
+                         failed = false;
+                     }
+                     result = defaultBean;
+                  } 
+                  
+                  if (failed) {
                     LOGGER.info("Timeout expired when waiting for OSGi service {}", getOsgiFilter());
                     throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", getOsgiFilter());
+                  }
                 } else {
                     throw new ServiceUnavailableException("The Blueprint container is being or has been destroyed", getOsgiFilter());
                 }
+            } else {
+            
+              if (trackedService == null) {
+                  trackedService = blueprintContainer.getService(trackedServiceReference);
+              }
+              
+              if (trackedService == null) {
+                  throw new IllegalStateException("getService() returned null for " + trackedServiceReference);
+              }
+              
+              result = trackedService;
             }
-            if (trackedService == null) {
-                trackedService = blueprintContainer.getService(trackedServiceReference);
-            }
-            if (trackedService == null) {
-                throw new IllegalStateException("getService() returned null for " + trackedServiceReference);
-            }
-            return trackedService;
+            return result;
         }
     }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,19 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.mutable;
+package org.apache.aries.blueprint.sample;
 
-import org.apache.aries.blueprint.ExtendedReferenceMetadata;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * A mutable version of the <code>ReferenceMetadata</code> that allows modifications.
- *
- * @version $Rev$, $Date$
- */
-public interface MutableReferenceMetadata extends ExtendedReferenceMetadata, MutableServiceReferenceMetadata {
-
-    void setTimeout(long timeout);
-
-    void setDefaultBean(String value);
-
+public class DefaultRunnable implements Runnable 
+{
+  private static AtomicInteger count = new AtomicInteger();
+  public void run() 
+  {
+    count.incrementAndGet();
+  }
+  
+  public int getCount()
+  {
+    return count.get();
+  }
 }

@@ -31,7 +31,10 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.aries.blueprint.sample.BindingListener;
+import org.apache.aries.blueprint.sample.DefaultRunnable;
 import org.apache.aries.blueprint.sample.InterfaceA;
+import org.apache.aries.unittest.mocks.MethodCall;
+import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -124,6 +127,34 @@ public class TestReferences extends AbstractIntegrationTest {
         assertEquals("Hello world!", a.hello("world"));
 
     }
+    
+    @Test
+    public void testDefaultReference() throws Exception {
+      BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample");
+      assertNotNull(blueprintContainer);
+
+      Runnable refRunnable = (Runnable) blueprintContainer.getComponentInstance("refWithDefault");
+      DefaultRunnable defaultRunnable = (DefaultRunnable) blueprintContainer.getComponentInstance("defaultRunnable");
+      refRunnable.run();
+      
+      assertEquals("The default runnable was not called", 1, defaultRunnable.getCount());
+      
+      Runnable mockService = Skeleton.newMock(Runnable.class);
+      
+      ServiceRegistration reg = bundleContext.registerService(Runnable.class.getName(), mockService, null);
+      
+      refRunnable.run();
+      
+      assertEquals("The default runnable was called when a service was bound", 1, defaultRunnable.getCount());
+      
+      Skeleton.getSkeleton(mockService).assertCalled(new MethodCall(Runnable.class, "run"));
+      
+      reg.unregister();
+      
+      refRunnable.run();
+      
+      assertEquals("The default runnable was not called", 2, defaultRunnable.getCount());
+    }
 
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
@@ -146,6 +177,7 @@ public class TestReferences extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"),
             mavenBundle("org.osgi", "org.osgi.compendium"),
+            mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
