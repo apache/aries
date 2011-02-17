@@ -18,13 +18,23 @@
  */
 package org.apache.aries.transaction;
 
+import java.net.URI;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.transaction.TransactionManager;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
+import org.apache.aries.blueprint.container.Parser;
+import org.apache.aries.blueprint.container.NamespaceHandlerRegistry.NamespaceHandlerSet;
+import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
+import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
+import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.transaction.parsing.TxElementHandler;
 import org.apache.aries.unittest.mocks.MethodCall;
@@ -39,6 +49,7 @@ public class BaseNameSpaceHandlerSetup {
     protected Bundle b;
     protected NamespaceHandlerRegistry nhri;
     protected TxComponentMetaDataHelperImpl txenhancer;
+    protected TxElementHandler namespaceHandler;
     
     @Before
     public void setUp() {
@@ -54,7 +65,7 @@ public class BaseNameSpaceHandlerSetup {
         txinterceptor.setTransactionManager(tm);
         txinterceptor.setTxMetaDataHelper(txenhancer);
         
-        TxElementHandler namespaceHandler = new TxElementHandler();
+        namespaceHandler = new TxElementHandler();
         
         BlueprintContainer container = Skeleton.newMock(BlueprintContainer.class);
         Skeleton.getSkeleton(container).setReturnValue(
@@ -68,10 +79,29 @@ public class BaseNameSpaceHandlerSetup {
         ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
     }
       
-      @After
-      public void tearDown() throws Exception{
-        b = null;
-          nhri = null;
-          txenhancer = null;
-      }
+    @After
+    public void tearDown() throws Exception{
+      b = null;
+      nhri = null;
+      txenhancer = null;
+      
+      BundleContextMock.clear();
+    }
+    
+    protected ComponentDefinitionRegistry parseCDR(String name) throws Exception {
+        Parser p = new Parser();
+        
+        URL bpxml = this.getClass().getResource(name);
+        p.parse(Arrays.asList(bpxml));
+        
+        Set<URI> nsuris = p.getNamespaces();
+        NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
+        p.validate(nshandlers.getSchema());
+        
+        ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
+        cdr.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", b));
+        p.populate(nshandlers, cdr);
+        
+        return cdr;
+    }
 }

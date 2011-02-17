@@ -18,19 +18,14 @@
  */
 package org.apache.aries.transaction;
 
-import static org.junit.Assert.assertEquals;
-
-import java.net.URI;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import static org.junit.Assert.*;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.container.Parser;
-import org.apache.aries.blueprint.container.NamespaceHandlerRegistry.NamespaceHandlerSet;
-import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.aries.transaction.parsing.TxBlueprintListener;
+import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
+import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
 public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
@@ -38,19 +33,7 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testMultipleElements_100() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("aries.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("aries.xml");
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
@@ -65,20 +48,8 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testMultipleElements_110() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("aries4.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
-      
+      ComponentDefinitionRegistry cdr = parseCDR("aries4.xml");
+        
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
       BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
@@ -92,19 +63,7 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testOptionalMethodAttribute_100() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("aries2.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("aries2.xml");
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
@@ -119,19 +78,7 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testOptionalMethodAttribute_110() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("aries5.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("aries5.xml");
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
@@ -146,19 +93,7 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testOptionalValueAttribute_100() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("aries3.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("aries3.xml");
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
@@ -173,19 +108,7 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testOptionalValueAttribute_110() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("aries6.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("aries6.xml");
       
       BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
       
@@ -200,19 +123,7 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testBundleWideAndBeanLevelTx() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("mixed-aries.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("mixed-aries.xml");
       
       BeanMetadata compRequiresNew = (BeanMetadata) cdr.getComponentDefinition("requiresNew");
       BeanMetadata compNoTx = (BeanMetadata) cdr.getComponentDefinition("noTx");
@@ -224,7 +135,38 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compSomeTx, "doSomething"));
       assertEquals("Mandatory", txenhancer.getComponentMethodTxAttribute(compSomeTx, "getRows"));
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "doSomething"));
-      assertEquals("Supports", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));
+      assertEquals("Supports", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));       
+    }
+    
+    @Test
+    public void testLifecycle() throws Exception
+    {
+        ComponentDefinitionRegistry cdr = parseCDR("mixed-aries.xml");
         
+        BeanMetadata compRequiresNew = (BeanMetadata) cdr.getComponentDefinition("requiresNew");
+        BeanMetadata compNoTx = (BeanMetadata) cdr.getComponentDefinition("noTx");
+        BeanMetadata compSomeTx = (BeanMetadata) cdr.getComponentDefinition("someTx");
+        BeanMetadata compAnotherBean = (BeanMetadata) cdr.getComponentDefinition("anotherBean");
+
+        assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compRequiresNew, "doSomething"));
+        assertEquals("Never", txenhancer.getComponentMethodTxAttribute(compNoTx, "doSomething"));
+        assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compSomeTx, "doSomething"));
+        assertEquals("Mandatory", txenhancer.getComponentMethodTxAttribute(compSomeTx, "getRows"));
+        assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "doSomething"));
+        assertEquals("Supports", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));   
+        
+        // cleanup
+        
+        assertTrue(namespaceHandler.isRegistered(cdr));
+        
+        new TxBlueprintListener(namespaceHandler, txenhancer).blueprintEvent(
+                new BlueprintEvent(BlueprintEvent.DESTROYED, b, Skeleton.newMock(Bundle.class)));
+        
+        assertFalse(namespaceHandler.isRegistered(cdr));
+        assertNull(txenhancer.getComponentMethodTxAttribute(compRequiresNew, "doSomething"));
+        assertNull(txenhancer.getComponentMethodTxAttribute(compSomeTx, "doSomething"));
+        assertNull(txenhancer.getComponentMethodTxAttribute(compSomeTx, "getRows"));
+        assertNull(txenhancer.getComponentMethodTxAttribute(compAnotherBean, "doSomething"));
+        assertNull(txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));   
     }
 }

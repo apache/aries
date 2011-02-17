@@ -21,9 +21,12 @@ package org.apache.aries.transaction.parsing;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,8 +34,10 @@ import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
+import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
+import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
@@ -45,13 +50,12 @@ public class TxElementHandler implements NamespaceHandler {
     public static final String DEFAULT_INTERCEPTOR_ID = "txinterceptor";
     public static final String INTERCEPTOR_BLUEPRINT_ID = "interceptor.blueprint.id";
 
-    private static final Logger LOGGER =
-        LoggerFactory.getLogger(TxElementHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TxElementHandler.class);
 
     private TxComponentMetaDataHelper metaDataHelper;
     private Interceptor interceptor = null;
 
-    private Set<ComponentDefinitionRegistry> registered = new HashSet<ComponentDefinitionRegistry>();
+    private ConcurrentMap<ComponentDefinitionRegistry,Bundle> registered = new ConcurrentHashMap<ComponentDefinitionRegistry, Bundle>();
 
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
     {
@@ -65,8 +69,7 @@ public class TxElementHandler implements NamespaceHandler {
             ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
             
             if (cm == null) {
-                // if the enclosing component is null, then we assume this is the top element 
-                
+                // if the enclosing component is null, then we assume this is the top element                 
                 
                 String bean = elt.getAttribute(Constants.BEAN);
                 registerComponentsWithInterceptor(cdr, bean);
@@ -79,7 +82,7 @@ public class TxElementHandler implements NamespaceHandler {
                     LOGGER.debug("parser setting comp trans data for " + elt.getAttribute(Constants.VALUE) + "  "
                             + elt.getAttribute(Constants.METHOD));
     
-                metaDataHelper.setComponentTransactionData(cm, elt.getAttribute(Constants.VALUE), elt
+                metaDataHelper.setComponentTransactionData(cdr, cm, elt.getAttribute(Constants.VALUE), elt
                         .getAttribute(Constants.METHOD));
             }
         }
@@ -106,9 +109,9 @@ public class TxElementHandler implements NamespaceHandler {
     public URL getSchemaLocation(String arg0)
     {
     	if (arg0.equals(Constants.TRANSACTION10URI)) {
-    		return this.getClass().getResource(Constants.TX10_SCHEMA);
+    	    return this.getClass().getResource(Constants.TX10_SCHEMA);
     	} else {
-            return this.getClass().getResource(Constants.TX11_SCHEMA);
+    	    return this.getClass().getResource(Constants.TX11_SCHEMA);
     	}
     }
 
@@ -149,50 +152,51 @@ public class TxElementHandler implements NamespaceHandler {
         return null;
     }
     
-    private boolean isRegistered(ComponentDefinitionRegistry cdr) {
-        for (ComponentDefinitionRegistry compdr : registered) {
-            if (compdr == cdr) {
-                return true;
+    public boolean isRegistered(ComponentDefinitionRegistry cdr) {
+        return registered.containsKey(cdr);
+    }
+    
+    public void unregister(Bundle blueprintBundle) {
+        Iterator<Map.Entry<ComponentDefinitionRegistry, Bundle>> it = registered.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<ComponentDefinitionRegistry, Bundle> e = it.next();
+            if (blueprintBundle.equals(e.getValue())) {
+                metaDataHelper.unregister(e.getKey());
+                it.remove();
             }
         }
-        
-        return false;
     }
     
     private void registerComponentsWithInterceptor(ComponentDefinitionRegistry cdr, String bean) {
-        // if it is already registered all components in the component definition registry, do nothing
-        if (isRegistered(cdr)) {
-            return;
+        ComponentMetadata meta = cdr.getComponentDefinition("blueprintBundle");
+        Bundle blueprintBundle = null;
+        if (meta instanceof PassThroughMetadata) {
+            blueprintBundle = (Bundle) ((PassThroughMetadata) meta).getObject();
         }
         
-        Set<String> ids = cdr.getComponentDefinitionNames();
-        
-        if (bean == null || bean.isEmpty()) {
-            // in this case, let's attempt to register all components
-            // if the component has already been registered with this interceptor,
-            // the registration will be ignored.
-            for (String id : ids) {
-                ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
-                cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
-            }
-            synchronized (registered) {
-                registered.add(cdr);
-            }
-        } else {
-            // register the beans specified
-            Pattern p = Pattern.compile(bean);
-            for (String id : ids) {
-                Matcher m = p.matcher(id);
-                if (m.matches()) {
+        // if it is already registered all components in the component definition registry, do nothing
+        if (registered.putIfAbsent(cdr, blueprintBundle) == null) {
+            Set<String> ids = cdr.getComponentDefinitionNames();
+            
+            if (bean == null || bean.isEmpty()) {
+                // in this case, let's attempt to register all components
+                // if the component has already been registered with this interceptor,
+                // the registration will be ignored.
+                for (String id : ids) {
                     ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
                     cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
                 }
+            } else {
+                // register the beans specified
+                Pattern p = Pattern.compile(bean);
+                for (String id : ids) {
+                    Matcher m = p.matcher(id);
+                    if (m.matches()) {
+                        ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
+                        cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
+                    }
+                }
             }
-        }
+        }        
     }
-    
-    // check if the beans pattern includes the particular component/bean id
-    /*private boolean includes(String beans, String id) {
-        return Pattern.matches(beans, id);
-    }*/
 }
