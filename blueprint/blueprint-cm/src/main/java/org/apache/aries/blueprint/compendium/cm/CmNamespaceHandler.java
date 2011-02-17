@@ -210,13 +210,11 @@ public class CmNamespaceHandler implements NamespaceHandler {
         if (defaultsRef != null) {
             metadata.addProperty("defaultProperties", createRef(context, defaultsRef));
         }
-        String ignoreMissingLocations = element.hasAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE, ExtNamespaceHandler.IGNORE_MISSING_LOCATIONS_ATTRIBUTE)
-                ? element.getAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE, ExtNamespaceHandler.IGNORE_MISSING_LOCATIONS_ATTRIBUTE) : null;
+        String ignoreMissingLocations = extractIgnoreMissingLocations(element);
         if (ignoreMissingLocations != null) {
             metadata.addProperty("ignoreMissingLocations", createValue(context, ignoreMissingLocations));
         }
-        String systemProperties = element.hasAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE, ExtNamespaceHandler.SYSTEM_PROPERTIES_ATTRIBUTE)
-                ? element.getAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE, ExtNamespaceHandler.SYSTEM_PROPERTIES_ATTRIBUTE) : null;
+        String systemProperties = extractSystemPropertiesAttribute(element);
         if (systemProperties == null) {
             systemProperties = ExtNamespaceHandler.SYSTEM_PROPERTIES_NEVER;
         }
@@ -242,7 +240,11 @@ public class CmNamespaceHandler implements NamespaceHandler {
                         Metadata props = parseDefaultProperties(context, metadata, e);
                         metadata.addProperty("defaultProperties", props);
                     }
-                } else if (ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE.equals(e.getNamespaceURI())) {
+                } else if (ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())) {
+                    if (nodeNameEquals(e, ExtNamespaceHandler.LOCATION_ELEMENT)) {
+                        locations.add(getTextValue(e));
+                    }
+                } else if (ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, ExtNamespaceHandler.LOCATION_ELEMENT)) {
                         locations.add(getTextValue(e));
                     }
@@ -256,6 +258,27 @@ public class CmNamespaceHandler implements NamespaceHandler {
         PlaceholdersUtils.validatePlaceholder(metadata, context.getComponentDefinitionRegistry());
         
         return metadata;
+    }
+
+    private String extractSystemPropertiesAttribute(Element element) {
+      String systemProperties = null;
+      
+      if (element.hasAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_0, ExtNamespaceHandler.SYSTEM_PROPERTIES_ATTRIBUTE)) {
+        systemProperties =  element.getAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_0, ExtNamespaceHandler.SYSTEM_PROPERTIES_ATTRIBUTE);
+      } else if (element.hasAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_1, ExtNamespaceHandler.SYSTEM_PROPERTIES_ATTRIBUTE)) {
+        systemProperties =  element.getAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_1, ExtNamespaceHandler.SYSTEM_PROPERTIES_ATTRIBUTE);
+      }
+      return systemProperties;
+    }
+
+    private String extractIgnoreMissingLocations(Element element) {
+      String ignoreMissingLocations = null;
+      if (element.hasAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_0, ExtNamespaceHandler.IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
+        ignoreMissingLocations = element.getAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_0, ExtNamespaceHandler.IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
+      } else if (element.hasAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_1, ExtNamespaceHandler.IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
+        ignoreMissingLocations = element.getAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE_V1_1, ExtNamespaceHandler.IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
+      }
+      return ignoreMissingLocations;
     }
 
     private Metadata parseDefaultProperties(ParserContext context, MutableBeanMetadata enclosingComponent, Element element) {

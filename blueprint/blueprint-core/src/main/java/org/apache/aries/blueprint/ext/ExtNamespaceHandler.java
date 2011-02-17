@@ -33,6 +33,7 @@ import org.apache.aries.blueprint.mutable.MutableComponentMetadata;
 import org.apache.aries.blueprint.mutable.MutableIdRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableMapMetadata;
 import org.apache.aries.blueprint.mutable.MutableRefMetadata;
+import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableServiceReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -44,6 +45,7 @@ import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.slf4j.Logger;
@@ -64,7 +66,8 @@ import org.w3c.dom.NodeList;
 public class ExtNamespaceHandler implements org.apache.aries.blueprint.NamespaceHandler {
 
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
-    public static final String BLUEPRINT_EXT_NAMESPACE = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
+    public static final String BLUEPRINT_EXT_NAMESPACE_V1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
+    public static final String BLUEPRINT_EXT_NAMESPACE_V1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String DEFAULT_PROPERTIES_ELEMENT = "default-properties";
@@ -92,13 +95,21 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     public static final String ROLE_PROCESSOR = "processor";
     
     public static final String FIELD_INJECTION_ATTRIBUTE = "field-injection";
+    
+    public static final String DEFAULT_REFERENCE_BEAN = "default";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
     private int idCounter;
 
     public URL getSchemaLocation(String namespace) {
-        return getClass().getResource("blueprint-ext.xsd");
+        if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(namespace)) {
+          return getClass().getResource("blueprint-ext.xsd");
+        } else if (BLUEPRINT_EXT_NAMESPACE_V1_1.equals(namespace)) {
+          return getClass().getResource("blueprint-ext-1.1.xsd");
+        } else {
+          return null;
+        }
     }
 
     public Set<Class> getManagedClasses() {
@@ -123,11 +134,29 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             return decorateRole(node, component, context);
         } else if (node instanceof Attr && nodeNameEquals(node, FIELD_INJECTION_ATTRIBUTE)) {
             return decorateFieldInjection(node, component, context);
+        } else if (node instanceof Attr && nodeNameEquals(node, DEFAULT_REFERENCE_BEAN)) {
+            return decorateDefaultBean(node, component, context);
         } else {
             throw new ComponentDefinitionException("Unsupported node: " + node.getNodeName());
         }
     }
     
+    private ComponentMetadata decorateDefaultBean(Node node,
+        ComponentMetadata component, ParserContext context) 
+    {
+        if (!(component instanceof ReferenceMetadata)) {
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <reference> element");
+        }
+      
+        if (!(component instanceof MutableReferenceMetadata)) {
+            throw new ComponentDefinitionException("Expected an instanceof MutableReferenceMetadata");
+        }
+        
+        String value = ((Attr) node).getValue();
+        ((MutableReferenceMetadata) component).setDefaultBean(value);
+        return component;
+    }
+
     private ComponentMetadata decorateFieldInjection(Node node, ComponentMetadata component, ParserContext context) {
         if (!(component instanceof BeanMetadata)) {
             throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <bean> element");
@@ -225,7 +254,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_EXT_NAMESPACE.equals(e.getNamespaceURI())) {
+                if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
                         if (defaultsRef != null) {
                             throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
@@ -254,7 +283,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_EXT_NAMESPACE.equals(e.getNamespaceURI())) {
+                if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
                         BeanProperty prop = context.parseElement(BeanProperty.class, enclosingComponent, e);
                         props.addEntry(createValue(context, prop.getName(), String.class.getName()), prop.getValue());

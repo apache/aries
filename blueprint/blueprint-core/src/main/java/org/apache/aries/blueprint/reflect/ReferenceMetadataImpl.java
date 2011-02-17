@@ -29,6 +29,7 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implements MutableReferenceMetadata {
 
     private long timeout;
+    private String defaultBeanId;
 
     public ReferenceMetadataImpl() {
     }
@@ -44,6 +45,14 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
+    }
+
+    public void setDefaultBean(String defaultBeanId) {
+      this.defaultBeanId = defaultBeanId;
+    }
+
+    public String getDefaultBean() {
+      return defaultBeanId;
     }
 
     @Override
