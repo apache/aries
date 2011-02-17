@@ -70,7 +70,7 @@ public abstract class AbstractProxyManager implements ProxyManager
   
   public final boolean isProxy(Object proxy)
   {
-    return (getInvocationHandler(proxy) instanceof ProxyHandler);
+    return (proxy != null && getInvocationHandler(proxy) instanceof ProxyHandler);
   }
   
   protected abstract Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes,
