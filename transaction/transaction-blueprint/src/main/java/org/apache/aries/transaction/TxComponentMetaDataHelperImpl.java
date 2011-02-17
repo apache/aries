@@ -19,11 +19,13 @@
 package org.apache.aries.transaction;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -158,13 +160,29 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
     // this is configured via top level tx:transaction element for the blueprint managed bundle
     private static final ConcurrentHashMap<ComponentDefinitionRegistry, List<BundleWideTxData>> bundleTransactionMap = new ConcurrentHashMap<ComponentDefinitionRegistry, List<BundleWideTxData>>();
 
-    public synchronized void setComponentTransactionData(ComponentMetadata component, String value, String method)
+    // this gives us a reverse lookup when we need to clean up
+    private static final ConcurrentMap<ComponentDefinitionRegistry, Collection<ComponentMetadata>> dataForCDR = 
+        new ConcurrentHashMap<ComponentDefinitionRegistry, Collection<ComponentMetadata>>();
+    
+    public void unregister(ComponentDefinitionRegistry registry) {
+        Collection<ComponentMetadata> components = dataForCDR.remove(registry);
+        bundleTransactionMap.remove(registry);
+        
+        if (components != null) {
+            for (ComponentMetadata meta : components) data.remove(meta);
+        }
+    }
+    
+    public synchronized void setComponentTransactionData(ComponentDefinitionRegistry registry, ComponentMetadata component, String value, String method)
     {
       TranData td = data.get(component);
           
       if (td == null) {
           td = new TranData();
           data.put(component, td);
+
+          dataForCDR.putIfAbsent(registry, new HashSet<ComponentMetadata>());
+          dataForCDR.get(registry).add(component);
       }
       
       if (method == null || method.isEmpty()) {
@@ -208,14 +226,13 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
              * 4. top level tx w/ no other attribute
              */
             //result = calculateBundleWideTransaction(component, methodName);
-            String compId = component.getId();
-            ComponentDefinitionRegistry cdr = getComponentDefinitionRegistry(compId);
+            ComponentDefinitionRegistry cdr = getComponentDefinitionRegistry(component);
             if (cdr == null) {
                 // no bundle wide transaction configuration avail
             	result = null;
             } else {
                 List<BundleWideTxData> bundleData = bundleTransactionMap.get(cdr);
-                result = BundleWideTxDataUtil.getAttribute(compId, methodName, bundleData);
+                result = BundleWideTxDataUtil.getAttribute(component.getId(), methodName, bundleData);
             }
         }
 
@@ -247,15 +264,13 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
         
     }
     
-    private ComponentDefinitionRegistry getComponentDefinitionRegistry(String compId) {
+    private ComponentDefinitionRegistry getComponentDefinitionRegistry(ComponentMetadata metadata) {
         Enumeration<ComponentDefinitionRegistry> keys = bundleTransactionMap.keys();
         while (keys.hasMoreElements()) {
             ComponentDefinitionRegistry cdr = keys.nextElement();
-            Set<String> names = cdr.getComponentDefinitionNames();
-            for (String name : names) {
-                if (name.equals(compId)) {
-                    return cdr;
-                }
+            if (cdr.containsComponentDefinition(metadata.getId()) 
+                    && metadata.equals(cdr.getComponentDefinition(metadata.getId()))) {
+                return cdr;
             }
         }
         
