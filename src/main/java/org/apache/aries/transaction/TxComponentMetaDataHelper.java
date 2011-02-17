@@ -23,8 +23,8 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 public interface TxComponentMetaDataHelper {
 
-    public void setComponentTransactionData(ComponentMetadata component, String value,
-        String method);
+    public void setComponentTransactionData(ComponentDefinitionRegistry registry, 
+            ComponentMetadata component, String value, String method);
 
     public String getComponentMethodTxAttribute(
             ComponentMetadata component, String methodName);
@@ -32,4 +32,5 @@ public interface TxComponentMetaDataHelper {
     public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, String value,
         String method, String bean);
 
+    public void unregister(ComponentDefinitionRegistry registry);
 }

@@ -21,16 +21,7 @@ package org.apache.aries.transaction;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.net.URI;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.container.Parser;
-import org.apache.aries.blueprint.container.NamespaceHandlerRegistry.NamespaceHandlerSet;
-import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.junit.Test;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
@@ -39,20 +30,7 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testMultipleElements() throws Exception
     {
-
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("bundlewide-aries.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("bundlewide-aries.xml");
             
       BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top1");
       BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down1");
@@ -68,19 +46,7 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testMultipleElements2() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("bundlewide-aries2.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("bundlewide-aries2.xml");
       
       BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top2");
       BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down2");
@@ -104,19 +70,7 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     @Test
     public void testMultipleElements3() throws Exception
     {
-      Parser p = new Parser();
-      
-      URL bpxml = this.getClass().getResource("bundlewide-aries3.xml");
-      List<URL> bpxmlList = new LinkedList<URL>();
-      bpxmlList.add(bpxml); 
-      
-      p.parse(bpxmlList);
-      Set<URI> nsuris = p.getNamespaces();
-      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-      p.validate(nshandlers.getSchema());
-      
-      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-      p.populate(nshandlers, cdr);
+      ComponentDefinitionRegistry cdr = parseCDR("bundlewide-aries3.xml");
       
       BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top3");
       BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down3");
