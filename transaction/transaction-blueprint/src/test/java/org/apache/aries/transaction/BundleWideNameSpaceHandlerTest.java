@@ -38,6 +38,9 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       assertNotNull(compTop);
       assertNotNull(compDown);
       
+      assertEquals(1, cdr.getInterceptors(compTop).size());
+      assertEquals(1, cdr.getInterceptors(compDown).size());
+      
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
         
@@ -55,6 +58,10 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       assertNotNull(compTop);
       assertNotNull(compDown);
       assertNotNull(compMiddle);
+      
+      assertEquals(1, cdr.getInterceptors(compTop).size());
+      assertEquals(1, cdr.getInterceptors(compDown).size());
+      assertEquals(0, cdr.getInterceptors(compMiddle).size());
       
       assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compTop, "update1234"));
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "update"));
@@ -79,6 +86,10 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       assertNotNull(compTop);
       assertNotNull(compDown);
       assertNotNull(compMiddle);
+      
+      assertEquals(1, cdr.getInterceptors(compTop).size());
+      assertEquals(1, cdr.getInterceptors(compDown).size());
+      assertEquals(1, cdr.getInterceptors(compMiddle).size());
       
       assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compTop, "update1234"));
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "update"));

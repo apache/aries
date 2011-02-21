@@ -41,8 +41,7 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
-      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
-        
+      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));        
     }
     
     @Test
@@ -139,7 +138,29 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     }
     
     @Test
-    public void testLifecycle() throws Exception
+    public void testLifecycleOld() throws Exception
+    {
+        ComponentDefinitionRegistry cdr = parseCDR("aries.xml");
+
+        BeanMetadata comp = (BeanMetadata) cdr.getComponentDefinition("top");
+
+        BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
+        BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
+
+        assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+        assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+        
+        assertTrue(namespaceHandler.isRegistered(cdr));
+        
+        new TxBlueprintListener(namespaceHandler).blueprintEvent(
+                new BlueprintEvent(BlueprintEvent.DESTROYED, b, Skeleton.newMock(Bundle.class)));
+
+        assertNull(txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+        assertNull(txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+    }
+    
+    @Test
+    public void testLifecycleMixed() throws Exception
     {
         ComponentDefinitionRegistry cdr = parseCDR("mixed-aries.xml");
         
@@ -159,7 +180,7 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
         
         assertTrue(namespaceHandler.isRegistered(cdr));
         
-        new TxBlueprintListener(namespaceHandler, txenhancer).blueprintEvent(
+        new TxBlueprintListener(namespaceHandler).blueprintEvent(
                 new BlueprintEvent(BlueprintEvent.DESTROYED, b, Skeleton.newMock(Bundle.class)));
         
         assertFalse(namespaceHandler.isRegistered(cdr));
