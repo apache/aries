@@ -35,6 +35,7 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.transaction.BundleWideTxData;
 import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
 import org.osgi.framework.Bundle;
@@ -85,6 +86,14 @@ public class TxElementHandler implements NamespaceHandler {
                 metaDataHelper.setComponentTransactionData(cdr, cm, elt.getAttribute(Constants.VALUE), elt
                         .getAttribute(Constants.METHOD));
             }
+            
+            ComponentMetadata meta = cdr.getComponentDefinition("blueprintBundle");
+            Bundle blueprintBundle = null;
+            if (meta instanceof PassThroughMetadata) {
+                blueprintBundle = (Bundle) ((PassThroughMetadata) meta).getObject();
+            }
+
+            registered.put(cdr, blueprintBundle);
         }
         
         if (LOGGER.isDebugEnabled())
@@ -167,36 +176,29 @@ public class TxElementHandler implements NamespaceHandler {
         }
     }
     
-    private void registerComponentsWithInterceptor(ComponentDefinitionRegistry cdr, String bean) {
-        ComponentMetadata meta = cdr.getComponentDefinition("blueprintBundle");
-        Bundle blueprintBundle = null;
-        if (meta instanceof PassThroughMetadata) {
-            blueprintBundle = (Bundle) ((PassThroughMetadata) meta).getObject();
-        }
-        
-        // if it is already registered all components in the component definition registry, do nothing
-        if (registered.putIfAbsent(cdr, blueprintBundle) == null) {
-            Set<String> ids = cdr.getComponentDefinitionNames();
-            
-            if (bean == null || bean.isEmpty()) {
-                // in this case, let's attempt to register all components
-                // if the component has already been registered with this interceptor,
-                // the registration will be ignored.
-                for (String id : ids) {
-                    ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
-                    cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
-                }
-            } else {
-                // register the beans specified
-                Pattern p = Pattern.compile(bean);
-                for (String id : ids) {
-                    Matcher m = p.matcher(id);
-                    if (m.matches()) {
-                        ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
-                        cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
-                    }
-                }
+    private void registerComponentsWithInterceptor(ComponentDefinitionRegistry cdr, String bean) {        
+        Set<String> ids = cdr.getComponentDefinitionNames();
+
+        if (bean == null || bean.isEmpty()) {
+            // in this case, let's attempt to register all components
+            // if the component has already been registered with this interceptor,
+            // the registration will be ignored.
+            for (String id : ids) {
+                ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
+                cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
             }
-        }        
+        } else {
+            //create a dummy bundle wide tx data, so we can get the bean patterns from it
+            BundleWideTxData data = new BundleWideTxData(null, "*", bean);
+            for (Pattern p : data.getBean()) {
+              for (String id : ids) {
+                  Matcher m = p.matcher(id);
+                  if (m.matches()) {
+                      ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
+                      cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
+                  }
+              }
+            }
+        }
     }
 }
