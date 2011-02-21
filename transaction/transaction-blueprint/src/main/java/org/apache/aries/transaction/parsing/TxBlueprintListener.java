@@ -18,7 +18,6 @@
  */
 package org.apache.aries.transaction.parsing;
 
-import org.apache.aries.transaction.TxComponentMetaDataHelper;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.BlueprintListener;
 
@@ -29,11 +28,9 @@ import org.osgi.service.blueprint.container.BlueprintListener;
 public class TxBlueprintListener implements BlueprintListener {
     
     private final TxElementHandler handler;
-    private final TxComponentMetaDataHelper helper;
     
-    public TxBlueprintListener(TxElementHandler handler, TxComponentMetaDataHelper helper) {
+    public TxBlueprintListener(TxElementHandler handler) {
         this.handler = handler;
-        this.helper = helper;
     }
     
     public void blueprintEvent(BlueprintEvent event) {
