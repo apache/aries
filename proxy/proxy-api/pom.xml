@@ -26,7 +26,7 @@
 
     <artifactId>org.apache.aries.proxy.api</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries Proxy</name>
+    <name>Apache Aries Proxy API</name>
     <description>
         This bundle contains the Apache Aries Proxy service API.
     </description>
