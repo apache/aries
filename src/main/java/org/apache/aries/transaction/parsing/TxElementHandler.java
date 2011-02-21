@@ -68,32 +68,34 @@ public class TxElementHandler implements NamespaceHandler {
                 LOGGER.debug("parser adding interceptor for " + elt);
 
             ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
-            
-            if (cm == null) {
-                // if the enclosing component is null, then we assume this is the top element                 
-                
-                String bean = elt.getAttribute(Constants.BEAN);
-                registerComponentsWithInterceptor(cdr, bean);
-
-                metaDataHelper.populateBundleWideTransactionData(pc.getComponentDefinitionRegistry(), 
-                        elt.getAttribute(Constants.VALUE), elt.getAttribute(Constants.METHOD), bean);
-            } else {
-                cdr.registerInterceptorWithComponent(cm, interceptor);
-                if (LOGGER.isDebugEnabled())
-                    LOGGER.debug("parser setting comp trans data for " + elt.getAttribute(Constants.VALUE) + "  "
-                            + elt.getAttribute(Constants.METHOD));
-    
-                metaDataHelper.setComponentTransactionData(cdr, cm, elt.getAttribute(Constants.VALUE), elt
-                        .getAttribute(Constants.METHOD));
-            }
-            
             ComponentMetadata meta = cdr.getComponentDefinition("blueprintBundle");
             Bundle blueprintBundle = null;
             if (meta instanceof PassThroughMetadata) {
                 blueprintBundle = (Bundle) ((PassThroughMetadata) meta).getObject();
             }
 
-            registered.put(cdr, blueprintBundle);
+            // don't register components if we have no bundle (= dry parse)
+            if (blueprintBundle != null) {
+              registered.put(cdr, blueprintBundle);
+              
+              if (cm == null) {
+                  // if the enclosing component is null, then we assume this is the top element                 
+                  
+                  String bean = elt.getAttribute(Constants.BEAN);
+                  registerComponentsWithInterceptor(cdr, bean);
+  
+                  metaDataHelper.populateBundleWideTransactionData(pc.getComponentDefinitionRegistry(), 
+                          elt.getAttribute(Constants.VALUE), elt.getAttribute(Constants.METHOD), bean);
+              } else {
+                  cdr.registerInterceptorWithComponent(cm, interceptor);
+                  if (LOGGER.isDebugEnabled())
+                      LOGGER.debug("parser setting comp trans data for " + elt.getAttribute(Constants.VALUE) + "  "
+                              + elt.getAttribute(Constants.METHOD));
+      
+                  metaDataHelper.setComponentTransactionData(cdr, cm, elt.getAttribute(Constants.VALUE), elt
+                          .getAttribute(Constants.METHOD));
+              }
+            }
         }
         
         if (LOGGER.isDebugEnabled())
