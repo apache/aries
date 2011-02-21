@@ -26,7 +26,7 @@
 
     <artifactId>org.apache.aries.proxy.impl</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries Proxy Implementation</name>
+    <name>Apache Aries Proxy Service</name>
     <description>
         This bundle contains the proxy service implementation for Apache Aries
     </description>
