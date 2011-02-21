@@ -281,7 +281,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                 }
                             }
                         };
-                        timeoutFuture = executors.schedule(r, 10, TimeUnit.SECONDS);
+                        timeoutFuture = executors.schedule(r, timeout, TimeUnit.MILLISECONDS);
                         state = State.WaitForInitialReferences;
                         break;
                     case WaitForInitialReferences:
