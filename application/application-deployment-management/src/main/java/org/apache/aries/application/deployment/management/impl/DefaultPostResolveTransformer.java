@@ -1,5 +1,3 @@
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,17 +17,25 @@
  * under the License.
  */
 
-package org.apache.aries.application.noop.platform.repo.impl;
-import java.net.URI;
-import java.util.Collection;
+package org.apache.aries.application.deployment.management.impl;
 
-import org.apache.aries.application.management.spi.repository.PlatformRepository;
+import org.apache.aries.application.ApplicationMetadata;
+import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.management.spi.resolve.PostResolveTransformer;
+import org.apache.aries.application.modelling.DeployedBundles;
 
-public class DefaultPlatformRepository implements PlatformRepository
+
+
+public class DefaultPostResolveTransformer implements PostResolveTransformer
 {
-  public Collection<URI> getPlatformRepositoryURLs()
+
+  @Override
+  public DeployedBundles postResolveProcess(ApplicationMetadata appMetadata, DeployedBundles deployedBundles)
+      throws ResolverException
   {
-    return null;
+    
+    return deployedBundles;
   }
+  
 
 }

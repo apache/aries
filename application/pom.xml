@@ -18,9 +18,9 @@
 
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
+        <artifactId>java6-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
-        <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
+        <relativePath>../parent/default-parent/java6-parent/pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -249,8 +249,6 @@
         <module>application-bundle</module>
         <module>application-deployment-management</module>
         <module>application-modeller</module>
-        <module>application-noop-platform-repository</module>
-	    <module>application-noop-postresolve-process</module>
 	    <module>application-default-local-platform</module>
         <module>application-itest-twitter</module>
 		<module>application-twitter4j</module>

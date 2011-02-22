@@ -250,8 +250,6 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.platform.repo"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.postresolve.process"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.default.local.platform"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
         mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),

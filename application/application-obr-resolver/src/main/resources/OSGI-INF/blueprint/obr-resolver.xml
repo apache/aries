@@ -17,7 +17,8 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0">
 
     <bean id="obr-resolver" class="org.apache.aries.application.resolver.obr.OBRAriesResolver" scope="singleton">
         <argument>
@@ -28,7 +29,9 @@
         <property name="modellingHelper" ref="modellingHelper"/>
         
     </bean>
-    <reference id="platformRepository" interface="org.apache.aries.application.management.spi.repository.PlatformRepository"/>
+    <bean id="default-platform-repository" class="org.apache.aries.application.resolver.internal.DefaultPlatformRepository"/>
+    <reference id="platformRepository" interface="org.apache.aries.application.management.spi.repository.PlatformRepository" 
+               availability="optional" ext:default="default-platform-repository"/>
     <reference id="modellingManager" interface="org.apache.aries.application.modelling.ModellingManager"/>
     <reference id="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
     <service ref="obr-resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>

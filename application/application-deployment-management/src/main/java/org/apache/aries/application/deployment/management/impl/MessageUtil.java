@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.application.deployment.management.internal;
+package org.apache.aries.application.deployment.management.impl;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

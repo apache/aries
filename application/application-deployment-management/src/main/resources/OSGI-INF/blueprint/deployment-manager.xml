@@ -16,8 +16,9 @@
     limitations under the License.
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0">
   
   <bean id="deploymentManifestManager" class="org.apache.aries.application.deployment.management.impl.DeploymentManifestManagerImpl">
     <property name="resolver" ref="resolver"/>
@@ -28,12 +29,15 @@
     <property name="modellingHelper" ref="modellingHelper"/>
   </bean>
   
+  <bean id="default-postresolve-transformer" class="org.apache.aries.application.deployment.management.impl.DefaultPostResolveTransformer"/>
+
   <reference id="modellingManager" interface="org.apache.aries.application.modelling.ModellingManager"/>
   <reference id="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
   <reference id="modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
   <reference id="localPlatform" interface="org.apache.aries.application.management.spi.runtime.LocalPlatform"/>
   <reference id="resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>
-  <reference id="postResolveTransformer" interface="org.apache.aries.application.management.spi.resolve.PostResolveTransformer"/>
+  <reference id="postResolveTransformer" interface="org.apache.aries.application.management.spi.resolve.PostResolveTransformer"
+               availability="optional" ext:default="default-postresolve-transformer"/>
   
   <service id ="deploymentManifestManager-Service" ref="deploymentManifestManager" interface="org.apache.aries.application.management.spi.resolve.DeploymentManifestManager"/>
     
