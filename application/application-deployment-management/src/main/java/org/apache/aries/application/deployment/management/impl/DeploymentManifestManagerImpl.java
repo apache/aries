@@ -44,7 +44,6 @@ import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.ServiceDeclaration;
-import org.apache.aries.application.deployment.management.internal.MessageUtil;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
