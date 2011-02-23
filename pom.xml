@@ -25,14 +25,11 @@
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.aries.proxy</groupId>
-    <artifactId>proxy</artifactId>
-    <name>Apache Aries Class Proxy</name>
-    <version>0.4-SNAPSHOT</version>
+    <artifactId>proxy-group</artifactId>
     <packaging>pom</packaging>
 
     <description>
-       A common proxy class generation service that can be used by blueprint and jndi and others.
+      A group pom for all the proxy modules. Note - this is a reactor pom, it is not the proxy-parent. 
     </description>
 
     <scm>

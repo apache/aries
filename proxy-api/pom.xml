@@ -27,16 +27,10 @@
     <artifactId>org.apache.aries.proxy.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy</name>
-    <version>FRED-SNAPSHOT</version>
+    <version>0.3</version>
     <description>
         This bundle contains the Apache Aries Proxy service API.
     </description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-api</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-api</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-api</url>
-   </scm>
 
     <properties>
         <aries.osgi.export.pkg>
