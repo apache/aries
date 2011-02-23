@@ -185,16 +185,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.noop.platform.repo</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.noop.postresolve.process</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
              <groupId>org.apache.aries.application</groupId>
              <artifactId>org.apache.aries.application.default.local.platform</artifactId>
              <scope>test</scope>
