@@ -26,7 +26,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.proxy</groupId>
-    <artifactId>proxy</artifactId>
+    <artifactId>proxy-parent</artifactId>
     <name>Apache Aries Class Proxy</name>
     <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -41,13 +41,66 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/proxy</url>
     </scm>
     
-    <modules>
-      <module>proxy-parent</module>
-      <module>proxy-api</module>
-      <module>proxy-impl</module>
-      <module>proxy-bundle</module>
-      <module>proxy-itests</module>
-    </modules>
+    <dependencyManagement>
+        <dependencies>
+            <!-- internal dependencies -->
+             <dependency>
+                <groupId>org.apache.aries.proxy</groupId>
+                <artifactId>org.apache.aries.proxy</artifactId>
+            	<version>0.4-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+            	<groupId>org.apache.aries.proxy</groupId>
+            	<artifactId>org.apache.aries.proxy.api</artifactId>
+            	<version>0.3</version>
+            </dependency>
+            <dependency>
+            	<groupId>org.apache.aries.proxy</groupId>
+            	<artifactId>org.apache.aries.proxy.impl</artifactId>
+            	<version>0.4-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+            	<groupId>org.apache.aries.proxy</groupId>
+            	<artifactId>org.apache.aries.proxy.itests</artifactId>
+            	<version>0.4-SNAPSHOT</version> 
+            </dependency>
+            <!-- dependencies on other aries modules -->
+            <dependency>
+            	<groupId>org.apache.aries</groupId>
+            	<artifactId>org.apache.aries.util</artifactId>
+            	<version>0.3</version>
+            </dependency>
+            <!-- external dependencies -->
+            <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm-all</artifactId>
+                <version>3.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.configadmin</artifactId>
+                <version>1.2.4</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.osgi.core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.osgi.compendium</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <pluginManagement>
@@ -66,6 +119,5 @@
             </plugins>
         </pluginManagement>
     </build>
-
 </project>
 

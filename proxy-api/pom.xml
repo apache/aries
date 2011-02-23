@@ -20,17 +20,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries.proxy</groupId>
-        <artifactId>proxy</artifactId>
+        <artifactId>proxy-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.proxy.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy</name>
-    <version>0.3</version>
+    <version>FRED-SNAPSHOT</version>
     <description>
         This bundle contains the Apache Aries Proxy service API.
     </description>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-api</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-api</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-api</url>
+   </scm>
 
     <properties>
         <aries.osgi.export.pkg>
@@ -41,6 +47,7 @@
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
         </aries.osgi.private.pkg>
+        <Implementation-Version>4.4.4</Implementation-Version>
     </properties>
 
     <dependencies>
