@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries.proxy</groupId>
-        <artifactId>proxy</artifactId>
+        <artifactId>proxy-parent</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
