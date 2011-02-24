@@ -45,6 +45,7 @@
     </properties>
 
     <dependencies>
+    <!-- There should be no dependency version in this pom, all versions are in the module parent or default parent -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>

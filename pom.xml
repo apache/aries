@@ -25,8 +25,9 @@
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>proxy-group</artifactId>
-    <name>Apache Aries Proxy Group</name>
+    <artifactId>proxy-module</artifactId>
+    <version>0.4-SNAPSHOT</version>
+    <name>Apache Aries Proxy Module</name>
     <packaging>pom</packaging>
 
     <description>
@@ -34,12 +35,13 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/proxy-module-0.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/proxy-module-0.3</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/proxy-module-0.3</url>
     </scm>
     
     <modules>
+    <!--Must be in dependency order (maven 2?) -->
       <module>proxy-parent</module>
       <module>proxy-api</module>
       <module>proxy-impl</module>

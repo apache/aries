@@ -32,6 +32,20 @@
     </description>
 
     <dependencies>
+    <!-- Internal module dependencies -->
+        <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy</artifactId>
+            <version>0.4-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+    <!-- Dependencies on other aries modules, versions specified in module parent -->
+        <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <scope>test</scope>
+        </dependency>
+    <!-- External dependencies, versions specified in module parent or default-parent -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -46,16 +60,6 @@
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries</groupId>
-            <artifactId>org.apache.aries.util</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>

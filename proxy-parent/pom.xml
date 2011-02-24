@@ -37,27 +37,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- internal dependencies -->
-             <dependency>
-                <groupId>org.apache.aries.proxy</groupId>
-                <artifactId>org.apache.aries.proxy</artifactId>
-            	<version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.apache.aries.proxy</groupId>
-            	<artifactId>org.apache.aries.proxy.api</artifactId>
-            	<version>0.3</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.apache.aries.proxy</groupId>
-            	<artifactId>org.apache.aries.proxy.impl</artifactId>
-            	<version>0.5-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.apache.aries.proxy</groupId>
-            	<artifactId>org.apache.aries.proxy.itests</artifactId>
-            	<version>0.4-SNAPSHOT</version> 
-            </dependency>
             <!-- dependencies on other aries modules -->
             <dependency>
             	<groupId>org.apache.aries</groupId>
@@ -87,7 +66,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
+<!--
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -95,6 +74,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+    -->
 </project>
 
