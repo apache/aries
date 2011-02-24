@@ -39,6 +39,7 @@ import org.apache.aries.application.management.AriesApplicationContext.Applicati
 import org.apache.aries.application.management.spi.framework.BundleFrameworkManager;
 import org.apache.aries.application.management.spi.repository.BundleRepositoryManager;
 import org.apache.aries.application.management.spi.runtime.AriesApplicationContextManager;
+import org.apache.aries.application.utils.AppConstants;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,13 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     LOGGER.debug(LOG_ENTRY, "ApplicationContextImpl");
     
     _appToContextMap = new ConcurrentHashMap<AriesApplication, AriesApplicationContext>();
+    
+    // When doing isolated runtime support provisioning against the local repo is a really bad idea
+    // it can result in trying to install things into the shared framework into the local framework
+    // this doesn't work because we don't know how to install them into the shared framework and
+    // we can't just use them because they are in the local framework, so if this class is constructed
+    // we disable local provisioning.
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     
     LOGGER.debug(LOG_EXIT, "ApplicationContextImpl", this);
   }
