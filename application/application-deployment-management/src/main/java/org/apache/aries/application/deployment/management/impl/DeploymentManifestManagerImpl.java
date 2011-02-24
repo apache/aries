@@ -51,6 +51,7 @@ import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.management.spi.resolve.DeploymentManifestManager;
 import org.apache.aries.application.management.spi.resolve.PostResolveTransformer;
+import org.apache.aries.application.management.spi.resolve.PreResolveHook;
 import org.apache.aries.application.management.spi.runtime.LocalPlatform;
 import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ExportedPackage;
@@ -84,6 +85,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
   private LocalPlatform localPlatform;
   private ModellingManager modellingManager;
   private ModellingHelper modellingHelper;
+  private List<PreResolveHook> preResolveHooks;
 
   public void setModellingManager (ModellingManager m) {
     modellingManager = m; 
@@ -101,6 +103,11 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
   public void setLocalPlatform(LocalPlatform localPlatform)
   {
     this.localPlatform = localPlatform;
+  }
+  
+  public void setPreResolveHooks(List<PreResolveHook> hooks)
+  {
+    preResolveHooks = hooks;
   }
 
   public ModelledResourceManager getModelledResourceManager()
@@ -201,6 +208,13 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     }
     byValueBundles.add(fakeBundleResource);
     
+    Collection<ModelledResource> fakeResources = new ArrayList<ModelledResource>();
+    for (PreResolveHook hook : preResolveHooks) {
+      hook.collectFakeResources(fakeResources);
+    }
+    
+    byValueBundles.addAll(fakeResources);
+    
     String appSymbolicName = appMetadata.getApplicationSymbolicName();
     String appVersion = appMetadata.getApplicationVersion().toString();
     String uniqueName = appSymbolicName + "_" + appVersion;
@@ -208,7 +222,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     DeployedBundles deployedBundles = modellingHelper.createDeployedBundles(appSymbolicName, appContentIB, useBundleIB, Arrays.asList(fakeBundleResource));
     Collection<ModelledResource> bundlesToBeProvisioned = resolver.resolve(
         appSymbolicName, appVersion, byValueBundles, bundlesToResolve);
-    pruneFakeBundleFromResults (bundlesToBeProvisioned);
+    pruneFakeBundlesFromResults (bundlesToBeProvisioned, fakeResources);
 
     if (bundlesToBeProvisioned.isEmpty()) {
       throw new ResolverException(MessageUtil.getMessage("EMPTY_DEPLOYMENT_CONTENT",uniqueName));
@@ -228,7 +242,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       bundlesToResolve.addAll(toContent(slimmedDownUseBundle));
       bundlesToBeProvisioned = resolver.resolve(appSymbolicName, appVersion,
           byValueBundles, bundlesToResolve);
-       pruneFakeBundleFromResults (bundlesToBeProvisioned);
+       pruneFakeBundlesFromResults (bundlesToBeProvisioned, fakeResources);
       for (ModelledResource rbm : bundlesToBeProvisioned)
       {
         deployedBundles.addBundle(rbm);
@@ -472,15 +486,21 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     return fakeBundle;
   }
 
-  private void pruneFakeBundleFromResults (Collection<ModelledResource> results) { 
+  private void pruneFakeBundlesFromResults (Collection<ModelledResource> results, Collection<ModelledResource> fakeResources) { 
     _logger.debug(LOG_ENTRY, "pruneFakeBundleFromResults", new Object[]{results});
-    boolean fakeBundleRemoved = false;
+    
+    List<String> fakeBundles = new ArrayList<String>();
+    
+    fakeBundles.add(FAKE_BUNDLE_NAME);
+    for (ModelledResource resource : fakeResources) {
+      fakeBundles.add(resource.getSymbolicName());
+    }
+    
     Iterator<ModelledResource> it = results.iterator();
-    while (!fakeBundleRemoved && it.hasNext()) { 
+    while (it.hasNext()) { 
       ModelledResource mr = it.next();
-      if (mr.getExportedBundle().getSymbolicName().equals(FAKE_BUNDLE_NAME)) { 
+      if (fakeBundles.contains(mr.getSymbolicName())) { 
         it.remove();
-        fakeBundleRemoved = true;
       }
     }
     _logger.debug(LOG_EXIT, "pruneFakeBundleFromResults");

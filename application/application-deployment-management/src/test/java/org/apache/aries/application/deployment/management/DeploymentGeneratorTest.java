@@ -45,6 +45,7 @@ import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
+import org.apache.aries.application.management.spi.resolve.PreResolveHook;
 import org.apache.aries.application.management.spi.runtime.LocalPlatform;
 import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ExportedPackage;
@@ -192,6 +193,7 @@ public class DeploymentGeneratorTest
     deplMFMgr.setLocalPlatform(localPlatform);
     deplMFMgr.setModellingManager(modellingManager);
     deplMFMgr.setModellingHelper(modellingHelper);
+    deplMFMgr.setPreResolveHooks(new ArrayList<PreResolveHook>());
   }
   
   private static ExportedPackage CAPABILITY_A;

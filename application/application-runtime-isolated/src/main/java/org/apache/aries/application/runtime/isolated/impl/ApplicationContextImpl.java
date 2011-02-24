@@ -77,9 +77,10 @@ public class ApplicationContextImpl implements AriesApplicationContext
     _deploymentMF = _application.getDeploymentMetadata();
 
     if (_deploymentMF.getApplicationDeploymentContents() != null
-        && !_deploymentMF.getApplicationDeploymentContents().isEmpty())
+        && !_deploymentMF.getApplicationDeploymentContents().isEmpty()) {
       install();
-
+    }
+    
     LOGGER.debug(LOG_EXIT, "ApplicationContextImpl", this);
   }
 
