@@ -25,10 +25,19 @@
       <property name="bundleContext" ref="blueprintBundleContext"/>
       <property name="updateStrategies" ref="strategies" />
   </bean>
+  
+  <bean id="pre-resolve-hook" class="org.apache.aries.application.runtime.framework.management.SharedFrameworkPreResolveHook">
+      <property name="bundleFrameworkManager" ref="equinox-bundle-framework-manager"/>
+      <property name="modellingManager" ref="modelling-manager"/>
+  </bean>
 
   <service interface="org.apache.aries.application.management.spi.framework.BundleFrameworkManager"
             ref="equinox-bundle-framework-manager"
             ranking="-1"/>
+         
+  <service interface="org.apache.aries.application.management.spi.resolve.PreResolveHook" ref="pre-resolve-hook"/>
+            
+  <reference id="modelling-manager" interface="org.apache.aries.application.modelling.ModellingManager"/>          
             
   <reference id="bundle-framework-factory" interface="org.apache.aries.application.management.spi.framework.BundleFrameworkFactory"/>
   

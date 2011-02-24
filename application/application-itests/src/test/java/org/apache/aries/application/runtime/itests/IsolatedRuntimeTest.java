@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNull;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.repository;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,7 +38,6 @@ import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.runtime.itests.util.IsolationTestUtils;
-import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.isolated.sample.HelloWorld;
@@ -66,6 +67,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
       .jar("sample.jar")
         .manifest().symbolicName("org.apache.aries.isolated.sample")
           .attribute("Bundle-Version", "1.0.0")
+          .attribute("Import-Package", "org.osgi.service.blueprint")
           .end()
         .binary("org/apache/aries/isolated/sample/HelloWorld.class", 
             IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorld.class"))
@@ -152,6 +154,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   
   @Test
   public void testUninstallReinstall() throws Exception {
+    
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
     AriesApplicationContext ctx = manager.install(app);
@@ -228,6 +231,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
     Option[] options = options(
+        repository( "http://repository.ops4j.org/maven2" ),
         // Log
         mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
         mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
@@ -241,7 +245,6 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
         // do not provision against the local runtime
-        systemProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP).value("true"),
         // Bundles
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("asm", "asm-all"),
@@ -268,7 +271,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         /*
          * vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5011"),
         waitForFrameworkStartup(),*/
-
+//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5011"),
         /*
          * and add these imports:
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;

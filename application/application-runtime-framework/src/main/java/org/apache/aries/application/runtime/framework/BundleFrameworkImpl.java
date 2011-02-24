@@ -60,14 +60,14 @@ public class BundleFrameworkImpl implements BundleFramework
   @Override
   public void start() throws BundleException
   {
-        _compositeBundle.start(Bundle.START_ACTIVATION_POLICY);
-  if ( _packageAdminTracker == null)
-  {
+    _compositeBundle.getCompositeFramework().init();
+    _compositeBundle.start(Bundle.START_ACTIVATION_POLICY);
+    if ( _packageAdminTracker == null)
+    {
       _packageAdminTracker = new ServiceTracker(_compositeBundle.getCompositeFramework().getBundleContext(),
           PackageAdmin.class.getName(), null);
       _packageAdminTracker.open();
-  }
-    
+    }
   }
   
   @Override
@@ -95,7 +95,12 @@ public class BundleFrameworkImpl implements BundleFramework
       }
     }
 
-    _compositeBundle.stop();
+    // We used to call stop before uninstall but this seems to cause NPEs in equinox. It isn't
+    // all the time, but I put in a change to resolution and it started NPEing all the time. This
+    // was because stop caused everything to go back to the RESOLVED state, so equinox inited the
+    // framework during uninstall and then tried to get the surrogate bundle, but init did not
+    // create a surroage, so we got an NPE. I removed the stop and added this comment in the hope
+    // that the stop doesn't get added back in. 
     _compositeBundle.uninstall();
   }
 
