@@ -31,6 +31,13 @@
     <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <scm>
+       <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-parent</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-parent</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy-parent</url>
+     </scm>
+
+
     <description>
        A common proxy class generation service that can be used by blueprint and jndi and others.
     </description>
