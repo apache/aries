@@ -27,6 +27,7 @@
     <property name="localPlatform" ref="localPlatform"/>
     <property name="modellingManager" ref="modellingManager"/>
     <property name="modellingHelper" ref="modellingHelper"/>
+    <property name="preResolveHooks" ref="preResolveHook"/>
   </bean>
   
   <bean id="default-postresolve-transformer" class="org.apache.aries.application.deployment.management.impl.DefaultPostResolveTransformer"/>
@@ -38,7 +39,7 @@
   <reference id="resolver" interface="org.apache.aries.application.management.spi.resolve.AriesApplicationResolver"/>
   <reference id="postResolveTransformer" interface="org.apache.aries.application.management.spi.resolve.PostResolveTransformer"
                availability="optional" ext:default="default-postresolve-transformer"/>
-  
+  <reference-list id="preResolveHook" availability="optional" interface="org.apache.aries.application.management.spi.resolve.PreResolveHook"/>
   <service id ="deploymentManifestManager-Service" ref="deploymentManifestManager" interface="org.apache.aries.application.management.spi.resolve.DeploymentManifestManager"/>
     
 </blueprint>
