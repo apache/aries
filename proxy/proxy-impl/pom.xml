@@ -33,7 +33,7 @@
     </description>
 
     <properties>
-        <aries.osgi.export.pkg/>
+        <aries.osgi.export.pkg />
         <aries.osgi.activator>
             org.apache.aries.proxy.impl.ProxyManagerActivator
         </aries.osgi.activator>
@@ -48,6 +48,20 @@
     </properties>
 
     <dependencies>
+    <!-- Internal module dependencies -->
+        <dependency>
+        	<groupId>org.apache.aries.proxy</groupId>
+        	<artifactId>org.apache.aries.proxy.api</artifactId>
+            <version>0.3</version>
+        	<scope>compile</scope>
+        </dependency>
+    <!-- Dependencies on other aries modules, versions specified in module parent -->
+        <dependency>
+        	<groupId>org.apache.aries</groupId>
+        	<artifactId>org.apache.aries.util</artifactId>
+        	<scope>compile</scope>
+        </dependency>
+    <!-- External dependencies, versions specified in module parent or default-parent -->
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
@@ -81,16 +95,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries.proxy</groupId>
-        	<artifactId>org.apache.aries.proxy.api</artifactId>
-        	<scope>compile</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries</groupId>
-        	<artifactId>org.apache.aries.util</artifactId>
-        	<scope>compile</scope>
         </dependency>
     </dependencies>
 
