@@ -19,14 +19,23 @@
 
 package org.apache.aries.application.runtime.framework.management;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.jar.Attributes;
+
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.aries.application.Content;
+import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkConfiguration;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkConfigurationFactory;
@@ -111,7 +120,7 @@ public class SharedBundleFramework
 
     return sharedFramework;
   }
-
+  
   /**
    * Wrapper for the basic framework configuration
    * @author cwilkin
