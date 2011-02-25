@@ -29,6 +29,7 @@
 	<groupId>org.apache.aries.proxy</groupId>
 	<artifactId>proxy-distro</artifactId>
 	<name>Proxy distribution</name>
+    <version>0.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
     <modules>
