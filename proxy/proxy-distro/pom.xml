@@ -33,9 +33,9 @@
 	<packaging>pom</packaging>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-distro</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-distro</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy-distro</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-distro</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-distro</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy/proxy-distro</url>
     </scm>
 
 
