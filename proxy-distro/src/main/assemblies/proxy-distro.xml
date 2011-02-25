@@ -29,60 +29,32 @@
 
     <files>
       <file>
-        <source>../pom.xml</source>
-        <outputDirectory>source</outputDirectory>
-       </file>
-      </files>
+        <source>../NOTICE</source>
+        <outputDirectory>apache-aries-proxy-${project.version}</outputDirectory>
+      </file>
+      <file>
+        <source>../LICENSE</source>
+        <outputDirectory>apache-aries-proxy-${project.version}</outputDirectory>
+      </file>
+    </files>
 
      <fileSets>
       <fileSet> 
-        <directory>../proxy-api</directory>
-        <outputDirectory>proxy-module-source/proxy-api</outputDirectory>
+        <directory>..</directory>
+        <outputDirectory>apache-aries-proxy-${project.version}</outputDirectory>
         <excludes>
-          <exclude>**target/**</exclude>
+          <exclude>**/**target/**</exclude>
+          <exclude>**proxy-distro/**</exclude>
         </excludes>
         </fileSet>
-      <fileSet> 
-        <directory>../proxy-impl</directory>
-        <outputDirectory>proxy-module-source/proxy-impl</outputDirectory>
-        <excludes>
-          <exclude>**target/**</exclude>
-        </excludes>
-        </fileSet>
-      <fileSet> 
-        <directory>../proxy-bundle</directory>
-        <outputDirectory>proxy-module-source/proxy-bundle</outputDirectory>
-        <excludes>
-          <exclude>**target/**</exclude>
-        </excludes>
-        </fileSet>
-      <fileSet> 
-        <directory>../proxy-itests</directory>
-        <outputDirectory>proxy-module-source/proxy-itests</outputDirectory>
-        <excludes>
-          <exclude>**target/**</exclude>
-        </excludes>
-        </fileSet>
-      </fileSets>
+     </fileSets>
+      
     <moduleSets>
         <moduleSet>
-       <!--     <sources>
-              <fileSets>
-                  <fileSet>
-                     <excludes>
-                         <exclude>target/**</exclude> 
-                         <exclude>.*/**</exclude>
-                      </excludes>
-                   </fileSet>
-               </fileSets>
-               <outputDirectoryMapping>source/${module.artifactId}</outputDirectoryMapping>
-            </sources>
-            -->
             <binaries>
                   <includeDependencies>false</includeDependencies>
-                  <outputDirectory>proxy-module-binaries</outputDirectory>
+                  <outputDirectory>apache-aries-proxy-${project.version}/bundles</outputDirectory>
                   <unpack>false</unpack>
-
             </binaries>
         </moduleSet>
     </moduleSets>
