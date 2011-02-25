@@ -241,8 +241,6 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
       {
         for (Bundle bundle : framework.getBundles())
           framework.stop(bundle);
-        
-        framework.getFrameworkBundle().stop();
       }
       
       // Do not stop shared bundles
