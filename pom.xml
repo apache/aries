@@ -19,9 +19,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.proxy</groupId>
-        <artifactId>proxy-parent</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.3</version>
     </parent>
 
     <artifactId>org.apache.aries.proxy.itests</artifactId>
@@ -43,6 +43,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
         </dependency>
     <!-- External dependencies, versions specified in module parent or default-parent -->
@@ -93,6 +94,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
+            <version>1.2.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -113,6 +115,7 @@
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
+            <version>3.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
