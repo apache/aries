@@ -147,8 +147,6 @@ public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime" ),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils" ),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.default.local.platform"),
-                mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.platform.repo"),
-                mavenBundle("org.apache.aries.application", "org.apache.aries.application.noop.postresolve.process"),
                 mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
