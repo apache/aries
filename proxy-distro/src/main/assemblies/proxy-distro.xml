@@ -27,14 +27,15 @@
 
 	<includeBaseDirectory>false</includeBaseDirectory>
 
+    <!-- These two files are required to get the IANAL checks to pass. Maybe there is a better way? -->
     <files>
       <file>
         <source>../NOTICE</source>
-        <outputDirectory>apache-aries-proxy-${project.version}</outputDirectory>
+        <outputDirectory>META-INF</outputDirectory> 
       </file>
       <file>
         <source>../LICENSE</source>
-        <outputDirectory>apache-aries-proxy-${project.version}</outputDirectory>
+        <outputDirectory>META-INF</outputDirectory> 
       </file>
     </files>
 
