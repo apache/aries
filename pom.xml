@@ -32,6 +32,14 @@
         This bundle contains the Apache Aries Proxy Service.
     </description>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy-bundle</url>
+    </scm>
+
+         
+
     <properties>
         <aries.osgi.activator>
             org.apache.aries.proxy.impl.ProxyManagerActivator
