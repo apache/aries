@@ -33,9 +33,9 @@
     </description>
 
     <scm>
-       <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy</connection>
-       <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy</developerConnection>
-       <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy</url>
+       <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-api</connection>
+       <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-api</developerConnection>
+       <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy-api</url>
     </scm>
 
 
