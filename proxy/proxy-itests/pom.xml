@@ -31,6 +31,12 @@
         Integration tests using the standalone proxy-bundle.
     </description>
 
+    <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-itests</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-itests</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy-itests</url>
+    </scm>
+
     <dependencies>
     <!-- Internal module dependencies -->
         <dependency>
