@@ -26,29 +26,11 @@
     </parent>
 
 
-	<groupId>org.apache.aries.proxy.distro</groupId>
+	<groupId>org.apache.aries.proxy</groupId>
 	<artifactId>proxy-distro</artifactId>
 	<name>Proxy distribution</name>
 	<packaging>pom</packaging>
-    <!--
-	<dependencies>
-    	<dependency>
-			<groupId>org.apache.aries.proxy</groupId>
-			<artifactId>org.apache.aries.proxy.api</artifactId>
-            <version>0.3</version>
-		</dependency>
-    	<dependency>
-			<groupId>org.apache.aries.proxy</groupId>
-			<artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>0.3</version>
-		</dependency>
-    	<dependency>
-			<groupId>org.apache.aries.proxy</groupId>
-			<artifactId>org.apache.aries.proxy</artifactId>
-            <version>0.3</version>
-		</dependency>
-	</dependencies>
-    -->
+
     <modules>
         <module>../proxy-api</module>
         <module>../proxy-impl</module>

@@ -19,22 +19,54 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
 
-	<id>proxy-distro</id>
+	<id>distribution</id>
 
 	<formats>
 		<format>zip</format>
 	</formats>
+
 	<includeBaseDirectory>false</includeBaseDirectory>
-<!--
-	<dependencySets> 
-		<dependencySet>
-			<outputDirectory></outputDirectory>
-		</dependencySet> 
-	</dependencySets>
--->
+
+    <files>
+      <file>
+        <source>../pom.xml</source>
+        <outputDirectory>source</outputDirectory>
+       </file>
+      </files>
+
+     <fileSets>
+      <fileSet> 
+        <directory>../proxy-api</directory>
+        <outputDirectory>proxy-module-source/proxy-api</outputDirectory>
+        <excludes>
+          <exclude>**target/**</exclude>
+        </excludes>
+        </fileSet>
+      <fileSet> 
+        <directory>../proxy-impl</directory>
+        <outputDirectory>proxy-module-source/proxy-impl</outputDirectory>
+        <excludes>
+          <exclude>**target/**</exclude>
+        </excludes>
+        </fileSet>
+      <fileSet> 
+        <directory>../proxy-bundle</directory>
+        <outputDirectory>proxy-module-source/proxy-bundle</outputDirectory>
+        <excludes>
+          <exclude>**target/**</exclude>
+        </excludes>
+        </fileSet>
+      <fileSet> 
+        <directory>../proxy-itests</directory>
+        <outputDirectory>proxy-module-source/proxy-itests</outputDirectory>
+        <excludes>
+          <exclude>**target/**</exclude>
+        </excludes>
+        </fileSet>
+      </fileSets>
     <moduleSets>
         <moduleSet>
-            <sources>
+       <!--     <sources>
               <fileSets>
                   <fileSet>
                      <excludes>
@@ -45,12 +77,14 @@
                </fileSets>
                <outputDirectoryMapping>source/${module.artifactId}</outputDirectoryMapping>
             </sources>
+            -->
             <binaries>
                   <includeDependencies>false</includeDependencies>
-                  <outputDirectory>binaries</outputDirectory>
+                  <outputDirectory>proxy-module-binaries</outputDirectory>
                   <unpack>false</unpack>
 
             </binaries>
         </moduleSet>
     </moduleSets>
+    
 </assembly>
