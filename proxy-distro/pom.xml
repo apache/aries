@@ -32,6 +32,13 @@
     <version>0.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-distro</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy-distro</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy-distro</url>
+    </scm>
+
+
     <modules>
         <module>../proxy-api</module>
         <module>../proxy-impl</module>
