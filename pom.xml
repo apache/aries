@@ -25,17 +25,20 @@
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>proxy-module</artifactId>
+    <artifactId>proxy</artifactId>
     <version>0.4-SNAPSHOT</version>
-    <name>Apache Aries Proxy Module</name>
+    <name>Apache Aries Proxy</name>
     <packaging>pom</packaging>
 
     <description>
-      A group pom for all the proxy modules. Note - this is a reactor pom, it is not the proxy-parent. 
+      A parent pom for all the proxy modules. 
     </description>
+
+     <properties>
+        <proxy-api-version>0.3</proxy-api-version>
+     </properties>
+
     <modules>
-    <!--Must be in dependency order (maven 2?) -->
-      <module>proxy-parent</module>
       <module>proxy-api</module>
       <module>proxy-impl</module>
       <module>proxy-bundle</module>
