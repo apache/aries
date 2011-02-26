@@ -28,15 +28,15 @@
     <artifactId>org.apache.aries.proxy.impl</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Implementation</name>
-        <version>0.8</version>
+        <version>0.5</version>
     <description>
         This bundle contains the proxy service implementation for Apache Aries
     </description>
 
     <scm>
-       <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy-distro-0.8/proxy-impl</connection>
-       <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy-distro-0.8/proxy-impl</developerConnection>
-       <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.proxy-distro-0.8/proxy-impl</url>
+       <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-impl</connection>
+       <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-impl</developerConnection>
+       <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy/proxy-impl</url>
     </scm>
 
 
@@ -60,7 +60,7 @@
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
-            <version>0.8</version>
+            <version>0.3</version>
         	<scope>compile</scope>
         </dependency>
     <!-- Dependencies on other aries modules, versions specified in module parent -->
