@@ -25,7 +25,17 @@
 
 	<includeBaseDirectory>false</includeBaseDirectory>
 
+    <dependencySets>
+      <dependencySet>
+      <includes>
+        <include>org.apache.aries.proxy*</include>
+      </includes>
+      <outputDirectory>apache-aries-proxy-${project.version}/bundles</outputDirectory>
+      </dependencySet>
+    </dependencySets>
+
     <!-- These two files are required to get the IANAL checks to pass. Maybe there is a better way? -->
+    <!--
     <files>
       <file>
         <source>../NOTICE</source>
@@ -57,5 +67,5 @@
             </binaries>
         </moduleSet>
     </moduleSets>
-    
+-->    
 </assembly>
