@@ -23,7 +23,8 @@
          <artifactId>java5-parent</artifactId>
          <version>0.3</version>
      </parent>
-
+    
+    <groupId>org.apache.aries.proxy</groupId>
     <artifactId>org.apache.aries.proxy.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy API</name>

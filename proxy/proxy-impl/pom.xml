@@ -24,10 +24,11 @@
         <version>0.3</version>
     </parent>
 
+    <groupId>org.apache.aries.proxy</groupId>
     <artifactId>org.apache.aries.proxy.impl</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Implementation</name>
-        <version>0.5</version>
+        <version>0.5-SNAPSHOT</version>
     <description>
         This bundle contains the proxy service implementation for Apache Aries
     </description>

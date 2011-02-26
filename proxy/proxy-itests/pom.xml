@@ -24,12 +24,13 @@
         <version>0.3</version>
     </parent>
 
+    <groupId>org.apache.aries.proxy</groupId>
     <artifactId>org.apache.aries.proxy.itests</artifactId>
-    
     <name>Apache Aries Proxy iTests</name>
     <description>
         Integration tests using the standalone proxy-bundle.
     </description>
+    <version>0.4-SNAPSHOT</version>
 
     <scm>
          <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-itests</connection>
