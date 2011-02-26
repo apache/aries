@@ -38,30 +38,13 @@
     </scm>
 
 
-    <dependencies>
-       <dependency>
-            <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy.api</artifactId>
-            <version>0.3</version>
-        </dependency>
-       <dependency>
-            <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>0.5</version>
-        </dependency>
-       <dependency>
-            <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy</artifactId>
-            <version>0.4</version>
-        </dependency>
-       <dependency>
-            <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy.itests</artifactId>
-            <version>0.4</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>../proxy-api</module>
+        <module>../proxy-impl</module>
+        <module>../proxy-bundle</module> 
+    </modules>
 
-    <build>
+	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
