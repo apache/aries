@@ -28,15 +28,15 @@
     <artifactId>org.apache.aries.proxy.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy API</name>
-    <version>0.3</version>
+    <version>0.8</version>
     <description>
         This bundle contains the Apache Aries Proxy service API.
     </description>
 
     <scm>
-       <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-api</connection>
-       <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-api</developerConnection>
-       <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy/proxy-api</url>
+       <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy-distro-0.8/proxy-api</connection>
+       <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy-distro-0.8/proxy-api</developerConnection>
+       <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.proxy-distro-0.8/proxy-api</url>
     </scm>
 
 
