@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * TODO: javadoc
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 1002318 $, $Date: 2010-09-28 19:47:49 +0100 (Tue, 28 Sep 2010) $
  */
 public class CmPropertyPlaceholder extends PropertyPlaceholder implements ManagedObject {
 

@@ -59,7 +59,7 @@ import org.osgi.framework.Bundle;
  * @see BlueprintListener
  * @see EventConstants
  * @Immutable
- * @version $Revision$
+ * @version $Revision: 1031344 $
  */
 public class BlueprintEvent {
 

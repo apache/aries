@@ -23,7 +23,7 @@ package org.osgi.service.blueprint.reflect;
  * This is specified by the <code>reference</code> element.
  * 
  * @ThreadSafe
- * @version $Revision$
+ * @version $Revision: 792499 $
  */
 public interface ReferenceMetadata extends Target, ServiceReferenceMetadata {
 
