@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @version $Rev$ $Date$
+ * @version $Rev: 964138 $ $Date: 2010-07-14 20:03:40 +0100 (Wed, 14 Jul 2010) $
  */
 public class OBRBundleInfo implements BundleInfo
 {

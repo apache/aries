@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @version $Rev$ $Date$
+ * @version $Rev: 911397 $ $Date: 2010-02-18 13:41:27 +0000 (Thu, 18 Feb 2010) $
  */
 public class MapToDictionary extends Dictionary
 {
