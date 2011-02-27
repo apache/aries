@@ -28,7 +28,7 @@
 	<groupId>org.apache.aries.proxy</groupId>
 	<artifactId>org.apache.aries.proxy-distro</artifactId>
 	<name>Proxy distribution</name>
-    <version>0.8</version>
+    <version>0.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
     <scm>
@@ -38,14 +38,50 @@
     </scm>
 
 
-    <modules>
-        <module>../proxy-api</module>
-        <module>../proxy-impl</module>
-        <module>../proxy-bundle</module> 
-    </modules>
+    <dependencies>
+       <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.api</artifactId>
+            <version>0.3</version>
+        </dependency>
+       <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.impl</artifactId>
+            <version>0.5</version>
+        </dependency>
+       <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy</artifactId>
+            <version>0.4</version>
+        </dependency>
+       <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.itests</artifactId>
+            <version>0.4</version>
+        </dependency>
+    </dependencies>
 
-	<build>
+    <build>
 		<plugins>
+         <plugin>
+           <artifactId>maven-antrun-plugin</artifactId>
+             <executions>
+                <execution>
+                  <phase>package</phase>
+                  <configuration>
+                  <tasks>
+                  <!--
+                     <copy file="src/main/resources/proxy-module-source.zip" tofile="src/main/resources/flibble.zip"/>
+                     -->
+                     <unzip src="src/main/resources/proxy-module-source.zip" dest="src/main/resources/source" />
+                  </tasks>
+                  </configuration>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+               </execution>
+            </executions>
+      </plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2-beta-5</version>

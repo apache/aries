@@ -31,12 +31,8 @@
     <packaging>pom</packaging>
 
     <description>
-      A parent pom for all the proxy modules. 
+      A reactor pom for all the proxy modules. 
     </description>
-
-     <properties>
-        <proxy-api-version>0.3</proxy-api-version>
-     </properties>
 
     <modules>
       <module>proxy-api</module>
@@ -44,24 +40,60 @@
       <module>proxy-bundle</module>
       <module>proxy-itests</module>
     </modules>
+    
+    <!-- this is executed as part of the release pricess to assemple the submodule source -->
+    <profiles>
+      <profile>
+        <id>aries-module-source</id>
+         <build>
+		   <plugins>
+			 <plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-5</version>
+                <executions>
+                  <execution>
+                   <phase>package</phase>
+                     <goals>
+                      <goal>single</goal>
+                     </goals>
+				    <configuration>
+                     <finalName>${project.artifactId}-module-source</finalName>
+                     <outputDirectory>${project.artifactId}-distro/src/main/resources</outputDirectory>
+				     <descriptors>
+				       <descriptor>src/main/assemblies/source.xml</descriptor>
+					</descriptors>
+				   </configuration>
+                  </execution>
+                </executions>
+			</plugin>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.1</version>
-                    <configuration>
-                        <autoVersionSubmodules>false</autoVersionSubmodules>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <goals>deploy</goals>
-                        <arguments>-Papache-release -DskipTests=true</arguments>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-
+            <!--
+<plugin>
+<artifactId>maven-resources-plugin</artifactId>
+<version>2.4.3</version>
+<executions>
+  <execution>
+     <id>copy-resources</id>
+     <phase>package</phase>
+     <goals>
+        <goal>copy-resources</goal>
+     </goals>
+     <configuration>
+        <outputDirectory>${basedir}/target/extra-resources</outputDirectory>
+     <resources>          
+        <resource>
+            <directory>src/non-packaged-resources</directory>
+            <filtering>true</filtering>
+        </resource>
+     </resources>              
+     </configuration>            
+   </execution>
+</executions>
+</plugin>
+-->
+         </plugins>
+	   </build>
+      </profile>
+    </profiles>
 </project>
 

@@ -22,17 +22,7 @@
 	<formats>
 		<format>zip</format>
 	</formats>
-
 	<includeBaseDirectory>false</includeBaseDirectory>
-
-    <dependencySets>
-      <dependencySet>
-      <includes>
-        <include>org.apache.aries.proxy*</include>
-      </includes>
-      <outputDirectory>apache-aries-proxy-${project.version}/bundles</outputDirectory>
-      </dependencySet>
-    </dependencySets>
 
     <!-- These two files are required to get the IANAL checks to pass. Maybe there is a better way? -->
     <files>
@@ -44,17 +34,15 @@
         <source>LICENSE</source>
         <outputDirectory>META-INF</outputDirectory> 
       </file>
-      <!--
-      <file>
-        <source>src/main/resources/proxy-module-source.zip</source>
-        <outputDirectory>apache-aries-proxy-${project.version}/source</outputDirectory> 
-      </file>
-      -->
     </files>
-    <fileSets>
-      <fileSet>
-        <directory>src/main/resources/source</directory>
-      <outputDirectory>apache-aries-proxy-${project.version}/</outputDirectory>
-      </fileSet>
+
+     <fileSets>
+      <fileSet> 
+        <outputDirectory></outputDirectory>
+        <excludes>
+          <exclude>**/**target/**</exclude>
+          <exclude>**proxy-distro/**</exclude>
+        </excludes>
+        </fileSet>
      </fileSets>
 </assembly>
