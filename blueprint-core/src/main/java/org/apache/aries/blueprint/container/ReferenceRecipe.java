@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * TODO: looks there is a potential problem if the service is unregistered between a call
  *        to ServiceDispatcher#loadObject() and when the actual invocation finish
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
  */
 public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 

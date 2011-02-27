@@ -31,7 +31,7 @@ import org.osgi.service.blueprint.reflect.PropsMetadata;
 /**
  * Implementation of PropsMetadata
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
  */
 public class PropsMetadataImpl implements MutablePropsMetadata {
 

@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * This is the blueprint extender that listens to blueprint bundles.  it implements the sync
  * bundle listener but it doesn't register the listener and uses the bundle tracker instead.
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 931474 $, $Date: 2010-04-07 10:20:32 +0100 (Wed, 07 Apr 2010) $
  */
 public class BlueprintExtender implements BundleActivator, SynchronousBundleListener {
 

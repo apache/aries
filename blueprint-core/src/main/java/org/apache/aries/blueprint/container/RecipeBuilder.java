@@ -66,7 +66,7 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 /**
  * TODO: javadoc
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 921845 $, $Date: 2010-03-11 13:45:28 +0000 (Thu, 11 Mar 2010) $
  */
 public class RecipeBuilder {
 

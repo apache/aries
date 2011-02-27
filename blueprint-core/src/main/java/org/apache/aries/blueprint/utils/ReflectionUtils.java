@@ -41,7 +41,7 @@ import java.util.WeakHashMap;
 /**
  * TODO: javadoc
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 910448 $, $Date: 2010-02-16 09:50:18 +0000 (Tue, 16 Feb 2010) $
  */
 public class ReflectionUtils {
 

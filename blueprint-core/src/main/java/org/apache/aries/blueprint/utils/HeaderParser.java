@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Utility class to parse a standard OSGi header with paths.
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 820286 $, $Date: 2009-09-30 15:45:55 +0100 (Wed, 30 Sep 2009) $
  */
 public class HeaderParser  {
 

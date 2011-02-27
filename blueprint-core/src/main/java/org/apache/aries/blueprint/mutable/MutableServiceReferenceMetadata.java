@@ -25,7 +25,7 @@ import org.osgi.service.blueprint.reflect.Target;
 /**
  * A mutable version of the <code>ServiceReferenceMetadata</code> that allows modifications.
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 900865 $, $Date: 2010-01-19 17:49:50 +0000 (Tue, 19 Jan 2010) $
  */
 public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenceMetadata, MutableComponentMetadata {
 

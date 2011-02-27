@@ -90,7 +90,7 @@ import org.xml.sax.InputSource;
 /**
  * TODO: javadoc
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 921632 $, $Date: 2010-03-10 23:41:41 +0000 (Wed, 10 Mar 2010) $
  */
 public class Parser {
 
