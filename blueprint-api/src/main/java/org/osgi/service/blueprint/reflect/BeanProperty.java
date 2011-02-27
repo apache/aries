@@ -23,7 +23,7 @@ package org.osgi.service.blueprint.reflect;
  * are defined according to the Java Beans conventions.
  * 
  * @ThreadSafe
- * @version $Revision$
+ * @version $Revision: 896324 $
  */
 public interface BeanProperty {
 

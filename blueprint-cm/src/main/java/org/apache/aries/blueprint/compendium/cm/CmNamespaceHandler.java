@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
  * @see CmProperties
  * @see CmPropertyPlaceholder
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
  */
 public class CmNamespaceHandler implements NamespaceHandler {
 

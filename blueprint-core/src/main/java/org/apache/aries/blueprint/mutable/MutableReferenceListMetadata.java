@@ -23,7 +23,7 @@ import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 /**
  * A mutable version of the <code>RefCollectionMetadata</code> that allows modifications.
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
  */
 public interface MutableReferenceListMetadata extends ExtendedReferenceListMetadata, MutableServiceReferenceMetadata {
 

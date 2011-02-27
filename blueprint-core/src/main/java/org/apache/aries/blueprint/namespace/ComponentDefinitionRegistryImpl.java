@@ -41,7 +41,7 @@ import org.osgi.service.blueprint.reflect.Target;
  * This implementation uses concurrent lists and maps to store components and converters metadata
  * to allow its use by concurrent threads. 
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 922829 $, $Date: 2010-03-14 12:34:19 +0000 (Sun, 14 Mar 2010) $
  */
 public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegistry {
 

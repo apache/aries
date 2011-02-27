@@ -24,7 +24,7 @@ import org.apache.aries.blueprint.mutable.MutablePassThroughMetadata;
 /**
  * A metadata for environment managers.
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
  */
 public class PassThroughMetadataImpl extends ComponentMetadataImpl implements MutablePassThroughMetadata {
 

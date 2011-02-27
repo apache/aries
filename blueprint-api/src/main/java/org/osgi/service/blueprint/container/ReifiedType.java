@@ -41,7 +41,7 @@ package org.osgi.service.blueprint.container;
  * optional type parameters as Reified Types.
  * 
  * @Immutable
- * @version $Revision$
+ * @version $Revision: 896324 $
  */
 public class ReifiedType {
 	private final static ReifiedType	OBJECT	= new ReifiedType(Object.class);

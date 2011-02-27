@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A <code>Recipe</code> to create POJOs.
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 978875 $, $Date: 2010-07-24 14:45:05 +0100 (Sat, 24 Jul 2010) $
  */
 public class BeanRecipe extends AbstractRecipe {
 
