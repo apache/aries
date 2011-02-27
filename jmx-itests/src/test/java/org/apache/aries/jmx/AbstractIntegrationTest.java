@@ -55,7 +55,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * 
  * 
  *
- * @version $Rev$ $Date$
+ * @version $Rev: 926162 $ $Date: 2010-03-22 16:28:46 +0000 (Mon, 22 Mar 2010) $
  */
 @RunWith(JUnit4TestRunner.class)
 public class AbstractIntegrationTest {

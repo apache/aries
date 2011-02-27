@@ -40,7 +40,7 @@ import org.osgi.jmx.framework.PackageStateMBean;
 /**
  * 
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 919658 $ $Date: 2010-03-05 22:41:40 +0000 (Fri, 05 Mar 2010) $
  */
 public class PackageStateMBeanTest extends AbstractIntegrationTest {
 

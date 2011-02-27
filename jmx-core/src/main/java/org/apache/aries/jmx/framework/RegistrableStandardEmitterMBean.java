@@ -33,7 +33,7 @@ import javax.management.StandardMBean;
  * issues surrounding the <code>MBeanRegistration</code> callback methods and <code>NotificationEmmitter</code> methods,
  * this subclass was introduced to force the delegation
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 896239 $ $Date: 2010-01-05 22:02:23 +0000 (Tue, 05 Jan 2010) $
  */
 public class RegistrableStandardEmitterMBean extends StandardMBean implements MBeanRegistration, NotificationEmitter {
 

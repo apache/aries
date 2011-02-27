@@ -56,7 +56,7 @@ import org.osgi.service.log.LogService;
  * Implementation of <code>ServiceStateMBean</code> which emits JMX <code>Notification</code> for framework
  * <code>ServiceEvent</code> events
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 931474 $ $Date: 2010-04-07 10:20:32 +0100 (Wed, 07 Apr 2010) $
  */
 public class ServiceState extends NotificationBroadcasterSupport implements ServiceStateMBean, MBeanRegistration {
 

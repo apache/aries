@@ -30,7 +30,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 /**
  * 
  *
- * @version $Rev$ $Date$
+ * @version $Rev: 897317 $ $Date: 2010-01-08 20:16:28 +0000 (Fri, 08 Jan 2010) $
  */
 public class ConfigurationAdminMBeanHandlerTest {
 

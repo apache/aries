@@ -32,7 +32,7 @@ import org.osgi.service.log.LogService;
  * 
  * @see MBeanHandler
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 897315 $ $Date: 2010-01-08 20:13:13 +0000 (Fri, 08 Jan 2010) $
  */
 public class ProvisioningServiceMBeanHandler extends AbstractCompendiumHandler {
 

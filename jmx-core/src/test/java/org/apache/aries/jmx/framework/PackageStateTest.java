@@ -39,7 +39,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  * {@link PackageStateMBean} test case.
  * 
  *
- * @version $Rev$ $Date$
+ * @version $Rev: 919624 $ $Date: 2010-03-05 21:22:07 +0000 (Fri, 05 Mar 2010) $
  */
 public class PackageStateTest {
     

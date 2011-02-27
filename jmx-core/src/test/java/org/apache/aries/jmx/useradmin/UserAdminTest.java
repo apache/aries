@@ -42,7 +42,7 @@ import org.osgi.service.useradmin.User;
 /**
  * UserAdminMBean test case.
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 920467 $ $Date: 2010-03-08 19:22:22 +0000 (Mon, 08 Mar 2010) $
  */
 public class UserAdminTest {
 

@@ -21,7 +21,7 @@ import java.util.Dictionary;
 /**
  * 
  *
- * @version $Rev$ $Date$
+ * @version $Rev: 898952 $ $Date: 2010-01-13 21:53:07 +0000 (Wed, 13 Jan 2010) $
  */
 @SuppressWarnings("unchecked")
 public interface InterfaceB {

@@ -43,7 +43,7 @@ import org.osgi.jmx.framework.ServiceStateMBean;
  * It is a codec for the <code>CompositeData</code> representing an OSGi ServiceEvent.
  * </p>
  *
- * @version $Rev$ $Date$
+ * @version $Rev: 896239 $ $Date: 2010-01-05 22:02:23 +0000 (Tue, 05 Jan 2010) $
  */
 public class ServiceEventData {
 

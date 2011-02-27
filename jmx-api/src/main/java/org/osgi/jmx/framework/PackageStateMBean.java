@@ -29,7 +29,7 @@ import org.osgi.jmx.JmxConstants;
 /**
  * This MBean provides information about the package state of the framework.
  * 
- * @version $Revision$
+ * @version $Revision: 919575 $
  * @ThreadSafe
  */
 public interface PackageStateMBean {

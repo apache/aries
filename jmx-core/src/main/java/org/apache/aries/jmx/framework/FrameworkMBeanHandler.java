@@ -35,7 +35,7 @@ import org.osgi.service.startlevel.StartLevel;
  * 
  * @see MBeanHandler
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 896239 $ $Date: 2010-01-05 22:02:23 +0000 (Tue, 05 Jan 2010) $
  */
 public class FrameworkMBeanHandler implements MBeanHandler {
 

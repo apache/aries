@@ -38,7 +38,7 @@ import org.osgi.service.startlevel.StartLevel;
  * </p>
  * @see FrameworkMBean
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 922890 $ $Date: 2010-03-14 16:46:39 +0000 (Sun, 14 Mar 2010) $
  */
 public class Framework implements FrameworkMBean {
 

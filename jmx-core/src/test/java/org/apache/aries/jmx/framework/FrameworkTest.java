@@ -41,7 +41,7 @@ import org.osgi.service.startlevel.StartLevel;
  * {@link FrameworkMBean} test case.
  * 
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 929337 $ $Date: 2010-03-31 00:10:23 +0100 (Wed, 31 Mar 2010) $
  */
 public class FrameworkTest {
 

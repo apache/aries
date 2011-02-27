@@ -37,7 +37,7 @@ import org.osgi.jmx.service.provisioning.ProvisioningServiceMBean;
 /**
  * Implementation of <code>ProvisioningServiceMBean</code> 
  *
- * @version $Rev$ $Date$
+ * @version $Rev: 922888 $ $Date: 2010-03-14 16:31:18 +0000 (Sun, 14 Mar 2010) $
  */
 public class ProvisioningService implements ProvisioningServiceMBean {
 

@@ -27,7 +27,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * 
  * @see org.osgi.service.log.LogService
  * @see org.osgi.util.tracker.ServiceTracker
- * @version $Rev$ $Date$
+ * @version $Rev: 920877 $ $Date: 2010-03-09 13:58:54 +0000 (Tue, 09 Mar 2010) $
  */
 public class Logger extends ServiceTracker implements LogService {
     

@@ -27,7 +27,7 @@ import org.osgi.service.permissionadmin.PermissionInfo;
  * </p>
  * @see PermissionAdminMBean
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 900529 $ $Date: 2010-01-18 20:09:13 +0000 (Mon, 18 Jan 2010) $
  */
 public class PermissionAdmin implements PermissionAdminMBean {
 

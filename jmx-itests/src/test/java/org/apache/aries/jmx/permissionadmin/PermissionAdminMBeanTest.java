@@ -43,7 +43,7 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 /**
  * 
  *
- * @version $Rev$ $Date$
+ * @version $Rev: 929346 $ $Date: 2010-03-31 01:23:36 +0100 (Wed, 31 Mar 2010) $
  */
 public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
     

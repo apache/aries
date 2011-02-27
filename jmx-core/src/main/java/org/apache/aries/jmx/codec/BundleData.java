@@ -82,7 +82,7 @@ import org.osgi.service.startlevel.StartLevel;
  * <code>CompositeData</code> representing an OSGi BundleData.
  * </p>
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 897313 $ $Date: 2010-01-08 20:07:12 +0000 (Fri, 08 Jan 2010) $
  */
 public class BundleData {
 

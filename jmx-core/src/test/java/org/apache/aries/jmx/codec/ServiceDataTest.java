@@ -40,7 +40,7 @@ import org.osgi.framework.ServiceReference;
 /**
  * 
  *
- * @version $Rev$ $Date$
+ * @version $Rev: 921523 $ $Date: 2010-03-10 19:29:59 +0000 (Wed, 10 Mar 2010) $
  */
 public class ServiceDataTest {
 

@@ -26,7 +26,7 @@ import org.osgi.service.log.LogService;
 /**
  * <p>Activator for JMX OSGi bundle.</p>
  * 
- * @version $Rev$ $Date$
+ * @version $Rev: 896239 $ $Date: 2010-01-05 22:02:23 +0000 (Tue, 05 Jan 2010) $
  */
 public class Activator implements BundleActivator {
 
