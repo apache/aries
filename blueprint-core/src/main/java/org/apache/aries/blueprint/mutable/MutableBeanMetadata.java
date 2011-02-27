@@ -27,7 +27,7 @@ import org.osgi.service.blueprint.reflect.Target;
 /**
  * A mutable version of the <code>BeanMetadata</code> that allows modifications.
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 910448 $, $Date: 2010-02-16 09:50:18 +0000 (Tue, 16 Feb 2010) $
  */
 public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableComponentMetadata {
 

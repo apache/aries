@@ -26,7 +26,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
 /**
- * @version $Rev$ $Date$
+ * @version $Rev: 820636 $ $Date: 2009-10-01 13:55:42 +0100 (Thu, 01 Oct 2009) $
  */
 public final class JavaUtils {
 

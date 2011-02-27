@@ -33,7 +33,7 @@ import org.osgi.service.blueprint.container.Converter;
 /**
  * TODO: javadoc
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 1002318 $, $Date: 2010-09-28 19:47:49 +0100 (Tue, 28 Sep 2010) $
  */
 public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
