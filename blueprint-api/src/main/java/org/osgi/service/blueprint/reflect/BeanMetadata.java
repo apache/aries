@@ -24,7 +24,7 @@ import java.util.List;
  * This is specified by the <code>bean</code> element.
  * 
  * @ThreadSafe
- * @version $Revision$
+ * @version $Revision: 792499 $
  */
 public interface BeanMetadata extends Target, ComponentMetadata {
 

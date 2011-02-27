@@ -23,7 +23,7 @@ package org.osgi.service.blueprint.container;
  * instance or lookup Component Metadata using a component id that does not
  * exist in the Blueprint Container.
  * 
- * @version $Revision$
+ * @version $Revision: 791585 $
  */
 public class NoSuchComponentException extends RuntimeException {
 	private static final long	serialVersionUID	= 1L;

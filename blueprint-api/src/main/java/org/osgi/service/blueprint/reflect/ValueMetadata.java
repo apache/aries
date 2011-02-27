@@ -20,7 +20,7 @@ package org.osgi.service.blueprint.reflect;
  * if necessary before injecting.
  * 
  * @ThreadSafe
- * @version $Revision$
+ * @version $Revision: 792499 $
  */
 public interface ValueMetadata extends NonNullMetadata {
 	/**

@@ -37,7 +37,7 @@ package org.osgi.service.blueprint.container;
  * 
  * @see BlueprintEvent
  * @ThreadSafe
- * @version $Revision$
+ * @version $Revision: 792499 $
  */
 public interface BlueprintListener {
 

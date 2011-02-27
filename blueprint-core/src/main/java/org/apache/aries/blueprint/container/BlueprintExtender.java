@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This is the blueprint extender that listens to blueprint bundles.  
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 982158 $, $Date: 2010-08-04 09:32:15 +0100 (Wed, 04 Aug 2010) $
  */
 public class BlueprintExtender implements BundleActivator, SynchronousBundleListener {
 

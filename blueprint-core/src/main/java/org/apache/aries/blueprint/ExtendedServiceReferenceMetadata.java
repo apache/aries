@@ -21,7 +21,7 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 /**
  * TODO: javadoc
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 950985 $, $Date: 2010-06-03 14:19:22 +0100 (Thu, 03 Jun 2010) $
  */
 public interface ExtendedServiceReferenceMetadata extends ServiceReferenceMetadata {
 
