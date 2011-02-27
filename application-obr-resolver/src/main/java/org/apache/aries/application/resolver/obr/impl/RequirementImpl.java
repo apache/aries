@@ -25,7 +25,7 @@ import org.osgi.service.obr.Capability;
 import org.osgi.service.obr.Requirement;
 
 /**
- * @version $Rev$ $Date$
+ * @version $Rev: 911133 $ $Date: 2010-02-17 18:19:57 +0000 (Wed, 17 Feb 2010) $
  */
 public class RequirementImpl implements Requirement
 {

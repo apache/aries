@@ -30,7 +30,7 @@ import java.net.URL;
 import java.util.Map;
 
 /**
- * @version $Rev$ $Date$
+ * @version $Rev: 910661 $ $Date: 2010-02-16 19:38:51 +0000 (Tue, 16 Feb 2010) $
  */
 public class ResourceImpl implements Resource
 {
