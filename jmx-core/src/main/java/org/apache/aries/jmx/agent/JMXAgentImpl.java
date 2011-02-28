@@ -53,7 +53,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * 
  * @see JMXAgent
  * 
- * @version $Rev: 931474 $ $Date: 2010-04-07 10:20:32 +0100 (Wed, 07 Apr 2010) $
+ * @version $Rev$ $Date$
  */
 public class JMXAgentImpl implements JMXAgent {
 

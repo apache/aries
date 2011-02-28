@@ -22,7 +22,7 @@ import javax.management.StandardMBean;
  * <p>Represents JMX OSGi MBeans handler.
  * Storing information about holden MBean.</p>
  * 
- * @version $Rev: 896239 $ $Date: 2010-01-05 22:02:23 +0000 (Tue, 05 Jan 2010) $
+ * @version $Rev$ $Date$
  */
 public interface MBeanHandler {
 

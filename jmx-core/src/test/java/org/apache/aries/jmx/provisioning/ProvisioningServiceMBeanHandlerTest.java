@@ -30,7 +30,7 @@ import org.osgi.service.provisioning.ProvisioningService;
 /**
  * 
  *
- * @version $Rev: 897315 $ $Date: 2010-01-08 20:13:13 +0000 (Fri, 08 Jan 2010) $
+ * @version $Rev$ $Date$
  */
 public class ProvisioningServiceMBeanHandlerTest {
 

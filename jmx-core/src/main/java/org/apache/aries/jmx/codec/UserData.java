@@ -33,7 +33,7 @@ import org.osgi.service.useradmin.User;
  * </p>
  * @see RoleData
  *
- * @version $Rev: 920467 $ $Date: 2010-03-08 19:22:22 +0000 (Mon, 08 Mar 2010) $
+ * @version $Rev$ $Date$
  */
 public class UserData extends RoleData {
 

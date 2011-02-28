@@ -31,7 +31,7 @@ import org.osgi.jmx.JmxConstants;
  * emits events that clients can use to get notified of the changes in the
  * bundle state of the framework.
  * 
- * @version $Revision: 922888 $
+ * @version $Revision$
  * @ThreadSafe
  */
 public interface BundleStateMBean {

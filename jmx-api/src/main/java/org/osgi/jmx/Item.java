@@ -41,7 +41,7 @@ import javax.management.openmbean.TabularType;
  * of name, description, and Open Type. These Item instances allows the
  * definitions of an item to stay together.
  * 
- * @version $Rev: 896239 $
+ * @version $Rev$
  * @Immutable
  */
 public class Item {

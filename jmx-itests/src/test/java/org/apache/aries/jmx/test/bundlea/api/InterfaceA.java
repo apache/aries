@@ -23,7 +23,7 @@ import org.osgi.service.cm.ManagedService;
 /**
  * 
  *
- * @version $Rev: 898952 $ $Date: 2010-01-13 21:53:07 +0000 (Wed, 13 Jan 2010) $
+ * @version $Rev$ $Date$
  */
 @SuppressWarnings("unchecked")
 public interface InterfaceA extends ManagedService {

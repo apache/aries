@@ -40,7 +40,7 @@ import org.osgi.jmx.framework.FrameworkMBean;
 /**
  * 
  * 
- * @version $Rev: 929327 $ $Date: 2010-03-30 23:51:43 +0100 (Tue, 30 Mar 2010) $
+ * @version $Rev$ $Date$
  */
 public class FrameworkMBeanTest extends AbstractIntegrationTest {    
 

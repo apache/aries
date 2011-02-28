@@ -29,7 +29,7 @@ import org.osgi.jmx.JmxConstants;
 /**
  * This MBean provides the management interface to the OSGi User Manager Service
  * 
- * @version $Revision: 920467 $
+ * @version $Revision$
  * @ThreadSafe
  */
 public interface UserAdminMBean {

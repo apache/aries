@@ -36,7 +36,7 @@ import org.osgi.service.packageadmin.ExportedPackage;
  * It is a codec for the composite data representing an OSGi ExportedPackage.
  * </p>
  * 
- * @version $Rev: 919575 $ $Date: 2010-03-05 20:00:30 +0000 (Fri, 05 Mar 2010) $
+ * @version $Rev$ $Date$
  */
 public class PackageData {
 

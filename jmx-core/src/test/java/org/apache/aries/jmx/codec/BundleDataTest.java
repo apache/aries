@@ -73,7 +73,7 @@ import org.osgi.service.startlevel.StartLevel;
 /**
  * 
  *
- * @version $Rev: 922888 $ $Date: 2010-03-14 16:31:18 +0000 (Sun, 14 Mar 2010) $
+ * @version $Rev$ $Date$
  */
 public class BundleDataTest {
 

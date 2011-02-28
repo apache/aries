@@ -40,7 +40,7 @@ import org.osgi.service.packageadmin.RequiredBundle;
 /**
  * This class contains common utilities related to Framework operations for the MBean implementations
  * 
- * @version $Rev: 898026 $ $Date: 2010-01-11 19:35:03 +0000 (Mon, 11 Jan 2010) $
+ * @version $Rev$ $Date$
  */
 public class FrameworkUtils {
 

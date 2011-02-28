@@ -26,7 +26,7 @@ import org.osgi.framework.BundleContext;
 /**
  * 
  *
- * @version $Rev: 896239 $ $Date: 2010-01-05 22:02:23 +0000 (Tue, 05 Jan 2010) $
+ * @version $Rev$ $Date$
  */
 public class ServiceStateMBeanHandlerTest {
 

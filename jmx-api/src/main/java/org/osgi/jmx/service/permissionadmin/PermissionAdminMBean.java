@@ -23,7 +23,7 @@ import org.osgi.jmx.JmxConstants;
 /**
  * This MBean represents the OSGi Permission Manager Service
  * 
- * @version $Rev: 896239 $
+ * @version $Rev$
  */
 public interface PermissionAdminMBean {
 	/**

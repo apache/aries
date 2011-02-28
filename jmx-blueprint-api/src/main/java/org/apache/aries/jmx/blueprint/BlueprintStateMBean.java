@@ -30,7 +30,7 @@ import javax.management.openmbean.TabularType;
 /**
  * This MBean provides the management interface to the OSGi Blueprint Service.
  * 
- * @version $Revision: 896239 $
+ * @version $Revision$
  */
 public interface BlueprintStateMBean {
     /**

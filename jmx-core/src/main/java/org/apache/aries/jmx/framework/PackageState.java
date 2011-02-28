@@ -39,7 +39,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  * 
  * @see PackageStateMBean
  * 
- * @version $Rev: 919575 $ $Date: 2010-03-05 20:00:30 +0000 (Fri, 05 Mar 2010) $
+ * @version $Rev$ $Date$
  */
 public class PackageState implements PackageStateMBean {
 
