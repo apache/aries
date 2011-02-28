@@ -35,7 +35,7 @@ package org.apache.aries.blueprint;
  * Note: a processor that replaces existing component definitions with new ones should take care to copy
  * interceptors defined against the old component definition if appropriate
  * 
- * @version $Rev: 922829 $, $Date: 2010-03-14 12:34:19 +0000 (Sun, 14 Mar 2010) $
+ * @version $Rev$, $Date$
  */
 public interface ComponentDefinitionRegistryProcessor {
 

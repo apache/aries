@@ -24,7 +24,7 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ReifiedType;
 
 /**
- * @version $Rev: 820271 $ $Date: 2009-09-30 14:58:29 +0100 (Wed, 30 Sep 2009) $
+ * @version $Rev$ $Date$
  */
 public class ArrayRecipe extends AbstractRecipe {
 

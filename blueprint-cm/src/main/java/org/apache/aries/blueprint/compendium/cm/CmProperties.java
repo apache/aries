@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @version $Rev: 820286 $, $Date: 2009-09-30 15:45:55 +0100 (Wed, 30 Sep 2009) $
+ * @version $Rev$, $Date$
  */
 public class CmProperties implements ManagedObject, ServiceProcessor {
 

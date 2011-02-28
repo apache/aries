@@ -33,7 +33,7 @@ import org.osgi.framework.Bundle;
 /**
  * A ClassLoader delegating to a given OSGi bundle.
  *
- * @version $Rev: 954428 $, $Date: 2010-06-14 13:32:07 +0100 (Mon, 14 Jun 2010) $
+ * @version $Rev$, $Date$
  */
 public class BundleDelegatingClassLoader extends ClassLoader {
 

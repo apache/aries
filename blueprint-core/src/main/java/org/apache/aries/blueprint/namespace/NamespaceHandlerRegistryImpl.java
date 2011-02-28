@@ -60,7 +60,7 @@ import org.xml.sax.SAXException;
  * This registry will track NamespaceHandler objects in the OSGi registry and make
  * them available, calling listeners when handlers are registered or unregistered.
  *
- * @version $Rev: 1071758 $, $Date: 2011-02-17 19:42:18 +0000 (Thu, 17 Feb 2011) $
+ * @version $Rev$, $Date$
  */
 public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, ServiceTrackerCustomizer {
     

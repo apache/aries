@@ -45,7 +45,7 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  * A utility class that handles cloning various polymorphic
  * bits of metadata into concrete class implementations.
  *
- * @version $Rev: 822644 $, $Date: 2009-10-07 11:23:35 +0100 (Wed, 07 Oct 2009) $
+ * @version $Rev$, $Date$
  */
 public class MetadataUtil {
 
