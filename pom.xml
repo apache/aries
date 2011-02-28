@@ -91,7 +91,7 @@
                        <goals>
                           <goal>single</goal>
                        </goals>
-				<configuration>
+				      <configuration>
 					<descriptors>
 						<descriptor>src/main/assemblies/proxy-distro.xml</descriptor>
 					</descriptors>
