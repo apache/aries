@@ -28,13 +28,13 @@
 	<groupId>org.apache.aries.proxy</groupId>
 	<artifactId>org.apache.aries.proxy-distro</artifactId>
 	<name>Proxy distribution</name>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.8</version>
 	<packaging>pom</packaging>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-distro</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/experimental-release-by-module/proxy/proxy-distro</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/experimental-release-by-module/proxy/proxy-distro</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy-distro-0.8</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy-distro-0.8</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.proxy-distro-0.8</url>
     </scm>
 
 
