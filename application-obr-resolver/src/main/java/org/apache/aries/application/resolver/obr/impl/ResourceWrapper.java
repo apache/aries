@@ -27,7 +27,7 @@ import org.apache.felix.bundlerepository.Resource;
 import org.osgi.framework.Version;
 
 /**
- * @version $Rev: 964138 $ $Date: 2010-07-14 20:03:40 +0100 (Wed, 14 Jul 2010) $
+ * @version $Rev$ $Date$
  */
 public class ResourceWrapper implements Resource {
 

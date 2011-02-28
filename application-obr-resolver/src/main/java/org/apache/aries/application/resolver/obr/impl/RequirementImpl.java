@@ -25,7 +25,7 @@ import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Requirement;
 
 /**
- * @version $Rev: 954793 $ $Date: 2010-06-15 11:28:34 +0100 (Tue, 15 Jun 2010) $
+ * @version $Rev$ $Date$
  */
 public class RequirementImpl implements Requirement
 {
