@@ -44,17 +44,17 @@
         <source>LICENSE</source>
         <outputDirectory>META-INF</outputDirectory> 
       </file>
-      <!--
+    <!--
       <file>
         <source>src/main/resources/proxy-module-source.zip</source>
         <outputDirectory>apache-aries-proxy-${project.version}/source</outputDirectory> 
       </file>
-      -->
+     -->
     </files>
     <fileSets>
       <fileSet>
         <directory>src/main/resources/source</directory>
-      <outputDirectory>apache-aries-proxy-${project.version}/</outputDirectory>
+        <outputDirectory>apache-aries-proxy-${project.version}/</outputDirectory>
       </fileSet>
      </fileSets>
 </assembly>
