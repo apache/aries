@@ -21,7 +21,7 @@ package org.osgi.service.blueprint.reflect;
  * refers. No implicit dependency is created.
  * 
  * @ThreadSafe
- * @version $Revision: 792499 $
+ * @version $Revision$
  */
 public interface IdRefMetadata extends NonNullMetadata {
 	/**

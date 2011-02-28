@@ -20,7 +20,7 @@ package org.osgi.service.blueprint.reflect;
  * events for a service reference.
  * 
  * @ThreadSafe
- * @version $Revision: 792499 $
+ * @version $Revision$
  */
 public interface ReferenceListener {
 

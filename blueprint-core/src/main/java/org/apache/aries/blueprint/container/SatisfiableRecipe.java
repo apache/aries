@@ -26,14 +26,14 @@ import org.apache.aries.blueprint.di.Recipe;
  * If the state of the object changes, registered SatisfactionListener objects
  * will be notified of the change.
  *
- * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
+ * @version $Rev$, $Date$
  */
 public interface SatisfiableRecipe extends Recipe {
 
     /**
      * A listener that will be notified when the constraint satisfaction changes.
      *
-     * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
+     * @version $Rev$, $Date$
      */
     public interface SatisfactionListener {
 

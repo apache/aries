@@ -94,7 +94,7 @@ import org.slf4j.LoggerFactory;
 /**
  * TODO: javadoc
  *
- * @version $Rev: 1042195 $, $Date: 2010-12-04 14:57:01 +0000 (Sat, 04 Dec 2010) $
+ * @version $Rev$, $Date$
  */
 public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
