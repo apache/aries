@@ -80,7 +80,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @version $Rev: 1059320 $ $Date: 2011-01-15 12:58:13 +0000 (Sat, 15 Jan 2011) $
+ * @version $Rev$ $Date$
  */
 public class OBRAriesResolver implements AriesApplicationResolver
 {
