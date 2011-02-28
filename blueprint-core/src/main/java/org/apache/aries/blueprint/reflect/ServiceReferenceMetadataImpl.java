@@ -30,7 +30,7 @@ import org.osgi.service.blueprint.reflect.Target;
 /**
  * Implementation of ServiceReferenceMetadata 
  *
- * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
+ * @version $Rev$, $Date$
  */
 public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl implements MutableServiceReferenceMetadata {
 

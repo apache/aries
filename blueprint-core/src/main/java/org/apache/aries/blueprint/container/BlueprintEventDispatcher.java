@@ -56,7 +56,7 @@ import org.apache.aries.blueprint.utils.JavaUtils;
  * The delivery of {@link BlueprintEvent}s is complicated.  The blueprint extender and its containers use this class to
  * deliver {@link BlueprintEvent}s.
  *
- * @version $Rev: 931474 $, $Date: 2010-04-07 10:20:32 +0100 (Wed, 07 Apr 2010) $
+ * @version $Rev$, $Date$
  */
 class BlueprintEventDispatcher implements BlueprintListener, SynchronousBundleListener {
 

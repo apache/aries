@@ -23,7 +23,7 @@ import java.util.List;
  * collection to a specific type.
  * 
  * @ThreadSafe
- * @version $Revision: 896324 $
+ * @version $Revision$
  */
 
 public interface CollectionMetadata extends NonNullMetadata {

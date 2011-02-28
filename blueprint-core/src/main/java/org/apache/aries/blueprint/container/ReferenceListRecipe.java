@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A recipe to create a managed collection of service references
  *
- * @version $Rev: 924332 $, $Date: 2010-03-17 15:31:29 +0000 (Wed, 17 Mar 2010) $
+ * @version $Rev$, $Date$
  */
 public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
 
