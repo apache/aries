@@ -23,7 +23,7 @@ import java.util.List;
  * {@link ServiceReferenceMetadata}.
  * 
  * @ThreadSafe
- * @version $Revision: 792499 $
+ * @version $Revision$
  */
 public interface ComponentMetadata extends NonNullMetadata {
 

@@ -46,7 +46,7 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 /**
  * TODO: javadoc
  *
- * @version $Rev: 990095 $, $Date: 2010-08-27 11:56:22 +0100 (Fri, 27 Aug 2010) $
+ * @version $Rev$, $Date$
  */
 public class ReflectionUtils {
 

@@ -23,7 +23,7 @@ package org.osgi.service.blueprint.reflect;
  * {@link ServiceMetadata}.
  * 
  * @ThreadSafe
- * @version $Revision: 896324 $
+ * @version $Revision$
  */
 public interface MapEntry {
 	/**
