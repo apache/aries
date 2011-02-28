@@ -24,7 +24,7 @@ package org.osgi.service.blueprint.reflect;
  * when the registration listener is actuated.
  * 
  * @ThreadSafe
- * @version $Revision: 792499 $
+ * @version $Revision$
  */
 public interface RegistrationListener {
 

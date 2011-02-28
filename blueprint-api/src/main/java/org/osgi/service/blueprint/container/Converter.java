@@ -19,7 +19,7 @@ package org.osgi.service.blueprint.container;
  * Type converter to convert an object to a target type.
  * 
  * @ThreadSafe
- * @version $Revision: 792499 $
+ * @version $Revision$
  */
 public interface Converter {
 

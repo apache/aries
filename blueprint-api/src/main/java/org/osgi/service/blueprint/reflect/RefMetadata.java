@@ -20,7 +20,7 @@ package org.osgi.service.blueprint.reflect;
  * Container.
  * 
  * @ThreadSafe
- * @version $Revision: 792499 $
+ * @version $Revision$
  */
 public interface RefMetadata extends Target, NonNullMetadata {
 	/**

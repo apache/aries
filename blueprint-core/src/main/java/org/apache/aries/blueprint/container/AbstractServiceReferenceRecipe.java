@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  *
  * TODO: it is allowed to have no interface defined at all, which should result in an empty proxy
  *
- * @version $Rev: 950985 $, $Date: 2010-06-03 14:19:22 +0100 (Thu, 03 Jun 2010) $
+ * @version $Rev$, $Date$
  */
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 

@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A <code>Recipe</code> to export services into the OSGi registry.
  *
- * @version $Rev: 1071718 $, $Date: 2011-02-17 17:35:28 +0000 (Thu, 17 Feb 2011) $
+ * @version $Rev$, $Date$
  */
 public class ServiceRecipe extends AbstractRecipe {
 

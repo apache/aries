@@ -59,7 +59,7 @@ import org.w3c.dom.NodeList;
 /**
  * A namespace handler for Aries blueprint extensions
  *
- * @version $Rev: 924332 $, $Date: 2010-03-17 15:31:29 +0000 (Wed, 17 Mar 2010) $
+ * @version $Rev$, $Date$
  */
 public class ExtNamespaceHandler implements org.apache.aries.blueprint.NamespaceHandler {
 
