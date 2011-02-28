@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /**
- * @version $Rev: 917781 $ $Date: 2010-03-01 23:00:12 +0000 (Mon, 01 Mar 2010) $
+ * @version $Rev$ $Date$
  */
 public class OBRAriesResolver implements AriesApplicationResolver
 {

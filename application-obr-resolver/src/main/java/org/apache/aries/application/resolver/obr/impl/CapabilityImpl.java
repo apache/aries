@@ -25,7 +25,7 @@ import org.osgi.service.obr.Capability;
 import java.util.Map;
 
 /**
- * @version $Rev: 910661 $ $Date: 2010-02-16 19:38:51 +0000 (Tue, 16 Feb 2010) $
+ * @version $Rev$ $Date$
  */
 public class CapabilityImpl implements Capability
 {
