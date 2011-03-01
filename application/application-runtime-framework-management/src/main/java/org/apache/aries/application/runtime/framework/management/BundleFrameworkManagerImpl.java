@@ -95,6 +95,18 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
       }
     }
   }
+  
+  public void close()
+  {
+    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+      try {
+        _sharedBundleFramework.close();
+      } catch (BundleException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+  }
 
   public BundleFramework getBundleFramework(Bundle frameworkBundle)
   {
