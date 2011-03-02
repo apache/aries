@@ -131,8 +131,10 @@
     </dependencies>
 
     <modules>
+        <!--
         <module>spi-fly-core</module>
         <module>spi-fly-itests</module>
+        -->
     </modules>
 
 </project>
