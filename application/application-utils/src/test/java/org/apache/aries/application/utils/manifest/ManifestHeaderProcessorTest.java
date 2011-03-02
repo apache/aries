@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.utils.internal.MessageUtil;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.junit.Test;
@@ -209,9 +208,9 @@ public class ManifestHeaderProcessorTest
     }
     assertEquals("The names of the packages are wrong.", 2, k);
     
-    
-    
-    }
+    exportPackageReturn = ManifestHeaderProcessor.parseExportString("some.export.with.space.in;directive := spacey");
+    assertEquals(exportPackageReturn.toString(), "spacey", exportPackageReturn.get(0).getValue().get("directive:"));
+  }
     
     @Test
     public void testExportMandatoryAttributes() {
