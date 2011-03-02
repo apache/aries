@@ -288,6 +288,7 @@
         <module>ariestrader</module>
         <module>blog</module>
         <module>blueprint</module>
+        <module>twitter</module>
     </modules>
 
 </project>
