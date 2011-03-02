@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.aries.spifly.api.SpiFlyConstants;
+import org.apache.aries.spifly.impl1.MySPIImpl1;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class ProviderBundleTrackerCustomizerTest {
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
                 EasyMock.eq("org.apache.aries.mytest.MySPI"), 
-                EasyMock.isA(MySPIImpl.class), 
+                EasyMock.isA(MySPIImpl1.class), 
                 (Dictionary<String,?>) EasyMock.anyObject())).andReturn(sreg);
         EasyMock.replay(implBC);
 
@@ -66,13 +67,13 @@ public class ProviderBundleTrackerCustomizerTest {
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers);
         
         // List the resources found at META-INF/services in the test bundle
-        URL res = getClass().getResource("org.apache.aries.mytest.MySPI");
+        URL res = getClass().getResource("impl1/META-INF/services/org.apache.aries.mytest.MySPI");
         Assert.assertNotNull("precondition", res);
         EasyMock.expect(implBundle.findEntries("META-INF/services", "*", false)).andReturn(
                 Collections.enumeration(Collections.singleton(res)));
         
-        Class<?> cls = getClass().getClassLoader().loadClass("org.apache.aries.spifly.MySPIImpl");
-        EasyMock.<Object>expect(implBundle.loadClass("org.apache.aries.spifly.MySPIImpl")).andReturn(cls);
+        Class<?> cls = getClass().getClassLoader().loadClass("org.apache.aries.spifly.impl1.MySPIImpl1");
+        EasyMock.<Object>expect(implBundle.loadClass("org.apache.aries.spifly.impl1.MySPIImpl1")).andReturn(cls);
         
         EasyMock.replay(implBundle);
         
