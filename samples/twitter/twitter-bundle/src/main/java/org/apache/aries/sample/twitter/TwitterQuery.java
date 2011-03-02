@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.itest.twitter;
+package org.apache.aries.sample.twitter;
 import java.util.List;
 
 import org.osgi.framework.BundleActivator;

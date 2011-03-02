@@ -24,20 +24,20 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.application.itest.twitter</groupId>
+        <groupId>org.apache.aries.samples.twitter</groupId>
         <artifactId>twitter</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.application.itest.twitter.eba</artifactId>
-    <name>Apache Aries Twitter itest EBA</name>
-    <description>This is the module that constructs the Twitter itest application from the Twitter itest bundle</description>
+    <artifactId>org.apache.aries.samples.twitter.eba</artifactId>
+    <name>Apache Aries Twitter EBA</name>
+    <description>This is the module that constructs the Twitter application from the Twitter bundle</description>
     <packaging>eba</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.application.itest.twitter</groupId>
-            <artifactId>org.apache.aries.application.itest.twitter.bundle</artifactId>
+            <groupId>org.apache.aries.samples.twitter</groupId>
+            <artifactId>org.apache.aries.samples.twitter.bundle</artifactId>
         </dependency>
     </dependencies>
 

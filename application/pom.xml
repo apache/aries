@@ -240,8 +240,6 @@
         <module>application-deployment-management</module>
         <module>application-modeller</module>
 	    <module>application-default-local-platform</module>
-        <module>application-itest-twitter</module>
-		<module>application-twitter4j</module>
     </modules>
 
     <build>

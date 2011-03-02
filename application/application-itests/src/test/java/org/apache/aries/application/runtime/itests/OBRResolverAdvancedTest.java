@@ -28,9 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -435,68 +432,6 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
 
 
 
-  //Test for JIRA-461 which currently fails.
-  @Test
-  public void testTwitter() throws Exception
-  {
-    // provision against the local runtime
-    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
-    Repository[] repos = repositoryAdmin.listRepositories();
-    for (Repository repo : repos) {
-      repositoryAdmin.removeRepository(repo.getURI());
-    }
-
-    
-    // Use the superclasses' getUrlToEba() method instead of the pax-exam mavenBundle() method because pax-exam is running in a
-    // diffference bundle which doesn't have visibility to the META-INF/maven/dependencies.properties file used to figure out the
-    // version of the maven artifact.
-    URL twitterEbaUrl = getUrlToEba("org.apache.aries.application.itest.twitter",
-        "org.apache.aries.application.itest.twitter.eba");
-    URL twitterCommonLangJar_url = getUrlToBundle("commons-lang", "commons-lang");
-    URL twitterJar_url = getUrlToBundle("org.apache.aries.application", "twitter4j");
-   
-    // add the repository xml to the repository admin
-    StringBuilder repositoryXML = new StringBuilder();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/obr/twitter/TwitterRepository.xml")));
-    String line;
-    while ((line = reader.readLine()) != null) {
-      repositoryXML.append(line);
-      repositoryXML.append("\r\n");
-    }
-  //replace the jar file url with the real url related to the environment
-    String repo = repositoryXML.toString().replaceAll("commons.lang.location", twitterCommonLangJar_url.toExternalForm());
-    repo = repo.replaceAll("twitter4j.location", twitterJar_url.toExternalForm());
-    
-    FileWriter writer = new FileWriter("twitterRepo.xml");
-    writer.write(repo);
-    writer.close();
-    repositoryAdmin.addRepository(new File("twitterRepo.xml").toURI().toURL());
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(twitterEbaUrl);
-    app = manager.resolve(app);
-    DeploymentMetadata depMeta = app.getDeploymentMetadata();
-    List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
-    Collection<DeploymentContent> useBundles = depMeta.getDeployedUseBundle();
-    Collection<DeploymentContent> appContent = depMeta.getApplicationDeploymentContents();
-    // We cannot be sure whether there are two or three provision bundles pulled in by Felix OBR as there is an outstanding defect
-    // https://issues.apache.org/jira/browse/FELIX-2672
-    // The workaround is to check we get the two bundles we are looking for, instead of insisting on just having two bundles.
-    
-    List<String> provisionBundleSymbolicNames = new ArrayList<String>();
-    for (DeploymentContent dep : provision) {
-       provisionBundleSymbolicNames.add(dep.getContentName());
-    }
-    String provision_bundle1 = "org.apache.commons.lang";
-    String provision_bundle2 = "twitter4j";
-    assertTrue("Bundle " + provision_bundle1 + " not found.", provisionBundleSymbolicNames.contains(provision_bundle1));
-    assertTrue("Bundle " + provision_bundle2 + " not found.", provisionBundleSymbolicNames.contains(provision_bundle2));
-    assertEquals(useBundles.toString(), 0, useBundles.size());
-    assertEquals(appContent.toString(), 1, appContent.size());
-    AriesApplicationContext ctx = manager.install(app);
-    ctx.start();
-  }
-  
   private void generateOBRRepoXML(boolean nullURI, String ... bundleFiles) throws Exception
   {
     Set<ModelledResource> mrs = new HashSet<ModelledResource>();
