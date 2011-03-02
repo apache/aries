@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='utf-8'?>
+<?xml-stylesheet type='text/xsl' href='http://www2.osgi.org/www/obr2html.xsl'?>
+
+<repository lastmodified='20101105121848.125' name='Untitled'>
+  <resource id='org.apache.commons.lang/2.4.0' presentationname='Commons Lang' symbolicname='org.apache.commons.lang' uri='commons.lang.location' version='2.4.0'>
+    <description>
+      Commons Lang, a package of Java utility classes for the   
+           classes that are in java.lang's hierarchy, or are considered
+       to be so        standard as to justify existence in java.lang.
+    </description>
+    <size>
+      261809
+    </size>
+    <license>
+      http://www.apache.org/licenses/LICENSE-2.0.txt
+    </license>
+    <documentation>
+      http://commons.apache.org/lang/
+    </documentation>
+    <capability name='bundle'>
+      <p n='manifestversion' v='2'/>
+      <p n='presentationname' v='Commons Lang'/>
+      <p n='symbolicname' v='org.apache.commons.lang'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang.math'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang.enums'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang.builder'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang.exception'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang.enum'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang.mutable'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang.text'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang.time'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='org.apache.commons.lang'/>
+      <p n='version' t='version' v='2.4.0'/>
+    </capability>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang ;version=2.4.0
+    </require>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.builder)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.builder ;version=2.4.0
+    </require>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.enum)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.enum ;version=2.4.0
+    </require>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.enums)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.enums ;version=2.4.0
+    </require>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.exception)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.exception ;version=2.4.0
+    </require>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.math)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.math ;version=2.4.0
+    </require>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.mutable)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.mutable ;version=2.4.0
+    </require>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.text)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.text ;version=2.4.0
+    </require>
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.time)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.time ;version=2.4.0
+    </require>
+  </resource>
+  <resource id='twitter4j/2.0.8' presentationname='Apache Aries Application Bundlise Twitter4j' symbolicname='twitter4j' uri='twitter4j.location' version='2.0.8'>
+    <description>
+      Application used to bundlelise twitter4j
+    </description>
+    <size>
+      257233
+    </size>
+    <license>
+      http://www.apache.org/licenses/LICENSE-2.0.txt
+    </license>
+    <documentation>
+      http://www.apache.org
+    </documentation>
+    <capability name='bundle'>
+      <p n='manifestversion' v='2'/>
+      <p n='presentationname' v='Apache Aries Application Bundlise Twitter4j'/>
+      <p n='symbolicname' v='twitter4j'/>
+      <p n='version' t='version' v='2.0.8'/>
+    </capability>
+    <capability name='package'>
+      <p n='package' v='twitter4j'/>
+      <p n='uses' v='javax.xml.transform.dom,javax.xml.transform.stream,org.w3c.dom,javax.xml.transform'/>
+      <p n='version' t='version' v='2.0.8'/>
+    </capability>
+    <require extend='false' filter='(&amp;(package=com.sun.syndication.feed.synd)(version&gt;=0.0.0))' multiple='false' name='package' optional='true'>
+      Import package com.sun.syndication.feed.synd
+    </require>
+    <require extend='false' filter='(&amp;(package=com.sun.syndication.io)(version&gt;=0.0.0))' multiple='false' name='package' optional='true'>
+      Import package com.sun.syndication.io
+    </require>
+    <require extend='false' filter='(&amp;(package=javax.crypto)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package javax.crypto
+    </require>
+    <require extend='false' filter='(&amp;(package=javax.crypto.spec)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package javax.crypto.spec
+    </require>
+    <require extend='false' filter='(&amp;(package=javax.xml.parsers)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package javax.xml.parsers
+    </require>
+    <require extend='false' filter='(&amp;(package=javax.xml.transform)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package javax.xml.transform
+    </require>
+    <require extend='false' filter='(&amp;(package=javax.xml.transform.dom)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package javax.xml.transform.dom
+    </require>
+    <require extend='false' filter='(&amp;(package=javax.xml.transform.stream)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package javax.xml.transform.stream
+    </require>
+    <require extend='false' filter='(&amp;(package=org.slf4j)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package org.slf4j
+    </require>
+    <require extend='false' filter='(&amp;(package=org.w3c.dom)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package org.w3c.dom
+    </require>
+    <require extend='false' filter='(&amp;(package=org.xml.sax)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
+      Import package org.xml.sax
+    </require>
+    <require extend='false' filter='(&amp;(package=twitter4j)(version&gt;=2.0.8))' multiple='false' name='package' optional='false'>
+      Import package twitter4j ;version=2.0.8
+    </require>
+  </resource>
+</repository>
