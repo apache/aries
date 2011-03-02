@@ -32,7 +32,6 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.impl.ContentImpl;
 import org.apache.aries.application.impl.VersionRangeImpl;
-import org.apache.aries.application.utils.internal.MessageUtil;
 import org.apache.aries.util.ManifestHeaderUtils;
 import org.osgi.framework.Constants;
 
@@ -283,7 +282,15 @@ public class ManifestHeaderProcessor
         String second = parts.get(1).trim();
         if (second.startsWith("\"") && second.endsWith("\""))
           second = second.substring(1,second.length()-1);
-        params.put(parts.get(0).trim(), second);
+        
+        String first = parts.get(0).trim();
+        
+        // make sure for directives we clear out any space as in "directive  :=value"        
+        if (first.endsWith(":")) {
+            first = first.substring(0, first.length()-1).trim()+":";
+        }
+        
+        params.put(first, second);
       }
     }
 
