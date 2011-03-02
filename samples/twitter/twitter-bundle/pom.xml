@@ -19,13 +19,13 @@
 
 	<modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.application.itest.twitter</groupId>
+        <groupId>org.apache.aries.samples.twitter</groupId>
         <artifactId>twitter</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-	<artifactId>org.apache.aries.application.itest.twitter.bundle</artifactId>
-	<name>Apache Aries Twitter itest bundle</name>
+	<artifactId>org.apache.aries.samples.twitter.bundle</artifactId>
+	<name>Apache Aries Twitter bundle</name>
 	<packaging>bundle</packaging>
 
     <properties>
@@ -60,8 +60,8 @@
 				<configuration>
 					<instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.application.itest.twitter.TwitterQuery</Bundle-Activator>
-                        <Private-Package>org.apache.aries.application.itest.twitter</Private-Package>
+                        <Bundle-Activator>org.apache.aries.sample.twitter.TwitterQuery</Bundle-Activator>
+                        <Private-Package>org.apache.aries.sample.twitter</Private-Package>
 					</instructions>
 				</configuration> 
 			</plugin>

@@ -19,17 +19,17 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>application</artifactId>
-        <groupId>org.apache.aries.application</groupId>
+        <artifactId>twitter</artifactId>
+        <groupId>org.apache.aries.samples.twitter</groupId>
         <version>0.4-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.aries.application.runtime.isolated.itests</artifactId>
+    <artifactId>org.apache.aries.samples.twitter.itests</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Aries Application integration tests</name>
+    <name>Apache Aries Twitter sample integration tests</name>
     <description>
-        Integration tests for the Application runtime
+        Integration tests for the Twitter sample
     </description>
     
     <dependencies>
@@ -191,6 +191,20 @@
         	<version>3.5.0.v20090520</version>
         	<type>jar</type>
         	<scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.aries.samples.twitter</groupId>
+          <artifactId>org.apache.aries.samples.twitter.eba</artifactId>
+          <scope>test</scope>
+          <type>eba</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.twitter</groupId>
+            <artifactId>org.apache.aries.samples.twitter.twitter4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.twitter</groupId>
+            <artifactId>org.apache.aries.samples.twitter.bundle</artifactId>
         </dependency>
     </dependencies>
 
