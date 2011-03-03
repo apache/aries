@@ -38,15 +38,18 @@
     </scm>
 
     <properties>
-        <ariesApplicationVersion>0.1-SNAPSHOT</ariesApplicationVersion>
-        <ariesBlueprintVersion>0.1-SNAPSHOT</ariesBlueprintVersion>
-        <ariesJmxVersion>0.1-SNAPSHOT</ariesJmxVersion>
-        <ariesJndiVersion>0.1-SNAPSHOT</ariesJndiVersion>
-        <ariesJpaVersion>0.1-SNAPSHOT</ariesJpaVersion>
-        <ariesTransactionVersion>0.1-SNAPSHOT</ariesTransactionVersion>
-        <ariesUtilVersion>0.1-SNAPSHOT</ariesUtilVersion>
-        <ariesWebVersion>0.1-SNAPSHOT</ariesWebVersion>
-        <openjpaVersion>2.0.0-beta3</openjpaVersion>
+        <ariesApplicationVersion>0.4-SNAPSHOT</ariesApplicationVersion>
+        <ariesBlueprintVersion>0.4-SNAPSHOT</ariesBlueprintVersion>
+        <ariesProxyVersion>0.4-SNAPSHOT</ariesProxyVersion>
+        <ariesQuiesceVersion>0.4-SNAPSHOT</ariesQuiesceVersion>
+        <ariesJmxVersion>0.4-SNAPSHOT</ariesJmxVersion>
+        <ariesJndiVersion>0.4-SNAPSHOT</ariesJndiVersion>
+        <ariesJpaVersion>0.4-SNAPSHOT</ariesJpaVersion>
+        <ariesTransactionVersion>0.4-SNAPSHOT</ariesTransactionVersion>
+        <ariesUtilVersion>0.4-SNAPSHOT</ariesUtilVersion>
+        <ariesWebVersion>0.4-SNAPSHOT</ariesWebVersion>
+        <openjpaVersion>2.0.0</openjpaVersion>
+        <geronimoServletVersion>1.2</geronimoServletVersion>
     </properties>
     
     <dependencyManagement>
