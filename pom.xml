@@ -45,15 +45,18 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly</url>
     </scm>
 
+    <!--
     <repositories>
-        <!-- The SpringSource bundle repository is required in order to be able to download osgified AspectJ bundles -->
+        <!- - The SpringSource bundle repository is required in order to be able to download osgified AspectJ bundles - ->
         <repository>
             <id>com.springsource.repository.bundles.external</id>
             <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository> 
     </repositories>
+    -->
 
+    <!--
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -113,7 +116,7 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- internal -->
+            <!- - internal - ->
             <dependency>
                 <groupId>org.apache.aries.spifly</groupId>
                 <artifactId>org.apache.aries.spifly.core</artifactId>
@@ -121,6 +124,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    -->
 
     <dependencies>
         <dependency>
@@ -131,8 +135,9 @@
     </dependencies>
 
     <modules>
-        <!--
+        <module>spi-fly-deps</module>
         <module>spi-fly-core</module>
+        <!--
         <module>spi-fly-itests</module>
         -->
     </modules>
