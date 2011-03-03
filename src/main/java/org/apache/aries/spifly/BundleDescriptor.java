@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -18,19 +18,26 @@
  */
 package org.apache.aries.spifly;
 
-import org.apache.aries.spifly.api.SPIClassloaderAdviceService;
+import org.osgi.framework.Version;
 
-public class SPIClassloaderAdviceServiceImpl implements
-        SPIClassloaderAdviceService {
-
-    private ClassLoader cl;
-
-    public SPIClassloaderAdviceServiceImpl(ClassLoader cl) {
-        this.cl = cl;
+class BundleDescriptor {
+    final String symbolicName;
+    final Version version;
+    
+    BundleDescriptor(String symbolicName) {
+        this(symbolicName, null);
     }
 
-    public ClassLoader getServiceClassLoader(Class<?> cls) {
-        return cl;
+    BundleDescriptor(String symbolicName, Version version) {
+        this.symbolicName = symbolicName;
+        this.version = version;
     }
 
+    public String getSymbolicName() {
+        return symbolicName;
+    }
+
+    public Version getVersion() {
+        return version;
+    }
 }

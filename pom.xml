@@ -10,8 +10,6 @@
 
     http://www.apache.org/licenses/LICENSE-2.0
 
-
-
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -39,93 +37,19 @@ JRE through META-INF/services resources).
 
     <dependencies>
         <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.6.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>3.3.1</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymockclassextension</artifactId>
-            <scope>test</scope>
+            <!-- Use the Eclipse version of OSGi until the core 4.3 OSGi jar is available in Maven. -->
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <version>3.7M5</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../spi-fly-deps/target/downloaded/org.eclipse.osgi_3.7.0.jar</systemPath>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Import-Package>
-                            *
-                        </Import-Package>
-                        <Export-Package>org.apache.aries.spifly.api</Export-Package>
-                        <Private-Package>
-                            org.apache.aries.spifly
-                        </Private-Package>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.spifly.Activator</Bundle-Activator>
-                        <!--
-                            Symbolic name 'org.aspectj.runtime' should
-                            be used. This is the original name of the
-                            AspectJ artifact and also the symbolic name
-                            of the AspectJ bundle shipped with Equinox
-                            Aspects. However, we're now using AspectJ
-                            from SpringSource with a different name:
-                            'com.springsource.org.aspectj.runtime'.
-                        -->
-                        <!--  <Require-Bundle>org.aspectj.runtime</Require-Bundle> -->
-                        <Require-Bundle>com.springsource.org.aspectj.runtime</Require-Bundle>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>aspectj-maven-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>**/BundleAspect.aj</include>
-                    </includes>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <configuration>
-                    <additionalProjectnatures>
-                        <projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
-                    </additionalProjectnatures>
-                    <buildcommands>
-                        <buildcommand>org.eclipse.ajdt.core.ajbuilder</buildcommand>
-                    </buildcommands>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

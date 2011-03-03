@@ -19,37 +19,8 @@
 package org.apache.aries.spifly.api;
 
 public interface SpiFlyConstants {
-
-    /*
-     * Header names
-     */
-
     String SPI_CONSUMER_HEADER = "SPI-Consumer";
-
     String SPI_PROVIDER_HEADER = "SPI-Provider";
 
-    /*
-     * Attributes to be used with the SPI-Provider and SPI-Consumer headers
-     */
-
-    String PROVIDER_NAME_ATTRIBUTE = "provider-name";
-
-    String SERVICE_IDS_ATTRIBUTE = "service-ids";
-
-    /*
-     * Attributes to be used with services created using the 'old' approach
-     */
-
     String SPI_PROVIDER_URL = "spi.provider.url";
-
-    /*
-     * Attributes to be used with services created using the 'new' approach
-     */
-
-    String SERVICE_ID_SERVICE_ATTRIBUTE = "ServiceId";
-
-    String PROVIDER_NAME_SERVICE_ATTRIBUTE = "ProviderName";
-
-    String API_NAME_SERVICE_ATTRIBUTE = "ApiName";
-
 }
