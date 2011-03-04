@@ -24,7 +24,7 @@ import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
-import org.apache.aries.subsystem.scope.ScopeAdmin;
+import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
 import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.osgi.framework.Bundle;
@@ -116,7 +116,7 @@ public class Activator implements BundleActivator {
         //private final List<ScopeAdmin> scopeAdmins = new ArrayList<ScopeAdmin>();
         private final List<SubsystemAdmin> admins = new ArrayList<SubsystemAdmin>();
         private final Map<SubsystemAdmin, Long> references = new HashMap<SubsystemAdmin, Long>();
-        private ScopeAdmin scopeAdmin; // scope admin for the root scope.
+        private Scope scopeAdmin; // scope admin for the root scope.
         private static ServiceTracker serviceTracker;
         private SubsystemAdmin defaultAdmin;
         private ServiceRegistration rootAdminReg;
@@ -124,11 +124,10 @@ public class Activator implements BundleActivator {
         public SubsystemAdminFactory() throws InvalidSyntaxException  {
             context = Activator.getBundleContext();
             
-            ServiceReference[] reference = Activator.getBundleContext().getServiceReferences(ScopeAdmin.class.getName(), 
-            "(&(ScopeName=root))");
-            if (reference != null && reference.length == 1) {
-                ScopeAdmin scopeAdmin = (ScopeAdmin)Activator.getBundleContext().getService(reference[0]);
-                Subsystem subsystem = new SubsystemImpl(scopeAdmin.getScope(), new HashMap<String, String>());
+            ServiceReference reference = Activator.getBundleContext().getServiceReference(Scope.class.getName());
+            if (reference != null) {
+                Scope scopeAdmin = (Scope)Activator.getBundleContext().getService(reference);
+                Subsystem subsystem = new SubsystemImpl(scopeAdmin, new HashMap<String, String>());
                 defaultAdmin = new SubsystemAdminImpl(scopeAdmin, subsystem, null);
                 rootAdminReg = context.registerService(SubsystemAdmin.class.getName(), 
                         defaultAdmin, 

@@ -30,43 +30,68 @@
         Integration tests using the subsystem scope api, impl for the implementation
         and subsystem-example helloIsolation and helloIsolationRef for the subsysem to be tested.
     </description>
-
+	
     <dependencies>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
-            <version>3.7.0.v20101022</version>
+            <version>3.7.0.v20110221</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
@@ -93,6 +118,10 @@
             <artifactId>pax-runner-no-jcl</artifactId>
         </dependency>
         <dependency>
+        	<groupId>org.ops4j.pax.swissbox</groupId>
+        	<artifactId>pax-swissbox-tinybundles</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -101,6 +130,12 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
@@ -121,26 +156,198 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.service.obr</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem.example</groupId>
             <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
+			<version>0.4-SNAPSHOT</version>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+        	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<id>tb1</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>1</classifier>
+							<archive>
+								<manifestFile>src/test/bundles/tb1/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/scope/itests/tb1/*</include>
+								<include>**/META-INF/*</include>
+							</includes>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<finalName>tb</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb2</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>2</classifier>
+							<archive>
+								<manifestFile>src/test/bundles/tb2/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/scope/itests/tb2/*</include>
+								<include>**/META-INF/*</include>
+							</includes>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<finalName>tb</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb3</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>3</classifier>
+							<archive>
+								<manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/scope/itests/tb3/*</include>
+								<include>**/META-INF/*</include>
+							</includes>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<finalName>tb</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb4</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>4</classifier>
+							<archive>
+								<manifestFile>src/test/bundles/tb4/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/scope/itests/tb4/*</include>
+								<include>**/META-INF/*</include>
+							</includes>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<finalName>tb</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb5</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>5</classifier>
+							<archive>
+								<manifestFile>src/test/bundles/tb5/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/scope/itests/tb5/*</include>
+								<include>**/META-INF/*</include>
+							</includes>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<finalName>tb</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb6</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>6</classifier>
+							<archive>
+								<manifestFile>src/test/bundles/tb6/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/scope/itests/tb6/*</include>
+								<include>**/META-INF/*</include>
+							</includes>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<finalName>tb</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb7</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>7</classifier>
+							<archive>
+								<manifestFile>src/test/bundles/tb7/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/scope/itests/tb7/*</include>
+								<include>**/META-INF/*</include>
+							</includes>
+							<outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+							<finalName>tb</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+				</executions>
+			</plugin> 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -170,7 +377,98 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>      
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>add-source-tb1</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb1</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-source-tb2</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb2</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-source-tb3</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb3</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-source-tb4</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb4</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-source-tb5</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb5</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-source-tb6</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb6</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-source-tb7</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb7</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 

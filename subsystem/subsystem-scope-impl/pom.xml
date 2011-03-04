@@ -45,38 +45,69 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
-            <version>3.7.0.v20101022</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <version>3.7.0.v20110221</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.utils</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -90,6 +121,12 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -18,15 +18,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
 import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.Scope;
-import org.apache.aries.subsystem.scope.ScopeAdmin;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
@@ -42,7 +41,7 @@ public class BundleResourceProcessor implements ResourceProcessor {
 
     public static class BundleSession implements Session {
 
-        private final ScopeAdmin scopeAdmin;
+        private final Scope scopeAdmin;
         private final List<Bundle> installed = new ArrayList<Bundle>();
         private final Map<Resource, Bundle> updated = new HashMap<Resource, Bundle>();
         private final Map<Resource, Bundle> removed = new HashMap<Resource, Bundle>();
@@ -60,7 +59,7 @@ public class BundleResourceProcessor implements ResourceProcessor {
                 
                 if (bundle == null) {
                     // fresh install 
-                    InstallInfo installInfo = new InstallInfo(new URL(resource.getLocation()), resource.getLocation());
+                    InstallInfo installInfo = new InstallInfo(resource.getLocation(), new URL(resource.getLocation()));
                     ScopeUpdate scopeUpdate = scopeAdmin.newScopeUpdate();
                     scopeUpdate.getBundlesToInstall().add(installInfo);
                     scopeUpdate.commit();
@@ -138,7 +137,7 @@ public class BundleResourceProcessor implements ResourceProcessor {
                     Bundle bundle = entry.getValue();
                     Resource res = entry.getKey();
                     try {
-                        InstallInfo installInfo = new InstallInfo(res.open(), res.getLocation());
+                        InstallInfo installInfo = new InstallInfo(res.getLocation(), res.open());
                         ScopeUpdate scopeUpdate = scopeAdmin.newScopeUpdate();
                         scopeUpdate.getBundlesToInstall().add(installInfo);
                         scopeUpdate.commit();
@@ -152,7 +151,7 @@ public class BundleResourceProcessor implements ResourceProcessor {
         }
         
         protected Bundle findBundle(Resource resource) {
-            Scope scope = scopeAdmin.getScope();
+            Scope scope = scopeAdmin;
             for (Bundle b : scope.getBundles()) {
                 if (resource.getLocation().equals(scope.getLocation())) {
                     return b;

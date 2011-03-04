@@ -43,6 +43,7 @@ public class SsActivator extends AbstractPlatformBuilderActivator
             new EquinoxPlatformBuilder( bundleContext, "3.5.1" ),
             new EquinoxPlatformBuilder( bundleContext, "3.6.0" ),
             new EquinoxPlatformBuilder( bundleContext, "3.7.0.V20101022" ),
+            new EquinoxPlatformBuilder( bundleContext, "3.7.0.V20110221" ),
             new EquinoxPlatformBuilderSnapshot( bundleContext )
         };
     }

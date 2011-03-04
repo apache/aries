@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.subsystem.itests;
+package org.apache.aries.subsystem.scope.itests;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,8 +41,8 @@ public class JarCreator
   }
 
   private static void createJar(String version) throws Exception {
-    createJarFromFile("../subsystem-example/subsystem-helloIsolation/target/org.apache.aries.subsystem.example.helloIsolation-0.3-SNAPSHOT.jar", version);
-    createJarFromFile("../subsystem-example/subsystem-helloIsolationRef/target/org.apache.aries.subsystem.example.helloIsolationRef-0.3-SNAPSHOT.jar", version);
+    createJarFromFile("../subsystem-example/subsystem-helloIsolation/target/org.apache.aries.subsystem.example.helloIsolation-0.4-SNAPSHOT.jar", version);
+    createJarFromFile("../subsystem-example/subsystem-helloIsolationRef/target/org.apache.aries.subsystem.example.helloIsolationRef-0.4-SNAPSHOT.jar", version);
   }
   private static void createJarFromFile(String fileName, String version) throws Exception {
     JarOutputStream jos = null;

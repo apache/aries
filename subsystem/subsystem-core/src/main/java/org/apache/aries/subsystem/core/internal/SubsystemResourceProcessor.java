@@ -29,15 +29,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -47,8 +45,7 @@ import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
-import org.apache.aries.subsystem.scope.InstallInfo;
-import org.apache.aries.subsystem.scope.ScopeAdmin;
+import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.scope.SharePolicy;
 import org.apache.aries.subsystem.spi.Resource;
@@ -106,7 +103,7 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
 
             try {
                 SubsystemAdminImpl adminImpl = (SubsystemAdminImpl)subsystemAdmin;
-                ScopeAdmin admin = adminImpl.getScopeAdmin();
+                Scope admin = adminImpl.getScopeAdmin();
                 ResourceResolver resolver = getService(ResourceResolver.class);
 
                 if (manifest == null) {
@@ -176,7 +173,9 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                     setupSharePolicies(exportSharePolicies, importSharePolicies, headers);
                     scopeUpdate.commit();
                     
-                    ScopeAdmin childScopeAdmin = getService(ScopeAdmin.class, "ScopeId=" + childScopeUpdate.getScope().getId());
+      //              ScopeAdmin childScopeAdmin = getService(ScopeAdmin.class, "ScopeId=" + childScopeUpdate.getScope().getId());
+      
+                    Scope childScopeAdmin = childScopeUpdate.getScope();
                     
                     subsystem = new SubsystemImpl(childScopeUpdate.getScope(), headers);
                     SubsystemAdmin childSubsystemAdmin = new SubsystemAdminImpl(childScopeAdmin, subsystem, subsystemAdmin.getSubsystem());

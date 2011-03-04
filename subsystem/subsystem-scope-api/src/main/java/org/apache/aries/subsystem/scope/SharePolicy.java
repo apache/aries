@@ -50,8 +50,14 @@ public class SharePolicy {
 	 * @param filter the filter for matching capabilities this policy controls.
 	 */
 	public SharePolicy(String type, String namespace, Filter filter) {
+		if (!(TYPE_EXPORT.equals(type) || TYPE_IMPORT.equals(type)))
+			throw new IllegalArgumentException("Invalid parameter value: type = " + type);
 		this.type = type;
+		if (namespace == null || namespace.length() == 0)
+			throw new IllegalArgumentException("Missing required paramater: namespace");
 		this.namespace = namespace;
+		if (filter == null)
+			throw new NullPointerException("Missing required parameter: filter");
 		this.filter = filter;
 	}
 

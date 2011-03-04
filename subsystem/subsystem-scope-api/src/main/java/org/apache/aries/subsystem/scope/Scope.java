@@ -74,13 +74,12 @@ public interface Scope {
 	long getId();
 	
 	/**
-	 * destoy the scope
-	 */
-	void destroy();
-	
-	/**
 	 * Returns the install location String of the scope
 	 * @return   the install location String of the scope
 	 */
 	String getLocation();
+	
+	Scope getParent();
+	
+	ScopeUpdate newScopeUpdate();
 }

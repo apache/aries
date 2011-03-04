@@ -33,14 +33,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
-            <version>3.7.0.v20110110</version>
+            <version>3.7.0.v20110221</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
