@@ -18,21 +18,20 @@
  */
 package org.apache.aries.spifly;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.easymock.EasyMock;
@@ -498,29 +497,33 @@ public class ClientWeavingHookTest {
         return spiFlyBundle;
     }
 
-    private Bundle mockProviderBundle(String subdir, long id) {
+    private Bundle mockProviderBundle(String subdir, long id) throws Exception {
         return mockProviderBundle(subdir, id, Version.emptyVersion);
     }
     
-    private Bundle mockProviderBundle(String subdir, long id, Version version) {
-        // Discover all the relevant resources in the META-INF/services directory of specified subdir
-        String location = getClass().getPackage().getName().replace('.', '/') + "/" + subdir + "/META-INF/services";
-        Bundle testBundle = ((BundleReference) getClass().getClassLoader()).getBundle();
-        
-        Set<String> resources = new HashSet<String>(); // findEntries happens to sometimes return duplicates in Eclipse
-        // This findEntries call is quite slow, can we do something that's a bit faster?
-        Enumeration<URL> entries = testBundle.findEntries("/", null, true);
-        for (URL entry : Collections.list(entries)) {
-            String s = entry.toExternalForm();
-            if (s.contains(location)) {
-                int idx = s.lastIndexOf("META-INF/services");
-                String resource = s.substring(idx);
-                if (!resource.endsWith("META-INF/services") && !resource.endsWith("META-INF/services/") && 
-                    !resource.substring("META-INF/services/".length()).contains("/")) {
-                    resources.add(resource);
-                }
+    private Bundle mockProviderBundle(String subdir, long id, Version version) throws Exception {
+        URL url = getClass().getResource("/" + getClass().getName().replace('.', '/') + ".class");
+        File classFile = new File(url.getFile());
+        File baseDir = new File(classFile.getParentFile(), subdir);
+        File directory = new File(baseDir, "/META-INF/services");
+
+        // Do a directory listing of the applicable META-INF/services directory
+        List<String> resources = new ArrayList<String>();
+        for (File f : directory.listFiles()) {
+            String fileName = f.getName();
+            if (fileName.startsWith(".") || fileName.endsWith("."))
+                continue;
+            
+            
+            // Needs to be something like: META-INF/services/org.apache.aries.mytest.MySPI
+            String path = f.getAbsolutePath().substring(baseDir.getAbsolutePath().length());
+            path = path.replace('\\', '/');
+            if (path.startsWith("/")) {
+                path = path.substring(1);
             }
+            resources.add(path);
         }
+            
         // Set up the classloader that will be used by the ASM-generated code as the TCCL. 
         // It can load a META-INF/services file
         ClassLoader cl = new TestImplClassLoader(subdir, resources.toArray(new String [] {}));
