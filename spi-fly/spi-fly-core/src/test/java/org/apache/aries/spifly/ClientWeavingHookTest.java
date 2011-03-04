@@ -61,7 +61,7 @@ public class ClientWeavingHookTest {
     @Test
     public void testClientWeavingHookBasicServiveLoaderUsage() throws Exception {
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
-        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
+        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
 
         // Register the bundle that provides the SPI implementation.
         Bundle providerBundle = mockProviderBundle("impl1", 1);        
@@ -97,7 +97,7 @@ public class ClientWeavingHookTest {
         Bundle spiFlyBundle = mockSpiFlyBundle();               
        
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
         Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
 
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());
@@ -129,7 +129,7 @@ public class ClientWeavingHookTest {
         Bundle spiFlyBundle = mockSpiFlyBundle();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "true");
+        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
         Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
 
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext());

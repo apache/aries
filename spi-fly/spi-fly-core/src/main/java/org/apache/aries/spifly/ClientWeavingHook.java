@@ -145,7 +145,7 @@ public class ClientWeavingHook implements WeavingHook {
                     methodRestriction = new MethodRestriction(methodName);
                 }
             } else {
-                if ("true".equalsIgnoreCase(name)) {
+                if ("*".equalsIgnoreCase(name)) {
                     className = ServiceLoader.class.getName();
                     methodName = "load";
                     ArgRestrictions argRestrictions = new ArgRestrictions();
