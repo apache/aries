@@ -28,7 +28,7 @@ import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemEvent;
 import org.apache.aries.subsystem.SubsystemException;
 import org.apache.aries.subsystem.SubsystemListener;
-import org.apache.aries.subsystem.scope.ScopeAdmin;
+import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.osgi.framework.BundleContext;
@@ -44,7 +44,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     private static final Version SUBSYSTEM_MANIFEST_VERSION = new Version("1.0");
 
     final BundleContext context;
-    final ScopeAdmin scopeAdmin;
+    final Scope scopeAdmin;
     final Map<Long, Subsystem> subsystems = new HashMap<Long, Subsystem>();
     final ServiceTracker resourceResolverTracker;
     final SubsystemEventDispatcher eventDispatcher;
@@ -52,7 +52,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     final Subsystem subsystem;
     final Subsystem parentSubsystem;
     
-    public SubsystemAdminImpl(ScopeAdmin scopeAdmin, Subsystem subsystem, Subsystem parentSubsystem) {
+    public SubsystemAdminImpl(Scope scopeAdmin, Subsystem subsystem, Subsystem parentSubsystem) {
         context = Activator.getBundleContext();
         this.eventDispatcher = Activator.getEventDispatcher();
         this.scopeAdmin = scopeAdmin;
@@ -283,7 +283,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     }
     
     // return the scope admin associated with the subsystemadmin.
-    protected ScopeAdmin getScopeAdmin() {
+    protected Scope getScopeAdmin() {
         return this.scopeAdmin;
     }
     

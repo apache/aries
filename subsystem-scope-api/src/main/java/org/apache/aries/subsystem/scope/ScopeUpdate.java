@@ -212,12 +212,6 @@ public interface ScopeUpdate {
 	boolean commit() throws BundleException;
 	
 	/**
-	 * Returns the children scope to be removed
-	 * @return   the to be removed children.   
-	 */
-	Collection<Scope> getToBeRemovedChildren();
-	
-	/**
 	 * Returns the scope it is updating
 	 * @return   the scope it is updating
 	 */

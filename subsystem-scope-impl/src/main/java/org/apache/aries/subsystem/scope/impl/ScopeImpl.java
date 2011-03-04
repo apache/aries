@@ -1,186 +1,161 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 package org.apache.aries.subsystem.scope.impl;
 
-import java.lang.IllegalArgumentException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.aries.subsystem.scope.Scope;
+import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.scope.SharePolicy;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.util.tracker.BundleTracker;
-import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 public class ScopeImpl implements Scope {
+	private static class UnmodifiableSharePolicyMap implements Map<String, List<SharePolicy>> {
+		private final Map<String, List<SharePolicy>> map;
+		
+		public UnmodifiableSharePolicyMap(Map<String, List<SharePolicy>> map) {
+			this.map = map;
+		}
+		
+		public void clear() {
+			throw new UnsupportedOperationException();
+		}
 
-    private String name;
-    private String location;
-    private BundleContext context;
-    private List<Scope> children = new ArrayList<Scope>();
-    private List<Bundle> bundles = new ArrayList<Bundle>();
-    private Map<String, List<SharePolicy>> importPolicies = new HashMap<String, List<SharePolicy>>();
-    private Map<String, List<SharePolicy>> exportPolicies = new HashMap<String, List<SharePolicy>>();
-    private BundleTracker bt;
-    private long id;
-    private List<String> bundleLocations = new ArrayList<String>();
-    
-    public ScopeImpl(String name) {
-        this.name = name;
-        this.id = getId();
-    }
-    
-    public ScopeImpl(String name, String location) {
-        this.name = name;
-        this.location = location;
-        this.id = getId();
-    }
-    // assume this constructor would be used to construct the root scope
-    public ScopeImpl(String name, BundleContext context) {
-        this(name);
+		public boolean containsKey(Object key) {
+			return map.containsKey(key);
+		}
 
-        this.context = context;
-        if (name.equals("root")) {
-            bundles.addAll(Arrays.asList(context.getBundles()));
-        }
+		public boolean containsValue(Object value) {
+			return map.containsValue(value);
+		}
 
-     
-        // let's use a bundle tracker to dynamically update the bundle list - need to wait on the resolution of the new rfc 138 bug
-        // we cannot really use bundle tracker because the hooks may not work here
-        //bt = new BundleTracker(context, Bundle.INSTALLED | Bundle.UNINSTALLED, new ScopeBundleTrackerCustomizer());
-        //bt.open();
-    }
-    
-    public void destroy() {
-        /*if (bt != null) {
-            bt.close();
-        }*/
-    }
-    
-    public Collection<Bundle> getBundles() {
-        return Collections.unmodifiableCollection(bundles);
-    }
-    
-    protected Collection<String> getToBeInstalledBundleLocation() {
-        return bundleLocations;
-    }
-    
-    protected void clearBundleLocations() {
-        bundleLocations = new ArrayList<String>();
-    }
-    
-    protected Collection<Bundle> getModifiableBundles() {
-        return this.bundles;
-    }
+		public Set<java.util.Map.Entry<String, List<SharePolicy>>> entrySet() {
+			Set<Map.Entry<String, List<SharePolicy>>> result = new HashSet<Map.Entry<String, List<SharePolicy>>>(map.size());
+			for (final Map.Entry<String, List<SharePolicy>> entry : map.entrySet()) {
+				result.add(new Map.Entry<String, List<SharePolicy>>() {
+					public String getKey() {
+						return entry.getKey();
+					}
 
-    public Collection<Scope> getChildren() {
-        return Collections.unmodifiableList(children);
-    }
-    
-    protected Collection<Scope> getModifiableChildren() {
-        return this.children;
-    }
+					public List<SharePolicy> getValue() {
+						return entry.getValue();
+					}
 
-    public String getName() {
-        return this.name;
-    }
+					public List<SharePolicy> setValue(List<SharePolicy> object) {
+						throw new UnsupportedOperationException();
+					}
+				});
+			}
+			return Collections.unmodifiableSet(result);
+		}
 
-    public Map<String, List<SharePolicy>> getSharePolicies(String type) {
-        if (type.equals(SharePolicy.TYPE_IMPORT)) {
-            return Collections.unmodifiableMap(this.importPolicies);
-        } else if (type.equals(SharePolicy.TYPE_EXPORT)) {
-            return Collections.unmodifiableMap(this.exportPolicies);
-        }
-        throw new IllegalArgumentException("Valid Types are : " + SharePolicy.TYPE_EXPORT + " & " + 
-                SharePolicy.TYPE_IMPORT + " Invalid type: " + type);
-        
-    }
-    
-    protected Map<String, List<SharePolicy>> getModifiableSharePolicies(String type) {
-        if (type.equals(SharePolicy.TYPE_IMPORT)) {
-            return this.importPolicies;
-        } else if (type.equals(SharePolicy.TYPE_EXPORT)) {
-            return this.exportPolicies;
-        }
-        throw new IllegalArgumentException("Valid Types are : " + SharePolicy.TYPE_EXPORT + " & " + 
-                SharePolicy.TYPE_IMPORT + " Invalid type: " + type);
-    }
+		public List<SharePolicy> get(Object key) {
+			List<SharePolicy> result = map.get(key);
+			return result == null ? null : Collections.unmodifiableList(result);
+		}
 
-    private class ScopeBundleTrackerCustomizer implements BundleTrackerCustomizer {
+		public boolean isEmpty() {
+			return map.isEmpty();
+		}
 
-        public Object addingBundle(Bundle bundle, BundleEvent event) {
-            if (event.getType() == BundleEvent.INSTALLED) {
-                bundles.add(bundle);
-            } else if (event.getType() == BundleEvent.UNINSTALLED) {
-                bundles.remove(bundle);
-            }
-            
-            return bundle;
-        }
+		public Set<String> keySet() {
+			return Collections.unmodifiableSet(map.keySet());
+		}
 
-        public void modifiedBundle(Bundle bundle, BundleEvent event,
-                Object object) {
-            if (event.getType() == BundleEvent.INSTALLED) {
-                bundles.add(bundle);
-            } else if (event.getType() == BundleEvent.UNINSTALLED) {
-                bundles.remove(bundle);
-            }
-            
-        }
+		public List<SharePolicy> put(String key, List<SharePolicy> value) {
+			throw new UnsupportedOperationException();
+		}
 
-        public void removedBundle(Bundle bundle, BundleEvent event,
-                Object object) {
-            if (event.getType() == BundleEvent.INSTALLED) {
-                bundles.add(bundle);
-            } else if (event.getType() == BundleEvent.UNINSTALLED) {
-                bundles.remove(bundle);
-            }          
-        }
-        
-    }
+		public void putAll(Map<? extends String, ? extends List<SharePolicy>> map) {
+			throw new UnsupportedOperationException();
+		}
 
-    public long getId() {
-        if (id == 0) {
-            id = IdGenerator.next();
-        } 
-        
-        return id;
-    }
-    
-    private static class IdGenerator {
-        static long newId;       
-        
-        protected static synchronized long next() {
-            newId++;
-            return newId;
-        }
-    }
+		public List<SharePolicy> remove(Object key) {
+			throw new UnsupportedOperationException();
+		}
 
-    public String getLocation() {
-        return this.location;
-    }
-    
+		public int size() {
+			return map.size();
+		}
+
+		public Collection<List<SharePolicy>> values() {
+			return Collections.unmodifiableCollection(map.values());
+		}
+	}
+	
+	private static long lastId = -1;
+	
+	private static synchronized long nextId() {
+		if (lastId == Long.MAX_VALUE)
+			throw new IllegalStateException("The next ID would exceed Long.MAX_VALUE");
+		return ++lastId;
+	}
+	
+	volatile boolean updating;
+	
+	long lastUpdate;
+	
+	final BundleContext bundleContext;
+	final Set<Bundle> bundles = Collections.synchronizedSet(new HashSet<Bundle>());
+	final Set<Scope> children = Collections.synchronizedSet(new HashSet<Scope>());
+	final Map<String, List<SharePolicy>> exportPolicies = Collections.synchronizedMap(new HashMap<String, List<SharePolicy>>());
+	final Map<String, List<SharePolicy>> importPolicies = Collections.synchronizedMap(new HashMap<String, List<SharePolicy>>());
+	
+	private final long id;
+	private final String location;
+	private final String name;
+	private final Scope parent;
+	
+	public ScopeImpl(
+			BundleContext bundleContext,
+			String name,
+			String location,
+			Scope parent) {
+		this.bundleContext = bundleContext;
+		this.name = name;
+		this.location = location;
+		this.parent = parent;
+		id = nextId();
+	}
+
+	public Collection<Bundle> getBundles() {
+		return Collections.unmodifiableCollection(bundles);
+	}
+	
+	public Collection<Scope> getChildren() {
+		return Collections.unmodifiableCollection(children);
+	}
+	
+	public long getId() {
+		return id;
+	}
+	
+	public String getLocation() {
+		return location;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public Scope getParent() {
+		return parent;
+	}
+
+	public Map<String, List<SharePolicy>> getSharePolicies(String type) {
+		if (SharePolicy.TYPE_EXPORT.equals(type))
+			return new UnmodifiableSharePolicyMap(exportPolicies);
+		else if (SharePolicy.TYPE_IMPORT.equals(type))
+			return new UnmodifiableSharePolicyMap(importPolicies);
+		throw new IllegalArgumentException(type);
+	}
+	
+	public ScopeUpdate newScopeUpdate() {
+		return ScopeUpdateImpl.newInstance(this);
+	}
 }

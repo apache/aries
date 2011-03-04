@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TB1
+Bundle-SymbolicName: org.apache.aries.subsystem.scope.itests.tb1
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.apache.aries.subsystem.scope.itests.tb1.Activator
+Import-Package: org.junit,
+ org.osgi.framework;version="1.3.0",
+ org.apache.aries.subsystem.scope
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
