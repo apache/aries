@@ -26,37 +26,35 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.spifly.core</artifactId>
-    <packaging>jar</packaging>
-    <name>Apache Aries SPI Fly Core</name>
+    <artifactId>org.apache.aries.spifly.static.support.bundle</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Aries SPI Fly Static Weaving runtime support Bundle</name>
     <description>
-This bundle contains an extender that facilitates the use
-of JRE SPI providers (components typically plugged in to the 
-JRE through META-INF/services resources).
+        This bundle contains support classes used at runtime by bundles
+        woven using the static weaving done through the org.apache.aries.spifly.static
+        component.
     </description>
 
     <dependencies>
         <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>3.3.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <!-- Use the Eclipse version of OSGi until the core 4.3 OSGi jar is available in Maven. -->
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>3.7M5</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../spi-fly-deps/target/downloaded/org.eclipse.osgi_3.7.0.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>3.0</version>
-            <scope>test</scope>
+            <groupId>org.apache.aries.spifly</groupId>
+            <artifactId>org.apache.aries.spifly.core</artifactId>
+            <version>${pom.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.apache.aries.spifly</Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
