@@ -19,43 +19,28 @@
 package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Currency;
-import java.util.Hashtable;
-import java.util.HashMap;
-import java.util.Map;
-
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
-import org.apache.aries.subsystem.scope.ScopeAdmin;
+import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
 
 
 @RunWith(JUnit4TestRunner.class)
@@ -85,7 +70,7 @@ public class SubsystemAdmin2Test extends AbstractIntegrationTest {
     @Test
     public void test() throws Exception {
         // make sure we are using a framework that provides scope admin service
-        ScopeAdmin scopeA = getOsgiService(ScopeAdmin.class);
+        Scope scopeA = getOsgiService(Scope.class);
         assertNotNull("scope admin should not be null", scopeA);
         System.out.println("able to get scope admin service");
         
@@ -138,7 +123,7 @@ public class SubsystemAdmin2Test extends AbstractIntegrationTest {
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 
-            equinox().version("3.7.0.v20110110")
+            equinox().version("3.7.0.v20110221")
         );
         options = updateOptions(options);
         return options;

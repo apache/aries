@@ -18,6 +18,7 @@
  */
 package org.apache.aries.subsystem.scope;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -26,15 +27,37 @@ import java.net.URL;
  * update}.
  */
 public class InstallInfo {
-	private final URL content;
+	private final InputStream content;
 	private final String location;
-	private final InputStream is;
+	
+	/**
+	 * Constructor for a bundle install info.
+	 * @param content the content of the bundle.
+	 * @param location the location of the bundle.
+	 */
+	public InstallInfo(String location, URL content) throws IOException {
+		this(location == null ? content.toExternalForm() : location, content.openStream());
+	}
+	
+	   /**
+     * Constructor for a bundle install info.
+     * @param content the content of the bundle.
+     * @param location the location of the bundle.
+     */
+    public InstallInfo(String location, InputStream content) {
+    	if (location == null || location.length() == 0)
+    		throw new IllegalArgumentException("Missing required parameter: location");
+    	if (content == null)
+    		throw new NullPointerException("Missing required parameter: content");
+        this.location = location;
+        this.content = content;
+    }
 
 	/**
 	 * Returns a url to the content of the bundle to install.
 	 * @return a url to the content of the bundle to install.
 	 */
-	public URL getContent() {
+	public InputStream getContent() {
 		return content;
 	}
 
@@ -45,26 +68,4 @@ public class InstallInfo {
 	public String getLocation() {
 		return location;
 	}
-
-	/**
-	 * Constructor for a bundle install info.
-	 * @param content the content of the bundle.
-	 * @param location the location of the bundle.
-	 */
-	public InstallInfo(URL content, String location) {
-		this.content = content;
-		this.location = location;
-		this.is = null;
-	}
-	
-	   /**
-     * Constructor for a bundle install info.
-     * @param content the content of the bundle.
-     * @param location the location of the bundle.
-     */
-    public InstallInfo(InputStream is, String location) {
-        this.is = is;
-        this.location = location;
-        this.content = null;
-    }
 }

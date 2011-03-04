@@ -16,32 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.subsystem.itests;
+package org.apache.aries.subsystem.scope.itests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
+import static org.ops4j.pax.exam.OptionUtils.combine;
 
-import java.io.*;
-import java.net.URISyntaxException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.aries.subsystem.scope.ScopeUpdate;
+import org.apache.aries.subsystem.scope.SharePolicy;
 import org.junit.After;
 import org.junit.Before;
 import org.ops4j.pax.exam.CoreOptions;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
-import static org.ops4j.pax.exam.OptionUtils.combine;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -49,7 +45,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractIntegrationTest {
@@ -206,4 +201,15 @@ public abstract class AbstractIntegrationTest {
         return options;
     }
     
+    protected void addPackageImportPolicy(String packageName, ScopeUpdate scopeUpdate) throws InvalidSyntaxException {
+		Filter filter = bundleContext.createFilter("(osgi.wiring.package=" + packageName + ')');
+		SharePolicy policy = new SharePolicy(SharePolicy.TYPE_IMPORT, "osgi.wiring.package", filter);
+		Map<String, List<SharePolicy>> policyMap = scopeUpdate.getSharePolicies(SharePolicy.TYPE_IMPORT);
+		List<SharePolicy> policies = policyMap.get("osgi.wiring.package");
+		if (policies == null) {
+			policies = new ArrayList<SharePolicy>();
+			policyMap.put("osgi.wiring.package", policies);
+		}
+		policies.add(policy);
+	}
 }

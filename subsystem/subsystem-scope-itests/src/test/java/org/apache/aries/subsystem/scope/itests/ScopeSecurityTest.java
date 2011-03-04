@@ -16,19 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.subsystem.itests;
+package org.apache.aries.subsystem.scope.itests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
-import java.io.FileOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Permission;
 import java.util.ArrayList;
@@ -39,14 +37,9 @@ import java.util.Map;
 import org.apache.aries.subsystem.example.helloIsolation.HelloIsolation;
 import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.Scope;
-import org.apache.aries.subsystem.scope.ScopeAdmin;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.scope.SharePolicy;
-import org.apache.aries.subsystem.scope.impl.ScopeAdminServiceFactory;
-import org.apache.aries.unittest.fixture.ArchiveFixture;
-import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -54,21 +47,17 @@ import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.PackagePermission;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.Capability;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.condpermadmin.ConditionInfo;
 import org.osgi.service.condpermadmin.ConditionalPermissionAdmin;
 import org.osgi.service.condpermadmin.ConditionalPermissionInfo;
 import org.osgi.service.condpermadmin.ConditionalPermissionUpdate;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.util.tracker.BundleTracker;
-import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 
 @RunWith(JUnit4TestRunner.class)
@@ -103,7 +92,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
     //@Test
     public void testScopeSecurityWithServiceIsolation() throws Exception {
         // make sure we are using a framework that provides composite admin service
-        ScopeAdmin scopeAdmin = getOsgiService(ScopeAdmin.class);
+        Scope scopeAdmin = getOsgiService(Scope.class);
         assertNotNull("scope admin should not be null", scopeAdmin);
         System.out.println("able to get scope admin service");
        
@@ -112,8 +101,8 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         
         // build up installInfo object for the scope
-        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-SNAPSHOT"), "helloIsolation");
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info1 = new InstallInfo("helloIsolation", new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.4-SNAPSHOT"));
+        InstallInfo info2 = new InstallInfo("helloIsolationRef", new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.4-SNAPSHOT"));
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info1);
@@ -150,7 +139,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         // test bundle service find hook
         //ServiceReference sr = bundleContext.getServiceReference(HelloIsolation.class.getName());
         //assertNull("sr should be null", sr);
-        Collection<Scope> children = scopeAdmin.getScope().getChildren();
+        Collection<Scope> children = scopeAdmin.getChildren();
         assertEquals(1, children.size());
         
         for (Scope child : children) {
@@ -183,26 +172,30 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         
         // remove child scope
         su = scopeAdmin.newScopeUpdate();
-        Collection<Scope> scopes = su.getToBeRemovedChildren();
+        Collection<ScopeUpdate> scopes = su.getChildren();
         
         // obtain child scope admin from service registry
-        String filter = "ScopeName=scope_test1";
-        ScopeAdmin childScopeAdmin = getOsgiService(ScopeAdmin.class, filter, DEFAULT_TIMEOUT);
-        assertEquals(scopeAdmin.getScope(), childScopeAdmin.getParentScope());
-        scopes.add(childScopeAdmin.getScope());
+//        String filter = "ScopeName=scope_test1";
+        Scope childScopeAdmin = childScopeUpdate.getScope();
+        assertEquals(scopeAdmin, childScopeAdmin.getParent());
+        scopes.remove(childScopeUpdate);
         su.commit();
         
-        childScopeAdmin = null;
-        try {
-            childScopeAdmin = getOsgiService(ScopeAdmin.class, filter, DEFAULT_TIMEOUT);
-        } catch (Exception ex) {
-            // ignore
-        }
-        assertNull("scope admin service for the scope should be unregistered", childScopeAdmin);
+        assertFalse(scopeAdmin.getChildren().contains(childScopeAdmin));
+        su = scopeAdmin.newScopeUpdate();
+        assertFalse(su.getChildren().contains(childScopeUpdate));
+        
+//        childScopeAdmin = null;
+//        try {
+//            childScopeAdmin = getOsgiService(Scope.class, filter, DEFAULT_TIMEOUT);
+//        } catch (Exception ex) {
+//            // ignore
+//        }
+//        assertNull("scope admin service for the scope should be unregistered", childScopeAdmin);
         
     }
     
-    @Test
+    //@Test
     public void testScopeSecurityWithServiceShared() throws Exception {
         
         SecurityManager security = System.getSecurityManager();
@@ -231,7 +224,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         }
         
         // make sure we are using a framework that provides composite admin service
-        ScopeAdmin scopeAdmin = getOsgiService(ScopeAdmin.class);
+        Scope scopeAdmin = getOsgiService(Scope.class);
         assertNotNull("scope admin should not be null", scopeAdmin);
         System.out.println("able to get scope admin service");
         
@@ -248,22 +241,22 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
                 "(&" + 
                   "(osgi.service=org.apache.aries.subsystem.example.helloIsolation.HelloIsolation)" +
                 ")");
-        List<SharePolicy> packagePolicies = sharePolicies.get(Capability.PACKAGE_CAPABILITY);
+        List<SharePolicy> packagePolicies = sharePolicies.get(BundleRevision.PACKAGE_NAMESPACE);
         if (packagePolicies == null) {
             packagePolicies = new ArrayList<SharePolicy>();
-            sharePolicies.put(Capability.PACKAGE_CAPABILITY, packagePolicies);
+            sharePolicies.put(BundleRevision.PACKAGE_NAMESPACE, packagePolicies);
         }
-        packagePolicies.add(new SharePolicy(SharePolicy.TYPE_EXPORT, Capability.PACKAGE_CAPABILITY, filter1));
-        List<SharePolicy> servicePolicies = sharePolicies.get(ScopeAdminServiceFactory.SERVICE_CAPABILITY);
+        packagePolicies.add(new SharePolicy(SharePolicy.TYPE_EXPORT, BundleRevision.PACKAGE_NAMESPACE, filter1));
+        List<SharePolicy> servicePolicies = sharePolicies.get("scope.share.service");
         if (servicePolicies == null) {
             servicePolicies = new ArrayList<SharePolicy>();
-            sharePolicies.put(ScopeAdminServiceFactory.SERVICE_CAPABILITY, servicePolicies);
+            sharePolicies.put("scope.share.service", servicePolicies);
         }
-        servicePolicies.add(new SharePolicy(SharePolicy.TYPE_EXPORT, ScopeAdminServiceFactory.SERVICE_CAPABILITY, filter2));
+        servicePolicies.add(new SharePolicy(SharePolicy.TYPE_EXPORT, "scope.share.service", filter2));
 
         // build up installInfo object for the scope
-        InstallInfo info1 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.3-SNAPSHOT"), "helloIsolation");
-        InstallInfo info2 = new InstallInfo(new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.3-SNAPSHOT"), "helloIsolationRef");
+        InstallInfo info1 = new InstallInfo("helloIsolation", new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.4-SNAPSHOT"));
+        InstallInfo info2 = new InstallInfo("helloIsolationRef", new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.4-SNAPSHOT"));
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info1);
@@ -300,7 +293,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         // test bundle service find hook
         //ServiceReference sr = bundleContext.getServiceReference(HelloIsolation.class.getName());
         //assertNull("sr should be null", sr);
-        Collection<Scope> children = scopeAdmin.getScope().getChildren();
+        Collection<Scope> children = scopeAdmin.getChildren();
         assertEquals(1, children.size());
         
         for (Scope child : children) {
@@ -335,22 +328,26 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         
         // remove child scope
         su = scopeAdmin.newScopeUpdate();
-        Collection<Scope> scopes = su.getToBeRemovedChildren();
+        Collection<ScopeUpdate> scopes = su.getChildren();
         
         // obtain child scope admin from service registry
-        String filter = "ScopeName=scope_test1";
-        ScopeAdmin childScopeAdmin = getOsgiService(ScopeAdmin.class, filter, DEFAULT_TIMEOUT);
-        assertEquals(scopeAdmin.getScope(), childScopeAdmin.getParentScope());
-        scopes.add(childScopeAdmin.getScope());
+//        String filter = "ScopeName=scope_test1";
+        Scope childScopeAdmin = childScopeUpdate.getScope();
+        assertEquals(scopeAdmin, childScopeAdmin.getParent());
+        scopes.remove(childScopeUpdate);
         su.commit();
         
-        childScopeAdmin = null;
-        try {
-            childScopeAdmin = getOsgiService(ScopeAdmin.class, filter, DEFAULT_TIMEOUT);
-        } catch (Exception ex) {
-            // ignore
-        }
-        assertNull("scope admin service for the scope should be unregistered", childScopeAdmin);
+        assertFalse(scopeAdmin.getChildren().contains(childScopeAdmin));
+        su = scopeAdmin.newScopeUpdate();
+        assertFalse(su.getChildren().contains(childScopeUpdate));
+        
+//        childScopeAdmin = null;
+//        try {
+//            childScopeAdmin = getOsgiService(Scope.class, filter, DEFAULT_TIMEOUT);
+//        } catch (Exception ex) {
+//            // ignore
+//        }
+//        assertNull("scope admin service for the scope should be unregistered", childScopeAdmin);
         
     }
     
@@ -387,7 +384,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 
-            equinox().version("3.7.0.v20101022")
+            equinox().version("3.7.0.v20110221")
         );
         options = updateOptions(options);
         return options;
