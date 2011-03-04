@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>org.apache.aries.spifly.core</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>Apache Aries SPI Fly Core</name>
     <description>
 This bundle contains an extender that facilitates the use
