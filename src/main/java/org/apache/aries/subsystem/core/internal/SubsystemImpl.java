@@ -14,16 +14,18 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemEvent;
 import org.apache.aries.subsystem.SubsystemException;
-import org.apache.aries.subsystem.Subsystem.State;
 import org.apache.aries.subsystem.scope.Scope;
-import org.apache.aries.subsystem.scope.ScopeAdmin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
