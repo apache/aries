@@ -63,7 +63,7 @@ public class ProviderBundleTrackerCustomizerTest {
         
         Dictionary<String, String> headers = new Hashtable<String, String>();
         // Specify the headers for the test bundle
-        headers.put(SpiFlyConstants.SPI_PROVIDER_HEADER, "true");
+        headers.put(SpiFlyConstants.SPI_PROVIDER_HEADER, "*");
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers);
         
         // List the resources found at META-INF/services in the test bundle
