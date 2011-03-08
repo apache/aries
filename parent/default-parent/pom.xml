@@ -441,11 +441,6 @@
                         <Implementation-Title>Apache Aries</Implementation-Title>
                         <Implementation-Version>${project.version}</Implementation-Version>
                         <Bundle-Vendor>The Apache Software Foundation</Bundle-Vendor>
-                        <!--
-                        <Bundle-DocURL>http://felix.apache.org/site/apache-felix-osgi-bundle-repository.html</Bundle-DocURL>
-                        <Bundle-Url>http://felix.apache.org/site/downloads.cgi</Bundle-Url>
-                        <Bundle-Source>http://felix.apache.org/site/downloads.cgi</Bundle-Source>
-                        -->
                         <Include-Resource>${aries.osgi.include.resource}</Include-Resource>
                         <_removeheaders>${aries.osgi.remove.headers}}</_removeheaders>
                         <_failok>${aries.osgi.failok}</_failok>
@@ -456,16 +451,6 @@
                         <aries.osgi.version.clean>${project.version}</aries.osgi.version.clean>
                     </versions>
                 </configuration>
-                <!--
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>cleanVersions</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                -->
             </plugin>
 
             <plugin>
@@ -661,7 +646,6 @@
 
     <properties>
         <!-- OSGi bundles properties -->
-        <aries.osgi.import.default.version>[$(version;==;$(@)),$(version;+;$(@)))</aries.osgi.import.default.version>
         <aries.osgi.import.defaults />
         <aries.osgi.import.before.defaults />
         <aries.osgi.import.additional />
