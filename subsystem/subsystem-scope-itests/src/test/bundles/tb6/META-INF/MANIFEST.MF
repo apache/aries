@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TB6
+Bundle-SymbolicName: org.apache.aries.subsystem.scope.itests.tb6
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.apache.aries.subsystem.scope.itests.tb6
+

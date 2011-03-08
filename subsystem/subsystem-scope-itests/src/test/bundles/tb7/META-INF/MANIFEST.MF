@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TB7
+Bundle-SymbolicName: org.apache.aries.subsystem.scope.itests.tb7
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Import-Package: org.osgi.framework;version="1.3.0",
+  org.apache.aries.subsystem.scope.itests
+Bundle-Activator: org.apache.aries.subsystem.scope.itests.tb7.Activator
