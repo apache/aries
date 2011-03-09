@@ -25,10 +25,9 @@ import org.apache.aries.application.management.spi.framework.BundleFrameworkConf
 
 public class BundleFrameworkConfigurationImpl implements BundleFrameworkConfiguration
 {
-
-  String frameworkId;
-  Properties frameworkBundleManifest;
-  Properties frameworkConfig;
+  private String frameworkId;
+  private Properties frameworkBundleManifest;
+  private Properties frameworkConfig;
 
   public BundleFrameworkConfigurationImpl(String frameworkId, Properties frameworkConfig,
       Properties frameworkBundleManifest)
