@@ -32,6 +32,7 @@
     </description>
 
     <properties>
+    <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
         <aries.osgi.export.pkg>
             org.apache.aries.application;
             org.apache.aries.application.filesystem;
@@ -40,6 +41,7 @@
             org.apache.aries.application.modelling;
             org.apache.aries.application.modelling.utils;
         </aries.osgi.export.pkg>
+        
     </properties>
 
     <dependencies>
