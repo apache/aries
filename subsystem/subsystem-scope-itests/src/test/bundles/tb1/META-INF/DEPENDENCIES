@@ -1,0 +1,15 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+Apache Aries Subsystem iTests
+
+
+From: 'OPS4J - Open Participation Software for Java' (http://www.ops4j.org/)
+  - OPS4J Pax Runner - Core - No JCL (http://www.ops4j.org/projects/runner/pax-runner-no-jcl/) org.ops4j.pax.runner:pax-runner-no-jcl:bundle:1.4.0
+    License: ALv2  (http://www.apache.org/licenses/LICENSE-2.0.html)
+
+
+
+
