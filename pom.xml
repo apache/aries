@@ -72,9 +72,6 @@
 						<instructions>
 							<Bundle-Blueprint-Annotation>true</Bundle-Blueprint-Annotation>
 						</instructions>
-						<versions>
-							<aries.osgi.version.clean>${project.version}</aries.osgi.version.clean>
-						</versions>
 					</configuration>
 				</plugin>
 
