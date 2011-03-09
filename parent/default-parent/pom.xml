@@ -600,8 +600,8 @@
         <aries.osgi.private.pkg>${project.artifactId}*.impl</aries.osgi.private.pkg>
         <!--
         Hard coded version must be changed
-        <aries.osgi.export>${aries.osgi.export.pkg};version=0.4.0;-noimport:=true</aries.osgi.export>
         -->
+        <aries.osgi.export>${aries.osgi.export.pkg};version=0.4.0;-noimport:=true</aries.osgi.export>
         <aries.osgi.export.pkg>!*.impl;${project.artifactId}*</aries.osgi.export.pkg>
         
         <aries.osgi.version>version=${project.version}</aries.osgi.version>
