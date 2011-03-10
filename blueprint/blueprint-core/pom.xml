@@ -36,6 +36,8 @@
       <aries.osgi.activator>
           org.apache.aries.blueprint.container.BlueprintExtender
       </aries.osgi.activator>
+      <!-- Export package versions are maintained in packageinfo files -->
+      <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
       <aries.osgi.export.pkg>
           !org.apache.aries.blueprint.annotation*,
           org.apache.aries.blueprint*
@@ -124,6 +126,12 @@
                 <includes>
                     <include>blueprint.xsd</include>
                 </includes>
+            </resource>
+            <resource>
+                  <directory>${project.build.sourceDirectory}</directory>
+                  <includes>
+                     <include>**/packageinfo</include>
+                  </includes>
             </resource>
         </resources>
     </build>
