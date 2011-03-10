@@ -30,9 +30,11 @@
     </description>
 
     <properties>
-         <aries.osgi.export>
-             org.osgi.service.blueprint*;version="1.0.1"
-         </aries.osgi.export>
+         <!-- Export package versions are maintained in packageinfo files -->
+         <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+         <aries.osgi.export.pkg>
+             org.osgi.service.blueprint*
+         </aries.osgi.export.pkg>
          <aries.osgi.import>
              !org.osgi.service.blueprint*,
              *

@@ -51,13 +51,15 @@
             org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
             *
         </aries.osgi.import>
-        <aries.osgi.export>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+        <aries.osgi.export.pkg>
             =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable,org.apache.aries.blueprint.compendium.cm";version="1.0.1",
-            org.osgi.service.blueprint.container;version="1.0.1",
-            org.osgi.service.blueprint.reflect;version="1.0.1",
+            org.osgi.service.blueprint.container,
+            org.osgi.service.blueprint.reflect,
             !org.apache.aries.blueprint.annotation*,
-            org.apache.aries.blueprint*;version="${pom.version}"
-        </aries.osgi.export>
+            org.apache.aries.blueprint*
+        </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             OSGI-INF*
         </aries.osgi.private.pkg>
