@@ -64,7 +64,6 @@
             org.apache.aries.jmx.whiteboard.Activator
         </aries.osgi.activator>
         <aries.osgi.export.pkg>
-            !*
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.jmx.whiteboard
