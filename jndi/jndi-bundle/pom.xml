@@ -31,11 +31,13 @@
     </description>
 
     <properties>
-        <aries.osgi.export>
-            org.osgi.service.jndi;version="1.0",
-            org.apache.aries.jndi.urls;version=${project.version},
-            org.apache.aries.jndi.spi;version=${project.version}
-        </aries.osgi.export>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+        <aries.osgi.export.pkg>
+            org.osgi.service.jndi,
+            org.apache.aries.jndi.urls,
+            org.apache.aries.jndi.spi
+        </aries.osgi.export.pkg>
         <aries.osgi.import>
             net.sf.cglib*;resolution:=optional,
             *
