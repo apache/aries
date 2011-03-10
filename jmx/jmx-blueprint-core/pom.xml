@@ -33,6 +33,8 @@
         <aries.osgi.activator>
             org.apache.aries.jmx.blueprint.impl.Activator
         </aries.osgi.activator>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
         <aries.osgi.export.pkg>
             org.apache.aries.jmx.blueprint.codec
         </aries.osgi.export.pkg>
