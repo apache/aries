@@ -21,6 +21,7 @@ package org.apache.aries.transaction.jdbc;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -81,6 +82,16 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
       map.put(key, ref.getProperty(key));
     }
     map.put("aries.xa.aware", "true");
+    
+    // make the ranking for our new better wrappered data source higher so
+    // it is the default object looked up using osgi.service.jndi.name.
+    Object rankingProp = map.get(Constants.SERVICE_RANKING);
+    
+    int ranking = 1000;
+    
+    if (rankingProp != null) ranking = ((Integer)rankingProp) + 1000;
+    
+    map.put(Constants.SERVICE_RANKING, ranking);
 
     XADatasourceEnlistingWrapper wrapper = new XADatasourceEnlistingWrapper();
     wrapper.setTxManager(tm);
