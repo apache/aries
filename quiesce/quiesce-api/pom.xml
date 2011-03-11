@@ -32,6 +32,9 @@
     </description>
 
     <properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+
         <aries.osgi.export.pkg>
             org.apache.aries.quiesce.manager;
             org.apache.aries.quiesce.participant;
