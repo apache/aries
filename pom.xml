@@ -27,6 +27,23 @@
     <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
     <packaging>bundle</packaging>
     <name>Test Bundle for Aries JPA Container iTests</name>
+
+    <properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+
+        <aries.osgi.export.pkg>
+            org.apache.aries.jpa.container.itest.entities
+        </aries.osgi.export.pkg>
+        <aries.osgi.import>
+            javax.persistence;version="[1.0.0,3.0.0)",
+            *
+        </aries.osgi.import>
+        <aries.osgi.private.pkg>
+            org.apache.aries.jpa.container.itest
+        </aries.osgi.private.pkg>
+        <aries.osgi.symbolic.name>${project.groupId}.${project.artifactId}</aries.osgi.symbolic.name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -47,17 +64,6 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>
-                            javax.persistence;version="[1.0.0,3.0.0)",
-                            *
-                        </Import-Package>
-                        <Export-Package>
-                            org.apache.aries.jpa.container.itest.entities;version="${pom.version}",
-                        </Export-Package>
-                        <Private-Package>org.apache.aries.jpa.container.itest</Private-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                         <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
                     </instructions>
                 </configuration>
