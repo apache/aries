@@ -59,7 +59,7 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.framework.wiring.Capability;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class SubsystemResourceProcessor implements ResourceProcessor {
@@ -246,35 +246,35 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
             String importService = headers.get(SubsystemConstants.SUBSYSTEM_IMPORTSERVICE);
             String exportService = headers.get(SubsystemConstants.SUBSYSTEM_EXPORTSERVICE);
             if (importPackage != null && !importPackage.trim().isEmpty()) {
-                List<SharePolicy> importPackagePolicies = importSharePolicies.get(Capability.PACKAGE_CAPABILITY);
+                List<SharePolicy> importPackagePolicies = importSharePolicies.get(BundleRevision.PACKAGE_NAMESPACE);
                 if (importPackagePolicies == null) {
                     importPackagePolicies = new ArrayList<SharePolicy>();
-                    importSharePolicies.put(Capability.PACKAGE_CAPABILITY,importPackagePolicies);
+                    importSharePolicies.put(BundleRevision.PACKAGE_NAMESPACE,importPackagePolicies);
                 }
                 
-                importPackagePolicies.add(new SharePolicy(SharePolicy.TYPE_IMPORT, Capability.PACKAGE_CAPABILITY, createFilter(importPackage, Capability.PACKAGE_CAPABILITY)));
+                importPackagePolicies.add(new SharePolicy(SharePolicy.TYPE_IMPORT, BundleRevision.PACKAGE_NAMESPACE, createFilter(importPackage, BundleRevision.PACKAGE_NAMESPACE)));
             }
             
             if (importService != null && !importService.trim().isEmpty()) {
-                List<SharePolicy> importServicePolicies = importSharePolicies.get("osgi.service");
+                List<SharePolicy> importServicePolicies = importSharePolicies.get("scope.share.service");
                 if (importServicePolicies == null) {
                     importServicePolicies = new ArrayList<SharePolicy>();
-                    importSharePolicies.put("osgi.service",importServicePolicies);
+                    importSharePolicies.put("scope.share.service",importServicePolicies);
                 }
                 
-                importServicePolicies.add(new SharePolicy(SharePolicy.TYPE_IMPORT, "osgi.service", createFilter(importService, "osgi.service")));
+                importServicePolicies.add(new SharePolicy(SharePolicy.TYPE_IMPORT, "scope.share.service", createFilter(importService, "scope.share.service")));
             }
             
         }
         
         private Filter createFilter(String packages, String namespace) {
-            if (namespace.equals(Capability.PACKAGE_CAPABILITY)) {
+            if (namespace.equals(BundleRevision.PACKAGE_NAMESPACE)) {
                 // split packages
                 List<String> pkgs = ManifestHeaderProcessor.split(packages, ",");
                 StringBuffer sb = new StringBuffer();
                 sb.append("(|");
                 for (String pkg : pkgs) {
-                    sb.append("(" + Capability.PACKAGE_CAPABILITY + "=" + pkg + ")");
+                    sb.append("(" + BundleRevision.PACKAGE_NAMESPACE + "=" + pkg + ")");
                 }
                 sb.append(")");
                 try {
@@ -285,13 +285,13 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                 }
                 
             }
-            if (namespace.equals("osgi.service")) {
+            if (namespace.equals("scope.share.service")) {
                 // split packages
                 List<String> pkgs = ManifestHeaderProcessor.split(packages, ",");
                 StringBuffer sb = new StringBuffer();
                 sb.append("(|");
                 for (String pkg : pkgs) {
-                    sb.append("(osgi.service=" + pkg + ")");
+                    sb.append("(scope.share.service=" + pkg + ")");
                 }
                 sb.append(")");
                 try {
