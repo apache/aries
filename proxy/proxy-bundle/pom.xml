@@ -32,6 +32,8 @@
     </description>
 
     <properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
         <aries.osgi.activator>
             org.apache.aries.proxy.impl.ProxyManagerActivator
         </aries.osgi.activator>
