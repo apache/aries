@@ -31,7 +31,6 @@
     <properties>
 
         <!-- Export package versions are maintained in packageinfo files -->
-        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
 
         <aries.osgi.export.pkg/>
         <aries.osgi.import>
