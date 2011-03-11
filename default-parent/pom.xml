@@ -452,6 +452,7 @@
                         <Include-Resource>${aries.osgi.include.resource}</Include-Resource>
                         <_removeheaders>${aries.osgi.remove.headers}}</_removeheaders>
                         <_failok>${aries.osgi.failok}</_failok>
+                        <_versionpolicy>${aries.osgi.import.default.version}</_versionpolicy>
                         <Export-Service>${aries.osgi.export.service}</Export-Service>
                         <Import-Service>${aries.osgi.import.service}</Import-Service>
                     </instructions>
@@ -597,11 +598,10 @@
         </aries.osgi.import.pkg>
         <aries.osgi.activator />
         <aries.osgi.failok>false</aries.osgi.failok>
+        <!--This is the default (consumer policy) range - override in the pom if you need a provider range -->
+        <aries.osgi.import.default.version>[$(version;==;$(@)),$(version;+;$(@)))</aries.osgi.import.default.version>
         <aries.osgi.private.pkg>${project.artifactId}*.impl</aries.osgi.private.pkg>
-        <!--
-        Hard coded version must be changed
-        -->
-        <aries.osgi.export>${aries.osgi.export.pkg};version=0.4.0;-noimport:=true</aries.osgi.export>
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
         <aries.osgi.export.pkg>!*.impl;${project.artifactId}*</aries.osgi.export.pkg>
         
         <aries.osgi.version>version=${project.version}</aries.osgi.version>
