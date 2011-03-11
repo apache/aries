@@ -30,6 +30,9 @@
 	<name>Apache Aries Transaction Blueprint</name>
 
 	<properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+
 		<aries.osgi.export.pkg>
 			org.apache.aries.transaction.exception
         </aries.osgi.export.pkg>
