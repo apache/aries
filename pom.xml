@@ -28,6 +28,22 @@
     <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
     <packaging>bundle</packaging>
 
+    <properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+
+        <aries.osgi.export.pkg />
+        <aries.osgi.import>
+            javax.persistence;version="[1.0.0,3.0.0)",
+            org.apache.aries.jpa.container.context;version="[0.1.0,1.1.0)",
+            org.apache.aries.blueprint;version="[0.1.0,1.1.0)",
+            *
+        </aries.osgi.import>
+        <aries.osgi.export.service>
+            org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/jpa/v1.0.0
+        </aries.osgi.export.service>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -74,29 +90,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>
-                            javax.persistence;version="[1.0.0,3.0.0)",
-                            org.apache.aries.jpa.container.context;version="[0.1.0,1.1.0)",
-                            org.apache.aries.blueprint;version="[0.1.0,1.1.0)",
-                            *
-                        </Import-Package>
-                        <Export-Service>
-                            org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/jpa/v1.0.0
-                        </Export-Service>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
