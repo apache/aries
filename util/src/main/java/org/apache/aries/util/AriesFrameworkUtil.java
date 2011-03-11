@@ -66,7 +66,7 @@ public final class AriesFrameworkUtil
    */
   private static boolean isEquinox(String bundleClassName) 
   {
-    if (bundleClassName.startsWith("org.eclipse.equinox")) {
+    if (bundleClassName.startsWith("org.eclipse.osgi")) {
       try {
         Class.forName("org.eclipse.osgi.framework.internal.core.BundleHost");
         return true;
