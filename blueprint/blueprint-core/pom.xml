@@ -37,7 +37,6 @@
           org.apache.aries.blueprint.container.BlueprintExtender
       </aries.osgi.activator>
       <!-- Export package versions are maintained in packageinfo files -->
-      <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
       <aries.osgi.export.pkg>
           !org.apache.aries.blueprint.annotation*,
           org.apache.aries.blueprint*
