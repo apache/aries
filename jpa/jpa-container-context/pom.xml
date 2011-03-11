@@ -29,6 +29,20 @@
     <packaging>bundle</packaging>
 
     <properties>
+
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+
+        <aries.osgi.export.pkg/>
+        <aries.osgi.import>
+            javax.persistence;version="[1.0.0,2.1.0)",
+            javax.persistence.criteria;version="[1.1.0,2.1.0)";resolution:=optional,
+            javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
+            org.apache.aries.jpa.container.context;version="[0.1.0,1.1.0)",
+            org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
+            org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
+            *
+        </aries.osgi.import>
       <aries.osgi.activator>
           org.apache.aries.jpa.container.context.impl.GlobalPersistenceManager
       </aries.osgi.activator>
@@ -91,31 +105,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>
-                            javax.persistence;version="[1.0.0,2.1.0)",
-                            javax.persistence.criteria;version="[1.1.0,2.1.0)";resolution:=optional,
-                            javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
-                            org.apache.aries.jpa.container.context;version="[0.1.0,1.1.0)",
-                            org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
-                            org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
-                            *
-                        </Import-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
