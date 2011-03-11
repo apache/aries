@@ -36,8 +36,22 @@ import org.osgi.framework.FrameworkUtil;
 public class DefaultWorker implements FrameworkUtilWorker, BundleListener, FrameworkListener
 {
   private Map<Bundle, ClassLoader> classLoaders = new IdentityHashMap<Bundle, ClassLoader>();
-  private static final Bundle myFrameworkBundle = FrameworkUtil.getBundle(DefaultWorker.class).getBundleContext().getBundle(0);
+  private static final Bundle myFrameworkBundle;
 
+  static
+  {
+    BundleContext myContext = FrameworkUtil.getBundle(DefaultWorker.class).getBundleContext();
+    
+    // This may be created during framework shutdown when the bundle context is null.
+    // So we need to cope and not NPE during construction.
+    if (myContext != null) {
+      myFrameworkBundle = myContext.getBundle(0);
+    } else {
+      myFrameworkBundle = null;
+    }
+  }
+  
+  
   public ClassLoader getClassLoader(final Bundle b) 
   {
     ClassLoader cl = get(b);
