@@ -34,7 +34,6 @@
             org.apache.aries.jmx.Activator
         </aries.osgi.activator>
         <!-- Export package versions are maintained in packageinfo files -->
-        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
         <aries.osgi.export>
             org.osgi.jmx;uses:="javax.management.openmbean",
             org.osgi.jmx.framework;uses:="org.osgi.jmx,javax.management.openmbean",
