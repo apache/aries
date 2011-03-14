@@ -25,12 +25,12 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
     </parent>
 
     <artifactId>default-parent</artifactId>
     <name>Aries :: Default Parent POM</name>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.4</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
@@ -221,7 +221,7 @@
         								</goals>
         							</pluginExecutionFilter>
         							<action>
-        								<ignore></ignore>
+        								<ignore />
         							</action>
         						</pluginExecution>
     							<pluginExecution>
@@ -240,7 +240,7 @@
     									</goals>
     								</pluginExecutionFilter>
     								<action>
-    									<ignore></ignore>
+    									<ignore />
     								</action>
     							</pluginExecution>
     							<pluginExecution>
@@ -261,7 +261,7 @@
     									</goals>
     								</pluginExecutionFilter>
     								<action>
-    									<ignore></ignore>
+    									<ignore />
     								</action>
     							</pluginExecution>
         						<pluginExecution>
@@ -282,7 +282,7 @@
         								</goals>
         							</pluginExecutionFilter>
         							<action>
-        								<ignore></ignore>
+        								<ignore />
         							</action>
         						</pluginExecution>
     						</pluginExecutions>
