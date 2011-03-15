@@ -268,7 +268,7 @@ public class ArchiveFixture
     }
     
     @Override
-    public void writeOut(OutputStream out) throws IOException
+    public InputStream getInputStream() throws IOException
     {
       if (bytes == null) {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -287,8 +287,7 @@ public class ArchiveFixture
         bytes = bout.toByteArray();
       }
       
-      ByteArrayInputStream bin = new ByteArrayInputStream(bytes);
-      copy(bin, out);
+      return new ByteArrayInputStream(bytes);
     }
   }
   
@@ -451,6 +450,11 @@ public class ArchiveFixture
     
     public void writeOut(OutputStream out) throws IOException 
     {
+      copy(getInputStream(), out);
+    }
+    
+    public InputStream getInputStream() throws IOException
+    {
       /*
        * For better reuse this method delegate the writing to writeAllEntries, which
        * can be reused by the JarFixture.
@@ -465,9 +469,7 @@ public class ArchiveFixture
       
       bytes = bout.toByteArray();
 
-      ByteArrayInputStream bin = new ByteArrayInputStream(bytes);
-      copy(bin, out);
+      return new ByteArrayInputStream(bytes);
     }
   }
-
 }
