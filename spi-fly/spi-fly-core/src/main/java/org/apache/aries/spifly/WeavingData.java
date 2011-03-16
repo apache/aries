@@ -19,6 +19,8 @@
 package org.apache.aries.spifly;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /** Contains information needed for the byte code weaver.
  */
@@ -26,6 +28,8 @@ public class WeavingData {
     private final String className;
     private final String methodName;
     private final String[] argClasses;
+    private final Set<ConsumerRestriction> argRestrictions;
+    private final List<BundleDescriptor> allowedBundles;
 
     /**
      * Constructor.
@@ -34,11 +38,16 @@ public class WeavingData {
      * @param argClasses The overload (class names of the signature) of the call
      * that needs to be woven. If <code>null</code> then all overloads of the method
      * need to be woven.
+     * @param argRestrictions 
+     * @param allowedBundles 
      */
-    public WeavingData(String className, String methodName, String[] argClasses) {
+    public WeavingData(String className, String methodName, String[] argClasses, Set<ConsumerRestriction> argRestrictions, List<BundleDescriptor> allowedBundles) {
+        // TODO can we infer argClasses from restrictions?
         this.className = className;
         this.methodName = methodName;
         this.argClasses = argClasses;
+        this.argRestrictions = argRestrictions;
+        this.allowedBundles = allowedBundles;
     }
 
     public String getClassName() {
@@ -49,10 +58,18 @@ public class WeavingData {
         return methodName;
     }
 
-    public String[] getArgClasses() {
-        return argClasses;
+    public List<BundleDescriptor> getAllowedBundles() {
+        return allowedBundles;
     }
 
+    public String[] getArgClasses() {
+        return argClasses;
+    }        
+
+    public Set<ConsumerRestriction> getArgRestrictions() {
+        return argRestrictions;
+    }        
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -88,7 +105,5 @@ public class WeavingData {
         } else if (!methodName.equals(other.methodName))
             return false;
         return true;
-    }    
-    
-    
+    }
 }

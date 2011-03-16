@@ -23,20 +23,22 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.jar.Manifest;
 
 import org.apache.aries.spifly.Streams;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.internal.ArrayComparisonFailure;
 
 public class MainTest {
     @Test
-    public void testUnJar() throws Exception {
+    public void testUnJarReJar() throws Exception {
         URL jarURL = getClass().getResource("/testjar.jar");
         File jarFile = new File(jarURL.getFile());
         File tempDir = new File(System.getProperty("java.io.tmpdir") + "/testjar_" + System.currentTimeMillis());
         
         try {
-            Main.unJar(jarFile, tempDir);
+            Manifest manifest = Main.unJar(jarFile, tempDir);
             
             assertStreams(new File(tempDir, "META-INF/MANIFEST.MF"), 
                     "jar:" + jarURL + "!/META-INF/MANIFEST.MF");
@@ -51,14 +53,43 @@ public class MainTest {
                     "jar:" + jarURL + "!/dir/dir 2/b.txt");
                         
             Assert.assertTrue(new File(tempDir, "dir/dir.3").exists());
+            
+            // Create a second jar from the exploded directory
+            File copiedFile = new File(jarFile.getAbsolutePath() + ".copy");            
+            Main.jar(copiedFile, tempDir, manifest);
+            URL copyURL = copiedFile.toURI().toURL();
+            
+            assertStreams("jar:" + copyURL + "!/META-INF/MANIFEST.MF", 
+                    "jar:" + jarURL + "!/META-INF/MANIFEST.MF");
+            
+            assertStreams("jar:" + copyURL + "!/A text File with no content",
+                    "jar:" + jarURL + "!/A text File with no content");
+            assertStreams("jar:" + copyURL + "!/dir/Main.class",
+                    "jar:" + jarURL + "!/dir/Main.class");
+            assertStreams("jar:" + copyURL + "!/dir/dir 2/a.txt", 
+                    "jar:" + jarURL + "!/dir/dir 2/a.txt");
+            assertStreams("jar:" + copyURL + "!/dir/dir 2/b.txt", 
+                    "jar:" + jarURL + "!/dir/dir 2/b.txt");
         } finally {
             deleteTree(tempDir);
         }
     }
-
+    
+    
+    private void assertStreams(String url1, String url2) throws Exception {
+        InputStream is1 = new URL(url1).openStream();
+        InputStream is2 = new URL(url2).openStream();
+        assertStreams(is1, is2);
+    }
+    
     private void assertStreams(File file, String url) throws Exception {
         InputStream is1 = new FileInputStream(file);
         InputStream is2 = new URL(url).openStream();
+        assertStreams(is1, is2);
+    }
+
+    private void assertStreams(InputStream is1, InputStream is2)
+            throws IOException, ArrayComparisonFailure {
         try {
             byte[] bytes1 = Streams.suck(is1);
             byte[] bytes2 = Streams.suck(is2);
