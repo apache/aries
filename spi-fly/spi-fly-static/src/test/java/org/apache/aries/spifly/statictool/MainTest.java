@@ -18,6 +18,9 @@
  */
 package org.apache.aries.spifly.statictool;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -71,10 +74,23 @@ public class MainTest {
             assertStreams("jar:" + copyURL + "!/dir/dir 2/b.txt", 
                     "jar:" + jarURL + "!/dir/dir 2/b.txt");
         } finally {
-            deleteTree(tempDir);
+            Main.delTree(tempDir);
         }
     }
-    
+
+    @Test
+    public void testDelTree() throws IOException {
+        URL jarURL = getClass().getResource("/testjar.jar");
+        File jarFile = new File(jarURL.getFile());
+        File tempDir = new File(System.getProperty("java.io.tmpdir") + "/testjar_" + System.currentTimeMillis());
+        
+        assertFalse("Precondition", tempDir.exists());
+        Main.unJar(jarFile, tempDir);
+        assertTrue(tempDir.exists());
+        
+        Main.delTree(tempDir);                
+        assertFalse(tempDir.exists());
+    }
     
     private void assertStreams(String url1, String url2) throws Exception {
         InputStream is1 = new URL(url1).openStream();
@@ -97,18 +113,6 @@ public class MainTest {
         } finally {
             is1.close();
             is2.close();
-        }
-    }
-
-    public static void deleteTree(File dir) throws IOException {
-        if (!dir.isDirectory()) 
-            return;
-                
-        for (File f : new DirTree(dir).getFiles()) {
-            if (!f.delete()) {
-                throw new IOException("Unable to delete file " + f.getAbsolutePath() +
-                    " The file may still be in use.");
-            }
         }
     }
 }
