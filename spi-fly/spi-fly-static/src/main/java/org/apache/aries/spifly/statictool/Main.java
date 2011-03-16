@@ -60,6 +60,7 @@ public class Main {
             weaveDir(tempDir, consumerHeader);
             // jar(tempDir, newJar);
         }
+        delTree(tempDir);
         // finally - clean up
     }
 
@@ -183,6 +184,13 @@ public class Main {
         } finally {
             jar.closeEntry();
             is.close();
+        }
+    }
+
+    static void delTree(File tempDir) throws IOException {
+        for (File f : new DirTree(tempDir).getFiles()) {
+            if (!f.delete())
+                throw new IOException("Problem deleting file: " + tempDir.getAbsolutePath());
         }
     }
 
