@@ -25,12 +25,11 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>default-parent</artifactId>
-        <version>0.4</version>
+        <version>0.4.1-SNAPSHOT</version>
     </parent>
     
     <artifactId>java5-parent</artifactId>
     <name>Aries :: Java 5 Parent POM</name>
-    <version>0.4</version>
     <packaging>pom</packaging>
     
     <build>
