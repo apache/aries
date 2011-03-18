@@ -22,20 +22,41 @@
     <modelVersion>4.0.0</modelVersion>
     
     <parent>
-        <groupId>org.apache.aries.jndi</groupId>
-        <artifactId>jndi</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
    
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
     <name>Apache Aries JNDI Test Bundle for Aries jndi-url iTests</name>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest-web</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest-web</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-url-itest-web</url>
+     </scm>
+
+     <properties>
+     <aries.osgi.private.pkg>
+        org.apache.aries.jndiurl.itest,
+        org.apache.aries.jndiurl.itest.beans
+     </aries.osgi.private.pkg>
+     <aries.osgi.import.pkg>
+        javax.servlet*;version=2.5,
+        *
+     </aries.osgi.import.pkg>
+     <aries.osgi.export.pkg />
+     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 
@@ -47,15 +68,6 @@
               <configuration>
                 <instructions>
                   <Web-ContextPath>/jndiUrlItest</Web-ContextPath>
-                  <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                  <Private-Package>
-                    org.apache.aries.jndiurl.itest,
-                    org.apache.aries.jndiurl.itest.beans
-                  </Private-Package>
-                  <Import-Package>
-                    javax.servlet*;version=2.5,
-                    *
-                  </Import-Package>
                 </instructions>
               </configuration>
             </plugin>
