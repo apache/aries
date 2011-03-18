@@ -93,6 +93,10 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="destroyCallingReference" class="org.apache.aries.blueprint.sample.DestroyTest" destroy-method="destroy">
+	  <property name="target" ref="refWithDefault"/>
+	</bean>
 
 	<service ref="foo" auto-export="all-classes">
 		<service-properties>
