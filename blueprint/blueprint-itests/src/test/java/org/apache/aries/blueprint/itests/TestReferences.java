@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.apache.aries.blueprint.sample.BindingListener;
 import org.apache.aries.blueprint.sample.DefaultRunnable;
+import org.apache.aries.blueprint.sample.DestroyTest;
 import org.apache.aries.blueprint.sample.InterfaceA;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -39,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
@@ -154,6 +156,35 @@ public class TestReferences extends AbstractIntegrationTest {
       refRunnable.run();
       
       assertEquals("The default runnable was not called", 2, defaultRunnable.getCount());
+    }
+    
+    @Test
+    public void testReferencesCallableInDestroy() throws Exception {
+      bundleContext.registerService(Runnable.class.getName(), new Thread(), null);
+      
+      BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample");
+      assertNotNull(blueprintContainer);
+      
+      DestroyTest dt = (DestroyTest) blueprintContainer.getComponentInstance("destroyCallingReference");
+      
+      Bundle b = findBundle("org.apache.aries.blueprint.sample");
+      assertNotNull(b);
+      b.stop();
+      
+      assertTrue("The destroy method was called", dt.waitForDestruction(1000));
+      
+      Exception e = dt.getDestroyFailure();
+      
+      if (e != null) throw e;
+    }
+
+    private Bundle findBundle(String bsn)
+    {
+      for (Bundle b : bundleContext.getBundles()) {
+        if (bsn.equals(b.getSymbolicName())) return b;
+      }
+      
+      return null;
     }
 
     @org.ops4j.pax.exam.junit.Configuration
