@@ -19,16 +19,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.jndi</groupId>
-        <artifactId>jndi</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.url.itest</artifactId>
     <name>Apache Aries JNDI iTests for jndi-url</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
         Integration test for JNDI
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-url-itest</url>
+     </scm>
 
     <dependencies>
         <dependency>
@@ -53,29 +62,34 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
+            <version>0.3</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         
         <dependency>
@@ -140,12 +154,14 @@
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
             <scope>test</scope>
+            <version>2.1_3_4</version>
         </dependency>
 
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
             <scope>test</scope>
+            <version>3.2</version>
         </dependency>
 
 		<dependency>
@@ -170,47 +186,41 @@
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <scope>test</scope>
+            <version>1.2</version>
         </dependency>
             
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-extender-war</artifactId>
             <scope>test</scope>
+            <version>0.8.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-jetty-bundle</artifactId>
             <scope>test</scope>
+            <version>0.8.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.fileinstall</artifactId>
             <scope>test</scope>
+            <version>2.0.8</version>
 		</dependency>
         
-		<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint</artifactId>
-            <scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.aries</groupId>
-			<artifactId>org.apache.aries.util</artifactId>
-            <scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.aries.jndi</groupId>
 			<artifactId>org.apache.aries.jndi</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
 		</dependency>
 
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
 
     </dependencies>
