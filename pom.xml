@@ -18,19 +18,31 @@
     <modelVersion>4.0.0</modelVersion>
     <description>Blueprint Test Quiesce Bundle, tests the blueprint participant for the quiesce functionality.</description>
     <parent>
-        <groupId>org.apache.aries.blueprint</groupId>
-        <artifactId>blueprint</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
     <name>Apache Aries Blueprint Test Quiesce Bundle</name>
     <packaging>bundle</packaging>
+    <version>0.3.2-SNAPSHOT</version>
 
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/testquiescebundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/testquiescebundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/testquiescebundle</url>
+     </scm>
     <properties>
         <aries.osgi.activator>
             org.apache.aries.blueprint.testquiescebundle.Activator
         </aries.osgi.activator>
+        <aries.osgi.private.pkg />
+        <aries.osgi.import.pkg> *
+        </aries.osgi.import.pkg>
+        <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
     </properties>
 
     <dependencies>
@@ -42,10 +54,12 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
