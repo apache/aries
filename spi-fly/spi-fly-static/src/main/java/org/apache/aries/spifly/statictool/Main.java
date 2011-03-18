@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
@@ -58,25 +59,45 @@ public class Main {
         String consumerHeader = manifest.getMainAttributes().getValue(SpiFlyConstants.SPI_CONSUMER_HEADER);
         if (consumerHeader != null) {
             weaveDir(tempDir, consumerHeader);
-            // jar(tempDir, newJar);
+
+            manifest.getMainAttributes().remove(new Attributes.Name(SpiFlyConstants.SPI_CONSUMER_HEADER));
+            manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeader);
+            
+            File newJar = getNewJarFile(jarFile);
+            jar(newJar, tempDir, manifest);
         }
         delTree(tempDir);
-        // finally - clean up
+    }
+
+    private static File getNewJarFile(File jarFile) {
+        String s = jarFile.getAbsolutePath();
+        int idx = s.lastIndexOf('.');
+        s = s.substring(0, idx);
+        s += "_spifly.jar";
+        return new File(s);
     }
 
     private static void weaveDir(File dir, String consumerHeader) throws IOException {
+        String dirName = dir.getAbsolutePath();
+        
         DirTree dt = new DirTree(dir);
         for (File f : dt.getFiles()) {
             if (!f.getName().endsWith(".class"))
                 continue;
+            
+            String className = f.getAbsolutePath().substring(dirName.length());
+            if (className.startsWith(File.separator)) 
+                className = className.substring(1);
+            className = className.substring(0, className.length() - ".class".length());
+            className = className.replace(File.separator, ".");
             
             WeavingData[] wd = ConsumerHeaderProcessor.processHeader(consumerHeader);
             InputStream is = new FileInputStream(f);
             byte[] b;
             try {
                 ClassReader cr = new ClassReader(is);
-                ClassWriter cw = new ClassWriter(0);
-                ClassVisitor cv = new TCCLSetterVisitor(cw, null, wd); 
+                ClassWriter cw = new ClassWriter(0);                
+                ClassVisitor cv = new TCCLSetterVisitor(cw, className, wd); 
                 cr.accept(cv, 0);
                 b = cw.toByteArray();
             } finally {
