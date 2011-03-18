@@ -19,13 +19,23 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>jpa</artifactId>
-        <groupId>org.apache.aries.jpa</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.container.itest</artifactId>
+    <version>0.3.1-SNAPSHOT</version>
     <name>Aries JPA iTests</name>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-itest</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-itest</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-container-itest</url>
+     </scm>
+
     <!--
 
       For adding EclipseLink as a provider
@@ -77,21 +87,25 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
+            <version>0.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
+            <version>3.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -102,31 +116,47 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
+            <version>1.2.4</version>
+                <exclusions>
+                     <exclusion>
+                         <groupId>org.apache.felix</groupId>
+                         <artifactId>org.osgi.compendium</artifactId>
+                     </exclusion>
+                     <exclusion>
+                          <groupId>org.apache.felix</groupId>
+                          <artifactId>org.osgi.core</artifactId>
+                     </exclusion>
+                 </exclusions>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <version>1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>org.apache.aries.jpa.api</artifactId>
             <groupId>org.apache.aries.jpa</groupId>
+            <version>0.3.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container.context</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <!--<scope>test</scope>-->
         </dependency>
         <!--
@@ -155,84 +185,101 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
+            <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <version>1.1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
+            <version>2.4</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
+            <version>1.5.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.serp</artifactId>
+            <version>1.13.1_2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.blueprint.itest.bundle</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.api</artifactId>
+            <version>0.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.testds</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
 			<groupId>org.apache.aries.transaction</groupId>
 			<artifactId>org.apache.aries.transaction.wrappers</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
 		</dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.core</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
+            <version>10.5.3.0_1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+            <version>2.1_3_4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

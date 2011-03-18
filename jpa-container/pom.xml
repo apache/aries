@@ -19,15 +19,24 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>jpa</artifactId>
-        <groupId>org.apache.aries.jpa</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.container</artifactId>
     <packaging>bundle</packaging>
+    <version>0.3.1-SNAPSHOT</version>
     <name>Aries JPA Container</name>
     
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-container</url>
+     </scm>
+
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
 
@@ -62,20 +71,24 @@
         <dependency>
             <artifactId>org.apache.aries.jpa.api</artifactId>
             <groupId>org.apache.aries.jpa</groupId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.api</artifactId>
+            <version>0.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>org.apache.aries.util</artifactId>
             <groupId>org.apache.aries</groupId>
+            <version>0.4-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <version>1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -91,6 +104,7 @@
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
 
         <dependency>
