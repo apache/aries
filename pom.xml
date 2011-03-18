@@ -18,15 +18,24 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>web</artifactId>
-        <groupId>org.apache.aries.web</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>org.apache.aries.web</groupId>
     <artifactId>org.apache.aries.web.urlhandler</artifactId>
     <packaging>bundle</packaging>
+    <version>0.3.1-SNAPSHOT</version>
     <name>Apache Aries Web Url handler</name>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/web/web-url-handler</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/web/web-url-handler</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/web/web-url-handler</url>
+     </scm>
 
 	<properties>
         <!-- Export package versions are maintained in packageinfo files -->
@@ -38,6 +47,8 @@
 			org.apache.aries.web.converter.impl,
 			org.apache.aries.web.url
 		</aries.osgi.private.pkg>
+		<aries.osgi.import.pkg>*
+		</aries.osgi.import.pkg>
 	</properties>
 
     <dependencies>
@@ -54,11 +65,13 @@
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
+            <version>3.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
     </dependencies>
 
