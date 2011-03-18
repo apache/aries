@@ -22,5 +22,7 @@ public interface SpiFlyConstants {
     String SPI_CONSUMER_HEADER = "SPI-Consumer";
     String SPI_PROVIDER_HEADER = "SPI-Provider";
 
+    String PROCESSED_SPI_CONSUMER_HEADER = "X-SpiFly-Processed-SPI-Consumer";
+
     String SPI_PROVIDER_URL = "spi.provider.url";
 }
