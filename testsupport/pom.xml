@@ -22,25 +22,18 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.4</version>
-        <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
+        <relativePath />
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.testsupport</groupId>
     <artifactId>testsupport</artifactId>
     <name>Apache Aries Test Support</name>
-    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
-        Test Support for OSGi
+        Test Support for OSGi - reactor pom
     </description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/testsupport</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/testsupport</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/testsupport</url>
-    </scm>
 
     <modules>
         <module>testsupport-unit</module>

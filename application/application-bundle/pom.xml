@@ -19,18 +19,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.application</groupId>
-        <artifactId>application</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java6-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Bundle</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
       This bundle is a standalone bundle to support
       Aries applications.
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application</url>
+     </scm>
 
     <properties>
         <aries.osgi.symbolic.name>
@@ -39,7 +48,7 @@
         <aries.osgi.import>
             org.osgi.framework;version="[1.5,2)",
             org.slf4j;version="[1.5,2)",
-            org.apache.aries.application*;version="[0.1,0.2)",
+            org.apache.aries.application*;version="[0.3,0.4)",
             *
         </aries.osgi.import>
         <aries.osgi.export.pkg>
@@ -62,18 +71,22 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

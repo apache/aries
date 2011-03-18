@@ -22,210 +22,14 @@
         <artifactId>java5-parent</artifactId>
         <groupId>org.apache.aries</groupId>
         <version>0.4</version>
-        <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
+        <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>jpa</artifactId>
     <packaging>pom</packaging>
     <name>Aries JPA Component</name>
-    <version>0.4-SNAPSHOT</version>
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jpa</url>
-    </scm>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>org.apache.aries.jpa.api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>org.apache.aries.jpa.blueprint.itest</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>org.apache.aries.jpa.blueprint.itest.bundle</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>org.apache.aries.jpa.container</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>org.apache.aries.jpa.container.context</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>org.apache.aries.jpa.container.itest</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 
-
-            <dependency>
-                <groupId>org.apache.aries</groupId>
-                <artifactId>org.apache.aries.util</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.proxy</groupId>
-                <artifactId>org.apache.aries.proxy</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.testsupport</groupId>
-                <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.quiesce</groupId>
-                <artifactId>org.apache.aries.quiesce.api</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>1.2.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.compendium</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jpa_2.0_spec</artifactId>
-                <version>1.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm-all</artifactId>
-                <version>3.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jta_1.1_spec</artifactId>
-                <version>1.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.openjpa</groupId>
-                <artifactId>openjpa</artifactId>
-                <version>2.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.4</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-                <version>3.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-pool</groupId>
-                <artifactId>commons-pool</artifactId>
-                <version>1.5.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.servicemix.bundles</groupId>
-                <artifactId>org.apache.servicemix.bundles.serp</artifactId>
-                <version>1.13.1_2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa</artifactId>
-                <version>2.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core</artifactId>
-                <version>2.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>2.0.0</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.aries.transaction</groupId>
-              <artifactId>org.apache.aries.transaction.manager</artifactId>
-              <scope>test</scope>
-              <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.aries.transaction</groupId>
-              <artifactId>org.apache.aries.transaction.testds</artifactId>
-              <scope>test</scope>
-              <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.aries.transaction</groupId>
-              <artifactId>org.apache.aries.transaction.wrappers</artifactId>
-              <scope>test</scope>
-              <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.aries.jndi</groupId>
-              <artifactId>org.apache.aries.jndi.api</artifactId>
-              <scope>test</scope>
-              <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.aries.jndi</groupId>
-              <artifactId>org.apache.aries.jndi.core</artifactId>
-              <scope>test</scope>
-              <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.aries.jndi</groupId>
-              <artifactId>org.apache.aries.jndi.url</artifactId>
-              <scope>test</scope>
-              <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.derby</groupId>
-                <artifactId>derby</artifactId>
-                <version>10.5.3.0_1</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.servicemix.bundles</groupId>
-                <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
-                <version>2.1_3_4</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <modules>
         <module>jpa-api</module>
         <module>jpa-container</module>
@@ -236,23 +40,7 @@
         <module>jpa-blueprint-testbundle</module>
     </modules>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.0</version>
-                    <configuration>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <goals>deploy</goals>
-                        <arguments>-Papache-release -DskipTests=true</arguments>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-
+ <!-- Saved from original parent pom - may need o be added to module poms if Eclipselink is used.
     <profiles>
         <profile>
             <id>eclipselink</id>
@@ -263,34 +51,6 @@
                 </repository>
             </repositories>
         </profile>
-        <profile>
-            <id>rat</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.rat</groupId>
-                        <artifactId>apache-rat-plugin</artifactId>
-                        <version>0.6</version>
-                        <!-- Note: other configuration inherited from the parent pom -->
-                        <configuration>
-                            <excludes>
-                                <!-- These CDDL+GPL files are covered in the NOTICE.vm and LICENCE.vm in the jpa-container module -->
-                                <exclude>**/persistence.xsd.rsrc</exclude>
-                                <exclude>**/persistence_2_0.xsd.rsrc</exclude>
-                                <!-- The rest of the excludes below had to be copied from the parent pom -->
-                                <exclude>**/target/**/*</exclude>
-                                <exclude>**/appended-resources/**/*</exclude>
-                                <exclude>**/dependency-reduced-pom.xml</exclude>
-                                <exclude>**/velocity.log</exclude>
-                                <!-- manifest files don't support comments so don't contain the ASL2.0 header -->
-                                <exclude>**/*.MF</exclude>
-                                <!--RAT doesn't seem to recognize MIT style licenses-->
-                                <exclude>manual/src/styles/print.css</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
+    -->
 </project>

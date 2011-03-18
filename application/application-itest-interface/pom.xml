@@ -19,17 +19,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.application</groupId>
-        <artifactId>application</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java6-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application itests sample application interface</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
       Interface class(es) for aplication runtime itests.
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-itest-interface</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-itest-interface</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-itest-interface</url>
+     </scm>
 
 	<properties>
         <!-- Export package versions are maintained in packageinfo files -->
@@ -37,6 +46,10 @@
 		<aries.osgi.export.pkg>
 			org.apache.aries.sample
 		</aries.osgi.export.pkg>
+
+		<aries.osgi.private.pkg />
+		<aries.osgi.import.pkg>*
+		</aries.osgi.import.pkg>
 	</properties>
 
 </project>

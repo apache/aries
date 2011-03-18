@@ -19,18 +19,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.aries.blueprint</groupId>
-    <artifactId>blueprint</artifactId>
-    <version>0.4-SNAPSHOT</version>
+    <groupId>org.apache.aries</groupId>
+    <artifactId>java5-parent</artifactId>
+    <version>0.4</version>
+    <relativePath />
   </parent>
 
+  <groupId>org.apache.aries.blueprint</groupId>
   <artifactId>org.apache.aries.blueprint.annotation.impl</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Blueprint Annotation Impl</name>
+  <version>0.3.2-SNAPSHOT</version>
   <description>
       This bundle contains the core implementation of Blueprint 
       along with the "ext" namespace handler.
   </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-impl</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-impl</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-annotation-impl</url>
+     </scm>
 
   <properties>
       <aries.osgi.activator>
@@ -41,24 +50,25 @@
           org.apache.aries.blueprint.annotation.impl
       </aries.osgi.export.pkg>
       <aries.osgi.import>
-          !org.apache.aries.blueprint.jaxb.*,
-          !org.apache.aries.blueprint.annotation.impl,
           org.apache.aries.blueprint.annotation,
         *
       </aries.osgi.import>
       <aries.osgi.export.service>
           org.apache.aries.blueprint.annotation.AnnotationScannerService
       </aries.osgi.export.service>
+      <aries.osgi.private.pkg />
   </properties>
   
   <dependencies>
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
+          <version>0.3.2-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>org.apache.aries</groupId>
           <artifactId>org.apache.aries.util</artifactId>
+          <version>0.4-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>org.osgi</groupId>
@@ -88,11 +98,19 @@
           <groupId>asm</groupId>
           <artifactId>asm-all</artifactId>
           <optional>true</optional>
+          <version>3.2</version>
       </dependency>
       <dependency>
           <groupId>org.apache.xbean</groupId>
           <artifactId>xbean-finder</artifactId>
+          <version>3.7</version>
       </dependency>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <scope>test</scope>
+      </dependency>
+
   </dependencies>
   
 </project>

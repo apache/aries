@@ -22,131 +22,18 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>0.4</version>
-        <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
+        <relativePath/>
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>jndi</artifactId>
     <name>Apache Aries JNDI</name>
-    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
-        JNDI support for OSGi
+        JNDI support for OSGi - Reactor POM
     </description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jndi</url>
-    </scm>
-
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- internal dependencies -->
-            <dependency>
-                <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>org.apache.aries.jndi.api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>org.apache.aries.jndi.core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>org.apache.aries.jndi.url</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>org.apache.aries.jndi.rmi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>org.apache.aries.jndi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-                       <dependency>
-                <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!-- external dependencies -->
-            <dependency>
-                <groupId>org.apache.aries.testsupport</groupId>
-                <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.apache.aries</groupId>
-            	<artifactId>org.apache.aries.util</artifactId>
-            	<version>0.4-SNAPSHOT</version>
-            </dependency>
-	        <dependency>
-	            <groupId>org.apache.aries.proxy</groupId>
-	            <artifactId>org.apache.aries.proxy.api</artifactId>
-	            <version>0.4-SNAPSHOT</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>asm</groupId>
-	            <artifactId>asm-all</artifactId>
-	            <version>3.2</version>
-	        </dependency>
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-servlet_2.5_spec</artifactId>
-                <version>1.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.servicemix.bundles</groupId>
-                <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
-                <version>2.1_3_4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ops4j.pax.web</groupId>
-                <artifactId>pax-web-extender-war</artifactId>
-                <version>0.8.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ops4j.pax.web</groupId>
-                <artifactId>pax-web-jetty-bundle</artifactId>
-                <version>0.8.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.fileinstall</artifactId>
-                <version>2.0.8</version>
-            </dependency>
-
-            <!-- other aries subproject dependency management -->
-             <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>0.4-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
-    
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <modules>
         <module>jndi-api</module>

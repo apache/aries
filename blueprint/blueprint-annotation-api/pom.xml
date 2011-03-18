@@ -17,17 +17,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.blueprint</groupId>
-        <artifactId>blueprint</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Annotation API</name>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
         This bundle contains the blueprint annotation api and the corresponding xml schema.
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-api</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-api</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-annotation-api</url>
+     </scm>
 
     <properties>
          <!-- Export package versions are maintained in packageinfo files -->
@@ -35,9 +44,9 @@
              org.apache.aries.blueprint.annotation.*
          </aries.osgi.export.pkg>
          <aries.osgi.import>
-             !org.apache.aries.blueprint.annotation.*,
              *
          </aries.osgi.import>
+         <aries.osgi.private.pkg />
      </properties>
 
      <dependencies>

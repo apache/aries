@@ -22,28 +22,30 @@
     <modelVersion>4.0.0</modelVersion>
     
     <parent>
-        <groupId>org.apache.aries.jndi</groupId>
-        <artifactId>jndi</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
    
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
     <name>Apache Aries JNDI "business logic" test bundle for Aries jndi-url iTests</name>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest-biz</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest-biz</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-url-itest-biz</url>
+     </scm>
+
+     <properties> 
+      <aries.osgi.import.pkg>*
+      </aries.osgi.import.pkg>
+      <aries.osgi.private.pkg>*
+      </aries.osgi.private.pkg>
+      <aries.osgi.export />
+     </properties>
     
-    <build>
-        <plugins>
-            <plugin>
-              <groupId>org.apache.felix</groupId>
-              <artifactId>maven-bundle-plugin</artifactId>
-              <configuration>
-                <instructions>
-                  <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                  <Private-Package>*</Private-Package>
-                </instructions>
-              </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

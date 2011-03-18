@@ -19,18 +19,27 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>application</artifactId>
-        <groupId>org.apache.aries.application</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java6-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.runtime.isolated</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Isolated Application Runtime</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
         An isolated application runtime implementation
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-runtime-isolated</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-runtime-isolated</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-runtime-isolated</url>
+     </scm>
 
     <properties>
         <aries.osgi.export.pkg>
@@ -49,15 +58,18 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

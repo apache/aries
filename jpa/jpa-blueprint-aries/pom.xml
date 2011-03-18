@@ -19,14 +19,23 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>jpa</artifactId>
-        <groupId>org.apache.aries.jpa</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
     <name>Aries JPA Container blueprint integration for Aries blueprint</name>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-blueprint-aries</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-blueprint-aries</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-blueprint-aries</url>
+     </scm>
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
@@ -57,16 +66,19 @@
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <version>1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>0.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -82,6 +94,7 @@
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

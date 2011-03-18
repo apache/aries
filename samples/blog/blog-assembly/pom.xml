@@ -164,44 +164,53 @@
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.install</artifactId>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.api</artifactId>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.management</artifactId>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.runtime</artifactId>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.utils</artifactId>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
              <groupId>org.apache.aries.application</groupId>
              <artifactId>org.apache.aries.application.default.local.platform</artifactId>            
+            <version>0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.modeller</artifactId>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.deployment.management</artifactId>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
+            <version>0.4-SNAPSHOT</version>
          </dependency>
 
 		<!-- Additional (JPA persistence layer) Aries dependencies -->

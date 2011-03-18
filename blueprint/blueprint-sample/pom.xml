@@ -17,17 +17,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.blueprint</groupId>
-        <artifactId>blueprint</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.sample</artifactId>
     <name>Apache Aries Blueprint Sample</name>
     <packaging>bundle</packaging>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
         Example blueprint application, mostly used for integration tests.
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample</url>
+     </scm>
 
     <properties>
 		<aries.osgi.export>
@@ -36,6 +45,9 @@
         <aries.osgi.activator>
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
+        <aries.osgi.private.pkg />
+        <aries.osgi.import.pkg > *
+        </aries.osgi.import.pkg>
     </properties>
 
     <dependencies>
@@ -47,6 +59,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

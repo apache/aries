@@ -19,17 +19,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.jndi</groupId>
-        <artifactId>jndi</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI Core</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
       This bundle contains the core of JNDI support for OSGi.
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-core</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-core</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-core</url>
+     </scm>
 
     <properties>
         <aries.osgi.private.pkg>
@@ -40,6 +49,7 @@
         <aries.osgi.activator>
             org.apache.aries.jndi.startup.Activator
         </aries.osgi.activator>
+        <aries.osgi.export.pkg />
     </properties>
 
     <dependencies>
@@ -47,6 +57,7 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
             <scope>provided</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -66,12 +77,19 @@
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

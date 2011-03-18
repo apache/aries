@@ -20,14 +20,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.transaction</groupId>
-        <artifactId>transaction</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
   <groupId>org.apache.aries.transaction</groupId>
   <artifactId>org.apache.aries.transaction.wrappers</artifactId>
   <name>Apache Aries Transaction Enlisting JDBC Datasource</name>
+  <version>0.3.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/wrappers</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/wrappers</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/wrappers</url>
+     </scm>
 
   <properties>
     <aries.osgi.export.pkg>
@@ -45,10 +53,12 @@
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

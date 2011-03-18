@@ -19,17 +19,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.application</groupId>
-        <artifactId>application</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java6-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.modeller</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Modelling</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
       Modelling utilities for working with Aries Applications.
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-modeller</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-modeller</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-modeller</url>
+     </scm>
 
     <properties>
     	<aries.osgi.private.pkg>
@@ -37,6 +46,7 @@
             org.apache.aries.application.modelling.internal;
             org.apache.aries.application.modelling.utils.impl
         </aries.osgi.private.pkg>
+    	<aries.osgi.export.pkg />
     </properties>
 
     <dependencies>
@@ -48,20 +58,24 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
              <groupId>org.apache.aries</groupId>
              <artifactId>org.apache.aries.util</artifactId>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
             <scope>provided</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -88,14 +102,17 @@
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.utils</artifactId>
         	<scope>provided</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.blueprint</groupId>
         	<artifactId>org.apache.aries.blueprint.api</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
