@@ -18,24 +18,39 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.aries.testsupport</groupId>
-    <artifactId>testsupport</artifactId>
-    <version>0.4-SNAPSHOT</version>
+  <groupId>org.apache.aries</groupId>
+       <artifactId>java5-parent</artifactId>
+       <version>0.4</version>
+       <relativePath />
   </parent>
 
+  <groupId>org.apache.aries.testsupport</groupId>
   <artifactId>org.apache.aries.testsupport.unit</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Unit Test Support</name>
+  <version>0.3.1-SNAPSHOT</version>
   <description>
       This bundle provides unit test support.
   </description>
+
+  <scm>
+     <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/testsupport/testsupport-unit</connection>
+     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/testsupport/testsupport-unit</developerConnection>
+     <url>http://svn.apache.org/viewvc/aries/trunk/testsupport/testsupport-unit</url>
+  </scm>
+
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
 
         <aries.osgi.export.pkg>
-            org.apache.aries.*
+            org.apache.aries.unittest.fixture,
+            org.apache.aries.mocks;uses:="junit.framework,org.osgi.framework,org.apache.aries.unittest.mocks,org.junit,org.apache.aries.unittest.mocks.ann otations,javax.naming,javax.naming.spi",
+            org.apache.aries.unittest.mocks.annotations;version="0.3.0",org.apache.aries.unittest.mocks;uses:="junit.framework,org.apache.aries.unittest.mocks.annotations",
+            org.apache.aries.unittest.junit;uses:="org.junit"
         </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg />
+        <aries.osgi.import.pkg>*</aries.osgi.import.pkg>
     </properties>
 
    <dependencies>
