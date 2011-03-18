@@ -18,21 +18,39 @@
  */
 package org.apache.aries.util.internal;
 
-import org.eclipse.osgi.framework.adaptor.BundleClassLoader;
-import org.eclipse.osgi.framework.internal.core.BundleHost;
-import org.eclipse.osgi.internal.loader.BundleLoader;
-import org.eclipse.osgi.internal.loader.BundleLoaderProxy;
+import java.lang.reflect.InvocationTargetException;
+
 import org.osgi.framework.Bundle;
 
 public class EquinoxWorker extends DefaultWorker implements FrameworkUtilWorker {
 
   public ClassLoader getClassLoader(Bundle b) 
   {
-    BundleHost host = (BundleHost) b;
-    BundleLoaderProxy lp = host.getLoaderProxy();
-    BundleLoader bl = (lp == null) ? null : lp.getBasicBundleLoader();
-    BundleClassLoader cl = (bl == null) ? null : bl.createClassLoader();
+    ClassLoader result = null;
+    try {
+      Object bundleLoaderProxy = invoke(b, "getLoaderProxy");
+      if (bundleLoaderProxy != null) {
+        Object bundleLoader = invoke(bundleLoaderProxy, "getBasicBundleLoader");
+        if (bundleLoader != null) {
+          Object bundleClassLoader = invoke(bundleLoader, "createClassLoader");
+          if (bundleClassLoader instanceof ClassLoader) {
+            result = (ClassLoader)bundleClassLoader;
+          }
+        }
+      }
+    } catch (IllegalArgumentException e) {
+    } catch (SecurityException e) {
+    } catch (IllegalAccessException e) {
+    } catch (InvocationTargetException e) {
+    } catch (NoSuchMethodException e) {
+    }
     
-    return ((cl instanceof ClassLoader) ? (ClassLoader)cl : null);
+    return result;
+  }
+
+  private Object invoke(Object targetObject, String method) throws IllegalAccessException, InvocationTargetException,
+      NoSuchMethodException
+  {
+    return targetObject.getClass().getDeclaredMethod(method).invoke(targetObject);
   }
 }
