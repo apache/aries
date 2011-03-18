@@ -18,15 +18,24 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>application</artifactId>
-        <groupId>org.apache.aries.application</groupId>
-        <version>0.4-SNAPSHOT</version>
+       <groupId>org.apache.aries</groupId>
+       <artifactId>java6-parent</artifactId>
+       <version>0.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.converters</artifactId>
     <packaging>bundle</packaging>
+    <version>0.3.1-SNAPSHOT</version>
     <name>Apache Aries Application Converters</name>
+     
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-converters</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-converters</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/application-converters</url>
+    </scm>
+
 
     <properties>
         <aries.osgi.export.pkg>
@@ -37,6 +46,33 @@
     </properties>
 
     <dependencies>
+        <!--Dependency on other Application bundles -->
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.application</groupId>
+        	<artifactId>org.apache.aries.application.utils</artifactId>
+        	<scope>provided</scope>
+            <version>0.3.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Dependency on other Aries module bundles -->
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+            <version>0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.web</groupId>
+            <artifactId>org.apache.aries.web.urlhandler</artifactId>
+            <scope>provided</scope>
+            <version>0.3</version>
+        </dependency>
+        <!--External dependencies. Versions may be specified in default parent -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -51,30 +87,12 @@
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.web</groupId>
-            <artifactId>org.apache.aries.web.urlhandler</artifactId>
-            <scope>provided</scope>
+            <version>3.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries.application</groupId>
-        	<artifactId>org.apache.aries.application.utils</artifactId>
-        	<scope>provided</scope>
         </dependency>
     </dependencies>
 
