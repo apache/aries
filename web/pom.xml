@@ -21,7 +21,7 @@
         <artifactId>java5-parent</artifactId>
         <groupId>org.apache.aries</groupId>
         <version>0.4</version>
-        <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
+        <relativePath />
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -29,98 +29,10 @@
     <artifactId>web</artifactId>
     <packaging>pom</packaging>
     <name>Apache Aries Web Component</name>
-    <version>0.4-SNAPSHOT</version>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/web</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/web</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/web</url>
-    </scm>
 
     <modules>
         <module>web-urlhandler</module>
         <module>web-itests</module>
     </modules>
 
-    <dependencyManagement>
-        <dependencies>
-            <!-- internal dependencies -->
-            <dependency>
-                <groupId>org.apache.aries.web</groupId>
-                <artifactId>org.apache.aries.web.itests</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.web</groupId>
-                <artifactId>org.apache.aries.web.urlhandler</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- external dependencies -->
-            <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm-all</artifactId>
-                <version>3.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.aries.testsupport</groupId>
-                <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.sample</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.proxy</groupId>
-                <artifactId>org.apache.aries.proxy</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>1.2.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.compendium</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries</groupId>
-                <artifactId>org.apache.aries.util</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.0</version>
-          <configuration>
-            <useReleaseProfile>false</useReleaseProfile>
-            <goals>deploy</goals>
-            <arguments>-Papache-release -DskipTests=true</arguments>
-          </configuration>
-        </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 </project>

@@ -20,242 +20,38 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>0.4</version>
-        <relativePath>../parent/default-parent/java6-parent/pom.xml</relativePath>
+        <relativePath />
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.application</groupId>
     <artifactId>application</artifactId>
     <name>Apache Aries Application</name>
-    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
-        Application support for Aries
+       Reactor pom for the Aries Application module 
     </description>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/application</url>
-    </scm>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm-all</artifactId>
-                <version>3.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries</groupId>
-                <artifactId>org.apache.aries.util</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.proxy</groupId>
-                <artifactId>org.apache.aries.proxy</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.core</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.api</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.testsupport</groupId>
-                <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.web</groupId>
-                <artifactId>org.apache.aries.web.urlhandler</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.transaction</groupId>
-                <artifactId>org.apache.aries.transaction.blueprint</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>org.apache.aries.jndi.api</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.bundlerepository</artifactId>
-                <version>1.6.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>1.2.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.compendium</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.fileinstall</artifactId>
-                <version>3.1.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.osgi.service.obr</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
-                <version>1.0.2</version>
-            </dependency>
-
-            <!-- internal -->
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.converters</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.install</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.management</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.isolated</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.isolated.itests</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.framework</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.repository</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.utils</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-			<dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.deployment.management</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-			<dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.modeller</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-			<dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.resolver.noop</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-			<dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.default.local.platform</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
-
     <modules>
-        <module>application-utils</module>
         <module>application-api</module>
-        <module>application-management</module>
+        <module>application-utils</module>
+        <module>application-bundle</module>
         <module>application-converters</module>
+	    <module>application-default-local-platform</module>
+        <module>application-deployment-management</module>
+        <module>application-install</module>
+        <module>application-itest-interface</module>
+        <module>application-itests</module>
+        <module>application-management</module>
+        <module>application-modeller</module>
+        <module>application-noop-resolver</module>
+        <module>application-obr-resolver</module>
         <module>application-runtime</module>
 	    <module>application-runtime-isolated</module>
 	    <module>application-runtime-framework</module>
 	    <module>application-runtime-framework-management</module>
 	    <module>application-runtime-repository</module>
-        <module>application-itest-interface</module>
-        <module>application-noop-resolver</module>
-        <module>application-itests</module>
-        <module>application-obr-resolver</module>
-        <module>application-install</module>
-        <module>application-bundle</module>
-        <module>application-deployment-management</module>
-        <module>application-modeller</module>
-	    <module>application-default-local-platform</module>
     </modules>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.0</version>
-                    <configuration>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <goals>deploy</goals>
-                        <arguments>-Papache-release -DskipTests=true</arguments>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 </project>

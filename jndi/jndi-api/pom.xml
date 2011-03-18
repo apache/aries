@@ -17,14 +17,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.jndi</groupId>
-        <artifactId>jndi</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-api</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-api</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-api</url>
+     </scm>
+
+    <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI API</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
         This bundle contains the JNDI 1.0.0 API
     </description>
@@ -39,9 +48,9 @@
             org.apache.aries.jndi.spi
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-            !org.osgi.service.jndi*,
             *
         </aries.osgi.import>
+        <aries.osgi.private.pkg />
     </properties>
 
 </project>

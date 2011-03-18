@@ -315,36 +315,56 @@
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.install</artifactId>
             <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.api</artifactId>
             <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.deployment.management</artifactId>
+            <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.management</artifactId>
             <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.modeller</artifactId>
+            <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.runtime</artifactId>
             <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.utils</artifactId>
             <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
 		</dependency>
 
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.default.local.platform</artifactId>
             <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
 		<dependency>
             <groupId>org.apache.felix</groupId>
@@ -409,6 +429,7 @@
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
             <scope>test</scope>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
 	</dependencies>
 

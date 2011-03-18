@@ -19,17 +19,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.application</groupId>
-        <artifactId>application</artifactId>
-        <version>0.4-SNAPSHOT</version>
+       <groupId>org.apache.aries</groupId>
+       <artifactId>java6-parent</artifactId>
+       <version>0.4</version>
     </parent>
 
+    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application API</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
       Application API.
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-api</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-api</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-api</url>
+     </scm>
+
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
@@ -41,6 +50,10 @@
             org.apache.aries.application.modelling;
             org.apache.aries.application.modelling.utils;
         </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg />
+        <aries.osgi.import.pkg> *
+        </aries.osgi.import.pkg>
+        
         
     </properties>
 

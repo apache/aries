@@ -17,16 +17,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>application</artifactId>
-        <groupId>org.apache.aries.application</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java6-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
+
+    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.default.local.platform</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Default local platform</name>
+    <version>0.3.1-SNAPSHOT</version>
+
     <description>
       Implementation of the default local Platform Repository
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-default-local-platform</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-default-local-platform</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-default-local-platform</url>
+     </scm>
     <properties>
         <aries.osgi.export.pkg>
         </aries.osgi.export.pkg>
@@ -43,6 +54,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

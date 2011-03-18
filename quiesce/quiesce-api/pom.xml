@@ -19,17 +19,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.quiesce</groupId>
-        <artifactId>quiesce</artifactId>
-        <version>0.4-SNAPSHOT</version>
+          <groupId>org.apache.aries</groupId>
+          <artifactId>java5-parent</artifactId>
+          <version>0.4</version>
+          <relativePath />
+
     </parent>
 
+    <groupId>org.apache.aries.quiesce</groupId>
     <artifactId>org.apache.aries.quiesce.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Quiesce API</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
       Quiesce API.
     </description>
+
+    <scm>
+            <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/quiesce/quiesce-api</connection>
+            <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/quiesce/quiesce-api</developerConnection>
+            <url>http://svn.apache.org/viewvc/aries/trunk/quiesce/quiesce-api</url>
+    </scm>
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->

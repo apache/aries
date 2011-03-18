@@ -20,13 +20,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.transaction</groupId>
-        <artifactId>transaction</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
   <groupId>org.apache.aries.transaction</groupId>
   <artifactId>org.apache.aries.transaction.itests</artifactId>
   <name>Apache Aries Transaction Integration Tests</name>
+  <version>0.3.1-SNAPSHOT</version>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/itests</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/itests</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/itests</url>
+     </scm>
+
   <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -81,41 +90,49 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.blueprint</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.wrappers</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.testds</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.testbundle</artifactId>
             <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
       <dependency>
           <groupId>asm</groupId>
           <artifactId>asm-all</artifactId>
           <scope>test</scope>
+          <version>3.2</version>
       </dependency>
     </dependencies>
   <build>

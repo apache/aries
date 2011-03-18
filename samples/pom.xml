@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>org.apache.aries.samples</groupId>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.3.1-SNAPSHOT</version>
     <artifactId>samples</artifactId>
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
@@ -39,16 +39,16 @@
     </scm>
 
     <properties>
-        <ariesApplicationVersion>0.4-SNAPSHOT</ariesApplicationVersion>
-        <ariesBlueprintVersion>0.4-SNAPSHOT</ariesBlueprintVersion>
-        <ariesJmxVersion>0.4-SNAPSHOT</ariesJmxVersion>
-        <ariesJndiVersion>0.4-SNAPSHOT</ariesJndiVersion>
-        <ariesJpaVersion>0.4-SNAPSHOT</ariesJpaVersion>
-        <ariesProxyVersion>0.4-SNAPSHOT</ariesProxyVersion>
-        <ariesQuiesceVersion>0.4-SNAPSHOT</ariesQuiesceVersion>
-        <ariesTransactionVersion>0.4-SNAPSHOT</ariesTransactionVersion>
-        <ariesUtilVersion>0.4-SNAPSHOT</ariesUtilVersion>
-        <ariesWebVersion>0.4-SNAPSHOT</ariesWebVersion>
+        <ariesApplicationVersion>0.3.1-SNAPSHOT</ariesApplicationVersion>
+        <ariesBlueprintVersion>0.3.1-SNAPSHOT</ariesBlueprintVersion>
+        <ariesJmxVersion>0.3.1-SNAPSHOT</ariesJmxVersion>
+        <ariesJndiVersion>0.3.1-SNAPSHOT</ariesJndiVersion>
+        <ariesJpaVersion>0.3.1-SNAPSHOT</ariesJpaVersion>
+        <ariesProxyVersion>0.3.1-SNAPSHOT</ariesProxyVersion>
+        <ariesQuiesceVersion>0.3.1-SNAPSHOT</ariesQuiesceVersion>
+        <ariesTransactionVersion>0.3.1-SNAPSHOT</ariesTransactionVersion>
+        <ariesUtilVersion>0.3.1-SNAPSHOT</ariesUtilVersion>
+        <ariesWebVersion>0.3.1-SNAPSHOT</ariesWebVersion>
         <openjpaVersion>2.0.0</openjpaVersion>
         <geronimoJpaSpecVersion>1.1</geronimoJpaSpecVersion>
         <geronimoJtaSpecVersion>1.1.1</geronimoJtaSpecVersion>
@@ -197,14 +197,14 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
-                <artifactId>application</artifactId>
+                <artifactId>org.apache.aries.application</artifactId>
                 <version>${ariesApplicationVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>blueprint</artifactId>
+                <artifactId>org.apache.aries.blueprint</artifactId>
                 <version>${ariesBlueprintVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -230,35 +230,35 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>jmx</artifactId>
+                <artifactId>org.apache.aries.jmx</artifactId>
                 <version>${ariesJmxVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>jndi</artifactId>
+                <artifactId>org.apache.aries.jndi</artifactId>
                 <version>${ariesJndiVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>jpa</artifactId>
+                <artifactId>org.apache.aries.jpa</artifactId>
                 <version>${ariesJpaVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.transaction</groupId>
-                <artifactId>transaction</artifactId>
+                <artifactId>org.apache.aries.transaction</artifactId>
                 <version>${ariesTransactionVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.web</groupId>
-                <artifactId>web</artifactId>
+                <artifactId>org.apache.aries.web</artifactId>
                 <version>${ariesWebVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>

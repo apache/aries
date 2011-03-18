@@ -19,17 +19,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.proxy</groupId>
-        <artifactId>proxy</artifactId>
-        <version>0.4-SNAPSHOT</version>
+         <groupId>org.apache.aries</groupId>
+         <artifactId>java5-parent</artifactId>
+         <version>0.4</version>
+         <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.proxy</groupId>
     <artifactId>org.apache.aries.proxy.impl</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Service</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
         This bundle contains the proxy service implementation for Apache Aries
     </description>
+
+    <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-impl</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-impl</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-impl</url>
+    </scm>
+
 
     <properties>
         <aries.osgi.export.pkg/>
@@ -51,6 +61,7 @@
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
             <optional>true</optional>
+            <version>3.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -85,11 +96,13 @@
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
         	<scope>compile</scope>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries</groupId>
         	<artifactId>org.apache.aries.util</artifactId>
         	<scope>compile</scope>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

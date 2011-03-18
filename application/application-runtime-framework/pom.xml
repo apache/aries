@@ -19,18 +19,27 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>application</artifactId>
-        <groupId>org.apache.aries.application</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java6-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.runtime.framework</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Bundle Framework provider</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
         An equinox based bundle framework runtime implementation
     </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-runtime-framework</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-runtime-framework</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-runtime-framework</url>
+     </scm>
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
@@ -53,15 +62,18 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

@@ -50,7 +50,9 @@
         <module>application</module>
         <module>jmx</module>
         <module>jpa</module>
+        <!--
         <module>samples</module>
+        -->
     </modules>
 
     <build>
