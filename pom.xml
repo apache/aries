@@ -22,142 +22,17 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.4</version>
-        <relativePath>../parent/default-parent/java5-parent/pom.xml</relativePath>
+        <relativePath />
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>jmx</artifactId>
     <name>Apache Aries JMX</name>
-    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
-    <description>Implementation of the JMX Management Model Specification</description>
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jmx</url>
-    </scm>
-    
-    <dependencyManagement>
-        <dependencies>
-            <!-- internal dependencies -->
-            <dependency>
-                <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>org.apache.aries.jmx.api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>org.apache.aries.jmx.core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>org.apache.aries.jmx</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>org.apache.aries.jmx.blueprint</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- external dependencies -->
-            <dependency>
-                <groupId>org.apache.aries</groupId>
-                <artifactId>org.apache.aries.util</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.proxy</groupId>
-                <artifactId>org.apache.aries.proxy</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm-all</artifactId>
-                <version>3.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.sample</artifactId>
-                <version>0.4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>1.2.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.compendium</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.jmock</groupId>
-                <artifactId>jmock-junit4</artifactId>
-                <version>2.5.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jmock</groupId>
-                <artifactId>jmock-legacy</artifactId>
-                <version>2.5.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>1.8.2</version>
-            </dependency>
-            
-        </dependencies>
-    </dependencyManagement>
-    
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.0</version>
-                    <configuration>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <goals>deploy</goals>
-                        <arguments>-Papache-release -DskipTests=true</arguments>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+    <description>Implementation of the JMX Management Model Specification - reactor pom</description>
 
     <modules>
         <module>jmx-api</module>

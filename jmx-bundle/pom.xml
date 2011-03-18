@@ -17,18 +17,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.jmx</groupId>
-        <artifactId>jmx</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Bundle</name>
+    <version>0.3.1-SNAPSHOT</version>
     <description>
        This bundle contains the standalone implementation of the along with the API.
     </description>
 
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx</url>
+     </scm>
     <properties>
         <aries.osgi.activator>
             org.apache.aries.jmx.Activator
@@ -76,10 +84,12 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.core</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
