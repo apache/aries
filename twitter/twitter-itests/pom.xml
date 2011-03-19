@@ -21,7 +21,7 @@
     <parent>
         <artifactId>twitter</artifactId>
         <groupId>org.apache.aries.samples.twitter</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.3.1-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
@@ -42,6 +42,7 @@
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.configadmin</artifactId>
+            <version>1.2.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -62,6 +63,7 @@
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm-all</artifactId>
+            <version>3.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -108,7 +110,6 @@
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         
         <dependency>
@@ -122,69 +123,59 @@
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.framework</artifactId>
         	<scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
         	<scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.repository</artifactId>
         	<scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.isolated</artifactId>
         	<scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime</artifactId>
         	<scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
        
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.noop</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
              <groupId>org.apache.aries.application</groupId>
              <artifactId>org.apache.aries.application.default.local.platform</artifactId>
              <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.transaction</groupId>
