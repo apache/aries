@@ -38,6 +38,12 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/samples</url>
     </scm>
 
+    <!-- VERSIONS - PLEASE NOTE 
+         All version information for the samples is maintained in this pom. The versions are used by submodules automatically 
+         AND are referred to in 'filtered-resources' for each project when building (eg) assemblies. 
+         At release time the Aries *-SNAPSHOT versions must be replaced with released versions of Aries components.
+     -->
+
     <properties>
         <!-- Aries Application Versions -->
         <ariesApplicationApiVersion>0.3.1-SNAPSHOT</ariesApplicationApiVersion>
@@ -146,7 +152,7 @@
         <felixMainVersion>2.0.4</felixMainVersion>
         <felixShellVersion>1.4.2</felixShellVersion>
         <felixShellTuiVersion>1.4.1</felixShellTuiVersion>
-        <felixEventAdminVersion>1.2.2</felixEventAdminVersion>
+        <felixEventadminVersion>1.2.2</felixEventadminVersion>
         <felixBundlerepositoryVersion>1.6.4</felixBundlerepositoryVersion>
         <felixConfigadminVersion>1.2.4</felixConfigadminVersion>
         <serpVersion>1.13.1</serpVersion>
@@ -194,7 +200,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.eventadmin</artifactId>
-                <version>${felixEventAdminVersion}</version>
+                <version>${felixEventadminVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.web</groupId>
