@@ -60,9 +60,6 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId};blueprint.graceperiod:=true;blueprint.timeout:= 60000</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.aries.samples.blueprint.idverifier.client.IDVerifierClientActivator</Bundle-Activator>
-                        <!--
-                                                <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
-                        -->
                     </instructions>
                 </configuration>
             </plugin>

@@ -38,9 +38,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-<!--
-                        <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
--->
                     </instructions>
                 </configuration>
             </plugin>
