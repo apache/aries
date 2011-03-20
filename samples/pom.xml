@@ -39,21 +39,121 @@
     </scm>
 
     <properties>
+        <!-- Aries Application Versions -->
+        <ariesApplicationApiVersion>0.3.1-SNAPSHOT</ariesApplicationApiVersion>
         <ariesApplicationVersion>0.3.1-SNAPSHOT</ariesApplicationVersion>
+        <ariesApplicationConvertersVersion>0.3.1-SNAPSHOT</ariesApplicationConvertersVersion>
+        <ariesApplicationDefaultLocalPlatformVersion>0.3.1-SNAPSHOT</ariesApplicationDefaultLocalPlatformVersion>
+        <ariesApplicationDeploymentManagementVersion>0.3.1-SNAPSHOT</ariesApplicationDeploymentManagementVersion>
+        <ariesApplicationInstallVersion>0.3.1-SNAPSHOT</ariesApplicationInstallVersion>
+        <ariesApplicationItestInterfaceVersion>0.3.1-SNAPSHOT</ariesApplicationItestInterfaceVersion>
+        <ariesApplicationManagementVersion>0.3.1-SNAPSHOT</ariesApplicationManagementVersion>
+        <ariesApplicationModellerVersion>0.3.1-SNAPSHOT</ariesApplicationModellerVersion>
+        <ariesApplicationNoopResolverVersion>0.3.1-SNAPSHOT</ariesApplicationNoopResolverVersion>
+        <ariesApplicationObrResolverVersion>0.3.1-SNAPSHOT</ariesApplicationObrResolverVersion>
+        <ariesApplicationRuntimeVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeVersion>
+        <ariesApplicationRuntimeFrameworkVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeFrameworkVersion>
+        <ariesApplicationRuntimeFrameworkManagementVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeFrameworkManagementVersion>
+        <ariesApplicationRuntimeIsolatedVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeIsolatedVersion>
+        <ariesApplicationRuntimeRepositoryVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeRepositoryVersion>
+        <ariesApplicationUtilsVersion>0.3.1-SNAPSHOT</ariesApplicationUtilsVersion>
+
+        <!-- Aries Blueprint Versions -->
+        <ariesBlueprintAnnotationApiVersion>0.3.2-SNAPSHOT</ariesBlueprintAnnotationApiVersion>
+        <ariesBlueprintAnnotationImplVersion>0.3.2-SNAPSHOT</ariesBlueprintAnnotationImplVersion>
+        <ariesBlueprintApiVersion>0.3.2-SNAPSHOT</ariesBlueprintApiVersion>
         <ariesBlueprintVersion>0.3.2-SNAPSHOT</ariesBlueprintVersion>
+        <ariesBlueprintCmVersion>0.3.2-SNAPSHOT</ariesBlueprintCmVersion>
+        <ariesBlueprintCoreVersion>0.3.2-SNAPSHOT</ariesBlueprintCoreVersion>
+
+        <!-- Aries Jmx Versions -->
+        <ariesJmxiApiVersion>0.3.1-SNAPSHOT</ariesJmxiApiVersion>
+        <ariesJmxBluePrintApiVersion>0.3.1-SNAPSHOT</ariesJmxBluePrintApiVersion>
+        <ariesJmxBlueprintVersion>0.3.1-SNAPSHOT</ariesJmxBlueprintVersion>
+        <ariesJmxBlueprintCoreVersion>0.3.1-SNAPSHOT</ariesJmxBlueprintCoreVersion>
         <ariesJmxVersion>0.3.1-SNAPSHOT</ariesJmxVersion>
+        <ariesJmxCoreVersion>0.3.1-SNAPSHOT</ariesJmxCoreVersion>
+        <ariesJmxWhiteboardVersion>0.3.1-SNAPSHOT</ariesJmxWhiteboardVersion>
+
+        <!-- Aries Jndi Versions -->
+        <ariesJndiApiVersion>0.3.1-SNAPSHOT</ariesJndiApiVersion>
         <ariesJndiVersion>0.3.1-SNAPSHOT</ariesJndiVersion>
-        <ariesJpaVersion>0.3.1-SNAPSHOT</ariesJpaVersion>
+        <ariesJndiCoreVersion>0.3.1-SNAPSHOT</ariesJndiCoreVersion>
+        <ariesJndiLegacySupportVersion>0.3.1-SNAPSHOT</ariesJndiLegacySupportVersion>
+        <ariesJndiRmiVersion>0.3.1-SNAPSHOT</ariesJndiRmiVersion>
+        <ariesJndiUrlVersion>0.3.1-SNAPSHOT</ariesJndiUrlVersion>
+
+        <!-- Aries Jpa Versions -->
+        <ariesJpaApiVersion>0.3.1-SNAPSHOT</ariesJpaApiVersion>
+        <ariesJpaBlueprintAriesVersion>0.3.1-SNAPSHOT</ariesJpaBlueprintAriesVersion>
+        <ariesJpaContainerVersion>0.3.1-SNAPSHOT</ariesJpaContainerVersion>
+        <ariesJpaContainerContextVersion>0.3.1-SNAPSHOT</ariesJpaContainerContextVersion>
+        
+        <!-- Aries Proxy Versions -->
+        <ariesProxyApiVersion>0.3.1-SNAPSHOT</ariesProxyApiVersion>
         <ariesProxyVersion>0.3.1-SNAPSHOT</ariesProxyVersion>
-        <ariesQuiesceVersion>0.3.1-SNAPSHOT</ariesQuiesceVersion>
-        <ariesTransactionVersion>0.3.1-SNAPSHOT</ariesTransactionVersion>
+        <ariesProxyImplVersion>0.3.1-SNAPSHOT</ariesProxyImplVersion>
+
+        <!-- Aries Quiesce Versions -->
+        <ariesQuiesceApiVersion>0.3.1-SNAPSHOT</ariesQuiesceApiVersion>
+        <ariesQuiesceManagerVersion>0.3.1-SNAPSHOT</ariesQuiesceManagerVersion>
+        
+
+        <!-- Aries Testsupport Versions -->
+        <ariesTestsupportUnitVersion>0.3.1-SNAPSHOT</ariesTestsupportUnitVersion>
+
+        <!-- Aries Transaction Versions -->
+        <ariesTransactionBlueprintVersion>0.3.1-SNAPSHOT</ariesTransactionBlueprintVersion>
+        <ariesTransactionManagerVersion>0.3.1-SNAPSHOT</ariesTransactionManagerVersion>
+        <ariesTransactionTestdsVersion>0.3.1-SNAPSHOT</ariesTransactionTestdsVersion>
+        <ariesTransactionWrappersVersion>0.3.1-SNAPSHOT</ariesTransactionWrappersVersion>
+
+        <!-- Aries Util Versions -->
         <ariesUtilVersion>0.4-SNAPSHOT</ariesUtilVersion>
+
+        <!-- Aries Web Versions -->
         <ariesWebVersion>0.3.1-SNAPSHOT</ariesWebVersion>
+
+
+
+        <!-- External Dependencies -->
+        <cmVersion>3.2.0-v20070116</cmVersion>
+        <servicesVersion>3.1.200-v20070605</servicesVersion>
+        <asmVersion>3.2</asmVersion>
+        <paxLoggingApiVersion>1.4</paxLoggingApiVersion>
+        <paxLoggingServiceVersion>1.4</paxLoggingServiceVersion>
+        <derbyVersion>10.5.3.0_1</derbyVersion>
+        <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
+        <commonsLangVersion>2.5</commonsLangVersion>
+        <commonsPoolVersion>1.5.4</commonsPoolVersion>
+        <servicemixBundlesSerpVersion>1.13.1_2</servicemixBundlesSerpVersion>
+        <servicemixBundlesCglibVersion>2.1_3_4</servicemixBundlesCglibVersion>
+
         <openjpaVersion>2.0.0</openjpaVersion>
         <geronimoJpaSpecVersion>1.1</geronimoJpaSpecVersion>
         <geronimoJtaSpecVersion>1.1.1</geronimoJtaSpecVersion>
         <geronimoTransactionVersion>2.1.3</geronimoTransactionVersion>
         <geronimoServletVersion>1.2</geronimoServletVersion>
+        <geronimoJ2eeConnector15SpecVersion>2.0.0</geronimoJ2eeConnector15SpecVersion>
+        <geronimoJsp21SpecVersion>1.0.1</geronimoJsp21SpecVersion>
+
+        <paxWebJettyBundleVersion>0.8.1</paxWebJettyBundleVersion>
+        <paxWebExtenderWarVersion>0.8.1</paxWebExtenderWarVersion>
+        <paxWebJspVersion>0.8.1</paxWebJspVersion>
+
+        <felixFileinstallVersion>3.1.4</felixFileinstallVersion>
+        <felixBundleRepositoryVersion>1.6.4</felixBundleRepositoryVersion>
+        <felixMainVersion>2.0.4</felixMainVersion>
+        <felixShellVersion>1.4.2</felixShellVersion>
+        <felixShellTuiVersion>1.4.1</felixShellTuiVersion>
+        <felixEventAdminVersion>1.2.2</felixEventAdminVersion>
+        <felixBundlerepositoryVersion>1.6.4</felixBundlerepositoryVersion>
+        <felixConfigadminVersion>1.2.4</felixConfigadminVersion>
+        <serpVersion>1.13.1</serpVersion>
+        <javaxServletVersion>1.2</javaxServletVersion>
+
+        <twitter4jVersion>2.0.8</twitter4jVersion>
+
         <aries.javadoc.exclude.packages>*</aries.javadoc.exclude.packages>
     </properties>
     
@@ -62,57 +162,69 @@
             <!-- ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ -->
             <!-- External project dependencies -->
             <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm-all</artifactId>
+                <version>${asmVersion}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.main</artifactId>
-                <version>2.0.4</version>
+                <version>${felixMainVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.configadmin</artifactId>
+                <version>${felixConfigadminVersion}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.shell</artifactId>
-                <version>1.4.2</version>
+                <version>${felixShellVersion}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.shell.tui</artifactId>
-                <version>1.4.1</version>
+                <version>${felixShellTuiVersion}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.eventadmin</artifactId>
-                <version>1.2.2</version>
+                <version>${felixEventAdminVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.web</groupId>
                 <artifactId>pax-web-extender-war</artifactId>
-                <version>0.8.1</version>
+                <version>${paxWebExtenderWarVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.web</groupId>
                 <artifactId>pax-web-jetty-bundle</artifactId>
-                <version>0.8.1</version>
+                <version>${paxWebJettyBundleVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.web</groupId>
                 <artifactId>pax-web-jsp</artifactId>
-                <version>0.8.1</version>
+                <version>${paxWebJspVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
-                <version>2.0.0</version>
+                <version>${geronimoJ2eeConnector15SpecVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-servlet_2.5_spec</artifactId>
-                <version>1.2</version>
+                <version>${geronimoServletVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jsp_2.1_spec</artifactId>
-                <version>1.0.1</version>
+                <version>${geronimoJsp21SpecVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.components</groupId>
@@ -132,12 +244,12 @@
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>jstl</artifactId>
-                <version>1.2</version>
+                <version>${javaxServletVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
-                <version>10.5.3.0_1</version>
+                <version>${derbyVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.openjpa</groupId>
@@ -152,44 +264,51 @@
             <dependency>
                 <groupId>net.sourceforge.serp</groupId>
                 <artifactId>serp</artifactId>
-                <version>1.13.1</version>
+                <version>${serpVersion}</version>
             </dependency>
             <!-- bundle version of serp necessary for equinox assembly using openjpa -->
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.serp</artifactId>
-                <version>1.13.1_2</version>
+                <version>${servicemixBundlesSerpVersion}</version>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
-                <version>2.5</version>
+                <version>${commonsLangVersion}</version>
             </dependency>
             <dependency>
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
-                <version>1.5.4</version>
+                <version>${commonsPoolVersion}</version>
             </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
-                <version>3.2.1</version>
+                <version>${commonsCollectionsVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
-                <version>2.1_3_4</version>
+                <version>${servicemixBundlesCglibVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.fileinstall</artifactId>
-                <version>3.1.4</version>
+                <version>${felixFileinstallVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.bundlerepository</artifactId>
-                <version>1.6.4</version>
+                <version>${felixBundlerepositoryVersion}</version>
             </dependency>
+             
+            <dependency>
+                <groupId>net.homeip.yusuke</groupId>
+                <artifactId>twitter4j</artifactId>
+                <version>${twitter4jVersion}</version>
+            </dependency>
+
 
             <!-- ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ -->
             <!-- other aries subproject dependency management -->
@@ -197,7 +316,7 @@
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.api</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
@@ -207,93 +326,93 @@
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.converters</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationConvertersVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.default.local.platform</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationDefaultLocalPlatformVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.deployment.management</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationDeploymentManagementVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.install</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationInstallVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.management</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationManagementVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.modeller</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationModellerVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.resolver.noop</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationNoopResolverVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationObrResolverVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationRuntimeVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime.framework</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationRuntimeFrameworkVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationRuntimeFrameworkManagementVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime.isolated</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationRuntimeIsolatedVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationItestInterfaceVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime.repository</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationRuntimeRepositoryVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.utils</artifactId>
-                <version>${ariesApplicationVersion}</version>
+                <version>${ariesApplicationUtilsVersion}</version>
             </dependency>
             <!-- blueprint -->
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-                <version>${ariesBlueprintVersion}</version>
+                <version>${ariesBlueprintAnnotationApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.annotation.impl</artifactId>
-                <version>${ariesBlueprintVersion}</version>
+                <version>${ariesBlueprintAnnotationImplVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.api</artifactId>
-                <version>${ariesBlueprintVersion}</version>
+                <version>${ariesBlueprintApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
@@ -303,33 +422,33 @@
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.cm</artifactId>
-                <version>${ariesBlueprintVersion}</version>
+                <version>${ariesBlueprintCmVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.core</artifactId>
-                <version>${ariesBlueprintVersion}</version>
+                <version>${ariesBlueprintCoreVersion}</version>
             </dependency>
             <!-- jmx -->
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.api</artifactId>
-                <version>${ariesJmxVersion}</version>
+                <version>${ariesJmxApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
-                <version>${ariesJmxVersion}</version>
+                <version>${ariesJmxBlueprintApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.blueprint</artifactId>
-                <version>${ariesJmxVersion}</version>
+                <version>${ariesJmxBlueprintVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
-                <version>${ariesJmxVersion}</version>
+                <version>${ariesJmxBlueprintCoreVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
@@ -339,18 +458,18 @@
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.core</artifactId>
-                <version>${ariesJmxVersion}</version>
+                <version>${ariesJmxCoreVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.whiteboard</artifactId>
-                <version>${ariesJmxVersion}</version>
+                <version>${ariesJmxWhiteboardVersion}</version>
             </dependency>
             <!-- jndi -->
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.api</artifactId>
-                <version>${ariesJndiVersion}</version>
+                <version>${ariesJndiApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
@@ -360,49 +479,49 @@
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.core</artifactId>
-                <version>${ariesJndiVersion}</version>
+                <version>${ariesJndiCoreVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.legacy.support</artifactId>
-                <version>${ariesJndiVersion}</version>
+                <version>${ariesJndiLegacySupportVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.rmi</artifactId>
-                <version>${ariesJndiVersion}</version>
+                <version>${ariesJndiRmiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.url</artifactId>
-                <version>${ariesJndiVersion}</version>
+                <version>${ariesJndiUrlVersion}</version>
             </dependency>
             <!-- jpa -->
             <dependency>
                 <groupId>org.apache.aries.jpa</groupId>
                 <artifactId>org.apache.aries.jpa.api</artifactId>
-                <version>${ariesJpaVersion}</version>
+                <version>${ariesJpaApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jpa</groupId>
                 <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
-                <version>${ariesJpaVersion}</version>
+                <version>${ariesJpaBlueprintAriesVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jpa</groupId>
                 <artifactId>org.apache.aries.jpa.container</artifactId>
-                <version>${ariesJpaVersion}</version>
+                <version>${ariesJpaContainerVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jpa</groupId>
                 <artifactId>org.apache.aries.jpa.container.context</artifactId>
-                <version>${ariesJpaVersion}</version>
+                <version>${ariesJpaContainerContextVersion}</version>
             </dependency>
             <!-- proxy -->
             <dependency>
                 <groupId>org.apache.aries.proxy</groupId>
                 <artifactId>org.apache.aries.proxy.api</artifactId>
-                <version>${ariesProxyVersion}</version>
+                <version>${ariesProxyApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.proxy</groupId>
@@ -412,39 +531,45 @@
             <dependency>
                 <groupId>org.apache.aries.proxy</groupId>
                 <artifactId>org.apache.aries.proxy.impl</artifactId>
-                <version>${ariesProxyVersion}</version>
+                <version>${ariesProxyImplVersion}</version>
             </dependency>
             <!-- quiesce -->      
             <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
                 <artifactId>org.apache.aries.quiesce.api</artifactId>
-                <version>${ariesQuiesceVersion}</version>
+                <version>${ariesQuiesceApiVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
                 <artifactId>org.apache.aries.quiesce.manager</artifactId>
-                <version>${ariesQuiesceVersion}</version>
+                <version>${ariesQuiesceManagerVersion}</version>
+            </dependency>
+            <!-- Testsupport -->
+            <dependency>
+                <groupId>org.apache.aries.testsupport</groupId>
+                <artifactId>org.apache.aries.testsupport.unit</artifactId>
+                <version>${ariesTestsupportUnitVersion}</version>
             </dependency>
             <!-- transaction -->      
             <dependency>
                 <groupId>org.apache.aries.transaction</groupId>
                 <artifactId>org.apache.aries.transaction.blueprint</artifactId>
-                <version>${ariesTransactionVersion}</version>
+                <version>${ariesTransactionBlueprintVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.transaction</groupId>
                 <artifactId>org.apache.aries.transaction.manager</artifactId>
-                <version>${ariesTransactionVersion}</version>
+                <version>${ariesTransactionManagerVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.transaction</groupId>
                 <artifactId>org.apache.aries.transaction.testds</artifactId>
-                <version>${ariesTransactionVersion}</version>
+                <version>${ariesTransactionTestdsVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.transaction</groupId>
                 <artifactId>org.apache.aries.transaction.wrappers</artifactId>
-                <version>${ariesTransactionVersion}</version>
+                <version>${ariesTransactionWrappersVersion}</version>
             </dependency>
             <!--util-->
             <dependency>
@@ -479,11 +604,9 @@
     </dependencyManagement>
 
     <modules>
-        <!--
         <module>blog</module>
         <module>ariestrader</module>
         <module>blueprint</module>
-        -->
         <module>twitter</module>
     </modules>
 

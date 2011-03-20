@@ -2,7 +2,7 @@
 <?xml-stylesheet type='text/xsl' href='http://www2.osgi.org/www/obr2html.xsl'?>
 
 <repository lastmodified='20101105121848.125' name='Untitled'>
-  <resource id='org.apache.commons.lang/2.4.0' presentationname='Commons Lang' symbolicname='org.apache.commons.lang' uri='commons.lang.location' version='2.4.0'>
+  <resource id='org.apache.commons.lang/${commonsLangVersion}' presentationname='Commons Lang' symbolicname='org.apache.commons.lang' uri='commons.lang.location' version='${commonsLangVersion}'>
     <description>
       Commons Lang, a package of Java utility classes for the   
            classes that are in java.lang's hierarchy, or are considered
@@ -21,73 +21,73 @@
       <p n='manifestversion' v='2'/>
       <p n='presentationname' v='Commons Lang'/>
       <p n='symbolicname' v='org.apache.commons.lang'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang.math'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang.enums'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang.builder'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang.exception'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang.enum'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang.mutable'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang.text'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang.time'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='org.apache.commons.lang'/>
-      <p n='version' t='version' v='2.4.0'/>
+      <p n='version' t='version' v='${commonsLangVersion}'/>
     </capability>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang ;version=${commonsLangVersion}
     </require>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.builder)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang.builder ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.builder)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.builder ;version=${commonsLangVersion}
     </require>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.enum)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang.enum ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.enum)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.enum ;version=${commonsLangVersion}
     </require>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.enums)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang.enums ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.enums)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.enums ;version=${commonsLangVersion}
     </require>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.exception)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang.exception ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.exception)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.exception ;version=${commonsLangVersion}
     </require>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.math)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang.math ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.math)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.math ;version=${commonsLangVersion}
     </require>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.mutable)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang.mutable ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.mutable)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.mutable ;version=${commonsLangVersion}
     </require>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.text)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang.text ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.text)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.text ;version=${commonsLangVersion}
     </require>
-    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.time)(version&gt;=2.4.0))' multiple='false' name='package' optional='false'>
-      Import package org.apache.commons.lang.time ;version=2.4.0
+    <require extend='false' filter='(&amp;(package=org.apache.commons.lang.time)(version&gt;=${commonsLangVersion}))' multiple='false' name='package' optional='false'>
+      Import package org.apache.commons.lang.time ;version=${commonsLangVersion}
     </require>
   </resource>
-  <resource id='twitter4j/2.0.8' presentationname='Apache Aries Application Bundlise Twitter4j' symbolicname='twitter4j' uri='twitter4j.location' version='2.0.8'>
+  <resource id='twitter4j/${twitter4jVersion}' presentationname='Apache Aries Application Bundlise Twitter4j' symbolicname='twitter4j' uri='twitter4j.location' version='${twitter4jVersion}'>
     <description>
       Application used to bundlelise twitter4j
     </description>
@@ -104,12 +104,12 @@
       <p n='manifestversion' v='2'/>
       <p n='presentationname' v='Apache Aries Application Bundlise Twitter4j'/>
       <p n='symbolicname' v='twitter4j'/>
-      <p n='version' t='version' v='2.0.8'/>
+      <p n='version' t='version' v='${twitter4jVersion}'/>
     </capability>
     <capability name='package'>
       <p n='package' v='twitter4j'/>
       <p n='uses' v='javax.xml.transform.dom,javax.xml.transform.stream,org.w3c.dom,javax.xml.transform'/>
-      <p n='version' t='version' v='2.0.8'/>
+      <p n='version' t='version' v='${twitter4jVersion}'/>
     </capability>
     <require extend='false' filter='(&amp;(package=com.sun.syndication.feed.synd)(version&gt;=0.0.0))' multiple='false' name='package' optional='true'>
       Import package com.sun.syndication.feed.synd
@@ -144,8 +144,8 @@
     <require extend='false' filter='(&amp;(package=org.xml.sax)(version&gt;=0.0.0))' multiple='false' name='package' optional='false'>
       Import package org.xml.sax
     </require>
-    <require extend='false' filter='(&amp;(package=twitter4j)(version&gt;=2.0.8))' multiple='false' name='package' optional='false'>
-      Import package twitter4j ;version=2.0.8
+    <require extend='false' filter='(&amp;(package=twitter4j)(version&gt;=${twitter4jVersion}))' multiple='false' name='package' optional='false'>
+      Import package twitter4j ;version=${twitter4jVersion}
     </require>
   </resource>
 </repository>
