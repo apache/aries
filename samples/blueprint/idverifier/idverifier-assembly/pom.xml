@@ -69,6 +69,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.aries.proxy</groupId>
+			<artifactId>org.apache.aries.proxy</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
 			<artifactId>org.apache.aries.blueprint</artifactId>
 		</dependency>
@@ -80,6 +85,10 @@
 		<dependency>
 			<groupId>org.apache.aries.jmx</groupId>
 			<artifactId>org.apache.aries.jmx.blueprint</artifactId>
+		</dependency>
+		<dependency>
+             <groupId>asm</groupId>
+             <artifactId>asm-all</artifactId>
 		</dependency>
 
 		<dependency>
