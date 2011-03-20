@@ -214,7 +214,6 @@
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm-all</artifactId>
-			<version>3.2</version>
 		</dependency>
 
 		<dependency>
