@@ -1,0 +1,116 @@
+#
+#
+# This file is used in creating the table of current releases on the web site 
+# and for downloading released bundles and copy in to the dist directory.
+# It is a list of bundles and most recent released versions.
+# The lis (but not teh version information) is generated using the script ../scripts/list_bundles_in_aries.pl
+#
+# Note: list_bundles_in_aries.pl does not pick up the eba maven plugin.
+#
+# Note: This file is read by two other scripts, download_release_artifacts.pl and create_modules_table.pl as part of the release process.
+#
+Module: application 
+application.api,0.3
+application,0.3
+application.converters,0.3
+application.default.local.platform,0.3
+application.deployment.management,0.3
+application.install,0.3
+application.runtime.itest.interfaces,0.3
+application.runtime.isolated.itests,0.3
+application.management,0.3
+application.modeller,0.3
+application.resolver.noop,0.3
+application.resolver.obr,0.3
+application.runtime,0.3
+application.runtime.framework,0.3
+application.runtime.framework.management,0.3
+application.runtime.isolated,0.3
+application.runtime.repository,0.3
+application.utils,0.3
+ModuleEnd
+#
+Module: blueprint 
+blueprint.annotation.api,0.3
+blueprint.annotation.impl,0.3
+blueprint.annotation.itests,0.3
+blueprint.api,0.3
+blueprint,0.3
+blueprint.cm,0.3
+blueprint.core,0.3
+blueprint.itests,0.3
+blueprint.sample,0.3
+blueprint.sample,0.3
+blueprint.testbundlea,0.3
+blueprint.testbundleb,0.3
+blueprint.testquiescebundle,0.3
+ModuleEnd
+#
+Module: jmx 
+jmx.api,0.3
+jmx.blueprint.api,0.3
+jmx.blueprint,0.3
+jmx.blueprint.core,0.3
+jmx,0.3
+jmx.core,0.3
+jmx.itests,0.3
+jmx.whiteboard,0.3
+ModuleEnd
+#
+Module: jndi 
+jndi.api,0.3
+jndi,0.3
+jndi.core,0.3
+jndi.legacy.support,0.3
+jndi.rmi,0.3
+jndi.url,0.3
+jndi.url.itest,0.3
+jndi.url.itest.biz,0.3
+jndi.url.itest.web,0.3
+ModuleEnd
+#
+Module: jpa 
+jpa.api,0.3
+jpa.blueprint.aries,0.3
+jpa.blueprint.itest.bundle,0.3
+jpa.container,0.3
+jpa.container.context,0.3
+jpa.container.itest,0.3
+jpa.container.itest.bundle,0.3
+ModuleEnd
+#
+Module: proxy 
+proxy.api,0.3
+proxy,0.3
+proxy.impl,0.3
+proxy.itests,0.3
+ModuleEnd
+#
+Module: quiesce 
+quiesce.api,0.3
+quiesce.manager,0.3
+quiesce.manager.itest,0.3
+ModuleEnd
+#
+Module: testsupport 
+testsupport.unit,0.3
+ModuleEnd
+#
+Module: transaction 
+transaction.blueprint,0.3
+transaction.itests,0.3
+transaction.manager,0.3
+transaction.manager,0.3
+transaction.testbundle,0.3
+transaction.testds,0.3
+transaction.wrappers,0.3
+ModuleEnd
+#
+Module: util 
+util,0.3
+ModuleEnd
+#
+Module: web 
+web.itests,0.3
+web.urlhandler,0.3
+ModuleEnd
