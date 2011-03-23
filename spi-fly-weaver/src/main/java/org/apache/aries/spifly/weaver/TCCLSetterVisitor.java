@@ -16,12 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly;
+package org.apache.aries.spifly.weaver;
 
 import java.util.Arrays;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import org.apache.aries.spifly.Util;
+import org.apache.aries.spifly.WeavingData;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodAdapter;

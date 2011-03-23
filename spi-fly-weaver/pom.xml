@@ -26,25 +26,23 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.spifly.core</artifactId>
+    <artifactId>org.apache.aries.spifly.weaver</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Aries SPI Fly Core</name>
-    <description>
-This bundle contains an extender that facilitates the use
-of JRE SPI providers (components typically plugged in to the 
-JRE through META-INF/services resources).
-    </description>
+    <name>Apache Aries SPI Fly Weaver</name>
 
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>        
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>${asm.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-        </dependency>        
+            <groupId>org.apache.aries.spifly</groupId>
+            <artifactId>org.apache.aries.spifly.core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.easymock</groupId>
