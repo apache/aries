@@ -38,6 +38,10 @@
     <description>
         SPI support for OSGi
     </description>
+    
+    <properties>
+      <asm.version>3.2</asm.version>
+    </properties>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly</connection>
@@ -56,6 +60,7 @@
     <modules>
         <module>spi-fly-deps</module>
         <module>spi-fly-core</module>
+        <module>spi-fly-weaver</module>
         <module>spi-fly-dynamic-bundle</module>
         <module>spi-fly-static-tool</module>
         <module>spi-fly-static-bundle</module>

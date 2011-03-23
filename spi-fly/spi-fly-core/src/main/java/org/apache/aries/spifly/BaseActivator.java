@@ -31,13 +31,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
@@ -53,8 +51,8 @@ public abstract class BaseActivator implements BundleActivator {
     private BundleContext bundleContext;
     private LogServiceTracker logServiceTracker;
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
-    private BundleTracker<Object> consumerBundleTracker; 
-    private BundleTracker<List<ServiceRegistration<?>>> providerBundleTracker;
+    private BundleTracker consumerBundleTracker; 
+    private BundleTracker providerBundleTracker;
 
     private final ConcurrentMap<Bundle, Set<WeavingData>> bundleWeavingData = 
         new ConcurrentHashMap<Bundle, Set<WeavingData>>();
@@ -71,11 +69,11 @@ public abstract class BaseActivator implements BundleActivator {
         logServiceTracker = new LogServiceTracker(context);
         logServiceTracker.open();
 
-        providerBundleTracker = new BundleTracker<List<ServiceRegistration<?>>>(context,
+        providerBundleTracker = new BundleTracker(context,
                 Bundle.ACTIVE, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
         providerBundleTracker.open();
         
-        consumerBundleTracker = new BundleTracker<Object>(context, Bundle.INSTALLED, null) {
+        consumerBundleTracker = new BundleTracker(context, Bundle.INSTALLED, null) {
             @Override
             public Object addingBundle(Bundle bundle, BundleEvent event) {
                 processBundle(bundle, consumerHeaderName);                    
@@ -109,9 +107,9 @@ public abstract class BaseActivator implements BundleActivator {
             return;
         }
         
-        String consumerHeader = bundle.getHeaders().get(consumerHeaderName);
-        if (consumerHeader != null) {
-            Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(consumerHeader);
+        Object consumerHeader = bundle.getHeaders().get(consumerHeaderName);
+        if (consumerHeader instanceof String) {
+            Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader((String) consumerHeader);
             bundleWeavingData.put(bundle, Collections.unmodifiableSet(wd));
             
             for (WeavingData w : wd) {
@@ -218,20 +216,20 @@ public abstract class BaseActivator implements BundleActivator {
 
     // TODO unRegisterConsumerBundle();
     
-    private class LogServiceTracker extends ServiceTracker<LogService, LogService> {
+    private class LogServiceTracker extends ServiceTracker {
         public LogServiceTracker(BundleContext context) {
-            super(context, LogService.class, null);
+            super(context, LogService.class.getName(), null);
         }
 
-        public LogService addingService(ServiceReference<LogService> reference) {
-            LogService svc = super.addingService(reference);
-            if (svc != null)
-                logServices.add(svc);
+        public Object addingService(ServiceReference reference) {
+            Object svc = super.addingService(reference);
+            if (svc instanceof LogService)
+                logServices.add((LogService) svc);
             return svc;
         }
 
         @Override
-        public void removedService(ServiceReference<LogService> reference, LogService service) {
+        public void removedService(ServiceReference reference, Object service) {
             logServices.remove(service);
         }        
     }
