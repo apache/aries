@@ -37,12 +37,18 @@
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-all</artifactId>
-            <version>3.3.1</version>
+            <version>${asm.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.spifly</groupId>
+            <artifactId>org.apache.aries.spifly.weaver</artifactId>
             <version>${pom.version}</version>
         </dependency>
     </dependencies>

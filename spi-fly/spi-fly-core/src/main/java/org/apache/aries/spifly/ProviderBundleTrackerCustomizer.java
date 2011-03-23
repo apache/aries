@@ -36,7 +36,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 /**
  * Listens for new bundles being installed and registers them as service providers if applicable.
  */
-public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<List<ServiceRegistration<?>>> {
+public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer {
     final BaseActivator activator;
     final Bundle spiBundle;
 
@@ -47,7 +47,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<
         // TODO handle pre-existing bundles.
     }
 
-    public List<ServiceRegistration<?>> addingBundle(Bundle bundle, BundleEvent event) {
+    public List<ServiceRegistration> addingBundle(Bundle bundle, BundleEvent event) {
         log(LogService.LOG_INFO, "Bundle Considered for SPI providers: "
                 + bundle.getSymbolicName());
 
@@ -66,12 +66,13 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<
                     + bundle.getSymbolicName());
         }
 
+        @SuppressWarnings("unchecked")
         Enumeration<URL> entries = bundle.findEntries("META-INF/services", "*", false);
         if (entries == null) {
             return null;
         }
 
-        List<ServiceRegistration<?>> registrations = new ArrayList<ServiceRegistration<?>>();
+        List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
         while (entries.hasMoreElements()) {
             URL url = entries.nextElement();
             log(LogService.LOG_INFO, "Found SPI resource: " + url);
@@ -96,7 +97,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<
                     registrationClassName = s.substring(idx + 1);
                 }
 
-                ServiceRegistration<?> reg = bundle.getBundleContext()
+                ServiceRegistration reg = bundle.getBundleContext()
                         .registerService(registrationClassName, o, props);
                 registrations.add(reg);
 
@@ -111,15 +112,16 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<
         return registrations;
     }
 
-    public void modifiedBundle(Bundle bundle, BundleEvent event, List<ServiceRegistration<?>> registrations) {
+    public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
         // should really be doing something here...
     }
 
-    public void removedBundle(Bundle bundle, BundleEvent event, List<ServiceRegistration<?>> registrations) {
+    @SuppressWarnings("unchecked")
+    public void removedBundle(Bundle bundle, BundleEvent event, Object registrations) {
         if (registrations == null)
             return;
         
-        for (ServiceRegistration<?> reg : registrations) {
+        for (ServiceRegistration reg : (List<ServiceRegistration>) registrations) {
             reg.unregister();
             log(LogService.LOG_INFO, "Unregistered: " + reg);            
         }

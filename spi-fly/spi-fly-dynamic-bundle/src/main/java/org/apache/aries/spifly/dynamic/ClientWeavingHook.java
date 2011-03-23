@@ -20,9 +20,9 @@ package org.apache.aries.spifly.dynamic;
 
 import java.util.Set;
 
-import org.apache.aries.spifly.TCCLSetterVisitor;
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
+import org.apache.aries.spifly.weaver.TCCLSetterVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
