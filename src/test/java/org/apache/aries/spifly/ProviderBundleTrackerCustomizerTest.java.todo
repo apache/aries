@@ -40,7 +40,7 @@ public class ProviderBundleTrackerCustomizerTest {
     public void testAddingRemovedBundle() throws Exception {        
         Bundle spiBundle = EasyMock.createMock(Bundle.class);
         EasyMock.replay(spiBundle);
-        Activator a = new Activator();        
+        BaseActivator a = new BaseActivator();        
         
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(a, spiBundle);
         
