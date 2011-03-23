@@ -20,6 +20,7 @@ package org.apache.aries.spifly;
 
 import java.util.Arrays;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
@@ -39,13 +40,13 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     private static final String VOID_RETURN_TYPE = "()V";
     
     private final String targetClass;
-    private final WeavingData [] weavingData;
+    private final Set<WeavingData> weavingData;
 
     // Set to true when the weaving code has changed the client such that an additional import 
     // (to the Util.class.getPackage()) is needed.
     private boolean additionalImportRequired = false;
 
-    public TCCLSetterVisitor(ClassVisitor cv, String className, WeavingData [] weavingData) {
+    public TCCLSetterVisitor(ClassVisitor cv, String className, Set<WeavingData> weavingData) {
         super(cv);
         this.targetClass = className.replace('.', '/');
         this.weavingData = weavingData;

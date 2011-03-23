@@ -56,7 +56,8 @@
     <modules>
         <module>spi-fly-deps</module>
         <module>spi-fly-core</module>
-        <module>spi-fly-static</module>
-        <module>spi-fly-static-support-bundle</module>
+        <module>spi-fly-dynamic-bundle</module>
+        <module>spi-fly-static-tool</module>
+        <module>spi-fly-static-bundle</module>
     </modules>
 </project>

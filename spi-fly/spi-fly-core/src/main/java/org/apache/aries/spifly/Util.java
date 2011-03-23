@@ -49,7 +49,7 @@ public class Util {
         
     public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
         if (!(bundleLoader instanceof BundleReference)) {
-            Activator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return;
         }
 
@@ -58,15 +58,15 @@ public class Util {
         
         ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
-            Activator.activator.log(LogService.LOG_INFO, "Temporarily setting Thread Context Classloader to: " + cl);
+            BaseActivator.activator.log(LogService.LOG_INFO, "Temporarily setting Thread Context Classloader to: " + cl);
             Thread.currentThread().setContextClassLoader(cl);
         } else {
-            Activator.activator.log(LogService.LOG_WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
+            BaseActivator.activator.log(LogService.LOG_WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
         }
     }
     
     private static ClassLoader findContextClassloader(Bundle consumerBundle, String className, String methodName, Class<?> clsArg) {
-        Activator activator = Activator.activator;
+        BaseActivator activator = BaseActivator.activator;
         
         String requestedClass;
         Map<Pair<Integer, String>, String> args;
