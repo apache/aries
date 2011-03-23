@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -33,6 +34,7 @@ import java.util.jar.Manifest;
 import org.apache.aries.spifly.ConsumerHeaderProcessor;
 import org.apache.aries.spifly.Streams;
 import org.apache.aries.spifly.TCCLSetterVisitor;
+import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.objectweb.asm.ClassReader;
@@ -40,6 +42,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 public class Main {
+    private static final String IMPORT_PACKAGE = "Import-Package";
+
     public static void usage() {
         System.err.println();
         System.err.println("Usage: java " + Main.class.getName() + " bundle1.jar bundle2.jar ...");
@@ -53,6 +57,8 @@ public class Main {
     }
 
     private static void weaveJar(String jarPath) throws IOException {
+        String spiFlyVersion = getMyVersion();
+        
         File jarFile = new File(jarPath);
         File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());        
         Manifest manifest = unJar(jarFile, tempDir);
@@ -62,11 +68,63 @@ public class Main {
 
             manifest.getMainAttributes().remove(new Attributes.Name(SpiFlyConstants.SPI_CONSUMER_HEADER));
             manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeader);
+            // TODO if new packages needed then...
+            extendImportPackage(spiFlyVersion, manifest);
             
             File newJar = getNewJarFile(jarFile);
             jar(newJar, tempDir, manifest);
         }
         delTree(tempDir);
+    }
+
+    private static void extendImportPackage(String spiFlyVersion, Manifest manifest) {
+        String ip = manifest.getMainAttributes().getValue(IMPORT_PACKAGE);            
+        StringBuilder sb = new StringBuilder(ip);
+        sb.append(",");
+        sb.append(Util.class.getPackage().getName());
+        sb.append(";version=\"[");
+        sb.append(spiFlyVersion);
+        sb.append(",");
+        sb.append(spiFlyVersion);
+        sb.append("]\"");
+        manifest.getMainAttributes().putValue(IMPORT_PACKAGE, sb.toString());
+    }
+
+    private static String getMyVersion() throws IOException {
+        // Should be able to leverage the aries.osgi.version file that appears in the target directory here. 
+        // Need to figure that out...
+        return "0.4.0.SNAPSHOT";
+        
+//        String classResource = "/" + Main.class.getName().replace(".", "/") + ".class";
+//        URL jarUrl = Main.class.getResource(classResource);
+//        if (jarUrl != null) {
+//            String jarLoc = jarUrl.toExternalForm();
+//            Manifest mf = null;
+//            if (jarLoc.startsWith("jar:")) {
+//                jarLoc.substring("jar:".length());
+//                int idx = jarLoc.indexOf("!/");
+//                if (idx >= 0) {
+//                    jarLoc = jarLoc.substring(0, idx);
+//                }
+//                
+//                JarFile jr = new JarFile(jarLoc);
+//                mf = jr.getManifest();
+//            } else if (jarLoc.startsWith("file:") && jarLoc.endsWith(classResource)) {
+//                String rootDir = jarLoc.substring(0, jarLoc.length() - classResource.length());
+//                File manifestFile = new File(rootDir + "/META-INF/MANIFEST.MF");
+//                if (manifestFile.exists()) {
+//                    mf = new Manifest(new FileInputStream(manifestFile));
+//                }
+//            }
+//            
+//            if (mf != null) {
+//                String version = mf.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+//                if (version == null)
+//                    throw new IOException("Could not obtain the implementation version of this jar file from the manifest");
+//                return version.trim();
+//            }
+//        }
+//        throw new IOException("This class can only be executed from inside a jar or an exploded jar file."); 
     }
 
     private static File getNewJarFile(File jarFile) {
@@ -91,7 +149,7 @@ public class Main {
             className = className.substring(0, className.length() - ".class".length());
             className = className.replace(File.separator, ".");
             
-            WeavingData[] wd = ConsumerHeaderProcessor.processHeader(consumerHeader);
+            Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(consumerHeader);
             InputStream is = new FileInputStream(f);
             byte[] b;
             try {

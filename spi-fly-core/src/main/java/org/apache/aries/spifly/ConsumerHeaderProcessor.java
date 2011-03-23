@@ -56,7 +56,7 @@ public class ConsumerHeaderProcessor {
      * @param consumerHeader the <tt>SPI-Consumer</tt> header.
      * @return an instance of the {@link WeavingData} class.
      */
-    public static WeavingData[] processHeader(/* Bundle consumerBundle, */String consumerHeader) {
+    public static Set<WeavingData> processHeader(/* Bundle consumerBundle, */String consumerHeader) {
         Set<WeavingData> weavingData = new HashSet<WeavingData>();
         
         for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
@@ -169,6 +169,6 @@ public class ConsumerHeaderProcessor {
             weavingData.add(new WeavingData(className, methodName, argClasses, restrictions, 
                     allowedBundles.size() == 0 ? null : allowedBundles));
         }
-        return weavingData.toArray(new WeavingData [weavingData.size()]);
+        return weavingData;
     }
 }

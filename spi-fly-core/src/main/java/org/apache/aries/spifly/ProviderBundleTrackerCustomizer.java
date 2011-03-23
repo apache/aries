@@ -37,10 +37,10 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  * Listens for new bundles being installed and registers them as service providers if applicable.
  */
 public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer<List<ServiceRegistration<?>>> {
-    final Activator activator;
+    final BaseActivator activator;
     final Bundle spiBundle;
 
-    public ProviderBundleTrackerCustomizer(Activator a, Bundle b) {
+    public ProviderBundleTrackerCustomizer(BaseActivator a, Bundle b) {
         activator = a;
         spiBundle = b;
                 

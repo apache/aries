@@ -16,27 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly;
+package org.apache.aries.spifly.dynamic;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
-import org.apache.aries.spifly.api.SpiFlyConstants;
+import org.apache.aries.spifly.TCCLSetterVisitor;
+import org.apache.aries.spifly.Util;
+import org.apache.aries.spifly.WeavingData;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.service.log.LogService;
-import org.osgi.util.tracker.BundleTracker;
 
 public class ClientWeavingHook implements WeavingHook {
     private final String addedImport;
-    private final Map<Bundle, WeavingData []> bundleWeavingData = new ConcurrentHashMap<Bundle, WeavingData[]>();
+    private final DynamicWeavingActivator activator;
     
-    ClientWeavingHook(BundleContext context) {
+    ClientWeavingHook(BundleContext context, DynamicWeavingActivator dwActivator) {
+        activator = dwActivator;
+        
         Bundle b = context.getBundle();
         String bver = b.getVersion().toString();
         String bsn = b.getSymbolicName();
@@ -44,44 +45,14 @@ public class ClientWeavingHook implements WeavingHook {
         addedImport = Util.class.getPackage().getName() + 
             ";bundle-symbolic-name=" + bsn + 
             ";bundle-version=" + bver;
-        
-        // TODO move to activator ? and bt.close()!
-        BundleTracker<Object> bt = new BundleTracker<Object>(context, Bundle.INSTALLED, null) {
-            @Override
-            public Object addingBundle(Bundle bundle, BundleEvent event) {
-                String consumerHeader = bundle.getHeaders().get(SpiFlyConstants.SPI_CONSUMER_HEADER);
-                if (consumerHeader != null) {
-                    WeavingData[] wd = ConsumerHeaderProcessor.processHeader(consumerHeader);
-                    bundleWeavingData.put(bundle, wd);
-                    
-                    for (WeavingData w : wd) {
-                        Activator.activator.registerConsumerBundle(bundle, w.getArgRestrictions(), w.getAllowedBundles());
-                    }
-                }                    
-                
-                return super.addingBundle(bundle, event);
-            }
-
-            @Override
-            public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
-                removedBundle(bundle, event, object);
-                addingBundle(bundle, event);
-            }
-
-            @Override
-            public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
-                bundleWeavingData.remove(bundle);
-            }
-        };
-        bt.open();
     }
     
 	@Override
 	public void weave(WovenClass wovenClass) {
 	    Bundle consumerBundle = wovenClass.getBundleWiring().getBundle();
-        WeavingData[] wd = bundleWeavingData.get(consumerBundle);
+        Set<WeavingData> wd = activator.getWeavingData(consumerBundle);
         if (wd != null) {
-	        Activator.activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());            
+	        activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());            
             
 //            WeavingData[] wd = ConsumerHeaderProcessor.processHeader(consumerBundle, consumerHeader);
 	        
