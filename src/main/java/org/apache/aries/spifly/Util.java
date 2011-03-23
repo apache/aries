@@ -18,8 +18,10 @@
  */
 package org.apache.aries.spifly;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +30,6 @@ import java.util.ServiceLoader;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
-import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.log.LogService;
 
 /** 
@@ -97,15 +98,38 @@ public class Util {
             return null;
         case 1:
             Bundle bundle = bundles.iterator().next();
-            BundleWiring wiring = bundle.adapt(BundleWiring.class);
-            return wiring.getClassLoader();            
+            return getBundleClassLoader(bundle);
+//            BundleWiring wiring = bundle.adapt(BundleWiring.class);
+//            return wiring.getClassLoader();            
         default:
             List<ClassLoader> loaders = new ArrayList<ClassLoader>();
             for (Bundle b : bundles) {
-                BundleWiring bw = b.adapt(BundleWiring.class);
-                loaders.add(bw.getClassLoader());
+//                BundleWiring bw = b.adapt(BundleWiring.class);
+//                loaders.add(bw.getClassLoader());
+                loaders.add(getBundleClassLoader(b));
             }
             return new MultiDelegationClassloader(loaders.toArray(new ClassLoader[loaders.size()]));
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static ClassLoader getBundleClassLoader(Bundle b) {
+        // In 4.3 this can be done much easier by using the BundleWiring...
+        // but here we're just finding any class in the bundle, load that and then use its classloader.
+        Enumeration<String> paths = b.getEntryPaths("/");
+        while(paths.hasMoreElements()) {
+            String path = paths.nextElement();
+            if (path.endsWith(".class")) {
+                String className = path.substring(0,path.length() - ".class".length());
+                className = className.replace('/', '.');
+                try {
+                    Class<?> cls = b.loadClass(className);
+                    return cls.getClassLoader();
+                } catch (ClassNotFoundException e) {                    
+                    // try the next class
+                }
+            }
+        }
+        throw new RuntimeException("Could not obtain classloader for bundle " + b);
     }
 }

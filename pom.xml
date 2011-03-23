@@ -37,20 +37,14 @@ JRE through META-INF/services resources).
 
     <dependencies>
         <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>3.3.1</version>
-            <scope>provided</scope>
-        </dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>        
 
         <dependency>
-            <!-- Use the Eclipse version of OSGi until the core 4.3 OSGi jar is available in Maven. -->
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>3.7M5</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../spi-fly-deps/target/downloaded/org.eclipse.osgi_3.7.0.jar</systemPath>
-        </dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>        
 
         <dependency>
             <groupId>org.easymock</groupId>
