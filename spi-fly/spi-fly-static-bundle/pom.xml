@@ -26,38 +26,48 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.spifly.static</artifactId>
-    <packaging>jar</packaging>
-    <name>Apache Aries SPI Fly Static Weaving Tool</name>
+    <artifactId>org.apache.aries.spifly.static.bundle</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Aries SPI Fly Static Weaving Bundle</name>
     <description>
-        This tool does the weaving to support SPI ServiceLoader statically.
+        This bundle contains support classes used at runtime by bundles
+        woven using the static weaving done through the org.apache.aries.spifly.static
+        component.
     </description>
 
     <dependencies>
         <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>3.3.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>        
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.apache.aries.spifly.statictool.Main</mainClass>
-                        </manifest>
-                    </archive>
+                    <instructions>
+                        <Import-Package>
+                            *
+                        </Import-Package>
+                        <Export-Package>
+                            org.apache.aries.spifly;version=${project.version},
+                            org.apache.aries.spifly.api;version=${project.version}
+                        </Export-Package>
+                        <Private-Package>
+                            org.apache.aries.spifly.staticbundle
+                        </Private-Package>
+                        <Bundle-Activator>org.apache.aries.spifly.staticbundle.StaticWeavingActivator</Bundle-Activator>
+                    </instructions>
                 </configuration>
             </plugin>
         </plugins>
