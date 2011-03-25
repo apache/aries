@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries.samples.goat</groupId>
         <artifactId>goat</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.samples.goat.dummy2</artifactId>
@@ -40,21 +40,14 @@
 	</dependencies>
 
     
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Private-Package>org.apache.aries.samples.goat.dummy2.*</Private-Package> 
-						<Export-Package>!org.apache.aries.samples.goat.dummy2.*</Export-Package> 
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
+     <properties>
+             <!-- Export package versions are maintained in packageinfo files -->
+              <aries.osgi.export.pkg />
+              <aries.osgi.import> *
+              </aries.osgi.import>
+              <aries.osgi.private.pkg >
+                   org.apache.aries.samples.goat.dummy2.*
+              </aries.osgi.private.pkg>
+     </properties>
 </project>
 

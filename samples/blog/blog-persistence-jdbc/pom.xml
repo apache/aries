@@ -49,7 +49,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Private-Package>org.apache.aries.samples.blog.persistence.jdbc.*</Private-Package>
                         <Export-Package>!org.apache.aries.samples.blog.persistence.jdbc*</Export-Package>
                     </instructions>

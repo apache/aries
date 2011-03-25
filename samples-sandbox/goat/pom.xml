@@ -21,7 +21,8 @@
     <parent>
         <groupId>org.apache.aries.samples</groupId>
         <artifactId>samples</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.3.1-SNAPSHOT</version>
+        <relativePath>../../samples</relativePath>
     </parent>
 
     <groupId>org.apache.aries.samples.goat</groupId>
@@ -62,7 +63,7 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>${pom.groupId}</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>org.apache.aries.samples.goat.info.enhancer</artifactId>
                 <version>${project.version}</version>
             </dependency>
