@@ -18,11 +18,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+        <groupId>org.apache.aries.samples</groupId>
         <artifactId>helloworld</artifactId>
         <version>0.3.1-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
     <artifactId>org.apache.aries.samples.blueprint.helloworld.assembly</artifactId>
     <name>Apache Aries Blueprint HelloWorld Assembly</name>
     <packaging>pom</packaging>
@@ -93,40 +94,6 @@
     <build>
 
         <plugins>
-            <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-resources-plugin</artifactId>
-                  <configuration>
-                        <outputDirectory>${project.build.directory}</outputDirectory>
-                  </configuration>
-                  <executions>
-                        <execution>
-                        <id>filter</id>
-                        <phase>generate-resources</phase>
-                            <goals>
-                                <goal>resources</goal>
-                            </goals>
-                  </execution>
-                  </executions>
-           </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>filter</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>resources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>

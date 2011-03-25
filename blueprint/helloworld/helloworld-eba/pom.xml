@@ -24,12 +24,13 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+        <groupId>org.apache.aries.samples</groupId>
         <artifactId>helloworld</artifactId>
         <version>0.3.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.samples.blueprint.helloworld</artifactId>
+    <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+    <artifactId>org.apache.aries.samples.blueprint.helloworld.eba</artifactId>
     <name>Apache Aries Blueprint HelloWorld EBA</name>
     <description>This is the module that constructs the Hello World application</description>
     <packaging>eba</packaging>
@@ -58,7 +59,7 @@ under the License.
                 <configuration>
                     <generateManifest>true</generateManifest>
                     <instructions>
-                        <Application-SymbolicName>${pom.artifactId}</Application-SymbolicName>
+                        <Application-SymbolicName>${project.artifactId}</Application-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>
