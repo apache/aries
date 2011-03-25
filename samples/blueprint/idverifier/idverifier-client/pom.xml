@@ -58,7 +58,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId};blueprint.graceperiod:=true;blueprint.timeout:= 60000</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId};blueprint.graceperiod:=true;blueprint.timeout:= 60000</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.aries.samples.blueprint.idverifier.client.IDVerifierClientActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
