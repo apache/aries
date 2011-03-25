@@ -21,27 +21,33 @@
     <parent>
         <groupId>org.apache.aries.samples.goat</groupId>
         <artifactId>goat</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.3.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.samples.goat.api</artifactId>
-    <name>Apache Aries GOAT api</name>
+    <artifactId>org.apache.aries.samples.goat.bundlecontextmodel</artifactId>
+    <name>Apache Aries GOAT BundleContext Model Provider</name>
     <packaging>bundle</packaging>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Export-Package>org.apache.aries.samples.goat.api; version=${project.version},
-					org.apache.aries.samples.goat.info;version=${project.version} </Export-Package>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.aries.samples.goat</groupId>
+			<artifactId>org.apache.aries.samples.goat.api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.samples.goat</groupId>
+			<artifactId>org.apache.aries.samples.goat.web</artifactId>
+		</dependency>
+	</dependencies>
 
+    <properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+            <aries.osgi.export.pkg />
+            <aries.osgi.import> *
+            </aries.osgi.import>
+            <aries.osgi.private.pkg >
+               org.apache.aries.samples.goat.bundlecontextmodel.*
+            </aries.osgi.private.pkg>
+    </properties>
+                                                                                
 </project>
+
