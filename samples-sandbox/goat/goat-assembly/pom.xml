@@ -29,14 +29,16 @@
 
 	<dependencies>
 
-    <!--not sure about this one -->
-        <dependency>
-	       <groupId>org.apache.felix</groupId>
-	       <artifactId>javax.servlet</artifactId>
-	       <version>1.0.0</version>
-	    </dependency>
+         <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_2.5_spec</artifactId>
+         </dependency>
 
-		<!-- Base (JDBC) platform dependencies -->
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+        </dependency>
+
 
 		<dependency>
 			<groupId>org.eclipse</groupId>
@@ -78,17 +80,14 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.fileinstall</artifactId>
 		</dependency>
 
-
-		<!-- Base (JDBC) Aries dependencies -->
+		<dependency>
+			<groupId>org.apache.aries.proxy</groupId>
+			<artifactId>org.apache.aries.proxy</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
