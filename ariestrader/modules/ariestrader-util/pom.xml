@@ -30,6 +30,18 @@
     <name>AriesTrader :: Modules - Util</name>
     <description>AriesTrader Util Module</description>
 
+
+    <properties>
+         <!-- Export versions handled with packageinfo files. Override settings in default parent which cause build warnings -->
+         <aries.osgi.export>
+             org.apache.aries.samples.ariestrader.util
+         </aries.osgi.export>
+         <aries.osgi.import>
+               *
+         </aries.osgi.import>
+         <aries.osgi.private.pkg />
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -38,21 +50,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Export-Package>
-                            org.apache.aries.samples.ariestrader.util;version=${pom.version}
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

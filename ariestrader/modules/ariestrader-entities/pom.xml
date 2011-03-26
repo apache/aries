@@ -30,6 +30,13 @@
     <name>AriesTrader :: Modules - Entities</name>
     <description>AriesTrader JPA Enhanced Entities Module</description>
 
+
+
+    <properties>
+         <!-- Override settings in default parent which cause build warnings -->
+         <aries.osgi.private.pkg />
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.samples.ariestrader</groupId>
@@ -111,11 +118,9 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${pom.version}</Bundle-Version>
                         <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
                         <Export-Package>
-                            org.apache.aries.samples.ariestrader.entities;version=${pom.version}
+                            org.apache.aries.samples.ariestrader.entities
                         </Export-Package>
                         <Import-Package>
                             org.apache.openjpa.enhance;version="[1.0.0,2.1.0)",
