@@ -28,6 +28,17 @@
 	<name>Apache Aries blog sample </name>
 	<packaging>bundle</packaging>
 
+    <properties>
+         <!-- Export package versions are maintained in packageinfo files -->
+         <aries.osgi.export.pkg />
+         <aries.osgi.import>
+               *
+         </aries.osgi.import>
+         <aries.osgi.private.pkg>
+             org.apache.aries.samples.blog.biz.*
+         </aries.osgi.private.pkg>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.samples.blog</groupId>
@@ -35,20 +46,5 @@
         </dependency>
     </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<configuration>
-					<instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Private-Package>org.apache.aries.samples.blog.biz.*</Private-Package>
-                        <Export-Package>!org.apache.aries.samples.blog.biz.*</Export-Package>
-					</instructions>
-				</configuration> 
-			</plugin>
-		</plugins>
-	</build>
 </project>
 	
