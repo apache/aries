@@ -56,6 +56,7 @@
                             javax.servlet*;version=${javaxServletVersion},
                             *
                         </Import-Package>
+                        <!-- Sets Bundle-Classpath to WEB-INF/classes -->
                         <_wab>src/main/webapp/</_wab>
                    </instructions>
                 </configuration>
