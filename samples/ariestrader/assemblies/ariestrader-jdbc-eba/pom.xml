@@ -63,11 +63,12 @@
             <plugin>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>eba-maven-plugin</artifactId>
+                <version>${ariesEbaMavenPluginVersion}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <generateManifest>true</generateManifest>
                     <instructions>
-                        <Application-SymbolicName>${pom.artifactId}</Application-SymbolicName>
+                        <Application-SymbolicName>${project.artifactId}</Application-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>
