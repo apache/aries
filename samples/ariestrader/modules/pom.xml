@@ -35,52 +35,52 @@
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.api</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.beans</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.core</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.derby.ds</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.entities</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.persist.jdbc</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.persist.jpa.am</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.persist.jpa.cm</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.util</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>org.apache.aries.samples.ariestrader.web</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
         
