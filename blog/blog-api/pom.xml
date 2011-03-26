@@ -29,23 +29,17 @@
     <name>Apache Aries blog sample API</name>
     <packaging>bundle</packaging>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Export-Package>
-							org.apache.aries.samples.blog.api;
-							org.apache.aries.samples.blog.api.comment.persistence;
-							org.apache.aries.samples.blog.api.persistence;
-								version=${project.version}
-						</Export-Package>
-					</instructions>
-				</configuration> 
-            </plugin>
-        </plugins>
-    </build>
+    <properties>
+         <!-- Export package versions are maintained in packageinfo files -->
+         <aries.osgi.export.pkg>
+              org.apache.aries.samples.blog.api,
+              org.apache.aries.samples.blog.api.comment.persistence,
+              org.apache.aries.samples.blog.api.persistence,
+         </aries.osgi.export.pkg>
+         <aries.osgi.import>
+               *
+         </aries.osgi.import>
+         <aries.osgi.private.pkg />
+    </properties>
+
 </project>
