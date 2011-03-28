@@ -31,6 +31,7 @@ import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 
 public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory
@@ -48,7 +49,7 @@ public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory
     try {
       return parseDeploymentMetadata(is);
     } finally {
-      is.close();
+      IOUtils.close(is);
     }
   }
 
