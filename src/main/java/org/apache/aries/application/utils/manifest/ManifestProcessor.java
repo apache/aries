@@ -34,6 +34,7 @@ import java.util.jar.Manifest;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.utils.AppConstants;
+import org.apache.aries.application.utils.filesystem.IOUtils;
 
 /**
  * This class contains utilities for parsing manifests. It provides methods to
@@ -97,47 +98,52 @@ public class ManifestProcessor
   {
     Manifest man = new Manifest();
     
-    // I'm assuming that we use UTF-8 here, but the jar spec doesn't say.
-    BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-    
-    String line;
-    StringBuilder attribute = null;
-    
-    String namedAttribute = null;
-    
-    do {
-      line = reader.readLine();
-
-      // if we get a blank line skip to the next one
-      if (line != null && line.trim().length() == 0) continue;
-      if (line != null && line.charAt(0) == ' ' && attribute != null) {
-        // we have a continuation line, so add to the builder, ignoring the
-        // first character
-        attribute.append(line.trim());
-      } else if (attribute == null) {
-        attribute = new StringBuilder(line.trim());
-      } else if (attribute != null) {
-        // We have fully parsed an attribute
-        int index = attribute.indexOf(":");
-        String attributeName = attribute.substring(0, index).trim();
-        // TODO cope with index + 1 being after the end of attribute
-        String attributeValue = attribute.substring(index + 1).trim();
-        
-        if ("Name".equals(attributeName)) {
-          man.getEntries().put(attributeValue, new Attributes());
-          namedAttribute = attributeValue;
-        } else {
-          if (namedAttribute == null) {
-            man.getMainAttributes().put(new Attributes.Name(attributeName), attributeValue);
+    try
+    {
+      // I'm assuming that we use UTF-8 here, but the jar spec doesn't say.
+      BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+      
+      String line;
+      StringBuilder attribute = null;
+      
+      String namedAttribute = null;
+      
+      do {
+        line = reader.readLine();
+  
+        // if we get a blank line skip to the next one
+        if (line != null && line.trim().length() == 0) continue;
+        if (line != null && line.charAt(0) == ' ' && attribute != null) {
+          // we have a continuation line, so add to the builder, ignoring the
+          // first character
+          attribute.append(line.trim());
+        } else if (attribute == null) {
+          attribute = new StringBuilder(line.trim());
+        } else if (attribute != null) {
+          // We have fully parsed an attribute
+          int index = attribute.indexOf(":");
+          String attributeName = attribute.substring(0, index).trim();
+          // TODO cope with index + 1 being after the end of attribute
+          String attributeValue = attribute.substring(index + 1).trim();
+          
+          if ("Name".equals(attributeName)) {
+            man.getEntries().put(attributeValue, new Attributes());
+            namedAttribute = attributeValue;
           } else {
-            man.getAttributes(namedAttribute).put(new Attributes.Name(attributeName), attributeValue);
+            if (namedAttribute == null) {
+              man.getMainAttributes().put(new Attributes.Name(attributeName), attributeValue);
+            } else {
+              man.getAttributes(namedAttribute).put(new Attributes.Name(attributeName), attributeValue);
+            }
           }
+          
+          if (line != null) attribute = new StringBuilder(line.trim());
         }
-        
-        if (line != null) attribute = new StringBuilder(line.trim());
-      }
-    } while (line != null);
-    
+      } while (line != null);
+    }
+    finally {
+      IOUtils.close(in);
+    }
     return man;
   }
   
