@@ -47,8 +47,8 @@
             org.apache.aries.proxy.impl.ProxyManagerActivator
         </aries.osgi.activator>
         <aries.osgi.import.pkg>
-            org.objectweb.asm;resolution:=optional,
-            org.objectweb.asm.commons;resolution:=optional,
+            org.objectweb.asm;version=3.2;resolution:=optional,
+            org.objectweb.asm.commons;version=3.2;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
