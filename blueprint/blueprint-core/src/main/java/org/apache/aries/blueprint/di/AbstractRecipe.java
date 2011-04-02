@@ -20,6 +20,10 @@ package org.apache.aries.blueprint.di;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import org.apache.aries.blueprint.container.GenericType;
 import org.osgi.service.blueprint.container.ReifiedType;
@@ -51,34 +55,64 @@ public abstract class AbstractRecipe implements Recipe {
         // Ensure a container has been set
         ExecutionContext context = ExecutionContext.Holder.getContext();
 
-        synchronized (context.getInstanceLock()) {
-            // if this recipe has already been executed in this container, return the currently registered value
-            Object obj = context.getPartialObject(name);
-            if (obj != null) {
-                return obj;
-            }
+        // if this recipe has already been executed in this context, return the currently registered value
+        Object result = context.getPartialObject(name);
+        if (result != null) {
+            return result;
+        }
 
-            // execute the recipe
-            context.push(this);
-            try {
-                obj = internalCreate();
-                if (!prototype) {
-                    context.addFullObject(name, obj);
+        // execute the recipe
+        context.push(this);
+        boolean didCreate = false;
+        try {
+            if (!prototype) {
+                FutureTask<Object> objectCreation = new FutureTask<Object>(new Callable<Object>() {
+                    public Object call() throws ComponentDefinitionException {
+                        return internalCreate();
+                    }                
+                });
+                Future<Object> resultFuture = context.addFullObject(name, objectCreation);
+
+                // are we the first to try to create it
+                if (resultFuture == null) {
+                    didCreate = true;
+                    objectCreation.run();
+                    resultFuture = objectCreation;
                 }
-                return obj;
-            } finally {
-                Recipe popped = context.pop();
-                if (popped != this) {
-                    //noinspection ThrowFromFinallyBlock
-                    throw new IllegalStateException("Internal Error: recipe stack is corrupt:" +
-                            " Expected " + this + " to be popped of the stack but was " + popped);
+                
+                
+                try {
+                    result = resultFuture.get();
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException ee) {
+                    if (ee.getCause() instanceof ComponentDefinitionException)
+                        throw (ComponentDefinitionException) ee.getCause();
+                    else if (ee.getCause() instanceof RuntimeException)
+                        throw (RuntimeException) ee.getCause();
+                    else 
+                        throw (Error) ee.getCause();
                 }
+                
+            } else {
+                result = internalCreate();
+            }
+        } finally {
+            if (didCreate) context.removePartialObject(name);
+            
+            Recipe popped = context.pop();
+            if (popped != this) {
+                //noinspection ThrowFromFinallyBlock
+                throw new IllegalStateException("Internal Error: recipe stack is corrupt:" +
+                        " Expected " + this + " to be popped of the stack but was " + popped);
             }
         }
+        
+        return result;
     }
 
     protected abstract Object internalCreate() throws ComponentDefinitionException;
-
+    
     protected void addPartialObject(Object obj) {
         if (!prototype) {                 
             ExecutionContext.Holder.getContext().addPartialObject(name, obj);

@@ -18,29 +18,26 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
-import java.text.SimpleDateFormat;
-import java.util.Currency;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.List;
 
-import org.apache.aries.blueprint.sample.Bar;
-import org.apache.aries.blueprint.sample.Foo;
+import org.apache.aries.unittest.fixture.ArchiveFixture;
+import org.apache.aries.unittest.fixture.ArchiveFixture.Fixture;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -63,6 +60,66 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
         
         // do the test
         testBlueprintContainer(bundle);
+    }
+    
+    @Test
+    public void testReferenceListenerDeadlock() throws Exception {
+        List<Bundle> bundles = new ArrayList<Bundle>();
+        int total = 10;
+        for (int i=0; i<total; i++) {
+            bundles.add(bundleContext.installBundle("sample"+i, getTestBundle(i, total)));
+        }
+        
+        for (Bundle b : bundles) b.start();
+        
+        // every blueprint container should be up
+        for (Bundle b : bundles) {
+          assertNotNull(getBlueprintContainerForBundle(b.getSymbolicName()));
+        }
+    }
+    
+    private InputStream getTestBundle(int no, int total) throws Exception {
+        StringBuilder blueprint = new StringBuilder();
+        blueprint.append("<blueprint xmlns=\"http://www.osgi.org/xmlns/blueprint/v1.0.0\">");
+        blueprint.append("<bean id=\"listener\" class=\"org.apache.aries.blueprint.itests.comp.Listener\" />");
+        
+        for (int i=0; i<total; i++) {
+            if (i==no) {
+                blueprint.append("<service interface=\"java.util.List\">");
+                blueprint.append("<service-properties><entry key=\"no\" value=\""+i+"\" /></service-properties>");
+                blueprint.append("<bean class=\"org.apache.aries.blueprint.itests.comp.ListFactory\" factory-method=\"create\">");
+                blueprint.append("<argument value=\""+i+"\" />");
+                blueprint.append("</bean>");
+                blueprint.append("</service>");
+            } else {
+                blueprint.append("<reference availability=\"optional\" id=\"ref"+i+"\" interface=\"java.util.List\" filter=\"(no="+i+")\">");
+                blueprint.append("<reference-listener ref=\"listener\" bind-method=\"bind\" unbind-method=\"unbind\" />");
+                blueprint.append("</reference>");
+            }
+        }
+        blueprint.append("</blueprint>");
+        
+        Fixture jar = ArchiveFixture.newJar()
+            .manifest().symbolicName("sample"+no)
+                .attribute("Import-Package", "org.osgi.framework")
+            .end()
+            .binary("org/apache/aries/blueprint/itests/comp/Component.class", 
+                    getClass().getClassLoader().getResourceAsStream(
+                            "org/apache/aries/blueprint/itests/comp/Component.class"))
+            .binary("org/apache/aries/blueprint/itests/comp/Listener.class",
+                    getClass().getClassLoader().getResourceAsStream(
+                            "org/apache/aries/blueprint/itests/comp/Listener.class"))
+            .binary("org/apache/aries/blueprint/itests/comp/ListFactory.class",
+                    getClass().getClassLoader().getResourceAsStream(
+                            "org/apache/aries/blueprint/itests/comp/ListFactory.class"))
+                            
+            .file("OSGI-INF/blueprint/blueprint.xml", blueprint.toString())
+            .end();
+        
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        jar.writeOut(bout);
+        
+        return new ByteArrayInputStream(bout.toByteArray());
     }
     
     @Test
@@ -101,6 +158,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
             mavenBundle("org.osgi", "org.osgi.compendium"),
+            mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
             //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
             equinox().version("3.5.0")

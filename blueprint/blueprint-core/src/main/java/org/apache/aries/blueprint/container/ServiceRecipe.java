@@ -230,10 +230,6 @@ public class ServiceRecipe extends AbstractRecipe {
 
     /**
      * Create the service object.
-     * We need to synchronize the access to the repository,
-     * but not on this ServiceRecipe instance to avoid deadlock.
-     * When using internalCreate(), no other lock but the on the repository
-     * should be held.
      *
      * @param bundle
      * @param registration
@@ -242,11 +238,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private Object internalGetService(Bundle bundle, ServiceRegistration registration) {
         LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
         if (this.service == null) {
-            synchronized (blueprintContainer.getRepository().getInstanceLock()) {
-                if (this.service == null) {
-                    createService();
-                }
-            }
+            createService();
         }
         
         Object service = this.service;

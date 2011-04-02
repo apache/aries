@@ -30,7 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.di.CircularDependencyException;
@@ -43,15 +46,11 @@ import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The default repository implementation
  */
 public class BlueprintRepository implements Repository, ExecutionContext {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintRepository.class);
 
     /**
      * The blueprint container
@@ -64,9 +63,10 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     private final Map<String, Recipe> recipes = new ConcurrentHashMap<String, Recipe>();
 
     /**
-     * Contains object instances
+     * Contains object instances. Objects are stored as futures by the first task that wants to create it.
+     * All other listeners should call get on the future.
      */
-    private final Map<String, Object> instances = new ConcurrentHashMap<String, Object>();
+    private final ConcurrentMap<String, Future<Object>> instances = new ConcurrentHashMap<String, Future<Object>>();
 
     /**
      * Keep track of creation order
@@ -74,27 +74,34 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     private final List<String> creationOrder = new CopyOnWriteArrayList<String>();
 
     /**
-     * Lock for object instance creation
-     */
-    private final Object instanceLock = new Object();
-
-    /**
      * Contains partial objects.
      */
-    private final Map<String, Object> partialObjects = new ConcurrentHashMap<String, Object>();
+    private final ThreadLocal<Map<String, Object>> partialObjects = new ThreadLocal<Map<String,Object>>();
 
     /**
      * Before each recipe is executed it is pushed on the stack.  The
      * stack is used to detect circular dependencies.
      */
-    private final LinkedList<Recipe> stack = new LinkedList<Recipe>();
+    private final ThreadLocal<LinkedList<Recipe>> stack = new ThreadLocal<LinkedList<Recipe>>();
     
     public BlueprintRepository(ExtendedBlueprintContainer container) {
         blueprintContainer = container;
     }
     
     public Object getInstance(String name) {
-        return instances.get(name);
+        Future<Object> future = instances.get(name);
+        if (future != null && future.isDone()) {
+            try {
+                return future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return null;
+            } catch (ExecutionException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     public Recipe getRecipe(String name) {
@@ -109,15 +116,15 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     public void putRecipe(String name, Recipe recipe) {
-        if (instances.get(name) != null) {
-            throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
+        if (instances.containsKey(name)) {
+            throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + getInstance(name));
         }
         recipes.put(name, recipe);
     }
     
     public void removeRecipe(String name) {
-        if (instances.get(name) != null)
-            throw new ComponentDefinitionException("Name " + name + " is already instanciated as " + instances.get(name) + " and cannot be removed.");
+        if (instances.containsKey(name))
+            throw new ComponentDefinitionException("Name " + name + " is already instanciated as " + getInstance(name) + " and cannot be removed.");
 
         recipes.remove(name);
     }
@@ -205,23 +212,16 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     private Map<String, Object> createInstances(Collection<String> names) {
-        // We need to synchronize recipe creation on the repository
-        // so that we don't end up with multiple threads creating the
-        // same instance at the same time.
-        synchronized (instanceLock) {
-            DependencyGraph graph = new DependencyGraph(this);
-            HashMap<String, Object> objects = new LinkedHashMap<String, Object>();
-            for (Map.Entry<String, Recipe> entry : graph.getSortedRecipes(names).entrySet()) {
-                String name = entry.getKey();
-                Object object = instances.get(name);
-                if (object == null) {
-                    Recipe recipe = entry.getValue();
-                    object = recipe.create();
-                }
-                objects.put(name, object);
-            }
-            return objects;
+        // Instance creation is synchronized inside each create method (via the use of futures), so that 
+        // a recipe will only created once where appropriate
+        DependencyGraph graph = new DependencyGraph(this);
+        HashMap<String, Object> objects = new LinkedHashMap<String, Object>();
+        for (Map.Entry<String, Recipe> entry : graph.getSortedRecipes(names).entrySet()) {
+            objects.put(
+                    entry.getKey(), 
+                    entry.getValue().create());
         }
+        return objects;
     }
         
     public void validate() {
@@ -292,20 +292,16 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         for (String name : order) {
             Recipe recipe = recipes.get(name);
             if (recipe != null) {
-                recipe.destroy(instances.get(name));
+                recipe.destroy(getInstance(name));
             }
         }
         instances.clear();
         creationOrder.clear();
     }
 
-    public Object getInstanceLock() {
-        return instanceLock;
-    }
-
     public void push(Recipe recipe) {
-        if (stack.contains(recipe)) {
-            ArrayList<Recipe> circularity = new ArrayList<Recipe>(stack.subList(stack.indexOf(recipe), stack.size()));
+        if (stack.get() != null && stack.get().contains(recipe)) {
+            ArrayList<Recipe> circularity = new ArrayList<Recipe>(stack.get().subList(stack.get().indexOf(recipe), stack.get().size()));
 
             // remove anonymous nodes from circularity list
             for (Iterator<Recipe> iterator = circularity.iterator(); iterator.hasNext();) {
@@ -320,53 +316,58 @@ public class BlueprintRepository implements Repository, ExecutionContext {
 
             throw new CircularDependencyException(circularity);
         }
-        stack.add(recipe);
+        if (stack.get() == null) {
+            stack.set(new LinkedList<Recipe>());
+        }
+        stack.get().add(recipe);
     }
 
     public Recipe pop() {
-        return stack.removeLast();
-    }
-
-    public LinkedList<Recipe> getStack() {
-        return new LinkedList<Recipe>(stack);
+        return stack.get().removeLast();
     }
 
     public boolean containsObject(String name) {
-        return getInstance(name) != null
-                || getRecipe(name) != null;
+        return instances.containsKey(name) || getRecipe(name) != null;
     }
 
     public Object getObject(String name) {
-        Object object = getInstance(name);
-        if (object == null) {
-            object = getRecipe(name);
+        Future<Object> future = instances.get(name);
+        Object result = null;
+        if (future != null && future.isDone()) {
+            try {
+                result = future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                result = getRecipe(name);
+            } catch (ExecutionException e) {
+                result = getRecipe(name);
+            }
+        } else {
+            result = getRecipe(name);
         }
-        return object;
+        
+        return result;
     }
 
-    public void addFullObject(String name, Object object) {
-        if (instances.get(name) != null) {
-            throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
-        }
-        instances.put(name, object);
-        creationOrder.add(name); 
-        partialObjects.remove(name);
+    public Future<Object> addFullObject(String name, Future<Object> object) {
+        return instances.putIfAbsent(name, object);
     }
     
     public void addPartialObject(String name, Object object) {
-        partialObjects.put(name, object);
-    }
-    
-    public Object removePartialObject(String name) {
-        return partialObjects.remove(name);
+        if (partialObjects.get() == null)
+            partialObjects.set(new HashMap<String, Object>());
+
+        partialObjects.get().put(name, object);
     }
     
     public Object getPartialObject(String name) {
-        Object obj = partialObjects.get(name);
-        if (obj == null) {
-            obj = getInstance(name);
-        }
-        return obj;
+        return (partialObjects.get() != null) ? partialObjects.get().get(name) : null;
+    }
+    
+    public void removePartialObject(String name) {
+        creationOrder.add(name); 
+        if (partialObjects.get() != null) 
+            partialObjects.get().remove(name);
     }
 
     public Object convert(Object value, ReifiedType type) throws Exception {

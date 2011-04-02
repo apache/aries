@@ -17,6 +17,8 @@
  */
 package org.apache.aries.blueprint.di;
 
+import java.util.concurrent.Future;
+
 import org.osgi.service.blueprint.container.ReifiedType;
 
 public interface ExecutionContext {
@@ -45,25 +47,18 @@ public interface ExecutionContext {
     }
 
     /**
-     * Lock that should be used to synchronized creation of singletons
-     * 
-     * @return
-     */
-    public Object getInstanceLock();
-
-    /**
      * Adds a recipe to the top of the execution stack.  If the recipe is already on
      * the stack, a CircularDependencyException is thrown.
      * @param recipe the recipe to add to the stack
      * @throws CircularDependencyException if the recipe is already on the stack
      */
-    public abstract void push(Recipe recipe) throws CircularDependencyException;
+    public void push(Recipe recipe) throws CircularDependencyException;
 
     /**
      * Removes the top recipe from the execution stack.
      * @return the top recipe on the stack
      */
-    public abstract Recipe pop();
+    public Recipe pop();
 
     /**
      * Does this context contain a object with the specified name.
@@ -71,7 +66,7 @@ public interface ExecutionContext {
      * @param name the unique name of the object instance
      * @return true if this context contain a object with the specified name
      */
-    public abstract boolean containsObject(String name);
+    public boolean containsObject(String name);
 
     /**
      * Gets the object or recipe with the specified name from the repository.
@@ -79,23 +74,29 @@ public interface ExecutionContext {
      * @param name the unique name of the object instance
      * @return the object instance, a recipe to build the object or null
      */
-    public abstract Object getObject(String name);
+    public Object getObject(String name);
 
-    public abstract void addFullObject(String name, Object object);
+    /**
+     * Try to add a full object and return the already registered future if available
+     * @param name
+     * @param object
+     * @return
+     */
+    public Future<Object> addFullObject(String name, Future<Object> object);
     
-    public abstract void addPartialObject(String name, Object object);
+    public void addPartialObject(String name, Object object);
     
-    public abstract Object removePartialObject(String name);
+    public Object getPartialObject(String name);
     
-    public abstract Object getPartialObject(String name);
+    public void removePartialObject(String name);
 
-    public abstract Object convert(Object value, ReifiedType type) throws Exception;
+    public Object convert(Object value, ReifiedType type) throws Exception;
     
-    public abstract boolean canConvert(Object value, ReifiedType type);
+    public boolean canConvert(Object value, ReifiedType type);
 
-    public abstract Class loadClass(String className) throws ClassNotFoundException;
+    public Class loadClass(String className) throws ClassNotFoundException;
 
-    public abstract Recipe getRecipe(String name);
+    public Recipe getRecipe(String name);
     
 }
 
