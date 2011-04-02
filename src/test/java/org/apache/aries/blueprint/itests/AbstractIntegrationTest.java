@@ -117,8 +117,12 @@ public abstract class AbstractIntegrationTest {
             
             // add tracker to the list of trackers we close at tear down
             srs.add(tracker);
+            System.out.println("Started waiting for service: "+filter+", timeout=" + timeout+ ", time="+System.currentTimeMillis());
             Object svc = type.cast(tracker.waitForService(timeout));
             if (svc == null) {
+                System.out.println("Could not obtain a service in time, service-ref="+ 
+                  tracker.getServiceReference()+
+                  ", time="+System.currentTimeMillis());
                 throw new RuntimeException("Gave up waiting for service " + flt);
             }
             return type.cast(svc);
