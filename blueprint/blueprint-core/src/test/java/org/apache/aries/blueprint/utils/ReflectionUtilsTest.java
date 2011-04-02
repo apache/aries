@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Future;
 
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.di.CircularDependencyException;
@@ -61,7 +62,6 @@ public class ReflectionUtilsTest {
     public static void before()
     {
         ExecutionContext.Holder.setContext(new ExecutionContext() {
-            public void addFullObject(String name, Object object) {}
             public void addPartialObject(String name, Object object) {}
             public boolean containsObject(String name) { return false; }
 
@@ -84,14 +84,14 @@ public class ReflectionUtilsTest {
                 else return false;
             }
 
-            public Object getInstanceLock() { return null; }
             public Object getObject(String name) { return null; }
             public Object getPartialObject(String name) { return null; }
             public Recipe getRecipe(String name) { return null; }
             public Class loadClass(String className) throws ClassNotFoundException { return null; }
             public Recipe pop() { return null; }
             public void push(Recipe recipe) throws CircularDependencyException {}
-            public Object removePartialObject(String name) { return null; }            
+            public void removePartialObject(String name) {}
+            public Future<Object> addFullObject(String name, Future<Object> object) { return null; }            
         });
     }
     

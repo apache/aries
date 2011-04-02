@@ -34,7 +34,7 @@ public interface Repository {
 
     /**
      * Return the singleton instance for the given name.
-     * This method will not create the object if it has been created yet.
+     * This method will not create the object if it has not been created yet.
      *
      * @param name
      * @return the instance or <code>null</code>
@@ -67,11 +67,4 @@ public interface Repository {
     Set<Recipe> getAllRecipes(String... names);
 
     void destroy();
-
-    /**
-     * Lock that should be used to synchronized creation of singletons
-     *
-     * @return
-     */
-    public Object getInstanceLock();
 }
