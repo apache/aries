@@ -40,11 +40,14 @@ public class ProviderBundleTrackerCustomizerTest {
     public void testAddingRemovedBundle() throws Exception {        
         Bundle spiBundle = EasyMock.createMock(Bundle.class);
         EasyMock.replay(spiBundle);
-        BaseActivator a = new BaseActivator();        
+        BaseActivator a = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}            
+        };        
         
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(a, spiBundle);
         
-        ServiceRegistration<Object> sreg = EasyMock.createMock(ServiceRegistration.class);
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
         sreg.unregister();
         EasyMock.expectLastCall();
         EasyMock.replay(sreg);
@@ -79,7 +82,7 @@ public class ProviderBundleTrackerCustomizerTest {
         
         Assert.assertEquals("Precondition", 0, a.findProviderBundles("org.apache.aries.mytest.MySPI").size());
         // Call addingBundle();
-        List<ServiceRegistration<?>> registrations = customizer.addingBundle(implBundle, null);
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         Collection<Bundle> bundles = a.findProviderBundles("org.apache.aries.mytest.MySPI");
         Assert.assertEquals(1, bundles.size());
         Assert.assertSame(implBundle, bundles.iterator().next());

@@ -34,7 +34,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTracker;
@@ -42,76 +41,59 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class BaseActivator implements BundleActivator {
     private static final Set<WeavingData> NON_WOVEN_BUNDLE = Collections.emptySet();
-    
-    // Static access to the activator used by the woven code, therefore 
+
+    // Static access to the activator used by the woven code, therefore
     // this bundle must be a singleton.
     // TODO see if we can get rid of the static access.
-    static BaseActivator activator;
-    
+    public static BaseActivator activator;
+
     private BundleContext bundleContext;
     private LogServiceTracker logServiceTracker;
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
-    private BundleTracker consumerBundleTracker; 
+    private BundleTracker consumerBundleTracker;
     private BundleTracker providerBundleTracker;
 
-    private final ConcurrentMap<Bundle, Set<WeavingData>> bundleWeavingData = 
+    private final ConcurrentMap<Bundle, Set<WeavingData>> bundleWeavingData =
         new ConcurrentHashMap<Bundle, Set<WeavingData>>();
 
-    private final ConcurrentMap<String, SortedMap<Long, Bundle>> registeredProviders = 
+    private final ConcurrentMap<String, SortedMap<Long, Bundle>> registeredProviders =
             new ConcurrentHashMap<String, SortedMap<Long, Bundle>>();
 
-    private final ConcurrentMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>> consumerRestrictions = 
+    private final ConcurrentMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>> consumerRestrictions =
             new ConcurrentHashMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>>();
-    
+
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
         bundleContext = context;
-        
+
         logServiceTracker = new LogServiceTracker(context);
         logServiceTracker.open();
 
         providerBundleTracker = new BundleTracker(context,
                 Bundle.ACTIVE, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
         providerBundleTracker.open();
-        
-        consumerBundleTracker = new BundleTracker(context, Bundle.INSTALLED, null) {
-            @Override
-            public Object addingBundle(Bundle bundle, BundleEvent event) {
-                processBundle(bundle, consumerHeaderName);                    
-                
-                return super.addingBundle(bundle, event);
-            }
 
-            @Override
-            public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
-                removedBundle(bundle, event, object);
-                addingBundle(bundle, event);
-            }
-
-            @Override
-            public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
-                bundleWeavingData.remove(bundle);
-            }
-        };
+        consumerBundleTracker = new BundleTracker(context,
+                Bundle.INSTALLED, new ConsumerBundleTrackerCustomizer(this, consumerHeaderName));
         consumerBundleTracker.open();
-        
+
         for (Bundle bundle : context.getBundles()) {
-            processBundle(bundle, consumerHeaderName);
+            addWeavingData(bundle, consumerHeaderName);
         }
-        
+
         activator = this;
     }
 
-    private void processBundle(Bundle bundle, String consumerHeaderName) {
+    public void addWeavingData(Bundle bundle, String consumerHeaderName) {
         if (bundleWeavingData.containsKey(bundle)) {
             // This bundle was already processed
             return;
         }
-        
+
         Object consumerHeader = bundle.getHeaders().get(consumerHeaderName);
         if (consumerHeader instanceof String) {
             Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader((String) consumerHeader);
             bundleWeavingData.put(bundle, Collections.unmodifiableSet(wd));
-            
+
             for (WeavingData w : wd) {
                 registerConsumerBundle(bundle, w.getArgRestrictions(), w.getAllowedBundles());
             }
@@ -120,10 +102,14 @@ public abstract class BaseActivator implements BundleActivator {
         }
     }
 
+    public void removeWeavingData(Bundle bundle) {
+        bundleWeavingData.remove(bundle);
+    }
+
     @Override
     public synchronized void stop(BundleContext context) throws Exception {
         activator = null;
-        
+
         consumerBundleTracker.close();
         providerBundleTracker.close();
         logServiceTracker.close();
@@ -144,20 +130,20 @@ public abstract class BaseActivator implements BundleActivator {
             }
         }
     }
-    
+
     public Set<WeavingData> getWeavingData(Bundle b) {
         // Simply return the value as it's already an unmovable set.
         Set<WeavingData> wd = bundleWeavingData.get(b);
-        if (wd == null) 
+        if (wd == null)
             return null;
-        
-        if (wd.size() == 0) 
+
+        if (wd.size() == 0)
             return null;
-        
+
         return wd;
     }
 
-    public void registerProviderBundle(String registrationClassName, Bundle bundle) {        
+    public void registerProviderBundle(String registrationClassName, Bundle bundle) {
         registeredProviders.putIfAbsent(registrationClassName, Collections.synchronizedSortedMap(new TreeMap<Long, Bundle>()));
         SortedMap<Long, Bundle> map = registeredProviders.get(registrationClassName);
         map.put(bundle.getBundleId(), bundle);
@@ -167,7 +153,7 @@ public abstract class BaseActivator implements BundleActivator {
         SortedMap<Long, Bundle> map = registeredProviders.get(name);
         return map == null ? Collections.<Bundle>emptyList() : map.values();
     }
-    
+
     // TODO unRegisterProviderBundle();
     public void registerConsumerBundle( Bundle consumerBundle,
             Set<ConsumerRestriction> restrictions, List<BundleDescriptor> allowedBundles) {
@@ -185,13 +171,13 @@ public abstract class BaseActivator implements BundleActivator {
             // Null means: no restrictions
             return null;
         }
-        
+
         for (Map.Entry<ConsumerRestriction, List<BundleDescriptor>> entry : restrictions.entrySet()) {
             if (entry.getKey().matches(className, methodName, args)) {
                 return getBundles(entry.getValue());
             }
         }
-        
+
         // Empty collection: nothing matches
         return Collections.emptySet();
     }
@@ -200,7 +186,7 @@ public abstract class BaseActivator implements BundleActivator {
         if (descriptors == null) {
             return null;
         }
-        
+
         List<Bundle> bundles = new ArrayList<Bundle>();
         for (Bundle b : bundleContext.getBundles()) {
             for (BundleDescriptor desc : descriptors) {
@@ -215,7 +201,7 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     // TODO unRegisterConsumerBundle();
-    
+
     private class LogServiceTracker extends ServiceTracker {
         public LogServiceTracker(BundleContext context) {
             super(context, LogService.class.getName(), null);
@@ -231,6 +217,6 @@ public abstract class BaseActivator implements BundleActivator {
         @Override
         public void removedService(ServiceReference reference, Object service) {
             logServices.remove(service);
-        }        
+        }
     }
 }

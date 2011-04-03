@@ -16,20 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly;
-
-import java.util.ServiceLoader;
+package org.apache.aries.spifly.dynamic.impl1;
 
 import org.apache.aries.mytest.MySPI;
 
-public class TestClient {
-    public String test(String input) {
-        StringBuilder sb = new StringBuilder();
-        
-        ServiceLoader<MySPI> loader = ServiceLoader.load(MySPI.class);
-        for (MySPI mySPI : loader) {
-            sb.append(mySPI.someMethod(input));
-        }
-        return sb.toString();
+public class MySPIImpl1 implements MySPI{
+    @Override
+    public String someMethod(String s) {
+        return new StringBuilder(s).reverse().toString();
     }
 }

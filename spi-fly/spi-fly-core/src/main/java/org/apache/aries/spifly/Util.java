@@ -18,7 +18,6 @@
  */
 package org.apache.aries.spifly;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -32,22 +31,22 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 import org.osgi.service.log.LogService;
 
-/** 
+/**
  * Methods used from ASM-generated code. They store, change and reset the thread context classloader.
  * The methods are static to make it easy to access them from generated code.
  */
 public class Util {
     static ThreadLocal<ClassLoader> storedClassLoaders = new ThreadLocal<ClassLoader>();
-    
+
     public static void storeContextClassloader() {
         storedClassLoaders.set(Thread.currentThread().getContextClassLoader());
     }
-    
+
     public static void restoreContextClassloader() {
         Thread.currentThread().setContextClassLoader(storedClassLoaders.get());
         storedClassLoaders.set(null);
     }
-        
+
     public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
         if (!(bundleLoader instanceof BundleReference)) {
             BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
@@ -55,8 +54,8 @@ public class Util {
         }
 
         BundleReference br = ((BundleReference) bundleLoader);
-        System.out.println("~~~ cls: " + cls + " method: " + method + " clarg:" + clsArg + " cl:" + bundleLoader + " clientBundle: " + br.getBundle().getSymbolicName());        
-        
+        System.out.println("~~~ cls: " + cls + " method: " + method + " clarg:" + clsArg + " cl:" + bundleLoader + " clientBundle: " + br.getBundle().getSymbolicName());
+
         ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
             BaseActivator.activator.log(LogService.LOG_INFO, "Temporarily setting Thread Context Classloader to: " + cl);
@@ -65,10 +64,10 @@ public class Util {
             BaseActivator.activator.log(LogService.LOG_WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
         }
     }
-    
+
     private static ClassLoader findContextClassloader(Bundle consumerBundle, String className, String methodName, Class<?> clsArg) {
         BaseActivator activator = BaseActivator.activator;
-        
+
         String requestedClass;
         Map<Pair<Integer, String>, String> args;
         if (ServiceLoader.class.getName().equals(className) && "load".equals(methodName)) {
@@ -82,7 +81,7 @@ public class Util {
 
         Collection<Bundle> bundles = new ArrayList<Bundle>(activator.findProviderBundles(requestedClass));
         activator.log(LogService.LOG_DEBUG, "Found bundles providing " + requestedClass + ": " + bundles);
-                
+
         Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle, className, methodName, args);
 
         if (allowedBundles != null) {
@@ -92,7 +91,7 @@ public class Util {
                 }
             }
         }
-        
+
         switch (bundles.size()) {
         case 0:
             return null;
@@ -100,7 +99,7 @@ public class Util {
             Bundle bundle = bundles.iterator().next();
             return getBundleClassLoader(bundle);
 //            BundleWiring wiring = bundle.adapt(BundleWiring.class);
-//            return wiring.getClassLoader();            
+//            return wiring.getClassLoader();
         default:
             List<ClassLoader> loaders = new ArrayList<ClassLoader>();
             for (Bundle b : bundles) {
@@ -111,7 +110,7 @@ public class Util {
             return new MultiDelegationClassloader(loaders.toArray(new ClassLoader[loaders.size()]));
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private static ClassLoader getBundleClassLoader(Bundle b) {
         // In 4.3 this can be done much easier by using the BundleWiring...
@@ -121,11 +120,14 @@ public class Util {
             String path = paths.nextElement();
             if (path.endsWith(".class")) {
                 String className = path.substring(0,path.length() - ".class".length());
+                if (className.startsWith("/"))
+                    className = className.substring(1);
+
                 className = className.replace('/', '.');
                 try {
                     Class<?> cls = b.loadClass(className);
                     return cls.getClassLoader();
-                } catch (ClassNotFoundException e) {                    
+                } catch (ClassNotFoundException e) {
                     // try the next class
                 }
             }
