@@ -48,6 +48,17 @@ JRE through META-INF/services resources).
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>                    
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -63,6 +74,13 @@ JRE through META-INF/services resources).
             <version>3.7M5</version>
             <scope>system</scope>
             <systemPath>${basedir}/../spi-fly-deps/target/downloaded/org.eclipse.osgi_3.7.0.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
