@@ -16,21 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly.staticbundle;
+package org.apache.aries.spifly.dynamic;
 
-import org.apache.aries.spifly.BaseActivator;
-import org.apache.aries.spifly.api.SpiFlyConstants;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import java.util.ServiceLoader;
 
-public class StaticWeavingActivator extends BaseActivator implements BundleActivator {
-    @Override
-    public synchronized void start(BundleContext context) throws Exception {
-        super.start(context, SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER);
-    }
+import org.apache.aries.mytest.MySPI;
 
-    @Override
-    public synchronized void stop(BundleContext context) throws Exception {
-        super.stop(context);
+public class TestClient {
+    public String test(String input) {
+        StringBuilder sb = new StringBuilder();
+        
+        ServiceLoader<MySPI> loader = ServiceLoader.load(MySPI.class);
+        for (MySPI mySPI : loader) {
+            sb.append(mySPI.someMethod(input));
+        }
+        return sb.toString();
     }
 }
