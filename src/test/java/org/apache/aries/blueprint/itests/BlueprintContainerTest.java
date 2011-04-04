@@ -103,9 +103,6 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
             .manifest().symbolicName("sample"+no)
                 .attribute("Import-Package", "org.osgi.framework")
             .end()
-            .binary("org/apache/aries/blueprint/itests/comp/Component.class", 
-                    getClass().getClassLoader().getResourceAsStream(
-                            "org/apache/aries/blueprint/itests/comp/Component.class"))
             .binary("org/apache/aries/blueprint/itests/comp/Listener.class",
                     getClass().getClassLoader().getResourceAsStream(
                             "org/apache/aries/blueprint/itests/comp/Listener.class"))
