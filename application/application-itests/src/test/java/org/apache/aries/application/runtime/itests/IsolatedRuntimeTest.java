@@ -139,6 +139,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     
     ctx.start();
     assertHelloWorldService("test.eba");
+    
+    manager.uninstall(ctx);
   }
   
   @Test
@@ -150,6 +152,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     
     ctx.start();
     assertHelloWorldService("org.apache.aries.sample2");
+    
+    manager.uninstall(ctx);
   }
   
   @Test
@@ -174,6 +178,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     ctx.start();
 
     assertHelloWorldService("org.apache.aries.sample2");
+    
+    manager.uninstall(ctx);
   }
   
   @Test
@@ -186,6 +192,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     ctx.start();
     
     assertHelloWorldService("withFragment.eba");
+    
+    manager.uninstall(ctx);
   }
 
   @Test
@@ -213,6 +221,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     ctx.start();
     
     assertHelloWorldService("org.apache.aries.sample2", "hello brave new world");
+    
+    manager.uninstall(ctx);
   }  
   
 
