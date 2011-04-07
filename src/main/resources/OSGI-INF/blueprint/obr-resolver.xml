@@ -41,10 +41,14 @@
         <argument>
             <reference interface="org.apache.felix.bundlerepository.RepositoryAdmin"/>
         </argument>
+        <property name="modelledResourceManager" ref="modelledResourceManagerRef"/> 
+        <property name="tempDir" ref="tempDirRef"/>
         <property name="bundleResourceTransformers" ref="bundle-resource-transformers"/>
+        
     </bean>
     <service id="repository-generator-service" ref="repository-generator" interface="org.apache.aries.application.management.spi.repository.RepositoryGenerator"/>
-    
+    <reference id="modelledResourceManagerRef" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
+    <reference id="tempDirRef" interface="org.apache.aries.application.management.spi.runtime.LocalPlatform"/>
     <reference-list id="bundle-resource-transformers" 
       interface="org.apache.aries.application.resolver.obr.ext.BundleResourceTransformer"
       availability="optional"/>
