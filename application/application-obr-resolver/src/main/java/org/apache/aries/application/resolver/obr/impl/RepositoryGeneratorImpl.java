@@ -21,11 +21,19 @@ package org.apache.aries.application.resolver.obr.impl;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,11 +44,17 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
+import org.apache.aries.application.management.spi.runtime.LocalPlatform;
 import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.resolver.obr.ext.BundleResource;
 import org.apache.aries.application.resolver.obr.ext.BundleResourceTransformer;
+import org.apache.aries.application.utils.filesystem.FileSystem;
+import org.apache.aries.application.utils.filesystem.FileUtils;
+import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Property;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
@@ -54,15 +68,25 @@ import org.w3c.dom.Element;
 public final class RepositoryGeneratorImpl implements RepositoryGenerator
 {
   private RepositoryAdmin repositoryAdmin;
+  private ModelledResourceManager modelledResourceManager;
+  private LocalPlatform tempDir;
   private static Logger logger = LoggerFactory.getLogger(RepositoryGeneratorImpl.class);
   private static Collection<BundleResourceTransformer> bundleResourceTransformers = new ArrayList<BundleResourceTransformer>();
   private static final String MANDATORY_DIRECTIVE = Constants.MANDATORY_DIRECTIVE + ":";
-  
-  
+
+
+  public void setModelledResourceManager( ModelledResourceManager modelledResourceManager) {
+    this.modelledResourceManager = modelledResourceManager;
+  }
+
+  public void setTempDir(LocalPlatform tempDir) {
+    this.tempDir = tempDir;
+  }
+
   public void setBundleResourceTransformers (List<BundleResourceTransformer> brts) { 
     bundleResourceTransformers = brts;
   }
-  
+
   public RepositoryGeneratorImpl(RepositoryAdmin repositoryAdmin) {
     this.repositoryAdmin = repositoryAdmin;
   }
@@ -77,8 +101,8 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
     capability.appendChild(p);
     logger.debug(LOG_ENTRY, "addProperty", new Object[]{});
   }
-  
-  
+
+
 
   /**
    * Write out the resource element
@@ -132,7 +156,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
 
       String name = (String) entry.getName();
       String objectAttrs = entry.getValue();
-      
+
       String type = getType(name);
 
       // remove the beginning " and tailing "
@@ -180,37 +204,37 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
   public static void generateRepository (RepositoryAdmin repositoryAdmin, String repositoryName,
       Collection<? extends ModelledResource> byValueBundles, OutputStream os)
   throws ResolverException, IOException {
-	  logger.debug(LOG_ENTRY, "generateRepository", new Object[]{repositoryAdmin, repositoryName, byValueBundles, os});
-	    Document doc;
-	    try {
-	      doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+    logger.debug(LOG_ENTRY, "generateRepository", new Object[]{repositoryAdmin, repositoryName, byValueBundles, os});
+    Document doc;
+    try {
+      doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 
-	    } catch (ParserConfigurationException pce) {
-	      throw new ResolverException(pce);
-	    }
-	    Element root = doc.createElement("repository");
+    } catch (ParserConfigurationException pce) {
+      throw new ResolverException(pce);
+    }
+    Element root = doc.createElement("repository");
 
-	    root.setAttribute("name", repositoryName);
-	    doc.appendChild(root);
-	    for (ModelledResource mr : byValueBundles) {
-	      BundleResource bundleResource = new BundleResource(mr, repositoryAdmin);
-	      if (bundleResourceTransformers.size() > 0) { 
-	        for (BundleResourceTransformer brt : bundleResourceTransformers) { 
-	          bundleResource = brt.transform (bundleResource);
-	        }
-	      }
-	      writeResource (bundleResource, mr.getLocation(), doc, root);
-	    }
+    root.setAttribute("name", repositoryName);
+    doc.appendChild(root);
+    for (ModelledResource mr : byValueBundles) {
+      BundleResource bundleResource = new BundleResource(mr, repositoryAdmin);
+      if (bundleResourceTransformers.size() > 0) { 
+        for (BundleResourceTransformer brt : bundleResourceTransformers) { 
+          bundleResource = brt.transform (bundleResource);
+        }
+      }
+      writeResource (bundleResource, mr.getLocation(), doc, root);
+    }
 
-	    try {
-	      Transformer trans = TransformerFactory.newInstance().newTransformer();
-	      trans.setOutputProperty(OutputKeys.INDENT, "yes");
-	      trans.transform(new DOMSource(doc), new StreamResult(os));
-	    } catch (TransformerException te) {
-	      logger.debug(LOG_EXIT, "generateRepository", te);
-	      throw new ResolverException(te);
-	    }
-	    logger.debug(LOG_EXIT, "generateRepository");
+    try {
+      Transformer trans = TransformerFactory.newInstance().newTransformer();
+      trans.setOutputProperty(OutputKeys.INDENT, "yes");
+      trans.transform(new DOMSource(doc), new StreamResult(os));
+    } catch (TransformerException te) {
+      logger.debug(LOG_EXIT, "generateRepository", te);
+      throw new ResolverException(te);
+    }
+    logger.debug(LOG_EXIT, "generateRepository");
   }
   private static String getType(String name) {
     logger.debug(LOG_ENTRY, "getType", new Object[]{name});
@@ -222,5 +246,88 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
     logger.debug(LOG_EXIT, "getType", new Object[]{type});
     return type;
   }
+
+  public void generateRepository(String[] source, OutputStream fout) throws IOException{
+
+    logger.debug(LOG_ENTRY, "generateRepository", new Object[]{source, fout});
+    List<URI> jarFiles = new ArrayList<URI>();
+    InputStream in = null;
+    OutputStream out = null;
+    File wstemp = null;
+    Set<ModelledResource> mrs = new HashSet<ModelledResource>();
+    if (source != null) {
+      try {
+        for (String urlString : source) {
+          
+          // for each entry, we need to find out whether it is in local file system. If yes, we would like to
+          // scan the bundles recursively under that directory
+          URI entry;
+          try {
+            File f = new File(urlString);
+            if (f.exists()) {
+              entry = f.toURI();
+            } else {
+              entry = new URI(urlString);
+            }
+            if ("file".equals(entry.toURL().getProtocol())) {
+              jarFiles.addAll(FileUtils.getBundlesRecursive(entry));
+            } else {
+              jarFiles.add(entry);
+            }
+          } catch (URISyntaxException use) {
+            throw new IOException(urlString + " is not a valide uri.");
+          }
+
+        }
+        for (URI jarFileURI : jarFiles) {
+          String uriString = jarFileURI.toString();
+          File f = null;
+          if ("file".equals(jarFileURI.toURL().getProtocol())) {
+            f = new File(jarFileURI);
+          } else {
+            int lastIndexOfSlash = uriString.lastIndexOf("/");
+            String fileName = uriString.substring(lastIndexOfSlash + 1);
+            //we need to download this jar/war to wstemp and work on it
+            URLConnection jarConn = jarFileURI.toURL().openConnection();
+            in = jarConn.getInputStream();
+            if (wstemp == null) {
+              wstemp = new File(tempDir.getTemporaryDirectory(), "generateRepositoryXML_" + System.currentTimeMillis());
+              boolean created = wstemp.mkdirs();
+              if (created) {
+                logger.debug("The temp directory was created successfully.");
+              } else {
+                logger.debug("The temp directory was NOT created.");
+              }
+            }
+            //Let's open the stream to download the bundles from remote
+            f = new File(wstemp, fileName);
+            out = new FileOutputStream(f);
+            IOUtils.copy(in, out);
+          } 
+
+          IDirectory jarDir = FileSystem.getFSRoot(f);
+          mrs.add(modelledResourceManager.getModelledResource(uriString, jarDir));
+
+        }
+        generateRepository("Resource Repository", mrs, fout);
+
+      } catch (Exception e) {
+        logger.debug(LOG_EXIT, "generateRepository");
+        throw new IOException(e);
+      } finally {
+        IOUtils.close(in);
+        IOUtils.close(out);
+        if (wstemp != null) {
+          IOUtils.deleteRecursive(wstemp);
+        }
+      }
+    } else {
+
+      logger.debug("The URL list is empty");
+    }
+
+    logger.debug(LOG_EXIT, "generateRepository");
+  }
+
 
 }
