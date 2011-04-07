@@ -36,5 +36,11 @@ public interface RepositoryGenerator
    * @throws IOException
    */
   void generateRepository(String repositoryName, Collection<? extends ModelledResource> byValueBundles, OutputStream os) throws ResolverException, IOException;
-  
+  /**
+   * Generate a repository xml for the list of url and store the content in the output stream
+   * @param source the list of url to the bundle archive, for file: protocol, it can be simplified by using relative path or absolute path(e.g. \temp\aa.jar or ..\temp\jars\aa.jar)
+   * @param fout the output stream containing the repository xml
+   * @throws IOException
+   */
+  void generateRepository(String[] source, OutputStream fout) throws IOException;
 }
