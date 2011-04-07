@@ -51,7 +51,7 @@
 	    <module>application-runtime-isolated</module>
 	    <module>application-runtime-framework</module>
 	    <module>application-runtime-framework-management</module>
-	    <module>application-runtime-repository</module>
+	    <module>application-tooling-repository-generator</module>
     </modules>
 
 </project>
