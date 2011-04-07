@@ -387,6 +387,56 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
   }
   
   @Test
+  public void testRepoAgain() throws Exception {
+    // do not provision against the local runtime
+    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
+    
+    RepositoryGenerator repositoryGenerator = getOsgiService(RepositoryGenerator.class);
+    
+    String fileURI = new File(REPO_BUNDLE+".jar").toURI().toString();
+    File repoXml = new File("repository.xml");
+    if (repoXml.exists()) {
+       repoXml.delete();
+    }
+    repositoryGenerator.generateRepository(new String[] {fileURI}, new FileOutputStream(repoXml));
+    
+    //print out the repository.xml
+    BufferedReader reader = new BufferedReader(new FileReader(new File("repository.xml")));
+    String line;
+    while (( line = reader.readLine()) != null) {
+        System.out.println(line);
+    }
+    // compare the generated with the expected file
+    Document real_doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File("repository.xml"));    
+    Document expected_doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(OBRResolverAdvancedTest.class.getClassLoader().getResourceAsStream("/obr/aries.bundle1/expectedRepository.xml"));
+    // parse two documents to make sure they have the same number of elements
+    Element element_real = real_doc.getDocumentElement();
+    Element element_expected = expected_doc.getDocumentElement();    
+    NodeList nodes_real = element_real.getElementsByTagName("capability");
+    NodeList nodes_expected = element_expected.getElementsByTagName("capability");
+    assertEquals("The number of capability is not expected. ", nodes_expected.getLength(), nodes_real.getLength());    
+    nodes_real = element_real.getElementsByTagName("require");
+    nodes_expected = element_expected.getElementsByTagName("require");    
+    assertEquals("The number of require elements is not expected. ", nodes_expected.getLength(), nodes_real.getLength());
+    nodes_real = element_real.getElementsByTagName("p");
+    nodes_expected = element_expected.getElementsByTagName("p");    
+    assertEquals("The number of properties is not expected. ", nodes_expected.getLength(), nodes_real.getLength());
+    // Let's verify all p elements are shown as expected.
+    for (int index=0; index < nodes_expected.getLength(); index++) {
+      Node node = nodes_expected.item(index);
+      boolean contains = false;
+      // make sure the node exists in the real generated repository
+      for (int i=0; i<nodes_real.getLength(); i++) {
+        Node real_node = nodes_real.item(i);
+        if (node.isEqualNode(real_node)) {
+          contains = true;
+          break;
+        }
+      }
+      assertTrue("The node " + node.toString() + "should exist.", contains);
+    }
+  }
+  @Test
   public void testMutlipleServices() throws Exception{
     // provision against the local runtime
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
