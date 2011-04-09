@@ -35,6 +35,8 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.spifly.BaseActivator;
 import org.apache.aries.spifly.Streams;
@@ -118,7 +120,7 @@ public class ClientWeavingHookTest {
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("UnaffectedTestClient.class");
         Assert.assertNotNull("Precondition", clsUrl);
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.UnaffectedTestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.UnaffectedTestClient", consumerBundle);
         Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
 
@@ -143,13 +145,15 @@ public class ClientWeavingHookTest {
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+
         Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
+        activator.addWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
 
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
@@ -541,19 +545,13 @@ public class ClientWeavingHookTest {
 
         // Set up the classloader that will be used by the ASM-generated code as the TCCL.
         // It can load a META-INF/services file
-        final ClassLoader cl = new TestImplClassLoader(subdir, resources.toArray(new String [] {}));
-
-        // The BundleWiring API is used on the bundle by the generated code to obtain its classloader
-        BundleWiring bw = EasyMock.createMock(BundleWiring.class);
-        EasyMock.expect(bw.getClassLoader()).andReturn(cl).anyTimes();
-        EasyMock.replay(bw);
+        final ClassLoader cl = new TestProviderBundleClassLoader(subdir, resources.toArray(new String [] {}));
 
         List<String> classResources = new ArrayList<String>();
         for(String className : classNames) {
             classResources.add("/" + className.replace('.', '/') + ".class");
         }
         Bundle providerBundle = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(providerBundle.adapt(BundleWiring.class)).andReturn(bw).anyTimes();
         String bsn = subdir;
         int idx = bsn.indexOf('_');
         if (idx > 0) {
@@ -621,15 +619,57 @@ public class ClientWeavingHookTest {
         return systemBundle;
     }
 
-    public static class TestImplClassLoader extends URLClassLoader {
+    // A classloader that loads anything starting with org.apache.aries.spifly.dynamic.impl1 from it
+    // and the rest from the parent. This is to mimic a bundle that holds a specific SPI implementation.
+    public static class TestProviderBundleClassLoader extends URLClassLoader {
         private final List<String> resources;
         private final String prefix;
+        private final String classPrefix;
+        private final Map<String, Class<?>> loadedClasses = new ConcurrentHashMap<String, Class<?>>();
 
-        public TestImplClassLoader(String subdir, String ... resources) {
-            super(new URL [] {}, TestImplClassLoader.class.getClassLoader());
+        public TestProviderBundleClassLoader(String subdir, String ... resources) {
+            super(new URL [] {}, TestProviderBundleClassLoader.class.getClassLoader());
 
-            this.prefix = TestImplClassLoader.class.getPackage().getName().replace('.', '/') + "/" + subdir + "/";
+            this.prefix = TestProviderBundleClassLoader.class.getPackage().getName().replace('.', '/') + "/" + subdir + "/";
+            this.classPrefix = prefix.replace('/', '.');
             this.resources = Arrays.asList(resources);
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            if (name.startsWith(classPrefix))
+                return loadClassLocal(name);
+
+            return super.loadClass(name);
+        }
+
+        @Override
+        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            if (name.startsWith(classPrefix)) {
+                Class<?> cls = loadClassLocal(name);
+                if (resolve)
+                    resolveClass(cls);
+
+                return cls;
+            }
+
+            return super.loadClass(name, resolve);
+        }
+
+        protected Class<?> loadClassLocal(String name) throws ClassNotFoundException {
+            Class<?> prevLoaded = loadedClasses.get(name);
+            if (prevLoaded != null)
+                return prevLoaded;
+
+            URL res = TestProviderBundleClassLoader.class.getClassLoader().getResource(name.replace('.', '/') + ".class");
+            try {
+                byte[] bytes = Streams.suck(res.openStream());
+                Class<?> cls = defineClass(name, bytes, 0, bytes.length);
+                loadedClasses.put(name, cls);
+                return cls;
+            } catch (Exception e) {
+                throw new ClassNotFoundException(name, e);
+            }
         }
 
         @Override
