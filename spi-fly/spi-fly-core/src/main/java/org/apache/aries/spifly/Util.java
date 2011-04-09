@@ -98,13 +98,9 @@ public class Util {
         case 1:
             Bundle bundle = bundles.iterator().next();
             return getBundleClassLoader(bundle);
-//            BundleWiring wiring = bundle.adapt(BundleWiring.class);
-//            return wiring.getClassLoader();
         default:
             List<ClassLoader> loaders = new ArrayList<ClassLoader>();
             for (Bundle b : bundles) {
-//                BundleWiring bw = b.adapt(BundleWiring.class);
-//                loaders.add(bw.getClassLoader());
                 loaders.add(getBundleClassLoader(b));
             }
             return new MultiDelegationClassloader(loaders.toArray(new ClassLoader[loaders.size()]));
@@ -113,8 +109,9 @@ public class Util {
 
     @SuppressWarnings("unchecked")
     private static ClassLoader getBundleClassLoader(Bundle b) {
-        // In 4.3 this can be done much easier by using the BundleWiring...
-        // but here we're just finding any class in the bundle, load that and then use its classloader.
+        // In 4.3 this can be done much easier by using the BundleWiring, but we want this code to
+        // be 4.2 compliant.
+        // Here we're just finding any class in the bundle, load that and then use its classloader.
         Enumeration<String> paths = b.getEntryPaths("/");
         while(paths.hasMoreElements()) {
             String path = paths.nextElement();
