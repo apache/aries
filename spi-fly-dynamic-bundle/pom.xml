@@ -64,7 +64,7 @@ JRE through META-INF/services resources).
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.weaver</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
