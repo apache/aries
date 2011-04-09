@@ -26,20 +26,21 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 
 public class DynamicWeavingActivator extends BaseActivator implements BundleActivator {
+    @SuppressWarnings("rawtypes")
     private ServiceRegistration weavingHookService;
 
     @Override
     public synchronized void start(BundleContext context) throws Exception {
         WeavingHook wh = new ClientWeavingHook(context, this);
         weavingHookService = context.registerService(WeavingHook.class.getName(), wh, null);
-        
+
         super.start(context, SpiFlyConstants.SPI_CONSUMER_HEADER);
     }
 
     @Override
     public synchronized void stop(BundleContext context) throws Exception {
         weavingHookService.unregister();
-        
+
         super.stop(context);
     }
 }
