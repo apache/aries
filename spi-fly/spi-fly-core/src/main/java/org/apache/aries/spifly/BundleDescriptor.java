@@ -21,9 +21,12 @@ package org.apache.aries.spifly;
 import org.osgi.framework.Version;
 
 class BundleDescriptor {
+    public static final int BUNDLE_ID_UNSPECIFIED = -1;
+
     final String symbolicName;
     final Version version;
-    
+    final long bundleID;
+
     BundleDescriptor(String symbolicName) {
         this(symbolicName, null);
     }
@@ -31,6 +34,17 @@ class BundleDescriptor {
     BundleDescriptor(String symbolicName, Version version) {
         this.symbolicName = symbolicName;
         this.version = version;
+        this.bundleID = BUNDLE_ID_UNSPECIFIED;
+    }
+
+    BundleDescriptor(long bundleID) {
+        this.bundleID = bundleID;
+        this.symbolicName = null;
+        this.version = null;
+    }
+
+    public long getBundleID() {
+        return bundleID;
     }
 
     public String getSymbolicName() {
