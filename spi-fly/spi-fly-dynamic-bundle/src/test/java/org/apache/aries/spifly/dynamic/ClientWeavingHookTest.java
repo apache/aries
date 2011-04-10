@@ -331,7 +331,7 @@ public class ClientWeavingHookTest {
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
-        WovenClass wc2 = new MyWovenClass(cls2Url, "org.apache.aries.spifly.AltTestClient", consumerBundle);
+        WovenClass wc2 = new MyWovenClass(cls2Url, "org.apache.aries.spifly.dynamic.AltTestClient", consumerBundle);
         wh.weave(wc2);
 
         // Invoke the AltTestClient
@@ -378,7 +378,7 @@ public class ClientWeavingHookTest {
                 providerBundle1, providerBundle2, providerBundle3, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
-        testConsumerBundleWeaving(consumerBundle1, wh, "impl4", "org.apache.aries.spifly.impl3.MyAltDocumentBuilderFactory");
+        testConsumerBundleWeaving(consumerBundle1, wh, "impl4", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
         testConsumerBundleWeaving(consumerBundle2, wh, "olleh", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
         testConsumerBundleWeaving(consumerBundle3, wh, "", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
     }
@@ -386,7 +386,7 @@ public class ClientWeavingHookTest {
     private void testConsumerBundleWeaving(Bundle consumerBundle, WeavingHook wh, String testClientResult, String jaxpClientResult) throws Exception {
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
@@ -397,7 +397,7 @@ public class ClientWeavingHookTest {
         Assert.assertEquals(testClientResult, result);
 
         URL clsUrl2 = getClass().getResource("JaxpClient.class");
-        WovenClass wc2 = new MyWovenClass(clsUrl2, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        WovenClass wc2 = new MyWovenClass(clsUrl2, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
         wh.weave(wc2);
 
         Class<?> cls2 = wc2.getDefinedClass();
@@ -772,6 +772,7 @@ public class ClientWeavingHookTest {
         private final String className;
         private final Bundle bundle;
         private final byte [] bytes;
+        private Class<?> wovenClass;
 
         public MyWovenClassClassLoader(String className, byte[] bytes, ClassLoader parent, Bundle bundle) {
             super(parent);
@@ -785,7 +786,10 @@ public class ClientWeavingHookTest {
         protected synchronized Class<?> loadClass(String name, boolean resolve)
                 throws ClassNotFoundException {
             if (name.equals(className)) {
-                return defineClass(className, bytes, 0, bytes.length);
+                if (wovenClass == null)
+                    wovenClass = defineClass(className, bytes, 0, bytes.length);
+
+                return wovenClass;
             } else {
                 return super.loadClass(name, resolve);
             }
