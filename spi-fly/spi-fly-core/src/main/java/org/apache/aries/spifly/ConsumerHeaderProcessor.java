@@ -118,6 +118,7 @@ public class ConsumerHeaderProcessor {
             }
             ConsumerRestriction restriction = new ConsumerRestriction(className, methodRestriction);
 
+            // TODO is this correct? Why is it added to a set?
             Set<ConsumerRestriction> restrictions = new HashSet<ConsumerRestriction>();
             restrictions.add(restriction);
 
@@ -156,8 +157,9 @@ public class ConsumerHeaderProcessor {
             // TODO this can be done in the WeavingData itself?
             String[] argClasses = restriction.getMethodRestriction(methodName).getArgClasses();
 
-            weavingData.add(new WeavingData(className, methodName, argClasses, restrictions,
-                    allowedBundles.size() == 0 ? null : allowedBundles));
+            WeavingData wd = new WeavingData(className, methodName, argClasses, restrictions,
+                    allowedBundles.size() == 0 ? null : allowedBundles);
+            weavingData.add(wd);
         }
         return weavingData;
     }

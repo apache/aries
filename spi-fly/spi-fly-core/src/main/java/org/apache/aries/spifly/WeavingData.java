@@ -38,8 +38,8 @@ public class WeavingData {
      * @param argClasses The overload (class names of the signature) of the call
      * that needs to be woven. If <code>null</code> then all overloads of the method
      * need to be woven.
-     * @param argRestrictions 
-     * @param allowedBundles 
+     * @param argRestrictions
+     * @param allowedBundles
      */
     public WeavingData(String className, String methodName, String[] argClasses, Set<ConsumerRestriction> argRestrictions, List<BundleDescriptor> allowedBundles) {
         // TODO can we infer argClasses from restrictions?
@@ -64,12 +64,12 @@ public class WeavingData {
 
     public String[] getArgClasses() {
         return argClasses;
-    }        
+    }
 
     public Set<ConsumerRestriction> getArgRestrictions() {
         return argRestrictions;
-    }        
-    
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -77,6 +77,8 @@ public class WeavingData {
         result = prime * result + Arrays.hashCode(argClasses);
         result = prime * result + ((className == null) ? 0 : className.hashCode());
         result = prime * result + ((methodName == null) ? 0 : methodName.hashCode());
+        result = prime * result + ((argRestrictions == null) ? 0 : argRestrictions.hashCode());
+        result = prime * result + ((allowedBundles == null) ? 0 : allowedBundles.hashCode());
         return result;
     }
 
@@ -84,26 +86,41 @@ public class WeavingData {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        
+
         if (obj == null)
             return false;
-        
+
         if (getClass() != obj.getClass())
             return false;
-        
+
         WeavingData other = (WeavingData) obj;
         if (!Arrays.equals(argClasses, other.argClasses))
             return false;
+
         if (className == null) {
             if (other.className != null)
                 return false;
         } else if (!className.equals(other.className))
             return false;
+
         if (methodName == null) {
             if (other.methodName != null)
                 return false;
         } else if (!methodName.equals(other.methodName))
             return false;
+
+        if (argRestrictions == null) {
+            if (other.argRestrictions != null)
+                return false;
+        } else if (!argRestrictions.equals(other.argRestrictions))
+            return false;
+
+        if (allowedBundles == null) {
+            if (other.allowedBundles != null)
+                return false;
+        } else if (!allowedBundles.equals(other.allowedBundles))
+            return false;
+
         return true;
     }
 }
