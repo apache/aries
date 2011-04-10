@@ -418,7 +418,7 @@ public class ClientWeavingHookTest {
         WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, systembundle).getBundleContext(), activator);
 
         URL clsUrl = getClass().getResource("JaxpClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
         wh.weave(wc);
 
         Class<?> cls = wc.getDefinedClass();
@@ -443,7 +443,7 @@ public class ClientWeavingHookTest {
         WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
 
         URL clsUrl = getClass().getResource("JaxpClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
         wh.weave(wc);
 
         Class<?> cls = wc.getDefinedClass();
@@ -467,7 +467,7 @@ public class ClientWeavingHookTest {
         WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
 
         URL clsUrl = getClass().getResource("JaxpClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
         wh.weave(wc);
 
         Class<?> cls = wc.getDefinedClass();
@@ -491,7 +491,7 @@ public class ClientWeavingHookTest {
         WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
 
         URL clsUrl = getClass().getResource("JaxpClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.JaxpClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
         wh.weave(wc);
 
         Class<?> cls = wc.getDefinedClass();
