@@ -34,35 +34,33 @@ import org.osgi.service.log.LogService;
 public class ClientWeavingHook implements WeavingHook {
     private final String addedImport;
     private final DynamicWeavingActivator activator;
-    
+
     ClientWeavingHook(BundleContext context, DynamicWeavingActivator dwActivator) {
         activator = dwActivator;
-        
+
         Bundle b = context.getBundle();
         String bver = b.getVersion().toString();
         String bsn = b.getSymbolicName();
-        
-        addedImport = Util.class.getPackage().getName() + 
-            ";bundle-symbolic-name=" + bsn + 
+
+        addedImport = Util.class.getPackage().getName() +
+            ";bundle-symbolic-name=" + bsn +
             ";bundle-version=" + bver;
     }
-    
+
 	@Override
 	public void weave(WovenClass wovenClass) {
 	    Bundle consumerBundle = wovenClass.getBundleWiring().getBundle();
         Set<WeavingData> wd = activator.getWeavingData(consumerBundle);
         if (wd != null) {
-	        activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());            
-            
-//            WeavingData[] wd = ConsumerHeaderProcessor.processHeader(consumerBundle, consumerHeader);
-	        
+	        activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());
+
 	        ClassReader cr = new ClassReader(wovenClass.getBytes());
 	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw, wovenClass.getClassName(), wd);
-	        cr.accept(tsv, 0);	        
+	        cr.accept(tsv, 0);
 	        wovenClass.setBytes(cw.toByteArray());
 	        if (tsv.additionalImportRequired())
 	            wovenClass.getDynamicImports().add(addedImport);
-	    }			
+	    }
 	}
 }
