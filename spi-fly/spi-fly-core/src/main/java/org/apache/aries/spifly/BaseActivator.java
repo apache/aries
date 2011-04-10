@@ -77,13 +77,13 @@ public abstract class BaseActivator implements BundleActivator {
         consumerBundleTracker.open();
 
         for (Bundle bundle : context.getBundles()) {
-            addWeavingData(bundle, consumerHeaderName);
+            addConsumerWeavingData(bundle, consumerHeaderName);
         }
 
         activator = this;
     }
 
-    public void addWeavingData(Bundle bundle, String consumerHeaderName) {
+    public void addConsumerWeavingData(Bundle bundle, String consumerHeaderName) {
         if (bundleWeavingData.containsKey(bundle)) {
             // This bundle was already processed
             return;
@@ -190,9 +190,15 @@ public abstract class BaseActivator implements BundleActivator {
         List<Bundle> bundles = new ArrayList<Bundle>();
         for (Bundle b : bundleContext.getBundles()) {
             for (BundleDescriptor desc : descriptors) {
-                if (b.getSymbolicName().equals(desc.getSymbolicName())) {
-                    if (desc.getVersion() == null || b.getVersion().equals(desc.getVersion())) {
+                if (desc.getBundleID() != BundleDescriptor.BUNDLE_ID_UNSPECIFIED) {
+                    if (b.getBundleId() == desc.getBundleID()) {
                         bundles.add(b);
+                    }
+                } else {
+                    if (b.getSymbolicName().equals(desc.getSymbolicName())) {
+                        if (desc.getVersion() == null || b.getVersion().equals(desc.getVersion())) {
+                            bundles.add(b);
+                        }
                     }
                 }
             }

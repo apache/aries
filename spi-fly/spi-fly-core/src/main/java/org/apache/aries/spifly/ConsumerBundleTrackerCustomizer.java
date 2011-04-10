@@ -33,7 +33,7 @@ public class ConsumerBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public Object addingBundle(Bundle bundle, BundleEvent event) {
-        activator.addWeavingData(bundle, headerName);                    
+        activator.addConsumerWeavingData(bundle, headerName);                    
         return bundle;
     }
 
