@@ -80,7 +80,7 @@ public class ClientWeavingHookTest {
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
 
         Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
-        activator.addWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
 
         Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
@@ -147,7 +147,7 @@ public class ClientWeavingHookTest {
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
 
         Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
-        activator.addWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
 
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
@@ -182,12 +182,14 @@ public class ClientWeavingHookTest {
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
@@ -211,12 +213,13 @@ public class ClientWeavingHookTest {
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle3);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle3);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle3);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
@@ -243,12 +246,13 @@ public class ClientWeavingHookTest {
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
@@ -275,12 +279,13 @@ public class ClientWeavingHookTest {
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
@@ -308,12 +313,13 @@ public class ClientWeavingHookTest {
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.TestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
@@ -363,8 +369,11 @@ public class ClientWeavingHookTest {
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
 
         Bundle consumerBundle1 = mockConsumerBundle(headers1, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
+        activator.addConsumerWeavingData(consumerBundle1, SpiFlyConstants.SPI_CONSUMER_HEADER);
         Bundle consumerBundle2 = mockConsumerBundle(headers2, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
+        activator.addConsumerWeavingData(consumerBundle2, SpiFlyConstants.SPI_CONSUMER_HEADER);
         Bundle consumerBundle3 = mockConsumerBundle(headers3, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
+        activator.addConsumerWeavingData(consumerBundle3, SpiFlyConstants.SPI_CONSUMER_HEADER);
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle1, consumerBundle2, consumerBundle3,
                 providerBundle1, providerBundle2, providerBundle3, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
@@ -404,6 +413,7 @@ public class ClientWeavingHookTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance()");
         Bundle consumerBundle = mockConsumerBundle(headers, systembundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
 
         WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, systembundle).getBundleContext(), activator);
 
@@ -428,6 +438,7 @@ public class ClientWeavingHookTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance()");
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
 
         WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
 
@@ -451,6 +462,7 @@ public class ClientWeavingHookTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundleId=0");
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
 
         WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
 
@@ -474,6 +486,7 @@ public class ClientWeavingHookTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=impl3");
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
 
         WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
 
@@ -503,6 +516,7 @@ public class ClientWeavingHookTest {
 
         EasyMock.expect(spiFlyBundle.getSymbolicName()).andReturn(bsn).anyTimes();
         EasyMock.expect(spiFlyBundle.getVersion()).andReturn(version).anyTimes();
+        EasyMock.expect(spiFlyBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
         EasyMock.expect(spiFlyBundle.getBundleContext()).andReturn(spiFlyBundleContext).anyTimes();
         EasyMock.replay(spiFlyBundle);
 
