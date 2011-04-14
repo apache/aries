@@ -18,10 +18,17 @@
  */
 package org.apache.aries.proxy;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-public interface InvocationHandlerWrapper 
+/**
+ * An {@link InvocationListener} is used in conjunction with the {@link ProxyManager}
+ * to intercept method calls on the proxy object
+ */
+public interface InvocationListener 
 {
-  public Object invoke(Object proxy, Method m, Object[] args, InvocationHandler delegate) throws Throwable;
+  public Object preInvoke(Object proxy, Method m, Object[] args) throws Throwable;
+  
+  public void postInvoke(Object token, Object proxy, Method m, Object returnValue) throws Throwable;
+  
+  public void postInvokeExceptionalReturn(Object token, Object proxy, Method m, Throwable exception) throws Throwable;
 }

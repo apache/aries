@@ -42,6 +42,12 @@ public class UnableToProxyException extends Exception
     super(e);
     this.className = className;
   }
+  
+  public UnableToProxyException(Object proxy, String msg)
+  {
+    super(msg);
+    this.className = proxy.getClass().getName();
+  }
 
   public String getClassName()
   {
