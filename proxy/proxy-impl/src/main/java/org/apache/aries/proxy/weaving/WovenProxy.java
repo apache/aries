@@ -16,42 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy;
+package org.apache.aries.proxy.weaving;
 
-public class UnableToProxyException extends Exception
-{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -17516969014644128L;
-  String className = null;
+import java.util.concurrent.Callable;
 
-  public UnableToProxyException(Class<?> clazz)
-  {
-    super(clazz.getName());
-    className = clazz.getName();
-  }
+import org.apache.aries.proxy.InvocationListener;
 
-  public UnableToProxyException(Class<?> clazz, Exception e)
-  {
-    this(clazz.getName(), e);
-  }
-
-  public UnableToProxyException(String className, Throwable e)
-  {
-    super(e);
-    this.className = className;
-  }
+public interface WovenProxy {
   
-  public UnableToProxyException(Object proxy, String msg)
-  {
-    super(msg);
-    this.className = proxy.getClass().getName();
-  }
-
-  public String getClassName()
-  {
-    return className;
-  }
-
+  /**
+   * @return true if this instance has a non null dispatcher or listener
+   */
+  public boolean org_apache_aries_proxy_weaving_WovenProxy_isProxyInstance();
+  
+  /**
+   * @return the dispatcher, or null if no dispatcher is set
+   */
+  public Callable<Object> org_apache_aries_proxy_weaving_WovenProxy_unwrap();
+  
+  /**
+   * @return A new proxy instance that can be used for delegation. Note that this object should
+   *         not be used without setting a dispatcher!
+   */
+  public WovenProxy org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance(
+      Callable<Object> dispatcher, InvocationListener listener);
 }

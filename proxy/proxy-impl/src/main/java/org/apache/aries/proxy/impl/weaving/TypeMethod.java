@@ -16,42 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy;
+package org.apache.aries.proxy.impl.weaving;
 
-public class UnableToProxyException extends Exception
-{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -17516969014644128L;
-  String className = null;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.Method;
 
-  public UnableToProxyException(Class<?> clazz)
-  {
-    super(clazz.getName());
-    className = clazz.getName();
-  }
-
-  public UnableToProxyException(Class<?> clazz, Exception e)
-  {
-    this(clazz.getName(), e);
-  }
-
-  public UnableToProxyException(String className, Throwable e)
-  {
-    super(e);
-    this.className = className;
-  }
+/**
+ * This object stores a {@link Method} and the class that declares it
+ */
+final class TypeMethod {
+  final Type declaringClass;
+  final Method method;
   
-  public UnableToProxyException(Object proxy, String msg)
-  {
-    super(msg);
-    this.className = proxy.getClass().getName();
+  public TypeMethod(Type declaringClass,
+      Method method) {
+    this.declaringClass = declaringClass;
+    this.method = method;
   }
-
-  public String getClassName()
-  {
-    return className;
-  }
-
 }

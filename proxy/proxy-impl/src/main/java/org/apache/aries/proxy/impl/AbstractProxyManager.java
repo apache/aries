@@ -18,63 +18,100 @@
  */
 package org.apache.aries.proxy.impl;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import org.apache.aries.proxy.InvocationHandlerWrapper;
+import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.weaving.WovenProxy;
 import org.apache.aries.util.AriesFrameworkUtil;
-import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
 
 public abstract class AbstractProxyManager implements ProxyManager
 {
-  public final Object createProxy(Bundle clientBundle, Collection<Class<?>> classes,
-      Callable<Object> dispatcher) 
+  public final Object createDelegatingProxy(Bundle clientBundle, Collection<Class<?>> classes,
+      Callable<Object> dispatcher, Object template) 
     throws UnableToProxyException
   {
-    return createProxy(clientBundle, classes, dispatcher, null);
+    return createDelegatingInterceptingProxy(clientBundle, classes, dispatcher, template, null);
+  }
+  
+  public Object createInterceptingProxy(Bundle clientBundle,
+      Collection<Class<?>> classes, Object delegate, InvocationListener listener)
+      throws UnableToProxyException {
+    
+    if (delegate instanceof WovenProxy) {
+      WovenProxy proxy = ((WovenProxy) delegate).
+              org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance(
+              new SingleInstanceDispatcher(delegate), listener);
+      return proxy;
+    } else {
+      return createDelegatingInterceptingProxy(clientBundle, classes, 
+          new SingleInstanceDispatcher(delegate), delegate, listener);
+    }
   }
 
-  public final Object createProxy(Bundle clientBundle, Collection<Class<?>> classes,
-      Callable<Object> dispatcher, InvocationHandlerWrapper wrapper)
+  public final Object createDelegatingInterceptingProxy(Bundle clientBundle, Collection<Class<?>> classes,
+      Callable<Object> dispatcher, Object template, InvocationListener listener)
       throws UnableToProxyException 
   {
-    InvocationHandler ih = new ProxyHandler(this, dispatcher, wrapper);
-    Object proxyObject = duplicateProxy(classes, ih);
+    if(dispatcher == null)
+      throw new NullPointerException("A dispatcher must be specified for a delegating proxy handler");
+    
+    if (template instanceof WovenProxy) {
+      WovenProxy proxy = ((WovenProxy) template).
+             org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance(
+             dispatcher, listener);
+      return proxy;
+    }
+    
+    Object proxyObject = duplicateProxy(classes, dispatcher, template, listener);
     
     if (proxyObject == null) {
-      proxyObject = createNewProxy(clientBundle, classes, ih);
+      proxyObject = createNewProxy(clientBundle, classes, dispatcher, listener);
     }
     
     return proxyObject;
   }
-  
+   
   public final Callable<Object> unwrap(Object proxy) 
   {
     Callable<Object> target = null;
     
-    if (isProxy(proxy)) {
+    if(proxy instanceof WovenProxy) {
+      //Woven proxies are a bit different, they can be proxies without
+      //having a dispatcher, so we fake one up if we need to 
+      
+      WovenProxy wp = (WovenProxy) proxy;
+      if(wp.org_apache_aries_proxy_weaving_WovenProxy_isProxyInstance()) {
+        target = wp.org_apache_aries_proxy_weaving_WovenProxy_unwrap();
+        if(target == null) {
+          target = new SingleInstanceDispatcher(proxy);
+        }
+      }
+    } else {
       InvocationHandler ih = getInvocationHandler(proxy);
       
       if (ih instanceof ProxyHandler) {
         target = ((ProxyHandler)ih).getTarget();
       }
     }
-    
     return target;
   }
   
   public final boolean isProxy(Object proxy)
   {
-    return (proxy != null && getInvocationHandler(proxy) instanceof ProxyHandler);
+    return (proxy != null && 
+        ((proxy instanceof WovenProxy && ((WovenProxy)proxy).org_apache_aries_proxy_weaving_WovenProxy_isProxyInstance()) || 
+        getInvocationHandler(proxy) instanceof ProxyHandler));
   }
   
   protected abstract Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes,
-      InvocationHandler ih) throws UnableToProxyException;
+      Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException;
   protected abstract InvocationHandler getInvocationHandler(Object proxy);
   protected abstract boolean isProxyClass(Class<?> clazz);
 
@@ -96,31 +133,45 @@ public abstract class AbstractProxyManager implements ProxyManager
     return cl;
   }
 
-  private Object duplicateProxy(Collection<Class<?>> classes, InvocationHandler handler)
+  private Object duplicateProxy(Collection<Class<?>> classes, Callable<Object> dispatcher, 
+      Object template, InvocationListener listener)
   {
     Object proxyObject = null;
+    Class<?> classToProxy = null;
     
-    if (classes.size() == 1) {
+    if (template != null) {
+      if(isProxyClass(template.getClass()))
+        classToProxy = template.getClass();
+    } else if (classes.size() == 1) {
 
-      Class<?> classToProxy = classes.iterator().next();
+      classToProxy = classes.iterator().next();
 
-      boolean isProxy = isProxyClass(classToProxy);
+      if(!!!isProxyClass(classToProxy))
+        classToProxy = null;
+    }
 
-      if (isProxy) {
-        try {
-          /*
-           * the class is already a proxy, we should just invoke
-           * the constructor to get a new instance of the proxy
-           * with a new Collaborator using the specified delegate
-           */
-          proxyObject = classToProxy.getConstructor(InvocationHandler.class).newInstance(handler);
-        } catch (InvocationTargetException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (InstantiationException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (SecurityException e) {
-        } catch (IllegalAccessException e) {
+    if (classToProxy != null) {
+      try {
+        /*
+         * the class is already a proxy, we should just invoke
+         * the constructor to get a new instance of the proxy
+         * with a new Collaborator using the specified delegate
+         */
+        if(WovenProxy.class.isAssignableFrom(classToProxy)) {
+          Constructor<?> c = classToProxy.getDeclaredConstructor(Callable.class, 
+              InvocationListener.class);
+          c.setAccessible(true);
+          proxyObject = c.newInstance(dispatcher, listener);
+        } else {
+          proxyObject = classToProxy.getConstructor(InvocationHandler.class).
+          newInstance(new ProxyHandler(this, dispatcher, listener));
         }
+      } catch (InvocationTargetException e) {
+      } catch (NoSuchMethodException e) {
+      } catch (InstantiationException e) {
+      } catch (IllegalArgumentException e) {
+      } catch (SecurityException e) {
+      } catch (IllegalAccessException e) {
       }
     }
     

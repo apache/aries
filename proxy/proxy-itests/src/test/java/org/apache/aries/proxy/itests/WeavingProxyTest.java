@@ -18,8 +18,8 @@
  */
 package org.apache.aries.proxy.itests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
@@ -28,47 +28,51 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.ProxyManager;
-import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.weaving.WovenProxy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 @RunWith(JUnit4TestRunner.class)
-public class BasicProxyTest extends AbstractProxyTest
+public class WeavingProxyTest extends AbstractProxyTest
 {
+  
   /**
-   * This test does two things. First of all it checks that we throw a FinalModifierException if we
-   * try to proxy a final class. It also validates that the message and toString in the exception
-   * works as expected.
+   * This test does two things. First of all it checks that we can proxy a final 
+   * class. It also validates that the class implements WovenProxy, and that the
+   * delegation still works
    */
   @Test
-  public void checkProxyFinalClass() throws UnableToProxyException
+  public void checkProxyFinalClass() throws Exception
   {
     ProxyManager mgr = getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
-    Callable<Object> c = new TestCallable();
+    TestCallable dispatcher = new TestCallable();
+    TestCallable template = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
     classes.add(TestCallable.class);
-    try {
-      mgr.createDelegatingProxy(b, classes, c, null);
-    } catch (FinalModifierException e) {
-      String msg = e.getMessage();
-      assertEquals("The message didn't look right", "The class " + TestCallable.class.getName() + " is final.", msg);
-      assertTrue("The message didn't appear in the toString", e.toString().endsWith(msg));
-    }
+    Callable<Object> o = (Callable<Object>) mgr.createDelegatingProxy(b, classes, 
+        dispatcher, template);
+    if(!!!(o instanceof WovenProxy))
+      fail("Proxy should be woven!");
+    
+    Object inner = new Integer(3);
+    dispatcher.setReturn(new TestCallable());
+    ((TestCallable)dispatcher.call()).setReturn(inner);
+    
+    assertSame("Should return the same object", inner, o.call());
   }
   
   /**
-   * This method checks that we correctly fail to proxy a class with final methods.
-   * It also does a quick validation on the exception message.
+   * This method checks that we correctly proxy a class with final methods.
    */
   @Test
-  public void checkProxyFinalMethods() throws UnableToProxyException
+  public void checkProxyFinalMethods() throws Exception
   {
     ProxyManager mgr = getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
@@ -79,13 +83,11 @@ public class BasicProxyTest extends AbstractProxyTest
       }
     };
     classes.add(r.getClass());
-    try {
-      mgr.createDelegatingProxy(b, classes, c, null);
-    } catch (FinalModifierException e) {
-      assertTrue("The methods didn't appear in the message", e.getMessage().contains("run"));
-    }
+    Object o = mgr.createDelegatingProxy(b, classes, c, r);
+    if(!!!(o instanceof WovenProxy))
+      fail("Proxy should be woven!");
   }
-  
+   
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
       Option[] options = options(
@@ -109,8 +111,9 @@ public class BasicProxyTest extends AbstractProxyTest
           // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
           mavenBundle("org.osgi", "org.osgi.compendium"),
 //          org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+          PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 
-          equinox().version("3.5.0")
+          equinox().version("3.7.0.v20110304")
       );
 
       options = updateOptions(options);

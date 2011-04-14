@@ -16,42 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy;
+package org.apache.aries.proxy.impl;
 
-public class UnableToProxyException extends Exception
-{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -17516969014644128L;
-  String className = null;
+import java.util.concurrent.Callable;
 
-  public UnableToProxyException(Class<?> clazz)
-  {
-    super(clazz.getName());
-    className = clazz.getName();
-  }
+/**
+ * Dispatch to a single fixed instance
+ */
+public final class SingleInstanceDispatcher implements Callable<Object> {
 
-  public UnableToProxyException(Class<?> clazz, Exception e)
-  {
-    this(clazz.getName(), e);
-  }
-
-  public UnableToProxyException(String className, Throwable e)
-  {
-    super(e);
-    this.className = className;
+  private final Object delegate;
+  
+  public SingleInstanceDispatcher(Object delegate) {
+    this.delegate = delegate;
   }
   
-  public UnableToProxyException(Object proxy, String msg)
-  {
-    super(msg);
-    this.className = proxy.getClass().getName();
+  public final Object call() throws Exception {
+    return delegate;
   }
-
-  public String getClassName()
-  {
-    return className;
-  }
-
 }
