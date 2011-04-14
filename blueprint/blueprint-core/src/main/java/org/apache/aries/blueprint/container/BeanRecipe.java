@@ -685,8 +685,8 @@ public class BeanRecipe extends AbstractRecipe {
                 // we have a class from the framework parent, so use our bundle for proxying.
                 b = blueprintContainer.getBundleContext().getBundle();
               }
-              intercepted = BlueprintExtender.getProxyManager().createProxy(b, 
-                  ProxyUtils.asList(original.getClass()), ProxyUtils.passThrough(original), 
+              intercepted = BlueprintExtender.getProxyManager().createInterceptingProxy(b, 
+                  ProxyUtils.asList(original.getClass()), original, 
                   new Collaborator(interceptorLookupKey, interceptors));
             } catch (org.apache.aries.proxy.UnableToProxyException e) {
                   Bundle b = blueprintContainer.getBundleContext().getBundle();
