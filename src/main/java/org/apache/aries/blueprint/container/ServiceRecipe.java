@@ -43,7 +43,7 @@ import org.apache.aries.blueprint.proxy.Collaborator;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
-import org.apache.aries.proxy.InvocationHandlerWrapper;
+import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -444,19 +444,18 @@ public class ServiceRecipe extends AbstractRecipe {
                   // we have a class from the framework parent, so use our bundle for proxying.
                   b = blueprintContainer.getBundleContext().getBundle();
                 }
-                Callable<Object> target = ProxyUtils.passThrough(original);
-                InvocationHandlerWrapper collaborator = new Collaborator(cm, interceptors);
+                InvocationListener collaborator = new Collaborator(cm, interceptors);
                 try {
-                    intercepted = BlueprintExtender.getProxyManager().createProxy(b, 
-                        ProxyUtils.asList(original.getClass()), target, collaborator);
+                    intercepted = BlueprintExtender.getProxyManager().createInterceptingProxy(b, 
+                        ProxyUtils.asList(original.getClass()), original, collaborator);
                 } catch (org.apache.aries.proxy.FinalModifierException u) {
                     LOGGER.debug("Error creating asm proxy (final modifier), trying with interfaces");
                     List<Class<?>> classes = new ArrayList<Class<?>>();
                     for (String className : getClasses()) {
                         classes.add(blueprintContainer.loadClass(className));
                     }
-                    intercepted = BlueprintExtender.getProxyManager().createProxy(b, 
-                        classes, target, collaborator);
+                    intercepted = BlueprintExtender.getProxyManager().createInterceptingProxy(b, 
+                        classes, original, collaborator);
                 }
             } catch (Throwable u) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
