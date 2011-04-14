@@ -18,17 +18,24 @@
  */
 package org.apache.aries.proxy.impl;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import org.apache.aries.proxy.InvocationHandlerWrapper;
+import org.apache.aries.proxy.InvocationListener;
 
-public class DefaultWrapper implements InvocationHandlerWrapper {
+public class DefaultWrapper implements InvocationListener {
 
-  public Object invoke(Object proxy, Method m, Object[] args,
-      InvocationHandler delegate) throws Throwable 
-  {
-    return delegate.invoke(proxy, m, args);
+
+  public Object preInvoke(Object proxy, Method m, Object[] args)
+      throws Throwable {
+    return null;
+  }
+
+  public void postInvoke(Object token, Object proxy, Method m, Object returnValue)
+      throws Throwable {
+  }
+
+  public void postInvokeExceptionalReturn(Object token, Object proxy, Method m,
+      Throwable exception) throws Throwable {
   }
 
 }

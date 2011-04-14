@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.proxy.impl</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Service</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <description>
         This bundle contains the proxy service implementation for Apache Aries
     </description>
@@ -42,13 +42,18 @@
 
 
     <properties>
-        <aries.osgi.export.pkg/>
+        <aries.osgi.export.pkg>
+          org.apache.aries.proxy.weaving;
+        </aries.osgi.export.pkg>
         <aries.osgi.activator>
             org.apache.aries.proxy.impl.ProxyManagerActivator
         </aries.osgi.activator>
         <aries.osgi.import.pkg>
             org.objectweb.asm;version=3.2;resolution:=optional,
             org.objectweb.asm.commons;version=3.2;resolution:=optional,
+            org.osgi.framework;version="[1.5,2)",
+            org.osgi.framework.hooks.weaving;version="[1.0,1.1)";resolution:=optional,
+            org.osgi.framework.wiring;version="[1.0,2)";resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
@@ -72,20 +77,31 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Use the Eclipse version of OSGi until the core 4.3 OSGi jar is available in Maven. -->        
         <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <version>3.7M6</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../proxy-tmp/target/downloaded/org.eclipse.osgi_3.7.0.jar</systemPath>
+        </dependency>
+        
+        <!-- <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
+            <version>4.3</version>
+        </dependency> -->
+        
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -96,13 +112,27 @@
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
         	<scope>compile</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.4-SNAPSHOT</version>
+            
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries</groupId>
         	<artifactId>org.apache.aries.util</artifactId>
         	<scope>compile</scope>
             <version>0.4-SNAPSHOT</version>
+                        
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

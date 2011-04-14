@@ -16,42 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy;
+package org.apache.aries.blueprint.proxy.pkg;
 
-public class UnableToProxyException extends Exception
-{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -17516969014644128L;
-  String className = null;
+import org.apache.aries.blueprint.proxy.ProxyTestClassUnweavableGrandParent;
 
-  public UnableToProxyException(Class<?> clazz)
-  {
-    super(clazz.getName());
-    className = clazz.getName();
+public class ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent 
+extends ProxyTestClassUnweavableGrandParent{
+
+  public ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent() {
+    super(1);
   }
 
-  public UnableToProxyException(Class<?> clazz, Exception e)
-  {
-    this(clazz.getName(), e);
+  String doStuff2() {
+    return "Hello!";
   }
-
-  public UnableToProxyException(String className, Throwable e)
-  {
-    super(e);
-    this.className = className;
-  }
-  
-  public UnableToProxyException(Object proxy, String msg)
-  {
-    super(msg);
-    this.className = proxy.getClass().getName();
-  }
-
-  public String getClassName()
-  {
-    return className;
-  }
-
 }

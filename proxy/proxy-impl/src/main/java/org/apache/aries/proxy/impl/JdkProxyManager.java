@@ -21,15 +21,18 @@ package org.apache.aries.proxy.impl;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
+import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.osgi.framework.Bundle;
 
 public final class JdkProxyManager extends AbstractProxyManager implements ProxyManager
 {
-  public Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes, InvocationHandler handler) 
+  public Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes, 
+      Callable<Object> dispatcher, InvocationListener listener) 
   {
-    return Proxy.newProxyInstance(getClassLoader(clientBundle, classes), getInterfaces(classes), handler);
+    return Proxy.newProxyInstance(getClassLoader(clientBundle, classes), getInterfaces(classes), new ProxyHandler(this, dispatcher, listener));
   }
 
   private static final Class<?>[] getInterfaces(Collection<Class<?>> classes)

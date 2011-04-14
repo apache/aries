@@ -51,4 +51,23 @@ public class ProxyTestClassGeneral extends ProxyTestClassSuper
 
   }
 
+  public boolean equals(Object o) {
+    return o == this;
+  }
+  
+  public void testException() {
+    throw new RuntimeException();
+  }
+  
+  public void testInternallyCaughtException() {
+    try {
+      try {
+        throw new RuntimeException();
+      } catch (RuntimeException re) {
+        // no op
+      }
+    } catch (Exception e) {
+      
+    }
+  }
 }
