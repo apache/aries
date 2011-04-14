@@ -90,13 +90,13 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
             <scope>test</scope>
-            <version>0.3</version>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
             <scope>test</scope>
-            <version>0.3</version>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
@@ -127,6 +127,11 @@
             <artifactId>org.apache.aries.transaction.testbundle</artifactId>
             <scope>test</scope>
             <version>0.3.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
         </dependency>
       <dependency>
           <groupId>asm</groupId>
