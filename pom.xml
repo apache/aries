@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.proxy</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Bundle</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <description>
         This bundle contains the Apache Aries Proxy Service.
     </description>
@@ -47,10 +47,14 @@
             org.apache.aries.proxy.impl.ProxyManagerActivator
         </aries.osgi.activator>
         <aries.osgi.export.pkg>
-            org.apache.aries.proxy;
+            org.apache.aries.proxy;,
+            org.apache.aries.proxy.weaving;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
             org.eclipse.*;resolution:=optional,
+            org.osgi.framework;version="[1.5,2)",
+            org.osgi.framework.hooks.weaving;version="[1.0,1.1)";resolution:=optional,
+            org.osgi.framework.wiring;version="[1.0,2)";resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
@@ -83,12 +87,12 @@
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
