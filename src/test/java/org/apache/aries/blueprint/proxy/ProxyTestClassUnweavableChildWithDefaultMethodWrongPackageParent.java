@@ -18,40 +18,10 @@
  */
 package org.apache.aries.blueprint.proxy;
 
-public class ProxyTestClassSuper
-{
-  static {
-    System.out.println("The time is: " + System.currentTimeMillis());
-  }
-  
-  public void bMethod()
-  {
-    aPrivateMethod();
-  }
+public class ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent extends ProxyTestClassUnweavableSuperWithFinalMethod{
 
-  protected void bProMethod()
-  {
-
-  }
-
-  void bDefMethod()
-  {
-
-  }
-
-  private void aPrivateMethod()
-  {
-
-  }
-  
-  public Object getTargetObject() {
-    return null;
-  }
-  
-  private void doTarget() {
-    Object o = getTargetObject();
-    if(this != o)
-      ((ProxyTestClassSuper)o).doTarget();
+  public ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent() {
+    super(1);
   }
 
 }

@@ -16,42 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.impl;
 
-public class ProxyTestClassSuper
-{
-  static {
-    System.out.println("The time is: " + System.currentTimeMillis());
+import java.util.concurrent.Callable;
+
+/**
+ * Dispatch to a single fixed instance
+ */
+public final class SingleInstanceDispatcher implements Callable<Object> {
+
+  private final Object delegate;
+  
+  public SingleInstanceDispatcher(Object delegate) {
+    this.delegate = delegate;
   }
   
-  public void bMethod()
-  {
-    aPrivateMethod();
+  public final Object call() throws Exception {
+    return delegate;
   }
-
-  protected void bProMethod()
-  {
-
-  }
-
-  void bDefMethod()
-  {
-
-  }
-
-  private void aPrivateMethod()
-  {
-
-  }
-  
-  public Object getTargetObject() {
-    return null;
-  }
-  
-  private void doTarget() {
-    Object o = getTargetObject();
-    if(this != o)
-      ((ProxyTestClassSuper)o).doTarget();
-  }
-
 }

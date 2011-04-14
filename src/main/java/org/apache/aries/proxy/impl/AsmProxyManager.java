@@ -18,24 +18,29 @@
  */
 package org.apache.aries.proxy.impl;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
+import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
+import org.apache.aries.proxy.impl.weaving.InterfaceCombiningClassAdapter;
+import org.apache.aries.proxy.weaving.WovenProxy;
 import org.osgi.framework.Bundle;
 
 public final class AsmProxyManager extends AbstractProxyManager implements ProxyManager
 {
-  public Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes, InvocationHandler handler) 
-    throws UnableToProxyException
+  public Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes, 
+      Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException
   {
     Object proxyObject = null;
-
+    
     // if we just have interfaces and no classes we default to using
     // the interface proxy because we can't dynamically
     // subclass more than one interface
@@ -78,10 +83,23 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
           classToProxy = clazz;
         }
       }
-      proxyObject = ProxySubclassGenerator.newProxySubclassInstance(classToProxy, handler);
+      if(WovenProxy.class.isAssignableFrom(classToProxy)) {
+        try {
+          Constructor<?> c = classToProxy.getDeclaredConstructor(Callable.class, 
+              InvocationListener.class);
+          c.setAccessible(true);
+          proxyObject = c.newInstance(dispatcher, listener);
+        } catch (Exception e) {
+          //We will have to subclass this one, but we should always have a constructor
+          //to use
+          //TODO log that performance would be improved by using a non-null template
+        }
+      } 
+      if(proxyObject == null){
+        proxyObject = ProxySubclassGenerator.newProxySubclassInstance(classToProxy, new ProxyHandler(this, dispatcher, listener));
+      }
     } else {
-      // TODO there are some problems here. If we get a BundleToClassLoaderAdapter back and the bundle can't see all the classes referenced by the interface bad things happen (i.e. it fails).
-      proxyObject = Proxy.newProxyInstance(getClassLoader(clientBundle, classes), classes.toArray(new Class<?>[classes.size()]), handler);
+      proxyObject = InterfaceCombiningClassAdapter.getProxyInstance(classes, dispatcher, listener);
     }
 
     return proxyObject;
@@ -90,7 +108,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
   @Override
   protected boolean isProxyClass(Class<?> clazz)
   {
-    return ProxySubclassGenerator.isProxySubclass(clazz) || Proxy.isProxyClass(clazz);
+    return WovenProxy.class.isAssignableFrom(clazz) || ProxySubclassGenerator.isProxySubclass(clazz) || Proxy.isProxyClass(clazz);
   }
 
   @Override

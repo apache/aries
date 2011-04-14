@@ -16,42 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.impl.weaving;
 
-public class ProxyTestClassSuper
-{
-  static {
-    System.out.println("The time is: " + System.currentTimeMillis());
-  }
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.Method;
+
+/**
+ * This object stores a {@link Method} and the class that declares it
+ */
+final class TypeMethod {
+  final Type declaringClass;
+  final Method method;
   
-  public void bMethod()
-  {
-    aPrivateMethod();
+  public TypeMethod(Type declaringClass,
+      Method method) {
+    this.declaringClass = declaringClass;
+    this.method = method;
   }
-
-  protected void bProMethod()
-  {
-
-  }
-
-  void bDefMethod()
-  {
-
-  }
-
-  private void aPrivateMethod()
-  {
-
-  }
-  
-  public Object getTargetObject() {
-    return null;
-  }
-  
-  private void doTarget() {
-    Object o = getTargetObject();
-    if(this != o)
-      ((ProxyTestClassSuper)o).doTarget();
-  }
-
 }

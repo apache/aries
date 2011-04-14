@@ -23,40 +23,80 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
-import org.apache.aries.proxy.InvocationHandlerWrapper;
+import org.apache.aries.proxy.InvocationListener;
 
 public final class ProxyHandler implements InvocationHandler {
   private final Callable<Object> target;
   private final InvocationHandler core;
-  private final InvocationHandlerWrapper wrapper;
   private final AbstractProxyManager proxyManager;
 
-  public ProxyHandler(AbstractProxyManager abstractProxyManager, Callable<Object> dispatcher, InvocationHandlerWrapper wrapper)
+  public ProxyHandler(AbstractProxyManager abstractProxyManager, Callable<Object> dispatcher, InvocationListener listener)
   {
     target = dispatcher;
     proxyManager = abstractProxyManager;
-    if (wrapper == null) {
-      this.wrapper = new DefaultWrapper();
+    final InvocationListener nonNullListener;
+    if (listener == null) {
+      nonNullListener = new DefaultWrapper();
     } else {
-      this.wrapper = wrapper;
+      nonNullListener = listener;
     }
     
     core = new InvocationHandler() {
       public Object invoke(Object proxy, Method method, Object[] args)
           throws Throwable 
       {
-          Object result;
-          try {
-              result = method.invoke(target.call(), args);
-          } catch (InvocationTargetException ite) {
-              // We are invisible, so unwrap and throw the cause as
-              // though we called the method directly.
-              throw ite.getCause();
-          } catch (IllegalAccessException e) {
-              throw new IllegalAccessError(e.getMessage());
-          }
+        Object result = null;
+        Object token = null;
+        boolean inInvoke = false;
+        try {
+          token = nonNullListener.preInvoke(proxy, method, args);
+          inInvoke = true;
+          result = method.invoke(target.call(), args);
+          inInvoke = false;
+          nonNullListener.postInvoke(token, proxy, method, result);
 
-          return result;
+        } catch (Throwable e) {
+          // whether the the exception is an error is an application decision
+          // if we catch an exception we decide carefully which one to
+          // throw onwards
+          Throwable exceptionToRethrow = null;
+          // if the exception came from a precall or postcall 
+          // we will rethrow it
+          if (!inInvoke) {
+            exceptionToRethrow = e;
+          }
+          // if the exception didn't come from precall or postcall then it
+          // came from invoke
+          // we will rethrow this exception if it is not a runtime
+          // exception, but we must unwrap InvocationTargetExceptions
+          else {
+            if (e instanceof InvocationTargetException) {
+              e = ((InvocationTargetException) e).getTargetException();
+            }
+            
+            if (!(e instanceof RuntimeException)) {
+              exceptionToRethrow = e;
+            }
+          }
+          try {
+            nonNullListener.postInvokeExceptionalReturn(token, proxy, method, e);
+          } catch (Exception f) {
+            // we caught an exception from
+            // postInvokeExceptionalReturn
+            // if we haven't already chosen an exception to rethrow then
+            // we will throw this exception
+            if (exceptionToRethrow == null) {
+              exceptionToRethrow = f;
+            }
+          }
+          // if we made it this far without choosing an exception we
+          // should throw e
+          if (exceptionToRethrow == null) {
+            exceptionToRethrow = e;
+          }
+          throw exceptionToRethrow;
+        }
+        return result;
       }
     };
   }
@@ -65,7 +105,8 @@ public final class ProxyHandler implements InvocationHandler {
   {
     // Unwrap calls for equals
     if (method.getName().equals("equals")
-            && method.getDeclaringClass() == Object.class) {
+            && method.getParameterTypes().length == 1 &&
+            method.getParameterTypes()[0] == Object.class) {
         Object targetObject = args[0];
         if (proxyManager.isProxy(targetObject)) {
           args[0] = proxyManager.unwrap(targetObject).call();
@@ -75,7 +116,7 @@ public final class ProxyHandler implements InvocationHandler {
         return null;
     }
     
-    return wrapper.invoke(proxy, method, args, core);
+    return core.invoke(proxy, method, args);
   }
 
   public Callable<Object> getTarget() 

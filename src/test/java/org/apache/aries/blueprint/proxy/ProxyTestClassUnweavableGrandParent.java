@@ -18,56 +18,14 @@
  */
 package org.apache.aries.blueprint.proxy;
 
-public class ProxyTestClassGeneral extends ProxyTestClassSuper
-{
+public class ProxyTestClassUnweavableGrandParent {
 
-  public String testMethod(String x, int y, Object z)
-  {
-    somePrivateMethod();
-    return x;
-  }
-
-  public String testArgs(double a, short b, long c, char d, byte e, boolean f)
-  {
-    return Character.toString(d);
-  }
-
-  protected void testReturnVoid()
-  {
-  }
-
-  int testReturnInt()
-  {
-    return 17;
-  }
-
-  public Integer testReturnInteger()
-  {
-    return Integer.valueOf(1);
-  }
-
-  private void somePrivateMethod()
-  {
-
-  }
-
-  public boolean equals(Object o) {
-    return o == this;
+  public ProxyTestClassUnweavableGrandParent(int i) {
+    
   }
   
-  public void testException() {
-    throw new RuntimeException();
+  public String doStuff() {
+    return "Hi!";
   }
   
-  public void testInternallyCaughtException() {
-    try {
-      try {
-        throw new RuntimeException();
-      } catch (RuntimeException re) {
-        // no op
-      }
-    } catch (Exception e) {
-      
-    }
-  }
 }

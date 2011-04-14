@@ -16,42 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.blueprint.proxy.pkg;
 
-public class ProxyTestClassSuper
-{
-  static {
-    System.out.println("The time is: " + System.currentTimeMillis());
-  }
-  
-  public void bMethod()
-  {
-    aPrivateMethod();
+import org.apache.aries.blueprint.proxy.ProxyTestClassUnweavableGrandParent;
+
+public class ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent 
+extends ProxyTestClassUnweavableGrandParent{
+
+  public ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent() {
+    super(1);
   }
 
-  protected void bProMethod()
-  {
-
+  String doStuff2() {
+    return "Hello!";
   }
-
-  void bDefMethod()
-  {
-
-  }
-
-  private void aPrivateMethod()
-  {
-
-  }
-  
-  public Object getTargetObject() {
-    return null;
-  }
-  
-  private void doTarget() {
-    Object o = getTargetObject();
-    if(this != o)
-      ((ProxyTestClassSuper)o).doTarget();
-  }
-
 }

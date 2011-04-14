@@ -18,40 +18,13 @@
  */
 package org.apache.aries.blueprint.proxy;
 
-public class ProxyTestClassSuper
-{
-  static {
-    System.out.println("The time is: " + System.currentTimeMillis());
+public class ProxyTestClassUnweavableSuperWithFinalMethod extends ProxyTestClassUnweavableGrandParent {
+
+  public ProxyTestClassUnweavableSuperWithFinalMethod(int i) {
+    super(i);
   }
   
-  public void bMethod()
-  {
-    aPrivateMethod();
+  public final String doStuff2() {
+    return "Hello!";
   }
-
-  protected void bProMethod()
-  {
-
-  }
-
-  void bDefMethod()
-  {
-
-  }
-
-  private void aPrivateMethod()
-  {
-
-  }
-  
-  public Object getTargetObject() {
-    return null;
-  }
-  
-  private void doTarget() {
-    Object o = getTargetObject();
-    if(this != o)
-      ((ProxyTestClassSuper)o).doTarget();
-  }
-
 }

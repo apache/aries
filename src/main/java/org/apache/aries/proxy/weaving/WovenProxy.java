@@ -16,42 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.proxy;
+package org.apache.aries.proxy.weaving;
 
-public class ProxyTestClassSuper
-{
-  static {
-    System.out.println("The time is: " + System.currentTimeMillis());
-  }
+import java.util.concurrent.Callable;
+
+import org.apache.aries.proxy.InvocationListener;
+
+public interface WovenProxy {
   
-  public void bMethod()
-  {
-    aPrivateMethod();
-  }
-
-  protected void bProMethod()
-  {
-
-  }
-
-  void bDefMethod()
-  {
-
-  }
-
-  private void aPrivateMethod()
-  {
-
-  }
+  /**
+   * @return true if this instance has a non null dispatcher or listener
+   */
+  public boolean org_apache_aries_proxy_weaving_WovenProxy_isProxyInstance();
   
-  public Object getTargetObject() {
-    return null;
-  }
+  /**
+   * @return the dispatcher, or null if no dispatcher is set
+   */
+  public Callable<Object> org_apache_aries_proxy_weaving_WovenProxy_unwrap();
   
-  private void doTarget() {
-    Object o = getTargetObject();
-    if(this != o)
-      ((ProxyTestClassSuper)o).doTarget();
-  }
-
+  /**
+   * @return A new proxy instance that can be used for delegation. Note that this object should
+   *         not be used without setting a dispatcher!
+   */
+  public WovenProxy org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance(
+      Callable<Object> dispatcher, InvocationListener listener);
 }
