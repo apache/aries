@@ -101,7 +101,7 @@ public class ServiceRegistryContextTest
     
     //   public Object createProxy(Bundle clientBundle, Collection<Class<?>> classes, Callable<Object> dispatcher) throws UnableToProxyException;
 
-    Skeleton.getSkeleton(mgr).registerMethodCallHandler(new MethodCall(ProxyManager.class, "createProxy", Bundle.class, Collection.class, Callable.class),
+    Skeleton.getSkeleton(mgr).registerMethodCallHandler(new MethodCall(ProxyManager.class, "createDelegatingProxy", Bundle.class, Collection.class, Callable.class),
         new MethodCallHandler() 
         {
           public Object handle(MethodCall methodCall, Skeleton skeleton) throws Exception 

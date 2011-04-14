@@ -233,7 +233,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         if (!interfaces.iterator().hasNext()) {
             return new Object();
         } else {
-            return BlueprintExtender.getProxyManager().createProxy(blueprintContainer.getBundleContext().getBundle(), interfaces, dispatcher);
+            return BlueprintExtender.getProxyManager().createDelegatingProxy(blueprintContainer.getBundleContext().getBundle(), interfaces, dispatcher, null);
         }
     }
 

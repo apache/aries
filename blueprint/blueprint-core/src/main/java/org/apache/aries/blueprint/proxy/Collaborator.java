@@ -19,13 +19,12 @@
 package org.apache.aries.blueprint.proxy;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Stack;
 
 import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.proxy.InvocationHandlerWrapper;
+import org.apache.aries.proxy.InvocationListener;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * A collaborator which ensures preInvoke and postInvoke occur before and after
  * method invocation
  */
-public class Collaborator implements InvocationHandlerWrapper, Serializable {
+public class Collaborator implements InvocationListener, Serializable {
 
     /** Serial version UID for this class */
     private static final long serialVersionUID = -58189302118314469L;
@@ -53,94 +52,34 @@ public class Collaborator implements InvocationHandlerWrapper, Serializable {
     /**
      * Invoke the preCall method on the interceptor
      * 
-     * @param cm
-     *            : component Metadata
+     * @param o
+     *            : The Object being invoked
      * @param m
      *            : method
      * @param parameters
      *            : method paramters
      * @throws Throwable
      */
-    private void preCallInterceptor(List<Interceptor> interceptorList,
-            ComponentMetadata cm, Method m, Object[] parameters,
-            Stack<Collaborator.StackElement> calledInterceptors)
+    public Object preInvoke(Object o, Method m, Object[] parameters)
             throws Throwable {
-        if ((interceptors != null) && !(interceptors.isEmpty())) {
-            for (Interceptor im : interceptorList) {
+        Stack<Collaborator.StackElement> stack = new Stack<Collaborator.StackElement>();
+        if (interceptors != null) {
+          try{
+            for (Interceptor im : interceptors) {
                 Collaborator.StackElement se = new StackElement(im);
 
                 // should we do this before or after the preCall ?
-                calledInterceptors.push(se);
+                stack.push(se);
 
                 // allow exceptions to propagate
                 se.setPreCallToken(im.preCall(cm, m, parameters));
             }
+          } catch (Throwable t) {
+            postInvokeExceptionalReturn(stack, o, m, t);
+            throw t;
+          }
         }
-    }
-
-    public Object invoke(Object proxy, Method method, Object[] args, InvocationHandler target)
-            throws Throwable {
-        Object toReturn = null;
-        
-        Stack<Collaborator.StackElement> calledInterceptors = new Stack<Collaborator.StackElement>();
-        boolean inInvoke = false;
-        try {
-            preCallInterceptor(interceptors, cm, method, args,
-                    calledInterceptors);
-            inInvoke = true;
-            toReturn = target.invoke(proxy, method, args);
-            inInvoke = false;
-            postCallInterceptorWithReturn(cm, method, toReturn,
-                    calledInterceptors);
-
-        } catch (Throwable e) {
-            // whether the the exception is an error is an application decision
-            LOGGER.debug("invoke", e);
-
-            // if we catch an exception we decide carefully which one to
-            // throw onwards
-            Throwable exceptionToRethrow = null;
-            // if the exception came from a precall or postcall interceptor
-            // we will rethrow it
-            // after we cycle through the rest of the interceptors using
-            // postCallInterceptorWithException
-            if (!inInvoke) {
-                exceptionToRethrow = e;
-            }
-            // if the exception didn't come from precall or postcall then it
-            // came from invoke
-            // we will rethrow this exception if it is not a runtime
-            // exception
-            else {
-                if (!(e instanceof RuntimeException)) {
-                    exceptionToRethrow = e;
-                }
-            }
-            try {
-                postCallInterceptorWithException(cm, method, e,
-                        calledInterceptors);
-            } catch (Exception f) {
-                // we caught an exception from
-                // postCallInterceptorWithException
-                // logger.catching("invoke", f);
-                // if we haven't already chosen an exception to rethrow then
-                // we will throw this exception
-                if (exceptionToRethrow == null) {
-                    exceptionToRethrow = f;
-                } else {
-                  LOGGER.warn("Discarding post-call with interceptor exception", f);
-                }
-            }
-            // if we made it this far without choosing an exception we
-            // should throw e
-            if (exceptionToRethrow == null) {
-                exceptionToRethrow = e;
-            } else if (exceptionToRethrow != e) {
-              LOGGER.warn("Discarding initial exception", e);
-            }
-            throw exceptionToRethrow;
-        }
-        return toReturn;
+        return stack;
     }
 
     /**
@@ -154,23 +93,25 @@ public class Collaborator implements InvocationHandlerWrapper, Serializable {
      *            : return type
      * @throws Throwable
      */
-    private void postCallInterceptorWithReturn(ComponentMetadata cm,
-            Method method, Object returnType,
-            Stack<Collaborator.StackElement> calledInterceptors)
-            throws Throwable {
-
-        while (!calledInterceptors.isEmpty()) {
-            Collaborator.StackElement se = calledInterceptors.pop();
-            try {
-                se.interceptor.postCallWithReturn(cm, method, returnType, se
-                        .getPreCallToken());
-            } catch (Throwable t) {
-                LOGGER.debug("postCallInterceptorWithReturn", t);
-                // propagate this to invoke ... further interceptors will be
-                // called via the postCallInterceptorWithException method
-                throw t;
-            }
-        } // end while
+    public void postInvoke(Object token, Object o, Method method, 
+         Object returnType) throws Throwable {
+        
+        Stack<Collaborator.StackElement> calledInterceptors = 
+                    (Stack<Collaborator.StackElement>) token;
+        if(calledInterceptors != null) {
+            while (!calledInterceptors.isEmpty()) {
+                Collaborator.StackElement se = calledInterceptors.pop();
+                try {
+                    se.interceptor.postCallWithReturn(cm, method, returnType, se
+                            .getPreCallToken());
+                } catch (Throwable t) {
+                    LOGGER.debug("postCallInterceptorWithReturn", t);
+                    // propagate this to invoke ... further interceptors will be
+                    // called via the postCallInterceptorWithException method
+                    throw t;
+                }
+            } // end while
+        }
     }
 
     /**
@@ -183,11 +124,11 @@ public class Collaborator implements InvocationHandlerWrapper, Serializable {
      * @param exception
      *            : exception thrown
      */
-    private void postCallInterceptorWithException(ComponentMetadata cm,
-            Method method, Throwable exception,
-            Stack<Collaborator.StackElement> calledInterceptors)
-            throws Throwable {
+    public void postInvokeExceptionalReturn(Object token, Object o, Method method,
+                 Throwable exception) throws Throwable {
         Throwable tobeRethrown = null;
+        Stack<Collaborator.StackElement> calledInterceptors = 
+          (Stack<Collaborator.StackElement>) token;
         while (!calledInterceptors.isEmpty()) {
             Collaborator.StackElement se = calledInterceptors.pop();
 
@@ -228,5 +169,4 @@ public class Collaborator implements InvocationHandlerWrapper, Serializable {
         }
 
     }
-
 }
