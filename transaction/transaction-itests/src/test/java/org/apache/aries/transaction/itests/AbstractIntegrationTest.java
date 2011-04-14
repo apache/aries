@@ -25,6 +25,8 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.container.def.options.VMOption;
 import org.ops4j.pax.exam.options.TimeoutOption;
 
@@ -108,8 +110,10 @@ public abstract class AbstractIntegrationTest {
 
                 //new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
                 //new TimeoutOption( 0 ),
+                PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 
-                equinox().version("3.5.0"));
+                equinox().version("3.5.0"),
+                equinox().version("3.7.0.v20110304"));
         options = updateOptions(options);
         return options;
     }
