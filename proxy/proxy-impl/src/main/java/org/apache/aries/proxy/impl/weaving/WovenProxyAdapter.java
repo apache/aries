@@ -42,7 +42,7 @@ public final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
     MethodVisitor methodVisitorToReturn;
     methodVisitorToReturn = new WovenProxyMethodAdapter(cv.visitMethod(
         access, name, desc, signature, exceptions), access, name, desc,
-        methodStaticFieldName, currentMethod, typeBeingWoven);
+        exceptions, methodStaticFieldName, currentMethod, typeBeingWoven);
     return methodVisitorToReturn;
   }
   

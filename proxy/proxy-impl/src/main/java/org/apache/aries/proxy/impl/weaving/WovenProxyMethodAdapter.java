@@ -21,10 +21,12 @@ package org.apache.aries.proxy.impl.weaving;
 import static org.apache.aries.proxy.impl.weaving.AbstractWovenProxyAdapter.DISPATCHER_FIELD;
 import static org.apache.aries.proxy.impl.weaving.AbstractWovenProxyAdapter.DISPATCHER_TYPE;
 import static org.apache.aries.proxy.impl.weaving.AbstractWovenProxyAdapter.OBJECT_TYPE;
+import static org.apache.aries.proxy.impl.weaving.WovenProxyGenerator.IS_AT_LEAST_JAVA_6;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.commons.Method;
 
 final class WovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
@@ -33,10 +35,12 @@ final class WovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
   private final Label executeDispatch = new Label();
   
   public WovenProxyMethodAdapter(MethodVisitor mv, int access, String name,
-      String desc, String methodStaticFieldName, Method currentTransformMethod,
+      String desc, String[] exceptions, String methodStaticFieldName, Method currentTransformMethod,
       Type typeBeingWoven) {
-    super(mv, access, name, desc, methodStaticFieldName, currentTransformMethod,
-        typeBeingWoven);
+    //If we're running on Java 6+ We need to inline any JSR instructions because we're computing stack frames.
+    //otherwise we can save the overhead
+    super((IS_AT_LEAST_JAVA_6) ? new JSRInlinerAdapter(mv, access, name, desc, null, exceptions) :
+             mv, access, name, desc, methodStaticFieldName, currentTransformMethod, typeBeingWoven);
   }
 
   /**

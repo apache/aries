@@ -123,7 +123,7 @@ public final class InterfaceCombiningClassAdapter extends EmptyVisitor implement
    */
   private InterfaceCombiningClassAdapter(String className,
       ClassLoader loader, Collection<Class<?>> interfaces) {
-    writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+    writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader);
     adapter = new InterfaceUsingWovenProxyAdapter(writer, className, loader);
     
     this.interfaces = interfaces;
