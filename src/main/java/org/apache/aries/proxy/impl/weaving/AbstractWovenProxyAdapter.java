@@ -19,6 +19,7 @@
 package org.apache.aries.proxy.impl.weaving;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -150,6 +151,11 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
    * when writing our own constructor.
    */
   private boolean superHasNoArgsConstructor = false;
+  /**
+   * If we have a no-args constructor then we can delegate there rather than 
+   * to a super no-args
+   */
+  private boolean hasNoArgsConstructor = false;
 
   /**
    * Create a new adapter for the supplied class
@@ -195,14 +201,6 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
 
         implementWovenProxy = true;
         
-        try {
-          superClass.getDeclaredConstructor();
-          superHasNoArgsConstructor = true;
-        } catch (NoSuchMethodException nsme) {
-          // This is a no-op here, but means we need to add a no-Args that
-          // delegates to Object#<init>() yuck :(
-        }
-        
         if(superClass != Object.class) {
           //If our superclass isn't Object, it means we didn't weave all the way
           //to the top of the hierarchy. This means we need to override all the
@@ -213,6 +211,15 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
             nonObjectSupers.add(nextSuper);
             nextSuper = nextSuper.getSuperclass();
           }
+          try {
+            superHasNoArgsConstructor = (superClass.getDeclaredConstructor().
+                     getModifiers() & Modifier.PRIVATE) == 0;
+          } catch (NoSuchMethodException nsme) {
+            // This is a no-op here, but means we need to add a no-Args that
+            // delegates to Object#<init>() yuck :(
+          }
+        } else {
+          superHasNoArgsConstructor = true;
         }
 
         // re-work the interfaces list to include WovenProxy
@@ -257,9 +264,9 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
 
     // Only weave "real" instance methods. Not constructors, initializers or
     // compiler generated ones.
-    if (!!!name.equals("<init>") && !!!name.equals("<clinit>")
-        && (access & (ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC | ACC_ABSTRACT
-            | ACC_NATIVE | ACC_BRIDGE)) == 0) {
+    if ((access & (ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC | ACC_ABSTRACT
+        | ACC_NATIVE | ACC_BRIDGE)) == 0 && !!!name.equals("<init>") && 
+        !!!name.equals("<clinit>")) {
 
       // found a method we should weave
 
@@ -272,6 +279,8 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
       methodVisitorToReturn = getWeavingMethodVisitor(access, name, desc,
           signature, exceptions, currentMethod, methodStaticFieldName);
     } else {
+      if(currentMethod.getArgumentTypes().length == 0 && name.equals("<init>"))
+        hasNoArgsConstructor = true;
       //This isn't a method we want to weave, so just get the default visitor
       methodVisitorToReturn = cv.visitMethod(access, name, desc, signature,
           exceptions);
@@ -451,9 +460,12 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
 
       if (superHasNoArgsConstructor)
         methodAdapter.invokeConstructor(superType, NO_ARGS_CONSTRUCTOR);
-      else
-        methodAdapter.invokeConstructor(OBJECT_TYPE, NO_ARGS_CONSTRUCTOR);
-      
+      else {
+        if(hasNoArgsConstructor)
+          methodAdapter.invokeConstructor(typeBeingWoven, NO_ARGS_CONSTRUCTOR);
+        else
+          methodAdapter.invokeConstructor(OBJECT_TYPE, NO_ARGS_CONSTRUCTOR);
+      }
       methodAdapter.loadThis();
       methodAdapter.loadArg(0);
       methodAdapter.putField(typeBeingWoven, DISPATCHER_FIELD, DISPATCHER_TYPE);
