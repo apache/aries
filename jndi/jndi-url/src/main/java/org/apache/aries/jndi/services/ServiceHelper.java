@@ -356,7 +356,7 @@ public final class ServiceHelper
     // on this adapter.
 
     try {
-      return proxyManager.createDelegatingProxy(serviceProviderBundle, clazz, ih);
+      return proxyManager.createDelegatingProxy(serviceProviderBundle, clazz, ih, null);
     } catch (UnableToProxyException e) {
       throw new IllegalArgumentException(e);
     } catch (RuntimeException e) {
