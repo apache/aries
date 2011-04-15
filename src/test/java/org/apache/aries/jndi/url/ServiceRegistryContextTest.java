@@ -99,9 +99,9 @@ public class ServiceRegistryContextTest
   {
     ProxyManager mgr = Skeleton.newMock(ProxyManager.class);
     
-    //   public Object createProxy(Bundle clientBundle, Collection<Class<?>> classes, Callable<Object> dispatcher) throws UnableToProxyException;
+    //   public Object createDelegatingProxy(Bundle clientBundle, Collection<Class<?>> classes, Callable<Object> dispatcher, Object template) throws UnableToProxyException;
 
-    Skeleton.getSkeleton(mgr).registerMethodCallHandler(new MethodCall(ProxyManager.class, "createDelegatingProxy", Bundle.class, Collection.class, Callable.class),
+    Skeleton.getSkeleton(mgr).registerMethodCallHandler(new MethodCall(ProxyManager.class, "createDelegatingProxy", Bundle.class, Collection.class, Callable.class, Object.class),
         new MethodCallHandler() 
         {
           public Object handle(MethodCall methodCall, Skeleton skeleton) throws Exception 
