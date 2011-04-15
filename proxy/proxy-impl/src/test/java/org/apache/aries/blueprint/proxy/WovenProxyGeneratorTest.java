@@ -67,11 +67,9 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     ProxyTestClassFinalMethod.class, ProxyTestClassFinal.class, ProxyTestClassGeneric.class,
     ProxyTestClassGenericSuper.class, ProxyTestClassCovariant.class, ProxyTestClassCovariantOverride.class,
     ProxyTestClassUnweavableChild.class, ProxyTestClassUnweavableSuperWithFinalMethod.class,
-    ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class};
+    ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class, ProxyTestClassUnweavableSibling.class};
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
-  
-  private static Class<?> WOVEN_TEST_CLASS;
   
   private static final ClassLoader weavingLoader = new ClassLoader() {
     public Class<?> loadClass(String className)  throws ClassNotFoundException
@@ -117,7 +115,6 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
       }
       rawClasses.put(clazz.getName(), baos.toByteArray());
     }
-    WOVEN_TEST_CLASS = weavingLoader.loadClass(TEST_CLASS.getName());
   }
 
   /**
@@ -240,6 +237,37 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     
     assertNotNull(ProxyTestClassUnweavableSuper.class.getDeclaredMethod("doStuff2"));
   }
+  
+  @Test
+  public void testUnweavableSuperWithNoNoargsAllTheWay() throws Exception
+  {
+    Class<?> woven = getProxyClass(ProxyTestClassUnweavableSibling.class);
+    
+    assertNotNull(woven);
+    assertNotNull(woven.getConstructor(int.class).newInstance(42));
+    
+    TestListener tl = new TestListener();
+    
+    WovenProxy proxy = (WovenProxy) woven.getConstructor(int.class).newInstance(42);
+    proxy = proxy.org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance(
+            new SingleInstanceDispatcher(proxy), tl);
+    
+    ProxyTestClassUnweavableSuper ptcuc = (ProxyTestClassUnweavableSuper) proxy;
+    assertCalled(tl, false, false, false);
+    
+    assertEquals("Hi!", ptcuc.doStuff());
+    
+    assertCalled(tl, true, true, false);
+    
+    assertEquals(ProxyTestClassUnweavableGrandParent.class.getMethod("doStuff"), 
+        tl.getLastMethod());
+    
+
+    //Because default access works on the package, and we are defined on a different classloader
+    //we can only check that the method exists, not that it is callable *sigh*
+    
+    assertNotNull(ProxyTestClassUnweavableSuper.class.getDeclaredMethod("doStuff2"));
+  }  
   
   /**
    * Test a class whose super couldn't be woven
