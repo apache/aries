@@ -45,8 +45,8 @@ public final class WovenProxyGenerator
     
     //If we are Java 1.6 + compiled then we need to compute stack frames, otherwise
     //maxs are fine (and faster)
-    ClassWriter cWriter = new ClassWriter(cReader, IS_AT_LEAST_JAVA_6 ? 
-            ClassWriter.COMPUTE_FRAMES : ClassWriter.COMPUTE_MAXS);
+    ClassWriter cWriter = new OSGiFriendlyClassWriter(cReader, IS_AT_LEAST_JAVA_6 ? 
+            ClassWriter.COMPUTE_FRAMES : ClassWriter.COMPUTE_MAXS, loader);
     ClassVisitor weavingAdapter = new WovenProxyAdapter(cWriter, className, loader);
     // If we are Java 1.6 + then we need to skip frames as they will be recomputed
     cReader.accept(weavingAdapter, IS_AT_LEAST_JAVA_6 ? ClassReader.SKIP_FRAMES : 0);

@@ -117,7 +117,7 @@ final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
       //Remember we need to copy the fake method *and* weave it, use a 
       //WovenProxyMethodAdapter as well as a CopyingMethodAdapter
       mv = new CopyingMethodAdapter(new WovenProxyMethodAdapter(cv.visitMethod(
-          access, name, desc, sig, exceptions), access, name, desc,
+          access, name, desc, sig, exceptions), access, name, desc, exceptions,
           methodStaticFieldName, currentTransformMethod, overridingClassType),
           superType, currentTransformMethod);
     }
