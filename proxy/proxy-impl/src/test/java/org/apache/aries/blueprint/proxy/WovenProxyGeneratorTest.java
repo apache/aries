@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,6 +94,10 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
       bytes = WovenProxyGenerator.getWovenProxy(bytes, className, this);
       
       return defineClass(className, bytes, 0, bytes.length);
+    }
+    
+    protected URL findResource(String resName) {
+      return WovenProxyGeneratorTest.class.getResource(resName);
     }
   };
    
