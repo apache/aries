@@ -181,10 +181,8 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
     LOGGER.debug(Constants.LOG_ENTRY, "visit", new Object[] { version, access,
         name, signature, superName, interfaces });
 
-    // We update to at least Java 1.5 because we add annotations and synthetic
-    // modifiers. Java 1.4 would not like this at all!
-    if (version < V1_5)
-      version = V1_5;
+    // always update to the most recent version of the JVM
+    version = WovenProxyGenerator.JAVA_CLASS_VERSION;
 
     superType = Type.getType("L" + superName + ";");
 
@@ -447,7 +445,7 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
 
     
     // Write a protected no-args constructor for this class
-    methodAdapter = getMethodGenerator(ACC_PROTECTED, ARGS_CONSTRUCTOR);
+    methodAdapter = getMethodGenerator(ACC_PROTECTED | ACC_SYNTHETIC, ARGS_CONSTRUCTOR);
 
     // /////////////////////////////////////////////////////
     // Implement the constructor
