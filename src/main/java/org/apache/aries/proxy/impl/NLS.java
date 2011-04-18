@@ -22,5 +22,5 @@ import org.apache.aries.util.nls.MessageUtil;
 
 public class NLS 
 {
-  public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(NLS.class, "org.apache.aries.proxy.impl.ProxyImplMessages");
+  public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(NLS.class, "org.apache.aries.proxy.nls.ProxyImplMessages");
 }
