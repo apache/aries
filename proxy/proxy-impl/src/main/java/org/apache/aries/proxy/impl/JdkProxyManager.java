@@ -25,21 +25,22 @@ import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
+import org.apache.aries.proxy.UnableToProxyException;
 import org.osgi.framework.Bundle;
 
 public final class JdkProxyManager extends AbstractProxyManager implements ProxyManager
 {
   public Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes, 
-      Callable<Object> dispatcher, InvocationListener listener) 
+      Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException 
   {
     return Proxy.newProxyInstance(getClassLoader(clientBundle, classes), getInterfaces(classes), new ProxyHandler(this, dispatcher, listener));
   }
 
-  private static final Class<?>[] getInterfaces(Collection<Class<?>> classes)
+  private static final Class<?>[] getInterfaces(Collection<Class<?>> classes) throws UnableToProxyException
   {
     for (Class<?> clazz : classes) {
         if (!!!clazz.isInterface()) {
-          throw new IllegalArgumentException(NLS.MESSAGES.getMessage("class.is.class", clazz.getName()));
+          throw new UnableToProxyException(clazz, NLS.MESSAGES.getMessage("class.is.class", clazz.getName()));
         } 
     }
     return (Class[]) classes.toArray(new Class[classes.size()]);

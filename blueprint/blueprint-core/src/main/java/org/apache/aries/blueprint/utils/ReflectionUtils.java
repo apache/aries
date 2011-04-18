@@ -84,6 +84,19 @@ public class ReflectionUtils {
         }
         return classes;
     }
+    
+    public static Set<Class<?>> getImplementedInterfacesAsClasses(Set<Class<?>> classes, Class<?> clazz) {
+        if (clazz != null && clazz != Object.class) {
+            for (Class<?> itf : clazz.getInterfaces()) {
+                if (Modifier.isPublic(itf.getModifiers())) {
+                    classes.add(itf);
+                }
+                getImplementedInterfacesAsClasses(classes, itf);
+            }
+            getImplementedInterfacesAsClasses(classes, clazz.getSuperclass());
+        }
+        return classes;
+    }
 
     public static Set<String> getSuperClasses(Set<String> classes, Class clazz) {
         if (clazz != null && clazz != Object.class) {
