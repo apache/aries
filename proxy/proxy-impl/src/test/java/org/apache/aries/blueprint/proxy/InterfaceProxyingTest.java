@@ -182,6 +182,29 @@ public class InterfaceProxyingTest {
     assertSame(o1.getClass(), o2.getClass());
   }
   
+  @Test
+  public void testComplexInterface() throws Exception {
+    Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(ProxyTestInterface.class));
+    
+    final TestCallable tc = new TestCallable();
+    tc.setReturn(5);
+    
+    Object o = InterfaceCombiningClassAdapter.getProxyInstance(classes, 
+        new Callable<Object>() {
+
+          @Override
+          public Object call() throws Exception {
+            return tc;
+          }
+    }, null);
+    
+    assertTrue(o instanceof ProxyTestInterface);
+    
+    assertTrue(o instanceof Callable);
+    
+    assertEquals(5, ((Callable)o).call());
+  }
+  
   protected void assertCalled(TestListener listener, boolean pre, boolean post, boolean ex) {
     assertEquals(pre, listener.preInvoke);
     assertEquals(post, listener.postInvoke);
