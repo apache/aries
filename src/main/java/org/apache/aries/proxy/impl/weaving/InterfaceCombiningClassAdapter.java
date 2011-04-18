@@ -20,6 +20,7 @@ package org.apache.aries.proxy.impl.weaving;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -146,8 +147,10 @@ public final class InterfaceCombiningClassAdapter extends EmptyVisitor implement
     //We're going to implement this method, so make it non abstract!
     access ^= ACC_ABSTRACT;
     //If we already implement this method (from another interface) then we don't
-    //want a duplicate
-    if(adapter.knownMethods.contains(new Method(name, desc)))
+    //want a duplicate. We also don't want to copy any static init blocks (these
+    //initialize static fields on the interface that we don't copy
+    if(adapter.knownMethods.contains(new Method(name, desc)) || 
+        "<clinit>".equals(name))
       return null;
     else 
       return adapter.visitMethod(access, name, desc, null, arg4);
@@ -192,7 +195,7 @@ public final class InterfaceCombiningClassAdapter extends EmptyVisitor implement
     
     Class<?> c;
     
-    HashSet<Class<?>> classes = new HashSet<Class<?>>(ifaces);
+    HashSet<Class<?>> classes = createSet(ifaces);
     
     c = cache.get(classes);
     
@@ -239,5 +242,22 @@ public final class InterfaceCombiningClassAdapter extends EmptyVisitor implement
     } catch (Exception e) {
       throw new UnableToProxyException(classes.iterator().next(), e);
     }
+  }
+
+  /**
+   * Get the set of interfaces we need to process. This will return a HashSet 
+   * that includes includes the supplied collection and any super-interfaces of 
+   * those classes 
+   * @param ifaces
+   * @return
+   */
+  private static HashSet<Class<?>> createSet(Collection<Class<?>> ifaces) {
+    HashSet<Class<?>> classes = new HashSet<Class<?>>();
+    for(Class<?> c : ifaces) {
+      //If we already have a class contained then we have already covered its hierarchy
+      if(classes.add(c))
+        classes.addAll(createSet(Arrays.asList(c.getInterfaces())));
+    }
+    return classes;
   }
 }
