@@ -27,6 +27,8 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.quiesce.manager.QuiesceCallback;
@@ -106,23 +108,22 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant
   			BlueprintRepository repository = container.getRepository();
   			Set<String> names = repository.getNames();
   			container.quiesce();
-  			boolean hasServices = false;
   			
+  			QuiesceDelegatingCallback qdcbk = new QuiesceDelegatingCallback(callback, bundleToQuiesce);
   			for (String name: names)
   			{
   				Recipe recipe = repository.getRecipe(name);
   				if (recipe instanceof ServiceRecipe)
   				{
-  					hasServices = true;
-  					((ServiceRecipe)recipe).quiesce(new QuiesceDelegatingCallback(callback, bundleToQuiesce));
+  					qdcbk.callCountDown.incrementAndGet();
+  					((ServiceRecipe)recipe).quiesce(qdcbk);
   				}
   			}
-  			//If the bundle has no services we can quiesce immediately
-  			if (!hasServices)
-  			{
-  				callback.bundleQuiesced(bundleToQuiesce);
-  			}
-			} else {
+  			//Either there were no services and we win, or there were services but they
+  			//have all finished and we win, or they still have tidy up to do, but we
+  			//end up at 0 eventually
+  			qdcbk.callback();
+		  } else {
 			  // for non-Blueprint bundles just call return completed
 			  
 			  callback.bundleQuiesced(bundleToQuiesce);
@@ -142,25 +143,18 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant
 	
 	  /** The single bundle being quiesced by this DestroyCallback */
 	  private final Bundle toQuiesce;
-	
-	  private final Set<String> services = new HashSet<String>();
+	  /** A countdown that starts at one so it can't finish before we do! */
+	  private final AtomicInteger callCountDown = new AtomicInteger(1);
 	    
 	  public QuiesceDelegatingCallback(QuiesceCallback cbk, Bundle b) 
 	  {
 	    callback = cbk;
 	    toQuiesce = b;
-	      
-	    ServiceReference[] serviceRefs = b.getRegisteredServices();
-	    
-	    for (ServiceReference ref : serviceRefs)
-	    {
-	  	  services.add(b.getBundleContext().getService(ref).toString());
-	    }
 	  }
 	    
-	  public void callback(Object key) 
+	  public void callback() 
 	  {
-	    if (key != null && services.remove(key.toString()) && services.isEmpty())
+	    if (callCountDown.decrementAndGet() == 0)
 	    {
 	 	  	callback.bundleQuiesced(toQuiesce);
 	    }

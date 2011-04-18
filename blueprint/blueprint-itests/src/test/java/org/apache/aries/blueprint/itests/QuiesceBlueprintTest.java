@@ -27,6 +27,7 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Arrays;
 
 import junit.framework.Assert;
 
@@ -59,14 +60,14 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
   {
     private int calls = 0;
 
-	public void bundleQuiesced(Bundle... bundlesQuiesced) {
-		System.out.println("bundleQuiesced "+ bundlesQuiesced);
-	      calls++;
-	}
-	
-	public int getCalls() {
-		return calls;
-	}
+  	public synchronized void bundleQuiesced(Bundle... bundlesQuiesced) {
+  		System.out.println("bundleQuiesced "+ Arrays.toString(bundlesQuiesced));
+  	  calls++;
+  	}
+  	
+  	public synchronized int getCalls() {
+  		return calls;
+  	}
   }
   
   @Inject
@@ -196,9 +197,9 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
 	    
 	    Assert.assertTrue("Quiesce callback should not have occurred yet; calls should be 0, but it is "+callback.getCalls(), callback.getCalls()==0);
 	    
-	    Thread.sleep(1500);
+	    t.join();
 	    
-	    System.out.println("After second sleep");
+	    System.out.println("After join");
 	    
 	    Assert.assertTrue("Quiesce callback should have occurred once; calls should be 1, but it is "+callback.getCalls(), callback.getCalls()==1);
 	    
@@ -244,6 +245,8 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
 	        assertNotNull(bundleb);
 	        bundleb.start();
 	        
+	        getBlueprintContainerForBundle(bundleContext, "org.apache.aries.blueprint.testbundleb", DEFAULT_TIMEOUT);
+	        
 			participant.quiesce(callbackB, Collections.singletonList(getBundle(
 				"org.apache.aries.blueprint.testbundleb")));
 			
@@ -253,6 +256,8 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
 		    
 		    Assert.assertTrue("Quiesce callback B should have occurred; calls should be 1, but it is "+callbackB.getCalls(), callbackB.getCalls()==1);
 		    Assert.assertTrue("Quiesce callback A should not have occurred yet; calls should be 0, but it is "+callbackA.getCalls(), callbackA.getCalls()==0);
+		    
+		    bundleb.stop();
 		    
 		    participant.quiesce(callbackA, Collections.singletonList(getBundle(
 			"org.apache.aries.blueprint.testbundlea")));
@@ -308,7 +313,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
 		    t.start();
 		    Thread.sleep(200);
 	        
-			participant.quiesce(callback, bundles);
+			  participant.quiesce(callback, bundles);
 			
 		    System.out.println("Called Quiesce");
 		    
