@@ -83,9 +83,11 @@ public class ServiceRecipe extends AbstractRecipe {
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private volatile Object service;
+    /** Only ever access when holding a lock on <code>this</code> */
     private int activeCalls;
+    /** Only ever access when holding a lock on <code>this</code> */
     private boolean quiesce;
-    private DestroyCallback destroyCallback;
+    private Collection<DestroyCallback> destroyCallbacks = new ArrayList<DestroyCallback>();
     
     public ServiceRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
@@ -407,35 +409,42 @@ public class ServiceRecipe extends AbstractRecipe {
 
     protected void incrementActiveCalls()
     {
-    	synchronized(this) 
-    	{
-    		activeCalls++;	
-		}
+    	  synchronized(this) 
+    	  {
+    		    activeCalls++;	
+		    }
     }
     
-	protected void decrementActiveCalls() 
-	{
-		
-    	synchronized(this) 
-    	{
-    		activeCalls--;
-
-			if (quiesce && activeCalls == 0)
-			{
-				destroyCallback.callback(service);
-			}
-    	}
-	}
+  	protected void decrementActiveCalls() 
+  	{
+  	    List<DestroyCallback> callbacksToCall = new ArrayList<DestroyCallback>();
+      	synchronized(this) 
+      	{
+      	    activeCalls--;
+  			    if(quiesce && activeCalls == 0) {
+  			        callbacksToCall.addAll(destroyCallbacks);
+  			        destroyCallbacks.clear();
+  			    }
+      	}
+      	if(!!!callbacksToCall.isEmpty()) {
+      	    for(DestroyCallback cbk : callbacksToCall)
+      	        cbk.callback();
+      	}
+  	}
 	
     public void quiesce(DestroyCallback destroyCallback)
     {
-    	this.destroyCallback = destroyCallback;
-    	quiesce = true;
-    	unregister();
-    	if(activeCalls == 0)
-		{
-			destroyCallback.callback(service);
-		}
+    	  unregister();
+    	  int calls;
+    	  synchronized (this) {
+            if(activeCalls != 0)
+              destroyCallbacks.add(destroyCallback);
+    	      quiesce = true;
+            calls = activeCalls;
+        }
+    	  if(calls == 0) {
+    	      destroyCallback.callback();
+    	  }
     }
      
     private class TriggerServiceFactory implements ServiceFactory 
