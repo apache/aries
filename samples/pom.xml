@@ -99,9 +99,9 @@
         <ariesJpaContainerContextVersion>0.3.1-SNAPSHOT</ariesJpaContainerContextVersion>
         
         <!-- Aries Proxy Versions -->
-        <ariesProxyApiVersion>0.3.1-SNAPSHOT</ariesProxyApiVersion>
-        <ariesProxyVersion>0.3.1-SNAPSHOT</ariesProxyVersion>
-        <ariesProxyImplVersion>0.3.1-SNAPSHOT</ariesProxyImplVersion>
+        <ariesProxyApiVersion>0.4-SNAPSHOT</ariesProxyApiVersion>
+        <ariesProxyVersion>0.4-SNAPSHOT</ariesProxyVersion>
+        <ariesProxyImplVersion>0.4-SNAPSHOT</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
         <ariesQuiesceApiVersion>0.3.1-SNAPSHOT</ariesQuiesceApiVersion>
