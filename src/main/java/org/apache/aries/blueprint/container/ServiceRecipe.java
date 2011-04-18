@@ -18,6 +18,7 @@ package org.apache.aries.blueprint.container;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashSet;
@@ -25,7 +26,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -44,6 +44,7 @@ import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.proxy.InvocationListener;
+import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -106,7 +107,6 @@ public class ServiceRecipe extends AbstractRecipe {
     public Recipe getServiceRecipe() {
         return serviceRecipe;
     }
-
     public CollectionRecipe getListenersRecipe() {
         return listenersRecipe;
     }
@@ -343,6 +343,41 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         return classes;
     }
+    
+    /**
+     * Get the classes we need to proxy, for auto-export interfaces only, those 
+     * will be just the interfaces implemented by the bean, for auto-export classes
+     * or everything, then just proxying the real bean class will give us everything we
+     * need, if none of the above then we need the class forms of the interfaces in
+     * the metadata
+     * @return
+     * @throws ClassNotFoundException
+     */
+    private Collection<Class<?>> getClassesForProxying() throws ClassNotFoundException {
+      Collection<Class<?>> classes;
+      switch (metadata.getAutoExport()) {
+          case ServiceMetadata.AUTO_EXPORT_INTERFACES:
+              classes = ReflectionUtils.getImplementedInterfacesAsClasses(new HashSet<Class<?>>(), internalGetService().getClass());
+              break;
+          case ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY:
+          case ServiceMetadata.AUTO_EXPORT_ALL_CLASSES:
+            classes = ProxyUtils.asList(internalGetService().getClass());
+              break;
+          default:
+              classes = new HashSet<Class<?>>(convertStringsToClasses(metadata.getInterfaces()));
+              break;
+      }
+      return classes;
+  }
+
+    private Collection<? extends Class<?>> convertStringsToClasses(
+        List<String> interfaces) throws ClassNotFoundException {
+      Set<Class<?>> classes = new HashSet<Class<?>>();
+      for(String s : interfaces) {
+        classes.add(blueprintContainer.loadClass(s)); 
+      }
+      return classes;
+    }
 
     private void createExplicitDependencies() {
         if (explicitDependencies != null) {
@@ -445,19 +480,10 @@ public class ServiceRecipe extends AbstractRecipe {
                   b = blueprintContainer.getBundleContext().getBundle();
                 }
                 InvocationListener collaborator = new Collaborator(cm, interceptors);
-                try {
-                    intercepted = BlueprintExtender.getProxyManager().createInterceptingProxy(b, 
-                        ProxyUtils.asList(original.getClass()), original, collaborator);
-                } catch (org.apache.aries.proxy.FinalModifierException u) {
-                    LOGGER.debug("Error creating asm proxy (final modifier), trying with interfaces");
-                    List<Class<?>> classes = new ArrayList<Class<?>>();
-                    for (String className : getClasses()) {
-                        classes.add(blueprintContainer.loadClass(className));
-                    }
-                    intercepted = BlueprintExtender.getProxyManager().createInterceptingProxy(b, 
-                        classes, original, collaborator);
-                }
-            } catch (Throwable u) {
+
+                intercepted = BlueprintExtender.getProxyManager().createInterceptingProxy(b, 
+                        getClassesForProxying(), original, collaborator);
+            } catch (Exception u) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
                 LOGGER.info("Unable to create a proxy object for the service " + getName() + " defined in bundle " + b.getSymbolicName() + " at version " + b.getVersion() + " with id " + b.getBundleId() + ". Returning the original object instead.", u);
                 LOGGER.debug(LOG_EXIT, "getService", original);
