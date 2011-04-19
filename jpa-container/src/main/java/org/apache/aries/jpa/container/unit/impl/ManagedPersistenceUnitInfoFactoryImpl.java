@@ -20,6 +20,9 @@ package org.apache.aries.jpa.container.unit.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
@@ -31,101 +34,36 @@ import org.osgi.framework.ServiceReference;
 public class ManagedPersistenceUnitInfoFactoryImpl implements
     ManagedPersistenceUnitInfoFactory {
 
-  public Collection<ManagedPersistenceUnitInfo> createManagedPersistenceUnitMetadata(
+  private ConcurrentMap<Bundle, Collection<ManagedPersistenceUnitInfoImpl>> persistenceUnits = 
+      new ConcurrentHashMap<Bundle, Collection<ManagedPersistenceUnitInfoImpl>>();
+  
+  public Collection<? extends ManagedPersistenceUnitInfo> createManagedPersistenceUnitMetadata(
       BundleContext containerContext, Bundle persistenceBundle,
       ServiceReference providerReference,
       Collection<ParsedPersistenceUnit> persistenceMetadata) {
     
-    //TODO add support for provider bundle imports (e.g. for weaving) here
-    
-    Collection<ManagedPersistenceUnitInfo> managedUnits = new ArrayList<ManagedPersistenceUnitInfo>();
+    Collection<ManagedPersistenceUnitInfoImpl> managedUnits = new ArrayList<ManagedPersistenceUnitInfoImpl>();
     
     for(ParsedPersistenceUnit unit : persistenceMetadata)
       managedUnits.add(new ManagedPersistenceUnitInfoImpl(persistenceBundle, unit, providerReference));
     
-    return managedUnits;
+    Collection<?> existing = persistenceUnits.putIfAbsent(persistenceBundle, managedUnits);
+    if(existing != null)
+      throw new IllegalStateException("Previous units were detected that have not been destroyed");
+    return Collections.unmodifiableCollection(managedUnits);
   }
 
   public void destroyPersistenceBundle(BundleContext containerContext, Bundle bundle) {
-
+    Collection<ManagedPersistenceUnitInfoImpl> mpus = persistenceUnits.remove(bundle);
+    if(mpus == null)
+      throw new IllegalStateException("No persistence units defined for bundle " +
+          bundle.getSymbolicName() + "_" + bundle.getVersion());
+    for(ManagedPersistenceUnitInfoImpl impl : mpus) {
+      impl.destroy();
+    }
   }
 
   public String getDefaultProviderClassName() {
     return null;
   }
-
-  //Code that can be used to attach a fragment for provider wiring
-  
-////If we can't find a provider then bomb out
-//if (providerRef != null)
-//{
-//  try 
-//    FragmentBuilder builder = new FragmentBuilder(b, ".jpa.fragment");
-//    builder.addImportsFromExports(providerRef.getBundle());
-//    fragment = builder.install(ctx);
-//  
-//    
-//    hostToFragmentMap.put(b, fragment);
-//    // If we successfully got a fragment then
-//    // set the provider reference and register the units
-//    Set<ServiceRegistration> registrations = new HashSet<ServiceRegistration>();
-//    Hashtable<String, Object> props = new Hashtable<String, Object>();
-//    
-//    props.put(PersistenceUnitInfoService.PERSISTENCE_BUNDLE_SYMBOLIC_NAME, b.getSymbolicName());
-//    props.put(PersistenceUnitInfoService.PERSISTENCE_BUNDLE_VERSION, b.getVersion());
-//    
-//    for(PersistenceUnitImpl unit : parsedPersistenceUnits){
-//      Hashtable<String, Object> serviceProps = new Hashtable<String, Object>(props);
-//      
-//      String unitName = (String) unit.getPersistenceXmlMetadata().get(PersistenceUnitInfoService.UNIT_NAME);
-//      if(unitName != null)
-//        serviceProps.put(PersistenceUnitInfoService.PERSISTENCE_UNIT_NAME, unitName);
-//      
-//      unit.setProviderReference(providerRef);
-//      registrations.add(ctx.registerService(PersistenceUnitInfoService.class.getName(), unit, serviceProps));
-//    }
-//    hostToPersistenceUnitMap.put(b, registrations);
-//  }
-//  catch (IOException e)
-//  {
-//    // TODO Fragment generation failed, log the error
-//    // No clean up because we didn't register the bundle yet
-//    e.printStackTrace();
-//  }
-//  catch (BundleException be) {
-//    //TODO log the failure to install the fragment, but return null
-//    // to show we didn't get a fragment installed
-//    // No clean up because we didn't register the bundle yet
-//  }
-//}
-//}
-//}
-  
-  //Code that can be used to clear up a persistence unit
-  
-///**
-// * If we have generated a resources for the supplied bundle, then
-// * tidy them  up.
-// * @param host
-// */
-//private void tidyUpPersistenceBundle(Bundle host)
-//{
-//  
-//  Bundle fragment = hostToFragmentMap.remove(host);
-//  Set<ServiceRegistration> services = hostToPersistenceUnitMap.remove(host);
-//  
-//  if(services != null) {
-//    for(ServiceRegistration reg : services)
-//      reg.unregister();
-//  }
-//  
-//  if(fragment != null){
-//    try {
-//      fragment.uninstall();
-//    } catch (BundleException be) {
-//      //TODO log this error, then hope that we don't try to
-//      //recreate the fragment before restarting the framework!
-//    }
-//  }
-//}
 }
