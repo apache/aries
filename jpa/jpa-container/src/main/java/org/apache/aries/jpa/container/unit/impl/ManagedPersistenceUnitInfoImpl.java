@@ -31,7 +31,7 @@ import org.osgi.framework.ServiceReference;
 public class ManagedPersistenceUnitInfoImpl implements
     ManagedPersistenceUnitInfo {
 
-  private final PersistenceUnitInfo info;
+  private final PersistenceUnitInfoImpl info;
   
   public ManagedPersistenceUnitInfoImpl(Bundle persistenceBundle,
       ParsedPersistenceUnit unit,
@@ -47,5 +47,7 @@ public class ManagedPersistenceUnitInfoImpl implements
     return info;
   }
 
-
+  public void destroy() {
+    info.clearUp();
+  }
 }

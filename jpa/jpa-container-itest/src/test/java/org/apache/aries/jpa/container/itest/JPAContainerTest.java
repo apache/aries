@@ -45,7 +45,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(JUnit4TestRunner.class)
 public class JPAContainerTest {
-  public static final long DEFAULT_TIMEOUT = 60000;
+  public static final long DEFAULT_TIMEOUT = 10000;
 
   @Inject
   protected BundleContext bundleContext;

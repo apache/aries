@@ -20,8 +20,10 @@ package org.apache.aries.jpa.container.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -77,7 +79,7 @@ public class EntityManagerFactoryManager {
   /** The {@link PersistenceProvider} to use */
   private ServiceReference provider;
   /** The persistence units to manage */
-  private Collection<ManagedPersistenceUnitInfo> persistenceUnits;
+  private Collection<? extends ManagedPersistenceUnitInfo> persistenceUnits;
   /** The original parsed data */
   private Collection<ParsedPersistenceUnit> parsedData;
   /** A Map of created {@link EntityManagerFactory}s */
@@ -104,7 +106,7 @@ public class EntityManagerFactoryManager {
    * @param ref 
    * @param parsedUnits 
    */
-  public EntityManagerFactoryManager(BundleContext containerCtx, Bundle b, Collection<ParsedPersistenceUnit> parsedUnits, ServiceReference ref, Collection<ManagedPersistenceUnitInfo> infos) {
+  public EntityManagerFactoryManager(BundleContext containerCtx, Bundle b, Collection<ParsedPersistenceUnit> parsedUnits, ServiceReference ref, Collection<? extends ManagedPersistenceUnitInfo> infos) {
     containerContext = containerCtx;
     bundle = b;
     provider = ref;
@@ -211,15 +213,15 @@ public class EntityManagerFactoryManager {
       //Register each EMF
       for(Entry<String, ? extends EntityManagerFactory> entry : emfs.entrySet())
       {
-        Properties props = new Properties();
+        Hashtable<String,Object> props = new Hashtable<String, Object>();
         String unitName = entry.getKey();
           
         props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, unitName);
         if(providerName != null)
           props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, providerName);
-        props.put(PersistenceUnitConstants.OSGI_UNIT_VERSION, provider.getBundle().getVersion());
-        props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
-        props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(unitName));
+          props.put(PersistenceUnitConstants.OSGI_UNIT_VERSION, provider.getBundle().getVersion());
+          props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
+          props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(unitName));
         try {
           registrations.put(unitName, bundle.getBundleContext().registerService(EntityManagerFactory.class.getCanonicalName(), entry.getValue(), props));
         } catch (Exception e) {
@@ -278,7 +280,7 @@ public class EntityManagerFactoryManager {
    * @param infos The {@link PersistenceUnitInfo}s defined by our bundle
    */
   public synchronized void manage(ServiceReference ref,
-      Collection<ManagedPersistenceUnitInfo> infos)  throws IllegalStateException{
+      Collection<? extends ManagedPersistenceUnitInfo> infos)  throws IllegalStateException{
     provider = ref;
     persistenceUnits = infos;
   }
@@ -294,7 +296,7 @@ public class EntityManagerFactoryManager {
    * @param infos The {@link PersistenceUnitInfo}s defined by our bundle
    */
   public synchronized void manage(Collection<ParsedPersistenceUnit> parsedUnits, ServiceReference ref,
-      Collection<ManagedPersistenceUnitInfo> infos)  throws IllegalStateException{
+      Collection<? extends ManagedPersistenceUnitInfo> infos)  throws IllegalStateException{
     parsedData = parsedUnits;
     provider = ref;
     persistenceUnits = infos;
