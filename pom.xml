@@ -88,7 +88,7 @@
         <dependency>
             <artifactId>org.apache.aries.jpa.api</artifactId>
             <groupId>org.apache.aries.jpa</groupId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.3.1-SNAPSHOT</version>
             
             <exclusions>
                 <exclusion>
