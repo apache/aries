@@ -19,7 +19,6 @@
 
 package org.apache.aries.jpa.container.parsing.impl;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -183,7 +182,7 @@ public class PersistenceDescriptorParserImpl implements PersistenceDescriptorPar
   /* (non-Javadoc)
    * @see org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParser#parse(org.osgi.framework.Bundle, org.apache.aries.jpa.container.parsing.PersistenceDescriptor)
    */
-  public Collection<ParsedPersistenceUnit> parse(Bundle b, PersistenceDescriptor descriptor) throws PersistenceDescriptorParserException {
+  public Collection<? extends ParsedPersistenceUnit> parse(Bundle b, PersistenceDescriptor descriptor) throws PersistenceDescriptorParserException {
     Collection<ParsedPersistenceUnit> persistenceUnits = new ArrayList<ParsedPersistenceUnit>();
     SAXParserFactory parserFactory = SAXParserFactory.newInstance();
     InputStream is = null;

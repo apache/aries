@@ -31,7 +31,11 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
+import org.apache.aries.jpa.container.annotation.impl.AnnotationScanner;
+import org.apache.aries.jpa.container.annotation.impl.AnnotationScannerFactory;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
+import org.apache.aries.jpa.container.weaving.impl.TransformerRegistry;
+import org.apache.aries.jpa.container.weaving.impl.TransformerRegistryFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -47,6 +51,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
   private final ServiceReference providerRef;
   
+  private ClassTransformer transformer;
+  
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
@@ -58,13 +64,21 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     cl = new BundleDelegatingClassLoader(b);
   }
   
-  public void addTransformer(ClassTransformer arg0) {
-    // TODO Add support for class transformation from this method
+  public synchronized void addTransformer(ClassTransformer arg0) {
+    TransformerRegistry reg = TransformerRegistryFactory.getTransformerRegistry();
+    if(reg != null) {
+      reg.addTransformer(bundle, arg0, providerRef);
+      transformer = arg0;
+    }
   }
 
-  public boolean excludeUnlistedClasses() {
+  public boolean internalExcludeUnlistedClasses() {
     Boolean result = (Boolean) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.EXCLUDE_UNLISTED_CLASSES);
     return (result == null) ? false : result;
+  }
+  
+  public boolean excludeUnlistedClasses() {
+    return true;
   }
 
   public ClassLoader getClassLoader() {
@@ -104,6 +118,11 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     List<String> classes = (List<String>) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MANAGED_CLASSES);
     if(classes == null)
       classes = new ArrayList<String>();
+    if(!!!internalExcludeUnlistedClasses()) {
+      AnnotationScanner scanner = AnnotationScannerFactory.getAnnotationScanner();
+      if(scanner != null)
+        classes.addAll(scanner.findJPAAnnotatedClasses(bundle));
+    }
     
     return Collections.unmodifiableList(classes);
   }
@@ -178,6 +197,14 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     else
       return ValidationMode.valueOf(s);
 
+  }
+
+  public synchronized void clearUp() {
+    if(transformer != null) {
+      TransformerRegistry reg = TransformerRegistryFactory.getTransformerRegistry();
+      reg.removeTransformer(bundle, transformer);
+      transformer = null;
+    }
   }
   
 }

@@ -58,7 +58,7 @@ public class PersistenceXMLParsingTest
       
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+      Collection<? extends ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
       assertEquals("An incorrect number of persistence units has been returned.", 4, parsedUnits.size());
       
       List<ParsedPersistenceUnit> units = getList(parsedUnits);
@@ -208,7 +208,7 @@ public class PersistenceXMLParsingTest
 
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+      Collection<? extends ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
       assertEquals("An incorrect number of persistence units has been returned.", 0, parsedUnits.size());
     } finally {
       if(is != null)
@@ -228,7 +228,7 @@ public class PersistenceXMLParsingTest
       
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+      Collection<? extends ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
 
       fail("Parsing should not succeed");
     } finally {
@@ -283,7 +283,7 @@ public class PersistenceXMLParsingTest
       
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+      Collection<? extends ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
       assertEquals("An incorrect number of persistence units has been returned.", 33, parsedUnits.size());
       
       List<ParsedPersistenceUnit> units = getList(parsedUnits);
