@@ -50,6 +50,9 @@
             org.apache.aries.jpa.container.parsing;version="[0.1.0,1.1.0)",
             org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
             org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
+            org.osgi.framework;version="[1.5,2)",
+            org.osgi.framework.hooks.weaving;version="[1,1.1)";resolution:=optional,
+            org.osgi.framework.wiring;version="[1,2)";resolution:=optional,
             *
         </aries.osgi.import>
       <aries.osgi.activator>
@@ -58,11 +61,25 @@
     </properties>
     
     <dependencies>
+        <!-- Use the Eclipse version of OSGi until the core 4.3 OSGi jar is available in Maven. -->        
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <version>3.7M6</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../jpa-tmp/target/downloaded/org.eclipse.osgi_3.7.0.jar</systemPath>
         </dependency>
+    
+        <!-- <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId> -->
+            <!-- 
+                 We override the version here because we need it
+                 to compile our weaving hook. We still want our
+                 bundles to be able to run with 4.2 though!
+            -->
+            <!-- <version>4.3</version>
+        </dependency> -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
@@ -71,19 +88,40 @@
         <dependency>
             <artifactId>org.apache.aries.jpa.api</artifactId>
             <groupId>org.apache.aries.jpa</groupId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.4-SNAPSHOT</version>
+            
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.api</artifactId>
             <version>0.3</version>
             <scope>provided</scope>
+            
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <artifactId>org.apache.aries.util</artifactId>
             <groupId>org.apache.aries</groupId>
             <version>0.4-SNAPSHOT</version>
             <scope>provided</scope>
+            
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -105,6 +143,13 @@
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
             <version>0.3</version>
+            
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

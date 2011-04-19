@@ -91,7 +91,7 @@ public interface ManagedPersistenceUnitInfoFactory {
    *                            metadata from the persistence descriptor.
    * @return A Collection of {@link ManagedPersistenceUnitInfo} objects that can be used to create {@link EntityManagerFactory} instances
    */
-  public Collection<ManagedPersistenceUnitInfo> createManagedPersistenceUnitMetadata(BundleContext containerContext, Bundle persistenceBundle, ServiceReference providerReference, Collection<ParsedPersistenceUnit> persistenceMetadata);
+  public Collection<? extends ManagedPersistenceUnitInfo> createManagedPersistenceUnitMetadata(BundleContext containerContext, Bundle persistenceBundle, ServiceReference providerReference, Collection<ParsedPersistenceUnit> persistenceMetadata);
   
   /**
    * If no persistence units in a persistence bundle specify a JPA {@link PersistenceProvider} 

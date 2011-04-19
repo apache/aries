@@ -119,7 +119,8 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     
     if(className != null) {
       try {
-        Class<? extends ManagedPersistenceUnitInfoFactory> clazz = ctx.getBundle().loadClass(className);
+        Class<? extends ManagedPersistenceUnitInfoFactory> clazz = 
+          (Class<? extends ManagedPersistenceUnitInfoFactory>) ctx.getBundle().loadClass(className);
         persistenceUnitFactory = clazz.newInstance();
       } catch (Exception e) {
         _logger.error("There was a problem creating the custom ManagedPersistenceUnitInfoFactory " + className 
@@ -183,7 +184,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
         : managersToManage.entrySet()) {
       EntityManagerFactoryManager mgr = entry.getKey();
       ServiceReference reference = entry.getValue();
-      Collection<ManagedPersistenceUnitInfo> infos = null;
+      Collection<? extends ManagedPersistenceUnitInfo> infos = null;
       try {
          infos = persistenceUnitFactory.createManagedPersistenceUnitMetadata(
              ctx, mgr.getBundle(), reference, mgr.getParsedPersistenceUnits());
@@ -360,7 +361,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
         
         ServiceReference ref = getProviderServiceReference(pUnits);
         //If we found a provider then create the ManagedPersistenceUnitInfo objects
-        Collection<ManagedPersistenceUnitInfo> infos = null;
+        Collection<? extends ManagedPersistenceUnitInfo> infos = null;
         if(ref != null) {  
           infos = persistenceUnitFactory.
               createManagedPersistenceUnitMetadata(ctx, bundle, ref, pUnits);

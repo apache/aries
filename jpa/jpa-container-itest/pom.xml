@@ -224,6 +224,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>org.apache.aries.jpa.container.advanced.itest.bundle</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.blueprint.itest.bundle</artifactId>
             <version>0.3.1-SNAPSHOT</version>
             <scope>test</scope>
