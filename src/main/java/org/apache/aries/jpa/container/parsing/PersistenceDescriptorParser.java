@@ -36,7 +36,7 @@ public interface PersistenceDescriptorParser {
    * @return A collection of {@link ParsedPersistenceUnit}
    * @throws PersistenceDescriptorParserException  if any error occurs in parsing
    */
-  public abstract Collection<ParsedPersistenceUnit> parse(Bundle b,
+  public abstract Collection<? extends ParsedPersistenceUnit> parse(Bundle b,
       PersistenceDescriptor descriptor)
       throws PersistenceDescriptorParserException;
 
