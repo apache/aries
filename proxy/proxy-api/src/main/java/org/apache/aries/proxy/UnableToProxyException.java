@@ -18,6 +18,8 @@
  */
 package org.apache.aries.proxy;
 
+import com.ibm.CORBA.iiop.Message;
+
 public class UnableToProxyException extends Exception
 {
   /**
@@ -28,8 +30,7 @@ public class UnableToProxyException extends Exception
 
   public UnableToProxyException(Class<?> clazz)
   {
-    super(clazz.getName());
-    className = clazz.getName();
+    this(clazz.getName(), clazz.getName());
   }
 
   public UnableToProxyException(Class<?> clazz, Exception e)
@@ -43,16 +44,20 @@ public class UnableToProxyException extends Exception
     this.className = className;
   }
   
+  public UnableToProxyException(String className, String message)
+  {
+    super(message);
+    this.className = className;
+  }
+  
   public UnableToProxyException(Object proxy, String msg)
   {
-    super(msg);
-    this.className = proxy.getClass().getName();
+    this(proxy.getClass().getName(), msg);
   }
 
   public UnableToProxyException(Class<?> clazz, String msg)
   {
-    super(msg);
-    className = clazz.getName();
+    this(clazz.getName(), msg);
   }
   
   public String getClassName()

@@ -31,6 +31,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.InvocationListener;
+import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.gen.Constants;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.ClassAdapter;
@@ -298,9 +299,21 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
     //first we need to override all the methods that were on non-object parents
     for(Class<?> c : nonObjectSupers) {
       try {
+        String className;
+        Class<?> enclosing = c.getEnclosingClass();
+        List<Class<?>> enclosingChain = new ArrayList<Class<?>>();
+        while(enclosing != null) {
+          enclosingChain.add(enclosing);
+          enclosing = enclosing.getEnclosingClass();
+        }
+        StringBuilder sb = new StringBuilder();
+        for(Class<?> clazz : enclosingChain) {
+          sb.append(clazz.getSimpleName()).append('$');
+        }
+        className = sb.append(c.getSimpleName()).append(".class").toString();
+        
         //Load the class bytes and copy methods across
-        ClassReader cReader = new ClassReader(c.getResourceAsStream(
-            c.getSimpleName() + ".class"));
+        ClassReader cReader = new ClassReader(c.getResourceAsStream(className));
         //We don't need the method bodies, so skip them for speed
         cReader.accept(new MethodCopyingClassAdapter(cv, c, typeBeingWoven,
             knownMethods, transformedMethods), ClassReader.SKIP_CODE | 
@@ -462,7 +475,9 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
         if(hasNoArgsConstructor)
           methodAdapter.invokeConstructor(typeBeingWoven, NO_ARGS_CONSTRUCTOR);
         else
-          methodAdapter.invokeConstructor(OBJECT_TYPE, NO_ARGS_CONSTRUCTOR);
+          throw new RuntimeException(new UnableToProxyException(typeBeingWoven.getClassName(), "The class " + 
+              typeBeingWoven.getClassName() + " and its supertype " + superType.getClassName() +
+              " do not have no-args constructors and cannot be woven."));
       }
       methodAdapter.loadThis();
       methodAdapter.loadArg(0);
