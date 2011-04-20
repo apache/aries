@@ -18,10 +18,9 @@
  */
 package org.apache.aries.blueprint.proxy;
 
-public class ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent extends ProxyTestClassUnweavableSuperWithFinalMethod{
+import org.apache.aries.blueprint.proxy.pkg.ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent;
 
-  public ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent() {
-    super(1);
-  }
+public class ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent extends ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent{
+
 
 }

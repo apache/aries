@@ -28,6 +28,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassInner;
+import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassStaticInner;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.junit.Test;
@@ -336,5 +338,15 @@ public abstract class AbstractProxyTest {
     assertEquals(pre, listener.preInvoke);
     assertEquals(post, listener.postInvoke);
     assertEquals(ex, listener.postInvokeExceptionalReturn);
+  }
+  @Test
+  public void testStaticInner() throws Exception {
+    assertNotNull(getProxyInstance(getProxyClass(ProxyTestClassStaticInner.class)));
+  }
+  @Test
+  public void testInner() throws Exception {
+    //An inner class has no no-args (the parent gets added as an arg) so we can't
+    //get an instance
+    assertNotNull(getProxyClass(ProxyTestClassInner.class));
   }
 }

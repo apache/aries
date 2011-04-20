@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.proxy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -32,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassInner;
+import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassStaticInner;
+import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassUnweavableInnerChild;
 import org.apache.aries.blueprint.proxy.pkg.ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent;
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.InvocationListener;
@@ -63,12 +67,14 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     regexp = sb.toString();
   }
   
-
+  /** An array of classes that will be woven - note no UnweavableParents should be in here! */
   private static final Class<?>[] CLASSES = new Class<?>[]{TEST_CLASS, ProxyTestClassSuper.class,
     ProxyTestClassFinalMethod.class, ProxyTestClassFinal.class, ProxyTestClassGeneric.class,
     ProxyTestClassGenericSuper.class, ProxyTestClassCovariant.class, ProxyTestClassCovariantOverride.class,
-    ProxyTestClassUnweavableChild.class, ProxyTestClassUnweavableSuperWithFinalMethod.class,
-    ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class, ProxyTestClassUnweavableSibling.class};
+    ProxyTestClassUnweavableChild.class, ProxyTestClassUnweavableSibling.class, ProxyTestClassInner.class, 
+    ProxyTestClassStaticInner.class, ProxyTestClassUnweavableInnerChild.class, 
+    ProxyTestClassUnweavableChildWithFinalMethodParent.class, 
+    ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class};
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
@@ -246,32 +252,14 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testUnweavableSuperWithNoNoargsAllTheWay() throws Exception
   {
-    Class<?> woven = getProxyClass(ProxyTestClassUnweavableSibling.class);
-    
-    assertNotNull(woven);
-    assertNotNull(woven.getConstructor(int.class).newInstance(42));
-    
-    TestListener tl = new TestListener();
-    
-    WovenProxy proxy = (WovenProxy) woven.getConstructor(int.class).newInstance(42);
-    proxy = proxy.org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance(
-            new SingleInstanceDispatcher(proxy), tl);
-    
-    ProxyTestClassUnweavableSuper ptcuc = (ProxyTestClassUnweavableSuper) proxy;
-    assertCalled(tl, false, false, false);
-    
-    assertEquals("Hi!", ptcuc.doStuff());
-    
-    assertCalled(tl, true, true, false);
-    
-    assertEquals(ProxyTestClassUnweavableGrandParent.class.getMethod("doStuff"), 
-        tl.getLastMethod());
-    
-
-    //Because default access works on the package, and we are defined on a different classloader
-    //we can only check that the method exists, not that it is callable *sigh*
-    
-    assertNotNull(ProxyTestClassUnweavableSuper.class.getDeclaredMethod("doStuff2"));
+    try {
+      Class<?> woven = getProxyClass(ProxyTestClassUnweavableSibling.class);
+      fail();
+    } catch (RuntimeException re) {
+      assertTrue(re.getCause() instanceof UnableToProxyException);
+      assertEquals(ProxyTestClassUnweavableSibling.class.getName(),
+          ((UnableToProxyException)re.getCause()).getClassName());
+    }
   }  
   
   /**
@@ -282,6 +270,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   {
     try{
       getProxyClass(ProxyTestClassUnweavableChildWithFinalMethodParent.class);
+      fail();
     } catch (RuntimeException re) {
       assertTrue(re.getCause() instanceof FinalModifierException);
       assertEquals(ProxyTestClassUnweavableSuperWithFinalMethod.class.getName(),
@@ -299,10 +288,25 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   {
     try{
       getProxyClass(ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class);
+      fail();
     } catch (RuntimeException re) {
       assertTrue(re.getCause() instanceof UnableToProxyException);
       assertEquals(ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent
           .class.getName(), ((UnableToProxyException)re.getCause()).getClassName());
+    }
+  }
+  
+  @Test
+  public void testInnerWithNoParentNoArgs() throws Exception {
+    //An inner class has no no-args (the parent gets added as an arg) so we can't
+    //get an instance
+    try{
+      getProxyClass(ProxyTestClassUnweavableInnerChild.class);
+      fail();
+    } catch (RuntimeException re) {
+      assertTrue(re.getCause() instanceof UnableToProxyException);
+      assertEquals(ProxyTestClassUnweavableInnerChild.class.getName(), 
+          ((UnableToProxyException)re.getCause()).getClassName());
     }
   }
   
