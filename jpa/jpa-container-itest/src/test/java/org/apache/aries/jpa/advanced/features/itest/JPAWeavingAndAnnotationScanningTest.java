@@ -80,7 +80,7 @@ public class JPAWeavingAndAnnotationScanningTest {
   
   @Test
   public void testClassIsWoven() throws Exception {
-    
+    getOsgiService(bundleContext, EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
     assertTrue("Not PersistenceCapable", Arrays.asList(Car.class.getInterfaces())
         .contains(PersistenceCapable.class));
   }
