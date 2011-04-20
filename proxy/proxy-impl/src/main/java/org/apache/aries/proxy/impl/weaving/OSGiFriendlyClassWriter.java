@@ -80,28 +80,31 @@ final class OSGiFriendlyClassWriter extends ClassWriter {
       InputStream is;
       
       while(aRunning || bRunning ) {
-        is = loader.getResourceAsStream(arg0 + ".class");
-        if(is != null) {
-          ClassReader cr = new ClassReader(is);
-          arg0 = cr.getSuperName();
-          if(arg0 == null)
+        if(aRunning) {
+          is = loader.getResourceAsStream(arg0 + ".class");
+          if(is != null) {
+            ClassReader cr = new ClassReader(is);
+            arg0 = cr.getSuperName();
+            if(arg0 == null)
+              aRunning = false;
+            else if(!!!names.add(arg0))
+              return arg0;
+          } else {
             aRunning = false;
-          else if(!!!names.add(arg0))
-            return arg0;
-        } else {
-          aRunning = false;
+          }
         }
-        
-        is = loader.getResourceAsStream(arg1 + ".class");
-        if(is != null) {
-          ClassReader cr = new ClassReader(is);
-          arg1 = cr.getSuperName();
-          if(arg1 == null)
+        if(bRunning) {
+          is = loader.getResourceAsStream(arg1 + ".class");
+          if(is != null) {
+            ClassReader cr = new ClassReader(is);
+            arg1 = cr.getSuperName();
+            if(arg1 == null)
+              bRunning = false;
+            else if(!!!names.add(arg1))
+              return arg1;
+          } else {
             bRunning = false;
-          else if(!!!names.add(arg1))
-            return arg1;
-        } else {
-          bRunning = false;
+          }
         }
       }
       
