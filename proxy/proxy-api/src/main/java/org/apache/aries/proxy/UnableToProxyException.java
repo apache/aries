@@ -18,8 +18,6 @@
  */
 package org.apache.aries.proxy;
 
-import com.ibm.CORBA.iiop.Message;
-
 public class UnableToProxyException extends Exception
 {
   /**
