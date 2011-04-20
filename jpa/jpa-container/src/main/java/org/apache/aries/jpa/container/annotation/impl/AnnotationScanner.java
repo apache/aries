@@ -25,7 +25,7 @@ public interface AnnotationScanner {
   /**
    * Scan a bundle for classes annotated with @Entity, @MappedSuperClass, or @Embeddable
    * @param b The bundle to scan
-   * @return A collection of class names
+   * @return A collection of class names that are annotated with one of the above annotations
    */
   public Collection<String> findJPAAnnotatedClasses(Bundle b);
 }
