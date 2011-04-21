@@ -386,7 +386,7 @@ public class ClientWeavingHookTest {
     private void testConsumerBundleWeaving(Bundle consumerBundle, WeavingHook wh, String testClientResult, String jaxpClientResult) throws Exception {
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, TestClient.class.getName(), consumerBundle);
         wh.weave(wc);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
@@ -397,7 +397,7 @@ public class ClientWeavingHookTest {
         Assert.assertEquals(testClientResult, result);
 
         URL clsUrl2 = getClass().getResource("JaxpClient.class");
-        WovenClass wc2 = new MyWovenClass(clsUrl2, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
+        WovenClass wc2 = new MyWovenClass(clsUrl2, JaxpClient.class.getName(), consumerBundle);
         wh.weave(wc2);
 
         Class<?> cls2 = wc2.getDefinedClass();
@@ -561,7 +561,7 @@ public class ClientWeavingHookTest {
         // It can load a META-INF/services file
         final ClassLoader cl = new TestProviderBundleClassLoader(subdir, resources.toArray(new String [] {}));
 
-        List<String> classResources = new ArrayList<String>();
+        final List<String> classResources = new ArrayList<String>();
         for(String className : classNames) {
             classResources.add("/" + className.replace('.', '/') + ".class");
         }
@@ -574,7 +574,12 @@ public class ClientWeavingHookTest {
         EasyMock.expect(providerBundle.getSymbolicName()).andReturn(bsn).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(id).anyTimes();
         EasyMock.expect(providerBundle.getVersion()).andReturn(version).anyTimes();
-        EasyMock.expect(providerBundle.getEntryPaths("/")).andReturn(Collections.enumeration(classResources)).anyTimes();
+        EasyMock.expect(providerBundle.getEntryPaths("/")).andAnswer(new IAnswer<Enumeration<String>>() {
+            @Override
+            public Enumeration<String> answer() throws Throwable {
+                return Collections.enumeration(classResources);
+            }
+        }).anyTimes();
         EasyMock.<Class<?>>expect(providerBundle.loadClass(EasyMock.anyObject(String.class))).andAnswer(new IAnswer<Class<?>>() {
             @Override
             public Class<?> answer() throws Throwable {
