@@ -449,7 +449,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", "org.apache.aries.spifly.impl3.MyAltDocumentBuilderFactory", result.getName());
+        Assert.assertEquals("JAXP implementation from JRE", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
     }
 
     @Test
@@ -497,7 +497,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.newInstance());
-        Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.impl3.MyAltDocumentBuilderFactory", result.getName());
+        Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
     }
 
     private Bundle mockSpiFlyBundle(Bundle ... bundles) throws Exception {
