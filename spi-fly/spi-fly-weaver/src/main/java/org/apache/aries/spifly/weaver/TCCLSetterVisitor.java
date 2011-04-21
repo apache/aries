@@ -19,6 +19,7 @@
 package org.apache.aries.spifly.weaver;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -38,13 +39,13 @@ import org.objectweb.asm.Type;
 public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opcodes {
     private static final String GENERATED_METHOD_NAME = "$$FCCL$$";
 
-    private static final String UTIL_CLASS = Util.class.getName().replace('.', '/'); 
+    private static final String UTIL_CLASS = Util.class.getName().replace('.', '/');
     private static final String VOID_RETURN_TYPE = "()V";
-    
+
     private final String targetClass;
     private final Set<WeavingData> weavingData;
 
-    // Set to true when the weaving code has changed the client such that an additional import 
+    // Set to true when the weaving code has changed the client such that an additional import
     // (to the Util.class.getPackage()) is needed.
     private boolean additionalImportRequired = false;
 
@@ -66,6 +67,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     @Override
     public void visitEnd() {
         // Add generated static method
+        Set<String> methodNames = new HashSet<String>();
 
         for (WeavingData wd : weavingData) {
             /* Equivalent to:
@@ -73,7 +75,12 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
              *   Util.fixContextClassLoader("java.util.ServiceLoader", "load", cls, WovenClass.class.getClassLoader());
              * }
              */
-             MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, getGeneratedMethodName(wd), 
+             String methodName = getGeneratedMethodName(wd);
+             if (methodNames.contains(methodName))
+                 continue;
+
+             methodNames.add(methodName);
+             MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, methodName,
                      "(Ljava/lang/Class;)V", "(Ljava/lang/Class<*>;)V", null);
              mv.visitCode();
              mv.visitLdcInsn(wd.getClassName());
@@ -90,7 +97,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                      "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;Ljava/lang/ClassLoader;)V");
              mv.visitInsn(RETURN);
              mv.visitMaxs(4, 1);
-             mv.visitEnd();            
+             mv.visitEnd();
         }
 
         super.visitEnd();
@@ -109,15 +116,15 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         }
         return name.toString();
     }
-    
+
     private class TCCLSetterMethodVisitor extends MethodAdapter implements MethodVisitor
     {
         Type lastLDCType;
-        
+
         public TCCLSetterMethodVisitor(MethodVisitor mv) {
             super(mv);
         }
-        
+
         /**
          * Store the last LDC call. When ServiceLoader.load(Class cls) is called
          * the last LDC call before the ServiceLoader.load() visitMethodInsn call
@@ -136,33 +143,33 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
          * Wrap selected method calls with
          *  Util.storeContextClassloader();
          *  $$FCCL$$(<class>)
-         *  Util.restoreContextClassloader(); 
+         *  Util.restoreContextClassloader();
          */
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
             System.out.println("### " + opcode + ": " + owner + "#" + name + "#" + desc);
-                        
-            WeavingData wd = findWeavingData(owner, name, desc);            
+
+            WeavingData wd = findWeavingData(owner, name, desc);
             if (opcode == INVOKESTATIC && wd != null) {
                 System.out.println("+++ Gotcha!");
-          
+
                 additionalImportRequired = true;
 
-                // Add: Util.storeContextClassloader();                
+                // Add: Util.storeContextClassloader();
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "storeContextClassloader", VOID_RETURN_TYPE);
 
-                // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);                
+                // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);
                 if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
                     "load".equals(wd.getMethodName()) &&
                     (wd.getArgClasses() == null || Arrays.equals(new String [] {Class.class.getName()}, wd.getArgClasses()))) {
-                    // ServiceLoader.load() is a special case because it's a general-purpose service loader, 
-                    // therefore, the target class it the class being passed in to the ServiceLoader.load() 
+                    // ServiceLoader.load() is a special case because it's a general-purpose service loader,
+                    // therefore, the target class it the class being passed in to the ServiceLoader.load()
                     // call itself.
                     mv.visitLdcInsn(lastLDCType);
                 } else {
                     // In any other case, we're not dealing with a general-purpose service loader, but rather
-                    // with a specific one, such as DocumentBuilderFactory.newInstance(). In that case the 
+                    // with a specific one, such as DocumentBuilderFactory.newInstance(). In that case the
                     // target class is the class that is being invoked on (i.e. DocumentBuilderFactory).
                     Type type = Type.getObjectType(owner);
                     mv.visitLdcInsn(type);
@@ -175,7 +182,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 // Add: Util.restoreContextClassloader();
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "restoreContextClassloader", VOID_RETURN_TYPE);
-            } else {                
+            } else {
                 super.visitMethodInsn(opcode, owner, name, desc);
             }
         }
