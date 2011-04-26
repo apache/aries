@@ -157,8 +157,10 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         BundleManifest bm = getBundleManifest (f);
         if (bm != null) {
           if (bm.isValid()) {
+            _logger.debug("File {} is a valid bundle. Adding it to bundle list.", f.getName());
             extraBundlesInfo.add(new SimpleBundleInfo(bm, f.toURL().toExternalForm()));
           } else if (deploymentManifest == null) { 
+            _logger.debug("File {} is not a valid bundle. Attempting to convert it.", f.getName());
             // We have a jar that needs converting to a bundle, or a war to migrate to a WAB 
             // We only do this if a DEPLOYMENT.MF does not exist.
             BundleConversion convertedBinary = null;
@@ -166,7 +168,9 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             List<ConversionException> conversionExceptions = Collections.emptyList();
             while (converters.hasNext() && convertedBinary == null) { 
               try {
-                convertedBinary = converters.next().convert(ebaFile, f);
+            	BundleConverter converter = converters.next();
+            	_logger.debug("Converting file using {} converter", converter);
+                convertedBinary = converter.convert(ebaFile, f);
               } catch (ServiceException sx) {
                 // We'll get this if our optional BundleConverter has not been injected. 
               } catch (ConversionException cx) { 
@@ -180,11 +184,18 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
               throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0005E", appName));
             }
             if (convertedBinary != null) { 
+              _logger.debug("File {} was successfully converted. Adding it to bundle list.", f.getName());
               modifiedBundles.put (f.getName(), convertedBinary);             
               extraBundlesInfo.add(convertedBinary.getBundleInfo());
-            } 
+            } else {
+              _logger.debug("File {} was not converted.", f.getName());
+            }
+          } else {
+            _logger.debug("File {} was ignored. It is not a valid bundle and DEPLOYMENT.MF is present", f.getName());
           }
-        } 
+        } else {
+          _logger.debug("File {} was ignored. It has no manifest file.", f.getName());
+        }
       }
  
       // if Application-Content header was not specified build it based on the bundles included by value
