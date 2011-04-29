@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly.client;
+package org.apache.aries.spifly.client.bundle;
 
 import org.apache.aries.spifly.client.jar.Consumer;
 import org.osgi.framework.BundleActivator;
