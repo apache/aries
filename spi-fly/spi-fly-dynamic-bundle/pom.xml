@@ -101,6 +101,7 @@ JRE through META-INF/services resources).
                         <Private-Package>
                             org.apache.aries.spifly.dynamic
                         </Private-Package>
+                        <Embed-Dependency>org.apache.aries.spifly.*;scope=compile;inline=true</Embed-Dependency>
                         <Bundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</Bundle-Activator>
                     </instructions>
                 </configuration>

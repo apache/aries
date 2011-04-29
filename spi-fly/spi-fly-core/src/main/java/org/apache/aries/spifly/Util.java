@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -112,20 +113,30 @@ public class Util {
         // In 4.3 this can be done much easier by using the BundleWiring, but we want this code to
         // be 4.2 compliant.
         // Here we're just finding any class in the bundle, load that and then use its classloader.
-        Enumeration<String> paths = b.getEntryPaths("/");
-        while(paths.hasMoreElements()) {
-            String path = paths.nextElement();
-            if (path.endsWith(".class")) {
-                String className = path.substring(0,path.length() - ".class".length());
-                if (className.startsWith("/"))
-                    className = className.substring(1);
+        
+        List<String> rootPaths = new ArrayList<String>();
+        rootPaths.add("/");
+        
+        while(rootPaths.size() > 0) {            
+            String rootPath = rootPaths.remove(0);
+            
+            Enumeration<String> paths = b.getEntryPaths(rootPath);
+            while(paths.hasMoreElements()) {
+                String path = paths.nextElement();
+                if (path.endsWith(".class")) {
+                    String className = path.substring(0,path.length() - ".class".length());
+                    if (className.startsWith("/"))
+                        className = className.substring(1);
 
-                className = className.replace('/', '.');
-                try {
-                    Class<?> cls = b.loadClass(className);
-                    return cls.getClassLoader();
-                } catch (ClassNotFoundException e) {
-                    // try the next class
+                    className = className.replace('/', '.');
+                    try {
+                        Class<?> cls = b.loadClass(className);
+                        return cls.getClassLoader();
+                    } catch (ClassNotFoundException e) {
+                        // try the next class
+                    }
+                } else if (path.endsWith("/")) {
+                    rootPaths.add(path);
                 }
             }
         }
