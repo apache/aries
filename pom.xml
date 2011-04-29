@@ -40,6 +40,7 @@
     
     <modules>
         <module>spi-fly-example-spi-bundle</module>
+        <module>spi-fly-example-client-jar</module>
         <module>spi-fly-example-client-bundle</module>
         <module>spi-fly-example-provider1-bundle</module>
         <module>spi-fly-example-provider2-bundle</module>
