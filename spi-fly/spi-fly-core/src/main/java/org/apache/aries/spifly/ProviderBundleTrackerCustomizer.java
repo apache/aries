@@ -19,16 +19,21 @@
 package org.apache.aries.spifly;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
@@ -37,6 +42,8 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  * Listens for new bundles being installed and registers them as service providers if applicable.
  */
 public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer {
+    private static final String METAINF_SERVICES = "META-INF/services";
+    
     final BaseActivator activator;
     final Bundle spiBundle;
 
@@ -66,20 +73,39 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     + bundle.getSymbolicName());
         }
 
-        @SuppressWarnings("unchecked")
-        Enumeration<URL> entries = bundle.findEntries("META-INF/services", "*", false);
-        if (entries == null) {
+        URL servicesDir = bundle.getResource("/" + METAINF_SERVICES);
+        if (servicesDir == null)
             return null;
+        
+        List<URL> serviceFiles = new ArrayList<URL>();
+        
+        @SuppressWarnings("unchecked")
+        Enumeration<URL> entries = bundle.findEntries(METAINF_SERVICES, "*", false);
+        if (entries != null) {
+            serviceFiles.addAll(Collections.list(entries));
         }
-
+        
+        Object bcp = bundle.getHeaders().get(Constants.BUNDLE_CLASSPATH);
+        if (bcp instanceof String) {
+            for (String entry : ((String) bcp).split(",")) {
+                entry = entry.trim();
+                if (entry.equals(".")) 
+                    continue;
+                
+                URL url = bundle.getResource(entry);
+                if (url != null) {
+                    serviceFiles.addAll(getMetaInfServiceURLsFromJar(url));
+                }
+            }
+        }
+        
         List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
-        while (entries.hasMoreElements()) {
-            URL url = entries.nextElement();
-            log(LogService.LOG_INFO, "Found SPI resource: " + url);
+        for (URL serviceFile : serviceFiles) {
+            log(LogService.LOG_INFO, "Found SPI resource: " + serviceFile);
 
             try {
                 BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(url.openStream()));
+                        new InputStreamReader(serviceFile.openStream()));
                 String className = reader.readLine();
                 // TODO need to read more than one class name!
 
@@ -88,9 +114,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
 
                 Hashtable<String, Object> props = new Hashtable<String, Object>();
-                props.put(SpiFlyConstants.SPI_PROVIDER_URL, url);
+                props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
 
-                String s = url.toExternalForm();
+                String s = serviceFile.toExternalForm();
                 int idx = s.lastIndexOf('/');
                 String registrationClassName = className;
                 if (s.length() > idx) {
@@ -105,11 +131,36 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 log(LogService.LOG_INFO, "Registered service: " + reg);                
             } catch (Exception e) {
                 log(LogService.LOG_WARNING,
-                        "Could not load SPI implementation referred from " + url, e);
+                        "Could not load SPI implementation referred from " + serviceFile, e);
             }
         }
         
         return registrations;
+    }
+
+    private List<URL> getMetaInfServiceURLsFromJar(URL url) {
+        List<URL> urls = new ArrayList<URL>();
+        try {
+            JarInputStream jis = null;
+            try {
+                jis = new JarInputStream(url.openStream());
+                
+                JarEntry je = null;
+                while((je = jis.getNextJarEntry()) != null) {
+                    if (je.getName().startsWith(METAINF_SERVICES) &&
+                        je.getName().length() > (METAINF_SERVICES.length() + 1)) {                       
+                        urls.add(new URL("jar:" + url + "!/" + je.getName()));
+                    }
+                }
+            } finally {
+                if (jis != null) {
+                    jis.close();
+                }
+            }
+        } catch (IOException e) {
+            log(LogService.LOG_ERROR, "Problem opening embedded jar file: " + url);
+        }
+        return urls;
     }
 
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
