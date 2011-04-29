@@ -18,18 +18,22 @@
  */
 package org.apache.aries.spifly;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.Constants;
 import org.osgi.service.log.LogService;
 
 /**
@@ -124,22 +128,72 @@ public class Util {
             while(paths.hasMoreElements()) {
                 String path = paths.nextElement();
                 if (path.endsWith(".class")) {
-                    String className = path.substring(0,path.length() - ".class".length());
-                    if (className.startsWith("/"))
-                        className = className.substring(1);
-
-                    className = className.replace('/', '.');
-                    try {
-                        Class<?> cls = b.loadClass(className);
-                        return cls.getClassLoader();
-                    } catch (ClassNotFoundException e) {
-                        // try the next class
-                    }
+                    ClassLoader cl = getClassLoaderFromClassResource(b, path);
+                    if (cl != null)
+                        return cl;
                 } else if (path.endsWith("/")) {
                     rootPaths.add(path);
                 }
             }
         }
+        
+        // if we can't find any classes in the bundle directly, try the Bundle-ClassPath 
+        Object bcp = b.getHeaders().get(Constants.BUNDLE_CLASSPATH);
+        if (bcp instanceof String) {
+            for (String entry : ((String) bcp).split(",")) {
+                entry = entry.trim();
+                if (entry.equals("."))
+                    continue;
+                
+                URL url = b.getResource(entry);
+                if (url != null) {
+                    ClassLoader cl = getClassLoaderViaBundleClassPath(b, url);
+                    if (cl != null)
+                        return cl;
+                }
+            }
+        }
         throw new RuntimeException("Could not obtain classloader for bundle " + b);
+    }
+
+    private static ClassLoader getClassLoaderViaBundleClassPath(Bundle b, URL url) {
+        try {
+            JarInputStream jis = null;
+            try {
+                jis = new JarInputStream(url.openStream());
+                
+                JarEntry je = null;
+                while ((je = jis.getNextJarEntry()) != null) {
+                    String path = je.getName();
+                    if (path.endsWith(".class")) {
+                        ClassLoader cl = getClassLoaderFromClassResource(b, path);
+                        if (cl != null)
+                            return cl;
+                    }
+                }
+            } finally {
+                if (jis != null)
+                    jis.close();
+            }
+        } catch (IOException e) {
+            BaseActivator.activator.log(LogService.LOG_ERROR, "Problem loading class from embedded jar file: " + url +
+                " in bundle " + b.getSymbolicName(), e);            
+        }
+        return null;
+    }
+
+    private static ClassLoader getClassLoaderFromClassResource(Bundle b, String path) {
+        String className = path.substring(0, path.length() - ".class".length());
+        if (className.startsWith("/"))
+            className = className.substring(1);
+
+        className = className.replace('/', '.');
+        try {
+            Class<?> cls = b.loadClass(className);
+            return cls.getClassLoader();
+        } catch (ClassNotFoundException e) {
+            // try the next class
+        }
+        return null;
     }
 }

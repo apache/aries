@@ -158,7 +158,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 }
             }
         } catch (IOException e) {
-            log(LogService.LOG_ERROR, "Problem opening embedded jar file: " + url);
+            log(LogService.LOG_ERROR, "Problem opening embedded jar file: " + url, e);
         }
         return urls;
     }
