@@ -19,5 +19,5 @@
 package org.apache.aries.spifly.mysvc;
 
 public abstract class SPIProvider {
-	public abstract void doit();
+	public abstract String doit();
 }

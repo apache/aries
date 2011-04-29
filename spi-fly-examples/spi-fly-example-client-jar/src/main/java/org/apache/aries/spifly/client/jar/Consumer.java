@@ -16,13 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly.mysvc.impl2;
+package org.apache.aries.spifly.client.jar;
+
+import java.util.ServiceLoader;
 
 import org.apache.aries.spifly.mysvc.SPIProvider;
 
-public class SPIProviderImpl extends SPIProvider {
-	@Override
-	public String doit() {
-		return "Doing it too!";
-	}
+public class Consumer {
+    public String callSPI() {
+        StringBuilder sb = new StringBuilder();
+
+        ServiceLoader<SPIProvider> ldr = ServiceLoader.load(SPIProvider.class);
+        for (SPIProvider spiObject : ldr) {
+            sb.append(spiObject.doit()); // invoke the SPI object
+        }
+
+        return sb.toString();
+    }
 }
