@@ -72,12 +72,13 @@
                         <Import-Package>
                             *
                         </Import-Package>
-                        <Export-Package>
-                        </Export-Package>
+                        <Export-Package/>
+                        <_exportcontents/>
                         <Private-Package>
-                            org.apache.aries.spifly.client
+                            org.apache.aries.spifly.client.bundle
                         </Private-Package>
-                        <Bundle-Activator>org.apache.aries.spifly.client.Activator</Bundle-Activator>
+                        <Embed-Dependency>*;scope=compile;inline=false</Embed-Dependency>
+                        <Bundle-Activator>org.apache.aries.spifly.client.bundle.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
