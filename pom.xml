@@ -39,9 +39,9 @@
     </description>
     
     <modules>
-        <module>spi-fly-example-spi</module>
-        <module>spi-fly-example-client</module>
-        <module>spi-fly-example-provider1</module>
-        <module>spi-fly-example-provider2</module>
+        <module>spi-fly-example-spi-bundle</module>
+        <module>spi-fly-example-client-bundle</module>
+        <module>spi-fly-example-provider1-bundle</module>
+        <module>spi-fly-example-provider2-bundle</module>
     </modules>
 </project>
