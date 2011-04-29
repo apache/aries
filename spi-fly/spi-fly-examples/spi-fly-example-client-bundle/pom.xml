@@ -32,7 +32,7 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Example SPI Client Bundle</name>
     <description>
-        A Bundle that uses the java.util.ServiceLoader() API.
+        A Bundle that uses the java.util.ServiceLoader() API through an embedded library. 
     </description>
 
     <dependencies>
@@ -79,6 +79,7 @@
                         </Private-Package>
                         <Embed-Dependency>*;scope=compile;inline=false</Embed-Dependency>
                         <Bundle-Activator>org.apache.aries.spifly.client.bundle.Activator</Bundle-Activator>
+                        <SPI-Consumer>*</SPI-Consumer>
                     </instructions>
                 </configuration>
             </plugin>
