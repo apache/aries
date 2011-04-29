@@ -22,7 +22,7 @@ import org.apache.aries.spifly.mysvc.SPIProvider;
 
 public class SPIProviderImpl extends SPIProvider {
 	@Override
-	public void doit() {
-		System.out.println("Doing it!");
+	public String doit() {
+		return "Doing it!";
 	}
 }

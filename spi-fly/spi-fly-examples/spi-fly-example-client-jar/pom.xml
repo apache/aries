@@ -28,29 +28,18 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.spifly.examples.spi.bundle</artifactId>
-    <packaging>bundle</packaging>
-    <name>Apache Aries Example SPI Interface</name>
+    <artifactId>org.apache.aries.spifly.examples.client.jar</artifactId>
+    <packaging>jar</packaging>
+    <name>Apache Aries Example SPI Client Jar</name>
     <description>
-        This is the API implemented by example SPI providers and used by the example SPI client 
+        A Jar file containing code that uses the java.util.ServiceLoader() API.
     </description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Import-Package>
-                            *
-                        </Import-Package>
-                        <Export-Package>
-                            *
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.spifly.examples</groupId>
+            <artifactId>org.apache.aries.spifly.examples.spi.bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+    </dependencies>
 </project>

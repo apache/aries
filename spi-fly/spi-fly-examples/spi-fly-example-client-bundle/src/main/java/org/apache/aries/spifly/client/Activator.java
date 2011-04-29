@@ -18,20 +18,16 @@
  */
 package org.apache.aries.spifly.client;
 
-import java.util.ServiceLoader;
-
-import org.apache.aries.spifly.mysvc.SPIProvider;
+import org.apache.aries.spifly.client.jar.Consumer;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
-		ServiceLoader<SPIProvider> ldr = ServiceLoader.load(SPIProvider.class);
-        for (SPIProvider spiObject : ldr) {
-            spiObject.doit(); // invoke the SPI object
-        }
+	    Consumer consumer = new Consumer();
+	    System.out.println("*** Result from invoking the SPI consumer: " + consumer.callSPI());
 	}
-	
+
 	public void stop(BundleContext context) throws Exception {
 	}
 }
