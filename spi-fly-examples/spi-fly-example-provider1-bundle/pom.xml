@@ -32,7 +32,7 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Example SPI Provider Bundle 1</name>
     <description>
-        A Bundle providing a service
+        A Bundle providing a service which is provided in an embedded jar file.
     </description>
 
     <dependencies>
@@ -42,6 +42,12 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>        
+        
+        <dependency>
+            <groupId>org.apache.aries.spifly.examples</groupId>
+            <artifactId>org.apache.aries.spifly.examples.provider1.jar</artifactId>
+            <version>${project.version}</version>
+        </dependency>                
     </dependencies>
 
     <build>
@@ -54,11 +60,11 @@
                         <Import-Package>
                             *
                         </Import-Package>
-                        <Export-Package>
-                        </Export-Package>
-                        <Private-Package>
-                            org.apache.aries.spifly.mysvc.impl
-                        </Private-Package>
+                        <Export-Package/>
+                        <_exportcontents/>
+                        <Private-Package/>
+                        <Embed-Dependency>*;scope=compile;inline=false</Embed-Dependency>
+                        <SPI-Provider>*</SPI-Provider>
                     </instructions>
                 </configuration>
             </plugin>

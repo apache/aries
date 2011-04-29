@@ -32,7 +32,7 @@
     <packaging>jar</packaging>
     <name>Apache Aries Example SPI Provider Jar 1</name>
     <description>
-        A Jar providing a service
+        A Jar providing a service through META-INF/services
     </description>
 
     <dependencies>

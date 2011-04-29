@@ -59,6 +59,7 @@
                         <Private-Package>
                             org.apache.aries.spifly.mysvc.impl2
                         </Private-Package>
+                        <SPI-Provider>*</SPI-Provider>                        
                     </instructions>
                 </configuration>
             </plugin>
