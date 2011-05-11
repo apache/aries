@@ -20,24 +20,31 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.subsystem.example</groupId>
-        <artifactId>example</artifactId>
-        <version>0.4-SNAPSHOT</version>
-    </parent>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
+    </parent>  
 
+    <groupId>org.apache.aries.subsystem</groupId>
     <artifactId>org.apache.aries.subsystem.example.helloIsolationRef</artifactId>
     <packaging>bundle</packaging>
+    <version>0.1-SNAPSHOT</version>
     <name>Apache Aries Subsystem hello IsolationRef Example</name>
-    <description>
-      Subsystems Hello Isolation example
-    </description>
+    <description>Subsystems Hello IsolationRef example</description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-example-helloIsolationRef</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-example-helloIsolationRef</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-example-helloIsolationRef</url>
+     </scm>
 
     <properties>
         <aries.osgi.activator>
             org.apache.aries.subsystem.example.helloIsolationRef.Activator
         </aries.osgi.activator>
         <aries.osgi.import>
-            org.apache.aries.subsystem.example.helloIsolation; version="0.3.0",
+            org.apache.aries.subsystem.example.helloIsolation,
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
@@ -52,7 +59,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.subsystem.example</groupId>
+            <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
             <version>${version}</version>
             <scope>provided</scope>
