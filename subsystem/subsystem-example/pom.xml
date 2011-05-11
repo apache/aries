@@ -17,30 +17,26 @@
     -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.subsystem</groupId>
-        <artifactId>subsystem</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.aries.subsystem.example</groupId>
-    <artifactId>example</artifactId>
-    <name>Apache Aries Subsystem Example</name>
-    <version>0.4-SNAPSHOT</version>
+    <groupId>org.apache.aries.subsystem</groupId>
+    <artifactId>org.apache.aries.subsystem.example</artifactId>
     <packaging>pom</packaging>
+    <name>Apache Aries Subsystem Executor</name>
+    <version>0.1-SNAPSHOT</version>
+    <description>Subsystems example for Aries</description>
 
-    <description>
-        Subsystems example for Aries
-    </description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/subsystem</url>
-    </scm>
-
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-example</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-example</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-example</url>
+     </scm>
 
     <modules>
         <module>subsystem-helloIsolation</module>

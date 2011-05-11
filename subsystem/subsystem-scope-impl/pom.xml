@@ -19,17 +19,24 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.subsystem</groupId>
-        <artifactId>subsystem</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.subsystem</groupId>
     <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystem Scope Impl</name>
-    <description>
-      Subsystems Scope Impl.
-    </description>
+    <version>0.1-SNAPSHOT</version>
+    <description>Subsystems Scope Implementation</description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-scope-impl</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-scope-impl</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-scope-impl</url>
+     </scm>
 
     <properties>
         <aries.osgi.activator>
@@ -45,6 +52,7 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
+            <version>0.1-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
@@ -55,6 +63,7 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
+            <version>0.1-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
@@ -65,6 +74,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
+            <version>0.3</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
@@ -75,6 +85,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
+            <version>0.3</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
@@ -85,6 +96,7 @@
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <version>0.3</version>
             <scope>test</scope>
             <exclusions>
             	<exclusion>
@@ -102,6 +114,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.utils</artifactId>
+            <version>1.1.0</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
@@ -121,6 +134,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <version>1.6.4</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
