@@ -19,12 +19,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.subsystem</groupId>
-        <artifactId>subsystem</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
-    
+
+    <groupId>org.apache.aries.subsystem</groupId>
     <artifactId>org.apache.aries.subsystem.itests</artifactId>
+    <version>0.1-SNAPSHOT</version>
     <name>Apache Aries Subsystem iTests</name>
     <description>
         Integration tests using the subsystem api, core for the implementation
@@ -42,34 +45,40 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <scope>test</scope>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
             <scope>test</scope>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>  
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.executor</artifactId>
-            <version>${version}</version>
+            <version>0.1-SNAPSHOT</version>
         </dependency>  
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>        
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
@@ -104,6 +113,7 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
             <scope>test</scope>
+            <version>1.2.8</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
@@ -124,21 +134,24 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.service.obr</artifactId>
             <scope>test</scope>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <scope>test</scope>
+            <version>1.6.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
             <scope>test</scope>
+            <version>0.3</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.subsystem.example</groupId>
+            <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
-            <version>${version}</version>
+            <version>0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

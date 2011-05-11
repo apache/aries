@@ -15,23 +15,22 @@
 		License.
 	--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-		<groupId>org.apache.aries</groupId>
-		<artifactId>java5-parent</artifactId>
-		<version>0.4-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
+    </parent>  
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.aries.subsystem</groupId>
 	<artifactId>subsystem</artifactId>
 	<name>Apache Aries Subsystem</name>
-	<version>0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<description>
-        Subsystems support for Aries
-    </description>
+	<description>Subsystems support for Aries</description>
 
+<!--
 	<scm>
 		<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem</connection>
 		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem</developerConnection>
@@ -125,15 +124,16 @@
             
 	    </dependencies>
 	</dependencyManagement>
-
+-->
     <modules>
         <module>subsystem-api</module>
         <module>subsystem-core</module>
         <module>subsystem-scope-api</module>
         <module>subsystem-scope-impl</module>
+        <module>subsystem-scope-itests</module>
         <module>subsystem-obr</module>
-        <module>subsystem-executor</module>
         <module>subsystem-install</module>
+        <module>subsystem-executor</module>
         <module>subsystem-example</module>
         <module>subsystem-itests</module>
     </modules>

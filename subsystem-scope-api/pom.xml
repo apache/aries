@@ -19,22 +19,32 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.subsystem</groupId>
-        <artifactId>subsystem</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>0.4</version>
+        <relativePath />
     </parent>
 
+    <groupId>org.apache.aries.subsystem</groupId>
     <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystem Scope API</name>
-    <description>
-      Subsystems Scope API.
-    </description>
+    <version>0.1-SNAPSHOT</version>
+    <description>Subsystems Scope API.</description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-scope-api</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-scope-api</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-scope-api</url>
+     </scm>
 
     <properties>
         <aries.osgi.export.pkg>
             org.apache.aries.subsystem.scope.*
         </aries.osgi.export.pkg>
+         <aries.osgi.import>
+             *
+         </aries.osgi.import>
     </properties>
 
     <dependencies>
