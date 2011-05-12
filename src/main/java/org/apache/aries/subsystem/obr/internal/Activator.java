@@ -18,7 +18,7 @@
  */
 package org.apache.aries.subsystem.obr.internal;
 
-import org.apache.aries.subsystem.spi.ResourceResolver;
+import org.apache.aries.subsystem.core.ResourceResolver;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
