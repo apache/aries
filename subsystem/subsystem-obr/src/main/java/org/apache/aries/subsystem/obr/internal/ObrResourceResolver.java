@@ -27,8 +27,8 @@ import java.util.Map;
 
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
+import org.apache.aries.subsystem.core.ResourceResolver;
 import org.apache.aries.subsystem.spi.Resource;
-import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
@@ -76,7 +76,7 @@ public class ObrResourceResolver implements ResourceResolver
         String ver = clauses[0].getAttribute(Constants.VERSION_ATTRIBUTE);
         String typ = clauses[0].getAttribute(SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE);
         String loc = clauses[0].getAttribute(SubsystemConstants.RESOURCE_LOCATION_ATTRIBUTE);
-        Map<String,String> attributes = new HashMap<String,String>();
+        Map<String,Object> attributes = new HashMap<String,Object>();
         for (Attribute a : clauses[0].getAttributes()) {
             String name = a.getName();
             if (!Constants.VERSION_ATTRIBUTE.equals(name)
@@ -116,10 +116,10 @@ public class ObrResourceResolver implements ResourceResolver
         List<org.apache.felix.bundlerepository.Resource> obrResources = new ArrayList<org.apache.felix.bundlerepository.Resource>();
         for (Resource res : subsystemResources)
         {
-            if (res.getType().equals(SubsystemConstants.RESOURCE_TYPE_BUNDLE)) {
+            if (res.getAttributes().get(Resource.NAMESPACE_ATTRIBUTE).equals(SubsystemConstants.RESOURCE_TYPE_BUNDLE)) {
                 try
                 {
-                    obrResources.add(admin.getHelper().createResource(new URL(res.getLocation())));
+                    obrResources.add(admin.getHelper().createResource(new URL(String.valueOf(res.getAttributes().get(Resource.LOCATION_ATTRIBUTE)))));
                 }
                 catch (Exception e) {
                     // TODO: log exception
@@ -136,8 +136,10 @@ public class ObrResourceResolver implements ResourceResolver
 
         for (Resource res : subsystemContent)
         {
-            if (res.getType().equals(SubsystemConstants.RESOURCE_TYPE_BUNDLE)) {
-                resolver.add(admin.getHelper().requirement(Capability.BUNDLE, "(&(symbolicname=" + res.getSymbolicName() + ")" + (res.getVersion() != null ? "(version=" + res.getVersion() + ")" : "") + ")"));
+            if (res.getAttributes().get(Resource.NAMESPACE_ATTRIBUTE).equals(SubsystemConstants.RESOURCE_TYPE_BUNDLE)) {
+            	String symbolicName = String.valueOf(res.getAttributes().get(Resource.SYMBOLIC_NAME_ATTRIBUTE));
+            	Version version = (Version)res.getAttributes().get(Resource.VERSION_ATTRIBUTE);
+                resolver.add(admin.getHelper().requirement(Capability.BUNDLE, "(&(symbolicname=" + symbolicName + ")" + (version != null ? "(version=" + version + ")" : "") + ")"));
             }
         }
         if (!resolver.resolve(Resolver.NO_OPTIONAL_RESOURCES)) {
@@ -146,7 +148,7 @@ public class ObrResourceResolver implements ResourceResolver
 
         List<Resource> resolved = new ArrayList<Resource>();
         for (org.apache.felix.bundlerepository.Resource res : resolver.getRequiredResources()) {
-            resolved.add(new ObrResourceImpl(res, SubsystemConstants.RESOURCE_TYPE_BUNDLE, new HashMap<String,String>()));
+            resolved.add(new ObrResourceImpl(res, SubsystemConstants.RESOURCE_TYPE_BUNDLE, new HashMap<String,Object>()));
         }
         return resolved;
     }

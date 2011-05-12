@@ -29,7 +29,7 @@ public class MoveBundleTest extends AbstractTest {
 	@Test
 	public void test1() throws Exception {
 		Bundle tb2 = installBundle("tb-2.jar");
-		Scope root = scope;
+		Scope root = getScope();
 		ScopeUpdate rootUpdate = root.newScopeUpdate();
 		ScopeUpdate s1Update = rootUpdate.newChild("S1");
 		ScopeUpdate s2Update = rootUpdate.newChild("S2");
@@ -80,7 +80,7 @@ public class MoveBundleTest extends AbstractTest {
 	@Test
 	public void test2() throws Exception {
 		Bundle tb2 = installBundle("tb-2.jar");
-		Scope root = scope;
+		Scope root = getScope();
 		ScopeUpdate rootUpdate = root.newScopeUpdate();
 		ScopeUpdate sUpdate = rootUpdate.newChild("S");
 		rootUpdate.getChildren().add(sUpdate);

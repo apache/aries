@@ -26,6 +26,7 @@ public class BasicTest extends AbstractTest {
 	 */
 	@Test
 	public void testRootScopeInitialState() {
+		Scope scope = getScope();
 		Collection<Bundle> bundles = Arrays.asList(bundleContext.getBundles());
 		assertCollectionEquals(bundles, scope.getBundles());
 		assertEmpty(scope.getChildren());
@@ -62,6 +63,7 @@ public class BasicTest extends AbstractTest {
 	
 	@Test
 	public void testInstallBundleIntoRootScope() throws Exception {
+		Scope scope = getScope();
 		int previousSize = scope.getBundles().size();
 		String location = getBundleLocation("tb-2.jar");
 		URL url = new URL(location);
@@ -78,6 +80,7 @@ public class BasicTest extends AbstractTest {
 	
 	@Test
 	public void testCreateChildScope() throws Exception {
+		Scope scope = getScope();
 		String name = "scope1";
 		ScopeUpdate parent = scope.newScopeUpdate();
 		ScopeUpdate child = parent.newChild(name);

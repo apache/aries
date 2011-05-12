@@ -28,6 +28,7 @@ public class GetScopeServiceTest extends AbstractTest {
 	 */
 	@Test
 	public void test1() throws Exception {
+		Scope scope = getScope();
 		assertEquals(0, scope.getId());
 		assertEquals("root", scope.getName());
 		assertTrue(scope.getBundles().contains(bundleContext.getBundle()));
@@ -44,7 +45,7 @@ public class GetScopeServiceTest extends AbstractTest {
 		ServiceReference<ScopeProvider> scopeProviderRef = bundleContext.getServiceReference(ScopeProvider.class);
 		ScopeProvider scopeProvider = bundleContext.getService(scopeProviderRef);
 		Scope scope = scopeProvider.getScope();
-		assertEquals(this.scope, scope);
+		assertEquals(getScope(), scope);
 		assertTrue(scope.getBundles().contains(bundle));
 		bundleContext.ungetService(scopeProviderRef);
 		bundle.uninstall();
@@ -57,6 +58,7 @@ public class GetScopeServiceTest extends AbstractTest {
 	 */
 	@Test
 	public void test3() throws Exception {
+		Scope scope = getScope();
 		ScopeUpdate scopeUpdate = scope.newScopeUpdate();
 		ScopeUpdate child = scopeUpdate.newChild("tb3");
 		scopeUpdate.getChildren().add(child);
@@ -74,7 +76,7 @@ public class GetScopeServiceTest extends AbstractTest {
 		bundle.start();
 		ServiceReference<ScopeProvider> scopeProviderRef = bundleContext.getServiceReference(ScopeProvider.class);
 		ScopeProvider scopeProvider = bundleContext.getService(scopeProviderRef);
-		Scope scope = scopeProvider.getScope();
+		scope = scopeProvider.getScope();
 		assertEquals("tb3", scope.getName());
 		assertTrue(scope.getBundles().contains(bundle));
 		bundleContext.ungetService(scopeProviderRef);
@@ -89,6 +91,7 @@ public class GetScopeServiceTest extends AbstractTest {
 	 */
 	@Test
 	public void test4() throws Exception {
+		Scope scope = getScope();
 		Bundle bundle = installBundle("tb-3.jar");
 		ScopeUpdate scopeUpdate = scope.newScopeUpdate();
 		scopeUpdate.getBundles().remove(bundle);
@@ -104,7 +107,7 @@ public class GetScopeServiceTest extends AbstractTest {
 		bundle.start();
 		ServiceReference<ScopeProvider> scopeProviderRef = bundleContext.getServiceReference(ScopeProvider.class);
 		ScopeProvider scopeProvider = bundleContext.getService(scopeProviderRef);
-		Scope scope = scopeProvider.getScope();
+		scope = scopeProvider.getScope();
 		assertEquals("tb3", scope.getName());
 		assertTrue(scope.getBundles().contains(bundle));
 		bundleContext.ungetService(scopeProviderRef);

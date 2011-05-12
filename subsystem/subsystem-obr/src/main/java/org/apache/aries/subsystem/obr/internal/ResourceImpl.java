@@ -21,8 +21,11 @@ package org.apache.aries.subsystem.obr.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.spi.Capability;
+import org.apache.aries.subsystem.spi.Requirement;
 import org.apache.aries.subsystem.spi.Resource;
 import org.osgi.framework.Version;
 
@@ -32,9 +35,9 @@ public class ResourceImpl implements Resource {
     private final Version version;
     private final String type;
     private final String location;
-    private final Map<String,String> attributes;
+    private final Map<String,Object> attributes;
 
-    public ResourceImpl(String symbolicName, Version version, String type, String location, Map<String,String> attributes) {
+    public ResourceImpl(String symbolicName, Version version, String type, String location, Map<String,Object> attributes) {
         this.symbolicName = symbolicName;
         this.version = version;
         this.type = type;
@@ -58,12 +61,22 @@ public class ResourceImpl implements Resource {
         return location;
     }
 
-    public Map<String, String> getAttributes() {
+    public Map<String, Object> getAttributes() {
         return attributes;
     }
 
     public InputStream open() throws IOException {
         return new URL(getLocation()).openStream();
     }
+
+	public List<Capability> getCapabilities(String namespace) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Requirement> getRequirements(String namespace) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

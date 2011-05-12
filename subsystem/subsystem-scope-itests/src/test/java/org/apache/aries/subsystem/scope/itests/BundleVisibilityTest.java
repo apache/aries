@@ -32,6 +32,7 @@ public class BundleVisibilityTest extends AbstractTest {
 	 */
 	@Test
 	public void test1() throws Exception {
+		Scope scope = getScope();
 		assertTrue(scope.getBundles().contains(bundleContext.getBundle()));
 		ScopeUpdate scopeUpdate = scope.newScopeUpdate();
 		String location = getBundleLocation("tb-4.jar");
@@ -60,6 +61,7 @@ public class BundleVisibilityTest extends AbstractTest {
 	 */
 	@Test
 	public void test2() throws Exception {
+		Scope scope = getScope();
 		assertTrue(scope.getBundles().contains(bundleContext.getBundle()));
 		ScopeUpdate scopeUpdate = scope.newScopeUpdate();
 		ScopeUpdate child = scopeUpdate.newChild("tb4");

@@ -7,6 +7,16 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 public class Utils {
+	public static Bundle findBundle(String symbolicName, BundleContext bundleContext) {
+		Bundle[] bundles = bundleContext.getBundles();
+		for (Bundle bundle : bundles) {
+			if (bundle.getSymbolicName().equals(symbolicName)) {
+				return bundle;
+			}
+		}
+		return null;
+	}
+	
 	public static Bundle findBundle(String symbolicName, Scope scope) {
 		if (scope == null) return null;
 		for (Bundle b : scope.getBundles()) {

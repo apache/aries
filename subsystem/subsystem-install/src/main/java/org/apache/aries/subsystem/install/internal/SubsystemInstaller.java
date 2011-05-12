@@ -21,36 +21,36 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.Subsystem;
-import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.felix.fileinstall.ArtifactInstaller;
 
 public class SubsystemInstaller implements ArtifactInstaller {
 
-    private SubsystemAdmin subsystemAdmin;
+    private Subsystem root;
 
-    public SubsystemAdmin getSubsystemAdmin() {
-        return subsystemAdmin;
+    public Subsystem getRootSubsystem() {
+        return root;
     }
 
-    public void setSubsystemAdmin(SubsystemAdmin subsystemAdmin) {
-        this.subsystemAdmin = subsystemAdmin;
+    public void setRootSubsystem(Subsystem subsystem) {
+        this.root = subsystem;
     }
 
     public void install(File file) throws Exception {
-        subsystemAdmin.install(getLocation(file));
+        root.install(getLocation(file));
     }
 
     public void update(File file) throws Exception {
-        subsystemAdmin.update(getSubsystem(getLocation(file)));
+    	String location = getLocation(file);
+        getSubsystem(location).update();
     }
 
     public void uninstall(File file) throws Exception {
-        subsystemAdmin.uninstall(getSubsystem(getLocation(file)));
+        getSubsystem(getLocation(file)).uninstall();
     }
 
     protected Subsystem getSubsystem(String location) {
-        for (Subsystem s : subsystemAdmin.getSubsystems()) {
+        for (Subsystem s : root.getChildren()) {
             if (s.getLocation().equals(location)) {
                 return s;
             }
