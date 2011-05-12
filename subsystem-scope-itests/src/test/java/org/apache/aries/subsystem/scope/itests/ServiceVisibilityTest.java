@@ -28,8 +28,8 @@ public class ServiceVisibilityTest extends AbstractTest {
 	 */
 	@Test
 	public void test1() throws Exception {
-		assertTrue(scope.getBundles().contains(bundleContext.getBundle()));
-		ScopeUpdate scopeUpdate = scope.newScopeUpdate();
+		assertTrue(getScope().getBundles().contains(bundleContext.getBundle()));
+		ScopeUpdate scopeUpdate = getScope().newScopeUpdate();
 		String location = getBundleLocation("tb-7.jar");
 		assertNull(bundleContext.getBundle(location));
 		URL url = new URL(location);
@@ -38,7 +38,7 @@ public class ServiceVisibilityTest extends AbstractTest {
 		scopeUpdate.commit();
 		Bundle bundle = bundleContext.getBundle(location);
 		assertNotNull(bundle);
-		assertTrue(scope.getBundles().contains(bundle));
+		assertTrue(getScope().getBundles().contains(bundle));
 		bundle.start();
 		ServiceReference<Service> serviceRef = bundleContext.getServiceReference(Service.class);
 		assertNotNull(serviceRef);
@@ -55,12 +55,12 @@ public class ServiceVisibilityTest extends AbstractTest {
 	 */
 	@Test
 	public void test2() throws Exception {
-		assertTrue(scope.getBundles().contains(bundleContext.getBundle()));
+		assertTrue(getScope().getBundles().contains(bundleContext.getBundle()));
 		String location = getBundleLocation("tb-7.jar");
 		assertNull(bundleContext.getBundle(location));
 		URL url = new URL(location);
 		InstallInfo installInfo = new InstallInfo(location, url.openStream());
-		ScopeUpdate scopeUpdate = scope.newScopeUpdate();
+		ScopeUpdate scopeUpdate = getScope().newScopeUpdate();
 		ScopeUpdate child = scopeUpdate.newChild("tb7");
 		scopeUpdate.getChildren().add(child);
 		child.getBundlesToInstall().add(installInfo);

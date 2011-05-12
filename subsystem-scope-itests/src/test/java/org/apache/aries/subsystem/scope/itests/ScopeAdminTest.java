@@ -60,7 +60,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 
 @RunWith(JUnit4TestRunner.class)
-public class ScopeAdminTest extends AbstractIntegrationTest {
+public class ScopeAdminTest extends AbstractTest {
 
     /* Use @Before not @BeforeClass so as to ensure that these resources
      * are created in the paxweb temp directory, and not in the svn tree 
@@ -598,40 +598,40 @@ public class ScopeAdminTest extends AbstractIntegrationTest {
         assertTrue(scopeAdmin.newScopeUpdate().getChildren().isEmpty());
     }
     
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        Option[] options = options(
-            // Log
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-            // Felix Config Admin
-            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-            // Felix mvn url handler
-            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-
-            // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-
-            // Bundles
-            mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
-            mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-            mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl"),
-
-            // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-
-            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-
-            equinox().version("3.7.0.v20110221")
-        );
-        options = updateOptions(options);
-        return options;
-    }
+//    @org.ops4j.pax.exam.junit.Configuration
+//    public static Option[] configuration() {
+//        Option[] options = options(
+//            // Log
+//            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
+//            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
+//            // Felix Config Admin
+//            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
+//            // Felix mvn url handler
+//            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
+//
+//
+//            // this is how you set the default log level when using pax logging (logProfile)
+//            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+//
+//            // Bundles
+//            mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
+//            mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
+//            mavenBundle("org.apache.aries", "org.apache.aries.util"),
+//            mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
+//            mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+//            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
+//            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
+//            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl"),
+//
+//            // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+//
+//            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+//
+//            equinox().version("3.7.0.v20110221")
+//        );
+//        options = updateOptions(options);
+//        return options;
+//    }
 
     private Scope createScope(Scope scopeAdmin, String scopeName, String loc, String version) throws MalformedURLException, InvalidSyntaxException, BundleException, IOException {
         ScopeUpdate su = scopeAdmin.newScopeUpdate();

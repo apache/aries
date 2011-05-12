@@ -54,15 +54,57 @@
     </properties>
 
     <dependencies>
+    	<dependency>
+    		<groupId>org.eclipse.equinox</groupId>
+    		<artifactId>coordinator</artifactId>
+    		<version>1.0.0.v20110314</version>
+    	</dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <version>0.1-SNAPSHOT</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
        <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>region</artifactId>
+            <version>1.0.0.v20110506</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.api</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
@@ -83,6 +125,12 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.utils</artifactId>
             <version>1.1.0</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
@@ -98,6 +146,12 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <version>1.6.4</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

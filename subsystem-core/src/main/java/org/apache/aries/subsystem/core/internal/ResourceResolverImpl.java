@@ -17,8 +17,6 @@ package org.apache.aries.subsystem.core.internal;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,20 +31,19 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
+import org.apache.aries.subsystem.core.ResourceResolver;
 import org.apache.aries.subsystem.core.obr.BundleInfoImpl;
 import org.apache.aries.subsystem.core.obr.ContentImpl;
 import org.apache.aries.subsystem.core.obr.Manve2Repository;
 import org.apache.aries.subsystem.core.obr.RepositoryDescriptorGenerator;
 import org.apache.aries.subsystem.spi.Resource;
-import org.apache.aries.subsystem.spi.ResourceResolver;
+import org.apache.felix.bundlerepository.Reason;
+import org.apache.felix.bundlerepository.Repository;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
+import org.apache.felix.bundlerepository.Resolver;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.apache.felix.bundlerepository.Repository;
-import org.apache.felix.bundlerepository.RepositoryAdmin;
-import org.apache.felix.bundlerepository.Requirement;
-import org.apache.felix.bundlerepository.Reason;
-import org.apache.felix.bundlerepository.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -200,9 +197,9 @@ public class ResourceResolverImpl implements ResourceResolver {
      * the format of resource is like bundlesymbolicname;version=1.0.0, for example com.ibm.ws.eba.example.blog.api;version=1.0.0,
      */
     private org.apache.felix.bundlerepository.Resource findOBRResource(Resource resource) throws SubsystemException {
-        String symbolicName = resource.getSymbolicName();
+        String symbolicName = String.valueOf(resource.getAttributes().get(Resource.SYMBOLIC_NAME_ATTRIBUTE));
         // this version could possibly be a range
-        Version version = resource.getVersion();
+        Version version = (Version)resource.getAttributes().get(Resource.VERSION_ATTRIBUTE);
 
         //org.apache.felix.bundlerepository.Resource[] res = this.repositoryAdmin.discoverResources(filterString.toString());
         Repository[] repos = this.repositoryAdmin.listRepositories();

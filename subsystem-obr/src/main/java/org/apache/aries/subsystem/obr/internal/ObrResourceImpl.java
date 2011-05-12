@@ -21,8 +21,11 @@ package org.apache.aries.subsystem.obr.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.spi.Capability;
+import org.apache.aries.subsystem.spi.Requirement;
 import org.apache.aries.subsystem.spi.Resource;
 import org.osgi.framework.Version;
 
@@ -30,9 +33,9 @@ public class ObrResourceImpl implements Resource {
 
     private final org.apache.felix.bundlerepository.Resource resource;
     private final String type;
-    private final Map<String,String> attributes;
+    private final Map<String,Object> attributes;
 
-    public ObrResourceImpl(org.apache.felix.bundlerepository.Resource resource, String type, Map<String,String> attributes) {
+    public ObrResourceImpl(org.apache.felix.bundlerepository.Resource resource, String type, Map<String,Object> attributes) {
         this.resource = resource;
         this.type = type;
         this.attributes = attributes;
@@ -54,11 +57,21 @@ public class ObrResourceImpl implements Resource {
         return resource.getURI();
     }
 
-    public Map<String, String> getAttributes() {
+    public Map<String, Object> getAttributes() {
         return attributes;
     }
 
     public InputStream open() throws IOException {
         return new URL(getLocation()).openStream();
     }
+
+	public List<Capability> getCapabilities(String namespace) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Requirement> getRequirements(String namespace) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
