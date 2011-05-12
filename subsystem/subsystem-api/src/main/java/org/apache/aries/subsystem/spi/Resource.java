@@ -13,62 +13,82 @@
  */
 package org.apache.aries.subsystem.spi;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
+import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+
 
 /**
  * A resource is the representation of a uniquely identified and typed data.
- * A bundle is represented as a resource with a type
- * {@link org.apache.aries.subsystem.SubsystemConstants#RESOURCE_TYPE_BUNDLE}.
+ * 
+ * A resources can be wired together via capabilities and requirements.
+ * 
+ * TODO decide on identity characteristics of a revision. Given in OSGi multiple
+ * bundles can be installed with same bsn/version this cannot be used as a key.
+ * 
+ * What then is identity of a resource? Object identity? URI (needs getter
+ * method?)
+ * 
+ * @ThreadSafe
+ * @version $Id: 8de47b041af414a2c6f2a21b5b34e89604c97806 $
  */
 public interface Resource {
+	/**
+	 * Name space for OSGi bundle resources
+	 */
+	final String BUNDLE_NAMESPACE = "osgi.bundle";
 
-    /**
-     * Symbolic name of the resource
-     *
-     * @return
-     */
-    String getSymbolicName();
+	/**
+	 * Attribute of type {@link String} used to specify the resource location.
+	 */
+	final String LOCATION_ATTRIBUTE = "location";
 
-    /**
-     * Version of the resource
-     *
-     * @return
-     */
-    Version getVersion();
+	/**
+	 * Attribute of type {@link String} used to specify the resource symbolic name.
+	 */
+	final String SYMBOLIC_NAME_ATTRIBUTE = "symbolic-name";
+	/**
+	 * Attribute of type {@link Version} used to specify the resource version.
+	 */
+	final String VERSION_ATTRIBUTE = Constants.VERSION_ATTRIBUTE;
+	/**
+	 * Attribute of type {@link String} used to specify the resource name space.
+	 */
+	final String NAMESPACE_ATTRIBUTE = "namespace";
 
-    /**
-     * Type of the resource
-     *
-     * @return
-     */
-    String getType();
+	/**
+	 * Returns the capabilities declared by this resource.
+	 * 
+	 * @param namespace
+	 *            The name space of the declared capabilities to return or
+	 *            {@code null} to return the declared capabilities from all name
+	 *            spaces.
+	 * @return A list containing a snapshot of the declared {@link Capability}s,
+	 *         or an empty list if this resource declares no capabilities in the
+	 *         specified name space.
+	 */
+	List<Capability> getCapabilities(String namespace);
 
-    /**
-     * Location of the resource.
-     * Can be the real url of the resource, but not necessarily.
-     *
-     * @return
-     */
-    String getLocation();
+	/**
+	 * Returns the requirements declared by this bundle resource.
+	 * 
+	 * @param namespace
+	 *            The name space of the declared requirements to return or
+	 *            {@code null} to return the declared requirements from all name
+	 *            spaces.
+	 * @return A list containing a snapshot of the declared {@link Requirement}
+	 *         s, or an empty list if this resource declares no
+	 *         requirements in the specified name space.
+	 */
+	List<Requirement> getRequirements(String namespace);
 
-    /**
-     * Attributes associated to this resource.  Those may contain informations
-     * for {@link ResourceConverter}s or {@link ResourceProcessor}s.
-     *  
-     * @return
-     */
-    Map<String, String> getAttributes();
-
-    /**
-     * Open the resource for reading.
-     *
-     * @return
-     * @throws IOException
-     */
-    InputStream open() throws IOException;
+	/**
+	 * Gets the attributes associated to this resource.
+	 * 
+	 * @return The attributes associated with the resource.
+	 */
+	public Map<String, Object> getAttributes();
 
 }

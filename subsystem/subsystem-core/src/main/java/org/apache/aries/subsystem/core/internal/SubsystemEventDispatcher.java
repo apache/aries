@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.aries.subsystem.Subsystem;
-import org.apache.aries.subsystem.SubsystemEvent;
-import org.apache.aries.subsystem.SubsystemListener;
+import org.apache.aries.subsystem.core.SubsystemEvent;
+import org.apache.aries.subsystem.core.SubsystemListener;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceReference;

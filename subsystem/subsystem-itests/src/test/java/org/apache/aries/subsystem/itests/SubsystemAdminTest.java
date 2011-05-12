@@ -30,8 +30,6 @@ import java.io.FileOutputStream;
 import java.util.Collection;
 
 import org.apache.aries.subsystem.Subsystem;
-import org.apache.aries.subsystem.SubsystemAdmin;
-import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
@@ -71,27 +69,22 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
     // Disable this test since it is designed to use the NoOpResolver which isn't registered.
     //@Test
     public void test() throws Exception {
-        // make sure we are using a framework that provides composite admin service
-    	Scope scopeA = getOsgiService(Scope.class);
-        assertNotNull("composite admin should not be null", scopeA);
-        System.out.println("able to get composite admin service");
-        
         // obtain subsystem admin service
-        SubsystemAdmin sa = getOsgiService(SubsystemAdmin.class);
-        assertNotNull("subsystem admin should not be null", sa);
+        Subsystem s = getOsgiService(Subsystem.class);
+        assertNotNull("subsystem admin should not be null", s);
         System.out.println("able to get subsytem admin service");
         
         File f = new File("test.eba");
         // capture initial bundle size
         int init = bundleContext.getBundles().length;
-        Subsystem subsystem = sa.install(f.toURI().toURL().toExternalForm());
+        Subsystem subsystem = s.install(f.toURI().toURL().toExternalForm());
         assertNotNull("subsystem should not be null", subsystem);
         
         assertTrue("subsystem should have a unique id", subsystem.getSubsystemId() > 0);
         assertTrue(subsystem.getLocation().indexOf("test.eba") != -1);
         assertEquals("felix-file-install", subsystem.getSymbolicName());
         assertEquals("2.0.8", subsystem.getVersion().toString());
-        Collection<Bundle> bundles = subsystem.getBundles();
+        Collection<Bundle> bundles = subsystem.getConstituents();
         assertEquals("check constituents' size", 1, bundles.size());
         // recapture bundle size
         int later = bundleContext.getBundles().length;
@@ -121,10 +114,9 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
             mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+            mavenBundle("org.eclipse.equinox", "coordinator"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl"),
 
             //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 

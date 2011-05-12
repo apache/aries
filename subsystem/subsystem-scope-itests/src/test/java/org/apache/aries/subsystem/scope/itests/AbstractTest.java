@@ -32,12 +32,10 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
-public class AbstractTest extends AbstractIntegrationTest {
-	protected Scope scope;
-	
-	private ServiceReference<Scope> scopeRef;
+public abstract class AbstractTest extends AbstractIntegrationTest {
+	protected ServiceTracker scopeTracker;
 	
 	protected void addPackageExportPolicy(String packageName, ScopeUpdate scopeUpdate) throws InvalidSyntaxException {
 		Filter filter = bundleContext.createFilter("(osgi.wiring.package=" + packageName + ')');
@@ -105,12 +103,30 @@ public class AbstractTest extends AbstractIntegrationTest {
 		}
 	}
 	
+	protected Bundle findBundle(String symbolicName) {
+		return Utils.findBundle(symbolicName, bundleContext);
+	}
+	
 	protected Bundle findBundle(String symbolicName, Scope scope) {
 		return Utils.findBundle(symbolicName, scope);
 	}
 	
 	protected Bundle findBundleInRootScope(String symbolicName) {
-		return findBundle(symbolicName, scope);
+		return findBundle(symbolicName, getScope());
+	}
+	
+	protected Scope findChildScope(String name, Scope parent) {
+		assertNotNull(name);
+		assertNotNull(parent);
+		Scope result = null;
+		for (Scope child : parent.getChildren()) {
+			if (name.equals(child.getName())) {
+				result = child;
+				break;
+			}
+		}
+		assertNotNull(result);
+		return result;
 	}
 	
 	protected ScopeUpdate findChildUpdate(String name, ScopeUpdate parent) {
@@ -130,6 +146,10 @@ public class AbstractTest extends AbstractIntegrationTest {
 	protected String getBundleLocation(String bundle) {
 		URL url = AbstractTest.class.getClassLoader().getResource(bundle);
 		return url.toExternalForm();
+	}
+	
+	protected Scope getScope() {
+		return (Scope)scopeTracker.getService();
 	}
 	
 	protected Bundle installBundle(String name) throws BundleException {
@@ -154,14 +174,16 @@ public class AbstractTest extends AbstractIntegrationTest {
 	@Before
 	public void before() throws Exception {
 		assertNotNull(bundleContext);
-		scopeRef = bundleContext.getServiceReference(Scope.class);
-		assertNotNull(scopeRef);
-		scope = bundleContext.getService(scopeRef);
-		assertNotNull(scope);
+		scopeTracker = new ServiceTracker(
+				bundleContext, 
+				Scope.class.getName(), 
+				null);
+		scopeTracker.open();
 	}
 
 	@After
 	public void after() throws Exception {
+		scopeTracker.close();
 	}
 	
 	protected void uninstallQuietly(Bundle bundle) {
@@ -189,6 +211,7 @@ public class AbstractTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
             mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+            mavenBundle("org.eclipse.equinox", "coordinator"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl"),

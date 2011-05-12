@@ -26,10 +26,11 @@ public class UninstallBundleTest extends AbstractTest {
 	
 	@Test
 	public void test() throws Exception {
-		ScopeUpdate scopeUpdate = scope.newScopeUpdate();
+		ScopeUpdate scopeUpdate = getScope().newScopeUpdate();
 		assertTrue("The bundle should have been removed", scopeUpdate.getBundles().remove(bundle));
 		assertTrue("The commit should have been successful", scopeUpdate.commit());
-		assertFalse("The bundle should have been removed from the scope", scope.getBundles().contains(bundle));
+		assertFalse(scopeUpdate.getScope().getBundles().contains(bundle));
+		assertFalse("The bundle should have been removed from the scope", getScope().getBundles().contains(bundle));
 		assertFalse(Arrays.asList(bundleContext.getBundles()).contains(bundle));
 		assertNull("The bundle should have been uninstalled", bundleContext.getBundle(location));
 	}
@@ -40,10 +41,10 @@ public class UninstallBundleTest extends AbstractTest {
 		location = getBundleLocation("tb-2.jar");
 		bundle = bundleContext.getBundle(location);
 		assertNull("The bundle should not exist", bundle);
-		installBundles(scope, new String[]{"tb-2.jar"});
+		installBundles(getScope(), new String[]{"tb-2.jar"});
 		bundle = bundleContext.getBundle(location);
 		assertNotNull("The bundle should exist", bundle);
-		assertTrue("The bundle should part of the scope", scope.getBundles().contains(bundle));
+		assertTrue("The bundle should part of the scope", getScope().getBundles().contains(bundle));
 	}
 	
 	@After

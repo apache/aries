@@ -30,8 +30,6 @@ import java.io.FileOutputStream;
 import java.util.Collection;
 
 import org.apache.aries.subsystem.Subsystem;
-import org.apache.aries.subsystem.SubsystemAdmin;
-import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
@@ -69,25 +67,20 @@ public class SubsystemAdmin2Test extends AbstractIntegrationTest {
     
     @Test
     public void test() throws Exception {
-        // make sure we are using a framework that provides scope admin service
-        Scope scopeA = getOsgiService(Scope.class);
-        assertNotNull("scope admin should not be null", scopeA);
-        System.out.println("able to get scope admin service");
-        
         // obtain subsystem admin service
-        SubsystemAdmin sa = getOsgiService(SubsystemAdmin.class);
-        assertNotNull("subsystem admin should not be null", sa);
+        Subsystem s = getOsgiService(Subsystem.class);
+        assertNotNull("subsystem admin should not be null", s);
         System.out.println("able to get subsytem admin service");
         
         File f = new File("test.eba");
-        Subsystem subsystem = sa.install(f.toURI().toURL().toExternalForm());
+        Subsystem subsystem = s.install(f.toURI().toURL().toExternalForm());
         assertNotNull("subsystem should not be null", subsystem);
         
         assertTrue("subsystem should have a unique id", subsystem.getSubsystemId() > 0);
         assertTrue(subsystem.getLocation().indexOf("test.eba") != -1);
         assertTrue(subsystem.getSymbolicName().indexOf("felix-file-install2") != -1);
         assertEquals("2.0.8", subsystem.getVersion().toString());
-        Collection<Bundle> bundles = subsystem.getBundles();
+        Collection<Bundle> bundles = subsystem.getConstituents();
         assertEquals("check bundles' size", 1, bundles.size());
 
     }
@@ -108,13 +101,13 @@ public class SubsystemAdmin2Test extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
             // Bundles
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl"),
+            mavenBundle("org.eclipse.equinox", "region"),
             mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
             mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+            mavenBundle("org.eclipse.equinox", "coordinator"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
 
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),

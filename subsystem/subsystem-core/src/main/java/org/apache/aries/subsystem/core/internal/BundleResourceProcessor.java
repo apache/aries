@@ -14,164 +14,169 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
-import org.apache.aries.subsystem.scope.InstallInfo;
-import org.apache.aries.subsystem.scope.Scope;
-import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.spi.Resource;
+import org.apache.aries.subsystem.spi.ResourceOperation;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
+import org.eclipse.equinox.region.Region;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Participant;
 
 public class BundleResourceProcessor implements ResourceProcessor {
-
-    public Session createSession(SubsystemAdmin subsystemAdmin) {
-        return new BundleSession(subsystemAdmin);
-    }
-
-    public static class BundleSession implements Session {
-
-        private final Scope scopeAdmin;
-        private final List<Bundle> installed = new ArrayList<Bundle>();
-        private final Map<Resource, Bundle> updated = new HashMap<Resource, Bundle>();
-        private final Map<Resource, Bundle> removed = new HashMap<Resource, Bundle>();
-        
-
-        public BundleSession(SubsystemAdmin subsystemAdmin) {
-            SubsystemAdminImpl subsystemAdminImpl = (SubsystemAdminImpl)subsystemAdmin;
-            this.scopeAdmin = subsystemAdminImpl.getScopeAdmin();
-        }
-
-        public void process(Resource resource) throws SubsystemException {
-            try {
-                // find the bundle
-                Bundle bundle = findBundle(resource);
-                
-                if (bundle == null) {
-                    // fresh install 
-                    InstallInfo installInfo = new InstallInfo(resource.getLocation(), new URL(resource.getLocation()));
-                    ScopeUpdate scopeUpdate = scopeAdmin.newScopeUpdate();
-                    scopeUpdate.getBundlesToInstall().add(installInfo);
-                    scopeUpdate.commit();
-                } else {
-                    // update only if RESOURCE_UPDATE_ATTRIBUTE is set to true
-                    String updateAttribute = resource.getAttributes().get(SubsystemConstants.RESOURCE_UPDATE_ATTRIBUTE);
-                    if ("update".equals(updateAttribute)) {
-                        bundle.update(resource.open());
-                        updated.put(resource, bundle);
-                    }
-                }
-                
-                if (bundle == null) {
-                    bundle = findBundle(resource);
-                    installed.add(bundle);
-                }
-
-                String startAttribute = resource.getAttributes().get(SubsystemConstants.RESOURCE_START_ATTRIBUTE);
-                
-                if (startAttribute == null || startAttribute.length() == 0) {
-                    // defaults to true
-                    startAttribute = "true";
-                }
-                if ("true".equals(startAttribute)) {
-                    bundle.start();
-                }
-            } catch (SubsystemException e) {
-                throw e;
-            } catch (Exception e) {
-//                throw new SubsystemException("Unable to process bundle resource", e);
-            	e.printStackTrace();
+	private final BundleContext bundleContext;
+	
+	public BundleResourceProcessor(BundleContext bundleContext) {
+		this.bundleContext = bundleContext;
+	}
+	
+	public void process(final ResourceOperation operation) throws SubsystemException {
+		switch (operation.getType()) {
+			case INSTALL:
+				install(operation);
+				break;
+			case START:
+				start(operation);
+				break;
+			case STOP:
+				stop(operation);
+				break;
+			case UNINSTALL:
+				uninstall(operation);
+				break;
+			case UPDATE:
+				update(operation);
+				break;
+			default:
+				throw new SubsystemException("Unsupported resource opertaion type: " + operation.getType());
+		}
+	}
+	
+	private Bundle findBundle(Resource resource, Region region) {        
+        Set<Long> bundleIds = region.getBundleIds();
+    	for (Long bundleId : bundleIds) {
+    		Bundle b = bundleContext.getBundle(bundleId);
+    		String location = String.valueOf(resource.getAttributes().get(Resource.LOCATION_ATTRIBUTE));
+            if (location.equals(b.getLocation())) {
+                return b;
             }
-        }
-
-        public void dropped(Resource resource) throws SubsystemException {
-            // find the bundle
-            Bundle bundle = findBundle(resource);
-            
-            if (bundle == null) {
-                throw new SubsystemException("Unable to find the resource to be dropped");
-            } else {
-                try {
-                    bundle.uninstall();
-                    removed.put(resource, bundle);
-                } catch (BundleException be) {
-                    throw new SubsystemException("Unable to drop resource", be);
-                }
-            }
-        }
-
-        public void prepare() throws SubsystemException {
-            // no-op
-        }
-
-        public void commit() {
-            clearAll();
-        }
-
-        public void rollback() {
-            // rollback installed bundle
-            for (Bundle bundle : installed) {
-                try {
-                    bundle.uninstall();
-                } catch (Exception e) {
-                    // Ignore
-                }
-            }
-            
-            // rollback updated bundle - not sure what we can do here
-            
-            // rollback removed bundle
-            if (!removed.isEmpty()) {
-                Set<Entry<Resource, Bundle>> removedSet = removed.entrySet();
-                for (Entry<Resource, Bundle> entry : removedSet) {
-                    Bundle bundle = entry.getValue();
-                    Resource res = entry.getKey();
-                    try {
-                        InstallInfo installInfo = new InstallInfo(res.getLocation(), res.open());
-                        ScopeUpdate scopeUpdate = scopeAdmin.newScopeUpdate();
-                        scopeUpdate.getBundlesToInstall().add(installInfo);
-                        scopeUpdate.commit();
-                    } catch (Exception e) {
-                        // Ignore
-                    }
-                }
-            }
-            
-            clearAll();
-        }
-        
-        protected Bundle findBundle(Resource resource) {
-            Scope scope = scopeAdmin;
-            for (Bundle b : scope.getBundles()) {
-                if (resource.getLocation().equals(scope.getLocation())) {
-                    return b;
-                }
-            }
-            
-            return null;
-        }
-        
-        private void clearAll() {
-            installed.clear();
-            updated.clear();
-            removed.clear();
-        }
-    }
-
-    public Session createSession(BundleContext arg0) {
-        // TODO Auto-generated method stub
+    	}
         return null;
     }
+	
+	private void install(final ResourceOperation operation) {
+		Coordination coordination = operation.getCoordination();
+		final Resource resource = operation.getResource();
+		final Region region = (Region)operation.getContext().get("region");
+		String location = String.valueOf(resource.getAttributes().get(Resource.LOCATION_ATTRIBUTE));
+        try {
+        	region.installBundle(location, new URL(location).openStream());
+            coordination.addParticipant(new Participant() {
+				public void ended(Coordination c) throws Exception {
+					operation.completed();
+				}
 
+				public void failed(Coordination c) throws Exception {
+					Bundle bundle = findBundle(resource, region);
+					region.removeBundle(bundle);
+				}
+            });
+        }
+        catch (Exception e) {
+        	coordination.fail(e);
+        }
+	}
+	
+	private void start(final ResourceOperation operation) {
+		Resource resource = operation.getResource();
+		String startAttribute = String.valueOf(resource.getAttributes().get(SubsystemConstants.RESOURCE_START_ATTRIBUTE));
+        if (!"true".equals(startAttribute)) return;
+		Coordination coordination = operation.getCoordination();
+		Region region = (Region)operation.getContext().get("region");
+		final Bundle bundle = findBundle(resource, region);
+		try {
+			bundle.start();
+			coordination.addParticipant(new Participant() {
+				public void ended(Coordination c) throws Exception {
+					operation.completed();
+				}
 
+				public void failed(Coordination c) throws Exception {
+					bundle.stop();
+				}
+			});
+		}
+		catch (Exception e) {
+			coordination.fail(e);
+		}
+	}
+	
+	private void stop(final ResourceOperation operation) {
+		Coordination coordination = operation.getCoordination();
+		Resource resource = operation.getResource();
+		Region region = (Region)operation.getContext().get("region");
+		final Bundle bundle = findBundle(resource, region);
+		try {
+			bundle.stop();
+			coordination.addParticipant(new Participant() {
+				public void ended(Coordination c) throws Exception {
+					operation.completed();
+				}
+
+				public void failed(Coordination c) throws Exception {
+					bundle.start();
+				}
+			});
+		}
+		catch (Exception e) {
+			coordination.fail(e);
+		}
+	}
+	
+	private void uninstall(final ResourceOperation operation) {
+		Coordination coordination = operation.getCoordination();
+		final Resource resource = operation.getResource();
+		final Region region = (Region)operation.getContext().get("region");
+		Bundle bundle = findBundle(resource, region);
+		try {
+			region.removeBundle(bundle);
+			coordination.addParticipant(new Participant() {
+				public void ended(Coordination c) throws Exception {
+					operation.completed();
+				}
+
+				public void failed(Coordination c) throws Exception {
+					String location = String.valueOf(resource.getAttributes().get(Resource.LOCATION_ATTRIBUTE));
+					region.installBundle(location);
+				}
+			});
+		}
+		catch (Exception e) {
+			coordination.fail(e);
+		}
+	}
+	
+	private void update(final ResourceOperation operation) {
+		Resource resource = operation.getResource();
+		String updateAttribute = String.valueOf(resource.getAttributes().get(SubsystemConstants.RESOURCE_UPDATE_ATTRIBUTE));
+		if (!"true".equals(updateAttribute)) return;
+		final String location = String.valueOf(resource.getAttributes().get(Resource.LOCATION_ATTRIBUTE));
+		Region region = (Region)operation.getContext().get("region");
+		final Bundle bundle = findBundle(resource, region);
+		Coordination coordination = operation.getCoordination();
+		coordination.addParticipant(new Participant() {
+			public void ended(Coordination c) throws Exception {
+				bundle.update(new URL(location).openStream());
+				operation.completed();
+			}
+			
+			public void failed(Coordination c) throws Exception {
+				// Do nothing.
+			}
+		});
+	}
 }
