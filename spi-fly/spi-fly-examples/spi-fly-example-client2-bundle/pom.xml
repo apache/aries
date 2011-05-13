@@ -28,9 +28,9 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.spifly.examples.client1.bundle</artifactId>
+    <artifactId>org.apache.aries.spifly.examples.client2.bundle</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries Example SPI Client Bundle 1</name>
+    <name>Apache Aries Example SPI Client Bundle 2</name>
     <description>
         A Bundle that uses the java.util.ServiceLoader() API through an embedded library. 
     </description>
