@@ -44,7 +44,8 @@
                         <configuration>
                             <tasks>
                                 <!-- Add Ant tasks from the ant-contrib jar -->
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.plugin.classpath" />
 
                                 <if>
                                     <available file="${basedir}/target/downloaded/org.eclipse.osgi_3.7.0.jar"/>
@@ -65,7 +66,15 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>20020829</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
+
 </project>
