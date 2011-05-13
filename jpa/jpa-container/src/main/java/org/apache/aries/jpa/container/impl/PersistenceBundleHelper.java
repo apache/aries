@@ -63,9 +63,12 @@ public class PersistenceBundleHelper
    */
   public static Collection<PersistenceDescriptor> findPersistenceXmlFiles(Bundle bundle)
   { 
+    @SuppressWarnings("unchecked")
     Dictionary<String, String> headers = bundle.getHeaders();
     String metaPersistence = headers.get(PERSISTENCE_UNIT_HEADER);
     String webContextPath = headers.get(WEB_CONTEXT_PATH_HEADER);
+    
+    String bundleIdentity = bundle.getSymbolicName() + '/' + bundle.getVersion();
     
     Collection<String> locations;
     
@@ -75,15 +78,15 @@ public class PersistenceBundleHelper
       } else {
         // WABs behave a bit differently to normal bundles. We process them even if they don't have a Meta-Persistence
        
-        if(_logger.isInfoEnabled())
-          _logger.info("The bundle " + bundle.getSymbolicName() + " specifies both the " + 
-                     WEB_CONTEXT_PATH_HEADER + " header, but it does not specify the " + PERSISTENCE_UNIT_HEADER + " header." +
-                     " This bundle will be scanned for persistence descriptors in any locations defined by the JPA specification" +
-                     "that are on the Classpath.");
-        
         String bundleClassPath = headers.get(Constants.BUNDLE_CLASSPATH);
         
         locations = findWABClassPathLocations(bundleClassPath);
+
+        if(_logger.isInfoEnabled())
+          _logger.info("The bundle " + bundleIdentity + " specifies the " + 
+                     WEB_CONTEXT_PATH_HEADER + " header; it does not specify the " + PERSISTENCE_UNIT_HEADER + " header. " +
+                     "This bundle will be scanned for persistence descriptors in the locations: " + locations + " " +
+                     "using the rules defined by the JPA specification for finding persistence descriptors for web applications.");
       }
     } else {
 
@@ -112,7 +115,7 @@ public class PersistenceBundleHelper
           }
       } catch (Exception e) {
           _logger.error("There was an exception while locating the persistence descriptor at location "
-              + location + " in bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion()
+              + location + " in bundle " + bundleIdentity
           		+ ". No persistence descriptors will be processed for this bundle.", e);
         //If we get an exception, then go through closing all of our streams.
         //It is better to fail completely than half succeed.
@@ -130,8 +133,8 @@ public class PersistenceBundleHelper
     }
     
     if (persistenceXmlFiles.isEmpty()) {
-      _logger.warn("The bundle "+bundle.getSymbolicName() + "_" + bundle.getVersion() + " specified the Meta-Persistence header. However, no persistence descriptors " + 
-        "could be located. The following locations were searched: " + locations.toString());
+      _logger.warn("No persistence descriptors could be located in the bundle " + bundleIdentity + ". " +
+                   "The following locations were searched: " + locations.toString());
     }
 
     return persistenceXmlFiles;
