@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.container;
 import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -45,6 +46,7 @@ import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ReifiedType;
@@ -740,8 +742,20 @@ public class BeanRecipe extends AbstractRecipe {
             if (method != null) {
                 invoke(method, obj, (Object[]) null);
             }
+        } catch (ComponentDefinitionException e) {
+            // This exception occurs if the destroy method does not exist, so we just output the exception message.
+            LOGGER.error(e.getMessage());
+        } catch (InvocationTargetException ite) {
+          Throwable t = ite.getTargetException();
+          BundleContext ctx = blueprintContainer.getBundleContext();
+          Bundle b = ctx.getBundle();
+          String bundleIdentifier = b.getSymbolicName() + '/' + b.getVersion();
+          LOGGER.error("The blueprint bean " + getName() + " in bundle " + bundleIdentifier + " incorrectly threw an exception from its destroy method.", t);
         } catch (Exception e) {
-            LOGGER.info("Error invoking destroy method", getRealCause(e));
+            BundleContext ctx = blueprintContainer.getBundleContext();
+            Bundle b = ctx.getBundle();
+            String bundleIdentifier = b.getSymbolicName() + '/' + b.getVersion();
+            LOGGER.error("An exception occurred while calling the destroy method of the blueprint bean " + getName() + " in bundle " + bundleIdentifier + ".", getRealCause(e));
         }
         for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.afterDestroy(obj, getName());
