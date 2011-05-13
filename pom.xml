@@ -40,10 +40,11 @@
     
     <modules>
         <module>spi-fly-example-spi-bundle</module>
-        <module>spi-fly-example-client1-jar</module>
-        <module>spi-fly-example-client1-bundle</module>
         <module>spi-fly-example-provider1-jar</module>
         <module>spi-fly-example-provider1-bundle</module>
         <module>spi-fly-example-provider2-bundle</module>
+        <module>spi-fly-example-client1-jar</module>
+        <module>spi-fly-example-client1-bundle</module>
+        <module>spi-fly-example-client2-bundle</module>
     </modules>
 </project>
