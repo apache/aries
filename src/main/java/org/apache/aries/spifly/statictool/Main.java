@@ -40,6 +40,7 @@ import org.apache.aries.spifly.weaver.TCCLSetterVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.osgi.framework.Constants;
 
 public class Main {
     private static final String MODIFIED_BUNDLE_SUFFIX = "_spifly.jar";
@@ -78,7 +79,8 @@ public class Main {
         Manifest manifest = unJar(jarFile, tempDir);
         String consumerHeader = manifest.getMainAttributes().getValue(SpiFlyConstants.SPI_CONSUMER_HEADER);
         if (consumerHeader != null) {
-            weaveDir(tempDir, consumerHeader);
+            String bcp = manifest.getMainAttributes().getValue(Constants.BUNDLE_CLASSPATH);
+            weaveDir(tempDir, consumerHeader, bcp);
 
             manifest.getMainAttributes().remove(new Attributes.Name(SpiFlyConstants.SPI_CONSUMER_HEADER));
             manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeader);
@@ -151,7 +153,7 @@ public class Main {
         return new File(s);
     }
 
-    private static void weaveDir(File dir, String consumerHeader) throws IOException {
+    private static void weaveDir(File dir, String consumerHeader, String bundleClassPath) throws IOException {
         String dirName = dir.getAbsolutePath();
 
         DirTree dt = new DirTree(dir);
@@ -184,6 +186,30 @@ public class Main {
             } finally {
                 os.close();
             }
+        }
+
+        if (bundleClassPath != null) {
+            for (String entry : bundleClassPath.split(",")) {
+                File jarFile = new File(dir, entry.trim());
+                if (jarFile.isFile()) {
+                    weaveBCPJar(jarFile, consumerHeader);
+                }
+            }
+        }
+    }
+
+    private static void weaveBCPJar(File jarFile, String consumerHeader) throws IOException {
+        File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());
+        try {
+            Manifest manifest = unJar(jarFile, tempDir);
+            weaveDir(tempDir, consumerHeader, null);
+            if (!jarFile.delete()) {
+                throw new IOException("Could not replace file: " + jarFile);
+            }
+
+            jar(jarFile, tempDir, manifest);
+        } finally {
+            delTree(tempDir);
         }
     }
 
