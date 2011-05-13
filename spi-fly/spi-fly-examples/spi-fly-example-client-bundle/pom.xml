@@ -28,7 +28,7 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.spifly.examples.client.bundle</artifactId>
+    <artifactId>org.apache.aries.spifly.examples.client1.bundle</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Example SPI Client Bundle</name>
     <description>
@@ -57,7 +57,7 @@
 
         <dependency>
             <groupId>org.apache.aries.spifly.examples</groupId>
-            <artifactId>org.apache.aries.spifly.examples.client.jar</artifactId>
+            <artifactId>org.apache.aries.spifly.examples.client1.jar</artifactId>
             <version>${project.version}</version>
         </dependency>        
     </dependencies>
