@@ -30,7 +30,7 @@
 
     <artifactId>org.apache.aries.spifly.examples.client1.jar</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Aries Example SPI Client Jar</name>
+    <name>Apache Aries Example SPI Client Jar 1</name>
     <description>
         A Jar file containing code that uses the java.util.ServiceLoader() API.
     </description>
