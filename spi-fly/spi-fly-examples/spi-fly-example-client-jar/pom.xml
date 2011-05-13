@@ -28,7 +28,7 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.spifly.examples.client.jar</artifactId>
+    <artifactId>org.apache.aries.spifly.examples.client1.jar</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Example SPI Client Jar</name>
     <description>

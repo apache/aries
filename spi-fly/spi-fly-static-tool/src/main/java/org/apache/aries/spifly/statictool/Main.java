@@ -42,25 +42,39 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 public class Main {
+    private static final String MODIFIED_BUNDLE_SUFFIX = "_spifly.jar";
     private static final String IMPORT_PACKAGE = "Import-Package";
 
     public static void usage() {
+        System.err.println("This tool processes OSGi Bundles that use java.util.ServiceLoader.load() to");
+        System.err.println("obtain implementations via META-INF/services. The byte code in the bundles is");
+        System.err.println("modified so that the ThreadContextClassLoader is set appropriately for the ");
+        System.err.println("duration of the java.util.ServiceLoader.load() call.");
+        System.err.println("To opt-in to this process, bundles need to have the following Manifest.MF");
+        System.err.println("header set:");
+        System.err.println("    " + SpiFlyConstants.SPI_CONSUMER_HEADER + ": *");
+        System.err.println("Modified bundles are written out under the following name:");
+        System.err.println("    <original-bundle-name>" + MODIFIED_BUNDLE_SUFFIX);
         System.err.println();
         System.err.println("Usage: java " + Main.class.getName() + " bundle1.jar bundle2.jar ...");
         System.exit(-1);
     }
-    
+
     public static void main(String ... args) throws Exception {
+        if (args.length < 1)
+            usage();
+
         for (String arg : args) {
             weaveJar(arg);
         }
     }
 
     private static void weaveJar(String jarPath) throws IOException {
+        System.out.println("[SPI Fly Static Tool] Processing: " + jarPath);
         String spiFlyVersion = getMyVersion();
-        
+
         File jarFile = new File(jarPath);
-        File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());        
+        File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());
         Manifest manifest = unJar(jarFile, tempDir);
         String consumerHeader = manifest.getMainAttributes().getValue(SpiFlyConstants.SPI_CONSUMER_HEADER);
         if (consumerHeader != null) {
@@ -70,15 +84,17 @@ public class Main {
             manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeader);
             // TODO if new packages needed then...
             extendImportPackage(spiFlyVersion, manifest);
-            
+
             File newJar = getNewJarFile(jarFile);
             jar(newJar, tempDir, manifest);
+        } else {
+            System.out.println("[SPI Fly Static Tool] This file is not marked as an SPI Consumer.");
         }
         delTree(tempDir);
     }
 
     private static void extendImportPackage(String spiFlyVersion, Manifest manifest) {
-        String ip = manifest.getMainAttributes().getValue(IMPORT_PACKAGE);            
+        String ip = manifest.getMainAttributes().getValue(IMPORT_PACKAGE);
         StringBuilder sb = new StringBuilder(ip);
         sb.append(",");
         sb.append(Util.class.getPackage().getName());
@@ -91,10 +107,10 @@ public class Main {
     }
 
     private static String getMyVersion() throws IOException {
-        // Should be able to leverage the aries.osgi.version file that appears in the target directory here. 
+        // Should be able to leverage the aries.osgi.version file that appears in the target directory here.
         // Need to figure that out...
         return "0.4.0.SNAPSHOT";
-        
+
 //        String classResource = "/" + Main.class.getName().replace(".", "/") + ".class";
 //        URL jarUrl = Main.class.getResource(classResource);
 //        if (jarUrl != null) {
@@ -106,7 +122,7 @@ public class Main {
 //                if (idx >= 0) {
 //                    jarLoc = jarLoc.substring(0, idx);
 //                }
-//                
+//
 //                JarFile jr = new JarFile(jarLoc);
 //                mf = jr.getManifest();
 //            } else if (jarLoc.startsWith("file:") && jarLoc.endsWith(classResource)) {
@@ -116,7 +132,7 @@ public class Main {
 //                    mf = new Manifest(new FileInputStream(manifestFile));
 //                }
 //            }
-//            
+//
 //            if (mf != null) {
 //                String version = mf.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
 //                if (version == null)
@@ -124,47 +140,47 @@ public class Main {
 //                return version.trim();
 //            }
 //        }
-//        throw new IOException("This class can only be executed from inside a jar or an exploded jar file."); 
+//        throw new IOException("This class can only be executed from inside a jar or an exploded jar file.");
     }
 
     private static File getNewJarFile(File jarFile) {
         String s = jarFile.getAbsolutePath();
         int idx = s.lastIndexOf('.');
         s = s.substring(0, idx);
-        s += "_spifly.jar";
+        s += MODIFIED_BUNDLE_SUFFIX;
         return new File(s);
     }
 
     private static void weaveDir(File dir, String consumerHeader) throws IOException {
         String dirName = dir.getAbsolutePath();
-        
+
         DirTree dt = new DirTree(dir);
         for (File f : dt.getFiles()) {
             if (!f.getName().endsWith(".class"))
                 continue;
-            
+
             String className = f.getAbsolutePath().substring(dirName.length());
-            if (className.startsWith(File.separator)) 
+            if (className.startsWith(File.separator))
                 className = className.substring(1);
             className = className.substring(0, className.length() - ".class".length());
             className = className.replace(File.separator, ".");
-            
+
             Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(consumerHeader);
             InputStream is = new FileInputStream(f);
             byte[] b;
             try {
                 ClassReader cr = new ClassReader(is);
-                ClassWriter cw = new ClassWriter(0);                
-                ClassVisitor cv = new TCCLSetterVisitor(cw, className, wd); 
+                ClassWriter cw = new ClassWriter(0);
+                ClassVisitor cv = new TCCLSetterVisitor(cw, className, wd);
                 cr.accept(cv, 0);
                 b = cw.toByteArray();
             } finally {
                 is.close();
             }
-            
+
             OutputStream os = new FileOutputStream(f);
             try {
-                os.write(b);                
+                os.write(b);
             } finally {
                 os.close();
             }
@@ -180,14 +196,14 @@ public class Main {
             if (je.isDirectory()) {
                 File outDir = new File(tempDir, je.getName());
                 ensureDirectory(outDir);
-                
+
                 continue;
             }
-            
+
             File outFile = new File(tempDir, je.getName());
             File outDir = outFile.getParentFile();
-            ensureDirectory(outDir); 
-            
+            ensureDirectory(outDir);
+
             OutputStream out = new FileOutputStream(outFile);
             try {
                 Streams.pump(jis, out);
@@ -198,7 +214,7 @@ public class Main {
             }
             outFile.setLastModified(je.getTime());
         }
-        
+
         Manifest manifest = jis.getManifest();
         if (manifest != null) {
             File mf = new File(tempDir, "META-INF/MANIFEST.MF");
@@ -210,14 +226,14 @@ public class Main {
                 manifest.write(out);
             } finally {
                 out.flush();
-                out.close();                
+                out.close();
             }
         }
-        
+
         jis.close();
         return manifest;
     }
-    
+
     static void jar(File jarFile, File rootFile, Manifest manifest) throws IOException {
         JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), manifest);
         try {
@@ -227,22 +243,22 @@ public class Main {
         }
     }
 
-    static void addToJarRecursively(JarOutputStream jar, File source, String rootDirectory) throws IOException {                
+    static void addToJarRecursively(JarOutputStream jar, File source, String rootDirectory) throws IOException {
         String sourceName = source.getAbsolutePath().replace("\\", "/");
         sourceName = sourceName.substring(rootDirectory.length());
-        
+
         if (sourceName.startsWith("/")) {
             sourceName = sourceName.substring(1);
         }
-        
+
         if ("META-INF/MANIFEST.MF".equals(sourceName))
             return;
-        
+
         if (source.isDirectory()) {
-            /* Is there any point in adding a directory beyond just taking up space? 
+            /* Is there any point in adding a directory beyond just taking up space?
             if (!sourceName.isEmpty()) {
                 if (!sourceName.endsWith("/")) {
-                    sourceName += "/";                        
+                    sourceName += "/";
                 }
                 JarEntry entry = new JarEntry(sourceName);
                 jar.putNextEntry(entry);
@@ -254,7 +270,7 @@ public class Main {
             }
             return;
         }
-        
+
         JarEntry entry = new JarEntry(sourceName);
         jar.putNextEntry(entry);
         InputStream is = new FileInputStream(source);
