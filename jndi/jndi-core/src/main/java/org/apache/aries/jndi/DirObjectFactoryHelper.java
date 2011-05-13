@@ -18,7 +18,6 @@
  */
 package org.apache.aries.jndi;
 
-import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.Hashtable;
 
@@ -33,7 +32,6 @@ import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirObjectFactory {
@@ -42,23 +40,11 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
         super(defaultContext, callerContext);
     }
     
-    public Object getObjectInstance(final Object obj,
-                                    final Name name,
-                                    final Context nameCtx,
-                                    final Hashtable<?, ?> environment,
-                                    final Attributes attrs) throws Exception {
-        return Utils.doPrivileged(new PrivilegedExceptionAction<Object>() {
-            public Object run() throws Exception {
-                return doGetObjectInstance(obj, name, nameCtx, environment, attrs);
-            }            
-        });
-    }
-    
-    private Object doGetObjectInstance(Object obj,
-                                       Name name,
-                                       Context nameCtx,
-                                       Hashtable<?, ?> environment,
-                                       Attributes attrs) throws Exception {
+    public Object getObjectInstance(Object obj,
+                                    Name name,
+                                    Context nameCtx,
+                                    Hashtable<?, ?> environment,
+                                    Attributes attrs) throws Exception {
 
         // Step 1
         if (obj instanceof Referenceable) {
@@ -100,31 +86,27 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
                                                          Hashtable<?, ?> environment,
                                                          Attributes attrs) 
         throws Exception {
+    	
         Object result = null;
-        try {
-            ServiceReference[] refs = callerContext.getServiceReferences(DirObjectFactory.class.getName(), null);
-            if (refs != null) {
-                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
-                for (ServiceReference ref : refs) {
-                    DirObjectFactory factory = (DirObjectFactory) callerContext.getService(ref);
+        ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, DirObjectFactory.class);
+        if (refs != null) {
+        	Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        	for (ServiceReference ref : refs) {
+        		DirObjectFactory factory = (DirObjectFactory) Utils.getServicePrivileged(callerContext, ref);
 
-                    try {
-                        result = factory.getObjectInstance(obj, name, nameCtx, environment, attrs);
-                    } finally {
-                        callerContext.ungetService(ref);
-                    }
+        		try {
+        			result = factory.getObjectInstance(obj, name, nameCtx, environment, attrs);
+        		} finally {
+        			callerContext.ungetService(ref);
+        		}
 
-                    // if the result comes back and is not null and not the reference
-                    // object then we should return the result, so break out of the
-                    // loop we are in.
-                    if (result != null && result != obj) {
-                        break;
-                    }
-                }
-            }
-        } catch (InvalidSyntaxException e) {
-            // should not happen
-            throw new RuntimeException("Invalid filter", e);
+        		// if the result comes back and is not null and not the reference
+        		// object then we should return the result, so break out of the
+        		// loop we are in.
+        		if (result != null && result != obj) {
+        			break;
+        		}
+        	}
         }
 
         if (result == null) {
@@ -142,26 +124,15 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
                                                    Hashtable<?, ?> environment,
                                                    Attributes attrs)
         throws Exception {
-        ServiceReference serviceReference = null;
 
-        try {
-            ServiceReference[] refs = defaultContext.getServiceReferences(className, null);
-            if (refs != null && refs.length > 0) {
-                serviceReference = refs[0];
-            }
-        } catch (InvalidSyntaxException e) {
-            // should not happen
-            throw new RuntimeException("Invalid filter", e);
-        }
-
+        Tuple<ServiceReference, ObjectFactory> tuple = ObjectFactoryHelper.findObjectFactoryByClassName(defaultContext, className);
         Object result = null;
         
-        if (serviceReference != null) {
-            DirObjectFactory factory = (DirObjectFactory) defaultContext.getService(serviceReference);
-            try {
-                result = factory.getObjectInstance(reference, name, nameCtx, environment, attrs);
+        if (tuple.second != null) {
+        	try {
+        		result = ((DirObjectFactory) tuple.second).getObjectInstance(reference, name, nameCtx, environment, attrs);
             } finally {
-                defaultContext.ungetService(serviceReference);
+                defaultContext.ungetService(tuple.first);
             }
         }
 
@@ -175,27 +146,22 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
                                                                Attributes attrs) 
         throws Exception {
         ObjectFactory factory = null;
-        try {
-            ServiceReference[] refs = callerContext.getServiceReferences(ObjectFactoryBuilder.class.getName(), null);
-            if (refs != null) {
-                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
-                for (ServiceReference ref : refs) {
-                    ObjectFactoryBuilder builder = (ObjectFactoryBuilder) callerContext.getService(ref);
-                    try {
-                        factory = builder.createObjectFactory(obj, environment);
-                    } catch (NamingException e) {
-                        // TODO: log it
-                    } finally {
-                        callerContext.ungetService(ref);
-                    }
-                    if (factory != null) {
-                        break;
-                    }
-                }
-            }
-        } catch (InvalidSyntaxException e) {
-            // should not happen
-            throw new RuntimeException("Invalid filter", e);
+        ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, ObjectFactoryBuilder.class);
+        if (refs != null) {
+        	Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        	for (ServiceReference ref : refs) {
+        		ObjectFactoryBuilder builder = (ObjectFactoryBuilder) Utils.getServicePrivileged(callerContext, ref);
+        		try {
+        			factory = builder.createObjectFactory(obj, environment);
+        		} catch (NamingException e) {
+        			// TODO: log it
+        		} finally {
+        			callerContext.ungetService(ref);
+        		}
+        		if (factory != null) {
+        			break;
+        		}
+        	}
         }
 
         Object result = null;

@@ -18,7 +18,8 @@
  */
 package org.apache.aries.jndi;
 
-import java.security.PrivilegedExceptionAction;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -47,21 +48,10 @@ public class ObjectFactoryHelper implements ObjectFactory {
         this.callerContext = callerContext;
     }
 
-    public Object getObjectInstance(final Object obj,
-                                    final Name name,
-                                    final Context nameCtx,
-                                    final Hashtable<?, ?> environment) throws Exception {
-        return Utils.doPrivileged(new PrivilegedExceptionAction<Object>() {
-            public Object run() throws Exception {
-                return doGetObjectInstance(obj, name, nameCtx, environment);
-            }            
-        });
-    }
-    
-    private Object doGetObjectInstance(Object obj,
-                                       Name name,
-                                       Context nameCtx,
-                                       Hashtable<?, ?> environment) throws Exception {
+    public Object getObjectInstance(Object obj,
+                                    Name name,
+                                    Context nameCtx,
+                                    Hashtable<?, ?> environment) throws Exception {
 
         // Step 1
         if (obj instanceof Referenceable) {
@@ -106,30 +96,27 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                            Hashtable<?, ?> environment) 
         throws Exception {
         Object result = null;
-        try {
-            ServiceReference[] refs = callerContext.getServiceReferences(ObjectFactory.class.getName(), null);
-            if (refs != null) {
-                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
-                for (ServiceReference ref : refs) {
-                    ObjectFactory factory = (ObjectFactory) callerContext.getService(ref);
+        ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, ObjectFactory.class);
+            
+        if (refs != null) {
+        	Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        	
+        	for (ServiceReference ref : refs) {
+        		ObjectFactory factory = (ObjectFactory) Utils.getServicePrivileged(callerContext, ref);
 
-                    try {
-                        result = factory.getObjectInstance(obj, name, nameCtx, environment);
-                    } finally {
-                        callerContext.ungetService(ref);
-                    }
+        		try {
+        			result = factory.getObjectInstance(obj, name, nameCtx, environment);
+        		} finally {
+        			callerContext.ungetService(ref);
+        		}
 
-                    // if the result comes back and is not null and not the reference
-                    // object then we should return the result, so break out of the
-                    // loop we are in.
-                    if (result != null && result != obj) {
-                        break;
-                    }
-                }
-            }
-        } catch (InvalidSyntaxException e) {
-            // should not happen
-            throw new RuntimeException("Invalid filter", e);
+        		// if the result comes back and is not null and not the reference
+        		// object then we should return the result, so break out of the
+        		// loop we are in.
+        		if (result != null && result != obj) {
+        			break;
+        		}
+        	}
         }
 
         return (result == null) ? obj : result;
@@ -181,6 +168,32 @@ public class ObjectFactoryHelper implements ObjectFactory {
         return (result == null) ? obj : result;
     }
 
+    static Tuple<ServiceReference,ObjectFactory> findObjectFactoryByClassName(final BundleContext ctx, final String className) {
+    	return AccessController.doPrivileged(new PrivilegedAction<Tuple<ServiceReference,ObjectFactory>>() {
+			public Tuple<ServiceReference,ObjectFactory> run() {
+		        ServiceReference serviceReference = null;
+		        
+		        try {
+		            ServiceReference[] refs = ctx.getServiceReferences(className, null);
+		            if (refs != null && refs.length > 0) {
+		                serviceReference = refs[0];
+		            }
+		        } catch (InvalidSyntaxException e) {
+		            // should not happen
+		            throw new RuntimeException("Invalid filter", e);
+		        }
+
+		        ObjectFactory factory = null;
+		        
+		        if (serviceReference != null) {
+		            factory = (ObjectFactory) ctx.getService(serviceReference);			
+		        }
+		        
+		        return new Tuple<ServiceReference, ObjectFactory>(serviceReference, factory);
+			}
+		});    	
+    }
+    
     private Object getObjectInstanceUsingClassName(Object reference,
                                                    String className,
                                                    Object obj,
@@ -188,26 +201,15 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                    Context nameCtx,
                                                    Hashtable<?, ?> environment) 
         throws Exception {
-        ServiceReference serviceReference = null;
-
-        try {
-            ServiceReference[] refs = defaultContext.getServiceReferences(className, null);
-            if (refs != null && refs.length > 0) {
-                serviceReference = refs[0];
-            }
-        } catch (InvalidSyntaxException e) {
-            // should not happen
-            throw new RuntimeException("Invalid filter", e);
-        }
-
-        Object result = null;
-        
-        if (serviceReference != null) {
-            ObjectFactory factory = (ObjectFactory) defaultContext.getService(serviceReference);
+    	
+    	Tuple<ServiceReference,ObjectFactory> tuple = findObjectFactoryByClassName(defaultContext, className);
+    	Object result = null;
+    	
+    	if (tuple.second != null) {
             try {
-                result = factory.getObjectInstance(reference, name, nameCtx, environment);
+                result = tuple.second.getObjectInstance(reference, name, nameCtx, environment);
             } finally {
-                defaultContext.ungetService(serviceReference);
+                defaultContext.ungetService(tuple.first);
             }
         }
 
@@ -219,28 +221,25 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                                Context nameCtx,
                                                                Hashtable<?, ?> environment) 
         throws Exception {
+    	
         ObjectFactory factory = null;
-        try {
-            ServiceReference[] refs = callerContext.getServiceReferences(ObjectFactoryBuilder.class.getName(), null);
-            if (refs != null) {
-                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
-                for (ServiceReference ref : refs) {
-                    ObjectFactoryBuilder builder = (ObjectFactoryBuilder) callerContext.getService(ref);
-                    try {
-                        factory = builder.createObjectFactory(obj, environment);
-                    } catch (NamingException e) {
-                        // TODO: log it
-                    } finally {
-                        callerContext.ungetService(ref);
-                    }
-                    if (factory != null) {
-                        break;
-                    }
-                }
-            }
-        } catch (InvalidSyntaxException e) {
-            // should not happen
-            throw new RuntimeException("Invalid filter", e);
+        
+        ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, ObjectFactoryBuilder.class);
+        if (refs != null) {
+        	Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        	for (ServiceReference ref : refs) {
+        		ObjectFactoryBuilder builder = (ObjectFactoryBuilder) Utils.getServicePrivileged(callerContext, ref);
+        		try {
+        			factory = builder.createObjectFactory(obj, environment);
+        		} catch (NamingException e) {
+        			// TODO: log it
+        		} finally {
+        			callerContext.ungetService(ref);
+        		}
+        		if (factory != null) {
+        			break;
+        		}
+        	}
         }
 
         Object result = null;
