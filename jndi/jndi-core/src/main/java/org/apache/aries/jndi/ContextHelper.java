@@ -18,7 +18,8 @@
  */
 package org.apache.aries.jndi;
 
-import java.security.PrivilegedExceptionAction;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -45,27 +46,19 @@ public final class ContextHelper {
         throw new RuntimeException();
     }
 
-    public static ContextProvider createURLContext(final BundleContext context,
-                                           final String urlScheme, 
-                                           final Hashtable<?, ?> env)
-        throws NamingException {
-        return Utils.doPrivilegedNaming(new PrivilegedExceptionAction<ContextProvider>() {
-            public ContextProvider run() throws Exception {
-                return doCreateURLContext(context, urlScheme, env);
-            }
-        });
-    }
-    
     /**
      * This method is used to create a URL Context. It does this by looking for
      * the URL context's ObjectFactory in the service registry.
      * 
+     * @param context
      * @param urlScheme
      * @param env
      * @return a Context
      * @throws NamingException
      */
-    private static ContextProvider doCreateURLContext(BundleContext context, String urlScheme, Hashtable<?, ?> env)
+    public static ContextProvider createURLContext(final BundleContext context,
+                                           final String urlScheme, 
+                                           final Hashtable<?, ?> env)
         throws NamingException {
       
         ServicePair<ObjectFactory> urlObjectFactory = getURLObjectFactory(context, urlScheme, env);
@@ -82,7 +75,7 @@ public final class ContextHelper {
         return null;
     }
     
-    public static final ServicePair<ObjectFactory> getURLObjectFactory(BundleContext ctx, String urlScheme, Hashtable<?, ?> environment)
+    public static final ServicePair<ObjectFactory> getURLObjectFactory(final BundleContext ctx, String urlScheme, Hashtable<?, ?> environment)
       throws NamingException
     {
       ServicePair<ObjectFactory> result = null;
@@ -90,11 +83,16 @@ public final class ContextHelper {
       ServiceReference ref = ServiceTrackerCustomizers.URL_FACTORY_CACHE.find(urlScheme);
       
       if (ref == null) {
-        ServiceReference[] refs = Activator.getURLObectFactoryFinderServices();
+        ServiceReference[] refs = AccessController.doPrivileged(new PrivilegedAction<ServiceReference[]>() {
+        	public ServiceReference[] run() {
+        		return Activator.getURLObectFactoryFinderServices();
+        	}
+		});        
         
         if (refs != null) {
-          for (ServiceReference finderRef : refs) {
-            URLObjectFactoryFinder finder = (URLObjectFactoryFinder) ctx.getService(finderRef);
+          for (final ServiceReference finderRef : refs) {
+            URLObjectFactoryFinder finder = (URLObjectFactoryFinder) Utils.getServicePrivileged(ctx, finderRef);
+            	
             if (finder != null) {
               ObjectFactory f = finder.findFactory(urlScheme, environment);
               
@@ -130,19 +128,10 @@ public final class ContextHelper {
         }
     }
 
-    public static ContextProvider getContextProvider(final BundleContext context,
-                                                     final Hashtable<?, ?> environment)
+    public static ContextProvider getContextProvider(BundleContext context,
+                                                     Hashtable<?, ?> environment)
         throws NamingException {
-        return Utils.doPrivilegedNaming(new PrivilegedExceptionAction<ContextProvider>() {
-            public ContextProvider run() throws Exception {
-                return doGetContextProvider(context, environment);
-            }
-        });
-    }
-    
-    private static ContextProvider doGetContextProvider(BundleContext context,
-                                                        Hashtable<?, ?> environment)
-        throws NamingException {
+    	
         ContextProvider provider = null;
         String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (contextFactoryClass == null) {
@@ -151,11 +140,17 @@ public final class ContextHelper {
 
             // 2. lookup all ContextFactory services
             if (provider == null) {
-                ServiceReference[] references = Activator.getInitialContextFactoryServices();
+            	
+            	ServiceReference[] references = AccessController.doPrivileged(new PrivilegedAction<ServiceReference[]>() {
+					public ServiceReference[] run() {
+						return Activator.getInitialContextFactoryServices();
+					}
+				});
+                
                 if (references != null) {
                     Context initialContext = null;
                     for (ServiceReference reference : references) {
-                        InitialContextFactory factory = (InitialContextFactory) context.getService(reference);
+                        InitialContextFactory factory = (InitialContextFactory) Utils.getServicePrivileged(context, reference);
                         try {
                             initialContext = factory.getInitialContext(environment);
                             if (initialContext != null) {
@@ -173,7 +168,7 @@ public final class ContextHelper {
             
             if (ref != null) {
               Context initialContext = null;
-              InitialContextFactory factory = (InitialContextFactory) context.getService(ref);
+              InitialContextFactory factory = (InitialContextFactory) Utils.getServicePrivileged(context, ref);
               if (factory != null) {
                 try {
                     initialContext = factory.getInitialContext(environment);
@@ -196,12 +191,18 @@ public final class ContextHelper {
     private static ContextProvider getInitialContextUsingBuilder(BundleContext context,
                                                                  Hashtable<?, ?> environment)
             throws NamingException {
+    	
         ContextProvider provider = null;
-        ServiceReference[] refs = Activator.getInitialContextFactoryBuilderServices();
+        ServiceReference[] refs = AccessController.doPrivileged(new PrivilegedAction<ServiceReference[]>() {
+			public ServiceReference[] run() {
+				return Activator.getInitialContextFactoryBuilderServices();
+			}        	
+		});
+        	
         if (refs != null) {
             InitialContextFactory factory = null;
             for (ServiceReference ref : refs) {                    
-                InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) context.getService(ref);
+                InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) Utils.getServicePrivileged(context, ref);
                 try {
                   factory = builder.createInitialContextFactory(environment);
                 } catch (NamingException ne) {

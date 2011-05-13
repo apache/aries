@@ -32,6 +32,7 @@ import org.apache.aries.jndi.spi.EnvironmentAugmentation;
 import org.apache.aries.jndi.startup.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIConstants;
 
@@ -162,6 +163,27 @@ public final class Utils {
                 throw ex;
             }
         }
+    }
+    
+    public static ServiceReference[] getReferencesPrivileged(final BundleContext ctx, final Class<?> clazz) {
+    	return AccessController.doPrivileged(new PrivilegedAction<ServiceReference[]>() {
+    		public ServiceReference[] run() {
+    			try {
+    				return ctx.getServiceReferences(clazz.getName(), null);
+    			} catch (InvalidSyntaxException ise) {
+    				// should not happen
+    				throw new RuntimeException("Invalid filter", ise);
+    			}
+    		}    		
+		});
+    }
+    
+    public static Object getServicePrivileged(final BundleContext ctx, final ServiceReference ref) {
+    	return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+    		public Object run() {
+    			return ctx.getService(ref);
+    		}
+		});
     }
 
     public static void augmentEnvironment(Hashtable<?, ?> environment) 
