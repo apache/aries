@@ -32,7 +32,7 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Example SPI Client Bundle 2</name>
     <description>
-        A Bundle that uses the java.util.ServiceLoader() API through an embedded library. 
+        A Bundle that uses the java.util.ServiceLoader() API 
     </description>
 
     <dependencies>
@@ -43,22 +43,10 @@
         </dependency>        
 
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>        
-        
-        <dependency>
             <groupId>org.apache.aries.spifly.examples</groupId>
             <artifactId>org.apache.aries.spifly.examples.spi.bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>        
-
-        <dependency>
-            <groupId>org.apache.aries.spifly.examples</groupId>
-            <artifactId>org.apache.aries.spifly.examples.client1.jar</artifactId>
-            <version>${project.version}</version>
         </dependency>        
     </dependencies>
 
@@ -73,12 +61,10 @@
                             *
                         </Import-Package>
                         <Export-Package/>
-                        <_exportcontents/>
                         <Private-Package>
-                            org.apache.aries.spifly.client.bundle
+                            org.apache.aries.spifly.examples.client2.impl
                         </Private-Package>
-                        <Embed-Dependency>*;scope=compile;inline=false</Embed-Dependency>
-                        <Bundle-Activator>org.apache.aries.spifly.client.bundle.Activator</Bundle-Activator>
+                        <Bundle-Activator>org.apache.aries.spifly.examples.client2.impl.Activator</Bundle-Activator>
                         <SPI-Consumer>*</SPI-Consumer>
                     </instructions>
                 </configuration>

@@ -25,7 +25,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 	    Consumer consumer = new Consumer();
-	    System.out.println("*** Result from invoking the SPI consumer: " + consumer.callSPI());
+	    System.out.println("*** Result from invoking the SPI consume via library: " + consumer.callSPI());
 	}
 
 	public void stop(BundleContext context) throws Exception {
