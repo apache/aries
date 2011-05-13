@@ -45,7 +45,7 @@ public class ServicePair<T>
   public T get()
   {
     if (serviceObject == null && ref.getBundle() != null) {
-      serviceObject = (T) ctx.getService(ref);
+      serviceObject = (T) Utils.getServicePrivileged(ctx, ref);
     }
     
     return serviceObject;
