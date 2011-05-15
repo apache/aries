@@ -32,6 +32,7 @@ import javax.naming.spi.ObjectFactory;
 import org.apache.aries.jndi.startup.Activator;
 import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
+import org.apache.aries.util.service.registry.ServicePair;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
