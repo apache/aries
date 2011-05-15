@@ -42,6 +42,7 @@ import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
 import javax.naming.ServiceUnavailableException;
 
+import org.apache.aries.jndi.services.ServiceHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -444,7 +445,7 @@ public class BlueprintURLContext implements Context
       st.close();
     }
     if (result == null) { 
-      throw new ServiceUnavailableException ("The BlueprintContainer service for bundle: " + b.getSymbolicName() + '_' + b.getVersion() + " not be located");
+      throw new ServiceUnavailableException (ServiceHelper.MESSAGES.getMessage("no.blueprint.container", b.getSymbolicName() + '/' + b.getVersion()));
     }
     return result;
   }

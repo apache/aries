@@ -30,6 +30,7 @@ import javax.naming.NamingException;
 
 import org.apache.aries.jndi.spi.EnvironmentAugmentation;
 import org.apache.aries.jndi.startup.Activator;
+import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.InvalidSyntaxException;
@@ -42,6 +43,7 @@ public final class Utils {
 
     public static final Comparator<ServiceReference> SERVICE_REFERENCE_COMPARATOR = 
         new ServiceReferenceComparator();
+    public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(Utils.class, "org.apache.aries.jndi.nls.jndiMessages");
 
     /** Ensure no one constructs us */
     private Utils() {
@@ -172,7 +174,7 @@ public final class Utils {
     				return ctx.getServiceReferences(clazz.getName(), null);
     			} catch (InvalidSyntaxException ise) {
     				// should not happen
-    				throw new RuntimeException("Invalid filter", ise);
+    				throw new RuntimeException(MESSAGES.getMessage("null.is.invalid.filter"), ise);
     			}
     		}    		
 		});
