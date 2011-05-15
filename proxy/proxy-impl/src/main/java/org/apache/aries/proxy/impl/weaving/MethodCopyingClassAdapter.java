@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -102,9 +103,8 @@ final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
       // package
       if((access & (ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE)) == 0) {
         if(!!!samePackage)
-          throw new RuntimeException("The method " + name + " in class " + 
-              superToCopy.getName() + " cannot be called by " + overridingClassType.getClassName()
-              + " because it is in a different package", new UnableToProxyException(superToCopy));
+          throw new RuntimeException(NLS.MESSAGES.getMessage("method.from.superclass.is.hidden", name, superToCopy.getName(), overridingClassType.getClassName()),
+                                     new UnableToProxyException(superToCopy));
       }
       //Safe to copy a call to this method!
       Type superType = Type.getType(superToCopy);

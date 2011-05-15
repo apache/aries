@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 /**
@@ -108,7 +109,7 @@ final class OSGiFriendlyClassWriter extends ClassWriter {
         }
       }
       
-      throw new RuntimeException("Unable to locate common superclass, start looking outside the loader's bundle");
+      throw new RuntimeException(NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
