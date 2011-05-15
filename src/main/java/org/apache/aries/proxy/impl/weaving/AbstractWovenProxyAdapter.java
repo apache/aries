@@ -32,6 +32,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.gen.Constants;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.ClassAdapter;
@@ -237,9 +238,7 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
     } catch (ClassNotFoundException e) {
       // If this happens we're about to hit bigger trouble on verify, so we can
       // just throw it
-      throw new RuntimeException("Unable to load the super type "
-          + superName.replace('/', '.') + " for class "
-          + typeBeingWoven.getClassName(), e);
+      throw new RuntimeException(NLS.MESSAGES.getMessage("cannot.load.superclass", superName.replace('/', '.'), typeBeingWoven.getClassName()), e);
     }
   }
 
@@ -319,9 +318,8 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
             knownMethods, transformedMethods), ClassReader.SKIP_CODE | 
             ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
       } catch (IOException e) {
-        //This should never happen!
-        throw new RuntimeException("Error processing " + c.getName() + " when weaving "
-            + typeBeingWoven.getClassName(), e);
+        // This should never happen! <= famous last words (not)
+        throw new RuntimeException(NLS.MESSAGES.getMessage("unexpected.error.processing.class", c.getName(), typeBeingWoven.getClassName()), e);
       }
     }
     // If we need to implement woven proxy in this class then write the methods
@@ -475,9 +473,8 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
         if(hasNoArgsConstructor)
           methodAdapter.invokeConstructor(typeBeingWoven, NO_ARGS_CONSTRUCTOR);
         else
-          throw new RuntimeException(new UnableToProxyException(typeBeingWoven.getClassName(), "The class " + 
-              typeBeingWoven.getClassName() + " and its supertype " + superType.getClassName() +
-              " do not have no-args constructors and cannot be woven."));
+          throw new RuntimeException(new UnableToProxyException(typeBeingWoven.getClassName(), 
+              NLS.MESSAGES.getMessage("type.lacking.no.arg.constructor", typeBeingWoven.getClassName(), superType.getClassName())));
       }
       methodAdapter.loadThis();
       methodAdapter.loadArg(0);
