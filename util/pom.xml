@@ -46,6 +46,7 @@
             org.apache.aries.util;
             org.apache.aries.util.tracker;
             org.apache.aries.util.nls;
+            org.apache.aries.util.service.registry;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
             !org.apache.aries.util*,
