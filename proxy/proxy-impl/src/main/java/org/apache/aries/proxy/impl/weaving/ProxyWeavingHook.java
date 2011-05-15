@@ -21,6 +21,7 @@ package org.apache.aries.proxy.impl.weaving;
 import java.util.List;
 
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
@@ -30,8 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public final class ProxyWeavingHook implements WeavingHook {
 
-  private static final Logger LOGGER = LoggerFactory
-  .getLogger(ProxyWeavingHook.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProxyWeavingHook.class);
   /** An import of the WovenProxy package */
   private static final String IMPORT_A = "org.apache.aries.proxy.weaving";
   /** 
@@ -67,14 +67,12 @@ public final class ProxyWeavingHook implements WeavingHook {
           e.getCause() instanceof UnableToProxyException){
         //This is a weaving failure that should be logged, but the class
         //can still be loaded
-        LOGGER.info("The class " + wovenClass.getClassName() + " cannot be woven, it may" +
-        		"not be possible for the runtime to proxy this class. The failure was : ", e);
+        LOGGER.info(NLS.MESSAGES.getMessage("cannot.weave", wovenClass.getClassName()), e);
       } else {
+        String failureMessage = NLS.MESSAGES.getMessage("fatal.weaving.failure", wovenClass.getClassName());
         //This is a failure that should stop the class loading!
-        LOGGER.error("There was a serious error trying to weave the class " 
-            + wovenClass.getClassName(), e);
-        throw new WeavingException("There was a serious error trying to weave the class " 
-          + wovenClass.getClassName(), e);
+        LOGGER.error(failureMessage, e);
+        throw new WeavingException(failureMessage, e);
       }
     }
     

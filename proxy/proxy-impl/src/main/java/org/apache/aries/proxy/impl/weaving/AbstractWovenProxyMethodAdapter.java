@@ -32,6 +32,7 @@ import static org.objectweb.asm.Opcodes.IFNE;
 import java.util.Arrays;
 
 import org.apache.aries.proxy.InvocationListener;
+import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -473,8 +474,7 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
       ilMethod = clazz.getMethod(name, argTypes);
     } catch (Exception e) {
       //Should be impossible!
-      throw new RuntimeException("Error finding Invocation Listener method " + name
-          + " " + Arrays.toString(argTypes), e);
+      throw new RuntimeException(NLS.MESSAGES.getMessage("error.finding.invocation.listener.method", name, Arrays.toString(argTypes)), e);
     }
     //get the ASM method
     return new Method(name, Type.getReturnType(ilMethod), Type.getArgumentTypes(ilMethod));

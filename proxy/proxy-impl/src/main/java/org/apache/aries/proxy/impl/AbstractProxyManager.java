@@ -60,7 +60,7 @@ public abstract class AbstractProxyManager implements ProxyManager
       throws UnableToProxyException 
   {
     if(dispatcher == null)
-      throw new NullPointerException("A dispatcher must be specified for a delegating proxy handler");
+      throw new NullPointerException(NLS.MESSAGES.getMessage("no.dispatcher"));
     
     if (template instanceof WovenProxy) {
       WovenProxy proxy = ((WovenProxy) template).
