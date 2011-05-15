@@ -43,7 +43,7 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
 	  
 	    BundleContext context = Utils.getBundleContext(environment, InitialContext.class);	    
 	    if (context == null) {
-            throw new NoInitialContextException("Unable to determine caller's BundleContext");
+            throw new NoInitialContextException(Utils.MESSAGES.getMessage("cannot.find.callers.bundlecontext"));
 	    }
 	    	    
 	    return ContextHelper.getInitialContext(context, environment);

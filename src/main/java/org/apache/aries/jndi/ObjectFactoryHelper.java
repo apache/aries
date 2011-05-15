@@ -181,7 +181,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
 		            }
 		        } catch (InvalidSyntaxException e) {
 		            // should not happen
-		            throw new RuntimeException("Invalid filter", e);
+                    throw new RuntimeException(Utils.MESSAGES.getMessage("null.is.invalid.filter"), e);
 		        }
 
 		        ObjectFactory factory = null;
