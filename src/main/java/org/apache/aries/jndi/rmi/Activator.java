@@ -23,6 +23,7 @@ import java.util.Hashtable;
 import javax.naming.spi.ObjectFactory;
 
 import org.apache.aries.util.AriesFrameworkUtil;
+import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -50,7 +51,8 @@ public class Activator implements BundleActivator {
         }
         catch (Exception e)
         {
-            LOGGER.info("Could not create the jndi rmi url factory.", e);
+            MessageUtil msg = MessageUtil.createMessageUtil(Activator.class, "org.apache.aries.jndi.nls.jndiRmiMessages");
+            LOGGER.info(msg.getMessage("rmi.factory.creation.failed"), e);
         }
     }
 
