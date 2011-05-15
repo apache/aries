@@ -18,6 +18,9 @@
  */
 package org.apache.aries.util.service.registry;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -45,7 +48,12 @@ public class ServicePair<T>
   public T get()
   {
     if (serviceObject == null && ref.getBundle() != null) {
-      serviceObject = (T) ctx.getService(ref);
+      serviceObject = AccessController.doPrivileged(new PrivilegedAction<T>() {
+          public T run()
+          {
+            return serviceObject = (T) ctx.getService(ref);
+          }
+        });
     }
     
     return serviceObject;
