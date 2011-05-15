@@ -90,7 +90,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
                     AccessController.checkPermission(adminPermission);
                     return callerContext;
                 } catch (AccessControlException accessControlException) {
-                    NamingException namingException = new NameNotFoundException("Caller does not have permissions to get BundleContext.");
+                    NamingException namingException = new NameNotFoundException(ServiceHelper.MESSAGES.getMessage("caller.not.priviledged"));
                     namingException.setRootCause(accessControlException);
                     throw namingException;
                 }

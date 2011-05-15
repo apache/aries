@@ -76,9 +76,9 @@ public class Activator implements BundleActivator {
             NamingManager.setInitialContextFactoryBuilder(builder);
             icfBuilder = builder;
         } catch (NamingException e) {
-            LOGGER.info("Cannot set the InitialContextFactoryBuilder.", e);
+            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB"), e);
         } catch (IllegalStateException e) {
-            LOGGER.info("Cannot set the InitialContextFactoryBuilder. Another builder " + getClassName(InitialContextFactoryBuilder.class) + " is already installed", e);
+            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
         }
 
         try {
@@ -86,9 +86,9 @@ public class Activator implements BundleActivator {
             NamingManager.setObjectFactoryBuilder(builder);
             ofBuilder = builder;
         } catch (NamingException e) {
-            LOGGER.info("Cannot set the ObjectFactoryBuilder.", e);
+            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB"), e);
         } catch (IllegalStateException e) {
-            LOGGER.info("Cannot set the ObjectFactoryBuilder. Another builder " + getClassName(InitialContextFactoryBuilder.class) + " is already installed", e);
+            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
         }
 
         context.registerService(JNDIProviderAdmin.class.getName(),
