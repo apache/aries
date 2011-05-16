@@ -19,7 +19,6 @@
 package org.apache.aries.jpa.blueprint.aries.impl;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +32,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.PersistenceUnit;
 
-import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
@@ -42,6 +40,7 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
+import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.reflect.BeanArgument;
@@ -53,7 +52,6 @@ import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
-import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +71,8 @@ public class NSHandler implements NamespaceHandler {
     /** Logger */
     private static final Logger _logger = LoggerFactory
             .getLogger("org.apache.aries.jpa.blueprint.aries");
+    /** MessageUtil */
+    private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(NSHandler.class, "org.apache.aries.jpa.blueprint.aries.nls.ariesBlueprintJpaMessages");
 
     /** The JPA 1.0.0 namespace */
     public static final String NS_URI_100 = "http://aries.apache.org/xmlns/jpa/v1.0.0";
@@ -125,23 +125,19 @@ public class NSHandler implements NamespaceHandler {
             ParserContext context) {
         // The node should always be an element
         if (node.getNodeType() != Node.ELEMENT_NODE) {
-            _logger.error("The JPA namespace handler does not understand the DOM node {}.",
-                            new Object[] { node });
+            _logger.error(MESSAGES.getMessage("unexpected.node", node));
             throw new IllegalArgumentException(node.toString());
         }
 
         Element element = (Element) node;
         // The surrounding component should always be a bean
         if (!(component instanceof BeanMetadata)) {
-            _logger.error("The JPA namespace should only be used to inject properties or constuctor arguments into a bean." +
-            		" The surrounding component was {}.", new Object[] { component });
+            _logger.error(MESSAGES.getMessage("incorrect.component.type", component));
             throw new IllegalArgumentException(component.toString());
         }
         
         if (!(component instanceof MutableBeanMetadata)) {
-            _logger.error("The JPA namespace should only be used to inject properties into beans " +
-                            "that implement the MutableBeanMetadata interface. " +
-                            "The surrounding component was {}.", new Object[] { component });
+            _logger.error(MESSAGES.getMessage("non.mutable.bean", component));
             throw new IllegalArgumentException(component.toString());
         }
 
@@ -149,18 +145,16 @@ public class NSHandler implements NamespaceHandler {
 
         if (!NS_URI_100.equals(element.getNamespaceURI())
             && !NS_URI_110.equals(element.getNamespaceURI())) {
-            _logger.error("The JPA namespace handler should not be called for the namespace {}.",
-                            new Object[] { element.getNamespaceURI() });
-            throw new IllegalArgumentException("The JPA namespace handler should not be called for the namespace " 
-                   + element.getNamespaceURI());
+            String message = MESSAGES.getMessage("unexpected.namespace", element.getNamespaceURI());
+            _logger.error(message);
+            throw new IllegalArgumentException(message);
         }
 
         if (!TAG_UNIT.equals(element.getLocalName())
                 && !TAG_CONTEXT.equals(element.getLocalName())) {
-            _logger.error("The JPA namespace handler did not recognize the element named {}.",
-                            new Object[] { element.getLocalName() });
-            throw new IllegalArgumentException("The JPA namespace handler did not recognize the element named " 
-                   + element.getLocalName());
+            String message = MESSAGES.getMessage("unexpected.element", element.getLocalName());
+            _logger.error(message);
+            throw new IllegalArgumentException(message);
         }
 
         String property = element.getAttribute(ATTR_PROPERTY);
@@ -168,7 +162,7 @@ public class NSHandler implements NamespaceHandler {
         String index = element.getAttribute(ATTR_INDEX);
         index = index.isEmpty() ? null : index;
         if(property != null && index != null) {
-          _logger.error("It is invalid to specify a bean property and an index") ;
+          _logger.error(MESSAGES.getMessage("invalid.property.and.index"));
         } else if (property != null) {
             
                 
@@ -202,9 +196,7 @@ public class NSHandler implements NamespaceHandler {
                 if(contextsAvailable.get()) {
                     manager.registerContext(unitName, client, properties);
                 } else {
-                    _logger.warn("The bundle {} is a client of persistence unit {} with properties {}, but no PersistenceContextProvider is available in the runtime. " +
-                    		"The blueprint for this bundle will not start correctly unless the managed persistence context is registered through some other mechanism",
-                    		new Object[] {client.getSymbolicName() + "_" + client.getVersion(), unitName, properties});
+                    _logger.warn(MESSAGES.getMessage("no.persistence.context.provider", client.getSymbolicName() + '/' + client.getVersion(), unitName, properties));
                 }
             } else {
                 _logger.debug("No bundle: this must be a dry, parse only run.");
@@ -234,7 +226,7 @@ public class NSHandler implements NamespaceHandler {
          * The namespace does not define any top-level elements, so we should
          * never get here. In case we do -> explode.
          */
-        _logger.error("The JPA namespace handler was called to parse a top level element.");
+        _logger.error(MESSAGES.getMessage("unexpected.top.level.element"));
         throw new UnsupportedOperationException();
     }
     
@@ -255,7 +247,7 @@ public class NSHandler implements NamespaceHandler {
      */
     public void contextUnavailable(ServiceReference ref) {
         contextsAvailable.set(false);
-        _logger.warn("Managed persistence context support is no longer available for use with the Aries Blueprint container");
+        _logger.warn(MESSAGES.getMessage("jpa.support.gone"));
     }
     
     /**
@@ -337,7 +329,7 @@ public class NSHandler implements NamespaceHandler {
             try {
                 i = Integer.parseInt(index);
             } catch (NumberFormatException nfe) {
-                throw new IllegalArgumentException("The string " + index + " could not be parsed as an index.", nfe);
+                throw new IllegalArgumentException(MESSAGES.getMessage("index.not.a.number", index), nfe);
             }
         }
         
@@ -495,7 +487,7 @@ public class NSHandler implements NamespaceHandler {
 
                     result.put(key.getStringValue(), value.getStringValue());
                 } else {
-                    _logger.error("There was a problem parsing a map of JPA properties");
+                    _logger.error(MESSAGES.getMessage("map.not.well.formed"));
                     throw new UnsupportedOperationException();
                 }
             }
