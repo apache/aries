@@ -37,7 +37,7 @@ import org.apache.aries.application.filesystem.IFile;
 public class ZipDirectory extends ZipFileImpl implements IDirectory
 {
   /** The root of the zip FS. */
-  private IDirectory root;
+  private final IDirectory root;
   private final boolean zipRoot;
   
   /**
@@ -51,6 +51,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   {
     super(zip1, entry1, parent);
     zipRoot = false;
+    root = parent.getRoot();
   }
 
   /**
@@ -72,7 +73,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   {
     IFile result = null;
     
-    String entryName = isZipRoot() ? name : getName() + "/" + name;
+    String entryName = isZipRoot() ? name : getNameInZip() + "/" + name;
     
     ZipEntry entryFile = getEntry(entryName);
     
@@ -97,13 +98,13 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     
     String name = foundEntry.getName();
     
-    name = name.substring(getName().length());
+    name = name.substring(getNameInZip().length());
     
     String[] paths = name.split("/");
     
-    StringBuilder baseBuilderCrapThingToGetRoundFindBugs = new StringBuilder(getName());
+    StringBuilder baseBuilderCrapThingToGetRoundFindBugs = new StringBuilder(getNameInZip());
     
-    if (!!!isRoot()) baseBuilderCrapThingToGetRoundFindBugs.append('/');
+    if (!!!isZipRoot()) baseBuilderCrapThingToGetRoundFindBugs.append('/');
     // Build 'result' as a chain of ZipDirectories. This will only work if java.util.ZipFile recognises every 
     // directory in the chain as being a ZipEntry in its own right. 
     outer: if (paths != null && paths.length > 1) {
@@ -150,7 +151,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 	  while (entries.hasMoreElements()) {
 		  ZipEntry possibleEntry = entries.nextElement();
 
-		  if (isInDir(possibleEntry, includeFilesInNestedSubdirs)) {
+		  if (isInDir(getNameInZip(), possibleEntry, includeFilesInNestedSubdirs)) {
 			  ZipDirectory parent = includeFilesInNestedSubdirs ? buildParent(possibleEntry) : this;
 			  if (possibleEntry.isDirectory()) {
 				  files.add(new ZipDirectory(zip, possibleEntry, parent));
@@ -172,11 +173,10 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
    * @param whether files in subdirectories are to be included
    * @return true if it is in this directory.
    */
-  private boolean isInDir(ZipEntry possibleEntry, boolean allowSubDirs)
+  protected static boolean isInDir(String parentDir, ZipEntry possibleEntry, boolean allowSubDirs)
   {
     boolean result;
     String name = possibleEntry.getName();
-    String parentDir = getName();
     if (name.endsWith("/")) name = name.substring(0, name.length() - 1);
     result = (name.startsWith(parentDir) && !!!name.equals(parentDir) && (allowSubDirs || name.substring(parentDir.length() + 1).indexOf('/') == -1));
     return result;

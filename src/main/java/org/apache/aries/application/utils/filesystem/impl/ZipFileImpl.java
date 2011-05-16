@@ -136,6 +136,16 @@ public class ZipFileImpl implements IFile
   {
     return name;
   }
+  
+  public String getNameInZip() 
+  {
+	  if (entry == null) return "";
+	  else {
+		  String name = entry.getName();
+		  if (isDirectory()) return name.substring(0, name.length()-1);
+		  else return name;
+	  }
+  }
 
   @Override
   public IDirectory getParent()

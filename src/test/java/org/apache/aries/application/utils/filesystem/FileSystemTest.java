@@ -136,6 +136,8 @@ public class FileSystemTest
 	
 	// check URLs are correct
 	checkManifest(appMf.toURL().openStream());
+	
+	runBasicDirTest(zip, "fileSystemTest/app2.zip/", appMf.getSize(), appMf.getLastModified());
   }
   
   /**
@@ -261,6 +263,11 @@ public class FileSystemTest
     dir.open();
   }
   
+  private void runBasicDirTest(IDirectory dir, long len, long time) throws IOException
+  {
+	  runBasicDirTest(dir, "", len, time);
+  }
+  
   /**
    * This method makes sure that the data is correctly understood from disk. It
    * is called for both the file and zip versions of the test to ensure we have
@@ -271,7 +278,7 @@ public class FileSystemTest
    * @param time  The time the file was last updated.
    * @throws IOException
    */
-  public void runBasicDirTest(IDirectory dir, long len, long time) throws IOException
+  private void runBasicDirTest(IDirectory dir, String namePrefix, long len, long time) throws IOException
   {
     assertNull("for some reason our fake app has a fake blueprint file.", dir.getFile("OSGI-INF/blueprint/aries.xml"));
     
@@ -279,11 +286,11 @@ public class FileSystemTest
     
     assertNotNull("we could not find the application manifest", file);
     
-    assertEquals(AppConstants.APPLICATION_MF, file.getName().replace('\\', '/'));
+    assertEquals(namePrefix+AppConstants.APPLICATION_MF, file.getName().replace('\\', '/'));
     assertTrue("The last update time is not within 2 seconds of the expected value. Expected: " + time + " Actual: " + file.getLastModified(), Math.abs(time - file.getLastModified()) < 2000);
 
     assertEquals(len, file.getSize());
-    assertEquals("META-INF", file.getParent().getName());
+    assertEquals(namePrefix+"META-INF", file.getParent().getName());
     assertFalse(file.isDirectory());
     assertTrue(file.isFile());
     
@@ -295,12 +302,12 @@ public class FileSystemTest
     filterOutSvn(allFiles);    
     assertEquals(3, allFiles.size());
     
-    assertEquals("META-INF", allFiles.get(1).getParent().getName());
+    assertEquals(namePrefix+"META-INF", allFiles.get(1).getParent().getName());
     
     IFile metaInf = files.get(0);
     
     assertTrue(metaInf.isDirectory());
-    assertEquals("META-INF", metaInf.getName());
+    assertEquals(namePrefix+"META-INF", metaInf.getName());
     assertNotNull(metaInf.convert());
     
     files = metaInf.convert().listAllFiles();
@@ -308,9 +315,9 @@ public class FileSystemTest
     assertEquals(2, files.size());    
     
     for (IFile aFile : dir) {
-      if (!aFile.getName().equalsIgnoreCase(".svn")) { 
+      if (!aFile.getName().contains(".svn")) { 
         assertTrue(aFile.isDirectory());
-        assertEquals("META-INF", aFile.getName());
+        assertEquals(namePrefix+"META-INF", aFile.getName());
         assertNotNull(aFile.convert());
       }
     }
