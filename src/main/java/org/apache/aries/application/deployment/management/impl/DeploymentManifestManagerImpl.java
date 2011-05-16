@@ -180,7 +180,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
    * @return
    * @throws ResolverException
    */
-    public DeployedBundles generateDeployedBundles(ApplicationMetadata appMetadata,
+    @Override
+	public DeployedBundles generateDeployedBundles(ApplicationMetadata appMetadata,
             Collection<ModelledResource> provideByValueBundles, Collection<Content> otherBundles)
             throws ResolverException {
      
@@ -662,6 +663,9 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       OutputStream out = new FileOutputStream(temp);
       IOUtils.copy(in, out);
       IOUtils.close(out);
+      
+      System.out.println("XXX: "+temp.getAbsolutePath()+" - "+temp.exists());
+      
       result.add(modelledResourceManager.getModelledResource(null, FileSystem.getFSRoot(temp)));
       // delete the temp file
       temp.delete();
