@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.jar.Manifest;
@@ -60,7 +61,7 @@ public class FileSystemTest
   @Test(expected=UnsupportedOperationException.class)
   public void basicRootDirTestsWithFiles() throws IOException
   {
-    File baseDir = new File("../src/test/resources/app1");
+    File baseDir = new File(getTestResourceDir(), "/app1");
     File manifest = new File(baseDir, AppConstants.APPLICATION_MF);
     IDirectory dir = FileSystem.getFSRoot(baseDir);
     
@@ -76,7 +77,7 @@ public class FileSystemTest
   @Test
   public void basicDirTestsWithFiles() throws IOException
   {
-    File baseDir = new File("../src/test/resources/app1");
+    File baseDir = new File(getTestResourceDir(), "/app1");
     IDirectory dir = FileSystem.getFSRoot(baseDir);
 
     File desiredFile = new File(baseDir, AppConstants.APPLICATION_MF);
@@ -101,6 +102,43 @@ public class FileSystemTest
   }
   
   /**
+   * Make sure that operations work on zip files nested in file IDirectories
+   * @throws IOException
+   */
+  @Test
+  public void nestedZipInDirectory() throws IOException
+  {
+	IDirectory dir = FileSystem.getFSRoot(new File("").getAbsoluteFile());  
+	
+	// base convert does not do nested zips
+	IDirectory zip = dir.getFile("fileSystemTest/app2.zip").convert();
+	assertNull(zip);
+	
+	// basic conversion works
+	zip = dir.getFile("fileSystemTest/app2.zip").convertNested();
+	assertNotNull(zip);
+	
+	// we get the parent and our path right
+	assertNotNull(zip.getParent());
+	assertEquals("fileSystemTest", zip.getParent().getName());
+	assertEquals("fileSystemTest/app2.zip", zip.getName());
+	
+	// files inside the nested zip have the correct path as well
+	IFile appMf = zip.getFile("META-INF/APPLICATION.MF");
+	assertNotNull(appMf);
+	assertEquals("fileSystemTest/app2.zip/META-INF/APPLICATION.MF", appMf.getName());
+	checkManifest(appMf.open());
+
+	// root is right
+	assertFalse(zip.isRoot());
+	assertEquals(dir, zip.getRoot());
+	assertEquals(dir, appMf.getRoot());	
+	
+	// check URLs are correct
+	checkManifest(appMf.toURL().openStream());
+  }
+  
+  /**
    * Make sure we correctly understand the directory structure for zips.
    * 
    * @throws IOException
@@ -111,7 +149,9 @@ public class FileSystemTest
     File baseDir = new File("fileSystemTest/app2.zip");
     IDirectory dir = FileSystem.getFSRoot(baseDir);
 
-    File desiredFile = new File(new File("../src/test/resources/app1"), AppConstants.APPLICATION_MF);
+    assertTrue(dir.toString(), dir.toString().endsWith("app2.zip"));
+    
+    File desiredFile = new File(new File(getTestResourceDir(), "/app1"), AppConstants.APPLICATION_MF);
     
     runBasicDirTest(dir, desiredFile.length(), desiredFile.lastModified());
   }
@@ -128,12 +168,19 @@ public class FileSystemTest
     File zipFile = new File("fileSystemTest/app2.zip");
     zipFile.getParentFile().mkdirs();
     ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
+
+    int index = new File(getTestResourceDir(), "/app1").getAbsolutePath().length();
     
-    int index = new File("../src/test/resources/app1").getAbsolutePath().length();
-    
-    writeEnties(out, new File("../src/test/resources/app1"), index);
+    writeEnties(out, new File(getTestResourceDir(), "/app1"), index);
     
     out.close();
+  }
+  
+  private static File getTestResourceDir() {
+	  File root = new File("").getAbsoluteFile();
+	  
+	  if (root.getName().equals("target")) return new File("../src/test/resources");
+	  else return new File("src/test/resources");
   }
   
   /**
@@ -234,36 +281,31 @@ public class FileSystemTest
     
     assertEquals(AppConstants.APPLICATION_MF, file.getName().replace('\\', '/'));
     assertTrue("The last update time is not within 2 seconds of the expected value. Expected: " + time + " Actual: " + file.getLastModified(), Math.abs(time - file.getLastModified()) < 2000);
+
     assertEquals(len, file.getSize());
     assertEquals("META-INF", file.getParent().getName());
     assertFalse(file.isDirectory());
     assertTrue(file.isFile());
     
     List<IFile> files = dir.listFiles();
-    Iterator<IFile> it = files.iterator();
-    while (it.hasNext()) { 
-      IFile f = it.next();
-      if (f.getName().equalsIgnoreCase(".svn")) { 
-        it.remove();
-      }
-    }
-    
+    filterOutSvn(files);
     assertEquals(1, files.size());
+
     List<IFile> allFiles = dir.listAllFiles();
-    Iterator<IFile> its = allFiles.iterator();
-    while (its.hasNext()) { 
-      IFile f = its.next();
-      if (f.getName().toLowerCase().contains(".svn")) { 
-        its.remove();
-      }
-    }
-    
+    filterOutSvn(allFiles);    
     assertEquals(3, allFiles.size());
+    
+    assertEquals("META-INF", allFiles.get(1).getParent().getName());
+    
     IFile metaInf = files.get(0);
     
     assertTrue(metaInf.isDirectory());
     assertEquals("META-INF", metaInf.getName());
     assertNotNull(metaInf.convert());
+    
+    files = metaInf.convert().listAllFiles();
+    filterOutSvn(files);
+    assertEquals(2, files.size());    
     
     for (IFile aFile : dir) {
       if (!aFile.getName().equalsIgnoreCase(".svn")) { 
@@ -272,17 +314,27 @@ public class FileSystemTest
         assertNotNull(aFile.convert());
       }
     }
-    
-    InputStream is = file.open();
-    
-    Manifest man = new Manifest(is);
-    //remember to close the input stream after use
-    is.close();
-    assertEquals("com.travel.reservation", man.getMainAttributes().getValue("Application-SymbolicName"));
+
+    checkManifest(file.open());
     
     IFile applicationMF2 = dir.getFile(AppConstants.APPLICATION_MF);
     
     Assert.assertEqualsContract(file, applicationMF2, dir);
     Assert.assertHashCodeEquals(file, applicationMF2, true);
+  }
+  
+  private void filterOutSvn(Collection<IFile> files) {
+	  Iterator<IFile> its = files.iterator();
+	  while (its.hasNext()) {
+		  IFile f = its.next();
+		  if (f.getName().toLowerCase().contains(".svn")) its.remove();
+	  }
+  }
+  
+  private void checkManifest(InputStream is) throws IOException {
+	  Manifest man = new Manifest(is);
+	  //remember to close the input stream after use
+	  is.close();
+	  assertEquals("com.travel.reservation", man.getMainAttributes().getValue("Application-SymbolicName"));	  
   }
 }

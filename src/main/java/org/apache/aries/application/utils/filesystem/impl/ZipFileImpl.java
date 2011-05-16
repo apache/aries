@@ -30,7 +30,6 @@ import java.util.zip.ZipFile;
 
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.application.utils.AppConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,19 +42,21 @@ public class ZipFileImpl implements IFile
   private static final Logger logger = LoggerFactory.getLogger("org.apache.aries.application.utils");
 
   /** The name of the file */
-  private String name = "";
+  private String name;
   /** The size of the file */
   private final long size;
   /** The last time the file was updated */
   private final long lastModified;
   /** The zip file this is contained in */
-  protected File zip;
+  protected final File zip;
   /** The entry in the zip this IFile represents */
-  protected ZipEntry entry;
+  protected final ZipEntry entry;
   /** The parent directory */
-  private ZipDirectory parent;
+  private final IDirectory parent;
   /** The URL of the zip file we are looking inside of */
   private final String url;
+  /** The path of the zip archive to the VFS root */
+  private final String zipPathToRoot;
   
   /**
    * This constructor is used to create a file entry within the zip.
@@ -69,7 +70,9 @@ public class ZipFileImpl implements IFile
     this.zip = zip1;
     this.entry = entry1;
     
-    name = entry1.getName();
+    this.zipPathToRoot = parent1.getZipPathToRoot();
+
+    name = zipPathToRoot + entry1.getName();
     
     if (entry1.isDirectory()) name = name.substring(0, name.length() - 1);
     
@@ -86,68 +89,95 @@ public class ZipFileImpl implements IFile
    * 
    * @param zip1 the zip file this represents.
    * @param fs   the file on the fs.
+   * @param rootName the name of this zipfile relative to the IFile filesystem root
    * @throws MalformedURLException
    */
-  protected ZipFileImpl(File zip1, File fs) throws MalformedURLException
+  protected ZipFileImpl(File zip1, File fs, IDirectory parent) throws MalformedURLException
   {
     this.zip = zip1;
     this.entry = null;
-    name = "";
+    
+    if (parent == null) {
+        name = "";
+        zipPathToRoot = "";
+        this.parent = null;
+    } else {
+    	this.parent = parent;
+    	name = parent.getName() + "/" + zip1.getName();
+    	zipPathToRoot = name+"/";
+    }
+    
     lastModified = fs.lastModified();
     size = fs.length();
     url = fs.toURI().toURL().toExternalForm();
   }
 
+  /**
+   * Obtain the path of the zip file to the VFS root
+   */
+  public String getZipPathToRoot() {
+	  return zipPathToRoot;
+  }
+  
+  @Override
   public IDirectory convert()
   {
     return null;
   }
 
+  @Override
   public long getLastModified()
   {
     return lastModified;
   }
 
+  @Override
   public String getName()
   {
     return name;
   }
 
+  @Override
   public IDirectory getParent()
   {
     return parent;
   }
 
+  @Override
   public long getSize()
   {
     return size;
   }
 
+  @Override
   public boolean isDirectory()
   {
     return false;
   }
 
+  @Override
   public boolean isFile()
   {
     return true;
   }
 
+  @Override
   public InputStream open() throws IOException
   {
     InputStream is = new SpecialZipInputStream(entry);
     return is;
   }
   
+  @Override
   public IDirectory getRoot()
   {
-    IDirectory root = parent.getRoot();
-    return root;
+    return parent.getRoot();
   }
 
+  @Override
   public URL toURL() throws MalformedURLException
   {
-    String entryURL = "jar:" + url + "!/" + getName();
+    String entryURL = "jar:" + url + "!/" + entry.getName();
     URL result = new URL(entryURL);
     return result;
   }
@@ -174,7 +204,8 @@ public class ZipFileImpl implements IFile
   @Override
   public String toString()
   {
-    return url.substring(5)+ "/" + name;
+	  if (name != null && !!!name.isEmpty()) return url.substring(5)+ "/" + name;
+	  else return url.substring(5);
   }
   
   ZipFile openZipFile(){
@@ -234,5 +265,11 @@ public class ZipFileImpl implements IFile
         closeZipFile(zipFile);
     }
     
+  }
+
+  @Override
+  public IDirectory convertNested() {
+	// TODO Auto-generated method stub
+	return null;
   }
 }

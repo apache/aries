@@ -43,6 +43,7 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     super(dir, rootFile);
   }
 
+  @Override
   public IFile getFile(String name)
   {
     File desiredFile = new File(file, name);
@@ -59,12 +60,14 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     return result;
   }
 
+  @Override
   public boolean isRoot()
   {
     boolean result = (rootDirFile == file);
     return result;
   }
 
+  @Override
   public List<IFile> listFiles()
   {
     List<IFile> files = new ArrayList<IFile>();
@@ -80,6 +83,8 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     }
     return files;
   }
+  
+  @Override
   public List<IFile> listAllFiles()
   {
     List<IFile> files = new ArrayList<IFile>();
@@ -89,40 +94,25 @@ public class DirectoryImpl extends FileImpl implements IDirectory
         if (f.isFile()) {
           files.add(new FileImpl(f, rootDirFile));
         } else if (f.isDirectory()) {
-          files.add(new DirectoryImpl(f, rootDirFile));
-          listSubDirectoryFiles(files, f);
+          IDirectory subdir = new DirectoryImpl(f, rootDirFile);
+          files.add(subdir);
+          files.addAll(subdir.listAllFiles());
         }
       }
     }
     return files;
   }
   
-  private void listSubDirectoryFiles(List<IFile> lists, File file) {
-    File[] filesInDir = file.listFiles();
-    if (filesInDir != null) {
-      for (File f : filesInDir) {
-        if (f.isFile()) {
-          lists.add(new FileImpl(f, rootDirFile));
-        } else if (f.isDirectory()) {
-          lists.add(new DirectoryImpl(f, rootDirFile));
-          listSubDirectoryFiles(lists, f);
-        }
-      }
-    }
-    
-  }
-
+  @Override
   public Iterator<IFile> iterator()
   {
-    Iterator<IFile> result = listFiles().iterator();
-    return result;
+	return listFiles().iterator();
   }
 
   @Override
   public IDirectory getParent()
   {
-    IDirectory result = isRoot() ? null : super.getParent();
-    return result;
+    return isRoot() ? null : super.getParent();
   }
 
   @Override

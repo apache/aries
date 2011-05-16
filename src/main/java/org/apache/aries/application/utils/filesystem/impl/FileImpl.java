@@ -34,7 +34,6 @@ import org.apache.aries.application.filesystem.IFile;
  */
 public class FileImpl implements IFile
 {
-  
   /** The name of the root directory of the file system */
   protected String rootDir;
   /** This file in the file system */
@@ -54,62 +53,72 @@ public class FileImpl implements IFile
     this.rootDirFile = rootFile;
     rootDir = rootFile.getAbsolutePath();
     
-    if (f == rootFile) name = "";
+    if (f.equals(rootFile)) name = "";
     else name = file.getAbsolutePath().substring(rootDir.length() + 1);
   }
   
+  @Override
   public IDirectory convert()
   {
     return null;
   }
 
+  @Override
   public long getLastModified()
   {
     long result = file.lastModified();
     return result;
   }
 
+  @Override
   public String getName()
   {
     return name;
   }
 
+  @Override
   public IDirectory getParent()
   {
     IDirectory parent = new DirectoryImpl(file.getParentFile(), rootDirFile);
     return parent;
   }
 
+  @Override
   public long getSize()
   {
     long size = file.length();
     return size;
   }
 
+  @Override
   public boolean isDirectory()
   {
     boolean result = file.isDirectory();
     return result;
   }
 
+  @Override
   public boolean isFile()
   {
     boolean result = file.isFile();
     return result;
   }
 
+  @Override
   public InputStream open() throws IOException
   {
     InputStream is = new FileInputStream(file);
     return is;
   }
 
+  @Override
   public IDirectory getRoot()
   {
     IDirectory root = new DirectoryImpl(rootDirFile, rootDirFile);
     return root;
   }
 
+  @Override
   public URL toURL() throws MalformedURLException
   {
     URL result = file.toURI().toURL();
@@ -139,5 +148,11 @@ public class FileImpl implements IFile
   public String toString()
   {
     return file.getAbsolutePath();
+  }
+
+  @Override
+  public IDirectory convertNested() {
+	  if (isDirectory()) return convert();
+	  else return FileSystemImpl.getFSRoot(file, getParent());
   }
 }
