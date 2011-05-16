@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 
@@ -38,7 +37,8 @@ import org.apache.aries.application.filesystem.IFile;
 public class ZipDirectory extends ZipFileImpl implements IDirectory
 {
   /** The root of the zip FS. */
-  private ZipDirectory root;
+  private IDirectory root;
+  private final boolean zipRoot;
   
   /**
    * Constructs a directory in the zip.
@@ -50,25 +50,29 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   public ZipDirectory(File zip1, ZipEntry entry1, ZipDirectory parent)
   {
     super(zip1, entry1, parent);
+    zipRoot = false;
   }
 
   /**
    * This constructor creates the root of the zip.
    * @param file
    * @param fs
+   * @param parent
    * @throws MalformedURLException 
    */
-  public ZipDirectory(File file, File fs) throws MalformedURLException
+  public ZipDirectory(File file, File fs, IDirectory parent) throws MalformedURLException
   {
-    super(file, fs);
-    root = this;
+    super(file, fs, parent);
+    root = (parent == null) ? this : parent.getRoot();
+    zipRoot = true;
   }
 
+  @Override
   public IFile getFile(String name)
   {
     IFile result = null;
     
-    String entryName = isRoot() ? name : getName() + "/" + name;
+    String entryName = isZipRoot() ? name : getName() + "/" + name;
     
     ZipEntry entryFile = getEntry(entryName);
     
@@ -118,87 +122,76 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     return result;
   }
 
+  @Override
   public boolean isRoot()
   {
-    boolean result = (root == this);
-    return result;
+	  return getParent() == null;
   }
 
+  @Override
   public List<IFile> listFiles()
   {
-    List<IFile> files = new ArrayList<IFile>();
-    
-    ZipFile z = openZipFile();
-    Enumeration<? extends ZipEntry> entries = z.entries();
-    
-    while (entries.hasMoreElements()) {
-      ZipEntry possibleEntry = entries.nextElement();
-      
-      if (isInDir(possibleEntry)) {
-        if (possibleEntry.isDirectory()) {
-          files.add(new ZipDirectory(zip, possibleEntry, this));
-        } else {
-          files.add(new ZipFileImpl(zip, possibleEntry, this));
-        }
-      }
-    }
-    closeZipFile(z);
-    return files;
+	  return listFiles(false);
   }
 
+  @Override
   public List<IFile> listAllFiles()
   {
-    List<IFile> files = new ArrayList<IFile>();
-
-    ZipFile z = openZipFile();
-    Enumeration<? extends ZipEntry> entries = z.entries();
-
-    while (entries.hasMoreElements()) {
-      ZipEntry possibleEntry = entries.nextElement();
-      if (possibleEntry.isDirectory()) {
-        files.add(new ZipDirectory(zip, possibleEntry, this));
-      } else {
-        files.add(new ZipFileImpl(zip, possibleEntry, this));
-      }
-      
-    }
-    closeZipFile(z);
-    return files;
+	  return listFiles(true);
   }
+  
+  private List<IFile> listFiles(boolean includeFilesInNestedSubdirs)
+  {
+	  List<IFile> files = new ArrayList<IFile>();
+
+	  ZipFile z = openZipFile();
+	  Enumeration<? extends ZipEntry> entries = z.entries();
+
+	  while (entries.hasMoreElements()) {
+		  ZipEntry possibleEntry = entries.nextElement();
+
+		  if (isInDir(possibleEntry, includeFilesInNestedSubdirs)) {
+			  ZipDirectory parent = includeFilesInNestedSubdirs ? buildParent(possibleEntry) : this;
+			  if (possibleEntry.isDirectory()) {
+				  files.add(new ZipDirectory(zip, possibleEntry, parent));
+			  } else {
+				  files.add(new ZipFileImpl(zip, possibleEntry, parent));
+			  }
+		  }
+
+	  }
+	  closeZipFile(z);
+	  return files;	  
+  }
+  
   /**
    * This method works out if the provided entry is inside this directory. It
    * returns false if it is not, or if it is in a sub-directory.
    * 
    * @param possibleEntry
+   * @param whether files in subdirectories are to be included
    * @return true if it is in this directory.
    */
-  private boolean isInDir(ZipEntry possibleEntry)
+  private boolean isInDir(ZipEntry possibleEntry, boolean allowSubDirs)
   {
     boolean result;
     String name = possibleEntry.getName();
     String parentDir = getName();
     if (name.endsWith("/")) name = name.substring(0, name.length() - 1);
-    result = (name.startsWith(parentDir) && !!!name.equals(parentDir) && name.substring(parentDir.length() + 1).indexOf('/') == -1);
+    result = (name.startsWith(parentDir) && !!!name.equals(parentDir) && (allowSubDirs || name.substring(parentDir.length() + 1).indexOf('/') == -1));
     return result;
   }
 
+  @Override
   public Iterator<IFile> iterator()
   {
-    Iterator<IFile> result = listFiles().iterator();
-    return result;
+    return listFiles().iterator();
   }
 
   @Override
   public IDirectory convert()
   {
     return this;
-  }
-
-  @Override
-  public IDirectory getParent()
-  {
-    IDirectory result = isRoot() ? null : super.getParent();
-    return result;
   }
 
   @Override
@@ -225,6 +218,10 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     return root;
   }
   
+  public boolean isZipRoot() {
+	  return zipRoot;
+  }
+    
   // Although we only delegate to our super class if we removed this Findbugs
   // would correctly point out that we add fields in this class, but do not
   // take them into account for the equals method. In fact this is not a problem

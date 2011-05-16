@@ -57,6 +57,11 @@ public interface IFile
   public IDirectory convert();
   
   /**
+   * @return if this is a directory or an archive, returns the opened IDirectory
+   */
+  public IDirectory convertNested();
+  
+  /**
    * @return returns the parent directory of this IFile, or null if this is the root.
    */
   public IDirectory getParent();
