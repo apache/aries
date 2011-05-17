@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.aries.application.filesystem.ICloseableDirectory;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 
@@ -137,5 +138,10 @@ public class DirectoryImpl extends FileImpl implements IDirectory
       if (tmpLastModified > result) result = tmpLastModified;
     }
     return result;
+  }
+
+  @Override
+  public ICloseableDirectory toCloseable() {
+	return new CloseableDirectory(this);
   }
 }
