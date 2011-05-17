@@ -35,8 +35,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.aries.application.filesystem.ICloseableDirectory;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.utils.AppConstants;
@@ -83,6 +85,7 @@ public class FileSystemTest
     File desiredFile = new File(baseDir, AppConstants.APPLICATION_MF);
     
     runBasicDirTest(dir, desiredFile.length(), desiredFile.lastModified());
+    runBasicDirTest(dir.toCloseable(), desiredFile.length(), desiredFile.lastModified());
   }
   
   /**
@@ -165,7 +168,10 @@ public class FileSystemTest
 	  assertNotNull(inner);
 	  
 	  File desiredFile = new File(new File(getTestResourceDir(), "/app1"), AppConstants.APPLICATION_MF);  
+	  
+	  // no size information when stream reading :(
 	  runBasicDirTest(inner, "app2.zip/", -1, desiredFile.lastModified());
+	  runBasicDirTest(inner.toCloseable(), "app2.zip/", desiredFile.length(), desiredFile.lastModified());
   }
   
   /**
@@ -184,6 +190,61 @@ public class FileSystemTest
     File desiredFile = new File(new File(getTestResourceDir(), "/app1"), AppConstants.APPLICATION_MF);
     
     runBasicDirTest(dir, desiredFile.length(), desiredFile.lastModified());
+    runBasicDirTest(dir.toCloseable(), desiredFile.length(), desiredFile.lastModified());
+  }
+  
+  @Test
+  public void zipCloseableZipSimplePerformanceTest() throws IOException
+  {
+	  int N = 100000;
+	  File baseDir = new File("fileSystemTest/app2.zip");
+
+	  ZipFile zip = new ZipFile(baseDir);	  
+	  
+	  long start = System.currentTimeMillis();
+	  for (int i=0; i<N; i++) {
+		  ZipEntry ze = zip.getEntry(AppConstants.APPLICATION_MF);
+		  InputStream is = zip.getInputStream(ze);
+		  is.close();
+	  }
+	  long duration = System.currentTimeMillis() - start;
+
+	  
+	  // normal zip files 
+	  
+	  ICloseableDirectory dir = FileSystem.getFSRoot(baseDir).toCloseable();
+
+	  start = System.currentTimeMillis();
+	  for (int i=0; i<N; i++) {
+		  IFile appMf = dir.getFile(AppConstants.APPLICATION_MF);
+		  InputStream is = appMf.open();
+		  is.close();
+	  }
+	  long duration2 = System.currentTimeMillis() - start;
+	  
+	  dir.close();
+	  // within an order of magnitude
+	  assertTrue("ZipFile: "+duration+", IDirectory: "+duration2 , duration2 < 10*duration );
+	  
+	  
+	  // nested zip files
+	  
+	  IDirectory outer = FileSystem.getFSRoot(new File("fileSystemTest/outer.zip"));
+	  IFile innerFile = outer.getFile("app2.zip");
+	  dir = innerFile.convertNested().toCloseable();
+	  
+	  start = System.currentTimeMillis();
+	  for (int i=0; i<N; i++) {
+		  IFile appMf = dir.getFile(AppConstants.APPLICATION_MF);
+		  InputStream is = appMf.open();
+		  is.close();
+	  }
+	  long duration3 = System.currentTimeMillis() - start;
+	  
+	  dir.close();
+	  // within an order of magnitude
+	  assertTrue("ZipFile: "+duration+", IDirectory: "+duration3 , duration3 < 10*duration );
+	  
   }
   
   /**
