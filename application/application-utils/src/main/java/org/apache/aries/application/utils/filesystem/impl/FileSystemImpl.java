@@ -32,7 +32,7 @@ public class FileSystemImpl {
 				dir = new DirectoryImpl(fs, fs);
 			} else if (fs.isFile() && isValidZip(fs)) {
 				try {
-					dir = new ZipDirectory(fs, fs, parent);
+					dir = new ZipDirectory(fs, parent);
 				} catch (IOException e) {
 					_logger.error ("IOException in IDirectory.getFSRoot", e);
 				}

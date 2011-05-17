@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * A virtual directory in a file system. Widely used to present a common view of regular 
- * file sytems, jar and zip files. 
+ * file systems, jar and zip files. 
  */
 public interface IDirectory extends Iterable<IFile>, IFile
 {
@@ -48,8 +48,21 @@ public interface IDirectory extends Iterable<IFile>, IFile
    * @return     the IFile, or null if no such file exists.
    */
   public IFile getFile(String name);
+  
   /**
    * @return true if this IDirectory is the root of the virtual file system.
    */
   public boolean isRoot();
+  
+  /**
+   * Open a more effective implementation with user regulated resource management. The implementation will be 
+   * more efficient for batch operations. Make sure to call close when finished with the returned IDirectory. 
+   * 
+   * IFiles and IDirectories other than the returned closeable directory
+   * will stay valid after calling the close method but will no longer perform as efficiently. InputStreams that are
+   * open at the time of calling close may be invalidated.
+   * 
+   * @return {@link ICloseableDirectory} or null if a batch aware version of this {@link IDirectory} is not supported
+   */
+  public ICloseableDirectory toCloseable();
 }
