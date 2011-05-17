@@ -124,6 +124,13 @@ public class ZipFileImpl implements IFile
   {
     return null;
   }
+  
+  @Override
+  public IDirectory convertNested() {
+	  if (isDirectory()) return convert();
+	  else if (FileSystemImpl.isValidZip(this)) return new NestedZipDirectory(this); 
+	  else return null;
+  }	
 
   @Override
   public long getLastModified()
@@ -277,9 +284,4 @@ public class ZipFileImpl implements IFile
     
   }
 
-  @Override
-  public IDirectory convertNested() {
-	// TODO Auto-generated method stub
-	return null;
-  }
 }
