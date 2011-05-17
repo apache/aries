@@ -57,6 +57,8 @@ public class ZipFileImpl implements IFile
   private final String url;
   /** The path of the zip archive to the VFS root */
   private final String zipPathToRoot;
+  /** The closeable directory that caches the open ZipFile */
+  protected final ZipCloseableDirectory cache;
   
   /**
    * This constructor is used to create a file entry within the zip.
@@ -65,7 +67,7 @@ public class ZipFileImpl implements IFile
    * @param entry1  the entry this IFile represents.
    * @param parent1 the parent directory.
    */
-  public ZipFileImpl(File zip1, ZipEntry entry1, ZipDirectory parent1)
+  public ZipFileImpl(File zip1, ZipEntry entry1, ZipDirectory parent1, ZipCloseableDirectory cache)
   {
     this.zip = zip1;
     this.entry = entry1;
@@ -82,6 +84,7 @@ public class ZipFileImpl implements IFile
     url = ((ZipFileImpl)parent1).url;
     
     this.parent = parent1;
+    this.cache = cache;
   }
   
   /**
@@ -92,7 +95,7 @@ public class ZipFileImpl implements IFile
    * @param rootName the name of this zipfile relative to the IFile filesystem root
    * @throws MalformedURLException
    */
-  protected ZipFileImpl(File zip1, File fs, IDirectory parent) throws MalformedURLException
+  protected ZipFileImpl(File zip1, IDirectory parent) throws MalformedURLException
   {
     this.zip = zip1;
     this.entry = null;
@@ -107,9 +110,22 @@ public class ZipFileImpl implements IFile
     	zipPathToRoot = name+"/";
     }
     
-    lastModified = fs.lastModified();
-    size = fs.length();
-    url = fs.toURI().toURL().toExternalForm();
+    lastModified = zip1.lastModified();
+    size = zip1.length();
+    url = zip1.toURI().toURL().toExternalForm();
+    this.cache = null;
+  }
+  
+  public ZipFileImpl(ZipFileImpl other, ZipCloseableDirectory cache) {
+	  name = other.name;
+	  size = other.size;
+	  lastModified = other.lastModified;
+	  zip = other.zip;
+	  entry = other.entry;
+	  parent = other.parent;
+	  url = other.url;
+	  zipPathToRoot = other.zipPathToRoot;
+	  this.cache = cache;
   }
 
   /**
@@ -227,23 +243,32 @@ public class ZipFileImpl implements IFile
   
   ZipFile openZipFile(){
     ZipFile z = null;
-    try {
-      z = new ZipFile(zip);
-    } catch (ZipException e) {
-      logger.error ("ZipException in ZipFileImpl.openZipFile", e);
-    } catch (IOException e) {
-      logger.error ("IOException in ZipFileImpl.openZipFile", e);
+
+    if (cache != null && !!!cache.isClosed()) {
+    	z = cache.getZipFile();
+    } else {
+	    try {
+	      z = new ZipFile(zip);
+	    } catch (ZipException e) {
+	      logger.error ("ZipException in ZipFileImpl.openZipFile", e);
+	    } catch (IOException e) {
+	      logger.error ("IOException in ZipFileImpl.openZipFile", e);
+	    }
     }
     return z;
   }
   
   void closeZipFile(ZipFile z){
-    try{
-      z.close();
-    }
-    catch (IOException e) {
-      logger.error ("IOException in ZipFileImpl.closeZipFile", e);
-    }
+	  if (cache != null && cache.getZipFile() == z) {
+		  // do nothing
+	  } else {
+		  try{
+			  z.close();
+		  }
+		  catch (IOException e) {
+			  logger.error ("IOException in ZipFileImpl.closeZipFile", e);
+		  }
+	  }
   }
   
   /**

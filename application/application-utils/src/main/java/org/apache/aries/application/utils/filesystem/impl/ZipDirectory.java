@@ -20,6 +20,7 @@
 package org.apache.aries.application.utils.filesystem.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -28,14 +29,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.apache.aries.application.filesystem.ICloseableDirectory;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A directory in the zip.
  */
 public class ZipDirectory extends ZipFileImpl implements IDirectory
 {
+  private static final Logger logger = LoggerFactory.getLogger("org.apache.aries.application.utils");
+
   /** The root of the zip FS. */
   private final IDirectory root;
   private final boolean zipRoot;
@@ -47,9 +54,9 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
    * @param entry1 the entry in the zip representing this dir.
    * @param parent the parent directory.
    */
-  public ZipDirectory(File zip1, ZipEntry entry1, ZipDirectory parent)
+  public ZipDirectory(File zip1, ZipEntry entry1, ZipDirectory parent, ZipCloseableDirectory cache)
   {
-    super(zip1, entry1, parent);
+    super(zip1, entry1, parent, cache);
     zipRoot = false;
     root = parent.getRoot();
   }
@@ -61,11 +68,17 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
    * @param parent
    * @throws MalformedURLException 
    */
-  public ZipDirectory(File file, File fs, IDirectory parent) throws MalformedURLException
+  public ZipDirectory(File fs, IDirectory parent) throws MalformedURLException
   {
-    super(file, fs, parent);
+    super(fs, parent);
     root = (parent == null) ? this : parent.getRoot();
     zipRoot = true;
+  }
+  
+  public ZipDirectory(ZipDirectory other, ZipCloseableDirectory cache) {
+	  super(other, cache);
+	  root = other.root;
+	  zipRoot = other.zipRoot;
   }
 
   @Override
@@ -79,9 +92,9 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     
     if (entryFile != null) {
       if (!!!entryFile.isDirectory()) {
-        result = new ZipFileImpl(zip, entryFile, buildParent(entryFile));
+        result = new ZipFileImpl(zip, entryFile, buildParent(entryFile), cache);
       } else {
-        result = new ZipDirectory(zip, entryFile, buildParent(entryFile));
+        result = new ZipDirectory(zip, entryFile, buildParent(entryFile), cache);
       }
     }
     return result;
@@ -116,7 +129,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
           result = this;
           break outer;
         }
-        result = new ZipDirectory(zip, dirEntry, result);
+        result = new ZipDirectory(zip, dirEntry, result, cache);
         baseBuilderCrapThingToGetRoundFindBugs.append('/');
       }
     }
@@ -152,9 +165,9 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 		  if (isInDir(getNameInZip(), possibleEntry, includeFilesInNestedSubdirs)) {
 			  ZipDirectory parent = includeFilesInNestedSubdirs ? buildParent(possibleEntry) : this;
 			  if (possibleEntry.isDirectory()) {
-				  files.add(new ZipDirectory(zip, possibleEntry, parent));
+				  files.add(new ZipDirectory(zip, possibleEntry, parent, cache));
 			  } else {
-				  files.add(new ZipFileImpl(zip, possibleEntry, parent));
+				  files.add(new ZipFileImpl(zip, possibleEntry, parent, cache));
 			  }
 		  }
 
@@ -239,7 +252,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     return super.hashCode();
   }
   
-  private ZipEntry getEntry(String entryName){
+  private ZipEntry getEntry(String entryName) {
     ZipFile z = openZipFile();
     ZipEntry entryFile = null;
     
@@ -249,4 +262,16 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     }
     return entryFile;
   }
+
+  @Override
+  public ICloseableDirectory toCloseable() {
+	  try {
+		  return new ZipCloseableDirectory(zip, this);
+	  } catch (IOException e) {
+		  logger.error("IOException opening zip file", this);
+		  return null;
+	  }
+  }
 }
+
+
