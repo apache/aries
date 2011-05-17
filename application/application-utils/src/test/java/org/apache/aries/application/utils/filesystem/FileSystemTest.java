@@ -101,6 +101,16 @@ public class FileSystemTest
     runBasicRootDirTests(dir, baseDir.length(), baseDir.lastModified());
   }
   
+  @Test
+  public void testInvalidFSRoot() throws IOException
+  {
+	  File baseDir = new File(getTestResourceDir(), "/app1");
+	  File manifest = new File(baseDir, AppConstants.APPLICATION_MF);
+	  IDirectory dir = FileSystem.getFSRoot(manifest);
+	  
+	  assertNull(dir);
+  }
+  
   /**
    * Make sure that operations work on zip files nested in file IDirectories
    * @throws IOException
@@ -141,6 +151,24 @@ public class FileSystemTest
   }
   
   /**
+   * Make sure that the operations work with zip files inside other zip files. Performance is not going to be great though :)
+   */
+  @Test
+  public void nestedZipInZip() throws IOException
+  {
+	  IDirectory outer = FileSystem.getFSRoot(new File("fileSystemTest/outer.zip"));
+	  
+	  IFile innerFile = outer.getFile("app2.zip");
+	  assertNotNull(innerFile);
+
+	  IDirectory inner = innerFile.convertNested();
+	  assertNotNull(inner);
+	  
+	  File desiredFile = new File(new File(getTestResourceDir(), "/app1"), AppConstants.APPLICATION_MF);  
+	  runBasicDirTest(inner, "app2.zip/", -1, desiredFile.lastModified());
+  }
+  
+  /**
    * Make sure we correctly understand the directory structure for zips.
    * 
    * @throws IOException
@@ -171,11 +199,19 @@ public class FileSystemTest
     zipFile.getParentFile().mkdirs();
     ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
 
-    int index = new File(getTestResourceDir(), "/app1").getAbsolutePath().length();
-    
+    int index = new File(getTestResourceDir(), "/app1").getAbsolutePath().length();    
     writeEnties(out, new File(getTestResourceDir(), "/app1"), index);
-    
+
     out.close();
+    
+    zipFile = new File("outer.zip");
+    out = new ZipOutputStream(new FileOutputStream(zipFile));
+    index = new File("fileSystemTest").getAbsolutePath().length();    
+    writeEnties(out, new File("fileSystemTest"), index);
+
+    out.close();
+    
+    if (!!!zipFile.renameTo(new File("fileSystemTest/outer.zip"))) throw new IOException("Rename failed");
   }
   
   private static File getTestResourceDir() {
@@ -191,7 +227,7 @@ public class FileSystemTest
   @AfterClass
   public static void destroyZip()
   {
-	  IOUtils.deleteRecursive(new File("fileSystemTest/"));
+	  IOUtils.deleteRecursive(new File("fileSystemTest"));
   }
   
   /**
@@ -286,6 +322,9 @@ public class FileSystemTest
     
     assertNotNull("we could not find the application manifest", file);
     
+    assertNull(file.convert());
+    assertNull(file.convertNested());
+    
     assertEquals(namePrefix+AppConstants.APPLICATION_MF, file.getName().replace('\\', '/'));
     assertTrue("The last update time is not within 2 seconds of the expected value. Expected: " + time + " Actual: " + file.getLastModified(), Math.abs(time - file.getLastModified()) < 2000);
 
@@ -323,7 +362,7 @@ public class FileSystemTest
     }
 
     checkManifest(file.open());
-    
+        
     IFile applicationMF2 = dir.getFile(AppConstants.APPLICATION_MF);
     
     Assert.assertEqualsContract(file, applicationMF2, dir);

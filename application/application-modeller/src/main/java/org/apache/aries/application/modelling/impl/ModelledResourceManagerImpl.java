@@ -22,14 +22,9 @@ package org.apache.aries.application.modelling.impl;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -58,7 +53,7 @@ import org.slf4j.LoggerFactory;
 
 public class ModelledResourceManagerImpl implements ModelledResourceManager
 {
-  private Logger _logger = LoggerFactory.getLogger(ModelledResourceManagerImpl.class);
+  private final Logger _logger = LoggerFactory.getLogger(ModelledResourceManagerImpl.class);
   private ParserProxy _parserProxy;
   private ModellingManager _modellingManager;
 
@@ -96,10 +91,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
       Collection<IFile> blueprints = findBlueprints(archive);
       InputStream is = null;
       for (IFile bpFile : blueprints) {
-        URL url = bpFile.toURL();
-        URLConnection conn = url.openConnection();
-        is = conn.getInputStream();
-
+    	is = bpFile.open();
         try {
           ParsedServiceElements pse = getParserProxy().parseAllServiceElements(is);
           services.addAll(pse.getServices());
@@ -133,18 +125,9 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   public ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException{
     _logger.debug(LOG_ENTRY, "getModelledResource", new Object[]{uri, bundle});
 
-    String bundleFile = null;
     if (bundle != null) {
-      try {
-        bundleFile = URLDecoder.decode(bundle.toString(), "UTF-8");
-      } catch (UnsupportedEncodingException uee) {
-        ModellerException me = new ModellerException(MessageUtil.getMessage("INVALID_BUNDLE_LOCATION", bundle));
-        _logger.debug(LOG_EXIT, "getModelledResource", me);
-        throw me;
-      }
-      if (new File(bundleFile).exists()) {
         ParsedServiceElements pse = getServiceElements(bundle);
-        BundleManifest bm = BundleManifest.fromBundle(new File(bundleFile));
+        BundleManifest bm = BundleManifest.fromBundle(bundle);//new File(bundleFile));
         Attributes attributes = bm.getRawAttributes();
         ModelledResource mbi = null;
         try {
@@ -156,12 +139,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
         }
         _logger.debug(LOG_EXIT, "getModelledResource", mbi);
         return mbi;
-      } else {
-        // The bundle does not exist
-        ModellerException me = new ModellerException(MessageUtil.getMessage("INVALID_BUNDLE_LOCATION", bundle));
-        _logger.debug(LOG_EXIT, "getModelledResource", me);
-        throw me;
-      } 
     }
     else {
       // The bundle does not exist
@@ -213,7 +190,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
         List<IFile> files = appBundle.listAllFiles();
         Iterator<IFile> it = files.iterator();
         while (it.hasNext()) {
-          IFile file = (IFile) it.next();         
+          IFile file = it.next();         
           String directoryFullPath = file.getName(); 
           String directoryName = "";
           String fileName = "";
