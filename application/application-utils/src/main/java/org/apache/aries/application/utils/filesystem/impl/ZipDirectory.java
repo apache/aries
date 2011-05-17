@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -146,11 +146,9 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 	  List<IFile> files = new ArrayList<IFile>();
 
 	  ZipFile z = openZipFile();
-	  Enumeration<? extends ZipEntry> entries = z.entries();
+	  List<? extends ZipEntry> entries = Collections.list(z.entries());
 
-	  while (entries.hasMoreElements()) {
-		  ZipEntry possibleEntry = entries.nextElement();
-
+	  for (ZipEntry possibleEntry : entries) {
 		  if (isInDir(getNameInZip(), possibleEntry, includeFilesInNestedSubdirs)) {
 			  ZipDirectory parent = includeFilesInNestedSubdirs ? buildParent(possibleEntry) : this;
 			  if (possibleEntry.isDirectory()) {
@@ -161,6 +159,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 		  }
 
 	  }
+	  
 	  closeZipFile(z);
 	  return files;	  
   }
