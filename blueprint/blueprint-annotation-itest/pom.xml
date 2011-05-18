@@ -87,6 +87,12 @@
         </dependency>        
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.sample-fragment</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundlea</artifactId>
             <scope>test</scope>
             <version>0.3.2-SNAPSHOT</version>
