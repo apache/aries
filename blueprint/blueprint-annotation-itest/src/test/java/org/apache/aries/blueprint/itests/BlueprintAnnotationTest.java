@@ -31,6 +31,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.aries.blueprint.sample.Bar;
@@ -39,7 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.Bundle;
+import org.osgi.framework.*;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -52,9 +53,9 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(
                  bundleContext, "org.apache.aries.blueprint.sample-annotation",
                 5000);
-
+    
         assertNotNull(blueprintContainer);
-
+    
         Object obj = blueprintContainer.getComponentInstance("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
@@ -74,7 +75,9 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
 
         assertTrue(foo.isInitialized());
         assertFalse(foo.isDestroyed());
-
+        
+        assertNotNull(blueprintContainer.getComponentInstance("fragment"));
+    
        obj = getOsgiService(bundleContext, Foo.class, null, 5000);
         assertNotNull(obj);
         assertEquals(foo.toString(), obj.toString());
@@ -104,6 +107,7 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.impl"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-annotation"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-fragment"),
             //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"),
             mavenBundle("org.osgi", "org.osgi.compendium"),
             //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),

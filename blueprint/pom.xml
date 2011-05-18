@@ -45,6 +45,7 @@
         <module>blueprint-annotation-api</module>
         <module>blueprint-annotation-impl</module>
         <module>blueprint-sample-annotation</module>
+        <module>blueprint-sample-fragment</module>
         <module>blueprint-testbundlea</module>
         <module>blueprint-testbundleb</module>
         <module>blueprint-testquiescebundle</module>
