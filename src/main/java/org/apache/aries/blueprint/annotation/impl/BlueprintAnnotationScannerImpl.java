@@ -25,8 +25,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -60,7 +63,6 @@ import org.apache.aries.blueprint.jaxb.TreferenceList;
 import org.apache.aries.blueprint.jaxb.TreferenceListener;
 import org.apache.aries.blueprint.jaxb.TregistrationListener;
 import org.apache.aries.blueprint.jaxb.Tservice;
-import org.apache.aries.blueprint.jaxb.TserviceProperties;
 import org.apache.aries.blueprint.jaxb.TservicePropertyEntry;
 import org.apache.aries.blueprint.jaxb.TtypeConverters;
 import org.apache.aries.blueprint.jaxb.Tvalue;
@@ -73,7 +75,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 public class BlueprintAnnotationScannerImpl implements
         BlueprintAnnotationScanner {
-    private BundleContext context;
+    private final BundleContext context;
 
     public BlueprintAnnotationScannerImpl(BundleContext bc) {
         this.context = bc;
@@ -167,10 +169,11 @@ public class BlueprintAnnotationScannerImpl implements
     private Tblueprint generateBlueprintModel(Bundle bundle) {
         BundleAnnotationFinder baf = createBundleAnnotationFinder(bundle);
 
-        List<Class> blueprintClasses = baf.findAnnotatedClasses(Blueprint.class);
-        List<Class> beanClasses = baf.findAnnotatedClasses(Bean.class);
-        List<Class> refListenerClasses = baf.findAnnotatedClasses(ReferenceListener.class);
-        List<Class> regListenerClasses = baf.findAnnotatedClasses(RegistrationListener.class);
+        // we don't trust baf when it comes to returning classes just once (ARIES-654)
+        Set<Class> blueprintClasses = new LinkedHashSet<Class>(baf.findAnnotatedClasses(Blueprint.class));
+        Set<Class> beanClasses = new HashSet<Class>(baf.findAnnotatedClasses(Bean.class));
+        Set<Class> refListenerClasses = new HashSet<Class>(baf.findAnnotatedClasses(ReferenceListener.class));
+        Set<Class> regListenerClasses = new HashSet<Class>(baf.findAnnotatedClasses(RegistrationListener.class));
         Map<String, TreferenceListener> reflMap = new HashMap<String, TreferenceListener>();
         Map<String, TregistrationListener> reglMap = new HashMap<String, TregistrationListener>();
         
@@ -179,7 +182,7 @@ public class BlueprintAnnotationScannerImpl implements
         
         if (!blueprintClasses.isEmpty()) {
             // use the first annotated blueprint annotation
-            Blueprint blueprint = (Blueprint)blueprintClasses.get(0).getAnnotation(Blueprint.class);
+            Blueprint blueprint = (Blueprint)blueprintClasses.iterator().next().getAnnotation(Blueprint.class);
             tblueprint.setDefaultActivation(blueprint.defaultActivation());
             tblueprint.setDefaultAvailability(blueprint.defaultAvailability());
             tblueprint.setDefaultTimeout(convertToBigInteger(blueprint.defaultTimeout()));
@@ -301,12 +304,12 @@ public class BlueprintAnnotationScannerImpl implements
                 if (fields[i].isAnnotationPresent(Inject.class)) { 
                     if (fields[i].isAnnotationPresent(Reference.class)) {
                         // the field is also annotated with @Reference
-                        Reference ref = (Reference)fields[i].getAnnotation(Reference.class);
+                        Reference ref = fields[i].getAnnotation(Reference.class);
                         Treference tref = generateTref(ref, reflMap);
                         components.add(tref);
                     } else if (fields[i].isAnnotationPresent(ReferenceList.class)) {
                         // the field is also annotated with @ReferenceList
-                        ReferenceList ref = (ReferenceList)fields[i].getAnnotation(ReferenceList.class);
+                        ReferenceList ref = fields[i].getAnnotation(ReferenceList.class);
                         TreferenceList tref = generateTrefList(ref, reflMap);
                         components.add(tref);
                         
