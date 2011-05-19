@@ -18,12 +18,15 @@
  */
 package org.apache.aries.spifly.statictool;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -72,7 +75,6 @@ public class Main {
 
     private static void weaveJar(String jarPath) throws IOException {
         System.out.println("[SPI Fly Static Tool] Processing: " + jarPath);
-        String spiFlyVersion = getMyVersion();
 
         File jarFile = new File(jarPath);
         File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());
@@ -85,7 +87,7 @@ public class Main {
             manifest.getMainAttributes().remove(new Attributes.Name(SpiFlyConstants.SPI_CONSUMER_HEADER));
             manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeader);
             // TODO if new packages needed then...
-            extendImportPackage(spiFlyVersion, manifest);
+            extendImportPackage(manifest);
 
             File newJar = getNewJarFile(jarFile);
             jar(newJar, tempDir, manifest);
@@ -95,54 +97,32 @@ public class Main {
         delTree(tempDir);
     }
 
-    private static void extendImportPackage(String spiFlyVersion, Manifest manifest) {
+    private static void extendImportPackage(Manifest manifest) throws IOException {
+        String utilPkgVersion = getPackageVersion(Util.class);
+
         String ip = manifest.getMainAttributes().getValue(IMPORT_PACKAGE);
         StringBuilder sb = new StringBuilder(ip);
         sb.append(",");
         sb.append(Util.class.getPackage().getName());
         sb.append(";version=\"[");
-        sb.append(spiFlyVersion);
+        sb.append(utilPkgVersion);
         sb.append(",");
-        sb.append(spiFlyVersion);
+        sb.append(utilPkgVersion);
         sb.append("]\"");
         manifest.getMainAttributes().putValue(IMPORT_PACKAGE, sb.toString());
     }
 
-    private static String getMyVersion() throws IOException {
-        // Should be able to leverage the aries.osgi.version file that appears in the target directory here.
-        // Need to figure that out...
-        return "0.4.0.SNAPSHOT";
+    private static String getPackageVersion(Class<?> clazz) throws IOException {
+        URL url = clazz.getResource("packageinfo");
+        if (url == null) {
+            throw new RuntimeException("'packageinfo' file with version information not found for package: "
+                    + clazz.getPackage().getName());
+        }
 
-//        String classResource = "/" + Main.class.getName().replace(".", "/") + ".class";
-//        URL jarUrl = Main.class.getResource(classResource);
-//        if (jarUrl != null) {
-//            String jarLoc = jarUrl.toExternalForm();
-//            Manifest mf = null;
-//            if (jarLoc.startsWith("jar:")) {
-//                jarLoc.substring("jar:".length());
-//                int idx = jarLoc.indexOf("!/");
-//                if (idx >= 0) {
-//                    jarLoc = jarLoc.substring(0, idx);
-//                }
-//
-//                JarFile jr = new JarFile(jarLoc);
-//                mf = jr.getManifest();
-//            } else if (jarLoc.startsWith("file:") && jarLoc.endsWith(classResource)) {
-//                String rootDir = jarLoc.substring(0, jarLoc.length() - classResource.length());
-//                File manifestFile = new File(rootDir + "/META-INF/MANIFEST.MF");
-//                if (manifestFile.exists()) {
-//                    mf = new Manifest(new FileInputStream(manifestFile));
-//                }
-//            }
-//
-//            if (mf != null) {
-//                String version = mf.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-//                if (version == null)
-//                    throw new IOException("Could not obtain the implementation version of this jar file from the manifest");
-//                return version.trim();
-//            }
-//        }
-//        throw new IOException("This class can only be executed from inside a jar or an exploded jar file.");
+        byte[] bytes = Streams.suck(url.openStream());
+        Properties p = new Properties();
+        p.load(new ByteArrayInputStream(bytes));
+        return p.getProperty("version");
     }
 
     private static File getNewJarFile(File jarFile) {
