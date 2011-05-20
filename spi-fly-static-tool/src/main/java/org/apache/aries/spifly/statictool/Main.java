@@ -44,6 +44,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
 
 public class Main {
     private static final String MODIFIED_BUNDLE_SUFFIX = "_spifly.jar";
@@ -100,15 +101,20 @@ public class Main {
     private static void extendImportPackage(Manifest manifest) throws IOException {
         String utilPkgVersion = getPackageVersion(Util.class);
 
+        Version osgiVersion = Version.parseVersion(utilPkgVersion);
+
+        Version minVersion = new Version(osgiVersion.getMajor(), osgiVersion.getMinor(), osgiVersion.getMicro());
+        Version maxVersion = new Version(osgiVersion.getMajor(), osgiVersion.getMinor() + 1, 0);
+
         String ip = manifest.getMainAttributes().getValue(IMPORT_PACKAGE);
         StringBuilder sb = new StringBuilder(ip);
         sb.append(",");
         sb.append(Util.class.getPackage().getName());
         sb.append(";version=\"[");
-        sb.append(utilPkgVersion);
+        sb.append(minVersion);
         sb.append(",");
-        sb.append(utilPkgVersion);
-        sb.append("]\"");
+        sb.append(maxVersion);
+        sb.append(")\"");
         manifest.getMainAttributes().putValue(IMPORT_PACKAGE, sb.toString());
     }
 
