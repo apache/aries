@@ -16,21 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly;
-
-import java.util.ServiceLoader;
+package org.apache.aries.spifly.impl2;
 
 import org.apache.aries.mytest.MySPI;
 
-public class UnaffectedTestClient {
-    public String test(String input) {
-        StringBuilder sb = new StringBuilder();
-        
-        ServiceLoader<MySPI> loader = ServiceLoader.load(MySPI.class,
-            new ClientWeavingHookTest.TestImplClassLoader("impl4", "META-INF/services/org.apache.aries.mytest.MySPI"));
-        for (MySPI mySPI : loader) {
-            sb.append(mySPI.someMethod(input));
-        }
-        return sb.toString();
+public class MySPIImpl2a implements MySPI {
+    @Override
+    public String someMethod(String s) {
+        return "" + s.length();
     }
 }
