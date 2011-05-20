@@ -18,6 +18,10 @@
  */
 package org.apache.aries.spifly;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,8 +32,6 @@ import java.util.List;
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.spifly.impl1.MySPIImpl1;
 import org.easymock.EasyMock;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -37,18 +39,17 @@ import org.osgi.framework.ServiceRegistration;
 
 public class ProviderBundleTrackerCustomizerTest {
     @Test
-    @Ignore("Need to fix, this is WIP")
     @SuppressWarnings("unchecked")
-    public void testAddingRemovedBundle() throws Exception {        
+    public void testAddingRemovedBundle() throws Exception {
         Bundle spiBundle = EasyMock.createMock(Bundle.class);
         EasyMock.replay(spiBundle);
         BaseActivator a = new BaseActivator() {
             @Override
-            public void start(BundleContext context) throws Exception {}            
-        };        
-        
+            public void start(BundleContext context) throws Exception {}
+        };
+
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(a, spiBundle);
-        
+
         ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
         sreg.unregister();
         EasyMock.expectLastCall();
@@ -57,41 +58,42 @@ public class ProviderBundleTrackerCustomizerTest {
         // The bundle context for the test SPI bundle
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
-                EasyMock.eq("org.apache.aries.mytest.MySPI"), 
-                EasyMock.isA(MySPIImpl1.class), 
+                EasyMock.eq("org.apache.aries.mytest.MySPI"),
+                EasyMock.isA(MySPIImpl1.class),
                 (Dictionary<String,?>) EasyMock.anyObject())).andReturn(sreg);
         EasyMock.replay(implBC);
 
         // The test impl bundle
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC);
-        
+
         Dictionary<String, String> headers = new Hashtable<String, String>();
         // Specify the headers for the test bundle
         headers.put(SpiFlyConstants.SPI_PROVIDER_HEADER, "*");
-        EasyMock.expect(implBundle.getHeaders()).andReturn(headers);
-        
+        EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+
         // List the resources found at META-INF/services in the test bundle
+        URL dir = getClass().getResource("impl1/META-INF/services");
+        assertNotNull("precondition", dir);
+        EasyMock.expect(implBundle.getResource("/META-INF/services")).andReturn(dir).anyTimes();
         URL res = getClass().getResource("impl1/META-INF/services/org.apache.aries.mytest.MySPI");
-        Assert.assertNotNull("precondition", res);
+        assertNotNull("precondition", res);
         EasyMock.expect(implBundle.findEntries("META-INF/services", "*", false)).andReturn(
-                Collections.enumeration(Collections.singleton(res)));
-        
+                Collections.enumeration(Collections.singleton(res))).anyTimes();
         Class<?> cls = getClass().getClassLoader().loadClass("org.apache.aries.spifly.impl1.MySPIImpl1");
-        EasyMock.<Object>expect(implBundle.loadClass("org.apache.aries.spifly.impl1.MySPIImpl1")).andReturn(cls);
-        
+        EasyMock.<Object> expect(implBundle.loadClass("org.apache.aries.spifly.impl1.MySPIImpl1")).andReturn(cls).anyTimes();
         EasyMock.replay(implBundle);
-        
-        Assert.assertEquals("Precondition", 0, a.findProviderBundles("org.apache.aries.mytest.MySPI").size());
+
+        assertEquals("Precondition", 0, a.findProviderBundles("org.apache.aries.mytest.MySPI").size());
         // Call addingBundle();
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         Collection<Bundle> bundles = a.findProviderBundles("org.apache.aries.mytest.MySPI");
-        Assert.assertEquals(1, bundles.size());
-        Assert.assertSame(implBundle, bundles.iterator().next());
-        
+        assertEquals(1, bundles.size());
+        assertSame(implBundle, bundles.iterator().next());
+
         // The bc.registerService() call should now have been made
         EasyMock.verify(implBC);
-        
+
         // Call removedBundle();
         customizer.removedBundle(implBundle, null, registrations);
         // sreg.unregister() should have been called.
