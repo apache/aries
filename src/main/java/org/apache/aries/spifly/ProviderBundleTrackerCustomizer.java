@@ -43,15 +43,13 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  */
 public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer {
     private static final String METAINF_SERVICES = "META-INF/services";
-    
+
     final BaseActivator activator;
     final Bundle spiBundle;
 
-    public ProviderBundleTrackerCustomizer(BaseActivator a, Bundle b) {
-        activator = a;
-        spiBundle = b;
-                
-        // TODO handle pre-existing bundles.
+    public ProviderBundleTrackerCustomizer(BaseActivator activator, Bundle spiBundle) {
+        this.activator = activator;
+        this.spiBundle = spiBundle;
     }
 
     public List<ServiceRegistration> addingBundle(Bundle bundle, BundleEvent event) {
@@ -76,29 +74,29 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         URL servicesDir = bundle.getResource("/" + METAINF_SERVICES);
         if (servicesDir == null)
             return null;
-        
+
         List<URL> serviceFiles = new ArrayList<URL>();
-        
+
         @SuppressWarnings("unchecked")
         Enumeration<URL> entries = bundle.findEntries(METAINF_SERVICES, "*", false);
         if (entries != null) {
             serviceFiles.addAll(Collections.list(entries));
         }
-        
+
         Object bcp = bundle.getHeaders().get(Constants.BUNDLE_CLASSPATH);
         if (bcp instanceof String) {
             for (String entry : ((String) bcp).split(",")) {
                 entry = entry.trim();
-                if (entry.equals(".")) 
+                if (entry.equals("."))
                     continue;
-                
+
                 URL url = bundle.getResource(entry);
                 if (url != null) {
                     serviceFiles.addAll(getMetaInfServiceURLsFromJar(url));
                 }
             }
         }
-        
+
         List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
         for (URL serviceFile : serviceFiles) {
             log(LogService.LOG_INFO, "Found SPI resource: " + serviceFile);
@@ -106,35 +104,35 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             try {
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(serviceFile.openStream()));
-                String className = reader.readLine();
-                // TODO need to read more than one class name!
+                String className = null;
+                while((className = reader.readLine()) != null) {
+                    Class<?> cls = bundle.loadClass(className);
+                    Object o = cls.newInstance();
+                    log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
 
-                Class<?> cls = bundle.loadClass(className);
-                Object o = cls.newInstance();
-                log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
+                    Hashtable<String, Object> props = new Hashtable<String, Object>();
+                    props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
 
-                Hashtable<String, Object> props = new Hashtable<String, Object>();
-                props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
+                    String s = serviceFile.toExternalForm();
+                    int idx = s.lastIndexOf('/');
+                    String registrationClassName = className;
+                    if (s.length() > idx) {
+                        registrationClassName = s.substring(idx + 1);
+                    }
 
-                String s = serviceFile.toExternalForm();
-                int idx = s.lastIndexOf('/');
-                String registrationClassName = className;
-                if (s.length() > idx) {
-                    registrationClassName = s.substring(idx + 1);
+                    ServiceRegistration reg = bundle.getBundleContext()
+                            .registerService(registrationClassName, o, props);
+                    registrations.add(reg);
+
+                    activator.registerProviderBundle(registrationClassName, bundle);
+                    log(LogService.LOG_INFO, "Registered service: " + reg);
                 }
-
-                ServiceRegistration reg = bundle.getBundleContext()
-                        .registerService(registrationClassName, o, props);
-                registrations.add(reg);
-
-                activator.registerProviderBundle(registrationClassName, bundle);
-                log(LogService.LOG_INFO, "Registered service: " + reg);                
             } catch (Exception e) {
                 log(LogService.LOG_WARNING,
                         "Could not load SPI implementation referred from " + serviceFile, e);
             }
         }
-        
+
         return registrations;
     }
 
@@ -144,11 +142,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             JarInputStream jis = null;
             try {
                 jis = new JarInputStream(url.openStream());
-                
+
                 JarEntry je = null;
                 while((je = jis.getNextJarEntry()) != null) {
                     if (je.getName().startsWith(METAINF_SERVICES) &&
-                        je.getName().length() > (METAINF_SERVICES.length() + 1)) {                       
+                        je.getName().length() > (METAINF_SERVICES.length() + 1)) {
                         urls.add(new URL("jar:" + url + "!/" + je.getName()));
                     }
                 }
@@ -171,10 +169,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     public void removedBundle(Bundle bundle, BundleEvent event, Object registrations) {
         if (registrations == null)
             return;
-        
+
         for (ServiceRegistration reg : (List<ServiceRegistration>) registrations) {
             reg.unregister();
-            log(LogService.LOG_INFO, "Unregistered: " + reg);            
+            log(LogService.LOG_INFO, "Unregistered: " + reg);
         }
     }
 
