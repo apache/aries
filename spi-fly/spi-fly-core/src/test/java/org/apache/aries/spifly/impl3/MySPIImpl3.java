@@ -16,20 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly;
+package org.apache.aries.spifly.impl3;
 
-import java.util.ServiceLoader;
+import org.apache.aries.mytest.MySPI;
 
-import org.apache.aries.mytest.AltSPI;
-
-public class AltTestClient {
-    public long test(long input) {
-        long result = 0;
-        
-        ServiceLoader<AltSPI> loader = ServiceLoader.load(AltSPI.class);
-        for (AltSPI mySPI : loader) {
-            result += mySPI.square(input);
-        }
-        return result;
+public class MySPIImpl3 implements MySPI {
+    @Override
+    public String someMethod(String s) {
+        return "impl3";
     }
 }
