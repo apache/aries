@@ -43,10 +43,12 @@ import org.osgi.service.log.LogService;
 public class Util {
     static ThreadLocal<ClassLoader> storedClassLoaders = new ThreadLocal<ClassLoader>();
 
+    // Provided as static method to make it easier to call from ASM-modified code
     public static void storeContextClassloader() {
         storedClassLoaders.set(Thread.currentThread().getContextClassLoader());
     }
 
+    // Provided as static method to make it easier to call from ASM-modified code
     public static void restoreContextClassloader() {
         Thread.currentThread().setContextClassLoader(storedClassLoaders.get());
         storedClassLoaders.set(null);
@@ -59,7 +61,6 @@ public class Util {
         }
 
         BundleReference br = ((BundleReference) bundleLoader);
-        System.out.println("~~~ cls: " + cls + " method: " + method + " clarg:" + clsArg + " cl:" + bundleLoader + " clientBundle: " + br.getBundle().getSymbolicName());
 
         ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
@@ -117,15 +118,15 @@ public class Util {
         // In 4.3 this can be done much easier by using the BundleWiring, but we want this code to
         // be 4.2 compliant.
         // Here we're just finding any class in the bundle, load that and then use its classloader.
-        
+
         List<String> rootPaths = new ArrayList<String>();
         rootPaths.add("/");
-        
-        while(rootPaths.size() > 0) {            
+
+        while(rootPaths.size() > 0) {
             String rootPath = rootPaths.remove(0);
-            
+
             Enumeration<String> paths = b.getEntryPaths(rootPath);
-            while(paths.hasMoreElements()) {
+            while(paths != null && paths.hasMoreElements()) {
                 String path = paths.nextElement();
                 if (path.endsWith(".class")) {
                     ClassLoader cl = getClassLoaderFromClassResource(b, path);
@@ -136,15 +137,15 @@ public class Util {
                 }
             }
         }
-        
-        // if we can't find any classes in the bundle directly, try the Bundle-ClassPath 
+
+        // if we can't find any classes in the bundle directly, try the Bundle-ClassPath
         Object bcp = b.getHeaders().get(Constants.BUNDLE_CLASSPATH);
         if (bcp instanceof String) {
             for (String entry : ((String) bcp).split(",")) {
                 entry = entry.trim();
                 if (entry.equals("."))
                     continue;
-                
+
                 URL url = b.getResource(entry);
                 if (url != null) {
                     ClassLoader cl = getClassLoaderViaBundleClassPath(b, url);
@@ -161,7 +162,7 @@ public class Util {
             JarInputStream jis = null;
             try {
                 jis = new JarInputStream(url.openStream());
-                
+
                 JarEntry je = null;
                 while ((je = jis.getNextJarEntry()) != null) {
                     String path = je.getName();
@@ -177,7 +178,7 @@ public class Util {
             }
         } catch (IOException e) {
             BaseActivator.activator.log(LogService.LOG_ERROR, "Problem loading class from embedded jar file: " + url +
-                " in bundle " + b.getSymbolicName(), e);            
+                " in bundle " + b.getSymbolicName(), e);
         }
         return null;
     }
