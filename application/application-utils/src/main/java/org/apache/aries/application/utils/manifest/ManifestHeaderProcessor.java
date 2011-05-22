@@ -132,7 +132,7 @@ public class ManifestHeaderProcessor
     }
    @Override
    public String toString(){
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append("{");
       boolean first=true;
       for(Map.Entry<N, V> entry : this.entrySet()){

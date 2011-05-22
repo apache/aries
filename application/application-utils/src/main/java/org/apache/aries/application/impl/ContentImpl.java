@@ -146,9 +146,24 @@ public final class ContentImpl implements Content
   @Override
   public String toString()
   {
-    return this.contentName + ";" + this.nameValueMap.toString();
+    StringBuilder builder = new StringBuilder();
+    
+    builder.append(this.contentName);
+    
+    if (!!!nameValueMap.isEmpty()) {
+      for (Map.Entry<String, String> entry : nameValueMap.entrySet()) {
+        builder.append(';');
+        builder.append(entry.getKey());
+        builder.append('=').append('\"');
+        builder.append(entry.getValue());
+        builder.append('\"');
+      }
+    }
+    
+    
+    return builder.toString();
   }
-  
+
   @Override
   public boolean equals(Object other)
   {
