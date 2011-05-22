@@ -26,10 +26,10 @@
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.resolver.noop</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries Application OBR Resolver</name>
+    <name>Apache Aries Application No-op Resolver</name>
     <version>0.3.1-SNAPSHOT</version>
     <description>
-      Implementation of the AriesApplicationResolver using OBR
+      Dummy implementation of the AriesApplicationResolver
     </description>
 
      <scm>

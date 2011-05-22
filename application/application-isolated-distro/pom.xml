@@ -28,7 +28,7 @@
 
 	<groupId>org.apache.aries.application</groupId>
 	<artifactId>org.apache.aries.application-isolated-distro</artifactId>
-	<name>Application distribution</name>
+	<name>Application distribution for isolated application support</name>
     <version>0.1-SNAPSHOT</version>
 
     <scm>

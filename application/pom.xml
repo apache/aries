@@ -52,6 +52,9 @@
 	    <module>application-runtime-framework</module>
 	    <module>application-runtime-framework-management</module>
 	    <module>application-tooling-repository-generator</module>
+       <module>application-runtime-repository</module>
+       <module>application-distro</module>
+       <module>application-isolated-distro</module>
     </modules>
 
 </project>
