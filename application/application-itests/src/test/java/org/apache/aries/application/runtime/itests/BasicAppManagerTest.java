@@ -114,6 +114,30 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
     manager.uninstall(ctx);
   }
 
+  @Test
+  public void testAppStore() throws Exception {
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
+    app = manager.resolve(app);
+
+    app.store(new FileOutputStream("test2-resolved.eba"));
+
+    app = manager.createApplication(FileSystem.getFSRoot(new File("test2-resolved.eba")));
+
+    // application name should equal to whatever Application name provided in the application.mf
+    assertEquals("test application 2", app.getApplicationMetadata().getApplicationName());
+
+    AriesApplicationContext ctx = manager.install(app);
+    ctx.start();
+
+    HelloWorld hw = getOsgiService(HelloWorld.class);
+    String result = hw.getMessage();
+    assertEquals (result, "hello world");
+
+    ctx.stop();
+    manager.uninstall(ctx);
+  }
+
   
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
