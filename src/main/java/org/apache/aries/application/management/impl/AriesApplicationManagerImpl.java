@@ -24,6 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -320,6 +322,28 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     }
   
     AriesApplicationContext result = _applicationContextManager.getApplicationContext(app);
+    
+    // When installing bundles in the .eba file we use the jar url scheme. This results in a
+    // JarFile being held open, which is bad as on windows we cannot delete the .eba file
+    // so as a work around we open a url connection to one of the bundles in the eba and
+    // if it is a jar url we close the associated JarFile.
+    
+    Iterator<BundleInfo> bi = app.getBundleInfo().iterator();
+    
+    if (bi.hasNext()) {
+      String location = bi.next().getLocation();
+      if (location.startsWith("jar")) {
+        try {
+          URL url = new URL(location);
+          JarURLConnection urlc = (JarURLConnection) url.openConnection();
+          urlc.getJarFile().close();
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
+    
     return result;
   }
   
