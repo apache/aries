@@ -30,7 +30,7 @@ import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.impl.ApplicationMetadataFactoryImpl;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.junit.Test;
 import org.osgi.framework.Version;
 

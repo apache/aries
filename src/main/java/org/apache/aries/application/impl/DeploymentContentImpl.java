@@ -22,10 +22,10 @@ package org.apache.aries.application.impl;
 import java.util.Map;
 
 import org.apache.aries.application.DeploymentContent;
-import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.apache.aries.util.VersionRange;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Version;
 
 public final class DeploymentContentImpl implements DeploymentContent {
