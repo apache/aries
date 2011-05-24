@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
-import org.apache.aries.application.utils.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.felix.fileinstall.ArtifactInstaller;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
