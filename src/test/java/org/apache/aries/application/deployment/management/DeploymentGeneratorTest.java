@@ -38,7 +38,6 @@ import java.util.jar.Manifest;
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.InvalidAttributeException;
-import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.deployment.management.impl.DeploymentManifestManagerImpl;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
@@ -55,10 +54,12 @@ import org.apache.aries.application.modelling.impl.ModellingManagerImpl;
 import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.application.utils.manifest.ContentFactory;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
+import org.apache.aries.util.VersionRange;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -224,11 +225,11 @@ public class DeploymentGeneratorTest
  
       CAPABILITY_B = createExportedPackage("aries.test.b", "1.1.0", new String[] {"aries.test.b"}, new String[] {"aries.test.e"});
       
-      BUNDLE_C = ManifestHeaderProcessor.parseContent("aries.test.c","[1.0.0,1.1.0)");
+      BUNDLE_C = ContentFactory.parseContent("aries.test.c","[1.0.0,1.1.0)");
       
       CAPABILITY_C = createExportedPackage("aries.test.c", "1.0.5", new String[] {"aries.test.c"}, new String[] {});
       
-      BUNDLE_D = ManifestHeaderProcessor.parseContent("aries.test.d","1.0.0");
+      BUNDLE_D = ContentFactory.parseContent("aries.test.d","1.0.0");
       
      // = new ImportedBundleImpl("aries.test.e", "1.0.0");
       
@@ -510,8 +511,7 @@ public class DeploymentGeneratorTest
   
   private Content mockContent(String symbolicName, String version) {
     Content bundle = Skeleton.newMock(Content.class);
-    VersionRange vr = Skeleton.newMock(VersionRange.class);
-    Skeleton.getSkeleton(vr).setReturnValue(new MethodCall(VersionRange.class, "toString"), version);
+    VersionRange vr = new VersionRange(version);
     Skeleton.getSkeleton(bundle).setReturnValue(new MethodCall(Content.class, "getContentName"), symbolicName);
     Skeleton.getSkeleton(bundle).setReturnValue(new MethodCall(Content.class, "getVersion"), vr);
     

@@ -64,10 +64,11 @@ import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.filesystem.FileSystem;
-import org.apache.aries.application.utils.filesystem.IOUtils;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.apache.aries.application.utils.manifest.ContentFactory;
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
@@ -159,7 +160,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     // This is because we want to make sure all bundles we passed into resolver the same as what we are going to get from resolver. 
     List<Content> restrictedReqs = new ArrayList<Content>();
     for (ResolveConstraint constraint : constraints ) {
-      Content content = ManifestHeaderProcessor.parseContent(constraint.getBundleName(), constraint.getVersionRange().toString());
+      Content content = ContentFactory.parseContent(constraint.getBundleName(), constraint.getVersionRange().toString());
       restrictedReqs.add(content);
     }
     
@@ -262,7 +263,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       String version = mr.getExportedBundle().getVersion();
       String exactVersion = "[" + version + "," + version + "]";
 
-      Content ib = ManifestHeaderProcessor.parseContent(mr.getExportedBundle().getSymbolicName(), 
+      Content ib = ContentFactory.parseContent(mr.getExportedBundle().getSymbolicName(), 
           exactVersion);
       requiredSharedBundles.add(ib);
 
@@ -631,7 +632,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
   {
     Collection<Content> contents = new ArrayList<Content>();
     for (ImportedBundle ib : ibs) {
-      contents.add(ManifestHeaderProcessor.parseContent(ib.getSymbolicName(), ib.getVersionRange()));
+      contents.add(ContentFactory.parseContent(ib.getSymbolicName(), ib.getVersionRange()));
     }
     return contents;
   }
