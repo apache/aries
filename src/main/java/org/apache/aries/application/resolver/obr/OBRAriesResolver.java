@@ -43,7 +43,6 @@ import java.util.Set;
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.InvalidAttributeException;
-import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
@@ -62,9 +61,11 @@ import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
 import org.apache.aries.application.resolver.obr.impl.RepositoryGeneratorImpl;
 import org.apache.aries.application.resolver.obr.impl.ResourceWrapper;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.filesystem.IOUtils;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.apache.aries.application.utils.manifest.ContentFactory;
+import org.apache.aries.util.VersionRange;
+import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.DataModelHelper;
 import org.apache.felix.bundlerepository.Reason;
@@ -261,7 +262,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     contents.addAll(useBundleContent);
     if ((constraints != null ) && (constraints.length > 0 )) {
       for (ResolveConstraint con: constraints) {
-        contents.add(ManifestHeaderProcessor.parseContent(con.getBundleName(), con.getVersionRange().toString()));
+        contents.add(ContentFactory.parseContent(con.getBundleName(), con.getVersionRange().toString()));
       }
     }
 
