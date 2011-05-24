@@ -21,8 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.aries.application.utils.manifest.BundleManifest;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.BundleManifest;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 
 /**
  * A bundle may contain a Bundle-Blueprint: header as per p649 of the v4 spec. If present, 

@@ -24,10 +24,10 @@ import java.io.InputStream;
 import java.util.Set;
 import java.util.jar.Manifest;
 
-import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.util.filesystem.IFile;
 
 /**
  * Methods for creating a DeploymentMetadata instance

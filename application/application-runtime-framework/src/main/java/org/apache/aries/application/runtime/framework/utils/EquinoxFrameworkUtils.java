@@ -26,10 +26,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.application.Content;
-import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValuePair;
+import org.apache.aries.application.utils.manifest.ContentFactory;
+import org.apache.aries.util.VersionRange;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -48,7 +49,7 @@ public class EquinoxFrameworkUtils
       if (exportString != null) {
         for (NameValuePair<String, NameValueMap<String, String>> nvp : ManifestHeaderProcessor
             .parseExportString(exportString))
-          exports.add(ManifestHeaderProcessor.parseContent(nvp.getName(), nvp.getValue()));
+          exports.add(ContentFactory.parseContent(nvp.getName(), nvp.getValue()));
       }
     }
     return Collections.unmodifiableSet(exports);
@@ -62,7 +63,7 @@ public class EquinoxFrameworkUtils
       if (exportString != null) {
         for (NameValuePair<String, NameValueMap<String, String>> nvp : ManifestHeaderProcessor
             .parseExportString(exportString))
-          extraPkgs.add(ManifestHeaderProcessor.parseContent(nvp.getName(), nvp.getValue()));
+          extraPkgs.add(ContentFactory.parseContent(nvp.getName(), nvp.getValue()));
       }
     
     return Collections.unmodifiableSet(extraPkgs);

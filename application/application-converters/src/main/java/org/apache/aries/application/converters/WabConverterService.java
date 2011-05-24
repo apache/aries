@@ -22,13 +22,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.aries.application.filesystem.IDirectory;
-import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.spi.convert.BundleConversion;
 import org.apache.aries.application.management.spi.convert.BundleConverter;
 import org.apache.aries.application.utils.management.SimpleBundleInfo;
-import org.apache.aries.application.utils.manifest.BundleManifest;
+import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.filesystem.IFile;
+import org.apache.aries.util.manifest.BundleManifest;
 import org.apache.aries.web.converter.WabConversion;
 import org.apache.aries.web.converter.WarToWabConverter;
 import org.apache.aries.web.converter.WarToWabConverter.InputStreamProvider;

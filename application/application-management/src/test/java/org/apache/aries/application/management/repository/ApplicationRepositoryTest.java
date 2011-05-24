@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.aries.application.DeploymentContent;
-import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.impl.DeploymentContentImpl;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;

@@ -34,8 +34,6 @@ import java.util.Set;
 import java.util.jar.Attributes;
 
 import org.apache.aries.application.InvalidAttributeException;
-import org.apache.aries.application.filesystem.IDirectory;
-import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
@@ -46,7 +44,9 @@ import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
 import org.apache.aries.application.modelling.internal.MessageUtil;
-import org.apache.aries.application.utils.manifest.BundleManifest;
+import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.filesystem.IFile;
+import org.apache.aries.util.manifest.BundleManifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

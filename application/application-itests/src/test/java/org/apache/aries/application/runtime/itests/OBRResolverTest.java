@@ -34,7 +34,6 @@ import java.util.Set;
 
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
-import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
@@ -43,9 +42,10 @@ import org.apache.aries.application.management.spi.repository.RepositoryGenerato
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.junit.After;
@@ -224,7 +224,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
     
-    assertEquals(provision.toString(), 3, provision.size());
+    assertEquals(provision.toString(), 4, provision.size());
     
     List<String> bundleSymbolicNames = new ArrayList<String>();
     

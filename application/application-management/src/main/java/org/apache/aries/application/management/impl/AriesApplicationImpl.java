@@ -39,7 +39,7 @@ import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.spi.convert.BundleConversion;
 import org.apache.aries.application.management.spi.runtime.LocalPlatform;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.filesystem.IOUtils;
+import org.apache.aries.util.filesystem.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

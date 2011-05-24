@@ -39,7 +39,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
-import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
@@ -49,12 +48,14 @@ import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.filesystem.FileSystem;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.apache.aries.application.utils.manifest.ContentFactory;
 import org.apache.aries.sample.HelloWorld;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.junit.After;
@@ -315,7 +316,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     maps.put("version", "0.0.0");
     maps.put("bundle-symbolic-name", "use.bundle.by.reference");
     maps.put("bundle-version", "[1.0.0,1.0.0]");
-    Content useContent = ManifestHeaderProcessor.parseContent("a.b.c", maps);
+    Content useContent = ContentFactory.parseContent("a.b.c", maps);
     assertTrue("Use Bundle not found in import packags", importPackages.contains(useContent));
     
     for (Content c : importPackages) {

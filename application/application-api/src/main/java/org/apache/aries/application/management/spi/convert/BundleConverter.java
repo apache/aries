@@ -19,8 +19,8 @@
 
 package org.apache.aries.application.management.spi.convert;
 
-import org.apache.aries.application.filesystem.IDirectory;
-import org.apache.aries.application.filesystem.IFile;
+import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.filesystem.IFile;
 
 /**
  * A BundleConverter turns a .jar that is not an OSGi bundle into a well formed OSGi bundle,

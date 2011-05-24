@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.application.Content;
-import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.utils.internal.MessageUtil;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.apache.aries.util.VersionRange;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
