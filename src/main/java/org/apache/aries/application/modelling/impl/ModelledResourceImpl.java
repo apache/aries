@@ -50,9 +50,9 @@ import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.ResourceType;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValuePair;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
