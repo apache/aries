@@ -19,8 +19,7 @@
 
 package org.apache.aries.application.management;
 
-import org.apache.aries.application.VersionRange;
-import org.osgi.framework.Version;
+import org.apache.aries.util.VersionRange;
 
 /**
  * An administrator may wish to change the content of an installed application. 
