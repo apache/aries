@@ -47,6 +47,8 @@
             org.apache.aries.util.tracker;
             org.apache.aries.util.nls;
             org.apache.aries.util.service.registry;
+            org.apache.aries.util.manifest;
+            org.apache.aries.util.filesystem;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
             !org.apache.aries.util*,
@@ -58,7 +60,8 @@
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
-            org.apache.aries.util.internal
+            org.apache.aries.util.internal,
+            org.apache.aries.util.filesystem.impl
         </aries.osgi.private.pkg>
     </properties>
 
@@ -77,6 +80,16 @@
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>

@@ -20,6 +20,8 @@ package org.apache.aries.application;
 
 import java.util.Map;
 
+import org.apache.aries.util.VersionRange;
+
 
 /**
  * A representation of content metadata such as Application-Content, Import-Package, etc

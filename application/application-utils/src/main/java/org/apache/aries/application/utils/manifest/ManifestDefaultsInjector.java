@@ -22,10 +22,12 @@ import java.io.File;
 import java.util.Map;
 import java.util.jar.Manifest;
 
-import org.apache.aries.application.filesystem.IDirectory;
-import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.filesystem.IFile;
+import org.apache.aries.util.manifest.BundleManifest;
+import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 
 public class ManifestDefaultsInjector

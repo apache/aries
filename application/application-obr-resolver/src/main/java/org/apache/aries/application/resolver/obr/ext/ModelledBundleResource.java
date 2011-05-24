@@ -44,7 +44,7 @@ import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.application.resolver.internal.MessageUtil;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Property;
 import org.apache.felix.bundlerepository.Requirement;

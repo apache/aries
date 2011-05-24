@@ -23,7 +23,7 @@ package org.apache.aries.application.management;
 import java.net.URL;
 
 import org.apache.aries.application.DeploymentMetadata;
-import org.apache.aries.application.filesystem.IDirectory;
+import org.apache.aries.util.filesystem.IDirectory;
 import org.osgi.framework.BundleException;
 
 /**

@@ -22,7 +22,7 @@ package org.apache.aries.application.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.aries.application.VersionRange;
+import org.apache.aries.util.VersionRange;
 import org.junit.Test;
 import org.osgi.framework.Version;
 

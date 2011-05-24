@@ -36,7 +36,7 @@ import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.application.modelling.WrappedReferenceMetadata;
 import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.application.utils.FilterUtils;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;

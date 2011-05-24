@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.apache.aries.application.modelling.Consumer;
 import org.apache.aries.application.utils.FilterUtils;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Requirement;
 import org.osgi.framework.Filter;

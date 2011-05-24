@@ -30,8 +30,8 @@ import java.util.jar.Attributes;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.impl.ContentImpl;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.utils.manifest.BundleManifest;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.BundleManifest;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 

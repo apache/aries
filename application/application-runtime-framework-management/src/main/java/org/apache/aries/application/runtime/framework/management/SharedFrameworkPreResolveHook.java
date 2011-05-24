@@ -37,9 +37,10 @@ import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModellingManager;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
-import org.apache.aries.application.utils.manifest.ManifestProcessor;
+import org.apache.aries.application.utils.manifest.ContentFactory;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -101,7 +102,7 @@ public class SharedFrameworkPreResolveHook implements PreResolveHook
       
       Map<String, NameValueMap<String, String>> parsedImports = ManifestHeaderProcessor.parseImportString(imports);
       for (Map.Entry<String, NameValueMap<String, String>> anImport : parsedImports.entrySet()) {
-        exports.add(ManifestHeaderProcessor.parseContent(anImport.getKey(), anImport.getValue()));
+        exports.add(ContentFactory.parseContent(anImport.getKey(), anImport.getValue()));
       }
       
       return exports;
