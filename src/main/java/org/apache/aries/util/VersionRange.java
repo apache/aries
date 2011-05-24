@@ -144,10 +144,11 @@ public final class VersionRange {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.aries.application.impl.VersionRange#getExactVersion()
+    /**
+     * this method returns the exact version from the versionInfo obj.
+     * this is used for DeploymentContent only to return a valid exact version
+     * otherwise, null is returned.
+     * @return the exact version
      */
     public Version getExactVersion() {
         Version v = null;
@@ -157,47 +158,42 @@ public final class VersionRange {
         return v;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.aries.application.impl.VersionRange#getMaximumVersion()
+    /**
+     * get the maximum version
+     * @return    the maximum version
      */
     public Version getMaximumVersion() {
         return maximumVersion;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.aries.application.impl.VersionRange#getMinimumVersion()
+    /**
+     * get the minimum version
+     * @return    the minimum version
      */
     public Version getMinimumVersion() {
         return minimumVersion;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.aries.application.impl.VersionRange#isMaximumExclusive()
+    /**
+     * is the maximum version exclusive
+     * @return is the max version in the range.
      */
     public boolean isMaximumExclusive() {
         return maximumExclusive;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.aries.application.impl.VersionRange#isMaximumUnbounded()
+    /**
+     * is the maximum version unbounded
+     * @return true if no upper bound was specified.
      */
     public boolean isMaximumUnbounded() {
         boolean unbounded = maximumVersion == null;
         return unbounded;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.aries.application.impl.VersionRange#isMinimumExclusive()
+    /**
+     * is the minimum version exclusive
+     * @return true if the min version is in range.
      */
     public boolean isMinimumExclusive() {
         return minimumExclusive;
@@ -364,22 +360,21 @@ public final class VersionRange {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.aries.application.impl.VersionRange#isExactVersion()
+    /**
+     * check if the versioninfo is the exact version
+     * @return true if the range will match 1 exact version.
      */
     public boolean isExactVersion() {
         return minimumVersion.equals(maximumVersion) && minimumExclusive == maximumExclusive
                && !!!minimumExclusive;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.aries.application.impl.VersionRange#intersect(VersionRange
-     * range)
+    /**
+     * Create a new version range that is the intersection of {@code this} and the argument.
+     * In other words, the largest version range that lies within both {@code this} and
+     * the parameter.
+     * @param range a version range to be intersected with {@code this}.
+     * @return a new version range, or {@code null} if no intersection is possible.
      */
     public VersionRange intersect(VersionRange r) {
         // Use the highest minimum version.
