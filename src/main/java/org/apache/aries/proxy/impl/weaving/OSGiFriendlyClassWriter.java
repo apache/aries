@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -79,37 +80,45 @@ final class OSGiFriendlyClassWriter extends ClassWriter {
       boolean bRunning = true;
       boolean aRunning = true;
       InputStream is;
-      
+      String arg00 = arg0;
+      String arg11 = arg1;
+      String unable = null;
       while(aRunning || bRunning ) {
         if(aRunning) {
-          is = loader.getResourceAsStream(arg0 + ".class");
+          is = loader.getResourceAsStream(arg00 + ".class");
           if(is != null) {
             ClassReader cr = new ClassReader(is);
-            arg0 = cr.getSuperName();
-            if(arg0 == null)
+            arg00 = cr.getSuperName();
+            if(arg00 == null)
               aRunning = false;
-            else if(!!!names.add(arg0))
-              return arg0;
+            else if(!!!names.add(arg00))
+              return arg00;
           } else {
+            unable = arg0;
             aRunning = false;
           }
         }
         if(bRunning) {
-          is = loader.getResourceAsStream(arg1 + ".class");
+          is = loader.getResourceAsStream(arg11 + ".class");
           if(is != null) {
             ClassReader cr = new ClassReader(is);
-            arg1 = cr.getSuperName();
-            if(arg1 == null)
+            arg11 = cr.getSuperName();
+            if(arg11 == null)
               bRunning = false;
-            else if(!!!names.add(arg1))
-              return arg1;
+            else if(!!!names.add(arg11))
+              return arg11;
           } else {
+            unable = arg1;
             bRunning = false;
           }
         }
       }
-      
-      throw new RuntimeException(NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1));
+
+        if (unable == null) {
+            throw new RuntimeException(NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1));
+        } else {
+            throw new RuntimeException(new UnableToProxyException(unable, NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1)));
+        }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
