@@ -62,13 +62,12 @@ public final class VersionRange {
      *            whether this is an exact version
      */
     public VersionRange(String version, boolean exactVersion) {
-        this.version = version;
         if (exactVersion) {
-            processExactVersionAttribute(this.version);
+            processExactVersionAttribute(version);
         } else {
+            this.version = version;
             processVersionAttribute(this.version);
         }
-
         assertInvariants();
     }
 

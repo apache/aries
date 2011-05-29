@@ -35,6 +35,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
+import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
@@ -169,7 +170,9 @@ public class OBRAriesResolver implements AriesApplicationResolver
   public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
   {
     Map<String, String> attribs = new HashMap<String, String>();
-    attribs.put(Resource.VERSION, bundleVersion.toString());
+    // bundleVersion is an exact version - so ensure right version filter is generated
+    VersionRange range = ManifestHeaderProcessor.parseVersionRange(bundleVersion.toString(), true);
+    attribs.put(Resource.VERSION, range.toString());
     String filterString = ManifestHeaderProcessor.generateFilter(Resource.SYMBOLIC_NAME, bundleSymbolicName, attribs);
     Resource[] resources;
     try {
