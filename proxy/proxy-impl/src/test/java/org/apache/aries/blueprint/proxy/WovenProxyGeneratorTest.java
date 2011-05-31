@@ -23,8 +23,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -74,7 +78,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     ProxyTestClassUnweavableChild.class, ProxyTestClassUnweavableSibling.class, ProxyTestClassInner.class, 
     ProxyTestClassStaticInner.class, ProxyTestClassUnweavableInnerChild.class, 
     ProxyTestClassUnweavableChildWithFinalMethodParent.class, 
-    ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class};
+    ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class, ProxyTestClassSerializable.class};
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
@@ -308,6 +312,23 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
       assertEquals(ProxyTestClassUnweavableInnerChild.class.getName(), 
           ((UnableToProxyException)re.getCause()).getClassName());
     }
+  }
+  
+  @Test
+  public void testSerialization() throws Exception {
+    
+    ProxyTestClassSerializable in = new ProxyTestClassSerializable();
+    in.value = 5;
+    
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(in);
+    
+    ProxyTestClassSerializable.checkDeserialization(baos.toByteArray(), 5);
+
+    Class<?> woven = getProxyClass(ProxyTestClassSerializable.class);
+    
+    woven.getMethod("checkDeserialization", byte[].class, int.class).invoke(null, baos.toByteArray(), 5);
   }
   
   @Override
