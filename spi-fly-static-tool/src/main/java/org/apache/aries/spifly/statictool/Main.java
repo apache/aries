@@ -55,7 +55,7 @@ public class Main {
         System.err.println("obtain implementations via META-INF/services. The byte code in the bundles is");
         System.err.println("modified so that the ThreadContextClassLoader is set appropriately for the ");
         System.err.println("duration of the java.util.ServiceLoader.load() call.");
-        System.err.println("To opt-in to this process, bundles need to have the following Manifest.MF");
+        System.err.println("To opt-in to this process, bundles need to have the following MANIFEST.MF");
         System.err.println("header set:");
         System.err.println("    " + SpiFlyConstants.SPI_CONSUMER_HEADER + ": *");
         System.err.println("Modified bundles are written out under the following name:");
