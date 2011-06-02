@@ -65,7 +65,7 @@ public class UtilTest {
     }
 
     @Test
-    public void testFixContextClassLoader() throws Exception {
+    public void testFixContextClassLoaderSimpleViaEmbeddedJar() throws Exception {
         BaseActivator activator = new BaseActivator() {
             public void start(BundleContext context) throws Exception {
             }
@@ -80,7 +80,7 @@ public class UtilTest {
         EasyMock.expect(providerBundle.getBundleId()).andReturn(42L).anyTimes();
         EasyMock.expect(providerBundle.getEntryPaths((String) EasyMock.anyObject())).andReturn(null).anyTimes();
         Dictionary<String, String> providerHeaders = new Hashtable<String, String>();
-        providerHeaders.put(Constants.BUNDLE_CLASSPATH, "embedded3.jar");
+        providerHeaders.put(Constants.BUNDLE_CLASSPATH, ".,embedded3.jar");
         EasyMock.expect(providerBundle.getHeaders()).andReturn(providerHeaders).anyTimes();
         EasyMock.expect(providerBundle.getResource("embedded3.jar")).andReturn(url).anyTimes();
         EasyMock.expect(providerBundle.loadClass((String) EasyMock.anyObject())).andAnswer(new IAnswer<Class<?>>() {
