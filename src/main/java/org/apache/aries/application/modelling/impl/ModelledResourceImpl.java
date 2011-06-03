@@ -51,7 +51,6 @@ import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,11 +152,11 @@ public class ModelledResourceImpl implements ModelledResource
     _exportedPackages = new ArrayList<ExportedPackage>();
     String packageExports = bundleAttributes.getValue(EXPORT_PACKAGE);
     if (packageExports != null) {
-      List<NameValuePair<String, NameValueMap<String, String>>> exportedPackages = ManifestHeaderProcessor
+      List<NameValuePair> exportedPackages = ManifestHeaderProcessor
         .parseExportString(packageExports);
-      for (NameValuePair<String, NameValueMap<String, String>> exportedPackage : exportedPackages) {
+      for (NameValuePair exportedPackage : exportedPackages) {
         _exportedPackages.add(new ExportedPackageImpl(this, exportedPackage.getName(), 
-            new HashMap<String, Object>(exportedPackage.getValue())));
+            new HashMap<String, Object>(exportedPackage.getAttributes())));
     
       }
     }
@@ -165,9 +164,9 @@ public class ModelledResourceImpl implements ModelledResource
     _importedPackages = new ArrayList<ImportedPackage>();
     String packageImports = bundleAttributes.getValue(IMPORT_PACKAGE);
     if (packageImports != null) {
-      Map<String, NameValueMap<String, String>> importedPackages = ManifestHeaderProcessor
+      Map<String, Map<String, String>> importedPackages = ManifestHeaderProcessor
           .parseImportString(packageImports);
-      for (Map.Entry<String, NameValueMap<String, String>> importedPackage : importedPackages.entrySet()) {
+      for (Map.Entry<String, Map<String, String>> importedPackage : importedPackages.entrySet()) {
         Map<String, String> atts = importedPackage.getValue();
         _importedPackages.add(new ImportedPackageImpl(importedPackage.getKey(), atts));
       }
@@ -181,10 +180,10 @@ public class ModelledResourceImpl implements ModelledResource
       serviceExports = bundleAttributes.getValue(EXPORT_SERVICE);
     } 
     if (serviceExports != null) {
-      List<NameValuePair<String, NameValueMap<String, String>>> expServices = ManifestHeaderProcessor
+      List<NameValuePair> expServices = ManifestHeaderProcessor
           .parseExportString(serviceExports);
-      for (NameValuePair<String, NameValueMap<String, String>> exportedService : expServices) {
-        _exportedServices.add(new ExportedServiceImpl(exportedService.getName(), exportedService.getValue()));
+      for (NameValuePair exportedService : expServices) {
+        _exportedServices.add(new ExportedServiceImpl(exportedService.getName(), exportedService.getAttributes()));
       }
     }
   
@@ -193,9 +192,9 @@ public class ModelledResourceImpl implements ModelledResource
       serviceImports = bundleAttributes.getValue(IMPORT_SERVICE);
     } 
     if (serviceImports != null) {
-      Map<String, NameValueMap<String, String>> svcImports = ManifestHeaderProcessor
+      Map<String, Map<String, String>> svcImports = ManifestHeaderProcessor
           .parseImportString(serviceImports);
-      for (Map.Entry<String, NameValueMap<String, String>> importedService : svcImports.entrySet()) {
+      for (Map.Entry<String, Map<String, String>> importedService : svcImports.entrySet()) {
         _importedServices.add(new ImportedServiceImpl(importedService.getKey(), importedService.getValue()));
       }
     }
@@ -205,9 +204,9 @@ public class ModelledResourceImpl implements ModelledResource
     if (_resourceType == ResourceType.BUNDLE) { 
       String requireBundleHeader = bundleAttributes.getValue(REQUIRE_BUNDLE);
       if (requireBundleHeader != null) {
-        Map<String, NameValueMap<String, String>> requiredBundles = ManifestHeaderProcessor
+        Map<String, Map<String, String>> requiredBundles = ManifestHeaderProcessor
             .parseImportString(requireBundleHeader);
-        for (Map.Entry<String, NameValueMap<String, String>> bundle : requiredBundles.entrySet()) {
+        for (Map.Entry<String, Map<String, String>> bundle : requiredBundles.entrySet()) {
           String type = bundle.getKey();
           Map<String, String> attribs = bundle.getValue();
           // We may parse a manifest with a header like Require-Bundle: bundle.a;bundle-version=3.0.0
@@ -225,9 +224,9 @@ public class ModelledResourceImpl implements ModelledResource
     
       String dynamicImports = bundleAttributes.getValue(DYNAMICIMPORT_PACKAGE);
       if (dynamicImports != null) {
-        Map<String, NameValueMap<String, String>> dynamicImportPackages = ManifestHeaderProcessor
+        Map<String, Map<String, String>> dynamicImportPackages = ManifestHeaderProcessor
             .parseImportString(dynamicImports);
-        for (Map.Entry<String, NameValueMap<String, String>> dynImportPkg : dynamicImportPackages.entrySet()) {
+        for (Map.Entry<String, Map<String, String>> dynImportPkg : dynamicImportPackages.entrySet()) {
           if (dynImportPkg.getKey().indexOf("*") == -1) {
             dynImportPkg.getValue().put(RESOLUTION_DIRECTIVE + ":", RESOLUTION_OPTIONAL);
             _importedPackages.add(new ImportedPackageImpl(dynImportPkg.getKey(), dynImportPkg.getValue()));
@@ -239,21 +238,24 @@ public class ModelledResourceImpl implements ModelledResource
   }
 
 
-  public String getLocation() {
+  @Override
+public String getLocation() {
     logger.debug(LOG_ENTRY, "getLocation");
     logger.debug(LOG_EXIT, "getLocation", _fileURI);
     return _fileURI;
   }
 
 
-  public ExportedBundle getExportedBundle() {
+  @Override
+public ExportedBundle getExportedBundle() {
     logger.debug(LOG_ENTRY, "getExportedBundle");
     logger.debug(LOG_EXIT, "getExportedBundle",  _exportedBundle);
     return _exportedBundle;
   }
 
 
-  public Collection<ExportedPackage> getExportedPackages() {
+  @Override
+public Collection<ExportedPackage> getExportedPackages() {
     logger.debug(LOG_ENTRY, "getExportedPackages");
     logger.debug(LOG_EXIT, "getExportedPackages",  _exportedPackages);
     return Collections.unmodifiableCollection(_exportedPackages);
@@ -261,13 +263,15 @@ public class ModelledResourceImpl implements ModelledResource
   
 
 
-  public Collection<ImportedPackage> getImportedPackages() {
+  @Override
+public Collection<ImportedPackage> getImportedPackages() {
     logger.debug(LOG_ENTRY, "getImportedPackages");
     logger.debug(LOG_EXIT, "getImportedPackages",  _importedPackages);
     return Collections.unmodifiableCollection(_importedPackages);
   }
 
-  public Collection<ExportedService> getExportedServices() {
+  @Override
+public Collection<ExportedService> getExportedServices() {
     logger.debug(LOG_ENTRY, "getExportedServices");
     logger.debug(LOG_EXIT, "getExportedServices",  _exportedServices);
     return Collections.unmodifiableCollection(_exportedServices);
@@ -275,14 +279,16 @@ public class ModelledResourceImpl implements ModelledResource
 
 
 
-  public Collection<ImportedService> getImportedServices() {
+  @Override
+public Collection<ImportedService> getImportedServices() {
     logger.debug(LOG_ENTRY, "getImportedServices");
     logger.debug(LOG_EXIT, "getImportedServices",  _exportedServices);
     return Collections.unmodifiableCollection(_importedServices);
   }
 
 
-  public String getSymbolicName() {
+  @Override
+public String getSymbolicName() {
     logger.debug(LOG_ENTRY, "getSymbolicName");
     String result = _exportedBundle.getSymbolicName();
     logger.debug(LOG_EXIT, "getSymbolicName",  result);
@@ -290,7 +296,8 @@ public class ModelledResourceImpl implements ModelledResource
   }
   
 
-  public String getVersion() {
+  @Override
+public String getVersion() {
     logger.debug(LOG_ENTRY, "getVersion");
     String result = _exportedBundle.getVersion();
     logger.debug(LOG_EXIT, "getVersion",  result);
@@ -298,7 +305,8 @@ public class ModelledResourceImpl implements ModelledResource
   }
 
 
-  public String toDeploymentString() {
+  @Override
+public String toDeploymentString() {
     logger.debug(LOG_ENTRY, "toDeploymentString");
     String result = _exportedBundle.toDeploymentString();
     logger.debug(LOG_EXIT, "toDeploymentString",  result);
@@ -306,7 +314,8 @@ public class ModelledResourceImpl implements ModelledResource
   }
 
 
-  public ResourceType getType() {
+  @Override
+public ResourceType getType() {
     logger.debug(LOG_ENTRY, "getType");
     logger.debug(LOG_EXIT, "getType",  ResourceType.BUNDLE);
     return _resourceType;
@@ -318,14 +327,16 @@ public class ModelledResourceImpl implements ModelledResource
   }
 
 
-  public Collection<ImportedBundle> getRequiredBundles() {
+  @Override
+public Collection<ImportedBundle> getRequiredBundles() {
     logger.debug(LOG_ENTRY, "getRequiredBundles");
     logger.debug(LOG_EXIT, "getRequiredBundles",  _requiredBundles);
     return Collections.unmodifiableCollection(_requiredBundles);
   }
 
 
-  public ImportedBundle getFragmentHost() {
+  @Override
+public ImportedBundle getFragmentHost() {
     logger.debug(LOG_ENTRY, "getFragmentHost");
     ImportedBundle result = _exportedBundle.getFragmentHost();
     logger.debug(LOG_EXIT, "getFragmentHost",  result);
@@ -333,7 +344,8 @@ public class ModelledResourceImpl implements ModelledResource
   }
 
 
-  public boolean isFragment() {
+  @Override
+public boolean isFragment() {
     logger.debug(LOG_ENTRY, "isFragment");
     boolean result = _exportedBundle.isFragment();
     logger.debug(LOG_EXIT, "isFragment",  result);

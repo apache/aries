@@ -43,7 +43,6 @@ import org.apache.aries.application.modelling.internal.MessageUtil;
 import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +114,7 @@ public class ModellingHelperImpl implements ModellingHelper
       
       return null;
     }
-    Map<String, NameValueMap<String, String>> parsedFragHost = ManifestHeaderProcessor.parseImportString(fragmentHostHeader);
+    Map<String, Map<String, String>> parsedFragHost = ManifestHeaderProcessor.parseImportString(fragmentHostHeader);
     if(parsedFragHost.size() != 1)
       throw new InvalidAttributeException(MessageUtil.getMessage("APPUTILS0001W",
           new Object[] {fragmentHostHeader}, 
