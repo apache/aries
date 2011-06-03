@@ -36,7 +36,7 @@ public class DeploymentContentImplTest {
     assertTrue(vi.isExactVersion());
     assertEquals(new Version("1.1.0"), dc.getExactVersion());
     assertEquals("com.travel.reservation.web", dc.getContentName());
-    assertEquals("{deployed-version->1.1.0}", dc.getNameValueMap().toString());
+    assertEquals("{deployed-version=1.1.0}", dc.getNameValueMap().toString());
   }
   
   @Test
@@ -47,7 +47,7 @@ public class DeploymentContentImplTest {
     assertTrue(vi.isExactVersion());
     assertEquals(new Version("2.0"), dc.getExactVersion());
     assertEquals("com.travel.reservation.business", dc.getContentName());
-    assertEquals("{deployed-version->2.0}", dc.getNameValueMap().toString());
+    assertEquals("{deployed-version=2.0}", dc.getNameValueMap().toString());
   }
   
   
@@ -59,7 +59,7 @@ public class DeploymentContentImplTest {
     assertTrue(vi.isExactVersion());
     assertEquals(new Version("2.1.1"), dc.getExactVersion());
     assertEquals("com.travel.reservation.data", dc.getContentName());
-    assertEquals("{deployed-version->2.1.1}", dc.getNameValueMap().toString());
+    assertEquals("{deployed-version=2.1.1}", dc.getNameValueMap().toString());
   }
 }
 

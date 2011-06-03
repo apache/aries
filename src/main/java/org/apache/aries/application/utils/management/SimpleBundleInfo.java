@@ -50,7 +50,7 @@ public final class SimpleBundleInfo implements BundleInfo {
   public SimpleBundleInfo(BundleManifest bm, String location) { 
     _contentName = new ContentImpl(
         bm.getSymbolicName(), 
-        ManifestHeaderProcessor.parseBundleSymbolicName(bm.getSymbolicName()).getValue());
+        ManifestHeaderProcessor.parseBundleSymbolicName(bm.getSymbolicName()).getAttributes());
     _version = bm.getVersion();
     _attributes = bm.getRawAttributes();
     _location = location;

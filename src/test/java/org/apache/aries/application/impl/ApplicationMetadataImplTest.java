@@ -21,7 +21,9 @@ package org.apache.aries.application.impl;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -30,7 +32,6 @@ import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.impl.ApplicationMetadataFactoryImpl;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.junit.Test;
 import org.osgi.framework.Version;
 
@@ -55,8 +56,8 @@ public class ApplicationMetadataImplTest
     List<Content> appContents = app.getApplicationContents();
     assertEquals(2, appContents.size());
     Content appContent1 = new ContentImpl("com.travel.reservation.business");
-    NameValueMap<String, String> attrs = new NameValueMap<String, String>();
-    attrs.addToCollection("version", "\"[1.1.0,1.2.0)\"");
+    Map<String, String> attrs = new HashMap<String, String>();
+    attrs.put("version", "\"[1.1.0,1.2.0)\"");
     Content appContent2 = new ContentImpl("com.travel.reservation.web", attrs);
     assertTrue(appContents.contains(appContent2));
     assertTrue(appContents.contains(appContent1));
