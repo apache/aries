@@ -40,9 +40,7 @@ import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.utils.manifest.ContentFactory;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
@@ -53,72 +51,83 @@ public class SharedFrameworkPreResolveHook implements PreResolveHook
   
   private static final class BundleInfoImpl implements BundleInfo
   {
-    private Bundle compositeBundle;
+    private final Bundle compositeBundle;
     
     public BundleInfoImpl(Bundle bundle) {
       compositeBundle = bundle;
     }
     
-    public String getSymbolicName()
+    @Override
+	public String getSymbolicName()
     {
       return compositeBundle.getSymbolicName();
     }
 
-    public Map<String, String> getBundleDirectives()
+    @Override
+	public Map<String, String> getBundleDirectives()
     {
       return Collections.emptyMap();
     }
 
-    public Map<String, String> getBundleAttributes()
+    @Override
+	public Map<String, String> getBundleAttributes()
     {
       return Collections.emptyMap();
     }
 
-    public Version getVersion()
+    @Override
+	public Version getVersion()
     {
       return compositeBundle.getVersion();
     }
 
-    public String getLocation()
+    @Override
+	public String getLocation()
     {
       return compositeBundle.getLocation();
     }
 
-    public Set<Content> getImportPackage()
+    @Override
+	public Set<Content> getImportPackage()
     {
       return Collections.emptySet();
     }
 
-    public Set<Content> getRequireBundle()
+    @Override
+	public Set<Content> getRequireBundle()
     {
       return Collections.emptySet();
     }
 
-    public Set<Content> getExportPackage()
+    @Override
+	public Set<Content> getExportPackage()
     {
       String imports = (String) compositeBundle.getHeaders().get(Constants.IMPORT_PACKAGE);
       
       Set<Content> exports = new HashSet<Content>();
       
-      Map<String, NameValueMap<String, String>> parsedImports = ManifestHeaderProcessor.parseImportString(imports);
-      for (Map.Entry<String, NameValueMap<String, String>> anImport : parsedImports.entrySet()) {
+      Map<String, Map<String, String>> parsedImports = ManifestHeaderProcessor.parseImportString(imports);
+      for (Map.Entry<String, Map<String, String>> anImport : parsedImports.entrySet()) {
         exports.add(ContentFactory.parseContent(anImport.getKey(), anImport.getValue()));
       }
       
       return exports;
     }
 
-    public Set<Content> getImportService()
+    @Override
+	public Set<Content> getImportService()
     {
       return Collections.emptySet();
     }
 
-    public Set<Content> getExportService()
+    @Override
+	public Set<Content> getExportService()
     {
       return Collections.emptySet();
     }
 
-    public Map<String, String> getHeaders()
+    @Override
+	public Map<String, String> getHeaders()
     {
       Map<String, String> result = new HashMap<String, String>();
       @SuppressWarnings("unchecked")
@@ -138,14 +147,16 @@ public class SharedFrameworkPreResolveHook implements PreResolveHook
       return result;
     }
 
-    public Attributes getRawAttributes()
+    @Override
+	public Attributes getRawAttributes()
     {
       return ManifestProcessor.mapToManifest(getHeaders()).getMainAttributes();
     }
     
   }
   
-  public void collectFakeResources(Collection<ModelledResource> resources)
+  @Override
+public void collectFakeResources(Collection<ModelledResource> resources)
   {
     Bundle b = fwMgr.getSharedBundleFramework().getIsolatedBundleContext().getBundle(1);
     BundleInfo info = new BundleInfoImpl(b);
