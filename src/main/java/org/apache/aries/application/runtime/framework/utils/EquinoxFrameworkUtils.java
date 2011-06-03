@@ -29,7 +29,6 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.utils.manifest.ContentFactory;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -47,9 +46,9 @@ public class EquinoxFrameworkUtils
     if (sysBundle != null && sysBundle.getHeaders() != null) {
       String exportString = (String) sysBundle.getHeaders().get(Constants.EXPORT_PACKAGE);
       if (exportString != null) {
-        for (NameValuePair<String, NameValueMap<String, String>> nvp : ManifestHeaderProcessor
+        for (NameValuePair nvp : ManifestHeaderProcessor
             .parseExportString(exportString))
-          exports.add(ContentFactory.parseContent(nvp.getName(), nvp.getValue()));
+          exports.add(ContentFactory.parseContent(nvp.getName(), nvp.getAttributes()));
       }
     }
     return Collections.unmodifiableSet(exports);
@@ -61,9 +60,9 @@ public class EquinoxFrameworkUtils
     
       String exportString = context.getProperty(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA);
       if (exportString != null) {
-        for (NameValuePair<String, NameValueMap<String, String>> nvp : ManifestHeaderProcessor
+        for (NameValuePair nvp : ManifestHeaderProcessor
             .parseExportString(exportString))
-          extraPkgs.add(ContentFactory.parseContent(nvp.getName(), nvp.getValue()));
+          extraPkgs.add(ContentFactory.parseContent(nvp.getName(), nvp.getAttributes()));
       }
     
     return Collections.unmodifiableSet(extraPkgs);
@@ -123,7 +122,7 @@ public class EquinoxFrameworkUtils
 
     // Let's always set javax.transaction as system extra packages because of the split package. 
     // It is reasonable to do so because we always flow userTransaction service into child framework anyway.
-    NameValueMap<String, String> map = new NameValueMap<String, String>();
+    Map<String, String> map = new HashMap<String, String>();
     map.put(EquinoxFrameworkConstants.TRANSACTION_BUNDLE, EquinoxFrameworkConstants.TRANSACTION_BUNDLE_VERSION);
     Map<String, Map<String, String>> resultMap = new HashMap<String, Map<String, String>>();
     resultMap.put(EquinoxFrameworkConstants.TRANSACTION_BUNDLE, map);
