@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNull;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.repository;
 
 import java.io.File;
@@ -208,11 +207,13 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         getOsgiService(ModellingManager.class));
 
     AriesApplication newApp = manager.resolve(app, new ResolveConstraint() {
-      public String getBundleName() {
+      @Override
+	public String getBundleName() {
         return "org.apache.aries.isolated.sample";
       }
 
-      public VersionRange getVersionRange() {
+      @Override
+	public VersionRange getVersionRange() {
         return ManifestHeaderProcessor.parseVersionRange("[2.0.0,2.0.0]", true);
       }
     });
