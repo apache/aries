@@ -46,33 +46,36 @@ public class ManifestHeaderProcessor
    * @param <N> The type for the 'Name'
    * @param <V> The type for the 'Value'
    */
-  public static class NameValuePair<N,V>{
-    private N name;
-    private V value;
-    public NameValuePair(N name, V value)
+  public static class NameValuePair {
+    private String name;
+    private Map<String,String> attributes;
+    
+    public NameValuePair(String name, Map<String,String> value)
     {
       this.name = name;
-      this.value = value;
+      this.attributes = value;
     }
-    public N getName()
+    public String getName()
     {
       return name;
     }
-    public void setName(N name)
+    public void setName(String name)
     {
       this.name = name;
     }
-    public V getValue()
+    
+    public Map<String,String> getAttributes()
     {
-      return value;
+      return attributes;
     }
-    public void setValue(V value)
+    public void setAttributes(Map<String,String> value)
     {
-      this.value = value;
+      this.attributes = value;
     }
+    
     @Override
     public String toString(){
-      return "{"+name.toString()+"::"+value.toString()+"}";
+      return "{"+name.toString()+"::"+attributes.toString()+"}";
     }
     @Override
     public int hashCode()
@@ -80,7 +83,7 @@ public class ManifestHeaderProcessor
       final int prime = 31;
       int result = 1;
       result = prime * result + ((name == null) ? 0 : name.hashCode());
-      result = prime * result + ((value == null) ? 0 : value.hashCode());
+      result = prime * result + ((attributes == null) ? 0 : attributes.hashCode());
       return result;
     }
     @Override
@@ -89,13 +92,13 @@ public class ManifestHeaderProcessor
       if (this == obj) return true;
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
-      final NameValuePair<?, ?> other = (NameValuePair<?, ?>) obj;
+      final NameValuePair other = (NameValuePair) obj;
       if (name == null) {
         if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
-      if (value == null) {
-        if (other.value != null) return false;
-      } else if (!value.equals(other.value)) return false;
+      if (attributes == null) {
+    	  if (other.attributes != null) return false;
+      } else if (!attributes.equals(other.attributes)) return false;
       return true;
     }
   }
@@ -107,13 +110,13 @@ public class ManifestHeaderProcessor
    * @param <N> Type of 'Name'
    * @param <V> Type of 'Value'
    */
-  public static interface NameValueCollection<N,V>{
+  public static interface NameValueCollection {
     /**
      * Add this Name & Value to the collection.
      * @param n
      * @param v
      */
-    public void addToCollection(N n,V v);
+    public void addToCollection(String n, Map<String,String> v);
   }
 
   /**
@@ -122,17 +125,19 @@ public class ManifestHeaderProcessor
    * @param <N> Type of 'Name'
    * @param <V> Type of 'Value'
    */
-  public static class NameValueMap<N,V> extends HashMap<N,V> implements NameValueCollection<N,V>, Map<N,V>{
-	    
-   public void addToCollection(N n,V v){
+  public static class NameValueMap extends HashMap<String, Map<String,String>> implements NameValueCollection, Map<String, Map<String,String>>{
+	private static final long serialVersionUID = -6446338858542599141L;
+	
+	public void addToCollection(String n, Map<String,String> v){
       this.put(n,v);
     }
-   @Override
-   public String toString(){
+	
+	@Override
+	public String toString(){
       StringBuilder sb = new StringBuilder();
       sb.append("{");
       boolean first=true;
-      for(Map.Entry<N, V> entry : this.entrySet()){
+      for(Map.Entry<String, Map<String,String>> entry : this.entrySet()){
         if(!first)sb.append(",");
         first=false;
         sb.append(entry.getKey()+"->"+entry.getValue());
@@ -148,17 +153,18 @@ public class ManifestHeaderProcessor
    * @param <N> Type of 'Name'
    * @param <V> Type of 'Value'
    */
-  public static class NameValueList<N,V> extends ArrayList<NameValuePair<N,V>> implements NameValueCollection<N,V>, List<NameValuePair<N,V>>{    
-
-	public void addToCollection(N n,V v){
-      this.add(new NameValuePair<N,V>(n,v));
+  public static class NameValueList extends ArrayList<NameValuePair> implements NameValueCollection, List<NameValuePair> {    
+	private static final long serialVersionUID = 1808636823825029983L;
+	
+	public void addToCollection(String n, Map<String,String> v){
+      this.add(new NameValuePair(n,v));
     } 
 	@Override
     public String toString(){
       StringBuffer sb = new StringBuffer();
       sb.append("{");
       boolean first = true;
-      for(NameValuePair<N, V> nvp : this){
+      for(NameValuePair nvp : this){
         if(!first)sb.append(",");
         first=false;
         sb.append(nvp.toString());        
@@ -201,15 +207,15 @@ public class ManifestHeaderProcessor
    * @return a list of NameValuePair, with the Name being the name component, 
    *         and the Value being a NameValueMap of key->value mappings.   
    */
-  private static List<NameValuePair<String, NameValueMap<String, String>>> genericNameWithNameValuePairProcess(String s){    
+  private static List<NameValuePair> genericNameWithNameValuePairProcess(String s){    
     String name;
-    NameValueMap<String,String> params = null;
-    List<NameValuePair<String, NameValueMap<String, String>>> nameValues = new ArrayList<NameValuePair<String, NameValueMap<String, String>>>();
+    Map<String,String> params = null;
+    List<NameValuePair> nameValues = new ArrayList<NameValuePair>();
     List<String> pkgs = new ArrayList<String>();
     int index = s.indexOf(";");
     if(index==-1){
       name = s;
-      params = new NameValueMap<String, String>();
+      params = new HashMap<String, String>();
       pkgs.add(name);
     }else{       
       name = s.substring(0,index).trim();
@@ -251,7 +257,7 @@ public class ManifestHeaderProcessor
       
     }
     for (String pkg : pkgs) {
-      nameValues.add(new NameValuePair<String, NameValueMap<String, String>>(pkg,params));
+      nameValues.add(new NameValuePair(pkg,params));
     }  
     
     return nameValues;
@@ -269,8 +275,8 @@ public class ManifestHeaderProcessor
    * @param s data to parse
    * @return a NameValueMap, with attribute-name -> attribute-value.
    */
-  private static NameValueMap<String,String> genericNameValueProcess(String s){
-    NameValueMap<String,String> params = new NameValueMap<String,String>();  
+  private static Map<String,String> genericNameValueProcess(String s){
+    Map<String,String> params = new HashMap<String,String>();  
     List<String> parameters = split(s, ";");
     for(String parameter : parameters) {
       List<String> parts = split(parameter,"=");
@@ -301,12 +307,12 @@ public class ManifestHeaderProcessor
    * @param out The collection to add each package name + attrib map to.
    * @param s The data to parse
    */
-  private static void genericImportExportProcess(NameValueCollection<String, NameValueMap<String,String>>out, String s){
+  private static void genericImportExportProcess(NameValueCollection out, String s){
     List<String> packages = split(s, ",");
     for(String pkg : packages){   
-      List<NameValuePair<String, NameValueMap<String, String>>> ps = genericNameWithNameValuePairProcess(pkg);
-      for (NameValuePair<String, NameValueMap<String, String>> p : ps) {
-        out.addToCollection(p.getName(), p.getValue());
+      List<NameValuePair> ps = genericNameWithNameValuePairProcess(pkg);
+      for (NameValuePair p : ps) {
+        out.addToCollection(p.getName(), p.getAttributes());
       }
     }    
   }
@@ -321,8 +327,8 @@ public class ManifestHeaderProcessor
    * @return List of NameValuePairs, where each Name in the list is an exported package, 
    *         with its associated Value being a NameValueMap of any attributes declared. 
    */
-  public static List<NameValuePair<String, NameValueMap<String, String>>> parseExportString(String s){
-    NameValueList<String, NameValueMap<String, String>> retval = new NameValueList<String, NameValueMap<String, String>>();
+  public static List<NameValuePair> parseExportString(String s){
+    NameValueList retval = new NameValueList();
     genericImportExportProcess(retval, s);
     return retval;
   }
@@ -339,12 +345,12 @@ public class ManifestHeaderProcessor
    * @return List of NameValuePairs, where each Name in the list is an exported package, 
    *         with its associated Value being a NameValueMap of any attributes declared. 
    */
-  public static List<NameValuePair<String, NameValueMap<String, String>>> parseExportList(List<String> list){
-    NameValueList<String, NameValueMap<String, String>> retval = new NameValueList<String, NameValueMap<String, String>>();
+  public static List<NameValuePair> parseExportList(List<String> list){
+    NameValueList retval = new NameValueList();
     for(String pkg : list){   
-      List<NameValuePair<String, NameValueMap<String, String>>> ps = genericNameWithNameValuePairProcess(pkg);
-      for (NameValuePair<String, NameValueMap<String, String>> p : ps) {
-        retval.addToCollection(p.getName(), p.getValue());
+      List<NameValuePair> ps = genericNameWithNameValuePairProcess(pkg);
+      for (NameValuePair p : ps) {
+        retval.addToCollection(p.getName(), p.getAttributes());
       }
     } 
     return retval;
@@ -360,8 +366,8 @@ public class ManifestHeaderProcessor
    * @return Map of NameValuePairs, where each Key in the Map is an imported package, 
    *         with its associated Value being a NameValueMap of any attributes declared. 
    */  
-  public static Map<String, NameValueMap<String, String>> parseImportString(String s){
-    NameValueMap<String, NameValueMap<String, String>> retval = new NameValueMap<String, NameValueMap<String, String>>();
+  public static Map<String, Map<String, String>> parseImportString(String s){
+    NameValueMap retval = new NameValueMap();
     genericImportExportProcess(retval, s);
     return retval;    
   }
@@ -375,7 +381,7 @@ public class ManifestHeaderProcessor
    * @return NameValuePair with Name being the BundleSymbolicName, 
    *         and Value being any attribs declared for the name. 
    */   
-  public static NameValuePair<String, NameValueMap<String, String>> parseBundleSymbolicName(String s){
+  public static NameValuePair parseBundleSymbolicName(String s){
     return genericNameWithNameValuePairProcess(s).get(0); // should just return the first one
   }
   
