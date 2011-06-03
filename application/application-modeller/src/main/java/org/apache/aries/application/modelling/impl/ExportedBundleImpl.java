@@ -32,7 +32,6 @@ import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.internal.MessageUtil;
 import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -56,7 +55,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
     logger.debug(LOG_ENTRY, "ExportedBundleImpl", attrs);
     String symbolicName = attrs.getValue(Constants.BUNDLE_SYMBOLICNAME);
     
-    Map<String,NameValueMap<String, String>> map = ManifestHeaderProcessor.parseImportString(symbolicName);
+    Map<String,Map<String, String>> map = ManifestHeaderProcessor.parseImportString(symbolicName);
     
     //This should have one entry, which is keyed on the symbolicName
     
@@ -67,7 +66,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
       throw iax;
     }
     
-    Map.Entry<String, NameValueMap<String, String>> entry =  map.entrySet().iterator().next();
+    Map.Entry<String, Map<String, String>> entry =  map.entrySet().iterator().next();
     
     symbolicName = entry.getKey();
     
@@ -121,26 +120,30 @@ public class ExportedBundleImpl extends AbstractExportedBundle
   }
 
 
-  public Map<String, Object> getAttributes() {
+  @Override
+public Map<String, Object> getAttributes() {
     logger.debug(LOG_ENTRY, "getAttributes");
     logger.debug(LOG_EXIT, "getAttributes", new Object[]{_attributes});
     return Collections.unmodifiableMap(_attributes);
   }
   
 
-  public String toString() {
+  @Override
+public String toString() {
     return  _attributes.toString();
   }
 
  
-  public ImportedBundle getFragmentHost() {
+  @Override
+public ImportedBundle getFragmentHost() {
     logger.debug(LOG_ENTRY, "getFragmentHost");
     logger.debug(LOG_EXIT, "getFragmentHost", new Object[]{_fragHost});
     return _fragHost;
   }
 
 
-  public boolean isFragment() {
+  @Override
+public boolean isFragment() {
     logger.debug(LOG_ENTRY, "isFragment");
     boolean result = _fragHost != null;
     logger.debug(LOG_EXIT, "isFragment", new Object[]{result});

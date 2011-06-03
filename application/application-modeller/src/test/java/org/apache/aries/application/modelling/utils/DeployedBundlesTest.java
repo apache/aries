@@ -43,7 +43,6 @@ import org.apache.aries.application.modelling.impl.ImportedServiceImpl;
 import org.apache.aries.application.modelling.impl.ModelledResourceImpl;
 import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -145,8 +144,8 @@ public final class DeployedBundlesTest
    */
   private static boolean isEqual(String actual, String expected)
   {
-    Map<NameValuePair<String, NameValueMap<String, String>>, Integer> actualEntries = parseEntries(actual);
-    Map<NameValuePair<String, NameValueMap<String, String>>, Integer> expectedEntries = parseEntries(expected);
+    Map<NameValuePair, Integer> actualEntries = parseEntries(actual);
+    Map<NameValuePair, Integer> expectedEntries = parseEntries(expected);
     return actualEntries.equals(expectedEntries);
   }
 
@@ -158,10 +157,10 @@ public final class DeployedBundlesTest
    * @param entries a manifest header entry.
    * @return a set of parsed entries.
    */
-  private static Map<NameValuePair<String, NameValueMap<String, String>>, Integer> parseEntries(String entries)
+  private static Map<NameValuePair, Integer> parseEntries(String entries)
   {
-    Map<NameValuePair<String, NameValueMap<String, String>>, Integer> result = new HashMap<NameValuePair<String, NameValueMap<String, String>>, Integer>();
-    for (NameValuePair<String, NameValueMap<String, String>> entry : ManifestHeaderProcessor.parseExportString(entries))
+    Map<NameValuePair, Integer> result = new HashMap<NameValuePair, Integer>();
+    for (NameValuePair entry : ManifestHeaderProcessor.parseExportString(entries))
     {
       Integer count = result.get(entry);
       if (count != null)

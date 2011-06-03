@@ -68,7 +68,6 @@ import org.apache.aries.application.utils.manifest.ContentFactory;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IOUtils;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
@@ -584,10 +583,10 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
    */
   private boolean providesPackage(ModelledResource bundle, String importPackages)
   {
-    Map<String, NameValueMap<String, String>> imports = ManifestHeaderProcessor.parseImportString(importPackages);
+    Map<String, Map<String, String>> imports = ManifestHeaderProcessor.parseImportString(importPackages);
     
     try {
-      for (Map.Entry<String, NameValueMap<String,String>> e : imports.entrySet()) {
+      for (Map.Entry<String, Map<String,String>> e : imports.entrySet()) {
         ImportedPackage importPackage = modellingManager.getImportedPackage(e.getKey(), e.getValue());
         
         for (ExportedPackage export : bundle.getExportedPackages()) {

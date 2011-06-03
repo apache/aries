@@ -1,9 +1,10 @@
 package org.apache.aries.application.utils.manifest;
 
+import java.util.Map;
+
 import org.apache.aries.application.Content;
 import org.apache.aries.application.impl.ContentImpl;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 
 
 public class ContentFactory {
@@ -23,7 +24,7 @@ public class ContentFactory {
    * @param nameValueMap The map containing the content attributes/directives
    * @return a content object
    */
-  public static Content parseContent(String contentName, NameValueMap<String, String> nameValueMap) {
+  public static Content parseContent(String contentName, Map<String, String> nameValueMap) {
     return new ContentImpl(contentName, nameValueMap);
   }
 }

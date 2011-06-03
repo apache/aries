@@ -38,7 +38,6 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -55,11 +54,11 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
   private Version appVersion;
   private String appName;
   private String appScope;
-  private List<Content> appContents;
-  private List<ServiceDeclaration> importServices;
-  private List<ServiceDeclaration> exportServices;
-  private Manifest manifest;
-  private List<Content> useBundle;
+  private final List<Content> appContents;
+  private final List<ServiceDeclaration> importServices;
+  private final List<ServiceDeclaration> exportServices;
+  private final Manifest manifest;
+  private final List<Content> useBundle;
   /**
    * create the applicationMetadata from appManifest
    * @param appManifest   the Application.mf manifest
@@ -99,15 +98,15 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     // configure appContents
  // use parseImportString as we don't allow appContents to be duplicate
     String applicationContents = appMap.get(AppConstants.APPLICATION_CONTENT);
-    Map<String, NameValueMap<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(applicationContents);
-    for (Map.Entry<String, NameValueMap<String, String>> e : appContentsMap.entrySet()) {
+    Map<String, Map<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(applicationContents);
+    for (Map.Entry<String, Map<String, String>> e : appContentsMap.entrySet()) {
       this.appContents.add(new ContentImpl(e.getKey(), e.getValue()));
     }
    
     String useBundleStr = appMap.get(AppConstants.APPLICATION_USE_BUNDLE);
     if (useBundleStr != null) {
-      Map<String, NameValueMap<String, String>> useBundleMap = ManifestHeaderProcessor.parseImportString(useBundleStr);
-    for (Map.Entry<String, NameValueMap<String, String>> e : useBundleMap.entrySet()) {
+      Map<String, Map<String, String>> useBundleMap = ManifestHeaderProcessor.parseImportString(useBundleStr);
+    for (Map.Entry<String, Map<String, String>> e : useBundleMap.entrySet()) {
         this.useBundle.add(new ContentImpl(e.getKey(), e.getValue()));
       }
     }
@@ -163,42 +162,50 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     return props;
   }  
     
-  public List<Content> getApplicationContents()
+  @Override
+public List<Content> getApplicationContents()
   {
     return Collections.unmodifiableList(this.appContents);
   }
 
-  public List<ServiceDeclaration> getApplicationExportServices()
+  @Override
+public List<ServiceDeclaration> getApplicationExportServices()
   {
     return Collections.unmodifiableList(this.exportServices);
   }
 
-  public List<ServiceDeclaration> getApplicationImportServices()
+  @Override
+public List<ServiceDeclaration> getApplicationImportServices()
   {
     return Collections.unmodifiableList(this.importServices);
   }
 
-  public String getApplicationSymbolicName()
+  @Override
+public String getApplicationSymbolicName()
   {
     return this.appSymbolicName;
   }
 
-  public Version getApplicationVersion()
+  @Override
+public Version getApplicationVersion()
   {
     return this.appVersion;
   }
 
-  public String getApplicationName() 
+  @Override
+public String getApplicationName() 
   {
     return this.appName;
   }
   
-  public String getApplicationScope() 
+  @Override
+public String getApplicationScope() 
   {
     return appScope;
   }
   
-  public boolean equals(Object other)
+  @Override
+public boolean equals(Object other)
   {
     if (other == this) return true;
     if (other == null) return false;
@@ -209,18 +216,21 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     return false;
   }
   
-  public int hashCode()
+  @Override
+public int hashCode()
   {
     return appScope.hashCode();
   }
 
-  public void store(File f) throws IOException {
+  @Override
+public void store(File f) throws IOException {
     FileOutputStream fos = new FileOutputStream (f);
     store(fos);
     fos.close();
   }
 
-  public void store(OutputStream out) throws IOException {
+  @Override
+public void store(OutputStream out) throws IOException {
     if (manifest != null) {
       Attributes att = manifest.getMainAttributes();
       if ((att.getValue(Attributes.Name.MANIFEST_VERSION.toString())) == null) {
@@ -230,7 +240,8 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     }
   }
 
-  public Collection<Content> getUseBundles()
+  @Override
+public Collection<Content> getUseBundles()
   {
     return this.useBundle;
   }

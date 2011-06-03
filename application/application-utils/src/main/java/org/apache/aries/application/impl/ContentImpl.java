@@ -26,7 +26,6 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.utils.internal.MessageUtil;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
@@ -40,18 +39,18 @@ public final class ContentImpl implements Content
   private String contentName;
   protected Map<String, String> attributes;
   private Map<String, String> directives;
-  private NameValueMap<String, String> nameValueMap;
+  private Map<String, String> nameValueMap;
   
   /**
    * 
    * @param content  Application-Content, Import-Package content
    */
   public ContentImpl(String content) {
-    Map<String, NameValueMap<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(content);
+    Map<String, Map<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(content);
     if (appContentsMap.size() != 1) {
       throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0004E",content));
     }
-    for (Map.Entry<String, NameValueMap<String, String>> entry : appContentsMap.entrySet()) {
+    for (Map.Entry<String, Map<String, String>> entry : appContentsMap.entrySet()) {
       this.contentName = entry.getKey();
       this.nameValueMap= entry.getValue();
       setup();
@@ -61,14 +60,14 @@ public final class ContentImpl implements Content
   
   public ContentImpl (String bundleSymbolicName, Version version) { 
     this.contentName = bundleSymbolicName;
-    this.nameValueMap = new NameValueMap<String, String>();
+    this.nameValueMap = new HashMap<String, String>();
     nameValueMap.put("version", version.toString());
     setup();
   }
   
   public ContentImpl (String bundleSymbolicName, VersionRange version) { 
     this.contentName = bundleSymbolicName;
-    this.nameValueMap = new NameValueMap<String, String>();
+    this.nameValueMap = new HashMap<String, String>();
     nameValueMap.put("version", version.toString());
     setup();
   }
@@ -77,7 +76,7 @@ public final class ContentImpl implements Content
    * @param contentName  
    * @param nameValueMap
    */
-  public ContentImpl(String contentName, NameValueMap<String, String> nameValueMap) {
+  public ContentImpl(String contentName, Map<String, String> nameValueMap) {
     this.contentName = contentName;
     this.nameValueMap= nameValueMap;
     setup();
@@ -114,10 +113,10 @@ public final class ContentImpl implements Content
     return toReturn;
   }
   
-  public NameValueMap<String, String> getNameValueMap() {
-    NameValueMap<String, String> nvm = new NameValueMap<String, String>();
+  public Map<String, String> getNameValueMap() {
+    Map<String, String> nvm = new HashMap<String, String>();
     for (String key : this.nameValueMap.keySet()) {
-      nvm.addToCollection(key, this.nameValueMap.get(key));
+      nvm.put(key, this.nameValueMap.get(key));
     }
     return nvm;
   }

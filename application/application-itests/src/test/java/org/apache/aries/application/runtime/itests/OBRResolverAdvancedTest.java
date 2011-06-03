@@ -30,8 +30,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,8 +56,6 @@ import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.junit.After;
@@ -312,7 +312,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     }
     assertTrue("Bundle " + USE_BUNDLE_BY_REFERENCE + " not found.", bundleSymbolicNames.contains(USE_BUNDLE_BY_REFERENCE));
     Collection<String> packages = new ArrayList<String>();
-    NameValueMap<String, String> maps = new NameValueMap<String, String>();
+    Map<String, String> maps = new HashMap<String, String>();
     maps.put("version", "0.0.0");
     maps.put("bundle-symbolic-name", "use.bundle.by.reference");
     maps.put("bundle-version", "[1.0.0,1.0.0]");
