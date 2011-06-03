@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,37 +41,47 @@ public class ManifestHeaderProcessorTest
 {
   @Test
   public void testNameValuePair() throws Exception {
-    NameValuePair<String, String> nvp = new NameValuePair<String, String>("key", "value");
-    assertEquals("The name value pair is not set properly.", nvp.getName(), "key");
-    assertEquals("The value is not set properly.", nvp.getValue(), "value");
-    NameValuePair<String, String> anotherNvp = new NameValuePair<String, String>("key", "value");
-    assertEquals("The two objects of NameValuePair is not equal.", nvp, anotherNvp);
-    nvp.setName("newKey");
-    nvp.setValue("newValue");
-    assertEquals("The name value pair is not set properly.", nvp.getName(), "newKey");
-    assertEquals("The value is not set properly.", nvp.getValue(), "newValue");
+	HashMap<String, String> attrs = new HashMap<String, String>();
+	attrs.put("some", "value");
+    NameValuePair nvp = new NameValuePair("key", attrs);
     
-    NameValueMap<String,String> nvm1 = new NameValueMap<String,String>();
+    assertEquals("The name value pair is not set properly.", nvp.getName(), "key");
+    assertEquals("The value is not set properly.", nvp.getAttributes().get("some"), "value");
+    
+	attrs = new HashMap<String, String>();
+	attrs.put("some", "value");
+    NameValuePair anotherNvp = new NameValuePair("key", attrs);
+    assertEquals("The two objects of NameValuePair is not equal.", nvp, anotherNvp);
+
+    nvp.setName("newKey");
+    attrs = new HashMap<String, String>();
+	attrs.put("some", "newValue");
+    nvp.setAttributes(attrs);
+    assertEquals("The name value pair is not set properly.", nvp.getName(), "newKey");
+    assertEquals("The value is not set properly.", nvp.getAttributes().get("some"), "newValue");
+    
+    Map<String,String> nvm1 = new HashMap<String,String>();
     nvm1.put("a","b");
     nvm1.put("c","d");
-    NameValueMap<String,String> nvm2 = new NameValueMap<String,String>();
+    
+    Map<String,String> nvm2 = new HashMap<String,String>();
     nvm2.put("c","d");
     nvm2.put("a","b");
     assertEquals("The maps are not equal.", nvm1, nvm2);
     nvm2.put("e","f");
     assertNotSame("The maps are the same.", nvm1, nvm2);
     
-    NameValuePair<String, NameValueMap<String,String>> nvp1 = new NameValuePair<String,NameValueMap<String,String>>("one",nvm1);
-    NameValuePair<String, NameValueMap<String,String>> nvp2 = new NameValuePair<String,NameValueMap<String,String>>("one",nvm2);
+    NameValuePair nvp1 = new NameValuePair("one",nvm1);
+    NameValuePair nvp2 = new NameValuePair("one",nvm2);
     
     assertNotSame("The pairs are identical ",nvp1,nvp2);
     nvm1.put("e","f");
     assertEquals("The pairs are not equal.", nvp1,nvp2);
     
-    List<NameValuePair<String, NameValueMap<String,String>>> bundleInfoList1 = new ArrayList<NameValuePair<String, NameValueMap<String,String>>>();
+    List<NameValuePair> bundleInfoList1 = new ArrayList<NameValuePair>();
     bundleInfoList1.add(nvp1);
 
-    List<NameValuePair<String, NameValueMap<String,String>>> bundleInfoList2 = new ArrayList<NameValuePair<String, NameValueMap<String,String>>>();
+    List<NameValuePair> bundleInfoList2 = new ArrayList<NameValuePair>();
     bundleInfoList2.add(nvp1);
     
     bundleInfoList1.removeAll(bundleInfoList2);
@@ -89,18 +100,14 @@ public class ManifestHeaderProcessorTest
   public void testParseBundleSymbolicName() 
   {
     String bundleSymbolicNameEntry = "com.acme.foo;singleton:=true;fragment-attachment:=always";
-    NameValuePair<String, NameValueMap<String, String>> nvp = ManifestHeaderProcessor.parseBundleSymbolicName(bundleSymbolicNameEntry);
+    NameValuePair nvp = ManifestHeaderProcessor.parseBundleSymbolicName(bundleSymbolicNameEntry);
     assertEquals("The symbolic name is wrong.", nvp.getName(), "com.acme.foo");
-    assertEquals("The value is wrong.", "true", nvp.getValue().get("singleton:") );
-    assertEquals("The directive is wrong.", "always", nvp.getValue().get("fragment-attachment:") );
+    assertEquals("The value is wrong.", "true", nvp.getAttributes().get("singleton:") );
+    assertEquals("The directive is wrong.", "always", nvp.getAttributes().get("fragment-attachment:") );
   
     String bundleSymbolicNameEntry2 = "com.acme.foo";
-    NameValuePair<String, NameValueMap<String, String>> nvp2 = ManifestHeaderProcessor.parseBundleSymbolicName(bundleSymbolicNameEntry2);
+    NameValuePair nvp2 = ManifestHeaderProcessor.parseBundleSymbolicName(bundleSymbolicNameEntry2);
     assertEquals("The symbolic name is wrong.", nvp2.getName(), "com.acme.foo");
-    
-    
-  
-  
   }
   
  
@@ -114,7 +121,7 @@ public class ManifestHeaderProcessorTest
   {
     String importPackage = "com.acme.foo,come.acm.e.bar;version=\"[1.23,1.24.5]\";resolution:=mandatory;company=\"ACME\",a.b.c;version=1.2.3;company=com";
   
-    Map<String, NameValueMap<String, String>> importPackageReturn = ManifestHeaderProcessor.parseImportString(importPackage);
+    Map<String, Map<String, String>> importPackageReturn = ManifestHeaderProcessor.parseImportString(importPackage);
   
     assertTrue("The package is not set.", importPackageReturn.containsKey("com.acme.foo"));
     assertTrue("The package is not set.", importPackageReturn.containsKey("come.acm.e.bar"));
@@ -133,39 +140,40 @@ public class ManifestHeaderProcessorTest
     assertTrue("The package should not contain any attributes.", importPackageReturn.get("com.acme.foo").isEmpty());
     
     importPackage="com.acme.foo;com.acme.bar;version=2";
-    Map<String, NameValueMap<String, String>> importPackageReturn2 = ManifestHeaderProcessor.parseImportString(importPackage);
+    Map<String, Map<String, String>> importPackageReturn2 = ManifestHeaderProcessor.parseImportString(importPackage);
     assertTrue("The package is not set.", importPackageReturn2.containsKey("com.acme.foo"));
     assertTrue("The package is not set.", importPackageReturn2.containsKey("com.acme.bar"));
     assertEquals("The directive is not set correctly.", "2", importPackageReturn2.get("com.acme.foo").get("version"));
     assertEquals("The directive is not set correctly.", "2", importPackageReturn2.get("com.acme.bar").get("version"));
   }
+  
   @Test
   public void testParseExportString()
   {
     String exportPackage = "com.acme.foo,com.acme.bar;version=1,com.acme.bar;version=2;uses:=\"a.b.c,d.e.f\";security=false;mandatory:=security";
   
-    List<NameValuePair<String, NameValueMap<String, String>>> exportPackageReturn = ManifestHeaderProcessor.parseExportString(exportPackage);
+    List<NameValuePair> exportPackageReturn = ManifestHeaderProcessor.parseExportString(exportPackage);
     
     int i =0;
     assertEquals("The number of the packages is wrong.", 3, exportPackageReturn.size());
-    for (NameValuePair<String, NameValueMap<String, String>> nvp : exportPackageReturn) {
+    for (NameValuePair nvp : exportPackageReturn) {
       if (nvp.getName().equals("com.acme.foo")) {
         i++;
         
-        assertTrue("The directive or attribute should not be set.", nvp.getValue().isEmpty() );
-      } else if ((nvp.getName().equals("com.acme.bar")) && ("2".equals(nvp.getValue().get("version")))) {
+        assertTrue("The directive or attribute should not be set.", nvp.getAttributes().isEmpty() );
+      } else if ((nvp.getName().equals("com.acme.bar")) && ("2".equals(nvp.getAttributes().get("version")))) {
       
         
         i++;
-        assertEquals("The directive is wrong.", "a.b.c,d.e.f", nvp.getValue().get("uses:"));
-        assertEquals("The directive is wrong.", "false", nvp.getValue().get("security"));
-        assertEquals("The directive is wrong.", "security", nvp.getValue().get("mandatory:"));
-      } else if ((nvp.getName().equals("com.acme.bar")) && ("1".equals(nvp.getValue().get("version")))) {
+        assertEquals("The directive is wrong.", "a.b.c,d.e.f", nvp.getAttributes().get("uses:"));
+        assertEquals("The directive is wrong.", "false", nvp.getAttributes().get("security"));
+        assertEquals("The directive is wrong.", "security", nvp.getAttributes().get("mandatory:"));
+      } else if ((nvp.getName().equals("com.acme.bar")) && ("1".equals(nvp.getAttributes().get("version")))) {
         i++;
         
-        assertNull("The directive is wrong.", nvp.getValue().get("uses:"));
-        assertNull("The directive is wrong.", nvp.getValue().get("security"));
-        assertNull("The directive is wrong.", nvp.getValue().get("mandatory:"));
+        assertNull("The directive is wrong.", nvp.getAttributes().get("uses:"));
+        assertNull("The directive is wrong.", nvp.getAttributes().get("security"));
+        assertNull("The directive is wrong.", nvp.getAttributes().get("mandatory:"));
       }
     }
     // make sure all three packages stored
@@ -177,11 +185,11 @@ public class ManifestHeaderProcessorTest
     
     int k =0;
     assertEquals("The number of the packages is wrong.", 1, exportPackageReturn.size());
-    for (NameValuePair<String, NameValueMap<String, String>> nvp : exportPackageReturn) {
+    for (NameValuePair nvp : exportPackageReturn) {
       if (nvp.getName().equals("com.acme.foo")) {
         k++;
         
-        assertTrue("The directive or attribute should not be set.", nvp.getValue().isEmpty() );
+        assertTrue("The directive or attribute should not be set.", nvp.getAttributes().isEmpty() );
       } 
     }
     assertEquals("The names of the packages are wrong.", 1, k);
@@ -194,45 +202,45 @@ public class ManifestHeaderProcessorTest
     
     k =0;
     assertEquals("The number of the packages is wrong.", 2, exportPackageReturn.size());
-    for (NameValuePair<String, NameValueMap<String, String>> nvp : exportPackageReturn) {
+    for (NameValuePair nvp : exportPackageReturn) {
       if (nvp.getName().equals("com.acme.foo")) {
         k++;
         
-        assertEquals("The attribute is wrong.", "2", nvp.getValue().get("version") );
-        assertEquals("The attribute is wrong.", "optional", nvp.getValue().get("resolution:"));
+        assertEquals("The attribute is wrong.", "2", nvp.getAttributes().get("version") );
+        assertEquals("The attribute is wrong.", "optional", nvp.getAttributes().get("resolution:"));
       } else if (nvp.getName().equals("com.acme.bar")) {
         k++;
         
-        assertEquals("The attribute is wrong.", "2", nvp.getValue().get("version") );
-        assertEquals("The attribute is wrong.", "optional", nvp.getValue().get("resolution:"));
+        assertEquals("The attribute is wrong.", "2", nvp.getAttributes().get("version") );
+        assertEquals("The attribute is wrong.", "optional", nvp.getAttributes().get("resolution:"));
       }
     }
     assertEquals("The names of the packages are wrong.", 2, k);
     
     exportPackageReturn = ManifestHeaderProcessor.parseExportString("some.export.with.space.in;directive := spacey");
-    assertEquals(exportPackageReturn.toString(), "spacey", exportPackageReturn.get(0).getValue().get("directive:"));
+    assertEquals(exportPackageReturn.toString(), "spacey", exportPackageReturn.get(0).getAttributes().get("directive:"));
   }
     
     @Test
     public void testExportMandatoryAttributes() {
       String exportPackage = "com.acme.foo,com.acme.bar;version=2;company=dodo;security=false;mandatory:=\"security,company\"";
       
-      List<NameValuePair<String, NameValueMap<String, String>>> exportPackageReturn = ManifestHeaderProcessor.parseExportString(exportPackage);
+      List<NameValuePair> exportPackageReturn = ManifestHeaderProcessor.parseExportString(exportPackage);
       
       int i =0;
       assertEquals("The number of the packages is wrong.", 2, exportPackageReturn.size());
-      for (NameValuePair<String, NameValueMap<String, String>> nvp : exportPackageReturn) {
+      for (NameValuePair nvp : exportPackageReturn) {
         if (nvp.getName().equals("com.acme.foo")) {
           i++;
           
-          assertTrue("The directive or attribute should not be set.", nvp.getValue().isEmpty() );
-        } else if ((nvp.getName().equals("com.acme.bar")) && ("2".equals(nvp.getValue().get("version")))) {
+          assertTrue("The directive or attribute should not be set.", nvp.getAttributes().isEmpty() );
+        } else if ((nvp.getName().equals("com.acme.bar")) && ("2".equals(nvp.getAttributes().get("version")))) {
         
           
           i++;
-          assertEquals("The directive is wrong.", "dodo", nvp.getValue().get("company"));
-          assertEquals("The directive is wrong.", "false", nvp.getValue().get("security"));
-          assertEquals("The directive is wrong.", "security,company", nvp.getValue().get("mandatory:"));
+          assertEquals("The directive is wrong.", "dodo", nvp.getAttributes().get("company"));
+          assertEquals("The directive is wrong.", "false", nvp.getAttributes().get("security"));
+          assertEquals("The directive is wrong.", "security,company", nvp.getAttributes().get("mandatory:"));
         } 
       }
       // make sure all three packages stored
@@ -240,7 +248,7 @@ public class ManifestHeaderProcessorTest
       
     }
     
-    private String createExpectedFilter(NameValueMap<String, String> values, String ... parts)
+    private String createExpectedFilter(Map<String, String> values, String ... parts)
     {
       StringBuilder builder = new StringBuilder(parts[0]);
       
@@ -260,10 +268,10 @@ public class ManifestHeaderProcessorTest
      */
     @Test
     public void testGenerateFilter() throws Exception {
-      NameValueMap<String, String> valueMap = new NameValueMap<String, String>();
-      valueMap.addToCollection("version", "[1.2, 2.3]");
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
+      Map<String, String> valueMap = new HashMap<String, String>();
+      valueMap.put("version", "[1.2, 2.3]");
+      valueMap.put("resulution:", "mandatory");
+      valueMap.put("company", "com");
       String filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
       String expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "(version>=1.2.0)(version<=2.3.0)", "(mandatory:<*company))");
       assertEquals("The filter is wrong.", expected, filter );
@@ -271,35 +279,35 @@ public class ManifestHeaderProcessorTest
       
       valueMap.clear();
       
-      valueMap.addToCollection("version", "(1.2, 2.3]");
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
+      valueMap.put("version", "(1.2, 2.3]");
+      valueMap.put("resulution:", "mandatory");
+      valueMap.put("company", "com");
       filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
       expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "(version>=1.2.0)(version<=2.3.0)(!(version=1.2.0))", "(mandatory:<*company))");
       assertEquals("The filter is wrong.", expected, filter );
       
       valueMap.clear();
       
-      valueMap.addToCollection("version", "(1.2, 2.3)");
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
+      valueMap.put("version", "(1.2, 2.3)");
+      valueMap.put("resulution:", "mandatory");
+      valueMap.put("company", "com");
       filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
       expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "(version>=1.2.0)(version<=2.3.0)(!(version=1.2.0))(!(version=2.3.0))", "(mandatory:<*company))");
       assertEquals("The filter is wrong.", expected, filter );
       
       valueMap.clear();
       
-      valueMap.addToCollection("version", "1.2");
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
+      valueMap.put("version", "1.2");
+      valueMap.put("resulution:", "mandatory");
+      valueMap.put("company", "com");
       filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
       expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "(version>=1.2.0)", "(mandatory:<*company))");
       assertEquals("The filter is wrong.", expected, filter );
       
       valueMap.clear();
       
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
+      valueMap.put("resulution:", "mandatory");
+      valueMap.put("company", "com");
       filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
       expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "", "(mandatory:<*company))");
       assertEquals("The filter is wrong.", expected, filter );

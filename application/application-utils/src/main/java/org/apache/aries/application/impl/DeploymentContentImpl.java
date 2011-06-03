@@ -19,18 +19,18 @@
 
 package org.apache.aries.application.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Version;
 
 public final class DeploymentContentImpl implements DeploymentContent {
   
-  private ContentImpl _content;
+  private final ContentImpl _content;
   
   /**
    * DeploymentContent relates to a bundle at a particular version. 
@@ -40,7 +40,7 @@ public final class DeploymentContentImpl implements DeploymentContent {
    * @param version
    */
   public DeploymentContentImpl (String bundleSymbolicName, Version version) {
-    NameValueMap<String, String> nvMap = new NameValueMap<String, String>();
+    Map<String, String> nvMap = new HashMap<String, String>();
     nvMap.put(AppConstants.DEPLOYMENT_BUNDLE_VERSION, version.toString());
     _content = new ContentImpl (bundleSymbolicName, nvMap);
   }
@@ -54,31 +54,38 @@ public final class DeploymentContentImpl implements DeploymentContent {
     _content = new ContentImpl (deployedContent);
   }
   
-  public Version getExactVersion() {
+  @Override
+public Version getExactVersion() {
     return getVersion().getExactVersion();
   }
 
-  public String getAttribute(String key) {
+  @Override
+public String getAttribute(String key) {
     return _content.getAttribute(key);
   }
 
-  public Map<String, String> getAttributes() {
+  @Override
+public Map<String, String> getAttributes() {
     return _content.getAttributes();
   }
 
-  public String getContentName() {
+  @Override
+public String getContentName() {
     return _content.getContentName();
   }
 
-  public String getDirective(String key) {
+  @Override
+public String getDirective(String key) {
     return _content.getDirective(key);
   }
 
-  public Map<String, String> getDirectives() {
+  @Override
+public Map<String, String> getDirectives() {
     return _content.getDirectives();
   }
 
-  public VersionRange getVersion() {
+  @Override
+public VersionRange getVersion() {
     String deployedVersion = _content.getAttribute(AppConstants.DEPLOYMENT_BUNDLE_VERSION);
     VersionRange vr = null;
     if (deployedVersion != null && deployedVersion.length() > 0) {
@@ -100,15 +107,18 @@ public final class DeploymentContentImpl implements DeploymentContent {
     }
   }
   
-  public int hashCode() {
+  @Override
+public int hashCode() {
     return _content.hashCode();
   }
 
-  public Map<String, String> getNameValueMap() {
+  @Override
+public Map<String, String> getNameValueMap() {
     return _content.getNameValueMap();
   }
   
-  public String toString()
+  @Override
+public String toString()
   {
     return _content.toString();
   }

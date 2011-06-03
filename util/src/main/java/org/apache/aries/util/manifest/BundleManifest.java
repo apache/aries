@@ -165,7 +165,7 @@ public class BundleManifest
 
     String result = null;
     if (rawSymName != null) {
-      NameValuePair<String, NameValueMap<String, String>> info = ManifestHeaderProcessor.parseBundleSymbolicName(rawSymName);
+      NameValuePair info = ManifestHeaderProcessor.parseBundleSymbolicName(rawSymName);
       result = info.getName();
     }
     
