@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +64,6 @@ import org.apache.aries.application.utils.manifest.ContentFactory;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.filesystem.IOUtils;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.DataModelHelper;
 import org.apache.felix.bundlerepository.Reason;
@@ -164,7 +162,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
       } else {
 
         for (Resource r : requiredResources) {
-          NameValueMap<String, String> attribs = new NameValueMap<String, String>();
+          Map<String, String> attribs = new HashMap<String, String>();
           attribs.put(Constants.VERSION_ATTRIBUTE, "[" + r.getVersion() + ',' + r.getVersion()
               + "]");
           ModelledResource modelledResourceForThisMatch = null; 
