@@ -24,10 +24,7 @@ import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 
 import java.math.BigDecimal;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
 /**
@@ -51,11 +48,51 @@ public final class WovenProxyGenerator
     ClassVisitor weavingAdapter = new WovenProxyAdapter(cWriter, className, loader);
     
     //Wrap our outer layer to add the original SerialVersionUID if it was previously being defaulted
-    weavingAdapter = new SerialVersionUIDAdder(weavingAdapter);
+    weavingAdapter = new MySerialVersionUIDAdder(weavingAdapter);
     
     // If we are Java 1.6 + then we need to skip frames as they will be recomputed
     cReader.accept(weavingAdapter, IS_AT_LEAST_JAVA_6 ? ClassReader.SKIP_FRAMES : 0);
     
     return cWriter.toByteArray();
   }
+
+  /**
+   * same as the ASM class it extends except marks the new SerialVersionUID filed synthetic
+   */
+  private static class MySerialVersionUIDAdder extends SerialVersionUIDAdder {
+    /**
+     * Creates a new {@link org.objectweb.asm.commons.SerialVersionUIDAdder}.
+     *
+     * @param cv a {@link org.objectweb.asm.ClassVisitor} to which this visitor will delegate
+     *           calls.
+     */
+    public MySerialVersionUIDAdder(ClassVisitor cv) {
+      super(cv);
+    }
+
+    /*
+    * Add the SVUID if class doesn't have one
+    */
+    public void visitEnd() {
+      // compute SVUID and add it to the class
+      if (computeSVUID && !hasSVUID) {
+        try {
+          cv.visitField(Opcodes.ACC_FINAL + Opcodes.ACC_STATIC + Opcodes.ACC_SYNTHETIC,
+              "serialVersionUID",
+              "J",
+              null,
+              new Long(computeSVUID()));
+        } catch (Throwable e) {
+          throw new RuntimeException("Error while computing SVUID for "
+              + name, e);
+        }
+      }
+      computeSVUID = false;
+      super.visitEnd();
+    }
+
+
+  }
+
+
 }
