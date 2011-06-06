@@ -64,7 +64,8 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
       .getLogger(AbstractWovenProxyAdapter.class);
 
   /** Access modifier for a public generated method */
-  private static final int PUBLIC_GENERATED_METHOD_ACCESS = ACC_PUBLIC | ACC_SYNTHETIC;
+  private static final int PUBLIC_GENERATED_METHOD_ACCESS = ACC_PUBLIC | ACC_FINAL
+      | ACC_SYNTHETIC;
   /** The internal name for Throwable */
   static final String THROWABLE_INAME = Type.getInternalName(Throwable.class);
   /** A UUID for adding to our method names */
