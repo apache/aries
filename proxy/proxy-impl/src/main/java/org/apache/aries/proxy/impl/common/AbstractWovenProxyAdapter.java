@@ -44,6 +44,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AdviceAdapter;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.commons.StaticInitMerger;
@@ -159,7 +160,23 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
    * to a super no-args
    */
   private boolean hasNoArgsConstructor = false;
-
+  /**
+   * The default static initialization method where we will write the proxy init
+   * code. If there is an existing <clinit> then we will change this and write a
+   * static_init_UUID instead (see the overriden 
+   * {@link #visitMethod(int, String, String, String, String[])}
+   * for where this swap happens). See also {@link #writeStaticInitMethod()} for
+   * where the method is actually written.
+   */
+  private Method staticInitMethod = new Method("<clinit>", Type.VOID_TYPE, NO_ARGS);
+  /**
+   * The default access flags for the staticInitMethod. If we find an existing
+   * <clinit> then we will write a static_init_UUID method and add the ACC_PRIVATE_FLAG.
+   * See the overriden {@link #visitMethod(int, String, String, String, String[])}
+   * for where this flag is added. See also {@link #writeStaticInitMethod()} for
+   * where the method is actually written.
+   */
+  private int staticInitMethodFlags = ACC_SYNTHETIC | ACC_PRIVATE | ACC_STATIC;
   
   public static final int JAVA_CLASS_VERSION = new BigDecimal(System.getProperty("java.class.version")).intValue();
   public static final boolean IS_AT_LEAST_JAVA_6 = JAVA_CLASS_VERSION >= Opcodes.V1_6;
@@ -176,9 +193,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
    */
   public AbstractWovenProxyAdapter(ClassVisitor writer, String className,
       ClassLoader loader) {
-    // We wrap the writer in a StaticInitMerger so we don't have to worry about
-    // our generated static init clashing with an existing one!
-    super(new StaticInitMerger("static_init_" + UU_ID, writer));
+    super(writer);
     typeBeingWoven = Type.getType("L" + className.replace('.', '/') + ";");
     this.loader = loader;
   }
@@ -281,6 +296,21 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
       // Surround the MethodVisitor with our weaver so we can manipulate the code
       methodVisitorToReturn = getWeavingMethodVisitor(access, name, desc,
           signature, exceptions, currentMethod, methodStaticFieldName);
+    } else if (name.equals("<clinit>")){
+      //there is an existing clinit method, change the fields we use
+      //to write our init code to static_init_UUID instead
+      staticInitMethod = new Method("static_init_" + UU_ID, Type.VOID_TYPE, NO_ARGS);
+      staticInitMethodFlags = staticInitMethodFlags | ACC_FINAL;
+      methodVisitorToReturn = new AdviceAdapter(cv.visitMethod(access, name, desc, signature,
+          exceptions), access, name, desc){
+        @Override
+        protected void onMethodEnter()
+        {
+          //add into the <clinit> a call to our synthetic static_init_UUID
+          invokeStatic(typeBeingWoven, staticInitMethod);
+          super.onMethodEnter();
+        }
+      };
     } else {
       if(currentMethod.getArgumentTypes().length == 0 && name.equals("<init>"))
         hasNoArgsConstructor = true;
@@ -504,8 +534,8 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
           methodStaticFieldName, METHOD_TYPE.getDescriptor(), null, null)
           .visitEnd();
     }
-    GeneratorAdapter staticAdapter = new GeneratorAdapter(ACC_STATIC,
-        new Method("<clinit>", Type.VOID_TYPE, NO_ARGS), null, null, cv);
+    GeneratorAdapter staticAdapter = new GeneratorAdapter(staticInitMethodFlags,
+        staticInitMethod, null, null, cv);
 
     for (Entry<String, TypeMethod> entry : transformedMethods.entrySet()) {
       // Add some more code to the static initializer
