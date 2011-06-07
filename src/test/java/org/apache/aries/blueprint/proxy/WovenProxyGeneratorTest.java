@@ -19,15 +19,13 @@
 package org.apache.aries.blueprint.proxy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -78,7 +76,8 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     ProxyTestClassUnweavableChild.class, ProxyTestClassUnweavableSibling.class, ProxyTestClassInner.class, 
     ProxyTestClassStaticInner.class, ProxyTestClassUnweavableInnerChild.class, 
     ProxyTestClassUnweavableChildWithFinalMethodParent.class, 
-    ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class, ProxyTestClassSerializable.class};
+    ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class, 
+    ProxyTestClassSerializable.class, ProxyTestClassSerializableWithSVUID.class};
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
@@ -257,7 +256,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   public void testUnweavableSuperWithNoNoargsAllTheWay() throws Exception
   {
     try {
-      Class<?> woven = getProxyClass(ProxyTestClassUnweavableSibling.class);
+      getProxyClass(ProxyTestClassUnweavableSibling.class);
       fail();
     } catch (RuntimeException re) {
       assertTrue(re.getCause() instanceof UnableToProxyException);
@@ -329,6 +328,18 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     Class<?> woven = getProxyClass(ProxyTestClassSerializable.class);
     
     woven.getMethod("checkDeserialization", byte[].class, int.class).invoke(null, baos.toByteArray(), 5);
+  }
+  
+  @Test
+  public void testGeneratedSVUIDisSynthetic() throws Exception {
+    
+    Class<?> woven = getProxyClass(ProxyTestClassSerializable.class);
+    
+    assertTrue(woven.getDeclaredField("serialVersionUID").isSynthetic());
+    
+    woven = getProxyClass(ProxyTestClassSerializableWithSVUID.class);
+    
+    assertFalse(woven.getDeclaredField("serialVersionUID").isSynthetic());
   }
   
   @Override
