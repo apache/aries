@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.weaving;
+package org.apache.aries.proxy.impl.common;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,11 +56,11 @@ import org.slf4j.LoggerFactory;
  * classes being written. Classes processed by this adapter will implement 
  * {@link WovenProxy}, and have a static initialiser that populates 
  * {@link java.lang.reflect.Method} fields for use with the 
- * {@link InvocationListener}. Known subclasses are {@link WovenProxyAdapter}, 
- * used to weave classes being loaded by the framework, and {@link InterfaceCombiningClassAdapter}
+ * {@link InvocationListener}. Known subclasses are WovenProxyAdapter, 
+ * used to weave classes being loaded by the framework, and InterfaceCombiningClassAdapter
  * which is used to dynamically create objects that implement multiple interfaces
  */
-abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes {
+public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes {
   private static final Logger LOGGER = LoggerFactory
       .getLogger(AbstractWovenProxyAdapter.class);
 
@@ -77,20 +78,20 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
   private static final String[] annotationTypeDescriptors = new String[] { "Ljavax/persistence/Transient;" };
 
   /** the name of the field used to store the {@link InvocationListener} */
-  static final String LISTENER_FIELD = "org_apache_aries_proxy_InvocationListener_"
+  protected static final String LISTENER_FIELD = "org_apache_aries_proxy_InvocationListener_"
       + UU_ID;
   /** the name of the field used to store the dispatcher */
-  static final String DISPATCHER_FIELD = "woven_proxy_dispatcher_" + UU_ID;
+  public static final String DISPATCHER_FIELD = "woven_proxy_dispatcher_" + UU_ID;
 
   /* Useful ASM types */
   /** The ASM type for the {@link InvocationListener} */
   static final Type LISTENER_TYPE = Type.getType(InvocationListener.class);
   /** The ASM type for the dispatcher */
-  static final Type DISPATCHER_TYPE = Type.getType(Callable.class);
+  public static final Type DISPATCHER_TYPE = Type.getType(Callable.class);
   private static final Type CLASS_TYPE = Type.getType(Class.class);
   private static final Type CLASS_ARRAY_TYPE = Type.getType(Class[].class);
   private static final Type STRING_TYPE = Type.getType(String.class);
-  static final Type OBJECT_TYPE = Type.getType(Object.class);
+  public static final Type OBJECT_TYPE = Type.getType(Object.class);
   static final Type METHOD_TYPE = Type.getType(java.lang.reflect.Method.class);
   /** The {@link Type} of the {@link WovenProxy} interface */
   static final Type WOVEN_PROXY_IFACE_TYPE = Type.getType(WovenProxy.class);
@@ -132,22 +133,22 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
    * This list is then used to override any methods that would otherwise be missed
    * by the weaving process. 
    */
-  private final List<Class<?>> nonObjectSupers = new ArrayList<Class<?>>();
+  protected final List<Class<?>> nonObjectSupers = new ArrayList<Class<?>>();
   
   /**
    * Methods we have transformed and need to create static fields for.
    * Stored as field name to {@link TypeMethod} so we know which Class to reflect
    * them off
    */
-  private final Map<String, TypeMethod> transformedMethods = new HashMap<String, TypeMethod>();
+  protected final Map<String, TypeMethod> transformedMethods = new HashMap<String, TypeMethod>();
   
   /**
    *  A set of {@link Method} objects identifying the methods that are in this 
    *  class. This is used to prevent us duplicating methods copied from 
-   *  {@link WovenProxyAdapter#nonObjectSupers} that are already overridden in 
+   *  {@link AbstractWovenProxyAdapter#nonObjectSupers} that are already overridden in 
    *  this class.
    */
-  final Set<Method> knownMethods = new HashSet<Method>();
+  private final Set<Method> knownMethods = new HashSet<Method>();
   /** 
    * If our super does not have a no-args constructor then we need to be clever
    * when writing our own constructor.
@@ -159,6 +160,10 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
    */
   private boolean hasNoArgsConstructor = false;
 
+  
+  public static final int JAVA_CLASS_VERSION = new BigDecimal(System.getProperty("java.class.version")).intValue();
+  public static final boolean IS_AT_LEAST_JAVA_6 = JAVA_CLASS_VERSION >= Opcodes.V1_6;
+  
   /**
    * Create a new adapter for the supplied class
    * 
@@ -184,7 +189,7 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
         name, signature, superName, interfaces });
 
     // always update to the most recent version of the JVM
-    version = WovenProxyGenerator.JAVA_CLASS_VERSION;
+    version = AbstractWovenProxyAdapter.JAVA_CLASS_VERSION;
 
     superType = Type.getType("L" + superName + ";");
 
@@ -256,7 +261,7 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
     
     Method currentMethod = new Method(name, desc);
     
-    knownMethods.add(currentMethod);
+    getKnownMethods().add(currentMethod);
     
     MethodVisitor methodVisitorToReturn = null;
 
@@ -292,36 +297,9 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
    * Our class may claim to implement WovenProxy, but doesn't have any
    * implementations! We should fix this.
    */
-  public final void visitEnd() {
+  public void visitEnd() {
     LOGGER.debug(Constants.LOG_ENTRY, "visitEnd");
 
-    //first we need to override all the methods that were on non-object parents
-    for(Class<?> c : nonObjectSupers) {
-      try {
-        String className;
-        Class<?> enclosing = c.getEnclosingClass();
-        List<Class<?>> enclosingChain = new ArrayList<Class<?>>();
-        while(enclosing != null) {
-          enclosingChain.add(enclosing);
-          enclosing = enclosing.getEnclosingClass();
-        }
-        StringBuilder sb = new StringBuilder();
-        for(Class<?> clazz : enclosingChain) {
-          sb.append(clazz.getSimpleName()).append('$');
-        }
-        className = sb.append(c.getSimpleName()).append(".class").toString();
-        
-        //Load the class bytes and copy methods across
-        ClassReader cReader = new ClassReader(c.getResourceAsStream(className));
-        //We don't need the method bodies, so skip them for speed
-        cReader.accept(new MethodCopyingClassAdapter(cv, c, typeBeingWoven,
-            knownMethods, transformedMethods), ClassReader.SKIP_CODE | 
-            ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-      } catch (IOException e) {
-        // This should never happen! <= famous last words (not)
-        throw new RuntimeException(NLS.MESSAGES.getMessage("unexpected.error.processing.class", c.getName(), typeBeingWoven.getClassName()), e);
-      }
-    }
     // If we need to implement woven proxy in this class then write the methods
     if (implementWovenProxy) {
       writeFinalWovenProxyMethods();
@@ -340,6 +318,11 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
 
     LOGGER.debug(Constants.LOG_EXIT, "visitEnd");
   }
+  
+  public Set<Method> getKnownMethods() {
+    return knownMethods;
+  }
+
   /**
    * Get the {@link MethodVisitor} that will weave a given method
    * @param access
@@ -588,8 +571,36 @@ abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes
    * 
    * @return
    */
-  static final String getSanitizedUUIDString() {
+  public static final String getSanitizedUUIDString() {
     return UUID.randomUUID().toString().replace('-', '_');
+  }
+
+  /**
+   * This method will read the bytes for the supplied {@link Class} using the
+   * supplied ASM {@link ClassVisitor}, the reader will skip DEBUG, FRAMES and CODE.
+   * @param c
+   * @param adapter
+   * @throws IOException
+   */
+  public static void readClass(Class<?> c, ClassVisitor adapter) throws IOException {
+    String className;
+    Class<?> enclosing = c.getEnclosingClass();
+    List<Class<?>> enclosingChain = new ArrayList<Class<?>>();
+    while(enclosing != null) {
+      enclosingChain.add(enclosing);
+      enclosing = enclosing.getEnclosingClass();
+    }
+    StringBuilder sb = new StringBuilder();
+    for(Class<?> clazz : enclosingChain) {
+      sb.append(clazz.getSimpleName()).append('$');
+    }
+    className = sb.append(c.getSimpleName()).append(".class").toString();
+    
+    //Load the class bytes and copy methods across
+    ClassReader cReader = new ClassReader(c.getResourceAsStream(className));
+
+    cReader.accept(adapter, ClassReader.SKIP_CODE | 
+        ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
   }
 
   /**

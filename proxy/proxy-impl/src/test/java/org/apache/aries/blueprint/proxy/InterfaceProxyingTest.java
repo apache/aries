@@ -29,12 +29,17 @@ import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.proxy.AbstractProxyTest.TestListener;
-import org.apache.aries.proxy.impl.weaving.InterfaceCombiningClassAdapter;
+import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
+import org.apache.aries.unittest.mocks.Skeleton;
+import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
 
 public class InterfaceProxyingTest {
 
@@ -57,12 +62,20 @@ public class InterfaceProxyingTest {
     }
   }
   
+  private Bundle testBundle;
+  
+  @Before
+  public void setup() {
+    testBundle = Skeleton.newMock(new BundleMock("test", 
+        new Hashtable<Object, Object>()), Bundle.class);
+  }
+  
   @Test
   public void testGetProxyInstance1() throws Exception{
     
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class));
     
-    Object o = InterfaceCombiningClassAdapter.getProxyInstance(classes, 
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
         new Callable<Object>() {
 
           @Override
@@ -80,7 +93,7 @@ public class InterfaceProxyingTest {
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class,
         Iterable.class, Map.class));
     
-    Object o = InterfaceCombiningClassAdapter.getProxyInstance(classes, 
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
         new Callable<Object>() {
 
           @Override
@@ -105,7 +118,8 @@ public class InterfaceProxyingTest {
     TestListener tl = new TestListener();
     TestCallable tc = new TestCallable();
     
-    Callable o = (Callable) InterfaceCombiningClassAdapter.getProxyInstance(classes, tc, tl);
+    Callable o = (Callable) InterfaceProxyGenerator.getProxyInstance(testBundle, 
+        classes, tc, tl);
     
     assertCalled(tl, false, false, false);
     
@@ -161,7 +175,7 @@ public class InterfaceProxyingTest {
   public void testCaching() throws Exception {
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class));
     
-    Object o1 = InterfaceCombiningClassAdapter.getProxyInstance(classes, 
+    Object o1 = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
         new Callable<Object>() {
 
           @Override
@@ -170,7 +184,7 @@ public class InterfaceProxyingTest {
           }
     }, null);
     
-    Object o2 = InterfaceCombiningClassAdapter.getProxyInstance(classes, 
+    Object o2 = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
         new Callable<Object>() {
 
           @Override
@@ -189,7 +203,7 @@ public class InterfaceProxyingTest {
     final TestCallable tc = new TestCallable();
     tc.setReturn(5);
     
-    Object o = InterfaceCombiningClassAdapter.getProxyInstance(classes, 
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
         new Callable<Object>() {
 
           @Override

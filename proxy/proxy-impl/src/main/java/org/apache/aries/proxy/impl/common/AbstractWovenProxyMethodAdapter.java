@@ -16,16 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.weaving;
+package org.apache.aries.proxy.impl.common;
 
-import static org.apache.aries.proxy.impl.weaving.WovenProxyAdapter.DISPATCHER_FIELD;
-import static org.apache.aries.proxy.impl.weaving.WovenProxyAdapter.DISPATCHER_TYPE;
-import static org.apache.aries.proxy.impl.weaving.WovenProxyAdapter.LISTENER_FIELD;
-import static org.apache.aries.proxy.impl.weaving.WovenProxyAdapter.LISTENER_TYPE;
-import static org.apache.aries.proxy.impl.weaving.WovenProxyAdapter.METHOD_TYPE;
-import static org.apache.aries.proxy.impl.weaving.WovenProxyAdapter.NO_ARGS;
-import static org.apache.aries.proxy.impl.weaving.WovenProxyAdapter.OBJECT_TYPE;
-import static org.apache.aries.proxy.impl.weaving.WovenProxyAdapter.THROWABLE_INAME;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_FIELD;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_TYPE;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.LISTENER_FIELD;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.LISTENER_TYPE;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.METHOD_TYPE;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.NO_ARGS;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.OBJECT_TYPE;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.THROWABLE_INAME;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.WOVEN_PROXY_IFACE_TYPE;
 import static org.objectweb.asm.Opcodes.ACONST_NULL;
 import static org.objectweb.asm.Opcodes.IFNE;
 
@@ -111,7 +112,7 @@ import org.objectweb.asm.commons.Method;
  *  
  *   
  */
-abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
+public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
 {
   /** The type of a RuntimeException */
   private static final Type RUNTIME_EX_TYPE = Type.getType(RuntimeException.class);
@@ -255,7 +256,7 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
    */
   private final void setupLocals() {
     if (isVoid){
-      normalResult = newLocal(WovenProxyAdapter.OBJECT_TYPE);
+      normalResult = newLocal(OBJECT_TYPE);
     } else{
       normalResult = newLocal(returnType);
     }
@@ -303,7 +304,7 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     loadArgArray();
     
     //invoke it and store the token returned
-    invokeInterface(WovenProxyAdapter.LISTENER_TYPE, PRE_INVOKE_METHOD);
+    invokeInterface(LISTENER_TYPE, PRE_INVOKE_METHOD);
     storeLocal(preInvokeReturnedToken);
     
     mark(nullListener);
@@ -321,7 +322,7 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     
     loadLocal(preInvokeReturnedToken);
     loadLocal(dispatchTarget);
-    getStatic(typeBeingWoven, methodStaticFieldName, WovenProxyAdapter.METHOD_TYPE);
+    getStatic(typeBeingWoven, methodStaticFieldName, METHOD_TYPE);
     loadLocal(normalResult);
     
     //If the result a primitive then we need to box it
@@ -330,7 +331,7 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     }
     
     //invoke the listener
-    invokeInterface(WovenProxyAdapter.LISTENER_TYPE, POST_INVOKE_METHOD);
+    invokeInterface(LISTENER_TYPE, POST_INVOKE_METHOD);
     
     mark(nullListener);
   }
@@ -389,7 +390,7 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     loadLocal(dispatchTarget);
     getStatic(typeBeingWoven, methodStaticFieldName, METHOD_TYPE);
     loadLocal(originalException);
-    invokeInterface(WovenProxyAdapter.LISTENER_TYPE, POST_INVOKE_EXCEPTIONAL_METHOD);
+    invokeInterface(LISTENER_TYPE, POST_INVOKE_EXCEPTIONAL_METHOD);
     goTo(throwSelectedException);
     
     mark(afterInvoke);
@@ -416,7 +417,7 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
   protected final void unwrapEqualsArgument() {
     
     //Create and initialize a local for our work
-    int unwrapLocal = newLocal(WovenProxyAdapter.OBJECT_TYPE);
+    int unwrapLocal = newLocal(OBJECT_TYPE);
     visitInsn(ACONST_NULL);
     storeLocal(unwrapLocal);
     
@@ -424,14 +425,14 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     mark(startUnwrap);
     //Load arg and check if it is a WovenProxy instances
     loadArg(0);
-    instanceOf(WovenProxyAdapter.WOVEN_PROXY_IFACE_TYPE);
+    instanceOf(WOVEN_PROXY_IFACE_TYPE);
     Label unwrapFinished = newLabel();
     //Jump if zero (false)
     visitJumpInsn(Opcodes.IFEQ, unwrapFinished);
     //Arg is a wovenProxy, if it is the same as last time then we're done
     loadLocal(unwrapLocal);
     loadArg(0);
-    ifCmp(WovenProxyAdapter.OBJECT_TYPE, EQ, unwrapFinished);
+    ifCmp(OBJECT_TYPE, EQ, unwrapFinished);
     //Not the same, store current arg in unwrapLocal for next loop
     loadArg(0);
     storeLocal(unwrapLocal);
@@ -439,19 +440,19 @@ abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     //So arg is a WovenProxy, but not the same as last time, cast it and store 
     //the result of unwrap.call in the arg
     loadArg(0);
-    checkCast(WovenProxyAdapter.WOVEN_PROXY_IFACE_TYPE);
+    checkCast(WOVEN_PROXY_IFACE_TYPE);
     //Now unwrap
-    invokeInterface(WovenProxyAdapter.WOVEN_PROXY_IFACE_TYPE, new Method("org_apache_aries_proxy_weaving_WovenProxy_unwrap",
-        WovenProxyAdapter.DISPATCHER_TYPE, WovenProxyAdapter.NO_ARGS));
+    invokeInterface(WOVEN_PROXY_IFACE_TYPE, new Method("org_apache_aries_proxy_weaving_WovenProxy_unwrap",
+        DISPATCHER_TYPE, NO_ARGS));
     
     //Now we may have a Callable to invoke
-    int callable = newLocal(WovenProxyAdapter.DISPATCHER_TYPE);
+    int callable = newLocal(DISPATCHER_TYPE);
     storeLocal(callable);
     loadLocal(callable);
     ifNull(unwrapFinished);
     loadLocal(callable);
-    invokeInterface(WovenProxyAdapter.DISPATCHER_TYPE, new Method("call",
-        WovenProxyAdapter.OBJECT_TYPE, WovenProxyAdapter.NO_ARGS));
+    invokeInterface(DISPATCHER_TYPE, new Method("call",
+        OBJECT_TYPE, NO_ARGS));
     //Store the result and we're done (for this iteration)
     storeArg(0);
     goTo(startUnwrap);

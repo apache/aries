@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.weaving;
+package org.apache.aries.proxy.impl.common;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,9 +30,9 @@ import org.objectweb.asm.ClassWriter;
 /**
  * We need to override ASM's default behaviour in {@link #getCommonSuperClass(String, String)}
  * so that it doesn't load classes (which it was doing on the wrong {@link ClassLoader}
- * anyway...
+ * anyway...)
  */
-final class OSGiFriendlyClassWriter extends ClassWriter {
+public final class OSGiFriendlyClassWriter extends ClassWriter {
 
   private static final String OBJECT_INTERNAL_NAME = "java/lang/Object";
   private final ClassLoader loader;
@@ -65,7 +65,8 @@ final class OSGiFriendlyClassWriter extends ClassWriter {
     if(arg0.equals(OBJECT_INTERNAL_NAME) || arg1.equals(OBJECT_INTERNAL_NAME))
       return OBJECT_INTERNAL_NAME;
     
-    //We can't load the class being woven, so call again passing in the supertype
+    // If either of these class names are the current class then we can short
+    // circuit to the superclass (which we already know)
     if(arg0.equals(currentClassInternalName))
       getCommonSuperClass(currentSuperClassInternalName, arg1);
     else if (arg1.equals(currentClassInternalName))
@@ -74,9 +75,8 @@ final class OSGiFriendlyClassWriter extends ClassWriter {
     Set<String> names = new HashSet<String>();
     names.add(arg0);
     names.add(arg1);
-    //Try loading the class (in ASM)
+    //Try loading the class (in ASM not for real)
     try {
-      
       boolean bRunning = true;
       boolean aRunning = true;
       InputStream is;
@@ -94,6 +94,7 @@ final class OSGiFriendlyClassWriter extends ClassWriter {
             else if(!!!names.add(arg00))
               return arg00;
           } else {
+            //The class file isn't visible on this ClassLoader
             unable = arg0;
             aRunning = false;
           }
@@ -114,11 +115,11 @@ final class OSGiFriendlyClassWriter extends ClassWriter {
         }
       }
 
-        if (unable == null) {
-            throw new RuntimeException(NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1));
-        } else {
-            throw new RuntimeException(new UnableToProxyException(unable, NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1)));
-        }
+      if (unable == null) {
+          throw new RuntimeException(NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1));
+      } else {
+          throw new RuntimeException(new UnableToProxyException(unable, NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1)));
+      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

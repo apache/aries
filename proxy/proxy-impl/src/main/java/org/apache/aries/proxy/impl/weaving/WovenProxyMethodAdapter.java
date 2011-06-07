@@ -18,11 +18,12 @@
  */
 package org.apache.aries.proxy.impl.weaving;
 
-import static org.apache.aries.proxy.impl.weaving.AbstractWovenProxyAdapter.DISPATCHER_FIELD;
-import static org.apache.aries.proxy.impl.weaving.AbstractWovenProxyAdapter.DISPATCHER_TYPE;
-import static org.apache.aries.proxy.impl.weaving.AbstractWovenProxyAdapter.OBJECT_TYPE;
-import static org.apache.aries.proxy.impl.weaving.WovenProxyGenerator.IS_AT_LEAST_JAVA_6;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_FIELD;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_TYPE;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.OBJECT_TYPE;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6;
 
+import org.apache.aries.proxy.impl.common.AbstractWovenProxyMethodAdapter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;

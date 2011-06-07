@@ -18,6 +18,11 @@
  */
 package org.apache.aries.proxy.impl.weaving;
 
+import java.io.IOException;
+
+import org.apache.aries.proxy.impl.NLS;
+import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -50,4 +55,22 @@ public final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
   protected final Type getDeclaringTypeForCurrentMethod() {
     return typeBeingWoven;
   }
+
+  @Override
+  public void visitEnd() {
+    //first we need to override all the methods that were on non-object parents
+    for(Class<?> c : nonObjectSupers) {
+      try {
+        readClass(c, new MethodCopyingClassAdapter(cv, 
+            c, typeBeingWoven, getKnownMethods(), transformedMethods));
+      } catch (IOException e) {
+        // This should never happen! <= famous last words (not)
+        throw new RuntimeException(NLS.MESSAGES.getMessage("unexpected.error.processing.class", c.getName(), typeBeingWoven.getClassName()), e);
+      }
+    }
+    //Now run the normal visitEnd
+    super.visitEnd();
+  }
+  
+  
 }
