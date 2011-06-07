@@ -22,8 +22,8 @@ import java.io.IOException;
 
 import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
@@ -31,7 +31,9 @@ import org.objectweb.asm.commons.Method;
 /**
  * Used to weave classes processed by the {@link ProxyWeavingHook}
  */
-public final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
+final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
+
+  private boolean sVUIDGenerated = false;
 
   public WovenProxyAdapter(ClassVisitor writer, String className,
       ClassLoader loader) {
@@ -57,6 +59,15 @@ public final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
   }
 
   @Override
+  public FieldVisitor visitField(int access, String name, String arg2,
+      String arg3, Object arg4) {
+    //If this sVUID is generated then make it synthetic
+    if(sVUIDGenerated && "serialVersionUID".equals(name)) 
+      access |= ACC_SYNTHETIC;
+    return super.visitField(access, name, arg2, arg3, arg4);
+  }
+
+  @Override
   public void visitEnd() {
     //first we need to override all the methods that were on non-object parents
     for(Class<?> c : nonObjectSupers) {
@@ -70,6 +81,10 @@ public final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
     }
     //Now run the normal visitEnd
     super.visitEnd();
+  }
+
+  public void setSVUIDGenerated(boolean b) {
+    sVUIDGenerated  = b;
   }
   
   
