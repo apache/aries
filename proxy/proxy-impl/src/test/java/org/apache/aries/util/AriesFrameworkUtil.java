@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.weaving;
+package org.apache.aries.util;
 
-import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.Method;
+import org.osgi.framework.Bundle;
 
 /**
- * This object stores a {@link Method} and the class that declares it
+ * A fake class for testing
  */
-final class TypeMethod {
-  final Type declaringClass;
-  final Method method;
+public final class AriesFrameworkUtil 
+{
   
-  public TypeMethod(Type declaringClass,
-      Method method) {
-    this.declaringClass = declaringClass;
-    this.method = method;
+  /**
+   * Mock Classloader for testing
+   */
+  public static ClassLoader getClassLoader(Bundle b) 
+  {
+    return AriesFrameworkUtil.class.getClassLoader();
   }
 }

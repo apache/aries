@@ -24,6 +24,8 @@ import java.util.Set;
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
+import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
+import org.apache.aries.proxy.impl.common.TypeMethod;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -110,7 +112,7 @@ final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
       Type superType = Type.getType(superToCopy);
       
       // identify the target method parameters and return type
-      String methodStaticFieldName = "methodField" + WovenProxyAdapter.getSanitizedUUIDString();
+      String methodStaticFieldName = "methodField" + AbstractWovenProxyAdapter.getSanitizedUUIDString();
       transformedMethods.put(methodStaticFieldName, new TypeMethod(
           superType, currentTransformMethod));  
       
