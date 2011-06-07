@@ -22,13 +22,11 @@ import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
 import static org.objectweb.asm.Opcodes.ACC_ENUM;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 
-
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassWriter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
 /**
  * This class is used to weave the bytes of a class into a proxyable class
@@ -45,10 +43,10 @@ public final class WovenProxyGenerator
     //maxs are fine (and faster)
     ClassWriter cWriter = new OSGiFriendlyClassWriter(cReader, AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6 ? 
             ClassWriter.COMPUTE_FRAMES : ClassWriter.COMPUTE_MAXS, loader);
-    ClassVisitor weavingAdapter = new WovenProxyAdapter(cWriter, className, loader);
     
     //Wrap our outer layer to add the original SerialVersionUID if it was previously being defaulted
-    weavingAdapter = new SerialVersionUIDAdder(weavingAdapter);
+    ClassVisitor weavingAdapter = new SyntheticSerialVerUIDAdder(
+                               new WovenProxyAdapter(cWriter, className, loader));
     
     // If we are Java 1.6 + then we need to skip frames as they will be recomputed
     cReader.accept(weavingAdapter, AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6 ? ClassReader.SKIP_FRAMES : 0);
