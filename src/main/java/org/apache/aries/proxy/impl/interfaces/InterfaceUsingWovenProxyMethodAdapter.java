@@ -16,15 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.weaving;
+package org.apache.aries.proxy.impl.interfaces;
 
-import static org.apache.aries.proxy.impl.weaving.AbstractWovenProxyAdapter.OBJECT_TYPE;
+import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.OBJECT_TYPE;
 
+import org.apache.aries.proxy.impl.common.AbstractWovenProxyMethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
 
-class InterfaceUsingWovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
+/**
+ * Used to create a delegating method implementation for methods with no body
+ */
+final class InterfaceUsingWovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
 
   private final Type interfaceType;
   public InterfaceUsingWovenProxyMethodAdapter(MethodVisitor mv, int access, String name,

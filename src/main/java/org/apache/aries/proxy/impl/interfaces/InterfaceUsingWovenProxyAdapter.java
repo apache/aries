@@ -16,15 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.weaving;
+package org.apache.aries.proxy.impl.interfaces;
 
+import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
+import org.apache.aries.proxy.impl.weaving.ProxyWeavingHook;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
 
 /**
- * Used to weave classes processed by the {@link ProxyWeavingHook}
+ * Used to copy method signatures into a new class
  */
 final class InterfaceUsingWovenProxyAdapter extends AbstractWovenProxyAdapter {
 

@@ -30,7 +30,7 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
-import org.apache.aries.proxy.impl.weaving.InterfaceCombiningClassAdapter;
+import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.osgi.framework.Bundle;
 
@@ -99,7 +99,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
         proxyObject = ProxySubclassGenerator.newProxySubclassInstance(classToProxy, new ProxyHandler(this, dispatcher, listener));
       }
     } else {
-      proxyObject = InterfaceCombiningClassAdapter.getProxyInstance(classes, dispatcher, listener);
+      proxyObject = InterfaceProxyGenerator.getProxyInstance(clientBundle, classes, dispatcher, listener);
     }
 
     return proxyObject;

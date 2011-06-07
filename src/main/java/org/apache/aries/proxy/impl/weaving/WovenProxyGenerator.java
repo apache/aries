@@ -22,12 +22,12 @@ import static org.objectweb.asm.Opcodes.ACC_ANNOTATION;
 import static org.objectweb.asm.Opcodes.ACC_ENUM;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 
-import java.math.BigDecimal;
 
+import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
+import org.apache.aries.proxy.impl.common.OSGiFriendlyClassWriter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
 /**
@@ -35,9 +35,6 @@ import org.objectweb.asm.commons.SerialVersionUIDAdder;
  */
 public final class WovenProxyGenerator
 {
-  public static final int JAVA_CLASS_VERSION = new BigDecimal(System.getProperty("java.class.version")).intValue();
-  public static final boolean IS_AT_LEAST_JAVA_6 = JAVA_CLASS_VERSION >= Opcodes.V1_6;
-    
   public static final byte[] getWovenProxy(byte[] original, String className, ClassLoader loader){
     ClassReader cReader = new ClassReader(original);
     //Don't weave interfaces, enums or annotations
@@ -46,7 +43,7 @@ public final class WovenProxyGenerator
     
     //If we are Java 1.6 + compiled then we need to compute stack frames, otherwise
     //maxs are fine (and faster)
-    ClassWriter cWriter = new OSGiFriendlyClassWriter(cReader, IS_AT_LEAST_JAVA_6 ? 
+    ClassWriter cWriter = new OSGiFriendlyClassWriter(cReader, AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6 ? 
             ClassWriter.COMPUTE_FRAMES : ClassWriter.COMPUTE_MAXS, loader);
     ClassVisitor weavingAdapter = new WovenProxyAdapter(cWriter, className, loader);
     
@@ -54,7 +51,7 @@ public final class WovenProxyGenerator
     weavingAdapter = new SerialVersionUIDAdder(weavingAdapter);
     
     // If we are Java 1.6 + then we need to skip frames as they will be recomputed
-    cReader.accept(weavingAdapter, IS_AT_LEAST_JAVA_6 ? ClassReader.SKIP_FRAMES : 0);
+    cReader.accept(weavingAdapter, AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6 ? ClassReader.SKIP_FRAMES : 0);
     
     return cWriter.toByteArray();
   }
