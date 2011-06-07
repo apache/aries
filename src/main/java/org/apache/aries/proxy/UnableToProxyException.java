@@ -31,7 +31,7 @@ public class UnableToProxyException extends Exception
     this(clazz.getName(), clazz.getName());
   }
 
-  public UnableToProxyException(Class<?> clazz, Exception e)
+  public UnableToProxyException(Class<?> clazz, Throwable e)
   {
     this(clazz.getName(), e);
   }
