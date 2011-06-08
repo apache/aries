@@ -155,7 +155,7 @@ public class JPAWeavingAndAnnotationScanningTest {
 
         //vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
         //waitForFrameworkStartup(),
-        org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),        
+        
        
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa"),
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core"),
