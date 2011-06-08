@@ -21,13 +21,11 @@ package org.apache.aries.proxy.impl.weaving;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_FIELD;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_TYPE;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.OBJECT_TYPE;
-import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6;
 
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyMethodAdapter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.commons.Method;
 
 final class WovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
@@ -40,8 +38,7 @@ final class WovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
       Type typeBeingWoven) {
     //If we're running on Java 6+ We need to inline any JSR instructions because we're computing stack frames.
     //otherwise we can save the overhead
-    super((IS_AT_LEAST_JAVA_6) ? new JSRInlinerAdapter(mv, access, name, desc, null, exceptions) :
-             mv, access, name, desc, methodStaticFieldName, currentTransformMethod, typeBeingWoven);
+    super(mv, access, name, desc, methodStaticFieldName, currentTransformMethod, typeBeingWoven);
   }
 
   /**
