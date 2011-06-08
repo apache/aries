@@ -27,6 +27,8 @@ import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
 /**
  * We need to override ASM's default behaviour in {@link #getCommonSuperClass(String, String)}
  * so that it doesn't load classes (which it was doing on the wrong {@link ClassLoader}
@@ -38,14 +40,17 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
   private final ClassLoader loader;
   private String currentClassInternalName;
   private String currentSuperClassInternalName;
+  private final boolean inlineJSR;
   
   public OSGiFriendlyClassWriter(ClassReader arg0, int arg1, ClassLoader loader) {
     super(arg0, arg1);
+    inlineJSR = arg1 == COMPUTE_FRAMES;
     this.loader = loader;
   }
   
   public OSGiFriendlyClassWriter(int arg0, ClassLoader loader) {
     super(arg0);
+    inlineJSR = arg0 == COMPUTE_FRAMES;
     this.loader = loader;
   }
 
@@ -134,6 +139,17 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
     currentClassInternalName = arg2;
     currentSuperClassInternalName = arg4;
     super.visit(arg0, arg1, arg2, arg3, arg4, arg5);
+  }
+
+  @Override
+  public MethodVisitor visitMethod(int arg0, String arg1, String arg2,
+      String arg3, String[] arg4) {
+    MethodVisitor mv =  super.visitMethod(arg0, arg1, arg2, arg3, arg4);
+    
+    if(inlineJSR)
+      mv = new JSRInlinerAdapter(mv, arg0, arg1, arg2, arg3, arg4);
+    
+    return mv;
   }
 
 }
