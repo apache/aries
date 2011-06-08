@@ -47,7 +47,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
-import org.objectweb.asm.commons.StaticInitMerger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
