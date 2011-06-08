@@ -19,7 +19,6 @@
 package org.apache.aries.proxy.impl.interfaces;
 
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
-import org.apache.aries.proxy.impl.weaving.ProxyWeavingHook;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
