@@ -40,23 +40,6 @@ import org.objectweb.asm.commons.Method;
  * This class is used to aggregate several interfaces into a real class which implements all of them
  */
 final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcodes {
-
-  /** 
-   * A cache of previously created proxy class loaders. Because we cache then update
-   * the {@link InterfaceCombiningClassAdapter#accessList} we might temporarily 
-   * end up with more in the cache than the maximum size of the access list. 
-   * We therefore initialize this to be double the size of the access list so it
-   * should never be necessary to resize
-   */
-  private static final ConcurrentMap<HashSet<Class<?>>, ProxyClassLoader> cache = 
-    new ConcurrentHashMap<HashSet<Class<?>>, ProxyClassLoader>(256);
-  /**
-   * The access List that determines when we evict things from our cache, items
-   * are removed and re-added when accessed so a {@link LinkedBlockingQueue}
-   * is considerably faster 
-   */
-  private static final Queue<HashSet<Class<?>>> accessList = 
-    new LinkedBlockingQueue<HashSet<Class<?>>>(128);
   
   /** The interfaces we need to implement */
   private final Collection<Class<?>> interfaces;
