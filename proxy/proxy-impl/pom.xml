@@ -142,4 +142,50 @@
         </dependency>
     </dependencies>
 
+    <build>
+     <plugins>
+       <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <!--  hack to make javac available to maven-antrun-plugin
+            because the maven-antrun-plugin runs with java.home set to the
+            jre subdirectory of a jdk, even if maven is using the jdk
+             -->
+            <dependencies>
+              <dependency>
+                <groupId>com.sun</groupId>
+                <artifactId>tools</artifactId>
+                <version>1.5.0</version>
+                <scope>system</scope>
+                <systemPath>${java.home}/../lib/tools.jar</systemPath>
+              </dependency>
+            </dependencies>
+         <executions>
+           <execution>
+             <phase>process-classes</phase>
+             <configuration>
+               <tasks>
+                 <!-- compile the Synthesizer which can add the synthetic modifier to classes -->
+                 <javac srcdir="${basedir}/src/build/resources" includes="**/Synthesize*.java" classpathref="maven.runtime.classpath"/>
+                 <!-- create a classpath that includes the compiled Synthesizer -->
+                 <path id="synthesizer.class.path">
+                   <dirset dir="${basedir}/src/build/resources"/>
+                   <path refid="maven.runtime.classpath"/>
+                 </path>
+                 <!-- run the Synthesizer on the WovenProxy class -->
+                 <java classname="org.apache.aries.proxy.synthesizer.Synthesizer"
+                       classpathref="synthesizer.class.path" fork="false">
+                       <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class"/>
+                 </java>
+               </tasks>
+             </configuration>
+             <goals>
+               <goal>run</goal>
+             </goals>
+           </execution>
+         </executions>
+       </plugin>
+     </plugins>
+    </build>
+
 </project>
