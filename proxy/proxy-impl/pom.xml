@@ -140,18 +140,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-    </dependencies>
-
-    <build>
-     <plugins>
-       <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
             <!--  hack to make javac available to maven-antrun-plugin
-            because the maven-antrun-plugin runs with java.home set to the
-            jre subdirectory of a jdk, even if maven is using the jdk
+                  because the maven-antrun-plugin runs with java.home set to the
+                  jre subdirectory of a jdk, even if maven is using the jdk
              -->
-            <dependencies>
               <dependency>
                 <groupId>com.sun</groupId>
                 <artifactId>tools</artifactId>
@@ -159,7 +151,13 @@
                 <scope>system</scope>
                 <systemPath>${java.home}/../lib/tools.jar</systemPath>
               </dependency>
-            </dependencies>
+    </dependencies>
+
+    <build>
+     <plugins>
+       <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
          <executions>
            <execution>
              <phase>process-classes</phase>
