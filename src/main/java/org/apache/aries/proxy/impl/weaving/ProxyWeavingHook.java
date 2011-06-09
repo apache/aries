@@ -67,7 +67,7 @@ public final class ProxyWeavingHook implements WeavingHook {
           e.getCause() instanceof UnableToProxyException){
         //This is a weaving failure that should be logged, but the class
         //can still be loaded
-        LOGGER.info(NLS.MESSAGES.getMessage("cannot.weave", wovenClass.getClassName()), e);
+        LOGGER.trace(NLS.MESSAGES.getMessage("cannot.weave", wovenClass.getClassName()), e);
       } else {
         String failureMessage = NLS.MESSAGES.getMessage("fatal.weaving.failure", wovenClass.getClassName());
         //This is a failure that should stop the class loading!
