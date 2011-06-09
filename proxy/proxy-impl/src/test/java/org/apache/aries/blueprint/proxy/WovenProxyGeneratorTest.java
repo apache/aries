@@ -379,5 +379,14 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   protected Object getP3() {
     return getProxyInstance(getProxyClass(TEST_CLASS));
   }
+  
+  /**
+   * This tests that the Synthesizer ran correctly and the packaged
+   * WovenProxy class has been modified with the synthetic modifier
+   */
+  @Test
+  public void testWovenProxyIsSynthetic(){
+    assertTrue(WovenProxy.class.isSynthetic());
+  }
 }
 
