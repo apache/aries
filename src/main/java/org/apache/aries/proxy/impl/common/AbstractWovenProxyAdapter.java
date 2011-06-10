@@ -255,9 +255,11 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
         cv.visit(version, access, name, signature, superName, interfaces);
       }
     } catch (ClassNotFoundException e) {
-      // If this happens we're about to hit bigger trouble on verify, so we can
-      // just throw it
-      throw new RuntimeException(NLS.MESSAGES.getMessage("cannot.load.superclass", superName.replace('/', '.'), typeBeingWoven.getClassName()), e);
+      // If this happens we're about to hit bigger trouble on verify, so we
+      // should stop weaving and fail. Make sure we don't cause the hook to
+      // throw an error though.
+      UnableToProxyException u = new UnableToProxyException(name, e);
+      throw new RuntimeException(NLS.MESSAGES.getMessage("cannot.load.superclass", superName.replace('/', '.'), typeBeingWoven.getClassName()), u);
     }
   }
 
