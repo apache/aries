@@ -53,7 +53,8 @@ public final class ProxyWeavingHook implements WeavingHook {
     
     if(wovenClass.getClassName().startsWith("org.objectweb.asm") || 
         wovenClass.getClassName().startsWith("org.slf4j") || 
-        wovenClass.getClassName().startsWith("org.apache.log4j"))
+        wovenClass.getClassName().startsWith("org.apache.log4j") ||
+        wovenClass.getClassName().startsWith("javax."))
       return;
     
     byte[] bytes = null;
