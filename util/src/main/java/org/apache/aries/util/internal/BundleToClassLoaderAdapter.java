@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.util;
+package org.apache.aries.util.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,13 +32,9 @@ import java.util.Enumeration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 
-/**
- * @deprecated Please use AriesFrameworkUtil.getClassLoader to get a class loader for a bundle instead of this method
- */
-@Deprecated
 public class BundleToClassLoaderAdapter extends ClassLoader implements BundleReference
 {
-  private Bundle b;
+  private final Bundle b;
 
   public BundleToClassLoaderAdapter(Bundle bundle)
   {
@@ -49,7 +45,8 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
   public URL getResource(final String name)
   {
     return AccessController.doPrivileged(new PrivilegedAction<URL>() {
-      public URL run()
+      @Override
+	public URL run()
       {
         return b.getResource(name);
       }
@@ -79,7 +76,8 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
     Enumeration<URL> urls;
     try {
       urls = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>() {
-        @SuppressWarnings("unchecked")
+        @Override
+		@SuppressWarnings("unchecked")
         public Enumeration<URL> run() throws IOException
         {
           return b.getResources(name);
@@ -105,7 +103,8 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
   {
     try {
       return AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
-        public Class<?> run() throws ClassNotFoundException
+        @Override
+		public Class<?> run() throws ClassNotFoundException
         {
           return b.loadClass(name);
         }
@@ -120,6 +119,7 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
     }
   }
 
+  @Override
   public Bundle getBundle()
   {
     return b;

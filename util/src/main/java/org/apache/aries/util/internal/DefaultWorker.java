@@ -23,7 +23,6 @@ import java.security.PrivilegedAction;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import org.apache.aries.util.BundleToClassLoaderAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
