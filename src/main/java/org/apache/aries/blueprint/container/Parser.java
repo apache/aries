@@ -179,15 +179,14 @@ public class Parser {
     private ComponentDefinitionRegistry registry;
     private NamespaceHandlerRegistry.NamespaceHandlerSet handlers;
     private String idPrefix = "component-";
-    private Set<String> ids = new HashSet<String>();
+    private final Set<String> ids = new HashSet<String>();
     private int idCounter;
     private String defaultTimeout;
     private String defaultAvailability;
     private String defaultActivation;
     private Set<URI> namespaces;
 
-    public Parser() {
-    }
+    public Parser() {}
 
     public Parser(String idPrefix) {
         this.idPrefix = idPrefix;
