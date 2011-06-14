@@ -19,7 +19,7 @@
 package org.apache.aries.blueprint;
 
 import org.apache.aries.blueprint.container.BlueprintContainerImpl;
-import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 
 public class TestBlueprintContainer extends BlueprintContainerImpl {

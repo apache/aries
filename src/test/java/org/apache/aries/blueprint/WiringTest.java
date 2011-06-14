@@ -34,7 +34,7 @@ import org.apache.aries.blueprint.CallbackTracker.Callback;
 import org.apache.aries.blueprint.container.BlueprintRepository;
 import org.apache.aries.blueprint.di.CircularDependencyException;
 import org.apache.aries.blueprint.di.Repository;
-import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.pojos.AmbiguousPojo;
 import org.apache.aries.blueprint.pojos.BeanD;
 import org.apache.aries.blueprint.pojos.BeanF;
