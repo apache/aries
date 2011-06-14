@@ -21,7 +21,7 @@ package org.apache.aries.blueprint.compendium.cm;
 import java.io.IOException;
 import java.util.*;
 
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ext.AbstractPropertyPlaceholder;
 import org.apache.aries.blueprint.ext.PropertyPlaceholder;
 import org.osgi.framework.Bundle;

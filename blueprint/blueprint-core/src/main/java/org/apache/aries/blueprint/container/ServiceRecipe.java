@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.ServiceProcessor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
@@ -41,6 +40,7 @@ import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.proxy.Collaborator;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.proxy.InvocationListener;

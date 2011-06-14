@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.blueprint.BeanProcessor;
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ServiceProcessor;
 import org.apache.aries.blueprint.container.ServiceListener;
 import org.apache.aries.blueprint.utils.JavaUtils;

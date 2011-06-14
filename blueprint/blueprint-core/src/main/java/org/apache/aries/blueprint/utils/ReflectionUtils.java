@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.container.GenericType;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.osgi.framework.BundleReference;

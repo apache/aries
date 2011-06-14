@@ -34,7 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.aries.blueprint.BeanProcessor;
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;

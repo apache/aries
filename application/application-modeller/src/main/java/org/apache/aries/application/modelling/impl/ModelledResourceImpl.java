@@ -239,7 +239,7 @@ public class ModelledResourceImpl implements ModelledResource
 
 
   @Override
-public String getLocation() {
+  public String getLocation() {
     logger.debug(LOG_ENTRY, "getLocation");
     logger.debug(LOG_EXIT, "getLocation", _fileURI);
     return _fileURI;
@@ -247,7 +247,7 @@ public String getLocation() {
 
 
   @Override
-public ExportedBundle getExportedBundle() {
+  public ExportedBundle getExportedBundle() {
     logger.debug(LOG_ENTRY, "getExportedBundle");
     logger.debug(LOG_EXIT, "getExportedBundle",  _exportedBundle);
     return _exportedBundle;
@@ -255,7 +255,7 @@ public ExportedBundle getExportedBundle() {
 
 
   @Override
-public Collection<ExportedPackage> getExportedPackages() {
+  public Collection<ExportedPackage> getExportedPackages() {
     logger.debug(LOG_ENTRY, "getExportedPackages");
     logger.debug(LOG_EXIT, "getExportedPackages",  _exportedPackages);
     return Collections.unmodifiableCollection(_exportedPackages);
@@ -264,23 +264,22 @@ public Collection<ExportedPackage> getExportedPackages() {
 
 
   @Override
-public Collection<ImportedPackage> getImportedPackages() {
+  public Collection<ImportedPackage> getImportedPackages() {
     logger.debug(LOG_ENTRY, "getImportedPackages");
     logger.debug(LOG_EXIT, "getImportedPackages",  _importedPackages);
     return Collections.unmodifiableCollection(_importedPackages);
   }
 
   @Override
-public Collection<ExportedService> getExportedServices() {
+  public Collection<ExportedService> getExportedServices() {
     logger.debug(LOG_ENTRY, "getExportedServices");
     logger.debug(LOG_EXIT, "getExportedServices",  _exportedServices);
     return Collections.unmodifiableCollection(_exportedServices);
   }
 
 
-
   @Override
-public Collection<ImportedService> getImportedServices() {
+  public Collection<ImportedService> getImportedServices() {
     logger.debug(LOG_ENTRY, "getImportedServices");
     logger.debug(LOG_EXIT, "getImportedServices",  _exportedServices);
     return Collections.unmodifiableCollection(_importedServices);
@@ -288,7 +287,7 @@ public Collection<ImportedService> getImportedServices() {
 
 
   @Override
-public String getSymbolicName() {
+  public String getSymbolicName() {
     logger.debug(LOG_ENTRY, "getSymbolicName");
     String result = _exportedBundle.getSymbolicName();
     logger.debug(LOG_EXIT, "getSymbolicName",  result);
@@ -297,7 +296,7 @@ public String getSymbolicName() {
   
 
   @Override
-public String getVersion() {
+  public String getVersion() {
     logger.debug(LOG_ENTRY, "getVersion");
     String result = _exportedBundle.getVersion();
     logger.debug(LOG_EXIT, "getVersion",  result);
@@ -306,7 +305,7 @@ public String getVersion() {
 
 
   @Override
-public String toDeploymentString() {
+  public String toDeploymentString() {
     logger.debug(LOG_ENTRY, "toDeploymentString");
     String result = _exportedBundle.toDeploymentString();
     logger.debug(LOG_EXIT, "toDeploymentString",  result);
@@ -315,7 +314,7 @@ public String toDeploymentString() {
 
 
   @Override
-public ResourceType getType() {
+  public ResourceType getType() {
     logger.debug(LOG_ENTRY, "getType");
     logger.debug(LOG_EXIT, "getType",  ResourceType.BUNDLE);
     return _resourceType;

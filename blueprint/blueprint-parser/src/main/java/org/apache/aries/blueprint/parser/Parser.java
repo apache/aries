@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.container;
+package org.apache.aries.blueprint.parser;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -90,7 +90,7 @@ import org.xml.sax.InputSource;
 /**
  * TODO: javadoc
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 1135256 $, $Date: 2011-06-13 21:09:27 +0100 (Mon, 13 Jun 2011) $
  */
 public class Parser {
 
@@ -177,7 +177,7 @@ public class Parser {
 
     private final List<Document> documents = new ArrayList<Document>();
     private ComponentDefinitionRegistry registry;
-    private NamespaceHandlerRegistry.NamespaceHandlerSet handlers;
+    private NamespaceHandlerSet handlers;
     private String idPrefix = "component-";
     private final Set<String> ids = new HashSet<String>();
     private int idCounter;
@@ -264,7 +264,7 @@ public class Parser {
         }
     }
 
-    public void populate(NamespaceHandlerRegistry.NamespaceHandlerSet handlers,
+    public void populate(NamespaceHandlerSet handlers,
                          ComponentDefinitionRegistry registry) {
         this.handlers = handlers;
         this.registry = registry;
