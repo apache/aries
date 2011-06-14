@@ -1,5 +1,8 @@
 package org.apache.aries.proxy.impl.interfaces;
 
+import java.security.AllPermission;
+import java.security.PermissionCollection;
+import java.security.Permissions;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
 import java.util.Map;
@@ -9,7 +12,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
@@ -20,6 +22,14 @@ import org.osgi.framework.Bundle;
 
 /** An implementation of ClassLoader that will be used to define our proxy class */
 final class ProxyClassLoader extends ClassLoader {
+  
+  private static final ProtectionDomain PROXY_PROTECTION_DOMAIN;
+  
+  static {
+    PermissionCollection pc = new Permissions();
+    pc.add(new AllPermission());
+    PROXY_PROTECTION_DOMAIN = new ProtectionDomain(null, pc);
+  }
   
   /** A {@link Map} of classes we already know */
   private final ConcurrentMap<HashSet<Class<?>>, String> classes = 
@@ -95,11 +105,14 @@ final class ProxyClassLoader extends ClassLoader {
     InterfaceCombiningClassAdapter icca = new InterfaceCombiningClassAdapter(
         className, this, createSet);
     
-    //Do not use a protection domain the real code will inherit permissions from
-    //the real class, not the proxy class
+    //Use a special protection domain that grants AllPermission to our Proxy
+    //object. This is important so that we never get in the way of any security
+    //checks. This isn't unsafe because we only add simple dispatch/listener code
+    
     try {
       byte[] bytes = icca.generateBytes();
-      Class<?> c = defineClass(className, bytes, 0, bytes.length);
+      Class<?> c = defineClass(className, bytes, 0, bytes.length, 
+          PROXY_PROTECTION_DOMAIN);
       String old = classes.putIfAbsent(createSet, className);
       if(old != null) {
         c = Class.forName(className, false, this);
