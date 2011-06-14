@@ -35,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.di.CircularDependencyException;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.IdRefRecipe;

@@ -38,7 +38,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.blueprint.BlueprintConstants;
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;

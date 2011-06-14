@@ -29,7 +29,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.ReifiedType;

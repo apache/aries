@@ -17,42 +17,37 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-    <parent>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.4</version>
         <relativePath />
-    </parent>  
+  </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.aries.blueprint</groupId>
-    <artifactId>blueprint</artifactId>
-    <name>Apache Aries Blueprint</name>
-    <packaging>pom</packaging>
+  <groupId>org.apache.aries.blueprint</groupId>
+  <artifactId>blueprint-parser</artifactId>
+  <packaging>jar</packaging>
+  <name>Apache Aries Blueprint Core</name>
+  <version>0.4-SNAPSHOT</version>
+  <description>
+      This bundle contains the core implementation of Blueprint 
+      along with the "ext" namespace handler.
+  </description>
 
-    <description>
-        Implementation of the Blueprint Container Specification
-    </description>
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-parser</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-parser</developerConnection>
+    <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-parser</url>
+  </scm>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.aries.blueprint</groupId>
+      <artifactId>org.apache.aries.blueprint.api</artifactId>
+      <version>0.3</version>
+    </dependency>
+  </dependencies>
 
-    <modules>
-        <module>blueprint-api</module>
-        <module>blueprint-parser</module>
-        <module>blueprint-core</module>
-        <module>blueprint-cm</module>
-        <module>blueprint-bundle</module>
-        <module>blueprint-sample</module>
-        <module>blueprint-annotation-api</module>
-        <module>blueprint-annotation-impl</module>
-        <module>blueprint-sample-annotation</module>
-        <module>blueprint-sample-fragment</module>
-        <module>blueprint-testbundlea</module>
-        <module>blueprint-testbundleb</module>
-        <module>blueprint-testquiescebundle</module>
-        <module>blueprint-itests</module>
-        <module>blueprint-annotation-itest</module>
-    </modules>
-
+  
 </project>
-

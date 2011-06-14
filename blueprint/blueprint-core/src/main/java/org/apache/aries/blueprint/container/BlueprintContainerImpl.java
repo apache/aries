@@ -50,13 +50,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.Processor;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
+import org.apache.aries.blueprint.parser.Parser;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
@@ -97,7 +99,7 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
-public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
+public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerSet.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
@@ -123,7 +125,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final ScheduledExecutorService executors;
     private Set<URI> namespaces;
     private State state = State.Unknown;
-    private NamespaceHandlerRegistry.NamespaceHandlerSet handlerSet;
+    private NamespaceHandlerSet handlerSet;
     private boolean destroyed;
     private Parser parser;
     private BlueprintRepository repository;

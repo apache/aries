@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.container;
+package org.apache.aries.blueprint.parser;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ParserContext;
@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
  * 
  * This class is supposed to be short lived and only used for calling a given namespace handler.
  *
- * @version $Rev$, $Date$
+ * @version $Rev: 896324 $, $Date: 2010-01-06 06:05:04 +0000 (Wed, 06 Jan 2010) $
  */
 public class ParserContextImpl implements ParserContext {    
     private final Parser parser;

@@ -24,7 +24,7 @@
   </bean>
   <service id = "modelledResourceManagerService" ref="modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
 
-  <reference id="parser-service" interface="org.apache.aries.blueprint.ParserService"/>
+  <reference id="parser-service" interface="org.apache.aries.blueprint.services.ParserService"/>
   <bean id="parserProxy" class="org.apache.aries.application.modelling.impl.ParserProxyImpl">
     <property name="parserService" ref="parser-service"/>
     <property name="bundleContext" ref="blueprintBundleContext"/>

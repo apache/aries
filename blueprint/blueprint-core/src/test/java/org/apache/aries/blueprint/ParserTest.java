@@ -33,7 +33,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanArgument;
@@ -184,7 +184,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertEquals("org.apache.aries.Cache", comp3.getClassName());         
     }
 
-    private static class TestNamespaceHandlerSet implements NamespaceHandlerRegistry.NamespaceHandlerSet {
+    private static class TestNamespaceHandlerSet implements NamespaceHandlerSet {
 
         private TestNamespaceHandlerSet() {
         }
@@ -210,10 +210,10 @@ public class ParserTest extends AbstractBlueprintTest {
             return null;
         }
 
-        public void addListener(NamespaceHandlerRegistry.Listener listener) {
+        public void addListener(NamespaceHandlerSet.Listener listener) {
         }
 
-        public void removeListener(NamespaceHandlerRegistry.Listener listener) {
+        public void removeListener(NamespaceHandlerSet.Listener listener) {
         }
 
         public void destroy() {

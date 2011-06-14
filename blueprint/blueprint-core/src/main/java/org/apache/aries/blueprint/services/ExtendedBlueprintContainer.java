@@ -14,12 +14,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.blueprint;
+package org.apache.aries.blueprint.services;
 
 import java.security.AccessControlContext;
 import java.util.Dictionary;
 import java.util.List;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.Processor;
 import org.apache.aries.blueprint.container.ServiceRecipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.osgi.framework.Bundle;

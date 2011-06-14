@@ -20,7 +20,7 @@ package org.apache.aries.blueprint.di;
 
 import java.util.List;
 
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ext.ComponentFactoryMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 

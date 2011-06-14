@@ -27,17 +27,17 @@ import javax.xml.validation.Schema;
 
 import junit.framework.TestCase;
 
-import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
-import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.ext.ExtNamespaceHandler;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.aries.blueprint.parser.Parser;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractBlueprintTest extends TestCase {
 
     protected ComponentDefinitionRegistryImpl parse(String name) throws Exception {
       final URI extensionHandler = new URI("http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0");
-      NamespaceHandlerRegistry.NamespaceHandlerSet handlers = new NamespaceHandlerRegistry.NamespaceHandlerSet() {
+      NamespaceHandlerSet handlers = new NamespaceHandlerSet() {
             public Set<URI> getNamespaces() {
                 return null;
             }
@@ -48,7 +48,7 @@ public abstract class AbstractBlueprintTest extends TestCase {
                   return null;
                 }
             }
-            public void removeListener(NamespaceHandlerRegistry.Listener listener) {
+            public void removeListener(NamespaceHandlerSet.Listener listener) {
             }
             public Schema getSchema() throws SAXException, IOException {
                 return null;
@@ -56,7 +56,7 @@ public abstract class AbstractBlueprintTest extends TestCase {
             public boolean isComplete() {
                 return false;
             }
-            public void addListener(NamespaceHandlerRegistry.Listener listener) {
+            public void addListener(NamespaceHandlerSet.Listener listener) {
             }
             public void destroy() {
             }
@@ -64,7 +64,7 @@ public abstract class AbstractBlueprintTest extends TestCase {
         return parse(name, handlers);
     }
 
-    protected ComponentDefinitionRegistryImpl parse(String name, NamespaceHandlerRegistry.NamespaceHandlerSet handlers) throws Exception {
+    protected ComponentDefinitionRegistryImpl parse(String name, NamespaceHandlerSet handlers) throws Exception {
         ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl();
         Parser parser = new Parser();
         parser.parse(Collections.singletonList(getClass().getResource(name)));

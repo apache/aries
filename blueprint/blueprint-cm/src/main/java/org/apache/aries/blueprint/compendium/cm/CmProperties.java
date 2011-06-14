@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ServiceProcessor;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.osgi.framework.Bundle;

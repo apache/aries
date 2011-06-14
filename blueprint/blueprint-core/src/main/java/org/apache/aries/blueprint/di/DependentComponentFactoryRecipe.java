@@ -21,7 +21,7 @@ package org.apache.aries.blueprint.di;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.container.SatisfiableRecipe;
 import org.apache.aries.blueprint.ext.DependentComponentFactoryMetadata;
 
