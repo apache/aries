@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.namespace;
+package org.apache.aries.blueprint.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
