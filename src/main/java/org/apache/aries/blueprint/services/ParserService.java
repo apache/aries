@@ -15,12 +15,13 @@
  *  limitations under the License.
  */
 
-package org.apache.aries.blueprint;
+package org.apache.aries.blueprint.services;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.osgi.framework.Bundle;
 
 public interface ParserService {

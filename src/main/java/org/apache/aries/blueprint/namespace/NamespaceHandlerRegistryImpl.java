@@ -45,6 +45,8 @@ import javax.xml.XMLConstants;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet.Listener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

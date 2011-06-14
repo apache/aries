@@ -25,9 +25,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.ParserService;
-import org.apache.aries.blueprint.container.NamespaceHandlerRegistry.NamespaceHandlerSet;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
+import org.apache.aries.blueprint.parser.Parser;
+import org.apache.aries.blueprint.services.ParserService;
 import org.osgi.framework.Bundle;
 import org.xml.sax.SAXException;
 

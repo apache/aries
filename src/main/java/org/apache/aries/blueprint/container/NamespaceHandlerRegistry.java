@@ -20,13 +20,11 @@ package org.apache.aries.blueprint.container;
 
 import java.net.URI;
 import java.util.Set;
-import java.io.IOException;
 
 import javax.xml.validation.Schema;
 
-import org.apache.aries.blueprint.NamespaceHandler;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.osgi.framework.Bundle;
-import org.xml.sax.SAXException;
 
 /**
  * Registry of NamespaceHandler.
@@ -49,71 +47,4 @@ public interface NamespaceHandlerRegistry {
      * Destroy this registry
      */
     void destroy();
-
-    /**
-     * Interface used to managed a set of namespace handlers
-     */
-    public interface NamespaceHandlerSet {
-
-        Set<URI> getNamespaces();
-
-        boolean isComplete();
-
-        /**
-         * Retrieve the NamespaceHandler to use for the given namespace
-         *
-         * @return the NamespaceHandler to use or <code>null</code> if none is available at this time
-         */
-        NamespaceHandler getNamespaceHandler(URI namespace);
-
-        /**
-         * Obtain a schema to validate the XML for the given list of namespaces
-         *
-         * @return the schema to use to validate the XML
-         */
-        Schema getSchema() throws SAXException, IOException;
-
-        /**
-         * Add a new Listener to be called when namespace handlers are registerd or unregistered
-         *
-         * @param listener the listener to register
-         */
-        void addListener(Listener listener);
-
-        /**
-         * Remove a previously registered Listener
-         *
-         * @param listener the listener to unregister
-         */
-        void removeListener(Listener listener);
-
-        /**
-         * Destroy this handler set
-         */
-        void destroy();
-    }
-
-    /**
-     * Interface used to listen to registered or unregistered namespace handlers.
-     *
-     * @see NamespaceHandlerSet#addListener(org.apache.aries.blueprint.container.NamespaceHandlerRegistry.Listener)
-     * @see NamespaceHandlerSet#removeListener(org.apache.aries.blueprint.container.NamespaceHandlerRegistry.Listener) 
-     */
-    public interface Listener {
-
-        /**
-         * Called when a NamespaceHandler has been registered for the specified URI.
-         *
-         * @param uri the URI of the newly registered namespace handler
-         */
-        void namespaceHandlerRegistered(URI uri);
-
-        /**
-         * Called when a NamespaceHandler has been unregistered for the specified URI.
-         *
-         * @param uri the URI of the newly unregistered namespace handler
-         */
-        void namespaceHandlerUnregistered(URI uri);
-
-    }
 }

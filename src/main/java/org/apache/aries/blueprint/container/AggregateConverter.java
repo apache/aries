@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
-import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
