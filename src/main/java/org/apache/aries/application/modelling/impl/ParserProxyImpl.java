@@ -37,7 +37,7 @@ import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.ParserService;
+import org.apache.aries.blueprint.services.ParserService;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
