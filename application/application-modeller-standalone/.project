@@ -1,0 +1,18 @@
+<projectDescription>
+  <name>application-modeller-standalone</name>
+  <comment>Modelling utilities for working with Aries Applications (distribution for offline use). NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>org.apache.aries.application.api</project>
+    <project>org.apache.aries.application.modeller</project>
+    <project>org.apache.aries.blueprint.api</project>
+    <project>org.apache.aries.util</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

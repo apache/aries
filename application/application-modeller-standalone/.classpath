@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/*.java" kind="src" path="target/maven-shared-archive-resources"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/aries/blueprint/blueprint-parser/0.3.2-SNAPSHOT/blueprint-parser-0.3.2-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/junit/junit/4.8.1/junit-4.8.1.jar"/>
+	<classpathentry kind="src" path="/org.apache.aries.application.api"/>
+	<classpathentry kind="src" path="/org.apache.aries.application.modeller"/>
+	<classpathentry kind="src" path="/org.apache.aries.blueprint.api"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/blueprint-parser"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

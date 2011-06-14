@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: test.bundle
+Bundle-Name: bundle1
+Import-Package: javax.jms;version="1.1.0",
+ javax.transaction;version="[1.1.0,2.0.0)",
+ third
+Export-Package: wibble;version="1.0.0";directive:=true
+

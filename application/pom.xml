@@ -34,27 +34,28 @@
     </description>
 
     <modules>
-        <module>application-api</module>
-        <module>application-utils</module>
-        <module>application-bundle</module>
-        <module>application-converters</module>
+      <module>application-api</module>
+      <module>application-utils</module>
+      <module>application-bundle</module>
+      <module>application-converters</module>
 	    <module>application-default-local-platform</module>
-        <module>application-deployment-management</module>
-        <module>application-install</module>
-        <module>application-itest-interface</module>
-        <module>application-itests</module>
-        <module>application-management</module>
-        <module>application-modeller</module>
-        <module>application-noop-resolver</module>
-        <module>application-obr-resolver</module>
-        <module>application-runtime</module>
+      <module>application-deployment-management</module>
+      <module>application-install</module>
+      <module>application-itest-interface</module>
+      <module>application-itests</module>
+      <module>application-management</module>
+      <module>application-modeller</module>
+      <module>application-modeller-standalone</module>
+      <module>application-noop-resolver</module>
+      <module>application-obr-resolver</module>
+      <module>application-runtime</module>
 	    <module>application-runtime-isolated</module>
 	    <module>application-runtime-framework</module>
 	    <module>application-runtime-framework-management</module>
 	    <module>application-tooling-repository-generator</module>
-       <module>application-runtime-repository</module>
-       <module>application-distro</module>
-       <module>application-isolated-distro</module>
+      <module>application-runtime-repository</module>
+      <module>application-distro</module>
+      <module>application-isolated-distro</module>
     </modules>
 
 </project>
