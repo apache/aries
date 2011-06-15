@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +41,7 @@ import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.WrappedReferenceMetadata;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
+import org.apache.aries.application.modelling.standalone.OfflineModellingFactory;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.ParserServiceImpl;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
@@ -47,41 +49,63 @@ import org.apache.aries.blueprint.services.ParserService;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.osgi.framework.BundleContext;
 
-public class ParserProxyImplTest {
+@RunWith(Parameterized.class)
+public class ParserProxyTest {
 
-  static ParserProxy _parserProxy;
-  static ModellingManager _modellingManager;
-  
-  @BeforeClass
-  public static void setup() { 
-    BundleContext mockCtx = Skeleton.newMock(new BundleContextMock(), BundleContext.class);
-    NamespaceHandlerRegistry nhri = new NamespaceHandlerRegistryImpl (mockCtx);
-    ParserService parserService = new ParserServiceImpl(nhri);
-    mockCtx.registerService(ParserService.class.getName(), parserService, new Hashtable<String, String>());
-    _parserProxy = new ParserProxyImpl();
-    ((ParserProxyImpl)_parserProxy).setParserService(parserService);
-    ((ParserProxyImpl)_parserProxy).setBundleContext(mockCtx);
-    _modellingManager = new ModellingManagerImpl();
-    ((ParserProxyImpl)_parserProxy).setModellingManager(_modellingManager);
+  @Parameters
+  public static List<Object[]> parserProxies() {
+    return Arrays.asList(new Object[][] {
+            {getMockParserServiceProxy()}, 
+            {OfflineModellingFactory.getOfflineParserProxy()}});
   }
   
-  
+  public static ParserProxy getMockParserServiceProxy() {
+      BundleContext mockCtx = Skeleton.newMock(new BundleContextMock(), BundleContext.class);
+      NamespaceHandlerRegistry nhri = new NamespaceHandlerRegistryImpl (mockCtx);
+
+      ParserService parserService = new ParserServiceImpl(nhri);
+      mockCtx.registerService(ParserService.class.getName(), parserService, new Hashtable<String, String>());
+      
+      ParserProxyImpl parserProxyService = new ParserProxyImpl();
+      parserProxyService.setParserService(parserService);
+      parserProxyService.setBundleContext(mockCtx);
+      parserProxyService.setModellingManager(new ModellingManagerImpl());
+      
+      return parserProxyService;
+  }
   
   @AfterClass
   public static void teardown() { 
     BundleContextMock.clear();
   }
   
+  private final ModellingManager _modellingManager;
+  private final ParserProxy _parserProxy;
+  private final File resourceDir;
+  
+  public ParserProxyTest(ParserProxy sut) throws IOException {
+	  _parserProxy = sut;
+	  _modellingManager = new ModellingManagerImpl();
+	  
+	  // make sure paths work in Eclipse as well as Maven
+	  if (new File(".").getCanonicalFile().getName().equals("target")) {
+	      resourceDir = new File("../src/test/resources");
+	  } else {
+	      resourceDir = new File("src/test/resources");
+	  }
+  }
   
   
   @Test
   public void basicTest1() throws Exception { 
-    File bpXml = new File ("../src/test/resources", "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp.xml");
-    File bp2Xml = new File ("../src/test/resources", "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp2.xml");
+    File bpXml = new File (resourceDir, "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp.xml");
+    File bp2Xml = new File (resourceDir, "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp2.xml");
     List<URL> urls = new ArrayList<URL>();
     urls.add ((bpXml.toURI()).toURL());
     urls.add ((bp2Xml.toURI()).toURL());
@@ -97,8 +121,8 @@ public class ParserProxyImplTest {
   
   @Test
   public void testParseAllServiceElements() throws Exception { 
-    File bpXml = new File ("../src/test/resources", "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp.xml");
-    File bp2Xml = new File ("../src/test/resources", "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp2.xml");
+    File bpXml = new File (resourceDir, "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp.xml");
+    File bp2Xml = new File (resourceDir, "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp2.xml");
     
     List<WrappedServiceMetadata> services = new ArrayList<WrappedServiceMetadata>();
     List<WrappedReferenceMetadata> references = new ArrayList<WrappedReferenceMetadata>();
@@ -147,7 +171,7 @@ public class ParserProxyImplTest {
   
   @Test
   public void checkMultiValues() throws Exception { 
-    File bpXml = new File ("../src/test/resources", "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bpMultiValues.xml");
+    File bpXml = new File (resourceDir, "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bpMultiValues.xml");
     List<WrappedServiceMetadata> services = new ArrayList<WrappedServiceMetadata>();
     FileInputStream fis = new FileInputStream (bpXml);
     ParsedServiceElements bpelem = _parserProxy.parseAllServiceElements(fis); 

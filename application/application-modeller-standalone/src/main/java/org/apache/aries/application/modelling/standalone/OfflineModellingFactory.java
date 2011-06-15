@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.xml.validation.Schema;
 
 import org.apache.aries.application.modelling.ModelledResourceManager;
+import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.impl.AbstractParserProxy;
 import org.apache.aries.application.modelling.impl.ModelledResourceManagerImpl;
 import org.apache.aries.application.modelling.impl.ModellingManagerImpl;
@@ -69,24 +70,33 @@ public class OfflineModellingFactory {
 	
 	
 	private static class OfflineParserProxy extends AbstractParserProxy {
-		private final Parser parser = new Parser();
-		
 		protected ComponentDefinitionRegistry parseCDR(List<URL> blueprintsToParse) throws Exception {
+			Parser parser = new Parser();
 			parser.parse(blueprintsToParse);
-			return getCDR();
+			return getCDR(parser);
 		}
 			
 		protected ComponentDefinitionRegistry parseCDR(InputStream blueprintToParse) throws Exception {
+			Parser parser = new Parser();
 			parser.parse(blueprintToParse);
-			return getCDR();
+			return getCDR(parser);
 		}
 		
-		private ComponentDefinitionRegistry getCDR() {
+		private ComponentDefinitionRegistry getCDR(Parser parser) {
 			ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
 			parser.populate(DUMMY_HANDLER_SET, cdr);
 			return cdr;			
 		}
 	};
+	
+	public static ParserProxy getOfflineParserProxy() {
+		ModellingManagerImpl modellingManager = new ModellingManagerImpl();
+		
+		OfflineParserProxy parserProxy = new OfflineParserProxy();
+		parserProxy.setModellingManager(modellingManager);
+		
+		return parserProxy;
+	}
 	
 	public static ModelledResourceManager getModelledResourceManager() {
 		ModellingManagerImpl modellingManager = new ModellingManagerImpl();
