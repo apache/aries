@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Application-ManifestVersion: 1.0
+Application-Name: test1.eba
+Application-SymbolicName: com.ibm.ws.eba.admin.application.modeller.test1.eba
+Application-Version: 1.0
+Application-Content: com.ibm.ws.eba.admin.application.modeller.bundle1;version=1.0.0
+Application-ImportService: foo.bar.MyInjectedService;filter="(security.authority=intranet)", 
+  com.ibm.infrastructure.Manager;filter="(hands.off=true)"  
+Application-ExportService: foo.bar.MyService;filter="(volume=11)",
+  com.acme.Delivery;filter="(&(customer=pig)(target=rabbit))" 
