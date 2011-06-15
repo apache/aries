@@ -1,20 +1,54 @@
-package org.apache.aries.modeller;
+package org.apache.aries.application.modelling;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
+import org.apache.aries.application.modelling.impl.ModelledResourceManagerImpl;
+import org.apache.aries.application.modelling.impl.ModellingManagerImpl;
+import org.apache.aries.application.modelling.impl.ParserProxyTest;
 import org.apache.aries.application.modelling.standalone.OfflineModellingFactory;
+import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.util.filesystem.FileSystem;
+import org.junit.AfterClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import static org.junit.Assert.*;
 
+@RunWith(Parameterized.class)
 public class ModellerTest {
-	ModelledResourceManager sut = OfflineModellingFactory.getModelledResourceManager();
+    
+    @Parameters
+    public static List<Object[]> getDifferentModelledResourceManagers() {
+        ModelledResourceManagerImpl manager = new ModelledResourceManagerImpl();
+        manager.setModellingManager(new ModellingManagerImpl());
+        manager.setParserProxy(ParserProxyTest.getMockParserServiceProxy());
+        
+        return Arrays.asList(new Object[][] {
+                {OfflineModellingFactory.getModelledResourceManager()},
+                {manager}
+        });
+    }
+    
+    @AfterClass
+    public static void cleanup() {
+        BundleContextMock.clear();
+    }
+    
+	private final ModelledResourceManager sut;
+	
+	public ModellerTest(ModelledResourceManager sut) {
+	    this.sut = sut;
+	}
 	
 	@Test
 	public void testParsingOfBundle() throws Exception {

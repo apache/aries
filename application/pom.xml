@@ -46,6 +46,7 @@
       <module>application-management</module>
       <module>application-modeller</module>
       <module>application-modeller-standalone</module>
+      <module>application-modeller-common-test</module>
       <module>application-noop-resolver</module>
       <module>application-obr-resolver</module>
       <module>application-runtime</module>
