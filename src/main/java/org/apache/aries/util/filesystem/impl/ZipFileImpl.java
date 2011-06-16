@@ -237,7 +237,7 @@ public class ZipFileImpl implements IFile
   @Override
   public String toString()
   {
-	  if (name != null && !!!name.isEmpty()) return url.substring(5)+ "/" + name;
+	  if (name != null && name.length() != 0) return url.substring(5)+ "/" + name;
 	  else return url.substring(5);
   }
   

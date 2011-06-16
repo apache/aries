@@ -18,17 +18,14 @@
  */
 package org.apache.aries.util.nls;
 
-import java.io.IOException;
-import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.text.MessageFormat;
-import java.util.ListResourceBundle;
 import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -41,7 +38,7 @@ import org.osgi.framework.FrameworkUtil;
 public final class MessageUtil
 {
   /** The resource bundle used to translate messages */
-  private ResourceBundle messages;
+  private final ResourceBundle messages;
   private static final StackFinder finder;
 
   /** 
@@ -146,63 +143,8 @@ public final class MessageUtil
       // if the bundle is null we are probably outside of OSGi, so just use non-OSGi resolve rules.
       rb = ResourceBundle.getBundle(baseName);
     } else {
-      rb = ResourceBundle.getBundle(baseName, new ResourceBundle.Control() {
-  
-        @Override
-        public ResourceBundle newBundle(String baseName, Locale locale, String format,
-            ClassLoader loader, boolean reload) throws IllegalAccessException,
-            InstantiationException, IOException
-        {
-          ResourceBundle result;
-  
-          final String bundleName = toBundleName(baseName, locale);
-  
-          if (FORMAT_PROPERTIES.contains(format)) {
-            final String resourceName = toResourceName(bundleName, "properties");
-            
-            URL url = AccessController.doPrivileged(new PrivilegedAction<URL>() {
-              public URL run()
-              {
-                URL url = b.getResource(resourceName);
-                
-                if (url == null) {
-                  url = b.getEntry(resourceName);
-                }
-                return url;
-              }
-            });
-            
-            if (url != null) {
-              result = new PropertyResourceBundle(url.openStream());
-            } else {
-              result = null;
-            }
-          } else if (FORMAT_CLASS.contains(format)) {
-            @SuppressWarnings("unchecked")
-            Class<? extends ListResourceBundle> clazz = AccessController.doPrivileged(new PrivilegedAction<Class<? extends ListResourceBundle>>() {
-              public Class<? extends ListResourceBundle> run()
-              {
-                try {
-                  return b.loadClass(bundleName);
-                } catch (ClassNotFoundException e) {
-                  return null;
-                }
-              }
-            });
-            
-            if (clazz != null) {
-              result = clazz.newInstance();
-            } else {
-              result = null;
-            }
-          } else {
-            throw new IllegalArgumentException(org.apache.aries.util.internal.MessageUtil.getMessage("UTIL0013E", format));
-          }
-  
-          return result;
-        }
-    
-      });
+      // if the bundle is OSGi use OSGi resolve rules as best as Java5 allows
+      rb = ResourceBundle.getBundle(baseName, Locale.getDefault(), AriesFrameworkUtil.getClassLoader(b));
     }
     
     return new MessageUtil(rb);

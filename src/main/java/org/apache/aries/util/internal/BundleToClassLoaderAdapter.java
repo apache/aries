@@ -88,7 +88,10 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
 
       if (cause instanceof IOException) throw (IOException)cause;
       if (cause instanceof RuntimeException) throw (RuntimeException)cause;
-      throw new IOException(name, cause);
+
+      IOException ioe = new IOException(name);
+      ioe.initCause(cause);
+      throw ioe;
     }
 
     if (urls == null) {
