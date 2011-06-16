@@ -25,12 +25,12 @@ import java.util.regex.Pattern;
 public final class BundleWideTxData
 {
   private String value;
-  private List<Pattern> methodList = new ArrayList<Pattern>();
-  private List<Pattern> beanList = new ArrayList<Pattern>();
+  private final List<Pattern> methodList = new ArrayList<Pattern>();
+  private final List<Pattern> beanList = new ArrayList<Pattern>();
   
   public BundleWideTxData(String value,
           String method, String bean) {
-      if(value == null || value.isEmpty())
+      if(value == null || value.length() == 0)
         this.value = "Required";
       else
         this.value = value;
@@ -39,10 +39,10 @@ public final class BundleWideTxData
  
   private void setupPatterns(String method, String bean) {
 	  // when bean or method is not specified, the value is same as "*".
-	  if (method == null || method.isEmpty()) {
+	  if (method == null || method.length() == 0) {
 		  method = "*";
 	  }
-	  if (bean == null || bean.isEmpty()) {
+	  if (bean == null || bean.length() == 0) {
 		  bean = "*";
 	  }
 	  

@@ -185,10 +185,10 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
           dataForCDR.get(registry).add(component);
       }
       
-      if (method == null || method.isEmpty()) {
+      if (method == null || method.length() == 0) {
     	  method = "*";
       }
-      if(value == null || value.isEmpty()) {
+      if(value == null || value.length() == 0) {
         value = "Required";
       }
       
