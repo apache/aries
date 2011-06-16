@@ -46,13 +46,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <dependencies>
-                  <dependency>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>animal-sniffer-enforcer-rule</artifactId>
-                    <version>1.6</version>
-                  </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <phase>validate</phase>
