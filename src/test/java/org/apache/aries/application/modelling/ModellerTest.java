@@ -67,9 +67,14 @@ public class ModellerTest {
 		assertEquals(1, resource.getExportedPackages().size());
 		assertEquals(3, resource.getImportedPackages().size());
 		
-		ImportedPackage pack = resource.getImportedPackages().iterator().next();
-		assertEquals("javax.jms", pack.getPackageName());
-		assertEquals("1.1.0", pack.getVersionRange());
+		boolean foundFirstPackage = false;
+		
+		for (ImportedPackage pack : resource.getImportedPackages()) {
+		    if ("javax.jms".equals(pack.getPackageName()) && "1.1.0".equals(pack.getVersionRange()))
+		        foundFirstPackage = true;
+		}
+		
+		assertTrue(foundFirstPackage);
 		
 		ExportedPackage epack = resource.getExportedPackages().iterator().next();
 		assertEquals("wibble", epack.getPackageName());
