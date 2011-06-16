@@ -63,12 +63,6 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <version>0.1-SNAPSHOT</version>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.osgi</groupId>
-            		<artifactId>org.osgi.core</artifactId>
-            	</exclusion>
-            </exclusions>
         </dependency>
        <dependency>
             <groupId>org.eclipse.equinox</groupId>
@@ -120,6 +114,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
