@@ -63,7 +63,9 @@ public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory
     try {
       return new DeploymentMetadataImpl(manifest);
     } catch (InvalidAttributeException iae) {
-      throw new IOException(iae);
+      IOException e = new IOException();
+      e.initCause(iae);
+      throw e;
     }
   }
 
