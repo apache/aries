@@ -39,48 +39,18 @@
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <scope>test</scope>
             <version>0.1-SNAPSHOT</version>
-
-            <exclusions>
-
-                <exclusion>
-
-                    <groupId>org.osgi</groupId>
-
-                    <artifactId>org.osgi.core</artifactId>
-
-                </exclusion>
-
-            </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
             <scope>test</scope>
             <version>0.1-SNAPSHOT</version>
-
         </dependency>
 
         <dependency>
-
             <groupId>org.apache.aries.subsystem</groupId>
-
             <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
-
             <version>0.1-SNAPSHOT</version>
-
-            <exclusions>
-
-                <exclusion>
-
-                    <groupId>org.osgi</groupId>
-
-                    <artifactId>org.osgi.core</artifactId>
-
-                </exclusion>
-
-            </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
@@ -91,18 +61,6 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.executor</artifactId>
             <version>0.1-SNAPSHOT</version>
-            <exclusions>
-
-                <exclusion>
-
-                    <groupId>org.osgi</groupId>
-
-                    <artifactId>org.osgi.core</artifactId>
-
-                </exclusion>
-
-            </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
@@ -176,19 +134,12 @@
             <artifactId>org.apache.felix.configadmin</artifactId>
             <scope>test</scope>
             <version>1.2.8</version>
-
             <exclusions>
-
                 <exclusion>
-
                     <groupId>org.osgi</groupId>
-
                     <artifactId>org.osgi.core</artifactId>
-
                 </exclusion>
-
             </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
@@ -267,18 +218,6 @@
             <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
             <version>0.1-SNAPSHOT</version>
             <scope>test</scope>
-            <exclusions>
-
-                <exclusion>
-
-                    <groupId>org.osgi</groupId>
-
-                    <artifactId>org.osgi.core</artifactId>
-
-                </exclusion>
-
-            </exclusions>
-
         </dependency>
     </dependencies>
 
