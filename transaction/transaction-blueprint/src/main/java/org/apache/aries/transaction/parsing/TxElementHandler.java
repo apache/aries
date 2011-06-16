@@ -56,7 +56,7 @@ public class TxElementHandler implements NamespaceHandler {
     private TxComponentMetaDataHelper metaDataHelper;
     private Interceptor interceptor = null;
 
-    private ConcurrentMap<ComponentDefinitionRegistry,Bundle> registered = new ConcurrentHashMap<ComponentDefinitionRegistry, Bundle>();
+    private final ConcurrentMap<ComponentDefinitionRegistry,Bundle> registered = new ConcurrentHashMap<ComponentDefinitionRegistry, Bundle>();
 
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
     {
@@ -181,7 +181,7 @@ public class TxElementHandler implements NamespaceHandler {
     private void registerComponentsWithInterceptor(ComponentDefinitionRegistry cdr, String bean) {        
         Set<String> ids = cdr.getComponentDefinitionNames();
 
-        if (bean == null || bean.isEmpty()) {
+        if (bean == null || bean.length() == 0) {
             // in this case, let's attempt to register all components
             // if the component has already been registered with this interceptor,
             // the registration will be ignored.

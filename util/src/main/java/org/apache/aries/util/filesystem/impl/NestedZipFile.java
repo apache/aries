@@ -168,7 +168,7 @@ public class NestedZipFile implements IFile {
 	@Override
 	public URL toURL() throws MalformedURLException
 	{
-		if (nameInZip.isEmpty()) return archive.toURL();
+		if (nameInZip.length() == 0) return archive.toURL();
 		else {
 			String entryURL = "jar:" + archive.toURL() + "!/" + nameInZip;
 			return new URL(entryURL);
@@ -197,7 +197,7 @@ public class NestedZipFile implements IFile {
 	@Override
 	public String toString()
 	{
-		if (nameInZip.isEmpty()) return archive.toString();
+		if (nameInZip.length() == 0) return archive.toString();
 		return archive.toString() + "/" + nameInZip;
 	}
 
