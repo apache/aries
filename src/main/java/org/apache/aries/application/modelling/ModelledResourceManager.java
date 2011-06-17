@@ -18,18 +18,66 @@
  */
 package org.apache.aries.application.modelling;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.aries.util.filesystem.IDirectory;
 
 public interface ModelledResourceManager
 {
   /**
-   * Obtain a ModelledResource object
-   * @param uri the file uri
+   * Utility interface for re-presenting a source of InputStreams
+   */
+  interface InputStreamProvider {
+    /** 
+     * Return a fresh input stream
+     */
+    InputStream open() throws IOException;
+  }
+    
+  /**
+   * Obtain a ModelledResource object.
+   * @param uri The URI to the conceptual location of the bundle, that will be returned from the getLocation method
+   * on {@link ModelledResource}
    * @param bundle the bundle file
    * @return the modelled resource.
-   */
+   */    
   ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException;
+  
+  /**
+   * Obtain a ModelledResource object. 
+   * 
+   * This method is equivalent to calling <pre>getModelledResource(bundle.toURL().toURI().toString(), bundle)</pre>
+   * @param bundle the bundle file
+   * @return the modelled resource.
+   */    
+  ModelledResource getModelledResource(IDirectory bundle) throws ModellerException;
+  
+  /**
+   * Obtain a ModelledResource via InputStreams
+   * 
+   * 
+   * @param uri The URI to the conceptual location of the bundle, that will be returned from the getLocation method
+   * on {@link ModelledResource}
+   * @param bundle The bundle
+   * @return
+   * @throws ModellerException
+   */
+  ModelledResource getModelledResource(String uri, InputStreamProvider bundle) throws ModellerException;
 
+  /**
+   * Parse service and reference elements of a bundle
+   * @param archive
+   * @return
+   * @throws ModellerException
+   */
   ParsedServiceElements getServiceElements (IDirectory archive) throws ModellerException; 
 
+  /**
+   * Parse service and reference elements of a bundle
+   * @param archive
+   * @return
+   * @throws ModellerException
+   */
+  ParsedServiceElements getServiceElements (InputStreamProvider archive) throws ModellerException;   
 }
