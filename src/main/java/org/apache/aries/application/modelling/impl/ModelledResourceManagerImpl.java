@@ -24,6 +24,7 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.aries.application.InvalidAttributeException;
 import org.apache.aries.application.modelling.ExportedService;
@@ -46,6 +49,7 @@ import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
 import org.apache.aries.application.modelling.internal.MessageUtil;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
+import org.apache.aries.util.filesystem.IOUtils;
 import org.apache.aries.util.manifest.BundleManifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +68,8 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   public void setParserProxy (ParserProxy p) { 
     _parserProxy = p;
   }
-  public ParserProxy getParserProxy()
-  {
+  
+  public ParserProxy getParserProxy() {
     return _parserProxy;
   }
 
@@ -82,16 +86,35 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
    */
   @Override
   public ParsedServiceElements getServiceElements (IDirectory archive) throws ModellerException { 
-
-    _logger.debug(LOG_ENTRY,"getServiceElements", archive );
+      BundleManifest bm = BundleManifest.fromBundle(archive);
+      return getServiceElements(bm, archive);
+  }
+  
+  @Override
+  public ParsedServiceElements getServiceElements(InputStreamProvider archive) throws ModellerException {
+      try {
+          BundleManifest bm = BundleManifest.fromBundle(archive.open());
+          return getServiceElements(bm, findBlueprints(bm, archive.open()));
+      } catch (IOException e) {
+          throw new ModellerException(e);
+      }
+  }
+  
+  private ParsedServiceElements getServiceElements (BundleManifest bundleMf, IDirectory archive) throws ModellerException { 
+      try {
+        return getServiceElements(bundleMf, findBlueprints(bundleMf, archive));
+    } catch (IOException e) {
+        throw new ModellerException(e);
+    }
+  }
+  
+  private ParsedServiceElements getServiceElements (BundleManifest bundleMf, Iterable<InputStream> blueprints) throws ModellerException { 
+    _logger.debug(LOG_ENTRY,"getServiceElements", new Object[] {bundleMf, blueprints} );
 
     Set<ExportedService> services = new HashSet<ExportedService>();
     Set<ImportedService> references = new HashSet<ImportedService>();
     try { 
-      Collection<IFile> blueprints = findBlueprints(archive);
-      InputStream is = null;
-      for (IFile bpFile : blueprints) {
-    	is = bpFile.open();
+      for (InputStream is : blueprints) {
         try {
           ParsedServiceElements pse = getParserProxy().parseAllServiceElements(is);
           services.addAll(pse.getServices());
@@ -103,14 +126,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
           }
         }
       }
-    } catch (URISyntaxException e) {
-      ModellerException m = new ModellerException(e);
-      _logger.debug(LOG_EXIT, "getServiceElements", m);
-      throw m;
-    } catch (IOException e) {
-      ModellerException m = new ModellerException(e);
-      _logger.debug(LOG_EXIT, "getServiceElements", m);
-      throw m;
     } catch (Exception e) {
       ModellerException m = new ModellerException(e);
       _logger.debug(LOG_EXIT, "getServiceElements", m);
@@ -122,25 +137,36 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   }
 
   @Override
+  public ModelledResource getModelledResource(IDirectory bundle) throws ModellerException {
+      try {
+          return getModelledResource(bundle.toURL().toURI().toString(), bundle);
+      } catch (MalformedURLException mue) {
+          throw new ModellerException(mue);
+      } catch (URISyntaxException use) {
+          throw new ModellerException(use);
+      }
+  }
+
+  @Override
+  public ModelledResource getModelledResource(String uri, InputStreamProvider bundle) throws ModellerException {
+      try {
+          BundleManifest bm = BundleManifest.fromBundle(bundle.open());
+          ParsedServiceElements pse = getServiceElements(bm, findBlueprints(bm, bundle.open()));
+          return model(uri, bm, pse);
+      } catch (IOException e) {
+          throw new ModellerException(e);
+      }
+  }
+  
+  @Override
   public ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException{
     _logger.debug(LOG_ENTRY, "getModelledResource", new Object[]{uri, bundle});
 
     if (bundle != null) {
-        ParsedServiceElements pse = getServiceElements(bundle);
-        BundleManifest bm = BundleManifest.fromBundle(bundle);//new File(bundleFile));
-        Attributes attributes = bm.getRawAttributes();
-        ModelledResource mbi = null;
-        try {
-          mbi = _modellingManager.getModelledResource(uri, attributes, pse.getReferences(), pse.getServices());
-        } catch (InvalidAttributeException iae) {
-          ModellerException me = new ModellerException(iae);
-          _logger.debug(LOG_EXIT, "getModelledResource", me);
-          throw me;
-        }
-        _logger.debug(LOG_EXIT, "getModelledResource", mbi);
-        return mbi;
-    }
-    else {
+        BundleManifest bm = BundleManifest.fromBundle(bundle);
+        ParsedServiceElements pse = getServiceElements(bm, bundle);
+        return model(uri, bm, pse);
+    } else {
       // The bundle does not exist
       ModellerException me = new ModellerException(MessageUtil.getMessage("INVALID_BUNDLE_LOCATION", bundle));
       _logger.debug(LOG_EXIT, "getModelledResource", me);
@@ -148,69 +174,145 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
     }
 
   }
+  
+  private ModelledResource model(String uri, BundleManifest bm, ParsedServiceElements pse) throws ModellerException {
+      Attributes attributes = bm.getRawAttributes();
+      ModelledResource mbi = null;
+      try {
+        mbi = _modellingManager.getModelledResource(uri, attributes, pse.getReferences(), pse.getServices());
+      } catch (InvalidAttributeException iae) {
+        ModellerException me = new ModellerException(iae);
+        _logger.debug(LOG_EXIT, "getModelledResource", me);
+        throw me;
+      }
+      _logger.debug(LOG_EXIT, "getModelledResource", mbi);
+      return mbi;      
+  }
 
   /**
    * Helper method to pass a single bundle into findBlueprints 
+   * @param bundleMf The bundle manifest 
    * @param oneBundle a single bundle
    * @return Files for all the blueprint files within the bundle
    * @throws URISyntaxException
    * @throws IOException
-   * @throws OpenFailureException
    */
-  private Collection<IFile> findBlueprints (IDirectory oneBundle) 
-  throws  IOException, URISyntaxException
+  private Iterable<InputStream> findBlueprints(BundleManifest bundleMf, IDirectory bundle) throws IOException
   {
-    _logger.debug(LOG_ENTRY, "findBlueprints", oneBundle);
-    Set<IDirectory> archiveSet = new HashSet<IDirectory>();
-    archiveSet.add(oneBundle);
-    Collection<IFile> result = findBlueprints (archiveSet);
+    _logger.debug(LOG_ENTRY, "findBlueprints", bundle);
+
+    Collection<IFile> blueprints = new ArrayList<IFile>();
+    BundleBlueprintParser bpParser = new BundleBlueprintParser(bundleMf);
+    List<IFile> files = bundle.listAllFiles();
+    Iterator<IFile> it = files.iterator();
+    while (it.hasNext()) {
+        IFile file = it.next();         
+        String directoryFullPath = file.getName(); 
+        String directoryName = "";
+        String fileName = "";
+        if (directoryFullPath.lastIndexOf("/") != -1) {
+            directoryName = directoryFullPath.substring(0, directoryFullPath.lastIndexOf("/"));
+            fileName = directoryFullPath.substring(directoryFullPath.lastIndexOf("/") + 1);
+        } else {
+            if (file.isFile()) {
+                directoryName="";
+                fileName = directoryFullPath;
+            } 
+
+        }
+        if (bpParser.isBPFile(directoryName, fileName)) {
+            blueprints.add(file);
+        }
+    }
+    
+    Collection<InputStream> result = new ArrayList<InputStream>();
+    try {
+        for (IFile bp : blueprints) result.add(bp.open());
+    } catch (IOException e) {
+        // if something went wrong, make sure we still clean up
+        for (InputStream is : result) IOUtils.close(is);
+        
+        throw e;
+    }
+    
     _logger.debug(LOG_EXIT, "findBlueprints", result);
     return result;
   }
 
-  /**
-   * Locate all blueprint xml files located within a set of bundles. Typically, call findApplicationBundles()
-   * first to determine which bundles within an EBA fall within the range of the Application-Content header. 
-   * (See the comment on that method). 
-   * @param applicationBundles
-   * @return A Collection of blue print files
-   * @throws URISyntaxException
-   * @throws IOException
-   * @throws OpenFailureException
-   */
-  private Collection<IFile> findBlueprints(Collection<IDirectory> applicationBundles)
-  throws IOException, URISyntaxException
-  {
-    _logger.debug(LOG_ENTRY, "findBlueprints", applicationBundles);
-    Collection<IFile> blueprints = new ArrayList<IFile>();
-    for (IDirectory appBundle : applicationBundles) {
-      if (appBundle != null) {
-        BundleManifest bundleMf = BundleManifest.fromBundle(appBundle);
-        BundleBlueprintParser bpParser = new BundleBlueprintParser(bundleMf);
-        List<IFile> files = appBundle.listAllFiles();
-        Iterator<IFile> it = files.iterator();
-        while (it.hasNext()) {
-          IFile file = it.next();         
-          String directoryFullPath = file.getName(); 
-          String directoryName = "";
-          String fileName = "";
-          if (directoryFullPath.lastIndexOf("/") != -1) {
-            directoryName = directoryFullPath.substring(0, directoryFullPath.lastIndexOf("/"));
-            fileName = directoryFullPath.substring(directoryFullPath.lastIndexOf("/") + 1);
-          } else {
-            if (file.isFile()) {
-              directoryName="";
-              fileName = directoryFullPath;
-            } 
-
-          }
-          if (bpParser.isBPFile(directoryName, fileName)) {
-            blueprints.add(file);
-          }
-        }
+  private class ZipBlueprintIterator implements Iterator<InputStream> {
+      private final ZipInputStream zip;
+      private final BundleBlueprintParser bpParser;
+      private boolean valid;
+      
+      public ZipBlueprintIterator(ZipInputStream zip, BundleBlueprintParser bpParser) {
+          this.zip = zip;
+          this.bpParser = bpParser;
       }
-    }
-    _logger.debug(LOG_EXIT, "findBlueprints", blueprints);
-    return blueprints;
+
+      @Override
+      public boolean hasNext() {
+          valid = false;
+          ZipEntry entry;
+          
+          try {
+              while (!valid && (entry = zip.getNextEntry()) != null) {
+                  if (!entry.isDirectory()) {
+                      String name = entry.getName();
+                      String directory = "";
+                      int index = name.lastIndexOf('/');
+                      if (index != -1) {
+                          directory = name.substring(0, index);
+                          name = name.substring(index+1);
+                      }
+                      
+                      if (bpParser.isBPFile(directory, name)) {
+                          valid = true;
+                      }
+                      
+                  }
+              }
+          } catch (IOException e) {
+              _logger.error("Could not open next zip entry", e);
+          }
+          
+          return valid;
+      }
+
+      @Override
+      public InputStream next() {
+          if (!valid) throw new IllegalStateException();
+          
+          return new InputStream() {
+            public int read() throws IOException {
+                return zip.read();
+            }
+              
+            @Override
+            public void close() {
+                // intercept close so that the zipinputstream stays open
+            }
+          };
+      }
+
+      @Override
+      public void remove() {
+          throw new UnsupportedOperationException();
+      }
+      
   }
+  
+  /**
+   * Internal use only. Different to the general Iterable interface this can return an Iterator only once.
+   */
+  private Iterable<InputStream> findBlueprints(BundleManifest bundleMf, InputStream stream) {
+      final BundleBlueprintParser bpParser = new BundleBlueprintParser(bundleMf);
+      final ZipInputStream zip = new ZipInputStream(stream);
+      
+      return new Iterable<InputStream>() {
+        public Iterator<InputStream> iterator() {
+            return new ZipBlueprintIterator(zip, bpParser);
+        }
+    };
+  }
+
 }
