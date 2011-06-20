@@ -66,7 +66,7 @@ import org.apache.aries.application.modelling.utils.ModellingHelper;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.manifest.ContentFactory;
 import org.apache.aries.util.filesystem.FileSystem;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
