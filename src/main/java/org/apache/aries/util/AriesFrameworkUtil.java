@@ -48,7 +48,7 @@ public final class AriesFrameworkUtil
    * their is no such classloader, or if it cannot obtain the classloader for the bundle.
    * 
    * @param b the bundle whose classloader is desired.
-   * @return  the classloader if found, or null.
+   * @return  the classloader if found, or null if for example the bundle is in INSTALLED or UNINSTALLED state
    */
   public static ClassLoader getClassLoader(Bundle b)
   {
