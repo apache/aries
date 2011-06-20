@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
@@ -36,6 +37,7 @@ import org.apache.aries.jpa.container.annotation.impl.AnnotationScannerFactory;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.apache.aries.jpa.container.weaving.impl.TransformerRegistry;
 import org.apache.aries.jpa.container.weaving.impl.TransformerRegistryFactory;
+import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -47,11 +49,12 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
   private final ParsedPersistenceUnit unit;
   
-  private final BundleDelegatingClassLoader cl;
-  
   private final ServiceReference providerRef;
   
   private ClassTransformer transformer;
+  
+  // initialize it lazily because we create a PersistenceUnitInfoImpl when the bundle is INSTALLED state
+  private final AtomicReference<ClassLoader> cl = new AtomicReference<ClassLoader>();
   
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
@@ -61,7 +64,6 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     bundle = b;
     unit = parsedData;
     this.providerRef = providerRef;
-    cl = new BundleDelegatingClassLoader(b);
   }
   
   public synchronized void addTransformer(ClassTransformer arg0) {
@@ -82,7 +84,12 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public ClassLoader getClassLoader() {
-    return cl;
+    if (cl.get() == null) {
+        // use forced because for even for a resolved bundle we could otherwise get null
+        cl.compareAndSet(null, AriesFrameworkUtil.getClassLoaderForced(bundle));
+    }
+    
+    return cl.get();
   }
 
   @SuppressWarnings("unchecked")
@@ -137,7 +144,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public ClassLoader getNewTempClassLoader() {
-    return new TempBundleDelegatingClassLoader(bundle, new BundleDelegatingClassLoader(providerRef.getBundle()));
+    ClassLoader cl = AriesFrameworkUtil.getClassLoader(providerRef.getBundle());
+    return new TempBundleDelegatingClassLoader(bundle, cl);
   }
 
   public DataSource getNonJtaDataSource() {

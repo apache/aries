@@ -18,10 +18,12 @@
  */
 package org.apache.aries.util;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * A fake class for testing
+ * A fake class for testing. We currently need this because the real AriesFrameworkUtil includes multiple
+ * layers of static initializers that blow up when not running in a proper OSGi framework.
  */
 public final class AriesFrameworkUtil 
 {
@@ -42,5 +44,16 @@ public final class AriesFrameworkUtil
         //This can be safely ignored
       }
     }
+  }
+  
+  public static ClassLoader getClassLoader(Bundle b) {
+      // dummy implementation
+      return null;
+  }
+  
+  public static ClassLoader getClassLoaderForced(Bundle b)
+  {
+      // dummy implementation
+      return null;
   }
 }
