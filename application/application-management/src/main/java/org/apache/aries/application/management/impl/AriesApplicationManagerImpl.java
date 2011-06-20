@@ -66,7 +66,7 @@ import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.BundleManifest;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.BundleContext;

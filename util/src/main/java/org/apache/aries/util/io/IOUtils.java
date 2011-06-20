@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.util.filesystem;
+package org.apache.aries.util.io;
 
 import java.io.Closeable;
 import java.io.File;
@@ -38,6 +38,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.internal.MessageUtil;
 
 public class IOUtils

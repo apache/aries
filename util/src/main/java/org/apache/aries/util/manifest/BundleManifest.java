@@ -29,8 +29,8 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.apache.aries.util.filesystem.IFile;
-import org.apache.aries.util.filesystem.IOUtils;
 import org.apache.aries.util.internal.MessageUtil;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.osgi.framework.Constants;

@@ -76,7 +76,7 @@ import org.apache.aries.unittest.utils.EbaUnitTestUtils;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.BundleManifest;
 import org.junit.Before;
 import org.junit.BeforeClass;
