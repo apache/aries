@@ -242,7 +242,9 @@ public class Framework implements FrameworkMBean {
         try {
             startLevel.setBundleStartLevel(bundle, newlevel);
         } catch (IllegalArgumentException e) {
-            throw new IOException("Setting the start level for bundle with id " + bundle.getBundleId() + " to level " + newlevel + " failed with message: " + e.getMessage(), e);
+            IOException ioex = new IOException("Setting the start level for bundle with id " + bundle.getBundleId() + " to level " + newlevel + " failed with message: " + e.getMessage());
+            ioex.initCause(e);
+            throw ioex;
         }
     }
 
