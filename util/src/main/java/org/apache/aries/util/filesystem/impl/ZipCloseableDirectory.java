@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 
 public class ZipCloseableDirectory extends CloseableDirectory {
 	private final ZipFile zip;

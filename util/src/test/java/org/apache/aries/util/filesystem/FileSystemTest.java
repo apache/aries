@@ -44,7 +44,7 @@ import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

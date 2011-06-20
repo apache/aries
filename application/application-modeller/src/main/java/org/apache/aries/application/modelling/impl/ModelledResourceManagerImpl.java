@@ -49,7 +49,7 @@ import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
 import org.apache.aries.application.modelling.internal.MessageUtil;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.BundleManifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

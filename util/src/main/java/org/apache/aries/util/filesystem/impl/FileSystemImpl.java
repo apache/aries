@@ -8,7 +8,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

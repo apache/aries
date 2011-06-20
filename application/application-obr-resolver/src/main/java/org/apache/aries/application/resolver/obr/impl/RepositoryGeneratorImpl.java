@@ -54,7 +54,7 @@ import org.apache.aries.application.resolver.obr.ext.BundleResourceTransformer;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.FileUtils;
 import org.apache.aries.util.filesystem.IDirectory;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Property;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
