@@ -33,7 +33,7 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 
 /**
  * This class contains utilities for parsing manifests. It provides methods to

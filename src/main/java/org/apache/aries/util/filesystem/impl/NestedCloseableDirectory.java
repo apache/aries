@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.zip.ZipFile;
 
 import org.apache.aries.util.filesystem.IFile;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 
 public class NestedCloseableDirectory extends CloseableDirectory {
 

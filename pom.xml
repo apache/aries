@@ -46,6 +46,7 @@
             org.apache.aries.util;
             org.apache.aries.util.tracker;
             org.apache.aries.util.nls;
+            org.apache.aries.util.io;
             org.apache.aries.util.service.registry;
             org.apache.aries.util.manifest;
             org.apache.aries.util.filesystem;

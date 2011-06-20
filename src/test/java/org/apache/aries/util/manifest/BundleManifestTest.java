@@ -29,7 +29,7 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.BundleManifest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
