@@ -20,7 +20,7 @@ import org.apache.aries.application.modelling.impl.ParserProxyTest;
 import org.apache.aries.application.modelling.standalone.OfflineModellingFactory;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.util.filesystem.FileSystem;
-import org.apache.aries.util.filesystem.IOUtils;
+import org.apache.aries.util.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
