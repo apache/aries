@@ -227,7 +227,7 @@ public class RecipeBuilder {
                 allowsFieldInjection(beanMetadata));
         // Create refs for explicit dependencies
         recipe.setExplicitDependencies(getDependencies(beanMetadata));
-        recipe.setPrototype(MetadataUtil.isPrototypeScope(beanMetadata));
+        recipe.setPrototype(MetadataUtil.isPrototypeScope(beanMetadata) || MetadataUtil.isCustomScope(beanMetadata));
         recipe.setInitMethod(beanMetadata.getInitMethod());
         recipe.setDestroyMethod(beanMetadata.getDestroyMethod());
         recipe.setInterceptorLookupKey(beanMetadata);
