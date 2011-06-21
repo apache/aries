@@ -54,7 +54,7 @@ public class FileImpl implements IFile
     rootDir = rootFile.getAbsolutePath();
     
     if (f.equals(rootFile)) name = "";
-    else name = file.getAbsolutePath().substring(rootDir.length() + 1);
+    else name = file.getAbsolutePath().substring(rootDir.length() + 1).replace('\\', '/');
   }
   
   @Override
