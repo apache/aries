@@ -31,7 +31,8 @@ import java.net.URL;
 public interface IFile
 {
   /**
-   * @return the name of the file relative to the root of the virtual FS.
+   * @return the name of the file relative to the root of the virtual FS. This will return a '/' separated path
+   * indepedent of underlying filesystem
    */
   public String getName();
   /**
