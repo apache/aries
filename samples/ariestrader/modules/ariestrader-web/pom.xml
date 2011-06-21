@@ -54,11 +54,6 @@
             <artifactId>geronimo-jsp_2.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>
