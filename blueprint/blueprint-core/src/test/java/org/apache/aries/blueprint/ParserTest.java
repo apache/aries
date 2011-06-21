@@ -20,7 +20,6 @@ package org.apache.aries.blueprint;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +34,6 @@ import org.w3c.dom.Node;
 
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
-import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -183,14 +181,49 @@ public class ParserTest extends AbstractBlueprintTest {
         BeanMetadata comp3 = (BeanMetadata) metadata;
         assertEquals("org.apache.aries.Cache", comp3.getClassName());         
     }
+    
+    public void testScopes() throws Exception {
+        ComponentDefinitionRegistry registry = parse("/test-scopes.xml", new TestNamespaceHandlerSet());
+
+        ComponentMetadata metadata = registry.getComponentDefinition("fooService");
+        assertNotNull(metadata);
+        assertTrue(metadata instanceof BeanMetadata);
+        BeanMetadata bm = (BeanMetadata) metadata;
+        assertNull(bm.getScope());
+        
+        metadata = registry.getComponentDefinition("barService");
+        assertNotNull(metadata);
+        assertTrue(metadata instanceof BeanMetadata);
+        bm = (BeanMetadata) metadata;
+        assertEquals("prototype", bm.getScope());
+        
+        metadata = registry.getComponentDefinition("bazService");
+        assertNotNull(metadata);
+        assertTrue(metadata instanceof BeanMetadata);
+        bm = (BeanMetadata) metadata;
+        assertEquals("singleton", bm.getScope());
+        
+        metadata = registry.getComponentDefinition("booService");
+        assertNotNull(metadata);
+        assertTrue(metadata instanceof BeanMetadata);
+        bm = (BeanMetadata) metadata;
+        assertEquals("{http://test.org}boo", bm.getScope());
+    }
 
     private static class TestNamespaceHandlerSet implements NamespaceHandlerSet {
+        private static final URI CACHE = URI.create("http://cache.org");
+
+        private static final URI TEST = URI.create("http://test.org");
 
         private TestNamespaceHandlerSet() {
         }
 
         public Set<URI> getNamespaces() {
-            return Collections.singleton(URI.create("http://cache.org"));
+            Set<URI> namespaces = new HashSet<URI>();
+            namespaces.add(CACHE);
+            namespaces.add(TEST);
+            
+            return namespaces;
         }
 
         public boolean isComplete() {
@@ -198,9 +231,10 @@ public class ParserTest extends AbstractBlueprintTest {
         }
 
         public NamespaceHandler getNamespaceHandler(URI namespace) {
-            URI u = URI.create("http://cache.org");
-            if (u.equals(namespace)) {
+            if (CACHE.equals(namespace)) {
                 return new TestNamespaceHandler();
+            } else if (TEST.equals(namespace)) {
+                return new ScopeNamespaceHandler();
             } else {
                 return null;
             }
@@ -217,6 +251,29 @@ public class ParserTest extends AbstractBlueprintTest {
         }
 
         public void destroy() {
+        }
+    }
+    
+    private static class ScopeNamespaceHandler implements NamespaceHandler {
+
+        public URL getSchemaLocation(String namespace) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public Set<Class> getManagedClasses() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public Metadata parse(Element element, ParserContext context) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public ComponentMetadata decorate(Node node,
+                ComponentMetadata component, ParserContext context) {
+            return component;
         }
     }
 
