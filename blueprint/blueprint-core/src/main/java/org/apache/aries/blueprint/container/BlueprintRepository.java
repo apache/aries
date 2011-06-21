@@ -300,8 +300,9 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     public void push(Recipe recipe) {
-        if (stack.get() != null && stack.get().contains(recipe)) {
-            ArrayList<Recipe> circularity = new ArrayList<Recipe>(stack.get().subList(stack.get().indexOf(recipe), stack.get().size()));
+        LinkedList<Recipe> list = stack.get();
+        if (list != null && list.contains(recipe)) {
+            ArrayList<Recipe> circularity = new ArrayList<Recipe>(list.subList(list.indexOf(recipe), list.size()));
 
             // remove anonymous nodes from circularity list
             for (Iterator<Recipe> iterator = circularity.iterator(); iterator.hasNext();) {
@@ -316,14 +317,16 @@ public class BlueprintRepository implements Repository, ExecutionContext {
 
             throw new CircularDependencyException(circularity);
         }
-        if (stack.get() == null) {
-            stack.set(new LinkedList<Recipe>());
+        if (list == null) {
+            list = new LinkedList<Recipe>();
+            stack.set(list);
         }
-        stack.get().add(recipe);
+        list.add(recipe);
     }
 
     public Recipe pop() {
-        return stack.get().removeLast();
+        LinkedList<Recipe> list = stack.get();
+        return list.removeLast();
     }
 
     public boolean containsObject(String name) {

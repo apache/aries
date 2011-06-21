@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -458,6 +459,37 @@ public class Parser {
     }
     
     /**
+     * Takes an Attribute Node for the scope, and returns the value.<br> 
+     *  
+     * @param attrNode The DOM Node with the attribute value.
+     * @return The scope as a stringified value. It should be either the value <code>prototype</code>,
+     * <code>singleton</code>, or a namespace qualified value, e.g. {http://foo}bar
+     * @throws ComponentDefinitionException if the namespace prefix in the attribute value cannot be resolved.
+     */
+    private String getScope(Node attrNode) throws ComponentDefinitionException {
+        String scope = null;
+        if(attrNode!=null && (attrNode instanceof Attr)){
+            Attr attr = (Attr)attrNode;
+            String attrValue = attr.getValue();
+            if(attrValue!=null && attrValue.indexOf(":")!=-1){
+                String[] parts = attrValue.split(":");
+                String prefix = parts[0];
+                String localName = parts[1];
+                String namespaceURI = attr.getOwnerElement().lookupNamespaceURI(prefix);
+                if(namespaceURI!=null){
+                    scope = new QName(namespaceURI, localName).toString();
+                }else{
+                    throw new ComponentDefinitionException("Unable to determine namespace binding for prefix, " + prefix);
+                }
+            }
+            else {
+                scope = attrValue;
+            }
+        }
+        return scope;
+    }
+    
+    /**
      * Tests if a scope attribute value is a custom scope, and if so invokes
      * the appropriate namespace handler, passing the blueprint scope node. 
      * <p> 
@@ -491,11 +523,11 @@ public class Parser {
         if (topElement) {
             metadata.setId(getId(element));
             if (element.hasAttribute(SCOPE_ATTRIBUTE)) {
-                metadata.setScope(element.getAttribute(SCOPE_ATTRIBUTE));
-                if (metadata.getScope().equals(BeanMetadata.SCOPE_PROTOTYPE)) {
+                metadata.setScope(getScope(element.getAttributeNode(SCOPE_ATTRIBUTE)));
+                if (!metadata.getScope().equals(BeanMetadata.SCOPE_SINGLETON)) {
                     if (element.hasAttribute(ACTIVATION_ATTRIBUTE)) {
                         if (element.getAttribute(ACTIVATION_ATTRIBUTE).equals(ACTIVATION_EAGER)) {
-                            throw new ComponentDefinitionException("A <bean> with a prototype scope can not have an eager activation");
+                            throw new ComponentDefinitionException("A <bean> with a prototype or custom scope can not have an eager activation");
                         }
                     }
                     metadata.setActivation(ComponentMetadata.ACTIVATION_LAZY);
