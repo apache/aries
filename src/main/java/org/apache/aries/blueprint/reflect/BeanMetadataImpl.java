@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanArgument;
@@ -45,7 +47,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private int initialization;
     private String factoryMethod;
     private Target factoryComponent;
-    private String scope;
+    private QName scope;
     private Class runtimeClass;
     private boolean processor;
     private boolean fieldInjection;
@@ -68,7 +70,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.initialization = source.getActivation();
         this.factoryMethod = source.getFactoryMethod();
         this.factoryComponent = MetadataUtil.cloneTarget(source.getFactoryComponent());
-        this.scope = source.getScope();
+        this.scope = source.getScope() != null ? QName.valueOf(source.getScope()) : null;
         this.dependsOn = new ArrayList<String>(source.getDependsOn());
         if (source instanceof ExtendedBeanMetadata) {
             this.runtimeClass = ((ExtendedBeanMetadata) source).getRuntimeClass();
@@ -181,11 +183,11 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     }
 
     public String getScope() {
-        return this.scope;
+        return this.scope != null ? this.scope.toString() : null;
     }
 
     public void setScope(String scope) {
-        this.scope = scope;
+        this.scope = scope != null ? QName.valueOf(scope) : null;
     }
 
     public Class getRuntimeClass() {

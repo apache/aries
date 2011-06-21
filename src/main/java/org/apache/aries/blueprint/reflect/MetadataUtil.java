@@ -200,6 +200,12 @@ public class MetadataUtil {
                 (metadata.getScope() == null && metadata.getId() != null));
     }
     
+    public static boolean isCustomScope(BeanMetadata metadata) {
+        return (metadata.getScope() != null &&
+                !BeanMetadata.SCOPE_PROTOTYPE.equals(metadata.getScope()) &&
+                !BeanMetadata.SCOPE_SINGLETON.equals(metadata.getScope()));
+    }
+    
     private static class BeanArgumentComparator implements Comparator<BeanArgument>, Serializable {
         public int compare(BeanArgument object1, BeanArgument object2) {
             return object1.getIndex() - object2.getIndex();
