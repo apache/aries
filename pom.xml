@@ -45,15 +45,7 @@
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <version>0.4-SNAPSHOT</version>
-            <scope>test</scope>
         </dependency>
-        <dependency>
-        	<groupId>org.osgi</groupId>
-        	<artifactId>org.osgi.core</artifactId>
-        	<version>4.2.0</version>
-        	<scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
@@ -74,7 +66,6 @@
           <groupId>org.apache.aries.application</groupId>
           <artifactId>org.apache.aries.application.utils</artifactId>
           <version>0.3.1-SNAPSHOT</version>
-          <scope>test</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.blueprint</groupId>
@@ -86,16 +77,28 @@
             <artifactId>blueprint-parser</artifactId>
             <version>0.4-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
+
+    <build>
+      <plugins>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+          </configuration>
+          <executions>
+            <execution>
+              <id>jar-with-dependencies</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>      
+      </plugins>
+    </build>
 
 </project>
