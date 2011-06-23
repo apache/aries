@@ -664,8 +664,6 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       IOUtils.copy(in, out);
       IOUtils.close(out);
       
-      System.out.println("XXX: "+temp.getAbsolutePath()+" - "+temp.exists());
-      
       result.add(modelledResourceManager.getModelledResource(null, FileSystem.getFSRoot(temp)));
       // delete the temp file
       temp.delete();
