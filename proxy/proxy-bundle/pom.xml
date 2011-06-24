@@ -51,6 +51,7 @@
             org.apache.aries.proxy.weaving;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
+            org.objectweb.asm*;version=3.2;resolution:=optional,
             org.eclipse.*;resolution:=optional,
             org.osgi.framework;version="[1.5,2)",
             org.osgi.framework.hooks.weaving;version="[1.0,1.1)";resolution:=optional,
