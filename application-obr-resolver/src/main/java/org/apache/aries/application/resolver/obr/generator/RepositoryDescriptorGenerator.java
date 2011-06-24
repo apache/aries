@@ -76,7 +76,7 @@ public final class RepositoryDescriptorGenerator
     
     requirement.setAttribute("extend", "false");
     requirement.setAttribute("multiple", "false");
-    requirement.setAttribute("optional", "false");
+    requirement.setAttribute("optional", getOptional(p));
     
     requirement.setAttribute("filter", ManifestHeaderProcessor.generateFilter("symbolicname", p.getContentName(), p.getAttributes()));
     
@@ -90,12 +90,8 @@ public final class RepositoryDescriptorGenerator
     
     requirement.setAttribute("extend", "false");
     requirement.setAttribute("multiple", "false");
-    
-    String optional = p.getDirective("optional");
-    if (optional == null) optional = "false";
-    
-    requirement.setAttribute("optional", optional);
-    
+    requirement.setAttribute("optional", getOptional(p));
+        
     requirement.setAttribute("filter", ManifestHeaderProcessor.generateFilter("package", p.getContentName(), p.getAttributes()));
     
     resource.appendChild(requirement);
@@ -145,5 +141,14 @@ public final class RepositoryDescriptorGenerator
     p.setAttribute("v", value);
     if (type != null) p.setAttribute("t", type);
     capability.appendChild(p);
+  }
+
+  private static String getOptional(Content p) {
+    String resolution = p.getDirective(Constants.RESOLUTION_DIRECTIVE);
+    if (Constants.RESOLUTION_OPTIONAL.equals(resolution)) {
+        return "true";
+    } else {
+        return "false";
+    }
   }
 }
