@@ -614,19 +614,9 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
    * @throws IOException
    */
   public static void readClass(Class<?> c, ClassVisitor adapter) throws IOException {
-    String className;
-    Class<?> enclosing = c.getEnclosingClass();
-    List<Class<?>> enclosingChain = new ArrayList<Class<?>>();
-    while(enclosing != null) {
-      enclosingChain.add(enclosing);
-      enclosing = enclosing.getEnclosingClass();
-    }
-    StringBuilder sb = new StringBuilder();
-    for(Class<?> clazz : enclosingChain) {
-      sb.append(clazz.getSimpleName()).append('$');
-    }
-    className = sb.append(c.getSimpleName()).append(".class").toString();
-    
+    String className = c.getName();
+    className = className.substring(className.lastIndexOf('.') + 1) + ".class";
+        
     //Load the class bytes and copy methods across
     ClassReader cReader = new ClassReader(c.getResourceAsStream(className));
 
