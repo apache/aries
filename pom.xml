@@ -66,15 +66,19 @@ JRE through META-INF/services resources).
             <artifactId>org.apache.aries.spifly.weaver</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.3.0</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
-            <!-- Use the Eclipse version of OSGi until the core 4.3 OSGi jar is available in Maven. -->
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>3.7M5</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../spi-fly-deps/target/downloaded/org.eclipse.osgi_3.7.0.jar</systemPath>
-        </dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>        
 
         <dependency>
             <groupId>org.easymock</groupId>
