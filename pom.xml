@@ -77,20 +77,12 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Use the Eclipse version of OSGi until the core 4.3 OSGi jar is available in Maven. -->        
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>3.7M6</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../proxy-tmp/target/downloaded/org.eclipse.osgi_3.7.0.jar</systemPath>
-        </dependency>
         
-        <!-- <dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.3</version>
-        </dependency> -->
+            <version>4.3.0</version>
+        </dependency>
         
         <dependency>
             <groupId>org.osgi</groupId>
