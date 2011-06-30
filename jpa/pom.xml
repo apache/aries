@@ -31,7 +31,6 @@
     <name>Aries JPA Component</name>
 
     <modules>
-        <module>jpa-tmp</module>
         <module>jpa-api</module>
         <module>jpa-container</module>
         <module>jpa-container-context</module>
