@@ -33,4 +33,9 @@ public final class AriesFrameworkUtil
   {
     return AriesFrameworkUtil.class.getClassLoader();
   }
+  
+  // Dummy implementation
+  public static ClassLoader getClassLoaderForced(Bundle b) {
+    return null;
+  }
 }
