@@ -25,13 +25,13 @@ import org.osgi.framework.Bundle;
  */
 public final class AriesFrameworkUtil 
 {
-  
   /**
    * Mock Classloader for testing
    */
   public static ClassLoader getClassLoader(Bundle b) 
   {
-    return AriesFrameworkUtil.class.getClassLoader();
+      if (b instanceof ClassLoaderProxy) return ((ClassLoaderProxy) b).getClassLoader();
+      return AriesFrameworkUtil.class.getClassLoader();
   }
   
   // Dummy implementation
