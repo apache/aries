@@ -20,12 +20,6 @@ package org.apache.aries.proxy.impl.interfaces;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassWriter;
@@ -80,7 +74,7 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
   public final MethodVisitor visitMethod(int access, String name, String desc,
       String sig, String[] arg4) {
     //We're going to implement this method, so make it non abstract!
-    access ^= ACC_ABSTRACT;
+    access &= ~ACC_ABSTRACT;
     //If we already implement this method (from another interface) then we don't
     //want a duplicate. We also don't want to copy any static init blocks (these
     //initialize static fields on the interface that we don't copy
@@ -106,9 +100,27 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
           throw new UnableToProxyException(c, e);
         }
       }
+      
+      visitObjectMethods();
+      
       adapter.visitEnd();
       done  = true;
     }
     return writer.toByteArray();
+  }
+  
+  /**
+   * Make sure that the three common Object methods toString, equals and hashCode are redirected to the delegate
+   * even if they are not on any of the interfaces
+   */
+  private void visitObjectMethods() {
+      MethodVisitor visitor = visitMethod(ACC_PUBLIC, "toString", "()Ljava/lang/String;", null, null);
+      if (visitor != null) visitor.visitEnd();
+      
+      visitor = visitMethod(ACC_PUBLIC, "equals", "(Ljava/lang/Object;)Z", null, null);
+      if (visitor != null) visitor.visitEnd();
+
+      visitor = visitMethod(ACC_PUBLIC, "hashCode", "()I", null, null);
+      if (visitor != null) visitor.visitEnd();      
   }
 }

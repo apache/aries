@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -75,14 +76,7 @@ public class InterfaceProxyingTest {
     
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class));
     
-    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
-        new Callable<Object>() {
-
-          @Override
-          public Object call() throws Exception {
-            return null;
-          }
-    }, null);
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(null), null);
     
     assertTrue(o instanceof Closeable);
   }
@@ -93,14 +87,7 @@ public class InterfaceProxyingTest {
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class,
         Iterable.class, Map.class));
     
-    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
-        new Callable<Object>() {
-
-          @Override
-          public Object call() throws Exception {
-            return null;
-          }
-    }, null);
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(null), null);
     
     assertTrue(o instanceof Closeable);
     assertTrue(o instanceof Iterable);
@@ -175,23 +162,8 @@ public class InterfaceProxyingTest {
   public void testCaching() throws Exception {
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class));
     
-    Object o1 = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
-        new Callable<Object>() {
-
-          @Override
-          public Object call() throws Exception {
-            return null;
-          }
-    }, null);
-    
-    Object o2 = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
-        new Callable<Object>() {
-
-          @Override
-          public Object call() throws Exception {
-            return null;
-          }
-    }, null);
+    Object o1 = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(null), null);
+    Object o2 = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(null), null);
     
     assertSame(o1.getClass(), o2.getClass());
   }
@@ -203,14 +175,7 @@ public class InterfaceProxyingTest {
     final TestCallable tc = new TestCallable();
     tc.setReturn(5);
     
-    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, 
-        new Callable<Object>() {
-
-          @Override
-          public Object call() throws Exception {
-            return tc;
-          }
-    }, null);
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(tc), null);
     
     assertTrue(o instanceof ProxyTestInterface);
     
@@ -219,9 +184,39 @@ public class InterfaceProxyingTest {
     assertEquals(5, ((Callable)o).call());
   }
   
+  @Test
+  public void testHandlesObjectMethods() throws Exception {
+      List<String> list = Arrays.asList("one", "two", "three");
+      Object proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, Arrays.<Class<?>>asList(List.class), constantly(list), null);
+      
+      // obeys hashCode and equals, they *are* on the interface
+      assertTrue(proxied.equals(Arrays.asList("one", "two", "three")));
+      assertEquals(Arrays.asList("one", "two", "three").hashCode(), proxied.hashCode());
+      
+      // and toString
+      assertEquals(list.toString(), proxied.toString());
+      
+      Runnable runnable = new Runnable() {
+        public void run() {}
+      };
+      proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, Arrays.<Class<?>>asList(Runnable.class), constantly(runnable), null);
+      
+      // obeys hashCode and equals, they *are not* on the interface
+      assertTrue(proxied.equals(runnable));
+      assertEquals(runnable.hashCode(), proxied.hashCode());
+  }
+  
   protected void assertCalled(TestListener listener, boolean pre, boolean post, boolean ex) {
     assertEquals(pre, listener.preInvoke);
     assertEquals(post, listener.postInvoke);
     assertEquals(ex, listener.postInvokeExceptionalReturn);
+  }
+  
+  private Callable<Object> constantly(final Object result) {
+      return new Callable<Object>() {
+          public Object call() throws Exception {
+              return result;
+          }             
+        };
   }
 }
