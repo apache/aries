@@ -78,6 +78,23 @@ final class ProxyClassLoader extends ClassLoader {
     }
     return null;
   }
+  
+  /**
+   * Test whether the classloader is invalidated by the set of classes
+   * @return
+   */
+  public boolean isInvalid(Set<Class<?>> createSet) {
+      for (Class<?> iface : createSet) {
+          try {
+              Class<?> newIFace = Class.forName(iface.getName(), false, this);
+              if (!!!newIFace.equals(iface)) return true;
+          } catch (ClassNotFoundException cnfe) {
+              return true;
+          }
+      }
+      
+      return false;
+  }
 
   public Class<?> createProxyClass(HashSet<Class<?>> createSet) throws UnableToProxyException {
     

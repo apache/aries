@@ -55,18 +55,26 @@ public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcod
     
     ProxyClassLoader pcl = null;
     
+    HashSet<Class<?>> classSet = createSet(ifaces);
+    
     synchronized (cache) {
       WeakReference<ProxyClassLoader> ref = cache.get(client);
       
       if(ref != null)
         pcl = ref.get();
+      
+      if (pcl != null && pcl.isInvalid(classSet)) {
+          pcl = null;
+          cache.remove(client);
+      }
+      
       if(pcl == null) {
         pcl = new ProxyClassLoader(client);
         cache.put(client, new WeakReference<ProxyClassLoader>(pcl));
       }
     }
     
-    Class<?> c = pcl.createProxyClass(createSet(ifaces));
+    Class<?> c = pcl.createProxyClass(classSet);
         
     try {
       Constructor<?> con = c.getDeclaredConstructor(Callable.class, InvocationListener.class);

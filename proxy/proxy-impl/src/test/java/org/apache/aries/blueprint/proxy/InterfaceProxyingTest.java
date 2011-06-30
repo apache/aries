@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Closeable;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,10 +38,14 @@ import java.util.concurrent.Callable;
 import org.apache.aries.blueprint.proxy.AbstractProxyTest.TestListener;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
+import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
+import org.apache.aries.util.ClassLoaderProxy;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
+
+import com.ibm.jvm.util.ByteArrayOutputStream;
 
 public class InterfaceProxyingTest {
 
@@ -205,6 +210,51 @@ public class InterfaceProxyingTest {
       assertTrue(proxied.equals(runnable));
       assertEquals(runnable.hashCode(), proxied.hashCode());
   }
+  
+  private static class TestClassLoader extends ClassLoader {
+      public TestClassLoader() throws Exception {
+          
+          InputStream is = TestClassLoader.class.getClassLoader().getResourceAsStream("org/apache/aries/blueprint/proxy/TestInterface.class");
+          ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+          int b;
+          while ((b = is.read()) != -1) {
+              bout.write(b);
+          }
+          
+          is.close();
+          
+          byte[] bytes = bout.toByteArray();
+          defineClass("org.apache.aries.blueprint.proxy.TestInterface", bytes, 0, bytes.length);
+      }
+  }
+  
+  @Test
+  public void testNoStaleProxiesForRefreshedBundle() throws Exception {
+      Bundle bundle = (Bundle) Skeleton.newMock(new Class<?>[] { Bundle.class, ClassLoaderProxy.class });      
+      Skeleton skel = Skeleton.getSkeleton(bundle);
+      
+      TestClassLoader loader = new TestClassLoader();
+      skel.setReturnValue(new MethodCall(ClassLoaderProxy.class, "getClassLoader"), loader);
+      skel.setReturnValue(new MethodCall(Bundle.class, "getLastModified"), 10l);
+      
+      Class<?> clazz = loader.loadClass("org.apache.aries.blueprint.proxy.TestInterface");
+      
+      Object proxy = InterfaceProxyGenerator.getProxyInstance(bundle, Arrays.<Class<?>>asList(clazz), constantly(null), null);
+      assertTrue(clazz.isInstance(proxy));
+      
+      /* Now again but with a changed classloader as if the bundle had refreshed */
+      
+      TestClassLoader loaderToo = new TestClassLoader();
+      skel.setReturnValue(new MethodCall(ClassLoaderProxy.class, "getClassLoader"), loaderToo);
+      skel.setReturnValue(new MethodCall(Bundle.class, "getLastModified"), 20l);
+      
+      Class<?> clazzToo = loaderToo.loadClass("org.apache.aries.blueprint.proxy.TestInterface");
+      
+      Object proxyToo = InterfaceProxyGenerator.getProxyInstance(bundle, Arrays.<Class<?>>asList(clazzToo), constantly(null), null);
+      assertTrue(clazzToo.isInstance(proxyToo));
+  }
+  
   
   protected void assertCalled(TestListener listener, boolean pre, boolean post, boolean ex) {
     assertEquals(pre, listener.preInvoke);
