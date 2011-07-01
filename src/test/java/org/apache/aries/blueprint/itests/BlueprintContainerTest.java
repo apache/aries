@@ -120,7 +120,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
         return new ByteArrayInputStream(bout.toByteArray());
     }
     
-    //@Test
+    @Test
     public void testDeadlock() throws Exception {
       bundleContext.registerService("java.util.Set",new HashSet<Object>(), null);
       
