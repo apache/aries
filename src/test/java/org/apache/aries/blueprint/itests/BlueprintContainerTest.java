@@ -164,7 +164,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
         long endFreeMemory = Runtime.getRuntime().freeMemory();
         
         long lossage = startFreeMemory - endFreeMemory;
-        assertTrue("We lost: "+lossage, lossage < 10000000);
+        assertTrue("We lost: "+lossage, lossage < 20000000);
     }
 
     @org.ops4j.pax.exam.junit.Configuration
