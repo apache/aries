@@ -116,7 +116,7 @@ public class ModellingHelperImpl implements ModellingHelper
     }
     Map<String, Map<String, String>> parsedFragHost = ManifestHeaderProcessor.parseImportString(fragmentHostHeader);
     if(parsedFragHost.size() != 1)
-      throw new InvalidAttributeException(MessageUtil.getMessage("APPUTILS0001W",
+      throw new InvalidAttributeException(MessageUtil.getMessage("MORE_THAN_ONE_FRAG_HOST",
           new Object[] {fragmentHostHeader}, 
           "An internal error occurred. A bundle fragment manifest must define exactly one Fragment-Host entry. The following entry was found" + fragmentHostHeader + "."));
     
