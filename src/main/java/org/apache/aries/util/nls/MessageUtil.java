@@ -144,7 +144,12 @@ public final class MessageUtil
       rb = ResourceBundle.getBundle(baseName);
     } else {
       // if the bundle is OSGi use OSGi resolve rules as best as Java5 allows
-      rb = ResourceBundle.getBundle(baseName, Locale.getDefault(), AriesFrameworkUtil.getClassLoader(b));
+      ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+        public ClassLoader run() {
+            return AriesFrameworkUtil.getClassLoader(b);
+        }          
+      }); 
+      rb = ResourceBundle.getBundle(baseName, Locale.getDefault(), loader);
     }
     
     return new MessageUtil(rb);
