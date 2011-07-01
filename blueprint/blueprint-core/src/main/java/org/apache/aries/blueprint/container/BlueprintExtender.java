@@ -30,8 +30,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
@@ -64,12 +63,12 @@ import org.slf4j.LoggerFactory;
  */
 public class BlueprintExtender implements BundleActivator, SynchronousBundleListener {
 
-	/** The QuiesceParticipant implementation class name */
-	private static final String QUIESCE_PARTICIPANT_CLASS = "org.apache.aries.quiesce.participant.QuiesceParticipant";
+    /** The QuiesceParticipant implementation class name */
+    private static final String QUIESCE_PARTICIPANT_CLASS = "org.apache.aries.quiesce.participant.QuiesceParticipant";
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintExtender.class);
 
     private BundleContext context;
-    private ScheduledExecutorService executors;
+    private ScheduledThreadPoolExecutor executors;
     private Map<Bundle, BlueprintContainerImpl> containers;
     private BlueprintEventDispatcher eventDispatcher;
     private NamespaceHandlerRegistry handlers;
@@ -83,7 +82,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
         this.context = ctx;
         handlers = new NamespaceHandlerRegistryImpl(ctx);
-        executors = Executors.newScheduledThreadPool(3, new BlueprintThreadFactory("Blueprint Extender"));
+        executors = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(3, new BlueprintThreadFactory("Blueprint Extender"));
         eventDispatcher = new BlueprintEventDispatcher(ctx, executors);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
 
@@ -152,7 +151,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     public void stop(BundleContext context) {
         LOGGER.debug("Stopping blueprint extender...");
         if (bt != null) {
-        	bt.close();
+            bt.close();
         }
         
         AriesFrameworkUtil.safeUnregisterService(parserServiceReg);
@@ -444,7 +443,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     
     protected BlueprintContainerImpl getBlueprintContainerImpl(Bundle bundle)
     {
-    	return containers.get(bundle);
+        return containers.get(bundle);
     }
     
 }

@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -122,7 +122,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final List<Object> pathList;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final AggregateConverter converter;
-    private final ScheduledExecutorService executors;
+    private final ScheduledThreadPoolExecutor executors;
     private Set<URI> namespaces;
     private State state = State.Unknown;
     private NamespaceHandlerSet handlerSet;
@@ -143,7 +143,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private AccessControlContext accessControlContext;
     private final IdSpace tempRecipeIdSpace = new IdSpace();
     
-    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<Object> pathList) {
+    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledThreadPoolExecutor executors, List<Object> pathList) {
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
         this.eventDispatcher = eventDispatcher;
@@ -330,6 +330,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         break;
                     case Create:
                         timeoutFuture.cancel(false);
+                        executors.purge();
                         registerServices();
                         instantiateEagerComponents();
                         // Register the BlueprintContainer in the OSGi registry
@@ -814,15 +815,18 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
         if (timeoutFuture != null) {
             timeoutFuture.cancel(false);
+            executors.purge();
         }
         AriesFrameworkUtil.safeUnregisterService(registration);
-        if (handlerSet != null) {
-            handlerSet.removeListener(this);
-            handlerSet.destroy();
-        }
+        
         unregisterServices();
 
         synchronized (running) {
+            if (handlerSet != null) {
+                handlerSet.removeListener(this);
+                handlerSet.destroy();
+            }
+            
             while (running.get()) {
                 try {
                     running.wait();
@@ -846,6 +850,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
         if (timeoutFuture != null) {
             timeoutFuture.cancel(false);
+            executors.purge();
         }
         AriesFrameworkUtil.safeUnregisterService(registration);
         if (handlerSet != null) {
