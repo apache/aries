@@ -57,7 +57,8 @@ class WrappingTransformer implements ClassTransformer {
     
     if(packages instanceof String[]) {
       for(String s : (String[]) packages) {
-        packageImportsToAdd.add(s + suffix);
+        if (s.contains(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE)) packageImportsToAdd.add(s);
+        else packageImportsToAdd.add(s + suffix);
       }
     } else {
       BundleRevision br = provider.adapt(BundleWiring.class).getRevision();

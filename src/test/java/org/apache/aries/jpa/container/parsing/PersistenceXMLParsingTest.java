@@ -85,7 +85,7 @@ public class PersistenceXMLParsingTest
           unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MANAGED_CLASSES));
       assertNull("We should not exclude any classes",
           unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.EXCLUDE_UNLISTED_CLASSES));
-      assertNull("The properties should never be null",
+      assertNotNull("The properties should never be null",
           unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.PROPERTIES));
       assertSame("The persistence unit was associated with the wrong bundle", b, unit.getDefiningBundle());
       
@@ -156,7 +156,7 @@ public class PersistenceXMLParsingTest
           unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MANAGED_CLASSES));
       assertTrue("We should not exclude any classes",
           (Boolean)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.EXCLUDE_UNLISTED_CLASSES));
-      assertNull("The properties should never be null",
+      assertNotNull("The properties should never be null",
           unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.PROPERTIES));
 
       assertSame("The persistence unit was associated with the wrong bundle", b, unit.getDefiningBundle());
@@ -184,7 +184,7 @@ public class PersistenceXMLParsingTest
           unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MANAGED_CLASSES));
       assertFalse("We should not exclude any classes",
           (Boolean)unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.EXCLUDE_UNLISTED_CLASSES));
-      assertNull("The properties should never be null",
+      assertNotNull("The properties should never be null",
           unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.PROPERTIES));
       assertSame("The persistence unit was associated with the wrong bundle", b, unit.getDefiningBundle());
 
