@@ -60,6 +60,7 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
   {
     this.bundle = b;
     metadata.put(SCHEMA_VERSION, version);
+    metadata.put(PROPERTIES, new Properties());
 
     if (name == null)
       name = "";
@@ -169,10 +170,6 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
   public void addProperty(String name, String value)
   {
     Properties props = (Properties) metadata.get(PROPERTIES);
-    if(props == null) {
-      props = new Properties();
-      metadata.put(PROPERTIES, props);
-    }
     props.setProperty(name, value);
   }
 
