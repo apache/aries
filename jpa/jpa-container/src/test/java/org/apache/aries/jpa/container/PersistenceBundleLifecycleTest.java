@@ -446,7 +446,6 @@ public class PersistenceBundleLifecycleTest
     //Clear the extender context to remove the previous get for the PersistenceProvider.
     Skeleton.getSkeleton(extenderContext).clearMethodCalls();
     
-    System.out.println(getTrackedObject());
     //Update the bundle
     Skeleton.getSkeleton(persistenceBundle).setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.INSTALLED);
     mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.UPDATED, persistenceBundle), getTrackedObject());

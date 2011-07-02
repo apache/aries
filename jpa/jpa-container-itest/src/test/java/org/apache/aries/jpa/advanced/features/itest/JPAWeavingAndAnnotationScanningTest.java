@@ -16,7 +16,6 @@ package org.apache.aries.jpa.advanced.features.itest;
  *  limitations under the License.
  */
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.bootDelegationPackages;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -25,21 +24,15 @@ import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
-import java.util.Arrays;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.advanced.itest.bundle.entities.Car;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -48,8 +41,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
-@RunWith(JUnit4TestRunner.class)
-public class JPAWeavingAndAnnotationScanningTest {
+public abstract class JPAWeavingAndAnnotationScanningTest {
 
   public static final long DEFAULT_TIMEOUT = 10000;
   
@@ -77,14 +69,7 @@ public class JPAWeavingAndAnnotationScanningTest {
     
     assertEquals(7, em.find(Car.class, "AB11CDE").getNumberOfSeats());
   }
-  
-  @Test
-  public void testClassIsWoven() throws Exception {
-    getOsgiService(bundleContext, EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
-    assertTrue("Not PersistenceCapable", Arrays.asList(Car.class.getInterfaces())
-        .contains(PersistenceCapable.class));
-  }
-  
+    
   protected <T> T getOsgiService(BundleContext bc, Class<T> type,
       String filter, long timeout) {
     ServiceTracker tracker = null;
@@ -135,7 +120,7 @@ public class JPAWeavingAndAnnotationScanningTest {
 
         // this is how you set the default log level when using pax
         // logging (logProfile)
-        systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+        systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 
         // Bundles
         mavenBundle("commons-lang", "commons-lang"),
@@ -149,17 +134,10 @@ public class JPAWeavingAndAnnotationScanningTest {
         mavenBundle("org.apache.derby", "derby"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
-        mavenBundle("org.apache.openjpa", "openjpa"),
-        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
+
         mavenBundle("org.osgi", "org.osgi.compendium"),
 
-        //vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
-        //waitForFrameworkStartup(),
-        
-       
-//        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa"),
-//        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core"),
-//        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm"),
+//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
         
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.advanced.itest.bundle"),
         
