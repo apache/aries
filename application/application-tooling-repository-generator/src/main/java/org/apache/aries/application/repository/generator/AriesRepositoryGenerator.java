@@ -52,7 +52,7 @@ public class AriesRepositoryGenerator {
   private List<ServiceTracker> srs = new ArrayList<ServiceTracker>();
   public static final long DEFAULT_TIMEOUT = 60000; 
   public static final String ERROR_LEVEL = "ERROR";
-  public static final String DEFAULT_REPO_NAME="reporsitory.xml";
+  public static final String DEFAULT_REPO_NAME="repository.xml";
 
   /**
    * Start OSGi framework and install the necessary bundles
