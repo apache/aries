@@ -40,8 +40,6 @@
     <class>org.apache.aries.jpa.container.itest.entities.Car</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-     <!-- This makes sure we get transaction integration. -->
-     <property name="eclipselink.target-server" value="org.apache.aries.jpa.container.itest.OSGiTSServer" />
      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
           to create a database  -->
      <property name="eclipselink.target-database" value="Derby"/>     
