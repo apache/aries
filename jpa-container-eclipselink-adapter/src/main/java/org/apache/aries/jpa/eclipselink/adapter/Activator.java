@@ -19,17 +19,29 @@
 package org.apache.aries.jpa.eclipselink.adapter;
 
 import java.lang.reflect.Constructor;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.SharedCacheMode;
+import javax.persistence.ValidationMode;
+import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.persistence.spi.ProviderUtil;
+import javax.sql.DataSource;
 
+import org.apache.aries.jpa.eclipselink.adapter.platform.OSGiTSServer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -57,6 +69,93 @@ public class Activator implements BundleActivator, BundleListener {
     
     private ServiceTracker tracker;
     private BundleContext context;
+    
+    private static class PersistenceUnitProxyWithTargetServer implements PersistenceUnitInfo {
+        private final PersistenceUnitInfo delegate;
+        
+        public PersistenceUnitProxyWithTargetServer(PersistenceUnitInfo info) {
+            delegate = info;
+        }
+
+        public void addTransformer(ClassTransformer arg0) {
+            delegate.addTransformer(arg0);
+        }
+
+        public boolean excludeUnlistedClasses() {
+            return delegate.excludeUnlistedClasses();
+        }
+
+        public ClassLoader getClassLoader() {
+            ClassLoader unionClassLoader = new ClassLoader(delegate.getClassLoader()) {
+                protected Class<?> findClass(String name) throws ClassNotFoundException {
+                    return Activator.class.getClassLoader().loadClass(name);
+                }
+            };
+            
+            return unionClassLoader;
+        }
+
+        public List<URL> getJarFileUrls() {
+            return delegate.getJarFileUrls();
+        }
+
+        public DataSource getJtaDataSource() {
+            return delegate.getJtaDataSource();
+        }
+
+        public List<String> getManagedClassNames() {
+            return delegate.getManagedClassNames();
+        }
+
+        public List<String> getMappingFileNames() {
+            return delegate.getMappingFileNames();
+        }
+
+        public ClassLoader getNewTempClassLoader() {
+            return delegate.getNewTempClassLoader();
+        }
+
+        public DataSource getNonJtaDataSource() {
+            return delegate.getNonJtaDataSource();
+        }
+
+        public String getPersistenceProviderClassName() {
+            return delegate.getPersistenceProviderClassName();
+        }
+
+        public String getPersistenceUnitName() {
+            return delegate.getPersistenceUnitName();
+        }
+
+        public URL getPersistenceUnitRootUrl() {
+            return delegate.getPersistenceUnitRootUrl();
+        }
+
+        public String getPersistenceXMLSchemaVersion() {
+            return delegate.getPersistenceXMLSchemaVersion();
+        }
+
+        public Properties getProperties() {
+            Properties props = delegate.getProperties();
+            if (!!!props.containsKey("eclipselink.target-server")) {
+                props.put("eclipselink.target-server", OSGiTSServer.class.getName());
+            }
+            
+            return props;
+        }
+
+        public SharedCacheMode getSharedCacheMode() {
+            return delegate.getSharedCacheMode();
+        }
+
+        public PersistenceUnitTransactionType getTransactionType() {
+            return delegate.getTransactionType();
+        }
+
+        public ValidationMode getValidationMode() {
+            return delegate.getValidationMode();
+        }
+    }
   
     private static class EclipseLinkProviderService implements ServiceFactory {
         private final Bundle eclipseLinkJpaBundle;
@@ -71,7 +170,22 @@ public class Activator implements BundleActivator, BundleListener {
             try {
                 Class<? extends PersistenceProvider> providerClass = eclipseLinkJpaBundle.loadClass(ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
                 Constructor<? extends PersistenceProvider> con = providerClass.getConstructor();
-                return con.newInstance();
+                final PersistenceProvider provider = con.newInstance();
+                
+                return new PersistenceProvider() {
+                    public ProviderUtil getProviderUtil() {
+                        return provider.getProviderUtil();
+                    }
+                    
+                    public EntityManagerFactory createEntityManagerFactory(String arg0, Map arg1) {
+                        return provider.createEntityManagerFactory(arg0, arg1);
+                    }
+                    
+                    public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo punit, Map props) {
+                        return provider.createContainerEntityManagerFactory(new PersistenceUnitProxyWithTargetServer(punit), props);
+                    }
+                };
+                
             } catch (Exception e) {
                 logger.error("Got exception trying to instantiate the EclipseLink provider", e);
                 return null;                
@@ -179,6 +293,10 @@ public class Activator implements BundleActivator, BundleListener {
                 }                
             }
         }
+        
+        result.add("org.apache.aries.jpa.eclipselink.adapter.platform;" + 
+                Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE + "=" + context.getBundle().getSymbolicName() + ";" + 
+                Constants.BUNDLE_VERSION_ATTRIBUTE  + "=" + context.getBundle().getVersion());        
         
         logger.debug("Found JPA packages {}", result);
         
