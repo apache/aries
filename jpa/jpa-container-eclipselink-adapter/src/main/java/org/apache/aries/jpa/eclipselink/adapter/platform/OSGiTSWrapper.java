@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.itest;
+package org.apache.aries.jpa.eclipselink.adapter.platform;
 
 import javax.transaction.TransactionManager;
 

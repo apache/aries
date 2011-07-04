@@ -44,7 +44,6 @@
             org.apache.aries.jpa.container.itest*
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-            org.eclipse.persistence.platform.server.was,
             javax.persistence;version="[1.0.0,3.0.0)",
             *
         </aries.osgi.import>
