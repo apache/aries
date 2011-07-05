@@ -154,6 +154,8 @@ public abstract class JPAContextTest {
     ensureTREBehaviour(false, managedEm, "setProperty", "hi", new Object());
     ensureTREBehaviour(false, managedEm, "unwrap", Object.class);
 
+    // now test that with a transaction actually active we don't get *any* TransactionRequiredExceptions
+
     UserTransaction ut = getOsgiService(UserTransaction.class);
     
     ut.begin();
@@ -165,20 +167,11 @@ public abstract class JPAContextTest {
       ensureTREBehaviour(false, managedEm, "createNativeQuery", "hi", "hi");
       ensureTREBehaviour(false, managedEm, "createQuery", "hi");
       ensureTREBehaviour(false, managedEm, "find", Object.class, new Object());
-      
-      // TODO sort out the correct behaviour:
-      // OpenJpa false, EclipseLink true
-      // ensureTREBehaviour(false, managedEm, "flush");
-      
-      
+      ensureTREBehaviour(false, managedEm, "flush");
       ensureTREBehaviour(false, managedEm, "getDelegate");
       ensureTREBehaviour(false, managedEm, "getFlushMode");
       ensureTREBehaviour(false, managedEm, "getReference", Object.class, new Object());
-      
-      // TODO sort out the correct behaviour
-      // OpenJPA false, EclipseLink true
-      // ensureTREBehaviour(false, managedEm, "lock", new Object(), LockModeType.NONE);
-      
+      ensureTREBehaviour(false, managedEm, "lock", new Object(), LockModeType.NONE);
       ensureTREBehaviour(false, managedEm, "merge", new Object());
       ensureTREBehaviour(false, managedEm, "persist", new Object());
       ensureTREBehaviour(false, managedEm, "refresh", new Object());
@@ -206,11 +199,7 @@ public abstract class JPAContextTest {
       ensureTREBehaviour(false, managedEm, "getLockMode", new Object());
       ensureTREBehaviour(false, managedEm, "getMetamodel");
       ensureTREBehaviour(false, managedEm, "getProperties");
-      
-      // TODO sort out the correct behaviour
-      // OpenJPA false, EclipseLink true
-      // ensureTREBehaviour(false, managedEm, "lock", new Object(), LockModeType.NONE, new HashMap());
-      
+      ensureTREBehaviour(false, managedEm, "lock", new Object(), LockModeType.NONE, new HashMap());      
       ensureTREBehaviour(false, managedEm, "refresh", new Object(), new HashMap());
       ensureTREBehaviour(false, managedEm, "refresh", new Object(), LockModeType.NONE);
       ensureTREBehaviour(false, managedEm, "refresh", new Object(), LockModeType.NONE, new HashMap());
