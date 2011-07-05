@@ -42,7 +42,7 @@ public class Activator implements BundleActivator {
         mbeanServerTracker.open();
 
         mbeanTracker = new MBeanTracker(context);
-        mbeanTracker.open();
+        mbeanTracker.open(true);
     }
 
     public void stop(BundleContext context) throws Exception {
