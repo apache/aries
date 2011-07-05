@@ -90,24 +90,4 @@ final class MBeanHolder {
                 + name, e);
         }
     }
-
-    // ---------- Object Overwrite
-
-    @Override
-    public int hashCode() {
-        return mbean.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (obj == this) {
-            return true;
-        } else if (obj instanceof MBeanHolder) {
-            return mbean == ((MBeanHolder) obj).mbean;
-        }
-
-        return false;
-    }
 }
