@@ -57,8 +57,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This exception is thrown if an {@link EntityManagerFactoryManager} has
- * entered an invalid state and needs to be destroyed
+ * Eclipselink adapter main class.
+ * 
+ * The purpose of this class is to:
+ * <ul>
+ * <li>publish an OSGi-compatible Eclipselink {@link PersistenceProvider} service in the service registry</li>
+ * <li>intercept {@link EntityManagerFactory} creation to ensure that the Eclipselink target server (if not specified otherwise)
+ *     is OSGi compatible</li>
+ * </ul>
  */
 public class Activator implements BundleActivator, BundleListener {
     private static final String ECLIPSELINK_JPA_PROVIDER_BUNDLE_SYMBOLIC_NAME = "org.eclipse.persistence.jpa";
@@ -70,6 +76,10 @@ public class Activator implements BundleActivator, BundleListener {
     private ServiceTracker tracker;
     private BundleContext context;
     
+    /**
+     * Wrapper {@link PersistenceUnitInfo} object that adds the eclipselink.target-server setting (if not present)
+     * and makes sure we can load {@link OSGiTSServer} from the unit's classloader.
+     */
     private static class PersistenceUnitProxyWithTargetServer implements PersistenceUnitInfo {
         private final PersistenceUnitInfo delegate;
         
@@ -157,6 +167,10 @@ public class Activator implements BundleActivator, BundleListener {
         }
     }
   
+    /**
+     * Service factory for generating the Eclipselink OSGi compatible provider. It proxies the provider so that
+     * we can go in at entity manager creation time and set the eclipselink target-server to be {@link OSGiTSServer}.
+     */
     private static class EclipseLinkProviderService implements ServiceFactory {
         private final Bundle eclipseLinkJpaBundle;
         
@@ -236,6 +250,7 @@ public class Activator implements BundleActivator, BundleListener {
         if (b.getSymbolicName().equals(ECLIPSELINK_JPA_PROVIDER_BUNDLE_SYMBOLIC_NAME)) {
             logger.debug("Found EclipseLink bundle {}", b);
             
+            // make sure we can actually find the JPA provider we expect to find
             try {
                 b.loadClass(ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
             } catch (ClassNotFoundException cnfe) {
@@ -265,7 +280,12 @@ public class Activator implements BundleActivator, BundleListener {
     }
     
     /**
-     * Get all the relevant packages that the EclipseLink JPA provider exports or persistence packages it uses itself
+     * Get all the relevant packages that the EclipseLink JPA provider exports or persistence packages it uses itself. These are needed
+     * so that the woven proxy (for runtime enhancement) can be used later on :)
+     * 
+     * Note that differently to OpenJPA the relevant classes are actually in more than just one bundle (org.eclipse.persistence.jpa and org.eclipse.persistence.core
+     * at the time of this writing). Hence, we have to take more than just the packages of the JPA provider bundle into account ...
+     * 
      * @param jpaBundle
      * @return
      */
