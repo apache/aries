@@ -20,7 +20,7 @@ package org.apache.aries.jmx.whiteboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
@@ -40,7 +40,8 @@ class JmxWhiteboardSupport {
 
     private MBeanServer[] mbeanServers = new MBeanServer[0];
 
-    private final HashMap<MBeanHolder, MBeanHolder> mbeans = new HashMap<MBeanHolder, MBeanHolder>();
+    // mapping registered MBean services to their MBeanHolder objects
+    private final IdentityHashMap<Object, MBeanHolder> mbeans = new IdentityHashMap<Object, MBeanHolder>();
 
     protected synchronized void addMBeanServer(final MBeanServer mbeanServer) {
 
@@ -83,7 +84,7 @@ class JmxWhiteboardSupport {
             for (MBeanServer mbeanServer : mbeanServers) {
                 holder.register(mbeanServer);
             }
-            mbeans.put(holder, holder);
+            mbeans.put(mbean, holder);
         }
     }
 
@@ -91,7 +92,7 @@ class JmxWhiteboardSupport {
 
         log.debug("unregisterMBean: Removing MBean {}", mbean);
 
-        final MBeanHolder holder = mbeans.remove(new MBeanHolder(mbean, null));
+        final MBeanHolder holder = mbeans.remove(mbean);
         if (holder != null) {
             holder.unregister();
         }
