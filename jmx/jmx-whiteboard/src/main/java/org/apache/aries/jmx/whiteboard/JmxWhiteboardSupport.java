@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 class JmxWhiteboardSupport {
 
-    private static final String PROP_OBJECT_NAME = "jmx.objectname";
+    static final String PROP_OBJECT_NAME = "jmx.objectname";
 
     /** default log */
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -79,12 +79,22 @@ class JmxWhiteboardSupport {
 
         ObjectName objectName = getObjectName(props);
         if (objectName != null || mbean instanceof MBeanRegistration) {
-            MBeanHolder holder = new MBeanHolder(mbean, objectName);
-            MBeanServer[] mbeanServers = this.mbeanServers;
-            for (MBeanServer mbeanServer : mbeanServers) {
-                holder.register(mbeanServer);
+            MBeanHolder holder = MBeanHolder.create(mbean, objectName);
+            if (holder != null) {
+                MBeanServer[] mbeanServers = this.mbeanServers;
+                for (MBeanServer mbeanServer : mbeanServers) {
+                    holder.register(mbeanServer);
+                }
+                mbeans.put(mbean, holder);
+            } else {
+                log.error(
+                    "registerMBean: Cannot register MBean service {} with MBean servers: Not an instanceof DynamicMBean or not MBean spec compliant standard MBean",
+                    mbean);
             }
-            mbeans.put(mbean, holder);
+        } else {
+            log.error(
+                "registerMBean: MBean service {} not registered with valid jmx.objectname propety and not implementing MBeanRegistration interface; not registering with MBean servers",
+                mbean);
         }
     }
 
