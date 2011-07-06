@@ -22,6 +22,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.management.DynamicMBean;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -29,6 +30,7 @@ import javax.management.MBeanServer;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.management.StandardMBean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +46,62 @@ final class MBeanHolder {
 
     private final Map<MBeanServer, ObjectName> registrations;
 
-    MBeanHolder(final Object mbean, final ObjectName requestedObjectName) {
+    static <T> MBeanHolder create(final T mbean,
+            final ObjectName requestedObjectName) {
+        if (mbean instanceof DynamicMBean) {
+            return new MBeanHolder(mbean, requestedObjectName);
+        } else if (mbean == null) {
+            return null;
+        }
+
+        Class<?> mbeanClass = mbean.getClass();
+        @SuppressWarnings("unchecked") // This is all in aid of getting new StandardMBean to work.
+        Class<T> mbeanInterface = (Class<T>) getMBeanInterface(mbeanClass);
+        if (mbeanInterface == null) {
+            return null;
+        }
+
+        if (mbeanInterface.getName().equals(
+            mbeanClass.getName().concat("MBean"))) {
+            return new MBeanHolder(mbean, requestedObjectName);
+        }
+
+        try {
+            StandardMBean stdMbean = new StandardMBean(mbean, mbeanInterface);
+            return new MBeanHolder(stdMbean, requestedObjectName);
+        } catch (NotCompliantMBeanException e) {
+            LoggerFactory.getLogger(MBeanHolder.class).error(
+                "create: Cannot create StandardMBean for " + mbean
+                    + " of type " + mbeanClass + " for interface "
+                    + mbeanInterface, e);
+            return null;
+        }
+    }
+
+    private static Class<?> getMBeanInterface(final Class<?> mbeanClass) {
+        if (mbeanClass == null) {
+            return null;
+        }
+
+        for (Class<?> i : mbeanClass.getInterfaces()) {
+            if (i.getName().endsWith("MBean")) {
+                return i;
+            }
+
+            Class<?> mbeanInterface = getMBeanInterface(i);
+            if (mbeanInterface != null) {
+                return mbeanInterface;
+            }
+        }
+
+        if (mbeanClass.getSuperclass() != null) {
+            return getMBeanInterface(mbeanClass.getSuperclass());
+        }
+
+        return null;
+    }
+
+    private MBeanHolder(final Object mbean, final ObjectName requestedObjectName) {
         this.mbean = mbean;
         this.requestedObjectName = requestedObjectName;
         this.registrations = new IdentityHashMap<MBeanServer, ObjectName>();
