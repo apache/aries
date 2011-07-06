@@ -22,7 +22,6 @@ import javax.management.MBeanServer;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -84,14 +83,13 @@ public class Activator implements BundleActivator {
     private class MBeanTracker extends ServiceTracker {
 
         /**
-         * Listens for any services registered with an interface whose name ends
-         * with "MBean". This matches all simple MBeans which have to implement
-         * an interface named after the class with a suffix of MBean. It also
-         * matches DynamicMBeans and all its extensions like open MBeans, model
-         * MBeans and StandardMBeans.
+         * Listens for any services registered with a "jmx.objectname" service
+         * property. If the property is not a non-empty String object the service
+         * is expected to implement the MBeanRegistration interface to create
+         * the name dynamically.
          */
         private static final String SIMPLE_MBEAN_FILTER = "("
-            + Constants.OBJECTCLASS + "=*MBean)";
+            + JmxWhiteboardSupport.PROP_OBJECT_NAME+ "=*)";
 
         public MBeanTracker(BundleContext context)
                 throws InvalidSyntaxException {
