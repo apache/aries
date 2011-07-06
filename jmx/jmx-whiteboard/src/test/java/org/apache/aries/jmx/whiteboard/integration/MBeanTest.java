@@ -28,6 +28,7 @@ import org.apache.aries.jmx.whiteboard.integration.helper.IntegrationTestBase;
 import org.apache.aries.jmx.whiteboard.integration.helper.TestClass;
 import org.apache.aries.jmx.whiteboard.integration.helper.TestClassMBean;
 import org.apache.aries.jmx.whiteboard.integration.helper.TestStandardMBean;
+import org.apache.aries.jmx.whiteboard.integration.helper2.TestClass2;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
@@ -45,6 +46,32 @@ public class MBeanTest extends IntegrationTestBase {
         final String objectNameString = "domain:instance=" + instanceName;
         final ObjectName objectName = new ObjectName(objectNameString);
         final TestClass testInstance = new TestClass(instanceName);
+
+        final MBeanServer server = getStaticMBeanServer();
+
+        // expect MBean to not be registered yet
+        assertNotRegistered(server, objectName);
+
+        // expect the MBean to be registered with the static server
+        final ServiceRegistration reg = registerService(
+            TestClassMBean.class.getName(), testInstance, objectNameString);
+        assertRegistered(server, objectName);
+
+        // expect MBean to return expected value
+        TestCase.assertEquals(instanceName,
+            server.getAttribute(objectName, "InstanceName"));
+
+        // unregister MBean, expect to not be registered any more
+        reg.unregister();
+        assertNotRegistered(server, objectName);
+    }
+
+    @Test
+    public void test_simple_MBean_different_package() throws Exception {
+        final String instanceName = "simple.test.instance.2";
+        final String objectNameString = "domain:instance=" + instanceName;
+        final ObjectName objectName = new ObjectName(objectNameString);
+        final TestClass testInstance = new TestClass2(instanceName);
 
         final MBeanServer server = getStaticMBeanServer();
 
