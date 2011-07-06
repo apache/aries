@@ -101,17 +101,31 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
     return urls;
   }
 
+  /*
+   * Notes we overwrite loadClass rather than findClass because we don't want to delegate
+   * to the default classloader, only the bundle.
+   * 
+   * Also note that ClassLoader#loadClass(String) by javadoc on ClassLoader delegates
+   * to this method, so we don't need to overwrite it separately.
+   * 
+   * (non-Javadoc)
+   * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
+   */  
   @Override
-  public Class<?> loadClass(final String name) throws ClassNotFoundException
+  public Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException
   {
     try {
-      return AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
+      Class<?> result = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
         @Override
 		public Class<?> run() throws ClassNotFoundException
         {
           return b.loadClass(name);
         }
       });
+      
+      if (resolve) resolveClass(result);
+      
+      return result;
     } catch (PrivilegedActionException e) {
       Exception cause = e.getException();
 
