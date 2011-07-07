@@ -28,21 +28,21 @@ public final class FelixWorker extends DefaultWorker implements FrameworkUtilWor
 {
   private static Method getCurrentModuleMethod;
   private static Method getClassLoader;
+  private static Class<?> moduleClass;
 
   static {
     Bundle b = FrameworkUtil.getBundle(FelixWorker.class);
     try {
       getCurrentModuleMethod = b.getClass().getDeclaredMethod("getCurrentModule");
-      Object result = getCurrentModuleMethod.invoke(b);
-      getClassLoader = result.getClass().getDeclaredMethod("getClassLoader");
+      moduleClass = b.getClass().getClassLoader().loadClass("org.apache.felix.framework.ModuleImpl");
+      getClassLoader = moduleClass.getDeclaredMethod("getClassLoader");
       
       getCurrentModuleMethod.setAccessible(true);
       getClassLoader.setAccessible(true);
     } catch (SecurityException e) {
     } catch (NoSuchMethodException e) {
     } catch (IllegalArgumentException e) {
-    } catch (IllegalAccessException e) {
-    } catch (InvocationTargetException e) {
+    } catch (ClassNotFoundException e) {
     }
   }
   
@@ -51,7 +51,7 @@ public final class FelixWorker extends DefaultWorker implements FrameworkUtilWor
     if (getCurrentModuleMethod != null) {
       try {
         Object result = getCurrentModuleMethod.invoke(b);
-        if (result != null) {
+        if (result != null && moduleClass.isInstance(result)) {
           Object cl = getClassLoader.invoke(result);
           
           if (cl instanceof ClassLoader) return (ClassLoader) cl;
@@ -66,6 +66,6 @@ public final class FelixWorker extends DefaultWorker implements FrameworkUtilWor
 
   public boolean isValid()
   {
-    return getCurrentModuleMethod != null && getClassLoader != null;
+    return getCurrentModuleMethod != null && moduleClass != null && getClassLoader != null;
   }
 }
