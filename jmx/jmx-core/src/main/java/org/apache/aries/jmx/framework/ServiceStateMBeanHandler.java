@@ -23,6 +23,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
 import org.osgi.jmx.framework.ServiceStateMBean;
 import org.osgi.service.log.LogService;
