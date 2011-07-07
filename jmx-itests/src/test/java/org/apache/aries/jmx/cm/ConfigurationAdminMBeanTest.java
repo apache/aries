@@ -66,6 +66,7 @@ public class ConfigurationAdminMBeanTest extends AbstractIntegrationTest {
                         mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
                         mavenBundle("org.osgi", "org.osgi.compendium"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
+                        mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
                         new Customizer() {
                             public InputStream customizeTestProbe(InputStream testProbe) throws Exception {
                                 return modifyBundle(testProbe)

@@ -63,7 +63,9 @@ public class ProvisioningServiceMBeanTest extends AbstractIntegrationTest {
                         mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
                         mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
                         mavenBundle("org.osgi", "org.osgi.compendium"), 
-                        mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"));
+                        mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
+                        mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
+                        mavenBundle("org.apache.aries", "org.apache.aries.util"));
         options = updateOptions(options);
         return options;
     }
