@@ -1,5 +1,5 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
+// * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -220,7 +220,7 @@ public class Activator implements BundleActivator, BundleListener {
         ctx.addBundleListener(this);
         
         for (Bundle b : ctx.getBundles()) {
-            if ((b.getState() & (Bundle.ACTIVE | Bundle.STARTING)) != 0) 
+            if ((b.getState() & (Bundle.ACTIVE | Bundle.STARTING | Bundle.RESOLVED | Bundle.STOPPING)) != 0) 
                 handlePotentialEclipseLink(b);
         }
     }
@@ -236,9 +236,9 @@ public class Activator implements BundleActivator, BundleListener {
     }
 
     public void bundleChanged(BundleEvent event) {
-        if ((event.getType() & (BundleEvent.STARTED | BundleEvent.STARTING | BundleEvent.LAZY_ACTIVATION)) != 0) {
+        if ((event.getType() & (BundleEvent.RESOLVED)) != 0) {
             handlePotentialEclipseLink(event.getBundle());
-        } else if (event.getType() == BundleEvent.STOPPING) {
+        } else if (event.getType() == BundleEvent.UNRESOLVED | event.getType() == BundleEvent.UNINSTALLED) {
             ServiceRegistration reg = registeredProviders.remove(event.getBundle());
             if (reg != null) {
                 reg.unregister();
@@ -268,7 +268,7 @@ public class Activator implements BundleActivator, BundleListener {
                 props.put("org.apache.aries.jpa.container.weaving.packages", getJPAPackages(b));
                 props.put("javax.persistence.provider", ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
                             
-                ServiceRegistration reg = b.getBundleContext().registerService(
+                ServiceRegistration reg = context.registerService(
                         PersistenceProvider.class.getName(), factory, props);
                 
                 ServiceRegistration old = registeredProviders.putIfAbsent(b, reg);

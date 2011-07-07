@@ -21,10 +21,10 @@ public class EclipseLinkWeavingAndAnnotationScanningTest extends JPAWeavingAndAn
     @Configuration
     public static Option[] eclipseLinkConfig() {
         return options(        
-                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa"),
-                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core"),
-                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm"),
-                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.antlr"),
+                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa").noStart(),
+                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core").noStart(),
+                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm").noStart(),
+                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.antlr").noStart(),
                 
                 mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.eclipselink.adapter")
         );
