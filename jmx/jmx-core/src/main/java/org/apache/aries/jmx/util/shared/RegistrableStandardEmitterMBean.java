@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.jmx.framework;
+package org.apache.aries.jmx.util.shared;
 
 import javax.management.ListenerNotFoundException;
 import javax.management.MBeanInfo;
