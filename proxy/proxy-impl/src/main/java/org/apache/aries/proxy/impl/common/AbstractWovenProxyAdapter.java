@@ -19,9 +19,11 @@
 package org.apache.aries.proxy.impl.common;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -160,6 +162,11 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
    */
   private boolean hasNoArgsConstructor = false;
   /**
+   * If we have a no-args constructor then we can delegate there rather than 
+   * to a super no-args
+   */
+  protected boolean isSerializable = false;
+  /**
    * The default static initialization method where we will write the proxy init
    * code. If there is an existing <clinit> then we will change this and write a
    * static_init_UUID instead (see the overriden 
@@ -214,6 +221,9 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
       Class<?> superClass = Class.forName(superName.replace('/', '.'), false,
           loader);
 
+      isSerializable = Serializable.class.isAssignableFrom(superClass) || 
+                       Arrays.asList(interfaces).contains(Type.getInternalName(Serializable.class));
+      
       if (!!!WovenProxy.class.isAssignableFrom(superClass)) {
 
         // We have found a type we need to add WovenProxy information to
