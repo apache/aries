@@ -61,9 +61,17 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
   @Override
   public FieldVisitor visitField(int access, String name, String arg2,
       String arg3, Object arg4) {
+    
     //If this sVUID is generated then make it synthetic
-    if(sVUIDGenerated && "serialVersionUID".equals(name)) 
+    if(sVUIDGenerated && "serialVersionUID".equals(name)) {
+      
+      //If we aren't a serializable class then don't add a generated sVUID
+      if(!!!isSerializable) {
+        return null;
+      }
+      
       access |= ACC_SYNTHETIC;
+    }
     return super.visitField(access, name, arg2, arg3, arg4);
   }
 
