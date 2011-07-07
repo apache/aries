@@ -24,6 +24,8 @@ import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.modifyBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
+import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; 
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -69,6 +71,8 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
                         mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
                         mavenBundle("org.osgi", "org.osgi.compendium"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
+                        mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
+                        mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
                         mavenBundle("org.apache.aries", "org.apache.aries.util"),
                         new Customizer() {
                             public InputStream customizeTestProbe(InputStream testProbe) throws Exception {
@@ -103,7 +107,10 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
                                 		",org.osgi.service.cm")
                                 .set(Constants.BUNDLE_ACTIVATOR,
                                         org.apache.aries.jmx.test.bundleb.Activator.class.getName())
-                                .build(withBnd()))
+                                .build(withBnd()))//,
+                                /* For debugging, uncomment the next two lines */
+//                              vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+//                              waitForFrameworkStartup()
                         );
         options = updateOptions(options);
         return options;
