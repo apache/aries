@@ -63,6 +63,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+          <groupId>org.ops4j.pax.runner</groupId>
+          <artifactId>pax-runner-no-jcl</artifactId>
+          <version>1.7.3</version>
+        </dependency>
+        <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-default</artifactId>
             <scope>test</scope>

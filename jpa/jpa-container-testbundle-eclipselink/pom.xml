@@ -48,7 +48,7 @@
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg />
-        <aries.osgi.symbolic.name>${project.groupId}.${project.artifactId}</aries.osgi.symbolic.name>
+        <aries.osgi.symbolic.name>${project.artifactId}</aries.osgi.symbolic.name>
     </properties>
     <dependencies>
         <dependency>
