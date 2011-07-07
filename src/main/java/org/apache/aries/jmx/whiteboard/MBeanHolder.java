@@ -32,6 +32,7 @@ import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
+import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ final class MBeanHolder {
         }
 
         try {
-            StandardMBean stdMbean = new StandardMBean(mbean, mbeanInterface);
+            StandardMBean stdMbean = new RegistrableStandardEmitterMBean(mbean, mbeanInterface);
             return new MBeanHolder(stdMbean, requestedObjectName);
         } catch (NotCompliantMBeanException e) {
             LoggerFactory.getLogger(MBeanHolder.class).error(

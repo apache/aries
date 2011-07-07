@@ -69,7 +69,8 @@
         <aries.osgi.export.pkg>
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
-            org.apache.aries.jmx.whiteboard
+            org.apache.aries.jmx.whiteboard,
+            org.apache.aries.jmx.util.shared
         </aries.osgi.private.pkg>
         <aries.osgi.import.service>
             javax.management.MBeanServer
@@ -119,6 +120,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.aries.jmx</groupId>
+            <artifactId>org.apache.aries.jmx.core</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
