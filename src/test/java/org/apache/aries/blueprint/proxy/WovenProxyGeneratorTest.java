@@ -313,6 +313,12 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     }
   }
   
+  @Test(expected=NoSuchFieldException.class)
+  public void testNonSerializableClassHasNoGeneratedSerialVersionUID() throws Exception {
+    Class<?> woven = getProxyClass(TEST_CLASS);
+    woven.getDeclaredField("serialVersionUID");
+  }
+  
   @Test
   public void testSerialization() throws Exception {
     
