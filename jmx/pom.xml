@@ -38,6 +38,7 @@
         <module>jmx-api</module>
         <module>jmx-blueprint-api</module>
         <module>jmx-core</module>
+        <module>jmx-core-whiteboard</module>
         <module>jmx-whiteboard</module>
         <module>jmx-blueprint-core</module>
         <module>jmx-bundle</module>
