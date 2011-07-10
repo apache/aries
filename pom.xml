@@ -47,10 +47,15 @@
             org.apache.aries.unittest.fixture,
             org.apache.aries.mocks;uses:="junit.framework,org.osgi.framework,org.apache.aries.unittest.mocks,org.junit,org.apache.aries.unittest.mocks.ann otations,javax.naming,javax.naming.spi",
             org.apache.aries.unittest.mocks.annotations;version="0.3.0",org.apache.aries.unittest.mocks;uses:="junit.framework,org.apache.aries.unittest.mocks.annotations",
-            org.apache.aries.unittest.junit;uses:="org.junit"
+            org.apache.aries.unittest.junit;uses:="org.junit",
+            org.apache.aries.itest
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg />
-        <aries.osgi.import.pkg>*</aries.osgi.import.pkg>
+        <!-- Don't import org.ops4j.pax.exam.container.def because it is only used for setup -->
+        <aries.osgi.import.pkg>
+          org.ops4j.pax.exam.container.def*;resolution:=optional,
+          *
+        </aries.osgi.import.pkg>
     </properties>
 
    <dependencies>
@@ -63,6 +68,19 @@
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <scope>provided</scope>      
+    </dependency>
+    <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-container-default</artifactId>
     </dependency>
   </dependencies>
 
