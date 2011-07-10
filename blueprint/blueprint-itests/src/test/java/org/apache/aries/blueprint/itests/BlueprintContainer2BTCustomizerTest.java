@@ -20,18 +20,16 @@ package org.apache.aries.blueprint.itests;
 
 import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.aries.itest.AbstractIntegrationTest;
+import org.apache.aries.itest.RichBundleContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
@@ -43,6 +41,8 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.framework.CompositeBundle;
 import org.osgi.service.framework.CompositeBundleFactory;
+
+import static org.apache.aries.itest.ExtraOptions.*;
 
 /**
  * This test is based on the BlueprintContainerBTCustomizerTest.  but this test starts the
@@ -56,7 +56,7 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
     @Test
     public void test() throws Exception {
         // Create a config to check the property placeholder
-        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);        
         Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
         Hashtable props = new Hashtable();
         props.put("key.b", "10");
@@ -86,7 +86,7 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
 
             BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
             // install the blueprint sample onto the framework associated with the composite bundle
-            MavenArtifactProvisionOption mapo = mavenBundleInTest("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample");
+            MavenArtifactProvisionOption mapo = mavenBundleInTest(getClass().getClassLoader(), "org.apache.aries.blueprint", "org.apache.aries.blueprint.sample");
             // let's use input stream to avoid invoking mvn url handler which isn't avail in the child framework.
             InputStream is = new URL(mapo.getURL()).openStream();
             Bundle bundle = compositeBundleContext.installBundle(mapo.getURL(), is);
@@ -97,12 +97,12 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
             bundle.start();
             
             // start the blueprint bundle and it should detect the previously started blueprint sample
-            Bundle blueprintBundle = getInstalledBundle("org.apache.aries.blueprint");
+            Bundle blueprintBundle = context().getBundleByName("org.apache.aries.blueprint");
             blueprintBundle.start();
             Thread.sleep(2000);
 
             // do the test
-            testBlueprintContainer(compositeBundleContext, bundle);
+            Helper.testBlueprintContainer(new RichBundleContext(compositeBundleContext), bundle);
             
             // unget the service
             bundleContext.ungetService(sr);
@@ -111,34 +111,11 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
 
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
-        Option[] options = options(
-            // Log
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-            // Felix Config Admin
-            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-            // Felix mvn url handler
-            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-
-            // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-
-            // Bundles
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-            mavenBundle("asm", "asm-all"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").noStart(),
-            // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
-            // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-            mavenBundle("org.osgi", "org.osgi.compendium"),
-//            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-
+        return testOptions(
+            paxLogging("DEBUG"),
+            Helper.blueprintBundles(false),
             equinox().version("3.5.0")
         );
-
-        options = updateOptions(options);
-        return options;
     }
 
 }

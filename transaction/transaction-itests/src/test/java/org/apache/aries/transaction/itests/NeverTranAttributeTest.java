@@ -27,8 +27,8 @@ public class NeverTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testNever() throws Exception {
-      TestBean bean = getOsgiService(TestBean.class, "(tranAttribute=Never)", DEFAULT_TIMEOUT);
-      UserTransaction tran = getOsgiService(UserTransaction.class);
+      TestBean bean = context().getService(TestBean.class, "(tranAttribute=Never)");
+      UserTransaction tran = context().getService(UserTransaction.class);
       
       //Test with client transaction - an exception is thrown because transactions are not allowed
       int initialRows = bean.countRows();

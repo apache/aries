@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.apache.aries.itest.ExtraOptions.*;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,27 +41,21 @@ import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.jmx.framework.FrameworkMBean;
 
 /**
- * 
- * 
  * @version $Rev$ $Date$
  */
 public class FrameworkMBeanTest extends AbstractIntegrationTest {    
 
     @Configuration
     public static Option[] configuration() {
-        
-        Option[] options = CoreOptions.options(
+        return testOptions(
             CoreOptions.equinox(),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
+            paxLogging("INFO"),
+
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
             mavenBundle("org.apache.aries", "org.apache.aries.util")
         );
-        
-        options = updateOptions(options);
-        return options;
     }
 
     @Override

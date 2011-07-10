@@ -23,36 +23,26 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-
 import java.text.SimpleDateFormat;
 import java.util.Currency;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
+import org.apache.aries.itest.AbstractIntegrationTest;
+import org.apache.aries.itest.RichBundleContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.*;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 @RunWith(JUnit4TestRunner.class)
 public class BlueprintAnnotationTest extends AbstractIntegrationTest {
 
     @Test
     public void test() throws Exception {
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(
-                 bundleContext, "org.apache.aries.blueprint.sample-annotation",
-                5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample-annotation");
     
         assertNotNull(blueprintContainer);
     
@@ -78,27 +68,20 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
         
         assertNotNull(blueprintContainer.getComponentInstance("fragment"));
     
-       obj = getOsgiService(bundleContext, Foo.class, null, 5000);
+        obj = context().getService(Foo.class, null, 5000);
         assertNotNull(obj);
         assertEquals(foo.toString(), obj.toString());
     }
 
+    private BlueprintContainer getBlueprintContainerForBundle(RichBundleContext context, String symbolicName) {
+        return context.getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + symbolicName + ")");
+    }    
+    
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
-        Option[] options = options(
-            // Log
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-            // Felix Config Admin
-            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-            // Felix mvn url handler
-            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
+        return testOptions(
+            paxLogging("DEBUG"),
 
-
-            // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-
-            // Bundles
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
             mavenBundle("asm", "asm-all"),
@@ -108,14 +91,10 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.impl"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-annotation"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-fragment"),
-            //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"),
             mavenBundle("org.osgi", "org.osgi.compendium"),
-            //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
             equinox().version("3.5.0")
         );
-        options = updateOptions(options);
-        return options;
     }
 
 }

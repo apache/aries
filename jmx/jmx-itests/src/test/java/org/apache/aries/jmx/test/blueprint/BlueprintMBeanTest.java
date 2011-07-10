@@ -21,6 +21,8 @@ package org.apache.aries.jmx.test.blueprint;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import static org.apache.aries.itest.ExtraOptions.*;
+
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
@@ -54,11 +56,11 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
     
     @Configuration
     public static Option[] configuration() {    
-        Option[] options = CoreOptions.options(
+        return testOptions(
                 CoreOptions.equinox(), 
+                paxLogging("INFO"),
+                
                 mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
                 mavenBundle("asm", "asm-all"),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
@@ -67,8 +69,6 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint"),
                 mavenBundle("org.osgi", "org.osgi.compendium")
         );
-        options = updateOptions(options);
-        return options;
     }  
 
     @Override
@@ -78,8 +78,8 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
        
        // Wait enough time for osgi framework and blueprint bundles to be set up
        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Waiting for bundles to be set up");
-       getOsgiService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint)", DEFAULT_TIMEOUT);
-       getOsgiService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint.sample)", DEFAULT_TIMEOUT);
+       context().getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint)");
+       context().getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint.sample)");
     }
     
     @Test
@@ -101,7 +101,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         if (-1==extenderBundleId) fail("Blueprint Extender Bundle is not found!");
         
         //retrieve the proxy object
-        BlueprintStateMBean stateProxy = (BlueprintStateMBean) MBeanServerInvocationHandler.newProxyInstance(mbeanServer, new ObjectName(BlueprintStateMBean.OBJECTNAME), BlueprintStateMBean.class, false);
+        BlueprintStateMBean stateProxy = MBeanServerInvocationHandler.newProxyInstance(mbeanServer, new ObjectName(BlueprintStateMBean.OBJECTNAME), BlueprintStateMBean.class, false);
         
         // test getBlueprintBundleIds
         long[] bpBundleIds = stateProxy.getBlueprintBundleIds();
@@ -131,7 +131,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         long sampleBlueprintContainerServiceId = (Long) serviceReferences[0].getProperty(Constants.SERVICE_ID);
         
         //retrieve the proxy object
-        BlueprintMetadataMBean metadataProxy = (BlueprintMetadataMBean) MBeanServerInvocationHandler.newProxyInstance(mbeanServer, new ObjectName(BlueprintMetadataMBean.OBJECTNAME), BlueprintMetadataMBean.class, false);
+        BlueprintMetadataMBean metadataProxy = MBeanServerInvocationHandler.newProxyInstance(mbeanServer, new ObjectName(BlueprintMetadataMBean.OBJECTNAME), BlueprintMetadataMBean.class, false);
         
         // test getBlueprintContainerServiceIds
         long[] bpContainerServiceIds = metadataProxy.getBlueprintContainerServiceIds();

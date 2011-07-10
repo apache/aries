@@ -25,6 +25,8 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.modifyBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 
+import static org.apache.aries.itest.ExtraOptions.*;
+
 import java.io.InputStream;
 import java.util.Dictionary;
 
@@ -58,12 +60,11 @@ public class ConfigurationAdminMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
-        Option[] options = CoreOptions
-                .options(
+        return testOptions(
                         CoreOptions.equinox(),
+                        paxLogging("INFO"),
+                        
                         mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-                        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
                         mavenBundle("org.osgi", "org.osgi.compendium"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
@@ -102,8 +103,6 @@ public class ConfigurationAdminMBeanTest extends AbstractIntegrationTest {
                                         org.apache.aries.jmx.test.bundleb.Activator.class.getName())
                                 .build(withBnd()))
                         );
-        options = updateOptions(options);
-        return options;
     }
     
     @Override
@@ -122,10 +121,10 @@ public class ConfigurationAdminMBeanTest extends AbstractIntegrationTest {
        
         // get bundles
         
-        Bundle a = getBundle("org.apache.aries.jmx.test.bundlea");
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         assertNotNull(a);
         
-        Bundle b = getBundle("org.apache.aries.jmx.test.bundleb");
+        Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
         assertNotNull(b);
        
         

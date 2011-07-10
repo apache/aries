@@ -17,12 +17,7 @@ package org.apache.aries.quiesce.manager.itest;
 
 import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
-import static org.ops4j.pax.exam.OptionUtils.combine;
-//import org.ops4j.pax.exam.container.def.options.VMOption;
-//import org.ops4j.pax.exam.options.TimeoutOption
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,31 +26,19 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.quiesce.manager.QuiesceManager;
 import org.apache.aries.quiesce.participant.QuiesceParticipant;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.ops4j.pax.exam.options.BootDelegationOption;
-import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.Version;
-import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(JUnit4TestRunner.class)
-public class QuiesceManagerTest {
-    public static final long DEFAULT_TIMEOUT = 60000;
+public class QuiesceManagerTest extends AbstractIntegrationTest {
     private QuiesceManager manager;
     private Bundle b1;
     private Bundle b2;
@@ -67,12 +50,9 @@ public class QuiesceManagerTest {
     private MockQuiesceParticipant participant3;
 
 
-    @Inject
-    protected BundleContext bundleContext;
-
     @Before
     public void setup() {
-        manager = getOsgiService(QuiesceManager.class);
+        manager = context().getService(QuiesceManager.class);
         b1 = bundleContext.getBundle(5);
         b2 = bundleContext.getBundle(6);
         b3 = bundleContext.getBundle(10);
@@ -288,20 +268,8 @@ public class QuiesceManagerTest {
 
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
-        Option[] options = options(
-                bootDelegation(),
-
-                // Log
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-                // Felix Config Admin
-                mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-                // Felix mvn url handler
-                mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-                // this is how you set the default log level when using pax
-                // logging (logProfile)
-                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+        return testOptions(
+                paxLogging("DEBUG"),
 
                 // Bundles
                 mavenBundle("org.osgi", "org.osgi.compendium"),
@@ -317,95 +285,5 @@ public class QuiesceManagerTest {
                 //new TimeoutOption( 0 ),
 
                 equinox().version("3.5.0"));
-        options = updateOptions(options);
-        return options;
-    }
-
-
-    protected Bundle getBundle(String symbolicName) {
-        return getBundle(symbolicName, null);
-    }
-
-    protected Bundle getBundle(String bundleSymbolicName, String version) {
-        Bundle result = null;
-        for (Bundle b : bundleContext.getBundles()) {
-            if (b.getSymbolicName().equals(bundleSymbolicName)) {
-                if (version == null
-                        || b.getVersion().equals(Version.parseVersion(version))) {
-                    result = b;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    public static BootDelegationOption bootDelegation() {
-        return new BootDelegationOption("org.apache.aries.unittest.fixture");
-    }
-
-    public static MavenArtifactProvisionOption mavenBundle(String groupId,
-            String artifactId) {
-        return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId)
-        .versionAsInProject();
-    }
-
-    protected static Option[] updateOptions(Option[] options) {
-        // We need to add pax-exam-junit here when running with the ibm
-        // jdk to avoid the following exception during the test run:
-        // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
-        if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
-            Option[] ibmOptions = options(wrappedBundle(mavenBundle(
-                    "org.ops4j.pax.exam", "pax-exam-junit")));
-            options = combine(ibmOptions, options);
-        }
-
-        return options;
-    }
-
-    protected <T> T getOsgiService(Class<T> type, long timeout) {
-        return getOsgiService(type, null, timeout);
-    }
-
-    protected <T> T getOsgiService(Class<T> type) {
-        return getOsgiService(type, null, DEFAULT_TIMEOUT);
-    }
-
-    protected <T> T getOsgiService(Class<T> type, String filter, long timeout) {
-        return getOsgiService(null, type, filter, timeout);
-    }
-
-    protected <T> T getOsgiService(BundleContext bc, Class<T> type,
-            String filter, long timeout) {
-        ServiceTracker tracker = null;
-        try {
-            String flt;
-            if (filter != null) {
-                if (filter.startsWith("(")) {
-                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")"
-                    + filter + ")";
-                } else {
-                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")("
-                    + filter + "))";
-                }
-            } else {
-                flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
-            }
-            Filter osgiFilter = FrameworkUtil.createFilter(flt);
-            tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter,
-                    null);
-            tracker.open();
-            // Note that the tracker is not closed to keep the reference
-            // This is buggy, has the service reference may change i think
-            Object svc = type.cast(tracker.waitForService(timeout));
-            if (svc == null) {
-                throw new RuntimeException("Gave up waiting for service " + flt);
-            }
-            return type.cast(svc);
-        } catch (InvalidSyntaxException e) {
-            throw new IllegalArgumentException("Invalid filter", e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

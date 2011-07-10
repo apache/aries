@@ -21,8 +21,7 @@ package org.apache.aries.proxy.itests;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +49,7 @@ public class WeavingProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalClass() throws Exception
   {
-    ProxyManager mgr = getService(ProxyManager.class);
+    ProxyManager mgr = context().getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
     TestCallable dispatcher = new TestCallable();
     TestCallable template = new TestCallable();
@@ -74,7 +73,7 @@ public class WeavingProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalMethods() throws Exception
   {
-    ProxyManager mgr = getService(ProxyManager.class);
+    ProxyManager mgr = context().getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
@@ -90,18 +89,8 @@ public class WeavingProxyTest extends AbstractProxyTest
    
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-      Option[] options = options(
-          // Log
-          mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-          mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-          // Felix Config Admin
-          mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-          // Felix mvn url handler
-          mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-
-          // this is how you set the default log level when using pax logging (logProfile)
-          systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+      return testOptions(
+          paxLogging("DEBUG"),
 
           // Bundles
           mavenBundle("org.apache.aries", "org.apache.aries.util"),
@@ -115,8 +104,5 @@ public class WeavingProxyTest extends AbstractProxyTest
 
           equinox().version("3.7.0.v20110304")
       );
-
-      options = updateOptions(options);
-      return options;
   }
 }

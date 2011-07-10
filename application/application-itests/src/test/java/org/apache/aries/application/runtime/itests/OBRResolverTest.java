@@ -21,8 +21,7 @@ package org.apache.aries.application.runtime.itests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +41,7 @@ import org.apache.aries.application.management.spi.repository.RepositoryGenerato
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.utils.AppConstants;
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.filesystem.FileSystem;
@@ -138,7 +138,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
 
   @After
   public void clearRepository() {
-	  RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+	  RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
 	  Repository[] repos = repositoryAdmin.listRepositories();
 	  if ((repos != null) && (repos.length >0)) {
 		  for (Repository repo : repos) {
@@ -153,7 +153,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
     generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
     
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
     
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
@@ -162,7 +162,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
     //installing requires a valid url for the bundle in repository.xml.
     
@@ -180,7 +180,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
     
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
     
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
@@ -189,7 +189,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
     //installing requires a valid url for the bundle in repository.xml.
     
@@ -205,7 +205,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
     generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
     
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
     
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
@@ -214,7 +214,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
     //installing requires a valid url for the bundle in repository.xml.
     
@@ -252,8 +252,8 @@ public class OBRResolverTest extends AbstractIntegrationTest
   {
     Set<ModelledResource> mrs = new HashSet<ModelledResource>();
     FileOutputStream fout = new FileOutputStream("repository.xml");
-    RepositoryGenerator repositoryGenerator = getOsgiService(RepositoryGenerator.class);
-    ModelledResourceManager modelledResourceManager = getOsgiService(ModelledResourceManager.class);
+    RepositoryGenerator repositoryGenerator = context().getService(RepositoryGenerator.class);
+    ModelledResourceManager modelledResourceManager = context().getService(ModelledResourceManager.class);
     for (String fileName : bundleFiles) {
       File bundleFile = new File(fileName);
       IDirectory jarDir = FileSystem.getFSRoot(bundleFile);
@@ -266,19 +266,9 @@ public class OBRResolverTest extends AbstractIntegrationTest
 
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-    Option[] options = options(
-        // Log
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-        // Felix Config Admin
-        mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-        // Felix mvn url handler
-        mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-        // this is how you set the default log level when using pax
-        // logging (logProfile)
-        systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-
+    return testOptions(
+        paxLogging("DEBUG"),
+        
         // Bundles
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("asm", "asm-all"),
@@ -295,7 +285,6 @@ public class OBRResolverTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
         /* For debugging, uncomment the next two lines */
         // vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
@@ -307,7 +296,5 @@ public class OBRResolverTest extends AbstractIntegrationTest
         */
 
         equinox().version("3.5.0"));
-    options = updateOptions(options);
-    return options;
   }
 }
