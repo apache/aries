@@ -4,10 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
-import static org.ops4j.pax.exam.OptionUtils.combine;
-
 import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -15,18 +11,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.junit.Test;
-import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 
-public class AbstractProxyTest {
+public class AbstractProxyTest extends AbstractIntegrationTest {
 
   public final static class TestCallable implements Callable<Object> {
     private Object list = new ArrayList<Object>();
@@ -115,37 +107,10 @@ public class AbstractProxyTest {
     }
   }
 
-  public static MavenArtifactProvisionOption mavenBundle(String groupId, String artifactId) {
-    return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId).versionAsInProject();
-  }
-
-  protected static Option[] updateOptions(Option[] options) {
-    // We need to add pax-exam-junit here when running with the ibm
-    // jdk to avoid the following exception during the test run:
-    // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
-    if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
-      Option[] ibmOptions = options(
-        wrappedBundle(mavenBundle("org.ops4j.pax.exam", "pax-exam-junit"))
-      );
-      options = combine(ibmOptions, options);
-    }
-  
-      return options;
-  }
-
-  protected <T> T getService(Class<T> clazz) {
-    BundleContext ctx = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-    ServiceReference ref = ctx.getServiceReference(ProxyManager.class.getName());
-    if (ref != null) {
-      return clazz.cast(ctx.getService(ref));
-    }
-    return null;
-  }
-
   @SuppressWarnings("unchecked")
   @Test
   public void testEquals() throws Exception {
-    ProxyManager mgr = getService(ProxyManager.class);
+    ProxyManager mgr = context().getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
     
     TestCallable c = new TestCallable();
@@ -166,7 +131,7 @@ public class AbstractProxyTest {
 
   @Test
   public void testDelegation() throws Exception {
-    ProxyManager mgr = getService(ProxyManager.class);
+    ProxyManager mgr = context().getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
     
     TestCallable c = new TestCallable();
@@ -186,7 +151,7 @@ public class AbstractProxyTest {
   
   @Test
   public void testInterception() throws Exception {
-    ProxyManager mgr = getService(ProxyManager.class);
+    ProxyManager mgr = context().getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
     
     TestDelegate td = new TestDelegate("Hello");
@@ -227,7 +192,7 @@ public class AbstractProxyTest {
   
   @Test
   public void testDelegationAndInterception() throws Exception {
-    ProxyManager mgr = getService(ProxyManager.class);
+    ProxyManager mgr = context().getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
     
     
