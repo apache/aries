@@ -18,7 +18,7 @@
  */
 package org.apache.aries.jmx.provisioning;
 
-import org.apache.aries.jmx.permissionadmin.PermissionAdminMBeanTest;
+import org.apache.aries.itest.ExtraOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
@@ -35,7 +35,7 @@ public class ProvisioningServiceMBeanWhiteboardTest extends ProvisioningServiceM
         MavenArtifactProvisionOption po = (MavenArtifactProvisionOption) options[i];
         String url = po.getURL();
         if (url.contains("mvn:org.apache.aries.jmx/org.apache.aries.jmx/")) {
-          options[i] = mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.core.whiteboard");
+          options[i] = ExtraOptions.mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.core.whiteboard");
         }
       }
     }

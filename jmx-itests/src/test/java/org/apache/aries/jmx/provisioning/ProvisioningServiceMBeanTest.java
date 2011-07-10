@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 import static org.osgi.service.provisioning.ProvisioningService.PROVISIONING_AGENT_CONFIG;
 import static org.osgi.service.provisioning.ProvisioningService.PROVISIONING_REFERENCE;
 
+import static org.apache.aries.itest.ExtraOptions.*;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Dictionary;
@@ -56,18 +58,13 @@ public class ProvisioningServiceMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
-        Option[] options = CoreOptions
-                .options(
+        return testOptions(
                         CoreOptions.equinox(),
-                        //provision("file:///<local>"),
-                        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
-                        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
+                        paxLogging("INFO"),
                         mavenBundle("org.osgi", "org.osgi.compendium"), 
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
                         mavenBundle("org.apache.aries", "org.apache.aries.util"));
-        options = updateOptions(options);
-        return options;
     }
 
     @Override

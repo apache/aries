@@ -24,8 +24,7 @@ import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.modifyBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; 
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -63,17 +62,17 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
-        Option[] options = CoreOptions
-                .options(
+        return testOptions(
                         CoreOptions.equinox(),
+                        paxLogging("INFO"),
+                        
                         mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-                        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
                         mavenBundle("org.osgi", "org.osgi.compendium"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
                         mavenBundle("org.apache.aries", "org.apache.aries.util"),
+                        
                         new Customizer() {
                             public InputStream customizeTestProbe(InputStream testProbe) throws Exception {
                                 return modifyBundle(testProbe)
@@ -112,8 +111,6 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 //                              vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 //                              waitForFrameworkStartup()
                         );
-        options = updateOptions(options);
-        return options;
     }
     
     @Override
@@ -129,10 +126,10 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         
         //get bundles
         
-        Bundle a = getBundle("org.apache.aries.jmx.test.bundlea");
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         assertNotNull(a);
         
-        Bundle b = getBundle("org.apache.aries.jmx.test.bundleb");
+        Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
         assertNotNull(b);
         
         // get services
