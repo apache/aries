@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -44,15 +45,13 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
-        Option[] options = CoreOptions.options(CoreOptions.equinox(), 
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
+        return testOptions(
+            CoreOptions.equinox(), 
+            paxLogging("INFO"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
             mavenBundle("org.apache.aries", "org.apache.aries.util"));
-        options = updateOptions(options);
-        return options;
     }
 
     @Override

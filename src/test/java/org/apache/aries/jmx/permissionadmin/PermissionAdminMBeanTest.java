@@ -21,8 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; 
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.IOException;
 
@@ -49,10 +48,9 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
     
     @Configuration
     public static Option[] configuration() {
-        Option[] options = CoreOptions.options(
+        return testOptions(
             CoreOptions.equinox(),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
+            paxLogging("INFO"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
@@ -72,8 +70,6 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
 //                     vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7778"),
 //                     waitForFrameworkStartup()
         );
-        options = updateOptions(options);
-        return options;
     }
     
     @Override
@@ -100,7 +96,7 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
         String[] mBeanDefPermissions = mBean.listDefaultPermissions();
         assertArrayEquals(encoded, mBeanDefPermissions);
         
-        Bundle a = getBundle("org.apache.aries.jmx.test.bundlea");
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         assertNotNull(a);
         
         String location = a.getLocation();

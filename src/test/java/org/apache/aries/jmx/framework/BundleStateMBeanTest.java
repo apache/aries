@@ -25,6 +25,8 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 import static org.osgi.jmx.framework.BundleStateMBean.OBJECTNAME;
 
+import static org.apache.aries.itest.ExtraOptions.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,21 +47,17 @@ import org.osgi.framework.Constants;
 import org.osgi.jmx.framework.BundleStateMBean;
 
 /**
- * 
- * 
- * 
  * @version $Rev$ $Date$
  */
 public class BundleStateMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
-        Option[] options = CoreOptions
-                .options(
+        return testOptions(
                         CoreOptions.equinox(),
+                        paxLogging("INFO"),
+                        
                         mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-                        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
                         mavenBundle("org.osgi", "org.osgi.compendium"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
@@ -103,8 +101,6 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
                                 .set(Constants.REQUIRE_BUNDLE, "org.apache.aries.jmx.test.bundlea;bundle-version=2.0.0")
                                 .build(withBnd()))
                         );
-        options = updateOptions(options);
-        return options;
     }
     
     @Override
@@ -120,16 +116,16 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         
         //get bundles
         
-        Bundle a = getBundle("org.apache.aries.jmx.test.bundlea");
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         assertNotNull(a);
         
-        Bundle b = getBundle("org.apache.aries.jmx.test.bundleb");
+        Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
         assertNotNull(b);
         
-        Bundle frag = getBundle("org.apache.aries.jmx.test.fragc");
+        Bundle frag = context().getBundleByName("org.apache.aries.jmx.test.fragc");
         assertNotNull(frag);
 
-        Bundle d = getBundle("org.apache.aries.jmx.test.bundled");
+        Bundle d = context().getBundleByName("org.apache.aries.jmx.test.bundled");
         assertNotNull(d);
         
         // exportedPackages
