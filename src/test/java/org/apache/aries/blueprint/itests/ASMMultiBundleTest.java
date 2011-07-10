@@ -18,13 +18,14 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.apache.aries.blueprint.testbundlea.NSHandlerTwo;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean.Phase;
 import org.apache.aries.blueprint.testbundleb.TestBean;
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -42,7 +44,8 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-public class AbstractMultiBundleTest extends AbstractIntegrationTest{
+@RunWith(JUnit4TestRunner.class)
+public class ASMMultiBundleTest extends AbstractIntegrationTest {
 
     private void checkInterceptorLog(String []expected, List<String> log){
         assertNotNull("interceptor log should not be null",log);
@@ -79,22 +82,23 @@ public class AbstractMultiBundleTest extends AbstractIntegrationTest{
         }
     }
     
-    protected void doCommonMultiBundleTest() throws Exception {
+    @Test
+    public void multiBundleTest() throws Exception {
         
         //bundlea provides the ns handlers, bean processors, interceptors etc for this test.
-        Bundle bundlea = getInstalledBundle("org.apache.aries.blueprint.testbundlea");
+        Bundle bundlea = context().getBundleByName("org.apache.aries.blueprint.testbundlea");
         assertNotNull(bundlea);
         bundlea.start();
         
         //bundleb makes use of the extensions provided by bundlea
-        Bundle bundleb = getInstalledBundle("org.apache.aries.blueprint.testbundleb");
+        Bundle bundleb = context().getBundleByName("org.apache.aries.blueprint.testbundleb");
         assertNotNull(bundleb);
         bundleb.start();
         
         //bundleb's container will hold the beans we need to query to check the function
         //provided by bundlea functioned as expected
         BlueprintContainer beanContainer = 
-            getBlueprintContainerForBundle( bundleContext , "org.apache.aries.blueprint.testbundleb", DEFAULT_TIMEOUT);
+            Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.testbundleb");
         assertNotNull(beanContainer);
 
         //TestBeanA should have the values below, no interference should be present from other sources.
@@ -122,7 +126,7 @@ public class AbstractMultiBundleTest extends AbstractIntegrationTest{
        
         //handlers are in bundlea, with its own container.
         BlueprintContainer handlerContainer = 
-            getBlueprintContainerForBundle( bundleContext , "org.apache.aries.blueprint.testbundlea", DEFAULT_TIMEOUT);
+            Helper.getBlueprintContainerForBundle( context(), "org.apache.aries.blueprint.testbundlea");
         assertNotNull(handlerContainer);
         
         Object ns1 = handlerContainer.getComponentInstance("NSHandlerOne");
@@ -186,4 +190,15 @@ public class AbstractMultiBundleTest extends AbstractIntegrationTest{
         //assertEquals(pb.getProcessedBy(Phase.BEFORE_DESTROY).get(0),bp);
         //assertEquals(pb.getProcessedBy(Phase.AFTER_DESTROY).get(0),bp);
     }
+    
+    @org.ops4j.pax.exam.junit.Configuration
+    public static Option[] configuration() {
+        return testOptions(
+            paxLogging("DEBUG"),
+            Helper.blueprintBundles(),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart(),
+            equinox().version("3.5.0")
+        );
+    } 
 }

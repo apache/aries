@@ -19,11 +19,9 @@
 package org.apache.aries.blueprint.itests;
 
 import static org.junit.Assert.assertNotNull;
+
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -32,6 +30,7 @@ import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.Fixture;
 import org.junit.Test;
@@ -42,25 +41,27 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import static org.apache.aries.itest.ExtraOptions.*;
+
 @RunWith(JUnit4TestRunner.class)
 public class BlueprintContainerTest extends AbstractIntegrationTest {
 
     @Test
     public void test() throws Exception {
         // Create a config to check the property placeholder
-        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);
         Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
         Hashtable props = new Hashtable();
         props.put("key.b", "10");
         cf.update(props);
 
-        Bundle bundle = getInstalledBundle("org.apache.aries.blueprint.sample");
+        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
         assertNotNull(bundle);
 
         bundle.start();
         
         // do the test
-        testBlueprintContainer(bundle);
+        Helper.testBlueprintContainer(context(), bundle);
     }
     
     @Test
@@ -75,7 +76,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
         
         // every blueprint container should be up
         for (Bundle b : bundles) {
-          assertNotNull(getBlueprintContainerForBundle(b.getSymbolicName()));
+          assertNotNull(Helper.getBlueprintContainerForBundle(context(), b.getSymbolicName()));
         }
     }
     
@@ -124,12 +125,12 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
     public void testDeadlock() throws Exception {
       bundleContext.registerService("java.util.Set",new HashSet<Object>(), null);
       
-      Bundle bundle = getInstalledBundle("org.apache.aries.blueprint.sample");
+      Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
       assertNotNull(bundle);
 
       bundle.start();
       
-      getBlueprintContainerForBundle(bundleContext, "org.apache.aries.blueprint.sample",DEFAULT_TIMEOUT);
+      Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
       
       // no actual assertions, we just don't want to deadlock
     }
@@ -169,33 +170,14 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
 
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
-        Option[] options = options(
-            // Log
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-            // Felix Config Admin
-            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-            // Felix mvn url handler
-            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-
-            // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
-
-            // Bundles
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-            mavenBundle("asm", "asm-all"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+        return testOptions(
+            paxLogging("INFO"),
+            Helper.blueprintBundles(),
+                
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-            mavenBundle("org.osgi", "org.osgi.compendium"),
-            mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
-            //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
             equinox().version("3.5.0")
         );
-        options = updateOptions(options);
-        return options;
     }
 
 }
