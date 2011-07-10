@@ -287,6 +287,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+          <groupId>org.apache.aries.testsupport</groupId>
+          <artifactId>org.apache.aries.testsupport.unit</artifactId>
+          <version>0.3.1-SNAPSHOT</version>
+          <scope>test</scope>
+        </dependency>        
+        <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <version>10.5.3.0_1</version>
