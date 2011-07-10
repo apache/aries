@@ -24,7 +24,7 @@ public class InvalidTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testInvalid() throws Exception {
-      TestBean bean = getOsgiService(TestBean.class, "(tranAttribute=Invalid)", DEFAULT_TIMEOUT);
+      TestBean bean = context().getService(TestBean.class, "(tranAttribute=Invalid)");
       
       //Test without client transaction - an exception is thrown because the bean is not
       //configured correctly, i.e. multiple transaction elements match to the same method

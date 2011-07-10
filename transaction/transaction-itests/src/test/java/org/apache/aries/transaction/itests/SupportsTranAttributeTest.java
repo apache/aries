@@ -30,8 +30,8 @@ public class SupportsTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testSupports() throws Exception {
-      TestBean bean = getOsgiService(TestBean.class, "(tranAttribute=Supports)", DEFAULT_TIMEOUT);
-      UserTransaction tran = getOsgiService(UserTransaction.class);
+      TestBean bean = context().getService(TestBean.class, "(tranAttribute=Supports)");
+      UserTransaction tran = context().getService(UserTransaction.class);
       
       //Test with client transaction - the insert succeeds because the bean delegates to
       //another bean with a transaction strategy of Mandatory, and the user transaction

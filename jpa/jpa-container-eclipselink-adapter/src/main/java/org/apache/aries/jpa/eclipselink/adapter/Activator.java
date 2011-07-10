@@ -147,6 +147,11 @@ public class Activator implements BundleActivator, BundleListener {
 
         public Properties getProperties() {
             Properties props = delegate.getProperties();
+            
+            if (props == null) {
+                props = new Properties();
+            }
+            
             if (!!!props.containsKey("eclipselink.target-server")) {
                 props.put("eclipselink.target-server", OSGiTSServer.class.getName());
             }

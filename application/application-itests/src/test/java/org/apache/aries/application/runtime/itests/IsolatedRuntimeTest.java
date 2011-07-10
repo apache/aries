@@ -22,9 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.repository;
+
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,6 +37,7 @@ import org.apache.aries.application.management.spi.repository.RepositoryGenerato
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.runtime.itests.util.IsolationTestUtils;
 import org.apache.aries.isolated.sample.HelloWorld;
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.VersionRange;
@@ -132,7 +133,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   @Test
   public void testAppWithoutApplicationManifest() throws Exception {
     
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     AriesApplicationContext ctx = manager.install(app);
     
@@ -145,7 +146,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   @Test
   public void testAppWithApplicationManifest() throws Exception {
         
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
     AriesApplicationContext ctx = manager.install(app);
     
@@ -158,7 +159,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   @Test
   public void testUninstallReinstall() throws Exception {
     
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
     AriesApplicationContext ctx = manager.install(app);
     
@@ -184,7 +185,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   @Test
   public void testAppWithFragment() throws Exception
   {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("withFragment.eba")));
     AriesApplicationContext ctx = manager.install(app);
 
@@ -198,13 +199,13 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   @Test
   public void testAppWithGlobalRepositoryBundle() throws Exception
   {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
     
     IsolationTestUtils.prepareSampleBundleV2(bundleContext, 
-        getOsgiService(RepositoryGenerator.class), 
-        getOsgiService(RepositoryAdmin.class), 
-        getOsgiService(ModellingManager.class));
+        context().getService(RepositoryGenerator.class), 
+        context().getService(RepositoryAdmin.class), 
+        context().getService(ModellingManager.class));
 
     AriesApplication newApp = manager.resolve(app, new ResolveConstraint() {
       @Override
@@ -241,19 +242,10 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-    Option[] options = options(
+    return testOptions(
         repository( "http://repository.ops4j.org/maven2" ),
-        // Log
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-        // Felix Config Admin
-        mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-        // Felix mvn url handler
-        mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-        // this is how you set the default log level when using pax
-        // logging (logProfile)
-        systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+        
+        paxLogging("DEBUG"),
 
         // do not provision against the local runtime
         // Bundles
@@ -276,7 +268,6 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.repository"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec"),
-        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
         /* For debugging, uncommenting the following two lines and add the imports */
         /*
@@ -289,7 +280,5 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
          */
         equinox().version("3.5.0"));
-    options = updateOptions(options);
-    return options;
   }
 }
