@@ -28,9 +28,9 @@ public class RequiresNewTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testRequiresNew() throws Exception {
-      TestBean rnBean = getOsgiService(TestBean.class, "(tranAttribute=RequiresNew)", DEFAULT_TIMEOUT);
-      TestBean rBean = getOsgiService(TestBean.class, "(tranAttribute=Required)", DEFAULT_TIMEOUT);
-      UserTransaction tran = getOsgiService(UserTransaction.class);
+      TestBean rnBean = context().getService(TestBean.class, "(tranAttribute=RequiresNew)");
+      TestBean rBean = context().getService(TestBean.class, "(tranAttribute=Required)");
+      UserTransaction tran = context().getService(UserTransaction.class);
       
       //Test with client transaction - a container transaction is used to insert the row
       int initialRows = rnBean.countRows();

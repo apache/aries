@@ -30,8 +30,8 @@ public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testMandatory() throws Exception {
-      TestBean bean = getOsgiService(TestBean.class, "(tranAttribute=Mandatory)", DEFAULT_TIMEOUT);
-      UserTransaction tran = getOsgiService(UserTransaction.class);
+      TestBean bean = context().getService(TestBean.class, "(tranAttribute=Mandatory)");
+      UserTransaction tran = context().getService(UserTransaction.class);
       
       //Test with client transaction - the user transaction is used to insert a row
       int initialRows = bean.countRows();

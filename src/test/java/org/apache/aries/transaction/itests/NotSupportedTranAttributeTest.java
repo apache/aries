@@ -29,9 +29,9 @@ public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testNotSupported() throws Exception {
-      TestBean nsBean = getOsgiService(TestBean.class, "(tranAttribute=NotSupported)", DEFAULT_TIMEOUT);
-      TestBean rBean = getOsgiService(TestBean.class, "(tranAttribute=Required)", DEFAULT_TIMEOUT);
-      UserTransaction tran = getOsgiService(UserTransaction.class);
+      TestBean nsBean = context().getService(TestBean.class, "(tranAttribute=NotSupported)");
+      TestBean rBean = context().getService(TestBean.class, "(tranAttribute=Required)");
+      UserTransaction tran = context().getService(UserTransaction.class);
       
       //Test with client transaction - the insert fails because the bean delegates to another
       //bean with a transaction strategy of Mandatory, and no transaction is available, i.e.
