@@ -17,11 +17,11 @@
  * under the License.
  */
 package org.apache.aries.application.runtime.itests;
+
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,6 +51,7 @@ import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.manifest.ContentFactory;
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.sample.HelloWorld;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
@@ -70,6 +71,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 @RunWith(JUnit4TestRunner.class)
 public class OBRResolverAdvancedTest extends AbstractIntegrationTest 
 {
@@ -243,7 +245,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     generateOBRRepoXML(false, TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar",  USE_BUNDLE_BY_REFERENCE+".jar");
     
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
     
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
@@ -252,7 +254,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("demo.eba")));
     
     app = manager.resolve(app);
@@ -274,7 +276,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     generateOBRRepoXML(false, TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar", USE_BUNDLE_BY_REFERENCE+".jar");
     
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
     
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
@@ -283,7 +285,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("demo.eba")));
     //installing requires a valid url for the bundle in repository.xml.
     
@@ -392,7 +394,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     // do not provision against the local runtime
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     
-    RepositoryGenerator repositoryGenerator = getOsgiService(RepositoryGenerator.class);
+    RepositoryGenerator repositoryGenerator = context().getService(RepositoryGenerator.class);
     
     String fileURI = new File(REPO_BUNDLE+".jar").toURI().toString();
     File repoXml = new File("repository.xml");
@@ -443,7 +445,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
     generateOBRRepoXML(false, HELLO_WORLD_SERVICE_BUNDLE1 + ".jar", HELLO_WORLD_SERVICE_BUNDLE2 + ".jar");
     
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
     
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
@@ -452,7 +454,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("hello.eba")));
     AriesApplicationContext ctx = manager.install(app);
     ctx.start();
@@ -462,7 +464,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     	Thread.sleep(5000);
     } catch (InterruptedException ix) {}
     
-    HelloWorld hw = getOsgiService(HelloWorld.class);
+    HelloWorld hw = context().getService(HelloWorld.class);
     String result = hw.getMessage();
     assertEquals (result, "hello world");
     
@@ -472,7 +474,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     // is fixed. This tracks the problem of provisioning only one service even when we 
     // specify multiple services.
      
-     /** HelloWorldManager hwm = getOsgiService(HelloWorldManager.class);
+     /** HelloWorldManager hwm = context().getService(HelloWorldManager.class);
      * int numberOfServices = hwm.getNumOfHelloServices();
      * assertEquals(2, numberOfServices); 
      */
@@ -487,8 +489,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
   {
     Set<ModelledResource> mrs = new HashSet<ModelledResource>();
     FileOutputStream fout = new FileOutputStream("repository.xml");
-    RepositoryGenerator repositoryGenerator = getOsgiService(RepositoryGenerator.class);
-    ModelledResourceManager modelledResourceManager = getOsgiService(ModelledResourceManager.class);
+    RepositoryGenerator repositoryGenerator = context().getService(RepositoryGenerator.class);
+    ModelledResourceManager modelledResourceManager = context().getService(ModelledResourceManager.class);
     for (String fileName : bundleFiles) {
       File bundleFile = new File(fileName);
       IDirectory jarDir = FileSystem.getFSRoot(bundleFile);
@@ -504,7 +506,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
 
   @After
   public void clearRepository() {
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
     Repository[] repos = repositoryAdmin.listRepositories();
     if ((repos != null) && (repos.length >0)) {
       for (Repository repo : repos) {
@@ -515,19 +517,9 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
 
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-    Option[] options = options(
-        // Log
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-        // Felix Config Admin
-        mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-        // Felix mvn url handler
-        mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-        // this is how you set the default log level when using pax
-        // logging (logProfile)
-        systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-
+    return testOptions(
+        paxLogging("DEBUG"),
+        
         // Bundles
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
@@ -544,7 +536,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
+
         /* For debugging, uncomment the next two lines  */
         /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5010"),
         waitForFrameworkStartup(),  */
@@ -555,7 +547,5 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         */
 
         equinox().version("3.5.0"));
-    options = updateOptions(options);
-    return options;
   }
 }

@@ -20,8 +20,7 @@ package org.apache.aries.application.runtime.itests;
 
 import static org.junit.Assert.assertEquals;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +28,7 @@ import java.io.FileOutputStream;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.sample.HelloWorld;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
@@ -79,7 +79,7 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
   @Test
   public void testAppWithoutApplicationManifest() throws Exception {
     
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     
     // application name should be equal to eba name since application.mf is not provided
@@ -87,7 +87,7 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
     AriesApplicationContext ctx = manager.install(app);
     ctx.start();
     
-    HelloWorld hw = getOsgiService(HelloWorld.class);
+    HelloWorld hw = context().getService(HelloWorld.class);
     String result = hw.getMessage();
     assertEquals (result, "hello world");
     
@@ -97,7 +97,7 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
 
   @Test
   public void testAppWithApplicationManifest() throws Exception {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
     
     // application name should equal to whatever Application name provided in the application.mf
@@ -106,7 +106,7 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
     AriesApplicationContext ctx = manager.install(app);
     ctx.start();
     
-    HelloWorld hw = getOsgiService(HelloWorld.class);
+    HelloWorld hw = context().getService(HelloWorld.class);
     String result = hw.getMessage();
     assertEquals (result, "hello world");
     
@@ -117,18 +117,8 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
   
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-    Option[] options = options(
-        // Log
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-        // Felix Config Admin
-        mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-        // Felix mvn url handler
-        mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-        // this is how you set the default log level when using pax
-        // logging (logProfile)
-        systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+    return testOptions(
+        paxLogging("DEBUG"),
 
         // Bundles
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
@@ -145,7 +135,6 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
         mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
         
         
         /* For debugging, uncomment the next two lines
@@ -158,7 +147,5 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
         */
 
         equinox().version("3.5.0"));
-    options = updateOptions(options);
-    return options;
   }
 }

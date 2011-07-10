@@ -21,8 +21,7 @@ package org.apache.aries.application.runtime.itests;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,6 +33,7 @@ import java.io.OutputStream;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.filesystem.FileSystem;
@@ -50,7 +50,6 @@ import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.BlueprintListener;
 
 @RunWith(JUnit4TestRunner.class)
-
 public class MinimumImportsTest extends AbstractIntegrationTest {
 
   /* Use @Before not @BeforeClass so as to ensure that these resources
@@ -138,9 +137,9 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
     AppMgrClientBlueprintListener acbl = new AppMgrClientBlueprintListener();
     ServiceRegistration sr = bundleContext.registerService("org.osgi.service.blueprint.container.BlueprintListener", acbl, null);
 
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("appmgrclienttest.eba")));
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
 
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
@@ -167,18 +166,8 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
 
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-    Option[] options = options(
-        // Log
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-        // Felix Config Admin
-        mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-        // Felix mvn url handler
-        mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-        // this is how you set the default log level when using pax
-        // logging (logProfile)
-        systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+    return testOptions(
+        paxLogging("DEBUG"),
 
         // Bundles
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
@@ -196,7 +185,6 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
         mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
         /* For debugging, uncomment the next two lines*/
         /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5007"),
@@ -208,7 +196,5 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
 
 
         equinox().version("3.5.0"));
-    options = updateOptions(options);
-    return options;
   }
 }

@@ -23,8 +23,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+
+import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,6 +47,7 @@ import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.runtime.itests.util.IsolationTestUtils;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.isolated.sample.HelloWorld;
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.VersionRange;
@@ -54,18 +56,22 @@ import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+@RunWith(JUnit4TestRunner.class)
 public class UpdateAppTest extends AbstractIntegrationTest {
   private static final String SAMPLE_APP_NAME = "org.apache.aries.sample2";
   /* Use @Before not @BeforeClass so as to ensure that these resources
    * are created in the paxweb temp directory, and not in the svn tree 
    */
   static boolean createdApplications = false;
+  
   @Before
-  public static void createApplications() throws Exception {
+  public void createApplications() throws Exception {
        
     if (createdApplications) { 
       return;
@@ -111,7 +117,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
   
   @Test
   public void testFullUpdate() throws Exception {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = setupApp();
     
     updateApp(manager, app);
@@ -121,7 +127,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
   
   @Test
   public void testFineUpdate() throws Exception {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = setupApp();
     
     BundleContext oldCtx = IsolationTestUtils.findIsolatedAppBundleContext(bundleContext, SAMPLE_APP_NAME);
@@ -138,7 +144,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
   @Test
   public void testUpdateThenStart() throws Exception
   {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     AriesApplicationContext ctx = manager.install(app);
     app = ctx.getApplication();
@@ -204,7 +210,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
   }
   
   private AriesApplication setupApp() throws Exception {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     AriesApplicationContext ctx = manager.install(app);
     app = ctx.getApplication();
@@ -217,9 +223,9 @@ public class UpdateAppTest extends AbstractIntegrationTest {
   
   private AriesApplicationContext updateApp(AriesApplicationManager manager, AriesApplication app) throws Exception {
     IsolationTestUtils.prepareSampleBundleV2(bundleContext, 
-        getOsgiService(RepositoryGenerator.class), 
-        getOsgiService(RepositoryAdmin.class), 
-        getOsgiService(ModellingManager.class));
+        context().getService(RepositoryGenerator.class), 
+        context().getService(RepositoryAdmin.class), 
+        context().getService(ModellingManager.class));
     
     AriesApplication newApp = manager.resolve(app, new ResolveConstraint() {
       public String getBundleName() {
@@ -242,19 +248,9 @@ public class UpdateAppTest extends AbstractIntegrationTest {
 
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-    Option[] options = options(
-        // Log
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-        mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-        // Felix Config Admin
-        mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-        // Felix mvn url handler
-        mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-        // this is how you set the default log level when using pax
-        // logging (logProfile)
-        systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-
+    return testOptions(
+        paxLogging("DEBUG"),
+        
         // do not provision against the local runtime
         systemProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP).value("true"),
         // Bundles
@@ -278,7 +274,6 @@ public class UpdateAppTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.isolated"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec"),
-        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
         // new VMOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5011"),
 
@@ -288,7 +283,5 @@ public class UpdateAppTest extends AbstractIntegrationTest {
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
          */
         equinox().version("3.5.0"));
-    options = updateOptions(options);
-    return options;
   }
 }
