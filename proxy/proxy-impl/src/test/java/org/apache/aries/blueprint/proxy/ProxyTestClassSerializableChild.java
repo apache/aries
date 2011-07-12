@@ -18,11 +18,6 @@
  */
 package org.apache.aries.blueprint.proxy;
 
-import java.util.concurrent.Callable;
+public class ProxyTestClassSerializableChild extends ProxyTestClassSerializable {
 
-public interface ProxyTestInterface extends Callable<Object> {
-
-  public static final String FIELD = "A Field";
-  
-  public int doSuff();
 }

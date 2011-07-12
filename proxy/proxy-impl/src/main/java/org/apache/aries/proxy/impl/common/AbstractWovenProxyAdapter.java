@@ -222,7 +222,8 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
           loader);
 
       isSerializable = Serializable.class.isAssignableFrom(superClass) || 
-                       Arrays.asList(interfaces).contains(Type.getInternalName(Serializable.class));
+                       Arrays.asList(interfaces).contains(Type.getInternalName(Serializable.class)) ||
+                       checkInterfacesForSerializability(interfaces);
       
       if (!!!WovenProxy.class.isAssignableFrom(superClass)) {
 
@@ -271,6 +272,16 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
       UnableToProxyException u = new UnableToProxyException(name, e);
       throw new RuntimeException(NLS.MESSAGES.getMessage("cannot.load.superclass", superName.replace('/', '.'), typeBeingWoven.getClassName()), u);
     }
+  }
+
+  private boolean checkInterfacesForSerializability(String[] interfaces) throws ClassNotFoundException {
+    for(String iface : interfaces)
+    {
+      if(Serializable.class.isAssignableFrom(Class.forName(
+                 iface.replace('/', '.'), false, loader)))
+        return true;
+    }
+    return false;
   }
 
   /**
