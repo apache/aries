@@ -77,7 +77,8 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     ProxyTestClassStaticInner.class, ProxyTestClassUnweavableInnerChild.class, 
     ProxyTestClassUnweavableChildWithFinalMethodParent.class, 
     ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class, 
-    ProxyTestClassSerializable.class, ProxyTestClassSerializableWithSVUID.class};
+    ProxyTestClassSerializable.class, ProxyTestClassSerializableWithSVUID.class,
+    ProxyTestClassSerializableChild.class, ProxyTestClassSerializableInterface.class};
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
@@ -334,6 +335,40 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     Class<?> woven = getProxyClass(ProxyTestClassSerializable.class);
     
     woven.getMethod("checkDeserialization", byte[].class, int.class).invoke(null, baos.toByteArray(), 5);
+  }
+  
+  @Test
+  public void testInheritedSerialization() throws Exception {
+    
+    ProxyTestClassSerializableChild in = new ProxyTestClassSerializableChild();
+    in.value = 4;
+    
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(in);
+    
+    ProxyTestClassSerializable.checkDeserialization(baos.toByteArray(), 4);
+
+    Class<?> woven = getProxyClass(ProxyTestClassSerializable.class);
+    
+    woven.getMethod("checkDeserialization", byte[].class, int.class).invoke(null, baos.toByteArray(), 4);
+  }
+  
+  @Test
+  public void testInterfaceInheritedSerialization() throws Exception {
+    
+    ProxyTestClassSerializableInterface in = new ProxyTestClassSerializableInterface();
+    in.value = 3;
+    
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(in);
+    
+    ProxyTestClassSerializableInterface.checkDeserialization(baos.toByteArray(), 3);
+
+    Class<?> woven = getProxyClass(ProxyTestClassSerializableInterface.class);
+    
+    woven.getMethod("checkDeserialization", byte[].class, int.class).invoke(null, baos.toByteArray(), 3);
   }
   
   @Test
