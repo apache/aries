@@ -26,8 +26,8 @@ public class HelloWorldClient {
 
         public void startUp() {
                 System.out.println("========>>>>Client HelloWorld: About to execute a method from the Hello World service");
-                // helloWorldService.hello();
-                // System.out.println("========>>>>Client HelloWorld: ... if you didn't just see a Hello World message something went wrong");
+                helloWorldService.hello();
+                System.out.println("========>>>>Client HelloWorld: ... if you didn't just see a Hello World message something went wrong");
         }
 
         public HelloWorldService getHelloWorldService() {
