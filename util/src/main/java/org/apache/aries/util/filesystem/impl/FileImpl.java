@@ -57,68 +57,58 @@ public class FileImpl implements IFile
     else name = file.getAbsolutePath().substring(rootDir.length() + 1).replace('\\', '/');
   }
   
-  @Override
   public IDirectory convert()
   {
     return null;
   }
 
-  @Override
   public long getLastModified()
   {
     long result = file.lastModified();
     return result;
   }
 
-  @Override
   public String getName()
   {
     return name;
   }
 
-  @Override
   public IDirectory getParent()
   {
     IDirectory parent = new DirectoryImpl(file.getParentFile(), rootDirFile);
     return parent;
   }
 
-  @Override
   public long getSize()
   {
     long size = file.length();
     return size;
   }
 
-  @Override
   public boolean isDirectory()
   {
     boolean result = file.isDirectory();
     return result;
   }
 
-  @Override
   public boolean isFile()
   {
     boolean result = file.isFile();
     return result;
   }
 
-  @Override
   public InputStream open() throws IOException
   {
     InputStream is = new FileInputStream(file);
     return is;
   }
 
-  @Override
   public IDirectory getRoot()
   {
     IDirectory root = new DirectoryImpl(rootDirFile, rootDirFile);
     return root;
   }
 
-  @Override
   public URL toURL() throws MalformedURLException
   {
     URL result = file.toURI().toURL();
@@ -150,7 +140,6 @@ public class FileImpl implements IFile
     return file.getAbsolutePath();
   }
 
-  @Override
   public IDirectory convertNested() {
 	  if (isDirectory()) return convert();
 	  else return FileSystemImpl.getFSRoot(file, getParent());

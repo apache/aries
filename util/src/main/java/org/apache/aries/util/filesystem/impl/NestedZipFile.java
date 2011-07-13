@@ -93,49 +93,40 @@ public class NestedZipFile implements IFile {
 		return nameInZip;
 	}
 	
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public boolean isDirectory() {
 		return false;
 	}
 
-	@Override
 	public boolean isFile() {
 		return true;
 	}
 
-	@Override
 	public long getLastModified() {
 		return lastModified;
 	}
 
-	@Override
 	public long getSize() {
 		return size;
 	}
 
-	@Override
 	public IDirectory convert() {
 		return null;
 	}
 
-	@Override
 	public IDirectory convertNested() {
 		if (isDirectory()) return convert();
 		else if (FileSystemImpl.isValidZip(this)) return new NestedZipDirectory(this);
 		else return null;
 	}
 
-	@Override
 	public IDirectory getParent() {
 		return parent;
 	}
 
-	@Override
 	public InputStream open() throws IOException, UnsupportedOperationException {
 		if (cache != null && !!!cache.isClosed()) {
 			ZipFile zip = cache.getZipFile();
@@ -160,12 +151,10 @@ public class NestedZipFile implements IFile {
 		}
 	}
 
-	@Override
 	public IDirectory getRoot() {
 		return archive.getRoot();
 	}
 
-	@Override
 	public URL toURL() throws MalformedURLException
 	{
 		if (nameInZip.length() == 0) return archive.toURL();

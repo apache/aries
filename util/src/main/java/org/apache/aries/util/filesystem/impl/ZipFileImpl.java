@@ -135,26 +135,22 @@ public class ZipFileImpl implements IFile
 	  return zipPathToRoot;
   }
   
-  @Override
   public IDirectory convert()
   {
     return null;
   }
   
-  @Override
   public IDirectory convertNested() {
 	  if (isDirectory()) return convert();
 	  else if (FileSystemImpl.isValidZip(this)) return new NestedZipDirectory(this); 
 	  else return null;
   }	
 
-  @Override
   public long getLastModified()
   {
     return lastModified;
   }
 
-  @Override
   public String getName()
   {
     return name;
@@ -170,44 +166,37 @@ public class ZipFileImpl implements IFile
 	  }
   }
 
-  @Override
   public IDirectory getParent()
   {
     return parent;
   }
 
-  @Override
   public long getSize()
   {
     return size;
   }
 
-  @Override
   public boolean isDirectory()
   {
     return false;
   }
 
-  @Override
   public boolean isFile()
   {
     return true;
   }
 
-  @Override
   public InputStream open() throws IOException
   {
     InputStream is = new SpecialZipInputStream(entry);
     return is;
   }
   
-  @Override
   public IDirectory getRoot()
   {
     return parent.getRoot();
   }
 
-  @Override
   public URL toURL() throws MalformedURLException
   {
     String entryURL = "jar:" + url + "!/" + entry.getName();
