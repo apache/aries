@@ -45,7 +45,6 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
   public URL getResource(final String name)
   {
     return AccessController.doPrivileged(new PrivilegedAction<URL>() {
-      @Override
 	public URL run()
       {
         return b.getResource(name);
@@ -76,7 +75,6 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
     Enumeration<URL> urls;
     try {
       urls = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>() {
-        @Override
 		@SuppressWarnings("unchecked")
         public Enumeration<URL> run() throws IOException
         {
@@ -116,8 +114,7 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
   {
     try {
       Class<?> result = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
-        @Override
-		public Class<?> run() throws ClassNotFoundException
+        public Class<?> run() throws ClassNotFoundException
         {
           return b.loadClass(name);
         }
@@ -136,7 +133,6 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
     }
   }
 
-  @Override
   public Bundle getBundle()
   {
     return b;

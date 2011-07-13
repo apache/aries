@@ -58,22 +58,18 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 		super(other, cache);
 	}
 	
-	@Override
 	public IDirectory convert() {
 		return this;
 	}
 
-	@Override
 	public Iterator<IFile> iterator() {
 		return listFiles().iterator();
 	}
 
-	@Override
 	public List<IFile> listFiles() {
 		return listFiles(false);
 	}
 
-	@Override
 	public List<IFile> listAllFiles() {
 		return listFiles(true);
 	}
@@ -145,7 +141,6 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 		return result;
 	}
 
-	@Override
 	public IFile getFile(String name) {
 		Map<String,ZipEntry> entries = new HashMap<String, ZipEntry>();
 		ZipEntry ze;
@@ -194,27 +189,22 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 	}
 
 	
-	@Override
 	public boolean isDirectory() {
 		return true;
 	}
 
-	@Override
 	public InputStream open() throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public boolean isFile() {
 		return false;
 	}
 
-	@Override
 	public boolean isRoot() {
 		return false;
 	}
 
-	@Override
 	public ICloseableDirectory toCloseable() {
 		try {
 			return new NestedCloseableDirectory(archive, this);			
