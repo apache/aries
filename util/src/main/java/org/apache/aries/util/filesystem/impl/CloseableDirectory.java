@@ -38,109 +38,91 @@ public class CloseableDirectory implements ICloseableDirectory {
 		this.delegate = delegate;
 	}
 	
-	@Override
 	public String getName() {
 		checkNotClosed();
 		return delegate.getName();
 	}
 
-	@Override
 	public boolean isDirectory() {
 		checkNotClosed();
 		return delegate.isDirectory();
 	}
 
-	@Override
 	public boolean isFile() {
 		checkNotClosed();
 		return delegate.isFile();
 	}
 
-	@Override
 	public long getLastModified() {
 		checkNotClosed();
 		return delegate.getLastModified();
 	}
 
-	@Override
 	public IFile getFile(String name) {
 		checkNotClosed();
 		return delegate.getFile(name);
 	}
 
-	@Override
 	public long getSize() {
 		checkNotClosed();
 		return delegate.getSize();
 	}
 
-	@Override
 	public IDirectory convert() {
 		checkNotClosed();
 		return delegate.convert();
 	}
 
-	@Override
 	public IDirectory convertNested() {
 		checkNotClosed();
 		return delegate.convertNested();
 	}
 
-	@Override
 	public boolean isRoot() {
 		checkNotClosed();
 		return delegate.isRoot();
 	}
 
-	@Override
 	public IDirectory getParent() {
 		checkNotClosed();
 		return delegate.getParent();
 	}
 
-	@Override
 	public IDirectory getRoot() {
 		checkNotClosed();
 		return delegate.getRoot();
 	}
 
-	@Override
 	public Iterator<IFile> iterator() {
 		checkNotClosed();
 		return delegate.iterator();
 	}
 
-	@Override
 	public List<IFile> listFiles() {
 		checkNotClosed();
 		return delegate.listFiles();
 	}
 
-	@Override
 	public List<IFile> listAllFiles() {
 		checkNotClosed();
 		return delegate.listAllFiles();
 	}
 
-	@Override
 	public ICloseableDirectory toCloseable() {
 		checkNotClosed();
 		return delegate.toCloseable();
 	}
 
-	@Override
 	public InputStream open() throws IOException, UnsupportedOperationException {
 		checkNotClosed();
 		return delegate.open();
 	}
 
-	@Override
 	public URL toURL() throws MalformedURLException {
 		checkNotClosed();
 		return delegate.toURL();
 	}
 
-	@Override
 	public final void close() throws IOException {
 		if (closed.compareAndSet(false, true)) {
 			cleanup();
@@ -153,7 +135,6 @@ public class CloseableDirectory implements ICloseableDirectory {
 		if (isClosed()) throw new IllegalStateException("ICloseableDirectory is closed");
 	}
 
-	@Override
 	public boolean isClosed() {
 		return closed.get();
 	}

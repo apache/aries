@@ -44,7 +44,6 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     super(dir, rootFile);
   }
 
-  @Override
   public IFile getFile(String name)
   {
     File desiredFile = new File(file, name);
@@ -61,14 +60,12 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     return result;
   }
 
-  @Override
   public boolean isRoot()
   {
     boolean result = (rootDirFile == file);
     return result;
   }
 
-  @Override
   public List<IFile> listFiles()
   {
     List<IFile> files = new ArrayList<IFile>();
@@ -85,7 +82,6 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     return files;
   }
   
-  @Override
   public List<IFile> listAllFiles()
   {
     List<IFile> files = new ArrayList<IFile>();
@@ -104,31 +100,26 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     return files;
   }
   
-  @Override
   public Iterator<IFile> iterator()
   {
 	return listFiles().iterator();
   }
 
-  @Override
   public IDirectory getParent()
   {
     return isRoot() ? null : super.getParent();
   }
 
-  @Override
   public IDirectory convert()
   {
     return this;
   }
 
-  @Override
   public InputStream open() throws IOException
   {
     throw new UnsupportedOperationException();
   }
 
-  @Override
   public long getLastModified()
   {
     long result = super.getLastModified();
@@ -140,7 +131,6 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     return result;
   }
 
-  @Override
   public ICloseableDirectory toCloseable() {
 	return new CloseableDirectory(this);
   }

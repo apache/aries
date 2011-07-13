@@ -81,7 +81,6 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 	  zipRoot = other.zipRoot;
   }
 
-  @Override
   public IFile getFile(String name)
   {
     IFile result = null;
@@ -136,19 +135,16 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     return result;
   }
 
-  @Override
   public boolean isRoot()
   {
 	  return getParent() == null;
   }
 
-  @Override
   public List<IFile> listFiles()
   {
 	  return listFiles(false);
   }
 
-  @Override
   public List<IFile> listAllFiles()
   {
 	  return listFiles(true);
@@ -194,37 +190,31 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     return result;
   }
 
-  @Override
   public Iterator<IFile> iterator()
   {
     return listFiles().iterator();
   }
 
-  @Override
   public IDirectory convert()
   {
     return this;
   }
 
-  @Override
   public boolean isDirectory()
   {
     return true;
   }
 
-  @Override
   public boolean isFile()
   {
     return false;
   }
 
-  @Override
   public InputStream open() 
   {
     throw new UnsupportedOperationException();
   }
 
-  @Override
   public IDirectory getRoot()
   {
     return root;
@@ -263,7 +253,6 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     return entryFile;
   }
 
-  @Override
   public ICloseableDirectory toCloseable() {
 	  try {
 		  return new ZipCloseableDirectory(zip, this);
