@@ -37,7 +37,7 @@
     <aries.osgi.private.pkg>org.apache.aries.jpa.eclipselink.adapter</aries.osgi.private.pkg>
     <aries.osgi.export.pkg>org.apache.aries.jpa.eclipselink.adapter.platform</aries.osgi.export.pkg>
     <aries.osgi.import.pkg>
-      javax.persistence*;version="[1.1,1.2)",
+      javax.persistence*;version="[1.1,2.1)",
       *
     </aries.osgi.import.pkg>
     <aries.osgi.activator>org.apache.aries.jpa.eclipselink.adapter.Activator</aries.osgi.activator>
