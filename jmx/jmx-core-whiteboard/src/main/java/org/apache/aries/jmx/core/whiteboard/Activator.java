@@ -269,14 +269,14 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
           if (service == null) return null;
           else return new org.apache.aries.jmx.provisioning.ProvisioningService(service);
         }
-      }, ProvisioningServiceMBean.OBJECTNAME, _provisioningMBeans, reference, ProvisioningService.class.getName());
+      }, ProvisioningServiceMBean.OBJECTNAME, _provisioningMBeans, reference, PROVISIONING_SERVICE);
   }
 
   private void foundUserAdmin(final ServiceReference reference)
   {
     try {
-      Class.forName(UserAdmin.class.getName());
-      if (reference.isAssignableTo(ctx.getBundle(), UserAdmin.class.getName())) {
+      Class.forName(USER_ADMIN);
+      if (reference.isAssignableTo(ctx.getBundle(), USER_ADMIN)) {
         registerMBean(UserAdminMBean.class.getName(), new Factory<UserAdminMBean>() {
           public UserAdminMBean create()
           {
@@ -285,7 +285,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
             if (service == null) return null;
             else return new org.apache.aries.jmx.useradmin.UserAdmin(service);
           }
-        }, UserAdminMBean.OBJECTNAME, _userAdminMBeans, reference, UserAdmin.class.getName());
+        }, UserAdminMBean.OBJECTNAME, _userAdminMBeans, reference, USER_ADMIN);
       }
     } catch (ClassNotFoundException e) {
     }
@@ -301,7 +301,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
         if (service == null) return null;
         else return new org.apache.aries.jmx.cm.ConfigurationAdmin(service);
       }
-    }, ConfigurationAdminMBean.OBJECTNAME, _configAdminMBeans, reference, ConfigurationAdmin.class.getName());
+    }, ConfigurationAdminMBean.OBJECTNAME, _configAdminMBeans, reference, CONFIG_ADMIN);
   }
 
   private void foundStartLevel(final ServiceReference reference)
@@ -362,17 +362,17 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
     String[] types = (String[]) reference.getProperty(Constants.OBJECTCLASS);
     
     for (String t : types) {
-      if (PackageAdmin.class.getName().equals(t)) {
+      if (PACKAGE_ADMIN.equals(t)) {
         lostPackageAdmin(reference);
-      } else if (StartLevel.class.getName().equals(t)) {
+      } else if (START_LEVEL.equals(t)) {
         lostStartLevel(reference);
-      } else if (PermissionAdmin.class.getName().equals(t)) {
+      } else if (PERMISSION_ADMIN.equals(t)) {
         lostPermissionAdmin(reference);
-      } else if (ConfigurationAdmin.class.getName().equals(t)) {
+      } else if (CONFIG_ADMIN.equals(t)) {
         lostConfigAdmin(reference);
-      } else if (UserAdmin.class.getName().equals(t)) {
+      } else if (USER_ADMIN.equals(t)) {
         lostUserAdmin(reference);
-      } else if (ProvisioningService.class.getName().equals(t)) {
+      } else if (PROVISIONING_SERVICE.equals(t)) {
         lostProvisioningService(reference);
       }
     }
