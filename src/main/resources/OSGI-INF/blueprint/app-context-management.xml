@@ -26,7 +26,9 @@
 
   <service interface="org.apache.aries.application.management.spi.runtime.AriesApplicationContextManager" ref="app-context-manager" ranking="-1"/>
     
-  <reference id="bundle-framework-manager" interface="org.apache.aries.application.management.spi.framework.BundleFrameworkManager"/>
+  <reference id="bundle-framework-manager" interface="org.apache.aries.application.management.spi.framework.BundleFrameworkManager">
+    <reference-listener ref="app-context-manager" bind-method="bindBundleFrameworkManager" unbind-method="unbindBundleFrameworkManager"/>
+  </reference>
   <reference id="bundle-repository-manager" interface="org.apache.aries.application.management.spi.repository.BundleRepositoryManager"/>
   
 </blueprint>
