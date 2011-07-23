@@ -208,9 +208,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     public void reload() {
-        unregisterServices();
-        untrackServiceReferences();
-        destroyComponents();
+        tidyupComponents();
         this.componentDefinitionRegistry.reset();
         this.repository = null;
         this.processors = new ArrayList<Processor>();
@@ -290,9 +288,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
                                     String[] missingDependecies = getMissingDependencies();
-                                    unregisterServices();
-                                    untrackServiceReferences();
-                                    destroyComponents();
+                                    tidyupComponents();
                                     LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName() + " due to unresolved dependencies " + Arrays.asList(missingDependecies), t);
                                     eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), missingDependecies, t));
                                 }
@@ -356,9 +352,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             if (timeoutFuture != null) {
                 timeoutFuture.cancel(false);
             }
-            unregisterServices();
-            untrackServiceReferences();
-            destroyComponents();
+            tidyupComponents();
             LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), t));
         }
@@ -868,12 +862,17 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     public void namespaceHandlerUnregistered(URI uri) {
         if (namespaces != null && namespaces.contains(uri)) {
-            unregisterServices();
-            untrackServiceReferences();
-            destroyComponents();
+            tidyupComponents();
             state = State.WaitForNamespaceHandlers;
             schedule();
         }
+    }
+
+    private void tidyupComponents()
+    {
+      unregisterServices();
+      destroyComponents();
+      untrackServiceReferences();
     }
 
 }
