@@ -43,9 +43,9 @@ import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkManager;
+import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.apache.aries.application.management.spi.repository.BundleRepositoryManager;
 import org.apache.aries.application.management.spi.repository.ContextException;
-import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
@@ -58,6 +58,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
   private final AriesApplication _application;
   private final Set<Bundle> _bundles;
   private ApplicationState _state = ApplicationState.UNINSTALLED;
+  private boolean _closed;
   private final BundleRepositoryManager _bundleRepositoryManager;
   private final BundleFrameworkManager _bundleFrameworkManager;
 
@@ -413,6 +414,20 @@ public class ApplicationContextImpl implements AriesApplicationContext
               false, e2);
         } 
       }
+    }
+  }
+
+  public synchronized void close() throws BundleException
+  {
+    uninstall();
+    _closed = true;
+  }
+  
+  public synchronized void open() throws BundleException
+  {
+    if (_closed) {
+      install();
+      _closed = false;
     }
   }
 }
