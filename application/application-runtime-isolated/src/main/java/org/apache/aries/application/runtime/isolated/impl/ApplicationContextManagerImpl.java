@@ -35,7 +35,6 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.UpdateException;
-import org.apache.aries.application.management.AriesApplicationContext.ApplicationState;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkManager;
 import org.apache.aries.application.management.spi.repository.BundleRepositoryManager;
 import org.apache.aries.application.management.spi.runtime.AriesApplicationContextManager;
@@ -70,9 +69,6 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
 
   public void setBundleFrameworkManager(BundleFrameworkManager bfm)
   {
-    LOGGER.debug(LOG_ENTRY, "setBundleFrameworkManager", bfm);
-    LOGGER.debug(LOG_EXIT, "setBundleFrameworkManager");
-    
     _bundleFrameworkManager = bfm;
   }
   
@@ -193,4 +189,42 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     return ctx;
   }
 
+  public void bindBundleFrameworkManager(BundleFrameworkManager bfm)
+  {
+    LOGGER.debug(LOG_ENTRY, "setBundleFrameworkManager", bfm);
+    LOGGER.debug(LOG_EXIT, "setBundleFrameworkManager");
+    
+    Iterator<AriesApplicationContext> it = _appToContextMap.values().iterator();
+    while (it.hasNext())
+    {      
+      try {
+        ApplicationContextImpl ctx = (ApplicationContextImpl)it.next();
+        ctx.open();
+      } catch (BundleException e)
+      {
+        LOGGER.debug(LOG_EXCEPTION,e);
+      }
+    }
+  }
+
+  public void unbindBundleFrameworkManager(BundleFrameworkManager bfm)
+  {
+    LOGGER.debug(LOG_ENTRY, "unbindBundleFrameworkManager", bfm);
+    
+    Iterator<AriesApplicationContext> it = _appToContextMap.values().iterator();
+    while (it.hasNext())
+    {      
+      try {
+        ApplicationContextImpl ctx = (ApplicationContextImpl)it.next();
+        ctx.close();
+      } catch (BundleException e)
+      {
+        LOGGER.debug(LOG_EXCEPTION,e);
+      }
+    }
+    
+    LOGGER.debug(LOG_EXIT, "unbindBundleFrameworkManager");
+    
+    
+  }
 }
