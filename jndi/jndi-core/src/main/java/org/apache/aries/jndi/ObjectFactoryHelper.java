@@ -54,33 +54,33 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                     Context nameCtx,
                                     Hashtable<?, ?> environment) throws Exception {
 
-        // Step 1
+        // Step 1 ensure we have a reference rather than a referenceable
         if (obj instanceof Referenceable) {
             obj = ((Referenceable) obj).getReference();
         }
 
         Object result = obj;
 
-        // Step 2
+        // Step 2 - if we have a reference process it as a reference
         if (obj instanceof Reference) {
             Reference ref = (Reference) obj;
             String className = ref.getFactoryClassName();
 
             if (className != null) {
-                // Step 3
+                // Step 3 - use the class name in the reference to get the factory class name
                 result = getObjectInstanceUsingClassName(obj, className, obj, name, nameCtx, environment);
             } else {
-                // Step 4
+                // Step 4 - look, assuming url string ref addrs, for a url context object factory.
                 result = getObjectInstanceUsingRefAddress(ref.getAll(), obj, name, nameCtx, environment);
             }
         }
 
-        // Step 5
+        // Step 5 - if we still don't have a resolved object goto the object factory builds in the SR.
         if (result == null || result == obj) {
             result = getObjectInstanceUsingObjectFactoryBuilders(obj, name, nameCtx, environment);
         }
 
-        // Step 6
+        // Step 6 - finally as a last ditch effort attempt to use all the registered ObjectFactories in the SR.
         if (result == null || result == obj) {                
             if ((obj instanceof Reference && ((Reference) obj).getFactoryClassName() == null) ||
                 !(obj instanceof Reference)) {
@@ -100,24 +100,26 @@ public class ObjectFactoryHelper implements ObjectFactory {
         ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, ObjectFactory.class);
             
         if (refs != null) {
-        	Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
-        	
-        	for (ServiceReference ref : refs) {
-        		ObjectFactory factory = (ObjectFactory) Utils.getServicePrivileged(callerContext, ref);
+            Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+            
+            for (ServiceReference ref : refs) {
+                ObjectFactory factory = (ObjectFactory) Utils.getServicePrivileged(callerContext, ref);
 
-        		try {
-        			result = factory.getObjectInstance(obj, name, nameCtx, environment);
-        		} finally {
-        			callerContext.ungetService(ref);
-        		}
+                try {
+                    result = factory.getObjectInstance(obj, name, nameCtx, environment);
+                } catch (NamingException ne) {
+                  // Ignore this since we are doing last ditch finding, another OF might work.
+                } finally {
+                    callerContext.ungetService(ref);
+                }
 
-        		// if the result comes back and is not null and not the reference
-        		// object then we should return the result, so break out of the
-        		// loop we are in.
-        		if (result != null && result != obj) {
-        			break;
-        		}
-        	}
+                // if the result comes back and is not null and not the reference
+                // object then we should return the result, so break out of the
+                // loop we are in.
+                if (result != null && result != obj) {
+                    break;
+                }
+            }
         }
 
         return (result == null) ? obj : result;
@@ -170,29 +172,29 @@ public class ObjectFactoryHelper implements ObjectFactory {
     }
 
     static Tuple<ServiceReference,ObjectFactory> findObjectFactoryByClassName(final BundleContext ctx, final String className) {
-    	return AccessController.doPrivileged(new PrivilegedAction<Tuple<ServiceReference,ObjectFactory>>() {
-			public Tuple<ServiceReference,ObjectFactory> run() {
-		        ServiceReference serviceReference = null;
-		        
-		        try {
-		            ServiceReference[] refs = ctx.getServiceReferences(className, null);
-		            if (refs != null && refs.length > 0) {
-		                serviceReference = refs[0];
-		            }
-		        } catch (InvalidSyntaxException e) {
-		            // should not happen
+        return AccessController.doPrivileged(new PrivilegedAction<Tuple<ServiceReference,ObjectFactory>>() {
+            public Tuple<ServiceReference,ObjectFactory> run() {
+                ServiceReference serviceReference = null;
+                
+                try {
+                    ServiceReference[] refs = ctx.getServiceReferences(className, null);
+                    if (refs != null && refs.length > 0) {
+                        serviceReference = refs[0];
+                    }
+                } catch (InvalidSyntaxException e) {
+                    // should not happen
                     throw new RuntimeException(Utils.MESSAGES.getMessage("null.is.invalid.filter"), e);
-		        }
+                }
 
-		        ObjectFactory factory = null;
-		        
-		        if (serviceReference != null) {
-		            factory = (ObjectFactory) ctx.getService(serviceReference);			
-		        }
-		        
-		        return new Tuple<ServiceReference, ObjectFactory>(serviceReference, factory);
-			}
-		});    	
+                ObjectFactory factory = null;
+                
+                if (serviceReference != null) {
+                    factory = (ObjectFactory) ctx.getService(serviceReference);            
+                }
+                
+                return new Tuple<ServiceReference, ObjectFactory>(serviceReference, factory);
+            }
+        });        
     }
     
     private Object getObjectInstanceUsingClassName(Object reference,
@@ -202,11 +204,11 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                    Context nameCtx,
                                                    Hashtable<?, ?> environment) 
         throws Exception {
-    	
-    	Tuple<ServiceReference,ObjectFactory> tuple = findObjectFactoryByClassName(defaultContext, className);
-    	Object result = null;
-    	
-    	if (tuple.second != null) {
+        
+        Tuple<ServiceReference,ObjectFactory> tuple = findObjectFactoryByClassName(defaultContext, className);
+        Object result = null;
+        
+        if (tuple.second != null) {
             try {
                 result = tuple.second.getObjectInstance(reference, name, nameCtx, environment);
             } finally {
@@ -222,25 +224,25 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                                Context nameCtx,
                                                                Hashtable<?, ?> environment) 
         throws Exception {
-    	
+        
         ObjectFactory factory = null;
         
         ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, ObjectFactoryBuilder.class);
         if (refs != null) {
-        	Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
-        	for (ServiceReference ref : refs) {
-        		ObjectFactoryBuilder builder = (ObjectFactoryBuilder) Utils.getServicePrivileged(callerContext, ref);
-        		try {
-        			factory = builder.createObjectFactory(obj, environment);
-        		} catch (NamingException e) {
-        			// TODO: log it
-        		} finally {
-        			callerContext.ungetService(ref);
-        		}
-        		if (factory != null) {
-        			break;
-        		}
-        	}
+            Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+            for (ServiceReference ref : refs) {
+                ObjectFactoryBuilder builder = (ObjectFactoryBuilder) Utils.getServicePrivileged(callerContext, ref);
+                try {
+                    factory = builder.createObjectFactory(obj, environment);
+                } catch (NamingException e) {
+                    // TODO: log it
+                } finally {
+                    callerContext.ungetService(ref);
+                }
+                if (factory != null) {
+                    break;
+                }
+            }
         }
 
         Object result = null;
