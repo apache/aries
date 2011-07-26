@@ -30,13 +30,16 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.services.ParserService;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
+import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper;
+import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper.ScheduledExecutorServiceFactory;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.aries.util.tracker.RecursiveBundleTracker;
@@ -68,7 +71,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintExtender.class);
 
     private BundleContext context;
-    private ScheduledThreadPoolExecutor executors;
+    private ScheduledExecutorService executors;
     private Map<Bundle, BlueprintContainerImpl> containers;
     private BlueprintEventDispatcher eventDispatcher;
     private NamespaceHandlerRegistry handlers;
@@ -82,7 +85,12 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
         this.context = ctx;
         handlers = new NamespaceHandlerRegistryImpl(ctx);
-        executors = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(3, new BlueprintThreadFactory("Blueprint Extender"));
+        executors = new ScheduledExecutorServiceWrapper(ctx, "Blueprint Extender", new ScheduledExecutorServiceFactory() {
+          public ScheduledExecutorService create(String name)
+          {
+            return Executors.newScheduledThreadPool(3, new BlueprintThreadFactory(name));
+          }
+        });
         eventDispatcher = new BlueprintEventDispatcher(ctx, executors);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
 
