@@ -38,8 +38,10 @@
     <aries.osgi.export.pkg>org.apache.aries.jpa.eclipselink.adapter.platform</aries.osgi.export.pkg>
     <aries.osgi.import.pkg>
       javax.persistence*;version="[1.1,2.1)",
+      !org.eclipse.persistence.*,
       *
     </aries.osgi.import.pkg>
+    <aries.osgi.failok>true</aries.osgi.failok>
     <aries.osgi.activator>org.apache.aries.jpa.eclipselink.adapter.Activator</aries.osgi.activator>
   </properties>
 
@@ -75,6 +77,12 @@
       <artifactId>org.apache.aries.transaction.manager</artifactId>
       <version>0.3.1-SNAPSHOT</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.apache.aries</groupId>
+    	<artifactId>org.apache.aries.util</artifactId>
+    	<version>0.4-SNAPSHOT</version>
+    	<scope>provided</scope>
     </dependency>
   </dependencies>
 
