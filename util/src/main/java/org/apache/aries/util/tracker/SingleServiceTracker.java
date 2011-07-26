@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -43,7 +44,9 @@ public final class SingleServiceTracker<T>
   private final AtomicReference<ServiceReference> ref = new AtomicReference<ServiceReference>();
   private final AtomicBoolean open = new AtomicBoolean(false);
   private final SingleServiceListener serviceListener;
-  
+  private String filterString;
+  private Filter filter;
+
   private final ServiceListener listener = new ServiceListener()
   {
     public void serviceChanged(ServiceEvent event) 
@@ -68,6 +71,13 @@ public final class SingleServiceTracker<T>
     serviceListener = sl;
   }
   
+  public SingleServiceTracker(BundleContext context, Class<T> clazz, String filterString, SingleServiceListener sl) throws InvalidSyntaxException
+  {
+    this(context, clazz, sl);
+    this.filterString = filterString;
+    if (filterString != null) filter = context.createFilter(filterString);
+  }
+  
   public T getService()
   {
     return service.get();
@@ -82,7 +92,9 @@ public final class SingleServiceTracker<T>
   {
     if (open.compareAndSet(false, true)) {
       try {
-        ctx.addServiceListener(listener, '(' + Constants.OBJECTCLASS + '=' + className + ')');
+        String filterString = '(' + Constants.OBJECTCLASS + '=' + className + ')';
+        if (filter != null) filterString = "(&" + filterString + filter + ')';
+        ctx.addServiceListener(listener, filterString);
         findMatchingReference(null);
       } catch (InvalidSyntaxException e) {
         // this can never happen. (famous last words :)
@@ -93,7 +105,7 @@ public final class SingleServiceTracker<T>
   private void findMatchingReference(ServiceReference original) {
     boolean clear = true;
     ServiceReference ref = ctx.getServiceReference(className);
-    if (ref != null) {
+    if (ref != null && (filter == null || filter.match(ref))) {
       @SuppressWarnings("unchecked")
       T service = (T) ctx.getService(ref);
       if (service != null) {
