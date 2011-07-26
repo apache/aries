@@ -32,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -49,6 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.aries.blueprint.utils.JavaUtils;
+import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper;
+import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper.ScheduledExecutorServiceFactory;
 
 /**
  * The delivery of {@link BlueprintEvent}s is complicated.  The blueprint extender and its containers use this class to
@@ -62,7 +65,7 @@ class BlueprintEventDispatcher implements BlueprintListener {
 
     private final Set<BlueprintListener> listeners = new CopyOnWriteArraySet<BlueprintListener>();
     private final Map<Bundle, BlueprintEvent> states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(new BlueprintThreadFactory("Blueprint Event Dispatcher"));
+    private final ExecutorService executor;
     private final ExecutorService sharedExecutor;
     private final EventAdminListener eventAdminListener;
     private final ServiceTracker containerListenerTracker;
@@ -71,7 +74,17 @@ class BlueprintEventDispatcher implements BlueprintListener {
 
         assert bundleContext != null;
         assert sharedExecutor != null;
+        
+        executor = new ScheduledExecutorServiceWrapper(bundleContext, "Blueprint Event Dispatcher", new ScheduledExecutorServiceFactory() {
+          
+          public ScheduledExecutorService create(String name)
+          {
+            return Executors.newScheduledThreadPool(1, new BlueprintThreadFactory(name));
+          }
+        });
 
+//        executor = Executors.newSingleThreadExecutor(new BlueprintThreadFactory("Blueprint Event Dispatcher"));
+        
         this.sharedExecutor = sharedExecutor;
 
         EventAdminListener listener = null;

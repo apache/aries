@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -122,7 +122,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final List<Object> pathList;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final AggregateConverter converter;
-    private final ScheduledThreadPoolExecutor executors;
+    private final ScheduledExecutorService executors;
     private Set<URI> namespaces;
     private State state = State.Unknown;
     private NamespaceHandlerSet handlerSet;
@@ -143,7 +143,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private AccessControlContext accessControlContext;
     private final IdSpace tempRecipeIdSpace = new IdSpace();
     
-    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledThreadPoolExecutor executors, List<Object> pathList) {
+    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<Object> pathList) {
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
         this.eventDispatcher = eventDispatcher;
@@ -176,7 +176,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         return eventDispatcher;
     }
 
-    private void checkDirectives() {
+    private void readDirectives() {
         Bundle bundle = bundleContext.getBundle();
         Dictionary headers = bundle.getHeaders();
         String symbolicName = (String)headers.get(Constants.BUNDLE_SYMBOLICNAME);
@@ -246,7 +246,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 LOGGER.debug("Running blueprint container for bundle {} in state {}", bundleContext.getBundle().getSymbolicName(), state);
                 switch (state) {
                     case Unknown:
-                        checkDirectives();
+                        readDirectives();
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATING, getBundleContext().getBundle(), getExtenderBundle()));
                         parser = new Parser();
                         parser.parse(getResources());
@@ -254,7 +254,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         handlerSet = handlers.getNamespaceHandlers(namespaces, getBundleContext().getBundle());
                         handlerSet.addListener(this);
                         state = State.WaitForNamespaceHandlers;
-                        break;
                     case WaitForNamespaceHandlers:
                     {
                         List<String> missing = new ArrayList<String>();
@@ -277,7 +276,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         }
                         parser.populate(handlerSet, componentDefinitionRegistry);
                         state = State.Populated;
-                        break;
                     }
                     case Populated:
                         getRepository();
@@ -296,7 +294,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         };
                         timeoutFuture = executors.schedule(r, timeout, TimeUnit.MILLISECONDS);
                         state = State.WaitForInitialReferences;
-                        break;
                     case WaitForInitialReferences:
                         if (waitForDependencies) {
                             String[] missingDependencies = getMissingDependencies();
@@ -307,12 +304,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             }
                         }
                         state = State.InitialReferencesSatisfied;
-                        break;
                     case InitialReferencesSatisfied:
                         processTypeConverters();
                         processProcessors();
                         state = State.WaitForInitialReferences2;
-                        break;
                     case WaitForInitialReferences2:
                         if (waitForDependencies) {
                             String[] missingDependencies = getMissingDependencies();
@@ -323,10 +318,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             }
                         }                       
                         state = State.Create;
-                        break;
                     case Create:
-                        timeoutFuture.cancel(false);
-                        executors.purge();
+                        cancelFutureIfPresent();
                         registerServices();
                         instantiateEagerComponents();
                         // Register the BlueprintContainer in the OSGi registry
@@ -341,7 +334,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         }
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundleContext().getBundle(), getExtenderBundle()));
                         state = State.Created;
-                        break;
                     case Created:
                     case Failed:
                         return;
@@ -349,9 +341,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
         } catch (Throwable t) {
             state = State.Failed;
-            if (timeoutFuture != null) {
-                timeoutFuture.cancel(false);
-            }
+            cancelFutureIfPresent();
             tidyupComponents();
             LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), t));
@@ -807,10 +797,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         destroyed = true;
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundleContext().getBundle(), getExtenderBundle()));
 
-        if (timeoutFuture != null) {
-            timeoutFuture.cancel(false);
-            executors.purge();
-        }
+        cancelFutureIfPresent();
         AriesFrameworkUtil.safeUnregisterService(registration);
         
         unregisterServices();
@@ -842,16 +829,20 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         destroyed = true;
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundleContext().getBundle(), getExtenderBundle()));
 
-        if (timeoutFuture != null) {
-            timeoutFuture.cancel(false);
-            executors.purge();
-        }
+        cancelFutureIfPresent();
         AriesFrameworkUtil.safeUnregisterService(registration);
         if (handlerSet != null) {
             handlerSet.removeListener(this);
             handlerSet.destroy();
         }
         LOGGER.debug("Blueprint container quiesced: {}", this.bundleContext);
+    }
+
+    private void cancelFutureIfPresent()
+    {
+      if (timeoutFuture != null) {
+          timeoutFuture.cancel(false);
+      }
     }
 
     public void namespaceHandlerRegistered(URI uri) {
@@ -874,6 +865,4 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
       destroyComponents();
       untrackServiceReferences();
     }
-
 }
-
