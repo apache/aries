@@ -28,6 +28,8 @@ import org.osgi.framework.BundleReference;
 
 public final class UnionClassLoader extends ClassLoader implements BundleReference{
   
+  private static final String ORG_OSGI_FRAMEWORK = "org.osgi.framework.";
+  private static final int DOT_INDEX = ORG_OSGI_FRAMEWORK.lastIndexOf('.');
   private final Bundle eclipseLinkBundle;
   private final Bundle adaptorBundle;
   
@@ -56,6 +58,9 @@ public final class UnionClassLoader extends ClassLoader implements BundleReferen
         throw new ClassNotFoundException(name, ioe);
       }
       return defineClass(name, baos.toByteArray(), 0, baos.size());
+    } else if (name.startsWith(ORG_OSGI_FRAMEWORK) &&
+        name.lastIndexOf('.') == DOT_INDEX) {
+      return adaptorBundle.loadClass(name);
     }
     return eclipseLinkBundle.loadClass(name);
   }
