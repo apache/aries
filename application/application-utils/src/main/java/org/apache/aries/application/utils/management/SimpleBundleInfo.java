@@ -67,7 +67,7 @@ public final class SimpleBundleInfo implements BundleInfo {
     if (_exportServices == null) {
       _exportServices = getContentSetFromHeader (_attributes, Constants.EXPORT_SERVICE);
     }
-    return _exportPackages;
+    return _exportServices;
   }
 
   public Map<String, String> getHeaders() {
