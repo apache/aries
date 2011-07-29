@@ -21,6 +21,7 @@
   <bean id="modelledResourceManager" class="org.apache.aries.application.modelling.impl.ModelledResourceManagerImpl">
     <property name="modellingManager" ref="modellingManager"/>
     <property name="parserProxy" ref="parserProxy"/>
+    <property name="modellingPlugins" ref="modellingPlugins"/>
   </bean>
   <service id = "modelledResourceManagerService" ref="modelledResourceManager" interface="org.apache.aries.application.modelling.ModelledResourceManager"/>
 
@@ -38,4 +39,5 @@
   <bean id="modellingHelper" class="org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl"/>
   <service id="modellingHelperService" ref="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
   
+  <reference-list id="modellingPlugins" interface="org.apache.aries.application.modelling.ServiceModeller" availability="optional"/>
 </blueprint>

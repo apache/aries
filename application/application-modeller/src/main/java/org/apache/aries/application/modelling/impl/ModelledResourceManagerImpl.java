@@ -45,8 +45,11 @@ import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
+import org.apache.aries.application.modelling.ServiceModeller;
 import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
 import org.apache.aries.application.modelling.internal.MessageUtil;
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
@@ -60,6 +63,11 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   private final Logger _logger = LoggerFactory.getLogger(ModelledResourceManagerImpl.class);
   private ParserProxy _parserProxy;
   private ModellingManager _modellingManager;
+  private Collection<ServiceModeller> modellingPlugins;
+
+  public void setModellingPlugins(Collection<ServiceModeller> modellingPlugins) {
+    this.modellingPlugins = modellingPlugins;
+  }
 
   public void setModellingManager (ModellingManager m) { 
     _modellingManager = m;
@@ -72,8 +80,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   public ParserProxy getParserProxy() {
     return _parserProxy;
   }
-
-
 
   /**
    * For a given file, which we know to be a bundle, parse out all the
@@ -92,23 +98,40 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   
   @Override
   public ParsedServiceElements getServiceElements(InputStreamProvider archive) throws ModellerException {
+      ICloseableDirectory dir = null;
       try {
-          BundleManifest bm = BundleManifest.fromBundle(archive.open());
-          return getServiceElements(bm, findBlueprints(bm, archive.open()));
+          dir = FileSystem.getFSRoot(archive.open());
+          BundleManifest bm = BundleManifest.fromBundle(dir);
+          return getServiceElements(bm, dir);
       } catch (IOException e) {
           throw new ModellerException(e);
+      } finally {
+          IOUtils.close(dir);
       }
   }
   
   private ParsedServiceElements getServiceElements (BundleManifest bundleMf, IDirectory archive) throws ModellerException { 
+      
+      Set<ExportedService> services = new HashSet<ExportedService>();
+      Set<ImportedService> references = new HashSet<ImportedService>();
+    
       try {
-        return getServiceElements(bundleMf, findBlueprints(bundleMf, archive));
-    } catch (IOException e) {
-        throw new ModellerException(e);
-    }
+          ParsedServiceElements pse = getBlueprintServiceElements(bundleMf, 
+                      findBlueprints(bundleMf, archive));
+          services.addAll(pse.getServices());
+          references.addAll(pse.getReferences());
+          for (ServiceModeller sm : modellingPlugins) {
+            pse = sm.modelServices(bundleMf, archive);
+            services.addAll(pse.getServices());
+            references.addAll(pse.getReferences());
+          }
+          return new ParsedServiceElementsImpl(services, references);
+      } catch (Exception e) {
+          throw new ModellerException(e);
+      }
   }
   
-  private ParsedServiceElements getServiceElements (BundleManifest bundleMf, Iterable<InputStream> blueprints) throws ModellerException { 
+  private ParsedServiceElements getBlueprintServiceElements (BundleManifest bundleMf, Iterable<InputStream> blueprints) throws ModellerException { 
     _logger.debug(LOG_ENTRY,"getServiceElements", new Object[] {bundleMf, blueprints} );
 
     Set<ExportedService> services = new HashSet<ExportedService>();
@@ -119,11 +142,8 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
           ParsedServiceElements pse = getParserProxy().parseAllServiceElements(is);
           services.addAll(pse.getServices());
           references.addAll(pse.getReferences());
-
         } finally {
-          if (is != null) {
-            is.close();
-          }
+          IOUtils.close(is);
         }
       }
     } catch (Exception e) {
@@ -149,12 +169,14 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
 
   @Override
   public ModelledResource getModelledResource(String uri, InputStreamProvider bundle) throws ModellerException {
+      ICloseableDirectory dir = null;
       try {
-          BundleManifest bm = BundleManifest.fromBundle(bundle.open());
-          ParsedServiceElements pse = getServiceElements(bm, findBlueprints(bm, bundle.open()));
-          return model(uri, bm, pse);
+          dir = FileSystem.getFSRoot(bundle.open());
+          return getModelledResource(uri, dir);
       } catch (IOException e) {
           throw new ModellerException(e);
+      } finally {
+          IOUtils.close(dir);
       }
   }
   
