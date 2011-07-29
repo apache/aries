@@ -1,10 +1,14 @@
 package org.apache.aries.application.modelling.standalone;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +16,7 @@ import javax.xml.validation.Schema;
 
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.ParserProxy;
+import org.apache.aries.application.modelling.ServiceModeller;
 import org.apache.aries.application.modelling.impl.AbstractParserProxy;
 import org.apache.aries.application.modelling.impl.ModelledResourceManagerImpl;
 import org.apache.aries.application.modelling.impl.ModellingManagerImpl;
@@ -108,6 +113,27 @@ public class OfflineModellingFactory {
 		result.setModellingManager(modellingManager);
 		result.setParserProxy(parserProxy);
 		
+		List<ServiceModeller> plugins = new ArrayList<ServiceModeller>();
+		
+    ClassLoader cl = OfflineModellingFactory.class.getClassLoader();
+		try {
+      Enumeration<URL> e = cl.getResources(
+          "META-INF/services/" + ServiceModeller.class.getName());
+      
+      while(e.hasMoreElements()) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                e.nextElement().openStream()));
+        try {
+          plugins.add((ServiceModeller) Class.forName(reader.readLine(), true, cl).newInstance());
+        } catch (Exception e1) {
+          e1.printStackTrace(System.err);
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace(System.err);
+    }
+
+    result.setModellingPlugins(plugins);
 		return result;
 	}
 }
