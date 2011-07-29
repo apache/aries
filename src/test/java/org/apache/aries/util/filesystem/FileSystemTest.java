@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -38,12 +39,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-
 import org.apache.aries.unittest.junit.Assert;
-import org.apache.aries.util.filesystem.FileSystem;
-import org.apache.aries.util.filesystem.ICloseableDirectory;
-import org.apache.aries.util.filesystem.IDirectory;
-import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -104,6 +100,26 @@ public class FileSystemTest
     IDirectory dir = FileSystem.getFSRoot(baseDir);
     
     runBasicRootDirTests(dir, baseDir.length(), baseDir.lastModified());
+  }
+  
+  /**
+   * Make sure we correctly understand the content of the application when the
+   * application is a zip. This test just checks that the
+   * root directory returns the expected information.
+   * 
+   * @throws IOException
+   */
+  @Test(expected=UnsupportedOperationException.class)
+  public void basicRootDirTestsWithZipInputStream() throws IOException
+  {
+    File baseDir = new File("fileSystemTest/app2.zip");
+    ICloseableDirectory dir = FileSystem.getFSRoot(new FileInputStream(baseDir));
+    
+    try {
+      runBasicRootDirTests(dir, baseDir.length(), baseDir.lastModified());
+    } finally {
+      dir.close();
+    }
   }
   
   @Test
@@ -177,6 +193,35 @@ public class FileSystemTest
   }
   
   /**
+   * Make sure that the operations work with zip files inside other zip files. Performance is not going to be great though :)
+   */
+  @Test
+  public void nestedZipInZipInputStream() throws Exception
+  {
+    ICloseableDirectory outer = FileSystem.getFSRoot(new FileInputStream("fileSystemTest/outer.zip"));
+    try {
+      IFile innerFile = outer.getFile("app2.zip");
+      assertNotNull(innerFile);
+
+      IDirectory inner = innerFile.convertNested();
+      assertNotNull(inner);
+      
+      File desiredFile = new File(new File(getTestResourceDir(), "/app1"), "META-INF/APPLICATION.MF");  
+      
+      // no size information when stream reading :(
+      runBasicDirTest(inner, "app2.zip/", -1, desiredFile.lastModified());
+      runBasicDirTest(inner.toCloseable(), "app2.zip/", desiredFile.length(), desiredFile.lastModified());
+    } finally {
+      outer.close();
+      
+      Field f = outer.getClass().getDeclaredField("tempFile");
+      
+      f.setAccessible(true);
+      assertFalse(((File)f.get(outer)).exists());
+    }
+  }
+  
+  /**
    * Make sure we correctly understand the directory structure for zips.
    * 
    * @throws IOException
@@ -193,6 +238,27 @@ public class FileSystemTest
     
     runBasicDirTest(dir, desiredFile.length(), desiredFile.lastModified());
     runBasicDirTest(dir.toCloseable(), desiredFile.length(), desiredFile.lastModified());
+  }
+  
+  /**
+   * Make sure we correctly understand the directory structure for zips.
+   * 
+   * @throws IOException
+   */
+  @Test
+  public void basicDirTestsWithZipInputStream() throws IOException
+  {
+    File baseDir = new File("fileSystemTest/app2.zip");
+    ICloseableDirectory dir = FileSystem.getFSRoot(new FileInputStream(baseDir));
+
+    try {
+      File desiredFile = new File(new File(getTestResourceDir(), "/app1"), "META-INF/APPLICATION.MF");
+    
+      runBasicDirTest(dir, desiredFile.length(), desiredFile.lastModified());
+      runBasicDirTest(dir.toCloseable(), desiredFile.length(), desiredFile.lastModified());
+    } finally {
+      dir.close();
+    }
   }
   
   @Test
