@@ -79,6 +79,6 @@ public abstract class JPAWeavingAndAnnotationScanningTest extends AbstractIntegr
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.advanced.itest.bundle"),
         
         PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-        equinox().version("3.7.0.v20110304"));
+        equinox().version("3.7.0.v20110613"));
   }
 }
