@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -37,6 +39,7 @@ public class ModellerTest {
         ModelledResourceManagerImpl manager = new ModelledResourceManagerImpl();
         manager.setModellingManager(new ModellingManagerImpl());
         manager.setParserProxy(ParserProxyTest.getMockParserServiceProxy());
+        manager.setModellingPlugins((Collection<ServiceModeller>)Collections.EMPTY_LIST);
 
         return Arrays.asList(new Object[][] {
                 {OfflineModellingFactory.getModelledResourceManager()},
