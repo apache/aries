@@ -20,8 +20,14 @@
 package org.apache.aries.util.filesystem;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipFile;
 
 import org.apache.aries.util.filesystem.impl.FileSystemImpl;
+import org.apache.aries.util.filesystem.impl.NestedZipDirectory;
+import org.apache.aries.util.io.IOUtils;
 
 /**
  * An abstraction of a file system. A file system can be a zip, or a directory.
@@ -38,5 +44,20 @@ public class FileSystem {
   public static IDirectory getFSRoot(File fs)
   {
 	  return FileSystemImpl.getFSRoot(fs, null);
+  }
+  
+  /**
+   * This method gets an ICloseableDirectory that represents the root of a virtual file
+   * system. The provided InputStream should represent a zip file.
+   * 
+   * When this {@link ICloseableDirectory} is closed then backing resources will be
+   * cleaned up.
+   * 
+   * @param is An input stream to a zip file.
+   * @return   the root of the virtual FS.
+   */
+  public static ICloseableDirectory getFSRoot(InputStream is)
+  {
+    return FileSystemImpl.getFSRoot(is);
   }
 }
