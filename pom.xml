@@ -48,6 +48,7 @@
         <module>transaction</module>
         <module>web</module>
         <module>application</module>
+        <module>ejb</module>
         <module>jmx</module>
         <module>jpa</module>
         <module>samples</module>
