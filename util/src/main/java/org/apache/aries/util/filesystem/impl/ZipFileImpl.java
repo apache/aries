@@ -199,8 +199,21 @@ public class ZipFileImpl implements IFile
 
   public URL toURL() throws MalformedURLException
   {
-    String entryURL = "jar:" + url + "!/" + entry.getName();
-    URL result = new URL(entryURL);
+    URL result;
+    
+    if(name.equals(zipPathToRoot))
+      result = new URL(url);
+    else {
+      
+      String entryURL = "jar:" + url + "!/";
+      if(entry != null)
+        entryURL += entry.getName();
+      else {
+        entryURL += name.substring(zipPathToRoot.length());
+      }
+      result = new URL(entryURL);
+    }
+      
     return result;
   }
 
