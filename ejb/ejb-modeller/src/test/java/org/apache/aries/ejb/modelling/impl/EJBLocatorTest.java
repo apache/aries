@@ -30,11 +30,17 @@ import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.BundleManifest;
+import org.junit.Before;
 import org.junit.Test;
 
 public class EJBLocatorTest {
 
   private EJBRegistry registry;
+  
+  @Before
+  public void setup() {
+    registry = Skeleton.newMock(EJBRegistry.class);
+  }
   
   @Test(expected=ModellerException.class)
   public void testUnavailable() throws ModellerException {
