@@ -21,21 +21,18 @@ package org.apache.aries.application.modelling.impl;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
+import org.apache.aries.application.utils.service.ExportedServiceHelper;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,11 +156,7 @@ public class ExportedServiceImpl implements ExportedService
 
   public int compareTo(WrappedServiceMetadata o) {
     logger.debug(LOG_ENTRY, "compareTo", o);
-    if (o == null) {
-      logger.debug(LOG_EXIT, "compareTo", -1);
-      return -1;      // shunt nulls to the end of any lists
-    }
-    int result = this.toString().compareTo(o.toString());
+    int result = ExportedServiceHelper.portableExportedServiceCompareTo(this, o);
     logger.debug(LOG_EXIT,"compareTo", result);
     return result;
   }
@@ -171,18 +164,7 @@ public class ExportedServiceImpl implements ExportedService
   @Override
   public boolean equals (Object o) { 
     logger.debug(LOG_ENTRY, "equals", o);
-    // Doubles as a null check
-    if (!(o instanceof WrappedServiceMetadata)) { 
-      logger.debug(LOG_EXIT, "equals", false);
-      return false;
-    }
-
-    if (o==this) { 
-      logger.debug(LOG_EXIT, "equals", true);
-      return true;
-    }
- 
-    boolean eq = this.toString().equals(o.toString());
+    boolean eq = ExportedServiceHelper.portableExportedServiceEquals(this, o);
     logger.debug(LOG_EXIT, "equals", eq);
     return eq;
   }
@@ -191,91 +173,26 @@ public class ExportedServiceImpl implements ExportedService
   @Override
   public int hashCode() {
     logger.debug(LOG_ENTRY, "hashCode");
-    int result = toString().hashCode();
+    int result = ExportedServiceHelper.portableExportedServiceHashCode(this);
     logger.debug(LOG_EXIT, "hashCode", result);
     return result;
   }
   
   @Override 
   public String toString() { 
-    if (_toString != null) { 
-      return _toString;
+    if (_toString == null) { 
+      _toString = ExportedServiceHelper.generatePortableExportedServiceToString(this);
     }
-    
-    List<String> interfaces = new ArrayList<String>(_interfaces);
-    Collections.sort(interfaces);
-    
-    List<String> props = new ArrayList<String>();
-    for (Map.Entry<String, Object> entry : _serviceProperties.entrySet()) {
-      Object entryValue = entry.getValue();
-      String entryText;
-      if (entryValue.getClass().isArray()) { 
-        // Turn arrays into comma separated Strings
-        Object [] entryArray = (Object[]) entryValue;
-        StringBuilder sb = new StringBuilder();
-        for (Object o: entryArray) { 
-          sb.append(String.valueOf(o) + ",");
-        }
-        sb = sb.deleteCharAt(sb.length()-1);
-        entryText = sb.toString();
-      } else { 
-        entryText = String.valueOf(entryValue);
-      }
-      props.add ("<entry> key=\"" + entry.getKey() + "\" value=\"" + entryText + "\"/>");
-    }
-    Collections.sort(props);
-    
-    StringBuffer buf = new StringBuffer("<service>");
-    if(_name != null) {
-      buf.append("<name>" + _name + "</name>");
-    }
-    if (_interfaces.size() > 0) { 
-      buf.append("<interfaces>");
-    }
-    for (String i : interfaces) { 
-      buf.append("<value>" + i + "</value>");
-    }
-    if (_interfaces.size() > 0) { 
-      buf.append("</interfaces>");
-    }
-    if (_serviceProperties.size() > 0) { 
-      buf.append("<service-properties>");
-    }
-    for (String p : props) { 
-      buf.append(p);
-    }
-    if (_serviceProperties.size() > 0) { 
-      buf.append("</service-properties>");
-    }
-    buf.append("</service>");
-    _toString = buf.toString();
-    return _toString;
+    return _toString;    
   }
   
 
   public boolean identicalOrDiffersOnlyByName(WrappedServiceMetadata wsmi) {
     logger.debug(LOG_ENTRY,"identicalOrDiffersOnlyByName", wsmi);
     
-    if (this.equals(wsmi)) { 
-      logger.debug(LOG_EXIT, "identicalOrDiffersOnlyByName", true);
-      return true;
-    }
-
-    Set<String> myInterfaces = new HashSet<String>(_interfaces);
-    Set<String> cmpInterfaces = new HashSet<String>(wsmi.getInterfaces());
-    if (!myInterfaces.equals(cmpInterfaces)) { 
-      logger.debug(LOG_EXIT, "identicalOrDiffersOnlyByName", false);
-      return false;
-    }
-    
-    boolean propertiesEqual = _serviceProperties.equals(wsmi.getServiceProperties());
-    if (!propertiesEqual) {
-      logger.debug(LOG_EXIT, "identicalOrDiffersOnlyByName", false);
-      return false;
-    }
-    logger.debug(LOG_EXIT, "identicalOrDiffersOnlyByName", true);
-    return true;
+    boolean result = ExportedServiceHelper.
+        portableExportedServiceIdenticalOrDiffersOnlyByName(this, wsmi);
+    logger.debug(LOG_EXIT, "identicalOrDiffersOnlyByName", result);
+    return result;
   }
-
-  
 }
