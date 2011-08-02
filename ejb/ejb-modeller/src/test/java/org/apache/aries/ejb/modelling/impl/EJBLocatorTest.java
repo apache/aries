@@ -68,6 +68,7 @@ public class EJBLocatorTest {
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
     addToZip(zos, "test/ejbs/StatelessSessionBean.class");
+    addToZip(zos, "test/ejbs/StatefulSessionBean.class");
     zos.close();
     
     runTest(baos.toByteArray(), "MANIFEST_1.MF");
@@ -82,6 +83,7 @@ public class EJBLocatorTest {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "test/ejbs/StatelessSessionBean.class");
+    addToZip(zos, "test/ejbs/StatefulSessionBean.class");
     zos.close();
     
     runTest(baos.toByteArray(), "MANIFEST_1.MF");
@@ -97,6 +99,7 @@ public class EJBLocatorTest {
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
     addToZip(zos, "test/ejb/StatelessSessionBean.class", "no/test/ejb/StatelessSessionBean.class");
+    addToZip(zos, "test/ejb/StatefulSessionBean.class", "no/test/ejb/StatefulSessionBean.class");
     zos.close();
     
     runTest(baos.toByteArray(), "MANIFEST_2.MF");
@@ -150,6 +153,14 @@ public class EJBLocatorTest {
     Skeleton s = Skeleton.getSkeleton(registry);
     MethodCall mc = new MethodCall(EJBRegistry.class, "addEJBView",
         "Annotated", "STATELESS", "test.ejbs.StatelessSessionBean", false);
+    
+    if(b)
+      s.assertCalledExactNumberOfTimes(mc, 1);
+    else
+      s.assertNotCalled(mc);
+    
+    mc = new MethodCall(EJBRegistry.class, "addEJBView",
+        String.class, "STATEFUL", String.class, boolean.class);
     
     if(b)
       s.assertCalledExactNumberOfTimes(mc, 1);

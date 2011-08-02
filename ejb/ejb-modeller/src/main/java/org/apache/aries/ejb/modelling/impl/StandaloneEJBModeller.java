@@ -16,6 +16,9 @@
  */
 package org.apache.aries.ejb.modelling.impl;
 
+/**
+ * An {@link EJBModeller} for use in standalone modelling
+ */
 public class StandaloneEJBModeller extends EJBModeller {
 
   public StandaloneEJBModeller() {
