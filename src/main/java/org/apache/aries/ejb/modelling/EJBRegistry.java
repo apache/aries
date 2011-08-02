@@ -16,7 +16,18 @@
  */
 package org.apache.aries.ejb.modelling;
 
+/**
+ * A registry of located Session EJBs
+ */
 public interface EJBRegistry {
+  /**
+   * Add a view of a session EJB, e.g. a local home, remote business interface etc.
+   * 
+   * @param ejbName The ejb name
+   * @param ejbType The ejb type (e.g. stateless)
+   * @param interfaceName The fully qualified Java type name for this view
+   * @param remote
+   */
   public void addEJBView(String ejbName, String ejbType, String interfaceName,
       boolean remote);
 }

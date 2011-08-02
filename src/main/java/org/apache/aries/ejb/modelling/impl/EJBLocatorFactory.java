@@ -18,6 +18,10 @@ package org.apache.aries.ejb.modelling.impl;
 
 import org.apache.aries.ejb.modelling.EJBLocator;
 
+/**
+ * A factory for creating our internal EJBLocator without a hard dependency on
+ * OpenEJB
+ */
 public class EJBLocatorFactory {
   public static EJBLocator getEJBLocator() {
     try {

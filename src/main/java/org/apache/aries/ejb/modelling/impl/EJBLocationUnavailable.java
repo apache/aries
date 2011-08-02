@@ -22,6 +22,10 @@ import org.apache.aries.ejb.modelling.EJBRegistry;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.manifest.BundleManifest;
 
+/**
+ * An EJB Locator implementation for when EJB location is unavailable.
+ * It will cause any modelling that might involve EJBs to fail.
+ */
 public class EJBLocationUnavailable implements EJBLocator {
 
   public void findEJBs(BundleManifest manifest, IDirectory bundle,

@@ -28,6 +28,9 @@ import org.apache.aries.application.modelling.WrappedServiceMetadata;
 import org.apache.aries.application.utils.service.ExportedServiceHelper;
 import org.osgi.framework.Constants;
 
+/**
+ * This class represents the service exported on behalf of a Session Bean
+ */
 public class EJBServiceExport implements ExportedService {
 
   private final String interfaceName;
@@ -38,6 +41,13 @@ public class EJBServiceExport implements ExportedService {
   private final Map<String, Object> serviceProperties;
   private String _toString;
   
+  /**
+   * Set up this {@link ExportedService} with the right EJB properties
+   * @param ejbName
+   * @param ejbType
+   * @param interfaceName
+   * @param remote
+   */
   public EJBServiceExport(String ejbName, String ejbType, String interfaceName,
       boolean remote) {
     this.interfaceName = interfaceName;
@@ -45,7 +55,7 @@ public class EJBServiceExport implements ExportedService {
     
     serviceProperties = new HashMap<String, Object>();
     serviceProperties.put("ejb.name", ejbName);
-    serviceProperties.put("ejb.type", ejbType);
+    serviceProperties.put("ejb.type", correctCase(ejbType));
     if(remote)
       serviceProperties.put("service.exported.interfaces", interfaceName);
     
@@ -54,6 +64,17 @@ public class EJBServiceExport implements ExportedService {
     _attributes.put(Constants.OBJECTCLASS, interfaceName);
     _attributes.put (Constants.SERVICE_RANKING, "0");
     _attributes.put(ModellingConstants.OBR_SERVICE, ModellingConstants.OBR_SERVICE);
+  }
+
+  /**
+   * The ejb.type property is always capitalised first letter, lowercase otherwise
+   * @param ejbType
+   * @return
+   */
+  private String correctCase(String ejbType) {
+    String result = ejbType.substring(0, 1).toUpperCase();
+    result += ejbType.substring(1).toLowerCase();
+    return result;
   }
 
   public Map<String, Object> getAttributes() {

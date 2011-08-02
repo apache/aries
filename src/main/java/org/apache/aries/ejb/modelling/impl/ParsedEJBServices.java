@@ -27,6 +27,12 @@ import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.ejb.modelling.EJBRegistry;
 
+/**
+ * An {@link EJBRegistry} that marks the {@link ParsedServiceElements} provided
+ * by the EJB bundle.
+ * @author Tim
+ *
+ */
 public class ParsedEJBServices implements ParsedServiceElements, EJBRegistry {
 
   private final Collection<ImportedService> references;
@@ -65,6 +71,9 @@ public class ParsedEJBServices implements ParsedServiceElements, EJBRegistry {
   
   public void addEJBView(String ejbName, String ejbType, String interfaceName,
       boolean remote) {
+    if(ejbType.equalsIgnoreCase("Stateful"))
+      return;
+    
     if(all || allowedNames.contains(ejbName))
       services.add(new EJBServiceExport(ejbName, ejbType, interfaceName, remote));
   }
