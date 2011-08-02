@@ -36,16 +36,23 @@ import org.apache.openejb.config.ReadDescriptors;
 import org.apache.openejb.jee.EjbJar;
 import org.apache.openejb.jee.EnterpriseBean;
 import org.apache.openejb.jee.SessionBean;
-import org.apache.openejb.jee.SessionType;
 import org.apache.xbean.finder.ClassFinder;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * An {@link EJBLocator} that uses OpenEJB to find EJBs
+ * @author Tim
+ *
+ */
 public class OpenEJBLocator implements EJBLocator {
 
   private static final Logger logger = LoggerFactory.getLogger(OpenEJBLocator.class);
   
+  /**
+   * A ClassLoader used by OpenEJB in annotation scanning
+   */
   public static class ResourceClassLoader extends ClassLoader {
 
     private final List<IDirectory> classpath;
@@ -72,24 +79,26 @@ public class OpenEJBLocator implements EJBLocator {
       EJBRegistry registry) throws ModellerException {
 
     try {
+      //If we have an ejb-jar.xml then parse it 
       IFile file = bundle.getFile("META-INF/ejb-jar.xml");
       EjbJar ejbJar = (file == null) ? new EjbJar() : ReadDescriptors.readEjbJar(file.toURL());
       
       EjbModule module = new EjbModule(ejbJar);
       
+      //Find our classpath so we can scan the module
       List<IDirectory> cpEntries = getClassPathLocations(manifest, bundle);
       
       ClassLoader cl = new ResourceClassLoader(cpEntries);
       module.setClassLoader(cl);
       
-      //This may become AnnotationFinder at some point in the future. We build our
-      //own because we can't trust anyone to get the classpath right otherwise!
+      //We build our own because we can't trust anyone to get the classpath right otherwise!
       module.setFinder(new ClassFinder(cl, getClassPathURLs(cpEntries)));
       
+      //Scan our app for annotated EJBs
       AppModule app = new AppModule(module);
-      
       new AnnotationDeployer().deploy(app);
       
+      //Register our session beans
       for(EnterpriseBean eb : ejbJar.getEnterpriseBeans()) {
         
         if(!!!(eb instanceof SessionBean))
@@ -102,7 +111,13 @@ public class OpenEJBLocator implements EJBLocator {
       throw new ModellerException(e);
     }
   }
-
+  
+  /**
+   * Get URLs for creating a {@link ClassFinder}
+   * @param cpEntries
+   * @return
+   * @throws MalformedURLException
+   */
   private List<URL> getClassPathURLs(List<IDirectory> cpEntries) throws MalformedURLException {
     List<URL> result = new ArrayList<URL>();
     
@@ -112,6 +127,13 @@ public class OpenEJBLocator implements EJBLocator {
     return result;
   }
 
+  /**
+   * Find the classpath entries for our bundle
+   * 
+   * @param manifest
+   * @param bundle
+   * @return
+   */
   private List<IDirectory> getClassPathLocations(BundleManifest manifest,
       IDirectory bundle) {
     List<IDirectory> result = new ArrayList<IDirectory>();
@@ -142,13 +164,15 @@ public class OpenEJBLocator implements EJBLocator {
     return result;
   }
 
+  /**
+   * Register a located session bean with the {@link EJBRegistry}
+   * @param registry
+   * @param sb
+   */
   private void registerSessionBean(EJBRegistry registry, SessionBean sb) {
     
     String name = sb.getEjbName();
     String type = sb.getSessionType().toString();
-    
-    if(sb.getSessionType() == SessionType.STATEFUL)
-      return;
     
     boolean added = false;
     

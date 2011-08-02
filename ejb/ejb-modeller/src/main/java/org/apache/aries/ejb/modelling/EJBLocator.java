@@ -20,8 +20,20 @@ import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.manifest.BundleManifest;
 
+/**
+ * A plug point for locating session EJBs in a bundle.
+ */
 public interface EJBLocator {
 
+  /**
+   * Find any session beans defined in the IDirectory bundle and register them
+   * with the supplied {@link EJBRegistry}.
+   * 
+   * @param manifest The manifest for the bundle
+   * @param bundle The bundle binary
+   * @param registry The registry of located Session EJBs
+   * @throws ModellerException
+   */
   public void findEJBs(BundleManifest manifest, IDirectory bundle, EJBRegistry registry)
     throws ModellerException;
   

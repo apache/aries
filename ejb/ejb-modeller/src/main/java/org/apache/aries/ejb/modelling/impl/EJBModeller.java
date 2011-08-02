@@ -40,6 +40,10 @@ public class EJBModeller implements ServiceModeller {
     this.locator = locator;
   }
   
+  /**
+   * This modeller only searches for EJBs if there is an Export-EJB header with
+   * a value other than NONE (which is also the default).
+   */
   public ParsedServiceElements modelServices(BundleManifest manifest, IDirectory bundle) 
     throws ModellerException {
     logger.trace("modelServices", new Object[] {manifest, bundle});
