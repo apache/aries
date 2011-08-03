@@ -78,9 +78,12 @@ public class OpenEJBLocator implements EJBLocator {
   public void findEJBs(BundleManifest manifest, IDirectory bundle,
       EJBRegistry registry) throws ModellerException {
 
+    String ejbJarLocation = (manifest.getRawAttributes().getValue(
+        "Web-ContextPath") == null) ? "META-INF/ejb-jar.xml" : "WEB-INF/ejb-jar.xml";
+    
     try {
       //If we have an ejb-jar.xml then parse it 
-      IFile file = bundle.getFile("META-INF/ejb-jar.xml");
+      IFile file = bundle.getFile(ejbJarLocation);
       EjbJar ejbJar = (file == null) ? new EjbJar() : ReadDescriptors.readEjbJar(file.toURL());
       
       EjbModule module = new EjbModule(ejbJar);

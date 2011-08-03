@@ -1,0 +1,5 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: foo
+Bundle-ClassPath: yes
+Web-ContextPath: test
+
