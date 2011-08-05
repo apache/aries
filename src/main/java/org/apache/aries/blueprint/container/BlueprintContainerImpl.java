@@ -257,13 +257,15 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     case WaitForNamespaceHandlers:
                     {
                         List<String> missing = new ArrayList<String>();
+                        List<URI> missingURIs = new ArrayList<URI>();
                         for (URI ns : namespaces) {
                             if (handlerSet.getNamespaceHandler(ns) == null) {
                                 missing.add("(&(" + Constants.OBJECTCLASS + "=" + NamespaceHandler.class.getName() + ")(" + NamespaceHandlerRegistryImpl.NAMESPACE + "=" + ns + "))");
+                                missingURIs.add(ns);
                             }
                         }
                         if (missing.size() > 0) {
-                            LOGGER.info("Bundle {} is waiting for namespace handlers ", bundleContext.getBundle().getSymbolicName(), missing);
+                            LOGGER.info("Bundle {} is waiting for namespace handlers {}", bundleContext.getBundle().getSymbolicName(), missingURIs);
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
