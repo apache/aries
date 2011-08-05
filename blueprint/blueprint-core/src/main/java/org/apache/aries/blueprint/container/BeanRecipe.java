@@ -556,7 +556,7 @@ public class BeanRecipe extends AbstractRecipe {
      */
     public Method getDestroyMethod(Object instance) throws ComponentDefinitionException {
         Method method = null;        
-        if (destroyMethod != null && destroyMethod.length() > 0) {
+        if (instance != null && destroyMethod != null && destroyMethod.length() > 0) {
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), destroyMethod);
             if (method == null) {
                 throw new ComponentDefinitionException("Component '" + getName() + "' does not have destroy-method: " + destroyMethod);
