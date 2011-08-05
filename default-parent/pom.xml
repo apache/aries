@@ -83,12 +83,12 @@
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
-                <version>1.4</version>
+                <version>1.5.0</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-service</artifactId>
-                <version>1.4</version>
+                <version>1.5.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.jdmk</groupId>
