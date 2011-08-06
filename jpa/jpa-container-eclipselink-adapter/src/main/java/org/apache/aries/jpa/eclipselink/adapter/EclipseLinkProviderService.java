@@ -27,6 +27,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ProviderUtil;
 
 import org.apache.aries.jpa.eclipselink.adapter.platform.OSGiTSServer;
+import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
@@ -39,7 +40,8 @@ import org.slf4j.LoggerFactory;
  * we can go in at entity manager creation time and set the eclipselink target-server to be {@link OSGiTSServer}.
  */
 public class EclipseLinkProviderService implements ServiceFactory {
-  private static final Logger logger = LoggerFactory.getLogger(Activator.class);  
+  private static final Logger logger = LoggerFactory.getLogger(Activator.class);
+  private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(EclipseLinkProviderService.class, "org.apache.aries.jpa.eclipselink.adapter.jpaEclipseLinkAdapter");
   
   private final Bundle eclipseLinkJpaBundle;
     
@@ -71,7 +73,7 @@ public class EclipseLinkProviderService implements ServiceFactory {
       };
         
     } catch (Exception e) {
-        logger.error("Got exception trying to instantiate the EclipseLink provider", e);
+        logger.error(MESSAGES.getMessage("error.creating.eclipselink.provider"), e);
         return null;                
     }
   }
