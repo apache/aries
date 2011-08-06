@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
+import org.apache.aries.util.internal.MessageUtil;
 
 public class CloseableDirectory implements ICloseableDirectory {
 	protected IDirectory delegate;
@@ -132,7 +133,7 @@ public class CloseableDirectory implements ICloseableDirectory {
 	protected void cleanup() {}
 	
 	protected void checkNotClosed() {
-		if (isClosed()) throw new IllegalStateException("ICloseableDirectory is closed");
+		if (isClosed()) throw new IllegalStateException(MessageUtil.getMessage("UTIL0018E"));
 	}
 
 	public boolean isClosed() {
