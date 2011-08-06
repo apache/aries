@@ -34,7 +34,7 @@ public enum TransactionAttribute {
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_NO_TRANSACTION) {
-          throw new IllegalStateException("No transaction on the thread");
+          throw new IllegalStateException(Constants.MESSAGES.getMessage("tran.not.found"));
         }
 
         return new TransactionToken(man.getTransaction(), null, MANDATORY);
@@ -45,7 +45,7 @@ public enum TransactionAttribute {
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_ACTIVE) {
-          throw new IllegalStateException("Transaction on the thread");
+          throw new IllegalStateException(Constants.MESSAGES.getMessage("tran.found.never"));
         }
 
         return new TransactionToken(null, null, NEVER);
