@@ -92,7 +92,7 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
         try {
             return (tm.getStatus() == Status.STATUS_ACTIVE) ? tm.getTransaction() : null;
         } catch (SystemException e) {
-            throw new SQLException("Error getting transaction");
+            throw new SQLException(NLS.MESSAGES.getMessage("unable.to.get.tx"), e);
         }
     }
     
