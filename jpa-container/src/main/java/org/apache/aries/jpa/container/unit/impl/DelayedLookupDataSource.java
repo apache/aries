@@ -27,6 +27,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.aries.jpa.container.impl.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -47,16 +48,14 @@ public class DelayedLookupDataSource implements DataSource {
         
         BundleContext bCtx = persistenceBundle.getBundleContext();
         if(bCtx == null)
-          throw new IllegalStateException("The bundle " + 
-              persistenceBundle.getSymbolicName() + "_" + persistenceBundle.getVersion() + 
-              " is not started.");
+          throw new IllegalStateException(NLS.MESSAGES.getMessage("persistence.bundle.not.active", persistenceBundle.getSymbolicName(), persistenceBundle.getVersion()));
         props.put("osgi.service.jndi.bundleContext", bCtx);
         InitialContext ctx = new InitialContext(props);
         ds = (DataSource) ctx.lookup(jndiName);
       } catch (NamingException e) {
-        _logger.error("No JTA datasource could be located using the JNDI name " + jndiName,
-            e);
-        throw new RuntimeException("The DataSource " + jndiName + " could not be used.", e);
+        String message = NLS.MESSAGES.getMessage("no.data.source.found", jndiName, persistenceBundle.getSymbolicName(), persistenceBundle.getVersion());
+        _logger.error(message, e);
+        throw new RuntimeException(message, e);
       }
     }
     return ds;

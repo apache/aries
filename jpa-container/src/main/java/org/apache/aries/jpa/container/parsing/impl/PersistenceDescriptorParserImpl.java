@@ -27,6 +27,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 
+import org.apache.aries.jpa.container.impl.NLS;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
@@ -77,8 +78,7 @@ public class PersistenceDescriptorParserImpl implements PersistenceDescriptorPar
         } 
       }
     } catch (Exception e) {
-      throw new PersistenceDescriptorParserException("There was an error parsing " + descriptor.getLocation() 
-          + " in bundle " + b.getSymbolicName() + "_" + b.getVersion(), e);
+      throw new PersistenceDescriptorParserException(NLS.MESSAGES.getMessage("persistence.description.parse.error", descriptor.getLocation(), b.getSymbolicName(), b.getVersion()), e);
     } finally {
       if(is != null) try {
         is.closeUnderlying();
@@ -87,9 +87,7 @@ public class PersistenceDescriptorParserImpl implements PersistenceDescriptorPar
       }
     }
     if(!!!schemaFound) {
-    throw new PersistenceDescriptorParserException("No Schema could be located for the" +
-        "persistence descriptor " + descriptor.getLocation() 
-        + " in bundle " + b.getSymbolicName() + "_" + b.getVersion());
+      throw new PersistenceDescriptorParserException(NLS.MESSAGES.getMessage("persistence.descriptor.schema.not.found", descriptor.getLocation(), b.getSymbolicName(), b.getVersion()));
     }
     return persistenceUnits;
   }

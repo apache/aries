@@ -63,7 +63,6 @@ public class PersistenceBundleHelper
    */
   public static Collection<PersistenceDescriptor> findPersistenceXmlFiles(Bundle bundle)
   { 
-    @SuppressWarnings("unchecked")
     Dictionary<String, String> headers = bundle.getHeaders();
     String metaPersistence = headers.get(PERSISTENCE_UNIT_HEADER);
     String webContextPath = headers.get(WEB_CONTEXT_PATH_HEADER);
@@ -83,10 +82,7 @@ public class PersistenceBundleHelper
         locations = findWABClassPathLocations(bundleClassPath);
 
         if(_logger.isInfoEnabled())
-          _logger.info("The bundle " + bundleIdentity + " specifies the " + 
-                     WEB_CONTEXT_PATH_HEADER + " header; it does not specify the " + PERSISTENCE_UNIT_HEADER + " header. " +
-                     "This bundle will be scanned for persistence descriptors in the locations: " + locations + " " +
-                     "using the rules defined by the JPA specification for finding persistence descriptors for web applications.");
+          _logger.info(NLS.MESSAGES.getMessage("wab.without.meta.persistence.header", bundleIdentity, WEB_CONTEXT_PATH_HEADER, PERSISTENCE_UNIT_HEADER, locations));
       }
     } else {
 
@@ -114,9 +110,7 @@ public class PersistenceBundleHelper
             persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
           }
       } catch (Exception e) {
-          _logger.error("There was an exception while locating the persistence descriptor at location "
-              + location + " in bundle " + bundleIdentity
-          		+ ". No persistence descriptors will be processed for this bundle.", e);
+          _logger.error(NLS.MESSAGES.getMessage("exception.while.locating.descriptor", location, bundleIdentity), e);
         //If we get an exception, then go through closing all of our streams.
         //It is better to fail completely than half succeed.
         for (PersistenceDescriptor desc : persistenceXmlFiles) {
@@ -133,8 +127,7 @@ public class PersistenceBundleHelper
     }
     
     if (persistenceXmlFiles.isEmpty()) {
-      _logger.warn("No persistence descriptors could be located in the bundle " + bundleIdentity + ". " +
-                   "The following locations were searched: " + locations.toString());
+      _logger.warn(NLS.MESSAGES.getMessage("no.persistence.descriptor", bundleIdentity, locations.toString()));
     }
 
     return persistenceXmlFiles;
