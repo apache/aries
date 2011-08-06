@@ -32,8 +32,7 @@ public class InvalidRangeCombination extends Exception {
 
   public InvalidRangeCombination(Version minVersion, boolean minExclusive,
       Version maxVersion, boolean maxExclusive) {
-    super("There was no overlap between the specified version ranges. The combined version range" +
-    		"string would have been " + getVersionRangeString(minVersion, minExclusive, maxVersion, maxExclusive));
+    super(NLS.MESSAGES.getMessage("no.overlap.for.version.range", getVersionRangeString(minVersion, minExclusive, maxVersion, maxExclusive)));
   }
 
   private static String getVersionRangeString(Version minVersion,

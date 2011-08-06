@@ -20,14 +20,12 @@ package org.apache.aries.jpa.container.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -204,11 +202,9 @@ public class EntityManagerFactoryManager {
       registrations = new ConcurrentHashMap<String, ServiceRegistration>();
       String providerName = (String) provider.getProperty("javax.persistence.provider");
       if(providerName == null) {
-        _logger.warn("The PersistenceProvider for bundle {} did not specify a provider name in the \"javax.persistence.provider\" service property. " +
-        		"As a result EntityManagerFactory objects will not be registered with the " 
-            + PersistenceUnitConstants.OSGI_UNIT_PROVIDER + " property. " 
-            + "The Peristence Provider service was {}",
-            new Object[] {bundle.getSymbolicName() + "_" + bundle.getVersion(), provider});
+        _logger.warn( NLS.MESSAGES.getMessage("no.provider.specified", 
+                      bundle.getSymbolicName() + '/' + bundle.getVersion(), 
+                      PersistenceUnitConstants.OSGI_UNIT_PROVIDER, provider));
       }
       //Register each EMF
       for(Entry<String, ? extends EntityManagerFactory> entry : emfs.entrySet())
@@ -225,8 +221,7 @@ public class EntityManagerFactoryManager {
         try {
           registrations.put(unitName, bundle.getBundleContext().registerService(EntityManagerFactory.class.getCanonicalName(), entry.getValue(), props));
         } catch (Exception e) {
-          _logger.error("There was an error registering the persistence unit " 
-              + unitName + " defined by the bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion(), e);
+          _logger.error(NLS.MESSAGES.getMessage("cannot.register.persistence.unit", unitName, bundle.getSymbolicName() + '/' + bundle.getVersion()));
           throw new InvalidPersistenceUnitException(e);
         }
       }
@@ -249,12 +244,10 @@ public class EntityManagerFactoryManager {
           PersistenceProvider providerService = (PersistenceProvider) containerContext.getService(provider);
 
           if(providerService == null) {
-            _logger.warn("The PersistenceProvider service hosting persistence units in bundle " 
-                + bundle.getSymbolicName() + "_" + bundle.getVersion() + " is no longer available. " +
-                		"Persistence units defined by the bundle will not be available until the bundle is refreshed");
+            _logger.warn(NLS.MESSAGES.getMessage("persistence.provider.gone.awol", bundle.getSymbolicName() + '/' + bundle.getVersion()));
             throw new InvalidPersistenceUnitException();
           }
-      
+
           for(ManagedPersistenceUnitInfo info : persistenceUnits){
             PersistenceUnitInfo pUnitInfo = info.getPersistenceUnitInfo();
         
@@ -325,8 +318,7 @@ public class EntityManagerFactoryManager {
         try {
           entry.getValue().close();
         } catch (Exception e) {
-          _logger.error("There was an exception when closing the EntityManagerFactory for persistence unit "
-              + entry.getKey() + " in bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion(), e);
+          _logger.error(NLS.MESSAGES.getMessage("could.not.close.persistence.unit", entry.getKey(), bundle.getSymbolicName() + '/' + bundle.getVersion()), e);
         }
       }
     }
