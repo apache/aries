@@ -29,6 +29,7 @@ import javax.persistence.TransactionRequiredException;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
 
+import org.apache.aries.jpa.container.context.impl.NLS;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -100,10 +101,9 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
     //Throw the error on to the client
     if(!!!isTransactionActive()) {
       if(jtaIntegrationAvailable())
-        throw new TransactionRequiredException("No transaction currently active");
+        throw new TransactionRequiredException(NLS.MESSAGES.getMessage("no.active.transaction"));
       else {
-        throw new TransactionRequiredException("No JTA transaction services implementation is currently available. As a result the" +
-        		" JPA container cannot integrate with JTA transactions.");
+        throw new TransactionRequiredException(NLS.MESSAGES.getMessage("no.transaction.manager"));
       }
     }
     EntityManager toReturn = null;
@@ -121,8 +121,9 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
       try {
         tsr.putResource(EMF_MAP_KEY, contextsForTransaction);
       } catch (IllegalStateException e) {
-        _logger.warn("Unable to create a persistence context for the transaction {} because the is not active", new Object[] {tsr.getTransactionKey()});
-        throw new TransactionRequiredException("Unable to assiociate resources with transaction " + tsr.getTransactionKey());
+        String message = NLS.MESSAGES.getMessage("tran.not.active", tsr.getTransactionKey());
+        _logger.warn(message);
+        throw new TransactionRequiredException(message);
       }
     }
     
@@ -134,9 +135,10 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
       try {
         tsr.registerInterposedSynchronization(new EntityManagerClearUp(toReturn, activeCount, cbk));
       } catch (IllegalStateException e) {
-        _logger.warn("No persistence context could be created as the JPA container could not register a synchronization with the transaction {}.", new Object[] {tsr.getTransactionKey()});
+        String message = NLS.MESSAGES.getMessage("unable.to.register.synchronization", tsr.getTransactionKey());
+        _logger.warn(message);
         toReturn.close();
-        throw new TransactionRequiredException("Unable to synchronize with transaction " + tsr.getTransactionKey());
+        throw new TransactionRequiredException(message);
       }
       contextsForTransaction.put(persistenceUnit, toReturn);
       activeCount.incrementAndGet();
@@ -180,16 +182,12 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
       TransactionSynchronizationRegistry tsr = (TransactionSynchronizationRegistry) context.getService(ref);
       if(tsr != null) {
         if(tranRegistry.compareAndSet(null, tsr)) {
-          _logger.info("A TransactionSynchronizationRegistry service is now available in the runtime. Managed persistence contexts will now" +
-              "integrate with JTA transactions using {}.", new Object[] {ref});
+          _logger.info(NLS.MESSAGES.getMessage("tran.sync.registry.arrived", ref));
         }
         else
         {
           tranRegistry.set(tsr);
-          _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts has been replaced." +
-              " The new TransactionSynchronizationRegistry, {}, will now be used to manage persistence contexts." +
-              " Managed persistence contexts may not work correctly unless the runtime uses the new JTA Transaction services implementation" +
-              " to manage transactions.", new Object[] {ref});
+          _logger.warn(NLS.MESSAGES.getMessage("tran.sync.registry.replace", ref));
         }
       } else {
         tranRegistryRef.compareAndSet(ref, null);
@@ -222,18 +220,11 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
         tranRegistryRef.set(null);
         tranRegistry.compareAndSet(old, null);
         
-      _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts is no longer available." +
-          " Managed persistence contexts will no longer be able to integrate with JTA transactions, and will behave as if" +
-          " no there is no transaction context at all times until a new TransactionSynchronizationRegistry is available." +
-          " Applications using managed persistence contexts may not work correctly until a new JTA Transaction services" +
-          " implementation is available.");
+        _logger.warn(NLS.MESSAGES.getMessage("tran.sync.registry.gone"));
       } else {
         tranRegistryRef.set(chosenRef);
         tranRegistry.set(replacement);
-      _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts has been replaced." +
-          " The new TransactionSynchronizationRegistry, {}, will now be used to manage persistence contexts." +
-          " Managed persistence contexts may not work correctly unless the runtime uses the new JTA Transaction services implementation" +
-          " to manage transactions.", new Object[] {chosenRef});
+        _logger.warn(NLS.MESSAGES.getMessage("tran.sync.registry.replace", chosenRef));
       }
       context.ungetService(reference);
       //If there was no replacement before, check again. This closes the short window if
@@ -288,10 +279,10 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
         activeCount.decrementAndGet();
         callback.callback();
       } finally {
-			  try{
-			    context.close();
+        try{
+          context.close();
         } catch (Exception e) {
-          _logger.warn("There was an error when the container closed an EntityManager", context);
+          _logger.warn(NLS.MESSAGES.getMessage("error.closing.entity.manager", context.getProperties()), e);
         }
       }
     }

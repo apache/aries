@@ -91,7 +91,7 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
     if(type == PersistenceContextType.TRANSACTION || type == null)
       return new JTAEntityManager(factory, properties, registry, activeCount, this);
     else {
-      _logger.error("There is currently no support for extended scope EntityManagers");
+      _logger.error(NLS.MESSAGES.getMessage("extended.em.not.supported"));
       return null;
     }
 
