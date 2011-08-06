@@ -82,9 +82,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     }
     
     if(!!!registry.jtaIntegrationAvailable())
-      _logger.warn("No JTA integration is currently available. The managed persistence context {} used by the bundle {} will operate " +
-      		"with no transaction context and be read only until a JTA Transaction Services implementation is available in" +
-      		"the runtime", new Object[] {unitName, client.getSymbolicName() + "_" + client.getVersion()});
+      _logger.warn(NLS.MESSAGES.getMessage("no.tran.manager.for.bundle", unitName, client.getSymbolicName(), client.getVersion()));
     
     //Find the framework for this bundle (we may be in a composite)
     Bundle frameworkBundle = client.getBundleContext().getBundle(0);
@@ -150,7 +148,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
           
           manager = managers.get(frameworkBundle);
           if (manager == null) {
-              _logger.error("There was no context manager for framework {}. This should never happen");
+              _logger.error(NLS.MESSAGES.getMessage("no.context.manager.for.framework", frameworkBundle.getSymbolicName(), frameworkBundle.getVersion()));
             throw new IllegalStateException();
           }
         } else if (managers.containsKey(bundle)) {
@@ -250,7 +248,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
       quiesceReg = context.registerService(QUIESCE_PARTICIPANT_CLASS,
           quiesceTidyUp, null);
     } catch (ClassNotFoundException e) {
-      _logger.info("No quiesce support is available, so persistence contexts will not participate in quiesce operations");
+      _logger.info(NLS.MESSAGES.getMessage("quiesce.manager.not.there"));
     }
   }
 
