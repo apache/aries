@@ -37,6 +37,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; 
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 public class Helper {
     public static BlueprintContainer getBlueprintContainerForBundle(RichBundleContext context, String symbolicName) {
@@ -49,6 +51,10 @@ public class Helper {
     
     public static Option[] blueprintBundles() {
         return blueprintBundles(true);
+    }
+    
+    public static Option[] debug(int port) {
+      return flatOptions(vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + port),waitForFrameworkStartup());
     }
     
     public static Option[] blueprintBundles(boolean startBlueprint) {
