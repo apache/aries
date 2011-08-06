@@ -83,7 +83,7 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
         try {
             mgr.start();
         } catch (Exception e) {
-            log.error("Error starting transaction manager", e);
+            log.error(NLS.MESSAGES.getMessage("exception.tx.manager.start"), e);
         }
     }
 
@@ -93,7 +93,7 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
             try {
                 mgr.close();
             } catch (Exception e) {
-                log.error("Error stopping transaction manager", e);
+                log.error(NLS.MESSAGES.getMessage("exception.tx.manager.stop"), e);
             }
         }
     }
