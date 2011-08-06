@@ -83,7 +83,7 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
                         txAttribute = map.get(matches.get(0));
                     }
                     else {
-                        throw new IllegalStateException("Unable to apply patterns: " + matches);
+                        throw new IllegalStateException(Constants.MESSAGES.getMessage("unable.to.apply.patterns", matches));
                     }
                 }
             }
