@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.persistence.spi.ClassTransformer;
 
+import org.apache.aries.jpa.container.impl.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.hooks.weaving.WeavingException;
@@ -80,9 +81,10 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
             throw (ThreadDeath)t;
           else if (t instanceof OutOfMemoryError)
             throw (OutOfMemoryError) t;
-          else throw new WeavingException("There was an error attempting to weave " +
-              wovenClass.getClassName() + " using transformer " + transformer.toString()
-              , t);
+          else {
+            Bundle b = wovenClass.getBundleWiring().getBundle();
+            throw new WeavingException(NLS.MESSAGES.getMessage("jpa.weaving.failure", wovenClass.getClassName(), b.getSymbolicName(), b.getVersion(), transformer), t);
+          }
         }
       }
     }
@@ -109,7 +111,7 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
     LinkedHashSet<WrappingTransformer> set = registeredTransformers.get(pBundle);
     
     if(set == null || !!!safeRemove(set, transformer))
-      throw new IllegalStateException("The transformer " + transformer + " is not registered");
+      throw new IllegalStateException(NLS.MESSAGES.getMessage("jpa.weaving.transformer.not.registered", transformer));
     
     if(set.isEmpty())
       registeredTransformers.remove(pBundle);

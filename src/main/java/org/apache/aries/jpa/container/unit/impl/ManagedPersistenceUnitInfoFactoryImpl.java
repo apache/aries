@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
+import org.apache.aries.jpa.container.impl.NLS;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -49,15 +50,14 @@ public class ManagedPersistenceUnitInfoFactoryImpl implements
     
     Collection<?> existing = persistenceUnits.putIfAbsent(persistenceBundle, managedUnits);
     if(existing != null)
-      throw new IllegalStateException("Previous units were detected that have not been destroyed");
+      throw new IllegalStateException(NLS.MESSAGES.getMessage("previous.pus.have.not.been.destroyed", persistenceBundle.getSymbolicName(), persistenceBundle.getVersion()));
     return Collections.unmodifiableCollection(managedUnits);
   }
 
   public void destroyPersistenceBundle(BundleContext containerContext, Bundle bundle) {
     Collection<ManagedPersistenceUnitInfoImpl> mpus = persistenceUnits.remove(bundle);
     if(mpus == null)
-      throw new IllegalStateException("No persistence units defined for bundle " +
-          bundle.getSymbolicName() + "_" + bundle.getVersion());
+      throw new IllegalStateException(NLS.MESSAGES.getMessage("no.persistence.units.for.bundle", bundle.getSymbolicName(), bundle.getVersion()));
     for(ManagedPersistenceUnitInfoImpl impl : mpus) {
       impl.destroy();
     }

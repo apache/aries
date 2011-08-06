@@ -123,8 +123,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
           (Class<? extends ManagedPersistenceUnitInfoFactory>) ctx.getBundle().loadClass(className);
         persistenceUnitFactory = clazz.newInstance();
       } catch (Exception e) {
-        _logger.error("There was a problem creating the custom ManagedPersistenceUnitInfoFactory " + className 
-            + ". The default ManagedPersistenceUnitInfo factory will be used instead", e);
+        _logger.error(NLS.MESSAGES.getMessage("unable.to.create.mpuif", className), e);
       }
     }
     
@@ -195,8 +194,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
         if(e instanceof InvalidPersistenceUnitException) {
           logInvalidPersistenceUnitException(mgr.getBundle(), (InvalidPersistenceUnitException)e);
         } else {
-          _logger.warn("An error occured whilst trying to manage persistence units for bundle " 
-              + mgr.getBundle().getSymbolicName() + "_" + mgr.getBundle().getVersion(), e);
+          _logger.warn(NLS.MESSAGES.getMessage("unable.to.manage.pu", mgr.getBundle().getSymbolicName(), mgr.getBundle().getVersion()), e);
         }
         mgr.destroy();
         if(infos != null)
@@ -248,18 +246,26 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     
     if(u != null) {
       if(_logger.isInfoEnabled())
-        _logger.info("A {} file was found. The default properties {} will be overridden.",
-            new Object[] {ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, config});
+        _logger.info(NLS.MESSAGES.getMessage("aries.jpa.config.file.found", 
+                                             ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, 
+                                             ctx.getBundle().getSymbolicName(),
+                                             ctx.getBundle().getVersion(),
+                                             config));
       try {
         config.load(u.openStream());
       } catch (IOException e) {
-        _logger.error("There was an error reading from " 
-            + ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, e);
+        _logger.error(NLS.MESSAGES.getMessage("aries.jpa.config.file.read.error", 
+                                              ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES,
+                                              ctx.getBundle().getSymbolicName(),
+                                              ctx.getBundle().getVersion()), e);
       }
     } else {
       if(_logger.isInfoEnabled())
-        _logger.info("No {} file was found. The default properties {} will be used.",
-            new Object[] {ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, config});
+        _logger.info(NLS.MESSAGES.getMessage("aries.jpa.config.file.not.found", 
+            ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, 
+            ctx.getBundle().getSymbolicName(),
+            ctx.getBundle().getVersion(),
+            config));
     }
   }
 
@@ -319,8 +325,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
         _logger.debug("Located Persistence descriptors: {} in bundle {}", new Object[] {persistenceXmls, b.getSymbolicName() + "_" + b.getVersion()});
       
       if(b.getState() == Bundle.ACTIVE) {
-        _logger.warn("The bundle {} is already active, it may not be possible to create managed persistence units for it.", 
-            new Object[] {b.getSymbolicName() + "_" + b.getVersion()});
+        _logger.warn(NLS.MESSAGES.getMessage("jpa.bundle.active", b.getSymbolicName(), b.getVersion()));
       }
       
       
@@ -330,9 +335,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
         try {
           pUnits.addAll(parser.parse(b, descriptor));
         } catch (PersistenceDescriptorParserException e) {
-          _logger.error("There was an error while parsing the persistence descriptor " 
-              + descriptor.getLocation() + " in bundle " + b.getSymbolicName() 
-              + "_" + b.getVersion() + ". No persistence units will be managed for this bundle", e);
+          _logger.error(NLS.MESSAGES.getMessage("persistence.description.parse.error", descriptor.getLocation(), b.getSymbolicName(), b.getVersion()), e);
         }
       }
     }
@@ -427,8 +430,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
           try {
             versionRanges.add(VersionRange.parseVersionRange(versionRangeString));
           } catch (IllegalArgumentException e) {
-            _logger.warn("There was an error parsing the version range string {} for persistence unit {}. It will be ignored."
-                , new Object[] {versionRangeString, metadata.get(ParsedPersistenceUnit.UNIT_NAME)});
+            _logger.warn(NLS.MESSAGES.getMessage("version.range.parse.failure", versionRangeString, metadata.get(ParsedPersistenceUnit.UNIT_NAME)));
           }
         }
       }
@@ -441,8 +443,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
         range = combineVersionRanges(versionRanges);
       } catch (InvalidRangeCombination e) {
         Bundle bundle = parsedPersistenceUnits.iterator().next().getDefiningBundle();
-        _logger.error("The bundle " + bundle.getSymbolicName() 
-            + "_" + bundle.getVersion() + " specified an invalid combination of provider version ranges",  e);
+        _logger.error(NLS.MESSAGES.getMessage("invalid.provider.version.ranges", bundle.getSymbolicName(), bundle.getVersion()), e);
         return null;
       }
     }
@@ -450,16 +451,14 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     if(ppClassNames.size() > 1)
     {
       Bundle bundle = parsedPersistenceUnits.iterator().next().getDefiningBundle();
-      _logger.error("The bundle " + bundle.getSymbolicName() 
-          + "_" + bundle.getVersion() + " specified more than one persistence provider: {}. "
-          + "This is not supported, so no persistence units will be created for this bundle.",
-          new Object[] {ppClassNames});
+      _logger.error(NLS.MESSAGES.getMessage("multiple.persistence.providers.specified", bundle.getSymbolicName(), bundle.getVersion(), ppClassNames));
       return null;
     } else {
+      Bundle bundle = parsedPersistenceUnits.iterator().next().getDefiningBundle();
       //Get the best provider for the given filters
       String provider = (ppClassNames.isEmpty()) ?
           persistenceUnitFactory.getDefaultProviderClassName() : ppClassNames.iterator().next();
-          return getBestProvider(provider, range);
+          return getBestProvider(provider, range, bundle);
     }
   }
  
@@ -531,10 +530,11 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
    * Locate the best provider for the given criteria
    * @param providerClass
    * @param matchingCriteria
+   * @param bundle 
    * @return
    */
   @SuppressWarnings("unchecked")
-  private synchronized ServiceReference getBestProvider(String providerClass, VersionRange matchingCriteria)
+  private synchronized ServiceReference getBestProvider(String providerClass, VersionRange matchingCriteria, Bundle bundle)
   {
     if(!!!persistenceProviders.isEmpty()) {
       if((providerClass != null && !!!"".equals(providerClass))
@@ -555,15 +555,14 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
           //Return the "best" provider, i.e. the highest version
           return Collections.max(refs, new ProviderServiceComparator());
         } else {
-          _logger.warn("There are no suitable providers for the provider class name {} and version range {}.",
-              new Object[] {providerClass, matchingCriteria});
+          _logger.warn(NLS.MESSAGES.getMessage("no.suitable.jpa.providers", providerClass, matchingCriteria, bundle.getSymbolicName(), bundle.getVersion()));
         }
       } else {
         //Return the "best" provider, i.e. the service OSGi would pick
         return (ServiceReference) Collections.max(persistenceProviders);
       }
     } else {
-      _logger.warn("There are no providers available.");
+      _logger.warn(NLS.MESSAGES.getMessage("no.jpa.providers"));
     }
     return null;
   }
@@ -594,8 +593,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
    */
   private void logInvalidPersistenceUnitException(Bundle bundle,
       InvalidPersistenceUnitException e) {
-    _logger.warn("The persistence units for bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion()
-        + " became invalid and will be destroyed.", e);
+    _logger.warn(NLS.MESSAGES.getMessage("pu.has.becomd.invalid", bundle.getSymbolicName(), bundle.getVersion()), e);
   }
 
   
@@ -627,7 +625,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
       quiesceReg = context.registerService(QUIESCE_PARTICIPANT_CLASS,
          quiesceParticipant, null);
     } catch (ClassNotFoundException e) {
-      _logger.info("No quiesce support is available, so managed persistence units will not participate in quiesce operations");
+      _logger.info(NLS.MESSAGES.getMessage("quiesce.manager.not.there"));
     }
   }
 
