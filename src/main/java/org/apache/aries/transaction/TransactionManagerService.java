@@ -81,7 +81,7 @@ public class TransactionManagerService {
         // Transaction timeout
         int transactionTimeout = getInt(TRANSACTION_TIMEOUT, DEFAULT_TRANSACTION_TIMEOUT);
         if (transactionTimeout <= 0) {
-            throw new ConfigurationException(TRANSACTION_TIMEOUT, "Property " + TRANSACTION_TIMEOUT + " must be > 0");
+            throw new ConfigurationException(TRANSACTION_TIMEOUT, NLS.MESSAGES.getMessage("tx.timeout.greaterthan.zero"));
         }
         // XID factory
         XidFactory xidFactory = new XidFactoryImpl(pid.getBytes());
@@ -90,7 +90,7 @@ public class TransactionManagerService {
             String bufferClassName = getString(HOWL_BUFFER_CLASS_NAME, "org.objectweb.howl.log.BlockLogBuffer");
             int bufferSizeKBytes = getInt(HOWL_BUFFER_SIZE, 32);
             if (bufferSizeKBytes < 1 || bufferSizeKBytes > 32) {
-                throw new ConfigurationException(HOWL_BUFFER_SIZE, "bufferSize must be between 1 and 32");
+                throw new ConfigurationException(HOWL_BUFFER_SIZE, NLS.MESSAGES.getMessage("buffer.size.between.one.and.thirtytwo"));
             }
             boolean checksumEnabled = getBool(HOWL_CHECKSUM_ENABLED, true);
             boolean adler32Checksum = getBool(HOWL_ADLER32_CHECKSUM, true);
@@ -101,16 +101,16 @@ public class TransactionManagerService {
             int maxLogFiles = getInt(HOWL_MAX_LOG_FILES, 2);
             int minBuffers = getInt(HOWL_MIN_BUFFERS, 4);
             if (minBuffers < 0) {
-                throw new ConfigurationException(HOWL_MIN_BUFFERS, "minBuffers must be > 0");
+                throw new ConfigurationException(HOWL_MIN_BUFFERS, NLS.MESSAGES.getMessage("min.buffers.greaterthan.zero"));
             }
             int maxBuffers = getInt(HOWL_MAX_BUFFERS, 0);
             if (maxBuffers > 0 && minBuffers < maxBuffers) {
-                throw new ConfigurationException(HOWL_MAX_BUFFERS, "minBuffers must be <= maxBuffers");
+                throw new ConfigurationException(HOWL_MAX_BUFFERS, NLS.MESSAGES.getMessage("max.buffers.greaterthan.min.buffers"));
             }
             int threadsWaitingForceThreshold = getInt(HOWL_THREADS_WAITING_FORCE_THRESHOLD, -1);
             String logFileDir = getString(HOWL_LOG_FILE_DIR, null);
             if (logFileDir == null || logFileDir.length() == 0 || !new File(logFileDir).isAbsolute()) {
-                throw new ConfigurationException(HOWL_LOG_FILE_DIR, "Property should be set to an absolute directory");
+                throw new ConfigurationException(HOWL_LOG_FILE_DIR, NLS.MESSAGES.getMessage("log.file.dir"));
             }
             try {
                 transactionLog = new HOWLLog(bufferClassName,
@@ -147,7 +147,7 @@ public class TransactionManagerService {
                 transactionManager = new GeronimoTransactionManager(transactionTimeout, xidFactory, transactionLog);
             }
         } catch (XAException e) {
-            throw new RuntimeException("Error recovering transaction log", e);
+            throw new RuntimeException(NLS.MESSAGES.getMessage("tx.recovery.error"), e);
         }
     }
 
@@ -188,7 +188,7 @@ public class TransactionManagerService {
             try {
                 return Integer.parseInt(value);
             } catch (Exception e) {
-                throw new ConfigurationException(property, "Error parsing " + property + "(" + value + ") property as an integer", e);
+                throw new ConfigurationException(property, NLS.MESSAGES.getMessage("prop.value.not.int", property, value), e);
             }
         }
         return dflt;
@@ -200,7 +200,7 @@ public class TransactionManagerService {
             try {
                 return Boolean.parseBoolean(value);
             } catch (Exception e) {
-                throw new ConfigurationException(property, "Error parsing " + property + "(" + value + ") property as a boolean", e);
+                throw new ConfigurationException(property, NLS.MESSAGES.getMessage("prop.value.not.boolean", property, value), e);
             }
         }
         return dflt;
