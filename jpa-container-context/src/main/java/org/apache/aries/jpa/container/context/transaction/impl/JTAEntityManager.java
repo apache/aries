@@ -33,6 +33,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.metamodel.Metamodel;
 
+import org.apache.aries.jpa.container.context.impl.NLS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,8 +129,7 @@ public class JTAEntityManager implements EntityManager {
 
   public void close()
   {
-    //TODO add a message here
-    throw new IllegalStateException("It is forbidden to call close on a container managed EntityManager");
+    throw new IllegalStateException(NLS.MESSAGES.getMessage("close.called.on.container.manged.em"));
   }
 
   public boolean contains(Object arg0)
@@ -241,7 +241,7 @@ public class JTAEntityManager implements EntityManager {
 
   public EntityTransaction getTransaction()
   {
-    throw new IllegalStateException("Transaction management is not available for container managed EntityManagers");
+    throw new IllegalStateException(NLS.MESSAGES.getMessage("getTransaction.called.on.container.managed.em"));
   }
 
   public boolean isOpen()
