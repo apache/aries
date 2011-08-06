@@ -3,6 +3,8 @@ package org.apache.aries.util.io;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.aries.util.internal.MessageUtil;
+
 /**
  * This class can be used to buffer an arbitrary amount of content from an input stream and be able to reset to 
  * the start.
@@ -108,7 +110,7 @@ public class RememberingInputStream extends InputStream {
 
   @Override
   public long skip(long n) throws IOException {
-    throw new IOException("Skip is unsupported");
+    throw new IOException(MessageUtil.getMessage("UTIL0017E"));
   }
 
   @Override
