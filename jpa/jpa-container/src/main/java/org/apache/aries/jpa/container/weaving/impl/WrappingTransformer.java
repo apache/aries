@@ -25,6 +25,7 @@ import java.util.HashSet;
 
 import javax.persistence.spi.ClassTransformer;
 
+import org.apache.aries.jpa.container.impl.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -40,10 +41,10 @@ class WrappingTransformer implements ClassTransformer {
       ServiceReference<?> persistenceProvider) {
 
     if(delegate == null) 
-      throw new NullPointerException("Delegate transformer must not be null");
+      throw new NullPointerException(NLS.MESSAGES.getMessage("jpa.weaving.null.transformer"));
     
     if(persistenceProvider == null) {
-      throw new NullPointerException("Persistence Provider must not be null");
+      throw new NullPointerException(NLS.MESSAGES.getMessage("jpa.weaving.null.provider"));
     }
     
     this.delegate = delegate;

@@ -34,6 +34,7 @@ import javax.sql.DataSource;
 
 import org.apache.aries.jpa.container.annotation.impl.AnnotationScanner;
 import org.apache.aries.jpa.container.annotation.impl.AnnotationScannerFactory;
+import org.apache.aries.jpa.container.impl.NLS;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.apache.aries.jpa.container.weaving.impl.TransformerRegistry;
 import org.apache.aries.jpa.container.weaving.impl.TransformerRegistryFactory;
@@ -100,9 +101,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
       for(String jarFile : jarFiles){
         URL url = bundle.getResource(jarFile);
         if(url == null) {
-          _logger.error("The persistence unit {} in bundle {} listed the jar file {}, but " +
-          		"{} could not be found in the bundle", new Object[]{getPersistenceUnitName(),
-              bundle.getSymbolicName() + "_" + bundle.getVersion(), jarFile, jarFile});
+          _logger.error(NLS.MESSAGES.getMessage("pu.not.found", getPersistenceUnitName(), bundle.getSymbolicName(), bundle.getVersion(), jarFile));
         } else {
             urls.add(url);
         }
