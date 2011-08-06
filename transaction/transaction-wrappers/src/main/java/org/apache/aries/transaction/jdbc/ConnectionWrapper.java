@@ -75,35 +75,35 @@ public class ConnectionWrapper implements Connection {
     
     public void commit() throws SQLException {
         if (enlisted) {
-            throw new SQLException("Cannot commit while enrolled in a transaction");
+            throw new SQLException(NLS.MESSAGES.getMessage("datasource.enlised.commit"));
         }
         connection.commit();
     }
 
     public void rollback() throws SQLException {
         if (enlisted) {
-            throw new SQLException("Cannot rollback while enrolled in a transaction");
+            throw new SQLException(NLS.MESSAGES.getMessage("datasource.enlised.rollback"));
         }
         connection.rollback();
     }
 
     public void rollback(Savepoint savepoint) throws SQLException {
         if (enlisted) {
-            throw new SQLException("Cannot rollback while enrolled in a transaction");
+            throw new SQLException(NLS.MESSAGES.getMessage("datasource.enlised.rollback"));
         }
         connection.rollback(savepoint);
     }
     
     public Savepoint setSavepoint() throws SQLException {
         if (enlisted) {
-            throw new SQLException("Cannot set savepoint while enrolled in a transaction");
+            throw new SQLException(NLS.MESSAGES.getMessage("datasource.enlised.savepoint"));
         }
         return connection.setSavepoint();
     }
 
     public Savepoint setSavepoint(String name) throws SQLException {
         if (enlisted) {
-            throw new SQLException("Cannot set savepoint while enrolled in a transaction");
+            throw new SQLException(NLS.MESSAGES.getMessage("datasource.enlised.savepoint"));
         }
         return connection.setSavepoint(name);
     }
