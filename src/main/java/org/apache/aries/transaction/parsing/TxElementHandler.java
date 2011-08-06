@@ -144,12 +144,12 @@ public class TxElementHandler implements NamespaceHandler {
                     id = props.getProperty(INTERCEPTOR_BLUEPRINT_ID);
                 }
             } catch (IOException e) {
-                LOGGER.error("IOException while loading provider properties. Using default provider", e);
+                LOGGER.error(Constants.MESSAGES.getMessage("unable.to.load.provider.props"), e);
             } finally {
                 try {
                     is.close();
                 } catch (IOException e2) {
-                    LOGGER.error("Unexpected exception while closing stream", e2);
+                    LOGGER.error(Constants.MESSAGES.getMessage("exception.closing.stream"), e2);
                 }
             }
         }

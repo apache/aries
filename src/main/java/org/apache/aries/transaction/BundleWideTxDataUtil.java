@@ -169,7 +169,7 @@ public class BundleWideTxDataUtil {
             return bundleDataNoRestriction.get(0).getValue();
         } else {
             // cannot have more than 1 transaction element that has no method or bean attribute
-            throw new IllegalStateException("More than 1 bundle wide transaction elements that have no method or bean attribute specified " + bundleDataNoRestriction);
+            throw new IllegalStateException(Constants.MESSAGES.getMessage("bundle.wide.tx", bundleDataNoRestriction));
         }
         
     }
@@ -199,7 +199,7 @@ public class BundleWideTxDataUtil {
                             return matchesMethod2.get(0).getValue();
                         } else {
                             // unable to find the best match!!
-                            throw new IllegalStateException("Unable to apply patterns: " + matchedTxData);
+                            throw new IllegalStateException(Constants.MESSAGES.getMessage("unable.to.apply.patterns", matchedTxData));
                         }
                     }
                 }
@@ -224,7 +224,7 @@ public class BundleWideTxDataUtil {
                     return matchesBean2.get(0).getValue();
                 } else {
                     // unable to find the best match!!
-                    throw new IllegalStateException("Unable to apply patterns: " + matchedTxData);                  
+                    throw new IllegalStateException(Constants.MESSAGES.getMessage("unable.to.apply.patterns", matchedTxData));                  
                 }
             }
         }
@@ -247,7 +247,7 @@ public class BundleWideTxDataUtil {
                     return matchesMethod2.get(0).getValue();
                 } else {
                     // unable to find the best match!!
-                    throw new IllegalStateException("Unable to apply patterns: " + matchedTxData);                  
+                    throw new IllegalStateException(Constants.MESSAGES.getMessage("unable.to.apply.patterns", matchedTxData));                  
                 }
             }
         }
