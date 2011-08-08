@@ -16,14 +16,18 @@
  */
 package org.apache.aries.ejb.modelling.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.ejb.modelling.EJBLocator;
 import org.apache.aries.ejb.modelling.EJBRegistry;
+import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.manifest.BundleManifest;
@@ -36,48 +40,113 @@ import org.apache.openejb.config.ReadDescriptors;
 import org.apache.openejb.jee.EjbJar;
 import org.apache.openejb.jee.EnterpriseBean;
 import org.apache.openejb.jee.SessionBean;
-import org.apache.xbean.finder.ClassFinder;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * An {@link EJBLocator} that uses OpenEJB to find EJBs
- * @author Tim
  *
  */
 public class OpenEJBLocator implements EJBLocator {
 
   private static final Logger logger = LoggerFactory.getLogger(OpenEJBLocator.class);
-  
-  /**
-   * A ClassLoader used by OpenEJB in annotation scanning
-   */
-  public static class ResourceClassLoader extends ClassLoader {
 
-    private final List<IDirectory> classpath;
-    public ResourceClassLoader(List<IDirectory> cpEntries) {
-      classpath = cpEntries;
-    }
+  public class ClasspathIDirectory implements IDirectory {
+
+    private final IDirectory parent;
+    private final String entry;
     
-    @Override
-    protected URL findResource(String resName) {
-      for(IDirectory id : classpath) {
-        IFile f = id.getFile(resName);
-        if(f != null)
-          try {
-            return f.toURL();
-          } catch (MalformedURLException e) {
-            logger.error("Error getting URL for file " + f, e);
-          }
+    public ClasspathIDirectory(IDirectory parent, String name) {
+      this.parent = parent;
+      this.entry = (name.endsWith("/")) ? name : name + "/";
+    }
+
+    public IDirectory convert() {
+      return parent.convert();
+    }
+
+    public IDirectory convertNested() {
+      return parent.convertNested();
+    }
+
+    public IFile getFile(String arg0) {
+      return parent.getFile(entry + arg0);
+    }
+
+    public long getLastModified() {
+      return parent.getLastModified();
+    }
+
+    public String getName() {
+      return parent.getName() + entry;
+    }
+
+    public IDirectory getParent() {
+      return parent.getParent();
+    }
+
+    public IDirectory getRoot() {
+      return parent.getRoot();
+    }
+
+    public long getSize() {
+      return parent.getSize();
+    }
+
+    public boolean isDirectory() {
+      return parent.isDirectory();
+    }
+
+    public boolean isFile() {
+      return parent.isFile();
+    }
+
+    public boolean isRoot() {
+      return parent.isRoot();
+    }
+
+    public Iterator<IFile> iterator() {
+      return parent.iterator();
+    }
+
+    public List<IFile> listAllFiles() {
+      List<IFile> files = new ArrayList<IFile>();
+      for(IFile f : parent.listAllFiles()) {
+        if(f.getName().startsWith(entry))
+          files.add(f);
       }
-      return null;
+      return files;
+    }
+
+    public List<IFile> listFiles() {
+      List<IFile> files = new ArrayList<IFile>();
+      for(IFile f : parent.listFiles()) {
+        if(f.getName().startsWith(entry))
+          files.add(f);
+      }
+      return files;
+    }
+
+    public InputStream open() throws IOException, UnsupportedOperationException {
+      return parent.open();
+    }
+
+    public ICloseableDirectory toCloseable() {
+      return parent.toCloseable();
+    }
+
+    public URL toURL() throws MalformedURLException {
+      return parent.toURL();
     }
   }
 
   public void findEJBs(BundleManifest manifest, IDirectory bundle,
       EJBRegistry registry) throws ModellerException {
 
+    logger.debug("Scanning " + manifest.getSymbolicName() + "_" + manifest.getManifestVersion() +
+        " for EJBs");
+    
     String ejbJarLocation = (manifest.getRawAttributes().getValue(
         "Web-ContextPath") == null) ? "META-INF/ejb-jar.xml" : "WEB-INF/ejb-jar.xml";
     
@@ -88,14 +157,9 @@ public class OpenEJBLocator implements EJBLocator {
       
       EjbModule module = new EjbModule(ejbJar);
       
-      //Find our classpath so we can scan the module
-      List<IDirectory> cpEntries = getClassPathLocations(manifest, bundle);
-      
-      ClassLoader cl = new ResourceClassLoader(cpEntries);
-      module.setClassLoader(cl);
-      
       //We build our own because we can't trust anyone to get the classpath right otherwise!
-      module.setFinder(new ClassFinder(cl, getClassPathURLs(cpEntries)));
+      module.setFinder(new IDirectoryFinder(AnnotationDeployer.class.getClassLoader(), 
+          getClassPathLocations(manifest, bundle)));
       
       //Scan our app for annotated EJBs
       AppModule app = new AppModule(module);
@@ -116,21 +180,6 @@ public class OpenEJBLocator implements EJBLocator {
   }
   
   /**
-   * Get URLs for creating a {@link ClassFinder}
-   * @param cpEntries
-   * @return
-   * @throws MalformedURLException
-   */
-  private List<URL> getClassPathURLs(List<IDirectory> cpEntries) throws MalformedURLException {
-    List<URL> result = new ArrayList<URL>();
-    
-    for(IDirectory id : cpEntries) {
-      result.add(id.toURL());
-    }
-    return result;
-  }
-
-  /**
    * Find the classpath entries for our bundle
    * 
    * @param manifest
@@ -143,24 +192,41 @@ public class OpenEJBLocator implements EJBLocator {
     
     String rawCp = manifest.getRawAttributes().getValue(Constants.BUNDLE_CLASSPATH);
     
+    logger.debug("Classpath is " + rawCp);
+    
     if(rawCp == null || rawCp.trim() == "")
       result.add(bundle);
     else {
       List<NameValuePair> splitCp = ManifestHeaderProcessor.parseExportString(rawCp);
       
+      List<IFile> allFiles = null;
+      
       for(NameValuePair nvp : splitCp) {
         String name = nvp.getName().trim();
-        if(".".equals(name))
+        if(".".equals(name)) {
           result.add(bundle);
+        }
         else {
           IFile f = bundle.getFile(name);
           
-          if(f==null)
-            continue;
-          
-          IDirectory converted = f.convertNested();
-          if(converted != null)
-            result.add(converted);
+          if(f==null) {
+            //This possibly just means no directory entries in a
+            //Zip. Check to make sure
+            if(allFiles == null)
+              allFiles = bundle.listAllFiles();
+            
+            for(IFile file : allFiles) {
+              if(file.getName().startsWith(name)) {
+                 result.add(new ClasspathIDirectory(bundle, name));
+                 break;
+              }
+            }
+            
+          } else {
+            IDirectory converted = f.convertNested();
+            if(converted != null)
+              result.add(converted);
+          }
         }
       }
     }
@@ -176,6 +242,8 @@ public class OpenEJBLocator implements EJBLocator {
     
     String name = sb.getEjbName();
     String type = sb.getSessionType().toString();
+    
+    logger.debug("Found EJB " + name + " of type " + type);
     
     boolean added = false;
     
