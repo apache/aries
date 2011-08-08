@@ -108,6 +108,21 @@ public class EJBLocatorTest {
     assertAnnotation(false);
   }
 
+  @Test
+  public void testEJBJARAndAnnotatedOnClasspathInZip() throws Exception {
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ZipOutputStream zos = new ZipOutputStream(baos);
+    addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+    addToZip(zos, "test/ejbs/StatelessSessionBean.class", "yes/test/ejb/StatelessSessionBean.class");
+    addToZip(zos, "test/ejbs/StatefulSessionBean.class", "yes/test/ejb/StatefulSessionBean.class");
+    zos.close();
+    
+    runTest(baos.toByteArray(), "MANIFEST_2.MF");
+    
+    assertXML(true);
+    assertAnnotation(true);
+  }
   
   @Test
   public void testEJBJARInWebZip() throws Exception {
@@ -183,6 +198,23 @@ public class EJBLocatorTest {
     assertXML(true);
     assertAnnotation(false);
   }
+
+  @Test
+  public void testEJBJARAndAnnotatedOnClasspathInWebZip() throws Exception {
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ZipOutputStream zos = new ZipOutputStream(baos);
+    addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+    addToZip(zos, "test/ejbs/StatelessSessionBean.class", "yes/test/ejb/StatelessSessionBean.class");
+    addToZip(zos, "test/ejbs/StatefulSessionBean.class", "yes/test/ejb/StatefulSessionBean.class");
+    zos.close();
+    
+    runTest(baos.toByteArray(), "MANIFEST_4.MF");
+    
+    assertXML(true);
+    assertAnnotation(true);
+  }
+  
   private void runTest(byte[] zip, String manifest) throws ModellerException,
       IOException {
     ICloseableDirectory icd = FileSystem.getFSRoot(new 
