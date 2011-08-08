@@ -32,6 +32,7 @@
 
     <modules>
         <module>ejb-modeller</module>
+        <module>ejb-modeller-itest</module>
     </modules>
 
 </project>
