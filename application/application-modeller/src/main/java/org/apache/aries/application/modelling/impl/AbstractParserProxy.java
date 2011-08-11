@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,13 +22,18 @@ import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
@@ -101,9 +107,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	      boolean suppressAnonymousServices) { 
 	    _logger.debug(LOG_ENTRY, "parseCDRForServices", new Object[]{cdr, suppressAnonymousServices});
 	    List<ExportedService> result = new ArrayList<ExportedService>();
-	    Set<String> names = cdr.getComponentDefinitionNames();
-	    for (String name: names) { 
-	      ComponentMetadata compMetadata = cdr.getComponentDefinition(name);
+	    for (ComponentMetadata compMetadata : findAllComponents(cdr)) { 
 	      if (compMetadata instanceof ServiceMetadata) { 
 	        ServiceMetadata serviceMetadata = (ServiceMetadata)compMetadata;
 	        String serviceName;
@@ -181,9 +185,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	  private List<ImportedService> parseCDRForReferences (ComponentDefinitionRegistry cdr) throws InvalidAttributeException { 
 	    _logger.debug(LOG_ENTRY, "parseCDRForReferences", new Object[]{cdr});
 	    List<ImportedService> result = new ArrayList<ImportedService>();
-	    Set<String> names = cdr.getComponentDefinitionNames();
-	    for (String name: names) { 
-	      ComponentMetadata compMetadata = cdr.getComponentDefinition(name);
+	    for (ComponentMetadata compMetadata : findAllComponents(cdr)) { 
 	      if (compMetadata instanceof ServiceReferenceMetadata) { 
 	        ServiceReferenceMetadata referenceMetadata = (ServiceReferenceMetadata)compMetadata;
 
@@ -209,6 +211,91 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	    }
 	    _logger.debug(LOG_EXIT, "parseCDRForReferences", new Object[]{result});
 	    return result; 
+	  }
+	  
+	  /**
+	   * Find all the components in a given {@link ComponentDefinitionRegistry} this finds top-level
+	   * components as well as their nested counter-parts. It may however not find components in custom namespacehandler 
+	   * {@link ComponentMetadata} instances.
+	   * 
+	   * @param cdr The {@link ComponentDefinitionRegistry} to scan
+	   * @return a {@link Set} of {@link ComponentMetadata}
+	   */
+	  private Set<ComponentMetadata> findAllComponents(ComponentDefinitionRegistry cdr) {
+	      Set<ComponentMetadata> components = new HashSet<ComponentMetadata>();
+	      
+	      for (String name : cdr.getComponentDefinitionNames()) {
+	          ComponentMetadata component = cdr.getComponentDefinition(name);
+	          traverseComponent(component, components);
+	      }
+	      
+	      return components;
+	  }
+	  
+	  /**
+	   * Traverse to find all nested {@link ComponentMetadata} instances
+	   * @param metadata
+	   * @param output
+	   */
+	  private void traverse(Metadata metadata, Set<ComponentMetadata> output) {
+	      if (metadata instanceof ComponentMetadata) {
+	          traverseComponent((ComponentMetadata) metadata, output);	          
+	      } else if (metadata instanceof CollectionMetadata) {
+	          CollectionMetadata collection = (CollectionMetadata) metadata;
+	          
+	          for (Metadata v : collection.getValues()) traverse(v, output);
+	      } else if (metadata instanceof MapMetadata) {
+	          MapMetadata map = (MapMetadata) metadata;
+	          
+	          for (MapEntry e : map.getEntries()) {
+	              traverse(e.getKey(), output);
+	              traverse(e.getValue(), output);
+	          }
+	      }
+	  }
+	  
+	  /**
+	   * Traverse {@link ComponentMetadata} instances to find all nested {@link ComponentMetadata} instances
+	   * @param component
+	   * @param output
+	   */
+	  private void traverseComponent(ComponentMetadata component, Set<ComponentMetadata> output) {
+	      if (!!!output.add(component)) return;
+	      
+	      if (component instanceof BeanMetadata) {
+	          BeanMetadata bean = (BeanMetadata) component;
+	          
+	          traverse(bean.getFactoryComponent(), output);
+
+	          for (BeanArgument argument : bean.getArguments()) {
+	              traverse(argument.getValue(), output);
+	          }
+	          
+	          for (BeanProperty property : bean.getProperties()) {
+	              traverse(property.getValue(), output);
+	          }
+	          
+	      } else if (component instanceof ServiceMetadata) {
+	          ServiceMetadata service = (ServiceMetadata) component;
+	          	          
+	          traverse(service.getServiceComponent(), output);
+	          
+	          for (RegistrationListener listener : service.getRegistrationListeners()) {
+	               traverse(listener.getListenerComponent(), output);
+	          }
+	          
+	          for (MapEntry e : service.getServiceProperties()) {
+	              traverse(e.getKey(), output);
+	              traverse(e.getValue(), output);
+	          }
+	          
+	      } else if (component instanceof ServiceReferenceMetadata) {
+	          ServiceReferenceMetadata reference = (ServiceReferenceMetadata) component;
+	          
+	          for (ReferenceListener listener : reference.getReferenceListeners()) {
+	              traverse(listener.getListenerComponent(), output);
+	          }
+	      }
 	  }
 	
 	  /**
