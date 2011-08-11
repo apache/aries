@@ -41,6 +41,26 @@
   	<bean id="namedInnerBean" class="an.anonymous.Bean"/>
   </service>
   
-  
   <reference id="anOptionalReference" interface="foo.bar.MyInjectedService" availability="optional"/>
+  
+  <bean class="java.util.ArrayList">
+    <argument>
+      <reference interface="java.util.Collection" />
+    </argument>
+    <argument>
+      <service interface="java.util.Collection">
+        <bean class="java.util.HashSet" />
+      </service>
+    </argument>
+    
+    <property name="elements">
+      <reference interface="java.util.List" />
+    </property>
+    <property name="elementsInCollection">
+      <list>
+        <reference interface="java.util.Set" />
+      </list>
+    </property>
+  </bean>
+  
 </blueprint>

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
@@ -39,7 +38,7 @@ public class ModellerTest {
         ModelledResourceManagerImpl manager = new ModelledResourceManagerImpl();
         manager.setModellingManager(new ModellingManagerImpl());
         manager.setParserProxy(ParserProxyTest.getMockParserServiceProxy());
-        manager.setModellingPlugins((Collection<ServiceModeller>)Collections.EMPTY_LIST);
+        manager.setModellingPlugins(Collections.<ServiceModeller>emptyList());
 
         return Arrays.asList(new Object[][] {
                 {OfflineModellingFactory.getModelledResourceManager()},
@@ -127,13 +126,19 @@ public class ModellerTest {
 
         // sanity check that we have parsed the services
 
-        assertEquals(3, resource.getExportedServices().size());
-        assertEquals(1, resource.getImportedServices().size());
+        assertEquals(4, resource.getExportedServices().size());
+        assertEquals(4, resource.getImportedServices().size());
 
-        ImportedService service = resource.getImportedServices().iterator().next();
-        assertEquals("foo.bar.MyInjectedService", service.getInterface());
-        assertTrue(service.isOptional());
-        assertFalse(service.isList());
-        assertEquals("anOptionalReference", service.getId());
+        boolean foundFirst = false;
+        for (ImportedService service : resource.getImportedServices()) {
+            if ("foo.bar.MyInjectedService".equals(service.getInterface())) {
+                foundFirst = true;
+                assertTrue(service.isOptional());
+                assertFalse(service.isList());
+                assertEquals("anOptionalReference", service.getId());                            
+            }
+        }
+        
+        assertTrue(foundFirst);
     }
 }
