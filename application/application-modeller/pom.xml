@@ -77,6 +77,21 @@
             <scope>provided</scope>
             <version>0.3</version>
         </dependency>
+
+        <!-- Blueprint API must come before OSGi compendium because we want to compile against the Java 5 interfaces
+             with generics -->
+        <dependency>
+          <groupId>org.apache.aries.blueprint</groupId>
+          <artifactId>org.apache.aries.blueprint.api</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
+        </dependency>
+        
+        
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -102,16 +117,6 @@
         	<artifactId>org.apache.aries.application.utils</artifactId>
         	<scope>provided</scope>
             <version>0.3.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries.blueprint</groupId>
-        	<artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
