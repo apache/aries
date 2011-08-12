@@ -417,6 +417,8 @@ public class EJBModellingTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.geronimo.specs", "geronimo-jaxrs_1.1_spec"),
         mavenBundle("commons-cli", "commons-cli"),
         mavenBundle("commons-lang", "commons-lang"),
+        mavenBundle("commons-beanutils", "commons-beanutils"),
+        mavenBundle("commons-collections", "commons-collections"),
         mavenBundle("org.apache.geronimo.components", "geronimo-connector"),
         mavenBundle("org.apache.geronimo.components", "geronimo-transaction"),
         mavenBundle("org.apache.geronimo.bundles", "scannotation"),
