@@ -24,18 +24,23 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.spi.framework.BundleFramework;
 import org.apache.aries.application.management.spi.repository.BundleRepository.BundleSuggestion;
-import org.eclipse.osgi.framework.internal.core.InternalSystemBundle;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.launch.Framework;
 import org.osgi.service.framework.CompositeBundle;
-import org.osgi.service.framework.SurrogateBundle;
 import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.service.startlevel.StartLevel;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +54,8 @@ public class BundleFrameworkImpl implements BundleFramework
   Framework _framework;
 
   ServiceTracker _packageAdminTracker;
+  
+  private final AtomicBoolean startLevelIncreased = new AtomicBoolean(false);
 
   BundleFrameworkImpl(CompositeBundle cb)
   {
@@ -68,6 +75,11 @@ public class BundleFrameworkImpl implements BundleFramework
           PackageAdmin.class.getName(), null);
       _packageAdminTracker.open();
     }
+    
+    // make sure inner bundles are now startable
+    if (startLevelIncreased.compareAndSet(false, true)) {
+        increaseStartLevel(_compositeBundle.getCompositeFramework().getBundleContext());
+    }
   }
   
   @Override
@@ -80,9 +92,81 @@ public class BundleFrameworkImpl implements BundleFramework
       _packageAdminTracker = new ServiceTracker(_compositeBundle.getCompositeFramework().getBundleContext(),
           PackageAdmin.class.getName(), null);
       _packageAdminTracker.open();
+      
+      setupStartLevelToPreventAutostart(_compositeBundle.getCompositeFramework().getBundleContext());
+    }
+  }
+  
+  /**
+   * Name says it all if we don't make some adjustments bundles will be autostarted, which in the
+   * grand scheme of things causes extenders to act on the inner bundles before the outer composite is even
+   * resolved ...
+   */
+  private void setupStartLevelToPreventAutostart(BundleContext frameworkBundleContext)
+  {
+    ServiceReference ref = frameworkBundleContext.getServiceReference(StartLevel.class.getName());
+    if (ref != null) {
+      StartLevel sl = (StartLevel) frameworkBundleContext.getService(ref);
+      if (sl != null) {
+        // make sure new bundles are *not* automatically started (because that causes havoc)
+        sl.setInitialBundleStartLevel(sl.getStartLevel()+1);
+        frameworkBundleContext.ungetService(ref);
+      }
     }
   }
 
+  private void increaseStartLevel(BundleContext context) {
+      /*
+       * Algorithm for doing this
+       * 
+       * 1. Set up a framework listener that will tell us when the start level has been set.
+       * 
+       * 2. Change the start level. This is asynchronous so by the time the method returned the event 
+       *    could have been sent. This is why we set up the listener in step 1.
+       * 
+       * 3. Wait until the start level has been set appropriately. At this stage all the bundles are startable
+       *    and some have been started (most notably lazy activated bundles it appears). Other bundles are still
+       *    in resolved state.
+       */    
+      
+      ServiceReference ref = context.getServiceReference(StartLevel.class.getName());
+      if (ref != null) {
+        StartLevel sl = (StartLevel) context.getService(ref);
+        if (sl != null) {
+
+          final Semaphore waitForStartLevelChangedEventToOccur = new Semaphore(0);
+          
+          // step 1
+          FrameworkListener listener = new FrameworkListener() {
+            public void frameworkEvent(FrameworkEvent event)
+            {
+              if (event.getType() == FrameworkEvent.STARTLEVEL_CHANGED) {
+                waitForStartLevelChangedEventToOccur.release();
+              }
+            }
+          };
+          
+          context.addFrameworkListener(listener);
+          
+          // step 2
+          sl.setStartLevel(sl.getStartLevel()+1);
+          
+          // step 3
+          try {
+            if (!!!waitForStartLevelChangedEventToOccur.tryAcquire(60, TimeUnit.SECONDS)) {
+              LOGGER.debug("Starting CBA child bundles took longer than 60 seconds");
+            }
+          } catch (InterruptedException e) {
+            // restore the interrupted status
+            Thread.currentThread().interrupt();
+          }
+          
+          context.removeFrameworkListener(listener);
+        }
+        context.ungetService(ref);
+      }
+  }
+  
   public void close() throws BundleException
   {
     // close out packageadmin service tracker

@@ -21,6 +21,7 @@ package org.apache.aries.application.runtime.itests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.repository;
 
@@ -28,6 +29,7 @@ import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
@@ -49,6 +51,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.service.framework.CompositeBundle;
 
 @RunWith(JUnit4TestRunner.class)
 public class IsolatedRuntimeTest extends AbstractIntegrationTest {
@@ -67,14 +73,26 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
       .jar("sample.jar")
         .manifest().symbolicName("org.apache.aries.isolated.sample")
           .attribute("Bundle-Version", "1.0.0")
-          .attribute("Import-Package", "org.osgi.service.blueprint")
+          .attribute("Import-Package", "org.osgi.service.blueprint, org.apache.aries.isolated.shared")
+          // needed for testFrameworkResolvedBeforeInnerBundlesStart()
+          .attribute("Bundle-ActivationPolicy", "lazy")
           .end()
         .binary("org/apache/aries/isolated/sample/HelloWorld.class", 
             IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorld.class"))
         .binary("org/apache/aries/isolated/sample/HelloWorldImpl.class", 
             IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/HelloWorldImpl.class"))
+        .binary("org/apache/aries/isolated/sample/SharedImpl.class", 
+            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/sample/SharedImpl.class"))
         .binary("OSGI-INF/blueprint/sample-blueprint.xml", 
             IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("isolated/sample-blueprint.xml"))
+        .end()
+      .jar("shared.jar")
+        .manifest().symbolicName("org.apache.aries.isolated.shared")
+          .attribute("Bundle-Version", "1.0.0")
+          .attribute("Export-Package", "org.apache.aries.isolated.shared")
+        .end()
+        .binary("org/apache/aries/isolated/shared/Shared.class",
+            IsolatedRuntimeTest.class.getClassLoader().getResourceAsStream("org/apache/aries/isolated/shared/Shared.class"))
         .end();
       
     FileOutputStream fout = new FileOutputStream("test.eba");
@@ -227,7 +245,53 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     manager.uninstall(ctx);
   }  
   
-
+  @Test
+  public void testFrameworkResolvedBeforeInnerBundlesStart() throws Exception {
+      /*
+       * Lazy bundles have in the past triggered recursive bundle trackers to handle them before
+       * the composite bundle framework was even resolved. In such a case the below loadClass
+       * operation on a class that depends on a class imported from the outside of the composite 
+       * will fail with an NPE.
+       */
+      
+      final AtomicBoolean loadedClass = new AtomicBoolean(false);
+      
+      context().addBundleListener(new SynchronousBundleListener() {
+        public void bundleChanged(BundleEvent event) {
+            Bundle b = event.getBundle();
+            if (event.getType() == BundleEvent.STARTING || event.getType() == BundleEvent.LAZY_ACTIVATION) {
+                if (b.getEntry("org/apache/aries/isolated/sample/SharedImpl.class") != null) {
+                    try {
+                        Class<?> cl = b.loadClass("org.apache.aries.isolated.sample.SharedImpl");
+                        cl.newInstance();
+                        loadedClass.set(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new RuntimeException(e);
+                    }
+                }
+            } else if (event.getType() == BundleEvent.INSTALLED && b instanceof CompositeBundle) {
+                ((CompositeBundle) b).getCompositeFramework().getBundleContext().addBundleListener(this);
+            }
+        }
+    });
+      
+    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
+    AriesApplicationContext ctx = manager.install(app);      
+    
+    try {
+        ctx.start();
+        
+        app = ctx.getApplication();
+        assertEquals(1, app.getDeploymentMetadata().getApplicationDeploymentContents().size());
+        assertEquals(1, app.getDeploymentMetadata().getApplicationProvisionBundles().size());
+        assertTrue(loadedClass.get());
+    } finally {
+        manager.uninstall(ctx);
+    }
+  }
+  
   private void assertHelloWorldService(String appName) throws Exception
   {
     assertHelloWorldService(appName, "hello world");
