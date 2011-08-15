@@ -1,0 +1,67 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.aries.subsystem.core;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.felix.utils.manifest.Attribute;
+import org.apache.felix.utils.manifest.Clause;
+import org.apache.felix.utils.manifest.Parser;
+import org.osgi.framework.Constants;
+import org.osgi.framework.wiring.Resource;
+import org.osgi.service.subsystem.SubsystemConstants;
+import org.osgi.service.subsystem.SubsystemException;
+
+public class NoOpResolver implements ResourceResolver {
+
+    public Resource find(String resource) throws SubsystemException {
+        Clause[] clauses = Parser.parseHeader(resource);
+        if (clauses.length != 1) {
+            throw new SubsystemException("Unsupported resource: " + resource);
+        }
+
+        String bsn = clauses[0].getName();
+        String ver = clauses[0].getAttribute(Constants.VERSION_ATTRIBUTE);
+        String typ = clauses[0].getAttribute(SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE);
+        String loc = clauses[0].getAttribute(SubsystemConstants.RESOURCE_LOCATION_ATTRIBUTE);
+        if (loc == null) {
+            throw new SubsystemException("Mandatory location missing on resource: " + resource);
+        }
+        Map<String,Object> attributes = new HashMap<String,Object>();
+        for (Attribute a : clauses[0].getAttributes()) {
+            String name = a.getName();
+            if (!Constants.VERSION_ATTRIBUTE.equals(name)
+                    && !SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE.equals(name)
+                    && !SubsystemConstants.RESOURCE_LOCATION_ATTRIBUTE.equals(name))
+            {
+                attributes.put(name, a.getValue());
+            }
+        }
+//        return new ResourceImpl(
+//                bsn,
+//                ver != null ? new Version(ver) : Version.emptyVersion,
+//                typ != null ? typ : SubsystemConstants.RESOURCE_TYPE_BUNDLE,
+//                loc,
+//                attributes
+//        );
+        return null;
+    }
+
+    public List<Resource> resolve(List<Resource> subsystemContent, List<Resource> subsystemResources) throws SubsystemException {
+        return subsystemResources;
+    }
+
+}
