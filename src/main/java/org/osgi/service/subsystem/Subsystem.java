@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) OSGi Alliance (2011). All Rights Reserved.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem;
+package org.osgi.service.subsystem;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.Resource;
 
 /*
  * TODO
@@ -54,19 +56,21 @@ public interface Subsystem {
 	 */
 	public static enum State {
 		/**
-		 * A subsystem is in the ACTIVE state when it has reached the beginning 
-		 * start-level (for starting it's contents), and all its persistently 
-		 * started content bundles that are resolved and have had their 
-		 * start-levels met have completed, or failed, their activator start 
-		 * method.
+		 * A subsystem is in the INSTALLING state when it is initially created.
 		 */
-		ACTIVE,
+		INSTALLING,
 		/**
-		 * A subsystem is in the INSTALLED state when it is initially created.
+		 * A subsystem is in the INSTALLED state when all resources are
+		 * successfully installed.
 		 */
 		INSTALLED,
 		/**
-		 *  A subsystem in the RESOLVED is allowed to have its content bundles 
+		 * Â A subsystem in the RESOLVING is allowed to have its content bundles 
+		 * resolved.
+		 */
+		RESOLVING,
+		/**
+		 * Â A subsystem is in the RESOLVED state when all resources are 
 		 * resolved.
 		 */
 		RESOLVED,
@@ -76,16 +80,36 @@ public interface Subsystem {
 		 */
 		STARTING,
 		/**
-		 *  A subsystem in the STOPPING state is in the process of taking its 
+		 * A subsystem is in the ACTIVE state when it has reached the beginning 
+		 * start-level (for starting it's contents), and all its persistently 
+		 * started content bundles that are resolved and have had their 
+		 * start-levels met have completed, or failed, their activator start 
+		 * method.
+		 */
+		ACTIVE,
+		/**
+		 * Â A subsystem in the STOPPING state is in the process of taking its 
 		 * its active start level to zero, stopping all the content bundles.
 		 */
 		STOPPING,
+		UPDATING,
+		UNINSTALLING,
 		/**
 		 * A subsystem is in the UNINSTALLED state when all its content bundles 
 		 * and uninstalled and its system bundle context is invalidated.
 		 */
 		UNINSTALLED
 	}
+	
+	/**
+	 * Cancels the currently executing asynchronous life-cycle operation, if
+	 * any.
+	 * @throws SubsystemException - If this subsystem is not in one of the
+	 *         transitional states or the currently executing operation cannot
+	 *         be cancelled for any reason.
+	 */
+	public void cancel() throws SubsystemException;
+	
 	/**
 	 * Gets the subsystems managed by this service. This only includes the 
 	 * top-level Subsystems installed in the Framework, CoompositeBundle or 
@@ -93,12 +117,17 @@ public interface Subsystem {
 	 * @return The Subsystems managed by this service.
 	 */
 	public Collection<Subsystem> getChildren();
+	
 	/**
-	 * Gets the content bundles of this subsystem.
-	 * @return The content of this subsystem.
+	 * Returns a snapshot of all {@code Resources} currently constituting this 
+	 * {@link Subsystem}. If this {@code Subsystem} has no {@code Resources}, 
+	 * the {@link Collection} will be empty.
+	 * 
+	 * @return A snapshot of all {@code Resources} currently constituting this
+	 *         {@code Subsystem}.
 	 */
-	// TODO Should constituents actually be resources instead of bundles?
-	public Collection<Bundle> getConstituents();
+	public Collection<Resource> getConstituents();
+	
 	/**
 	 * Gets the headers used to define this subsystem. The headers will be 
 	 * localized using the locale returned by java.util.Locale.getDefault. This 
@@ -109,6 +138,7 @@ public interface Subsystem {
 	 *         permissions.
 	 */
 	public Map<String, String> getHeaders();
+	
 	/**
 	 * Gets the headers used to define this subsystem.
 	 * @param locale The locale name to be used to localize the headers. If the 
@@ -119,42 +149,48 @@ public interface Subsystem {
 	 *         specified locale. 
 	 */
 	public Map<String, String> getHeaders(String locale);
+	
 	/**
 	 * The location identifier used to install this subsystem through 
-	 * SubsystemAdmin.install. This identifier does not change while this 
-	 * subsystem remains installed, even after SubsystemAdmin.update. This 
-	 * location identifier is used in SubsystemAdmin.update if no other update 
-	 * source is specified. 
+	 * Subsystem.install. This identifier does not change while this subsystem 
+	 * remains installed, even after Subsystem.update. This location identifier 
+	 * is used in Subsystem.update if no other update source is specified. 
 	 * @return The string representation of the subsystem's location identifier.
 	 */
 	public String getLocation();
+	
 	/**
-	 * Gets the parent Subsystem that scopes this subsystem admin instance.
-	 * @return The Subsystem that scopes this subsystem admin or null if there 
-	 * is no parent subsystem (e.g. if the outer scope is the framework).
+	 * Gets the parent Subsystem that scopes this subsystem instance.
+	 * @return The Subsystem that scopes this subsystem or null if there is no 
+	 *         parent subsystem (e.g. if the outer scope is the framework).
 	 */
 	public Subsystem getParent();
+	
 	/**
 	 * Gets the state of the subsystem.
 	 * @return The state of the subsystem.
 	 */
 	public State getState();
+	
 	/**
 	 * Gets the identifier of the subsystem. Subsystem identifiers are assigned 
 	 * when the subsystem is installed and are unique within the framework. 
 	 * @return The identifier of the subsystem.
 	 */
 	public long getSubsystemId();
+	
 	/**
 	 * Gets the symbolic name of this subsystem.
 	 * @return The symbolic name of this subsystem.
 	 */
 	public String getSymbolicName();
+	
 	/**
 	 * Gets the version of this subsystem.
 	 * @return The version of this subsystem.
 	 */
 	public Version getVersion();
+	
 	/**
 	 * Install a new subsystem from the specified location identifier.
 	 * <p>
@@ -170,6 +206,7 @@ public interface Subsystem {
 	 *         Runtime Environment supports permissions.
 	 */
 	public Subsystem install(String location) throws SubsystemException;
+	
 	/**
 	 * Install a new subsystem from the specified InputStream object.
 	 * <p/>
@@ -225,6 +262,7 @@ public interface Subsystem {
 	 *         Runtime Environment supports permissions.
 	 */
 	public Subsystem install(String location, InputStream content) throws SubsystemException;
+	
 	/**
 	 * Starts the subsystem. The subsystem is started according to the rules 
 	 * defined for Bundles and the content bundles are enabled for activation. 
@@ -235,6 +273,7 @@ public interface Subsystem {
 	 *         permissions.
 	 */
 	public void start() throws SubsystemException;
+	
 	/**
 	 * Stops the subsystem. The subsystem is stopped according to the rules 
 	 * defined for Bundles and the content bundles are disabled for activation 
@@ -247,6 +286,7 @@ public interface Subsystem {
 	 *         permissions.
 	 */
 	public void stop() throws SubsystemException;
+	
 	/**
 	 * Uninstall the given subsystem.
 	 * <p/>
@@ -282,38 +322,4 @@ public interface Subsystem {
 	 *         supports permissions.
 	 */
 	public void uninstall() throws SubsystemException;
-	/**
-	 * Update the given subsystem.
-	 * <p/>
-	 * This method performs the same function as calling update(Subsystem, 
-	 * InputStream) with the specified subsystem and a null InputStream.
-	 * @throws SubsystemException If the subsystem could not be updated for any
-	 *         reason.
-	 */
-	public void update() throws SubsystemException;
-	/**
-	 * Update the given subsystem from an InputStream.
-	 * <p/>
-	 * If the specified InputStream is null, the InputStream must be created 
-	 * from the subsystem's Subsystem-UpdateLocation Manifest header if present, 
-	 * or this subsystem's location provided when the subsystem was originally 
-	 * installed.
-	 * <p/>
-	 * TODO: expand on this description. For example, we need details on how 
-	 * update works for individual resources. We could follow the 
-	 * deploymentadmin approach and uninstall bundles that are removed and 
-	 * install new ones. This would happen if we had a different (updated) 
-	 * deployment calculated for the same version of the application.
-	 * @param content The InputStream from which to update the subsystem or null 
-	 *        if the Subsystem-UpdateLocation or original location are to be 
-	 *        used.
-	 * @throws SubsystemException
-	 * @throws IllegalStateException If the subsystem is in the UNINSTALLED 
-	 *         state.
-	 * @throws SecurityException If the caller does not have the appropriate 
-	 *         AdminPermission[this,LIFECYCLE] for both the current subsystem 
-	 *         and the updated subsystem and the Java Runtime Environment 
-	 *         supports permissions.
-	 */
-	public void update(InputStream content) throws SubsystemException;
 }
