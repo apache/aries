@@ -11,12 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,21 +30,26 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.subsystem.SubsystemConstants;
-import org.apache.aries.subsystem.SubsystemException;
+import org.apache.aries.subsystem.core.BundleInfoImpl;
+import org.apache.aries.subsystem.core.ContentImpl;
+import org.apache.aries.subsystem.core.Manve2Repository;
+import org.apache.aries.subsystem.core.RepositoryDescriptorGenerator;
 import org.apache.aries.subsystem.core.ResourceResolver;
-import org.apache.aries.subsystem.core.obr.BundleInfoImpl;
-import org.apache.aries.subsystem.core.obr.ContentImpl;
-import org.apache.aries.subsystem.core.obr.Manve2Repository;
-import org.apache.aries.subsystem.core.obr.RepositoryDescriptorGenerator;
-import org.apache.aries.subsystem.spi.Resource;
+import org.apache.aries.subsystem.core.obr.felix.FelixResourceAdapter;
+import org.apache.aries.subsystem.core.obr.felix.OsgiResourceAdapter;
+import org.apache.felix.bundlerepository.Capability;
+import org.apache.felix.bundlerepository.Property;
 import org.apache.felix.bundlerepository.Reason;
 import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
+import org.apache.felix.bundlerepository.Requirement;
 import org.apache.felix.bundlerepository.Resolver;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.Resource;
+import org.osgi.service.subsystem.SubsystemConstants;
+import org.osgi.service.subsystem.SubsystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -177,12 +183,14 @@ public class ResourceResolverImpl implements ResourceResolver {
                 if (resources[i].getSymbolicName().equals(symbolicName)) {
                     if (resources[i].getVersion().compareTo(new Version(version)) == 0) {
                         res = resources[i];
+                        break;
                     }
                 }
             }
         }
         if (res == null) {
-            throw new SubsystemException("unable to find the resource " + resource);
+//            throw new SubsystemException("unable to find the resource " + resource);
+        	return null;
         }
         
         Map props = res.getProperties();
@@ -190,16 +198,16 @@ public class ResourceResolverImpl implements ResourceResolver {
 
         Object type = props.get(SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE);
 
-        return new ResourceImpl(symbolicName, res.getVersion(), type == null ? SubsystemConstants.RESOURCE_TYPE_BUNDLE : (String)type, res.getURI() , props);
+        return new FelixResourceAdapter(res);
     }
     
     /**
      * the format of resource is like bundlesymbolicname;version=1.0.0, for example com.ibm.ws.eba.example.blog.api;version=1.0.0,
      */
     private org.apache.felix.bundlerepository.Resource findOBRResource(Resource resource) throws SubsystemException {
-        String symbolicName = String.valueOf(resource.getAttributes().get(Resource.SYMBOLIC_NAME_ATTRIBUTE));
+        String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
         // this version could possibly be a range
-        Version version = (Version)resource.getAttributes().get(Resource.VERSION_ATTRIBUTE);
+        Version version = ResourceHelper.getVersionAttribute(resource);
 
         //org.apache.felix.bundlerepository.Resource[] res = this.repositoryAdmin.discoverResources(filterString.toString());
         Repository[] repos = this.repositoryAdmin.listRepositories();
@@ -230,7 +238,7 @@ public class ResourceResolverImpl implements ResourceResolver {
 
         Object type = props.get(SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE);
 
-        return new ResourceImpl(resource.getSymbolicName(), resource.getVersion(), type == null ? SubsystemConstants.RESOURCE_TYPE_BUNDLE : (String)type, resource.getURI() , props);
+        return new FelixResourceAdapter(resource);
     }
     
     public List<Resource> resolve(List<Resource> subsystemContent,
@@ -243,38 +251,116 @@ public class ResourceResolverImpl implements ResourceResolver {
         
         // add subsystem content to the resolver
         for (Resource res : subsystemContent) {
-            org.apache.felix.bundlerepository.Resource obrRes = findOBRResource(res);
-            obrResolver.add(obrRes);
+//            org.apache.felix.bundlerepository.Resource obrRes = findOBRResource(res);
+//            obrResolver.add(obrRes);
+            obrResolver.add(new OsgiResourceAdapter(res));
         }
         
         // add subsystem resource to the resolver
         for (Resource res : subsystemResources) {
-            org.apache.felix.bundlerepository.Resource obrRes = findOBRResource(res);
-            obrResolver.add(obrRes);
+//            org.apache.felix.bundlerepository.Resource obrRes = findOBRResource(res);
+//            obrResolver.add(obrRes);
+        	obrResolver.add(new OsgiResourceAdapter(res));
         }
         
         // Question: do we need to create the repository.xml for the subsystem and add the repo to RepoAdmin?
         List<Resource> resources = new ArrayList<Resource>();
         if (obrResolver.resolve()) {
             for (org.apache.felix.bundlerepository.Resource res : obrResolver.getRequiredResources()) {
-                resources.add(toResource(res));
+//                resources.add(toResource(res));
+            	resources.add(new FelixResourceAdapter(res));
             }
             
             // Question: should we handle optional resource differently?
             for (org.apache.felix.bundlerepository.Resource res : obrResolver.getOptionalResources()) {
-                resources.add(toResource(res));
+//                resources.add(toResource(res));
+            	resources.add(new FelixResourceAdapter(res));
             }
         } else {
             // log the unsatisfied requirement
             Reason[] reasons = obrResolver.getUnsatisfiedRequirements();
+            StringBuilder builder = new StringBuilder("Failed to resolve subsystem").append(System.getProperty("line.separator"));
             for (Reason reason : reasons) {
                 LOGGER.warn("Unable to resolve subsystem content {} subsystem resource {} because of unsatisfied requirement {}", 
                         new Object[] {subsystemContent.toString(), subsystemResources.toString(), reason.getRequirement().getName()});
+                builder
+                	.append("resource = ")
+                	.append(reason.getResource().getSymbolicName())
+                	.append(", requirement = ")
+                	.append(reason.getRequirement().getName())
+                	.append(System.getProperty("line.separator"));
             }
-
+            throw new SubsystemException(builder.toString());
         }
-        
         return resources;
+    }
+    
+    private org.apache.felix.bundlerepository.Resource convert(final Resource resource) {
+    	return new org.apache.felix.bundlerepository.Resource() {
+			public Capability[] getCapabilities() {
+				Collection<Capability> result = new ArrayList<Capability>(resource.getCapabilities(null).size());
+				for (org.osgi.framework.wiring.Capability capability : resource.getCapabilities(null)) {
+					result.add(new Capability() {
+						public String getName() {
+							// TODO Auto-generated method stub
+							return null;
+						}
+
+						public Property[] getProperties() {
+							// TODO Auto-generated method stub
+							return null;
+						}
+
+						public Map getPropertiesAsMap() {
+							// TODO Auto-generated method stub
+							return null;
+						}
+					});
+				}
+				return null;
+			}
+
+			public String[] getCategories() {
+				return new String[0];
+			}
+
+			public String getId() {
+				return getSymbolicName() + ";version=" + getVersion();
+			}
+
+			public String getPresentationName() {
+				return getSymbolicName();
+			}
+
+			public Map getProperties() {
+				return Collections.EMPTY_MAP;
+			}
+
+			public Requirement[] getRequirements() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public Long getSize() {
+				return 0L;
+			}
+
+			public String getSymbolicName() {
+				return ResourceHelper.getSymbolicNameAttribute(resource);
+			}
+
+			public String getURI() {
+				return ResourceHelper.getContentAttribute(resource);
+			}
+
+			public Version getVersion() {
+				return ResourceHelper.getVersionAttribute(resource);
+			}
+
+			public boolean isLocal() {
+				return false;
+			}
+    	};
     }
 
 }
