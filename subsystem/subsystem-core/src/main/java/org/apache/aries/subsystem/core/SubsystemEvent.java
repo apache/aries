@@ -13,7 +13,7 @@
  */
 package org.apache.aries.subsystem.core;
 
-import org.apache.aries.subsystem.Subsystem;
+import org.osgi.service.subsystem.Subsystem;
 
 /**
  * Event sent to listeners when an operation has been performed on a subsystem.
@@ -31,6 +31,7 @@ public class SubsystemEvent {
          * Event type used to indicate a subsystem has been installed.
          */
         INSTALLED,
+        INSTALLING,
 
         /**
          * Event type used to indicate a subsystem has been started.
