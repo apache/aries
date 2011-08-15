@@ -31,74 +31,125 @@
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
-            <version>3.7.0.v20110221</version>
+            <version>3.8.0-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>services</artifactId>
+            <version>3.3.0-v20110523</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.event</artifactId>
+            <version>1.2.100</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <scope>test</scope>
             <version>0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+                <!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
             <scope>test</scope>
             <version>0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
-            <version>0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
-            <version>0.1-SNAPSHOT</version>
+			<exclusions>
+            	<exclusion>
+            		<groupId>org.osgi</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            	<!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.executor</artifactId>
             <version>0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+                <!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
             <version>0.3</version>
-
             <exclusions>
-
                 <exclusion>
-
                     <groupId>org.osgi</groupId>
-
                     <artifactId>org.osgi.core</artifactId>
-
                 </exclusion>
-
+                <!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
             </exclusions>
-
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.api</artifactId>
+            <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+                <!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
-            <version>0.3</version>
-
+            <version>0.4-SNAPSHOT</version>
             <exclusions>
-
                 <exclusion>
-
                     <groupId>org.osgi</groupId>
-
                     <artifactId>org.osgi.core</artifactId>
-
                 </exclusion>
-
+                <!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
             </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
@@ -139,6 +190,16 @@
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
+                <exclusion>
+            		<groupId>org.apache.felix</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            	<!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
             </exclusions>
         </dependency>
         <dependency>
@@ -161,68 +222,170 @@
             <artifactId>org.osgi.service.obr</artifactId>
             <scope>test</scope>
             <version>1.0.2</version>
-
             <exclusions>
-
                 <exclusion>
-
                     <groupId>org.osgi</groupId>
-
                     <artifactId>org.osgi.core</artifactId>
-
                 </exclusion>
-
+                <exclusion>
+            		<groupId>org.apache.felix</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            	<!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
             </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <scope>test</scope>
             <version>1.6.4</version>
-
             <exclusions>
-
                 <exclusion>
-
                     <groupId>org.osgi</groupId>
-
                     <artifactId>org.osgi.core</artifactId>
-
                 </exclusion>
-
+                <exclusion>
+            		<groupId>org.apache.felix</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+            	<!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
             </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
             <scope>test</scope>
-            <version>0.3</version>
-
+            <version>0.3.1-SNAPSHOT</version>
             <exclusions>
-
                 <exclusion>
-
                     <groupId>org.osgi</groupId>
-
                     <artifactId>org.osgi.core</artifactId>
-
                 </exclusion>
-
             </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
             <version>0.1-SNAPSHOT</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+                <!-- 
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+                -->
+            </exclusions>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
+        	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<id>tb1-application1</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestFile>src/test/bundles/tb1/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<excludes>
+								<exclude>**/*</exclude>
+							</excludes>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<outputDirectory>src/test/resources/application1</outputDirectory>
+							<finalName>tb1</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb1-feature1</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestFile>src/test/bundles/tb1/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/itests/tb1/**</include>
+							</includes>
+							<outputDirectory>src/test/resources/feature1</outputDirectory>
+							<finalName>tb1</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb2-feature2</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestFile>src/test/bundles/tb2/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/itests/tb2/**</include>
+							</includes>
+							<outputDirectory>src/test/resources/feature2</outputDirectory>
+							<finalName>tb2</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>add-source-tb1</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb1</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-source-tb2</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb2</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
