@@ -20,10 +20,10 @@ import java.io.File;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.subsystem.core.internal.ResourceResolverImpl;
 import org.apache.aries.unittest.mocks.Skeleton;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
-import org.apache.felix.bundlerepository.RepositoryAdmin;
 
 public class ResourceResolverTest {
 

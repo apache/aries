@@ -13,8 +13,8 @@
  */
 package org.apache.aries.subsystem.core;
 
-import org.apache.aries.subsystem.SubsystemException;
-import org.apache.aries.subsystem.spi.Resource;
+import org.osgi.framework.wiring.Resource;
+import org.osgi.service.subsystem.SubsystemException;
 
 /**
  * ResourceConverters are used to transform resources into another kind of
