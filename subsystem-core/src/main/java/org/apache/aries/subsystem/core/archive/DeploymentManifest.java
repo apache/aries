@@ -37,6 +37,7 @@ public class DeploymentManifest extends Manifest {
 			Requirement requirement = OsgiIdentityRequirement.newInstance(content);
 			requirements.add(requirement);
 		}
+		// TODO This does not validate that all content bundles were found.
 		Map<Resource, List<Wire>> resolution = Activator.getResolver().resolve(environment, requirements.toArray(new Requirement[requirements.size()]));
 		// TODO Once we have a resolver that actually returns lists of wires, we can use them to compute other manifest headers such as Import-Package.
 		Collection<Resource> deployedContent = new ArrayList<Resource>();

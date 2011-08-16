@@ -142,10 +142,23 @@ public class Activator implements BundleActivator {
 		        for (Resource resource : resources)
 		            resolver.add(new OsgiResourceAdapter(resource));
 		        if (resolver.resolve()) {
-		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getRequiredResources())
-		            	resources.add(new FelixResourceAdapter(resource));
-		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getOptionalResources())
-		        		resources.add(new FelixResourceAdapter(resource));
+		        	/* 
+		        	 * TODO For now, these need to go back through the environment in order to be sure the URL is available.
+		        	 * This is because RepositoryAdmin is not going through the environment as part of pulling in transitive
+		        	 * dependencies. Once a "real" Resolver is available, this will no longer be necessary.
+		        	 */
+		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getRequiredResources()) {
+		        		Resource r = new FelixResourceAdapter(resource);
+		        		// Make the environment aware of the resource and its URL.
+		        		environment.findProviders(new OsgiIdentityRequirement(r, resource.getSymbolicName(), resource.getVersion()));
+		            	resources.add(r);
+		        	}
+		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getOptionalResources()) {
+		        		Resource r = new FelixResourceAdapter(resource);
+		        		// Make the environment aware of the resource and its URL.
+		        		environment.findProviders(new OsgiIdentityRequirement(r, resource.getSymbolicName(), resource.getVersion()));
+		            	resources.add(r);
+		        	}
 		        }
 		        else {
 		            Reason[] reasons = resolver.getUnsatisfiedRequirements();
