@@ -16,9 +16,9 @@ package org.apache.aries.subsystem.core.obr.felix;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.OsgiContentCapability;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
-import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.wiring.Capability;
 import org.osgi.framework.wiring.Requirement;
 import org.osgi.framework.wiring.Resource;

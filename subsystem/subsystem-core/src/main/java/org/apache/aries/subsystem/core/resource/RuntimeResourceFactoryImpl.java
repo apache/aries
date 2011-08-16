@@ -13,8 +13,8 @@
  */
 package org.apache.aries.subsystem.core.resource;
 
+import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.AriesSubsystem;
-import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.wiring.Resource;
 import org.osgi.framework.wiring.ResourceConstants;
 import org.osgi.service.subsystem.SubsystemException;
@@ -26,7 +26,7 @@ public class RuntimeResourceFactoryImpl implements RuntimeResourceFactory {
 			return (RuntimeResource)resource;
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
-			return new BundleRuntimeResource((BundleResource)resource, listener, subsystem);
+			return new BundleRuntimeResource(resource, listener, subsystem);
 		// TODO Add to constants.
 		if ("osgi.subsystem".equals(type))
 			return new SubsystemRuntimeResource((SubsystemResource)resource, listener, subsystem);

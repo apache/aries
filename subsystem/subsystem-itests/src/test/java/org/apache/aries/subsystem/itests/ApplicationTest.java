@@ -21,10 +21,10 @@ package org.apache.aries.subsystem.itests;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.service.subsystem.Subsystem;

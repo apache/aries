@@ -19,6 +19,10 @@ import java.util.EnumSet;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.aries.subsystem.core.obr.felix.RepositoryAdminRepository;
+import org.apache.aries.subsystem.itests.util.RepositoryGenerator;
+import org.apache.aries.subsystem.itests.util.Utils;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
@@ -27,6 +31,7 @@ import org.osgi.framework.Version;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
+import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -106,11 +111,14 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected Subsystem rootSubsystem;
 	
+	private ServiceRegistration<Repository> repositoryReg;
 	private ServiceRegistration<EventHandler> subsystemEventsReg;
 	private ServiceRegistration<EventHandler> subsystemInternalEventsReg;
 	
 	public void setUp() {
 		super.setUp();
+		new RepositoryGenerator(bundleContext).generateOBR();
+		repositoryReg = bundleContext.registerService(Repository.class, new RepositoryAdminRepository(getOsgiService(RepositoryAdmin.class)), null);
 		Dictionary<String, Object> d = new Hashtable<String, Object>();
 		d.put(EventConstants.EVENT_TOPIC, new String[]{"org/osgi/service/Subsystem/*"});
 		subsystemEventsReg = bundleContext.registerService(EventHandler.class, subsystemEvents, d);
@@ -123,6 +131,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	public void tearDown() {
 		Utils.unregisterQuietly(subsystemInternalEventsReg);
 		Utils.unregisterQuietly(subsystemEventsReg);
+		Utils.unregisterQuietly(repositoryReg);
 		super.tearDown();
 	}
 	

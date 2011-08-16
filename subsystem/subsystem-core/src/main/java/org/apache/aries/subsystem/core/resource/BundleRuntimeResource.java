@@ -19,13 +19,14 @@ import java.net.URL;
 import org.apache.aries.subsystem.core.internal.AriesSubsystem;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.wiring.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
 
 public class BundleRuntimeResource extends AbstractRuntimeResource {	
 	private volatile Bundle bundle;
 	
-	public BundleRuntimeResource(BundleResource resource, ResourceListener listener, AriesSubsystem subsystem) {
+	public BundleRuntimeResource(Resource resource, ResourceListener listener, AriesSubsystem subsystem) {
 		super(resource, listener, subsystem);
 	}
 	

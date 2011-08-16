@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
@@ -73,7 +74,7 @@ public class FeatureTest extends SubsystemTest {
 		try {
 			assertSymbolicName("org.apache.aries.subsystem.feature1", subsystem);
 			assertVersion("1.0.0", subsystem);
-			assertConstituents(1, subsystem);
+			assertConstituents(2, subsystem);
 			// TODO Test internal events for installation.
 			startSubsystem(subsystem);
 			// TODO Test internal events for starting.
