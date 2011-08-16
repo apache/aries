@@ -51,6 +51,7 @@ public class OsgiIdentityRequirement implements Requirement {
 			.append(")(")
 			.append(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE)
 			.append('=')
+			// TODO This does not take into account version ranges.
 			.append(version)
 			.append(")(")
 			.append(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE)

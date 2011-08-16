@@ -25,7 +25,7 @@ import org.osgi.framework.wiring.Resource;
 import org.osgi.framework.wiring.ResourceConstants;
 
 public abstract class AbstractHeader implements Header {
-	protected static final String REGEX = '(' + Grammar.CLAUSE + ")(?:,(" + Grammar.CLAUSE + "))*";
+	protected static final String REGEX = Grammar.CLAUSE + "(?=,|\\z)";
 	protected static final Pattern PATTERN = Pattern.compile(REGEX);
 	
 	// TODO This is specific to deployment manifests and shouldn't be at this level.
@@ -45,7 +45,7 @@ public abstract class AbstractHeader implements Header {
 			.append(namespace);
 	}
 	
-	protected final List<Clause> clauses;
+	protected final List<Clause> clauses = new ArrayList<Clause>();
 	protected final String name;
 	protected final String value;
 	
@@ -53,17 +53,10 @@ public abstract class AbstractHeader implements Header {
 		this.name = name;
 		this.value = value;
 		Matcher matcher = PATTERN.matcher(value);
-		if (!matcher.matches())
+		while (matcher.find())
+			clauses.add(new GenericClause(matcher.group()));
+		if (clauses.isEmpty())
 			throw new IllegalArgumentException("Invalid header syntax -> " + name + ": " + value);
-		// TODO Group count is probably not a reliable guide to set the size. Consider using an ArrayList
-		// with the default size then trimming the result down to size.
-		clauses = new ArrayList<Clause>(matcher.groupCount());
-		for (int i = 1; i <= matcher.groupCount(); i++) {
-			String group = matcher.group(i);
-			if (group == null) continue;
-			GenericClause clause = new GenericClause(group);
-			clauses.add(clause);
-		}
 	}
 	
 	public List<Clause> getClauses() {

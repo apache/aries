@@ -56,6 +56,7 @@ public class SubsystemEnvironment implements Environment {
 	public Collection<Capability> findProviders(Requirement requirement) {
 		Collection<Capability> capabilities = new ArrayList<Capability>();
 		if (requirement instanceof OsgiIdentityRequirement) {
+			// TODO Consider returning only the first capability matched by the requirement in this case.
 			// This means we're looking for a content resource.
 			OsgiIdentityRequirement identity = (OsgiIdentityRequirement)requirement;
 			if (subsystem.isFeature()) {

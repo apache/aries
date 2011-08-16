@@ -2,4 +2,4 @@ Manifest-Version: 1.0
 Composite-ManifestVersion: 1.0
 Composite-SymbolicName: org.apache.aries.subsystem.composite1
 Composite-Version: 1.0.0
-Composite-Content: org.aorg.apache.aries.subsystem.itests.tb1;version=1.0.0
+Composite-Content: org.apache.aries.subsystem.itests.tb1;version=1.0.0
