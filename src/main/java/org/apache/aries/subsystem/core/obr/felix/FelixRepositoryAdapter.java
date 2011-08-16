@@ -18,7 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.aries.subsystem.core.internal.ResourceHelper;
+import org.apache.aries.subsystem.core.ResourceHelper;
 import org.osgi.framework.wiring.Capability;
 import org.osgi.framework.wiring.Requirement;
 import org.osgi.framework.wiring.Resource;
