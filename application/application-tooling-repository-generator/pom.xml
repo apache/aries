@@ -127,6 +127,46 @@
             <artifactId>asm-all</artifactId>
             <version>3.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>org.apache.aries.jpa.api</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
+    		<artifactId>org.apache.aries.transaction.manager</artifactId>
+    		<version>0.3.1-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
+  			<artifactId>org.apache.aries.transaction.wrappers</artifactId>  			
+  			<version>0.3.1-SNAPSHOT</version>
+        </dependency>
+        
+       <dependency>
+           <groupId>org.apache.aries.transaction</groupId>
+    	   <artifactId>org.apache.aries.transaction.blueprint</artifactId>    	
+    	   <version>0.3.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.aries.jpa</groupId>
+    	  <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
+    	  <version>0.3.1-SNAPSHOT</version>
+        </dependency>
+        
     </dependencies>
 
     <description>Command line tool for generating repository xml</description>
