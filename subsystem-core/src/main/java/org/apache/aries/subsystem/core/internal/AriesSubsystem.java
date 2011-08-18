@@ -171,6 +171,10 @@ public class AriesSubsystem implements Subsystem {
 		
 	}
 	
+	public void addConstituent(Resource resource) {
+		constituents.add(resource);
+	}
+	
 	@Override
 	public void cancel() throws SubsystemException {
 		// TODO Auto-generated method stub
@@ -317,6 +321,13 @@ public class AriesSubsystem implements Subsystem {
 		return "osgi.feature".equals(archive.getSubsystemManifest().getSubsystemType().getValue());
 	}
 	
+	public boolean isTransitive(Resource resource) {
+		SubsystemEnvironment environment = getEnvironment();
+		if (environment == null)
+			return true;
+		return !environment.isContentResource(resource);
+	}
+	
 	/* INSTALLING	Wait, Start
 	 * INSTALLED	-
 	 * RESOLVING	Wait, Start
@@ -450,10 +461,6 @@ public class AriesSubsystem implements Subsystem {
 		}
 	}
 	
-	protected void addConstituent(Resource resource) {
-		constituents.add(resource);
-	}
-	
 	protected boolean contains(Resource resource) {
 		return constituents.contains(resource);
 	}
@@ -534,6 +541,8 @@ public class AriesSubsystem implements Subsystem {
 	}
 	
 	private Region createRegion() throws BundleException {
+		if (isRoot())
+			return Activator.getRegionDigraph().getRegion(0);
 		return Activator.getRegionDigraph().createRegion(getSymbolicName() + ';' + getVersion());
 	}
 	
@@ -541,40 +550,40 @@ public class AriesSubsystem implements Subsystem {
 //		String content = ResourceHelper.getContentAttribute(resource);
 //		String location = getSubsystemId() + '@' + getSymbolicName() + '@' + content;
 		try {
-			final RuntimeResource runtimeResource;
+//			final RuntimeResource runtimeResource;
 //			final Bundle bundle;
-			if (transitive) {
+//			if (transitive) {
 				// Transitive dependencies should be provisioned into the highest possible level.
 				// Transitive dependencies do not become a constituent.
 				// TODO Assumes root is always the appropriate level.
-				AriesSubsystem subsystem = this;
-				while (subsystem.parent != null)
-					subsystem = subsystem.parent;
-				runtimeResource = new RuntimeResourceFactoryImpl().create(resource, null, subsystem);
+//				AriesSubsystem subsystem = this;
+//				while (subsystem.parent != null)
+//					subsystem = subsystem.parent;
+				RuntimeResource runtimeResource = new RuntimeResourceFactoryImpl().create(resource, null, this);
 				runtimeResource.install(coordination);
-				subsystem.constituents.add(runtimeResource);
+//				subsystem.constituents.add(runtimeResource);
 //				bundle = subsystem.region.installBundle(location, new URL(content).openStream());
-			}
-			else if (region == null) {
+//			}
+//			else if (region == null) {
 				// Feature resources should be provisioned into the parent, unless the parent is also a feature.
 				// TODO Assumes parent is always highest possible level.
 //				AriesSubsystem subsystem = this.parent;
 //				while (subsystem.region == null)
 //					subsystem = subsystem.parent;
-				runtimeResource = new RuntimeResourceFactoryImpl().create(resource, null, this);
-				runtimeResource.install(coordination);
+//				runtimeResource = new RuntimeResourceFactoryImpl().create(resource, null, this);
+//				runtimeResource.install(coordination);
 //				bundle = subsystem.region.installBundle(location, new URL(content).openStream());
 				// Features retain their constituents.
-				constituents.add(runtimeResource);
-			}
-			else {
+//				constituents.add(runtimeResource);
+//			}
+//			else {
 				// Constituent (non-transitive) resources must be provisioned into the owning subsystem, except for features.
 				// We know this isn't a feature because the region was not null.
-				runtimeResource = new RuntimeResourceFactoryImpl().create(resource, null, this);
-				runtimeResource.install(coordination);
+//				runtimeResource = new RuntimeResourceFactoryImpl().create(resource, null, this);
+//				runtimeResource.install(coordination);
 //				bundle = region.installBundle(location, new URL(content).openStream());
-				constituents.add(runtimeResource);
-			}
+//				constituents.add(runtimeResource);
+//			}
 //			coordination.addParticipant(new Participant() {
 //				public void ended(Coordination coordination) throws Exception {
 //					// noop
@@ -610,7 +619,7 @@ public class AriesSubsystem implements Subsystem {
 		DeployedContentHeader contentHeader = manifest.getDeployedContent();
 		for (DeployedContent content : contentHeader.getDeployedContents()) {
 			Collection<Capability> capabilities = environment.findProviders(
-					new OsgiIdentityRequirement(null, content.getName(), content.getDeployedVersion(), content.getNamespace()));
+					new OsgiIdentityRequirement(content.getName(), content.getDeployedVersion(), content.getNamespace(), false));
 			if (capabilities.isEmpty())
 				throw new SubsystemException("Subsystem content resource does not exist: " + content.getName() + ";version=" + content.getDeployedVersion());
 			Resource resource = capabilities.iterator().next().getResource();
@@ -626,7 +635,7 @@ public class AriesSubsystem implements Subsystem {
 		if (resourceHeader != null) {
 			for (ProvisionedResource content : resourceHeader.getProvisionedResources()) {
 				Collection<Capability> capabilities = environment.findProviders(
-						new OsgiIdentityRequirement(null, content.getName(), content.getDeployedVersion(), content.getNamespace()));
+						new OsgiIdentityRequirement(content.getName(), content.getDeployedVersion(), content.getNamespace(), true));
 				if (capabilities.isEmpty())
 					throw new SubsystemException("Subsystem content resource does not exist: " + content.getName() + ";version=" + content.getDeployedVersion());
 				Resource resource = capabilities.iterator().next().getResource();
@@ -683,11 +692,17 @@ public class AriesSubsystem implements Subsystem {
 			return;
 		}
 		if (isApplication()) {
+			// TODO Implement import isolation policy for applications.
+			// Applications have an implicit import policy equating to "import everything that I require", which is not the same as features.
+			// This must be computed from the application requirements and will be done using the Wires returned by the Resolver, when one is available.
 			region.connectRegion(
 					parent.getRegion(), 
 					region.getRegionDigraph().createRegionFilterBuilder().allowAll(RegionFilter.VISIBLE_ALL_NAMESPACE).build());
 		}
-		// TODO Implement import isolation policy for composites.
+		else if (isComposite()) {
+			// TODO Implement import isolation policy for composites.
+			// Composites specify an explicit import policy in their subsystem and deployment manifests.
+		}
 	}
 	
 //	private void start(Resource resource, Coordination coordination) throws BundleException {

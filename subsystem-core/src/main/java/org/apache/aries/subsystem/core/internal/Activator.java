@@ -150,13 +150,13 @@ public class Activator implements BundleActivator {
 		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getRequiredResources()) {
 		        		Resource r = new FelixResourceAdapter(resource);
 		        		// Make the environment aware of the resource and its URL.
-		        		environment.findProviders(new OsgiIdentityRequirement(r, resource.getSymbolicName(), resource.getVersion()));
+		        		environment.findProviders(new OsgiIdentityRequirement(r, true));
 		            	resources.add(r);
 		        	}
 		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getOptionalResources()) {
 		        		Resource r = new FelixResourceAdapter(resource);
 		        		// Make the environment aware of the resource and its URL.
-		        		environment.findProviders(new OsgiIdentityRequirement(r, resource.getSymbolicName(), resource.getVersion()));
+		        		environment.findProviders(new OsgiIdentityRequirement(r, true));
 		            	resources.add(r);
 		        	}
 		        }
