@@ -34,7 +34,7 @@ public class DeploymentManifest extends Manifest {
 		result.headers.put(ManifestVersionHeader.NAME, manifest.getManifestVersion());
 		Collection<Requirement> requirements = new ArrayList<Requirement>();
 		for (SubsystemContentHeader.Content content : manifest.getSubsystemContent().getContents()) {
-			Requirement requirement = OsgiIdentityRequirement.newInstance(content);
+			Requirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
 			requirements.add(requirement);
 		}
 		// TODO This does not validate that all content bundles were found.

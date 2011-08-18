@@ -17,12 +17,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.osgi.framework.VersionRange;
 import org.osgi.framework.wiring.Capability;
 import org.osgi.framework.wiring.Requirement;
 import org.osgi.framework.wiring.Resource;
@@ -30,60 +30,107 @@ import org.osgi.framework.wiring.ResourceConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class OsgiIdentityRequirement implements Requirement {
-	public static OsgiIdentityRequirement newInstance(SubsystemContentHeader.Content content) {
-		return new OsgiIdentityRequirement(null, content.getName(), content.getVersion(), content.getType());
+	private static Filter createFilter(String symbolicName, Version version, String type) {
+		return createFilter(
+				symbolicName,
+				new StringBuilder()
+					.append('(')
+					.append(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE)
+					.append('=')
+					.append(version)
+					.append(')')
+					.toString(),
+				type);
+	}
+	
+	private static Filter createFilter(String symbolicName, VersionRange versionRange, String type) {
+		return createFilter(
+				symbolicName,
+				versionRange.toFilterString(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE),
+				type);
+	}
+	
+	private static Filter createFilter(Resource resource) {
+		Map<String, Object> attributes = resource.getCapabilities(ResourceConstants.IDENTITY_NAMESPACE).get(0).getAttributes();
+		String symbolicName = String.valueOf(attributes.get(ResourceConstants.IDENTITY_NAMESPACE));
+		Version version = Version.parseVersion(String.valueOf(attributes.get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE)));
+		String type = String.valueOf(attributes.get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE));
+		return createFilter(symbolicName, version, type);
+	}
+	
+	private static Filter createFilter(String symbolicName, String versionFilter, String type) {
+		try {
+			return FrameworkUtil.createFilter(createFilterString(symbolicName, versionFilter, type));
+		}
+		catch (InvalidSyntaxException e) {
+			throw new SubsystemException(e);
+		}
+	}
+	
+	private static String createFilterString(String symbolicName, String versionFilter, String type) {
+		return new StringBuilder("(&(")
+			.append(ResourceConstants.IDENTITY_NAMESPACE)
+			.append('=')
+			.append(symbolicName)
+			.append(')')
+			.append(versionFilter)
+			.append('(')
+			.append(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE)
+			.append('=')
+			.append(type)
+			.append("))").toString();
 	}
 	
 	private final Map<String, String> directives = new HashMap<String, String>();
 	private final Filter filter;
 	private final Resource resource;
+	private final boolean transitive;
 	
-	public OsgiIdentityRequirement(Resource resource, String symbolicName, Version version) {
-		this(resource, symbolicName, version, ResourceConstants.IDENTITY_TYPE_BUNDLE);
+	public OsgiIdentityRequirement(String symbolicName, VersionRange versionRange, String type, boolean transitive) {
+		this(createFilter(symbolicName, versionRange, type), null, transitive);
 	}
 	
-	public OsgiIdentityRequirement(Resource resource, String symbolicName, Version version, String type) {
+	public OsgiIdentityRequirement(String symbolicName, Version version, String type, boolean transitive) {
+		this(createFilter(symbolicName, version, type), null, transitive);
+	}
+	
+	public OsgiIdentityRequirement(Resource resource, boolean transitive) {
+		this(createFilter(resource), resource, transitive);
+	}
+	
+	private OsgiIdentityRequirement(Filter filter, Resource resource, boolean transitive) {
+		this.filter = filter;
 		this.resource = resource;
-		StringBuilder builder = new StringBuilder("(&(")
-			.append(ResourceConstants.IDENTITY_NAMESPACE)
-			.append('=')
-			.append(symbolicName)
-			.append(")(")
-			.append(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE)
-			.append('=')
-			// TODO This does not take into account version ranges.
-			.append(version)
-			.append(")(")
-			.append(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE)
-			.append('=')
-			.append(type)
-			.append("))");
-		try {
-			filter = FrameworkUtil.createFilter(builder.toString());
-		}
-		catch (InvalidSyntaxException e) {
-			throw new SubsystemException(e);
-		}
+		this.transitive = transitive;
 		directives.put(ResourceConstants.IDENTITY_SINGLETON_DIRECTIVE, Boolean.FALSE.toString());
 		directives.put(Constants.EFFECTIVE_DIRECTIVE, Constants.EFFECTIVE_RESOLVE);
 	}
 
+	@Override
 	public Map<String, Object> getAttributes() {
 		return Collections.emptyMap();
 	}
 
+	@Override
 	public Map<String, String> getDirectives() {
 		return Collections.unmodifiableMap(directives);
 	}
 
+	@Override
 	public String getNamespace() {
 		return ResourceConstants.IDENTITY_NAMESPACE;
 	}
 
+	@Override
 	public Resource getResource() {
 		return resource;
 	}
+	
+	public boolean isTransitiveDependency() {
+		return transitive;
+	}
 
+	@Override
 	public boolean matches(Capability capability) {
 		if (capability == null) return false;
 		if (!capability.getNamespace().equals(getNamespace())) return false;
@@ -91,5 +138,4 @@ public class OsgiIdentityRequirement implements Requirement {
 		// TODO Check directives.
 		return true;
 	}
-
 }

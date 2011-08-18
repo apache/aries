@@ -111,7 +111,7 @@ public class SubsystemEnvironment implements Environment {
 	
 	private void findContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement) {
 		findArchiveProviders(capabilities, requirement);
-		findRepositoryServiceProviders(capabilities, requirement, true);
+		findRepositoryServiceProviders(capabilities, requirement, !requirement.isTransitiveDependency());
 	}
 	
 	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement) {
@@ -149,7 +149,6 @@ public class SubsystemEnvironment implements Environment {
 				if (content)
 					resources.add(capability.getResource());
 			}
-			capabilities.addAll(repository.findProviders(requirement));
 		}
 	}
 	
