@@ -51,11 +51,13 @@ public class ProvisionResourceHeader extends AbstractHeader {
 	
 	public static ProvisionResourceHeader newInstance(Collection<Resource> resources) {
 		StringBuilder builder = new StringBuilder();
-		appendResource(resources.iterator().next(), builder);
 		for (Resource resource : resources) {
-			builder.append(',');
 			appendResource(resource, builder);
+			builder.append(',');
 		}
+		// Remove the trailing comma.
+		// TODO Intentionally letting the exception propagate since there must be at least one resource.
+		builder.deleteCharAt(builder.length() - 1);
 		return new ProvisionResourceHeader(builder.toString());
 	}
 	

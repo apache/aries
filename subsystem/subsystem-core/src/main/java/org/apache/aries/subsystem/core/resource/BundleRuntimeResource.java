@@ -36,12 +36,27 @@ public class BundleRuntimeResource extends AbstractRuntimeResource {
 
 	@Override
 	protected void doInstall(Coordination coordination) throws BundleException, IOException {
-		URL content = subsystem.getEnvironment().getContent(resource);
 		AriesSubsystem subsystem = this.subsystem;
-		if (subsystem.isFeature()) {
+		URL content = subsystem.getEnvironment().getContent(resource);
+		if (subsystem.isTransitive(resource)) {
+			// Transitive dependencies should be provisioned into the highest possible level.
+			// Transitive dependencies become constituents of the susbsytem into which they were provisioned.
+			// TODO Assumes root is always the appropriate level.
+			while (subsystem.getParent() != null)
+				subsystem = subsystem.getParent();
+			subsystem.addConstituent(this);
+		}
+		else if (subsystem.isFeature()) {
 			// Feature resources should be provisioned into the first parent that's not a feature.
+			// Feature resources become constituents of the feature.
 			while (subsystem.getRegion() == null)
 				subsystem = subsystem.getParent();
+			this.subsystem.addConstituent(this);
+		}
+		else {
+			// Application and composite resources are provisioned into the application or composite;
+			// Application and composite resources become constituents of the application or composite.
+			subsystem.addConstituent(this);
 		}
 		String location = subsystem.getSubsystemId() + '@' + subsystem.getSymbolicName() + '@' + content;
 		bundle = subsystem.getRegion().installBundle(location, content.openStream());
@@ -53,6 +68,7 @@ public class BundleRuntimeResource extends AbstractRuntimeResource {
 			}
 
 			public void failed(Coordination coordination) throws Exception {
+				// TODO Remove the constituent?
 				bundle.uninstall();
 			}
 		});

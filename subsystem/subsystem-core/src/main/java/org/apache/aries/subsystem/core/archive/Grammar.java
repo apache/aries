@@ -60,26 +60,26 @@ public interface Grammar {
 //	digit ::= [0..9]
 //	alpha ::= [a..zA..Z]
 //	alphanum ::= alpha | digit
-//	extended ::= ( alphanum | ’_’ | ’-’ | ’.’ )+
-//	quoted-string ::= ’"’ ( ~["\#x0D#x0A#x00] | ’\"’|’\\’)* ’"’
+//	extended ::= ( alphanum | _ | - | . )+
+//	quoted-string ::= " ( ~["\#x0D#x0A#x00] | \"|\\)* "
 //	argument ::= extended | quoted-string
 //	parameter ::= directive | attribute
-//	directive ::= extended ’:=’ argument
-//	attribute ::= extended ’=’ argument
-//	path ::= path-unquoted | (’"’ path-unquoted ’"’)
+//	directive ::= extended := argument
+//	attribute ::= extended = argument
+//	path ::= path-unquoted | (" path-unquoted ")
 //	path-unquoted ::= path-sep | path-sep? path-element (path-sep path-element)*
 //	path-element ::= ~[/"\#x0D#x0A#x00]+
-//	path-sep ::= ’/’
-//	header ::= clause ( ’,’ clause ) *
-//	clause ::= path ( ’;’ path ) * ( ’;’ parameter ) *
+//	path-sep ::= /
+//	header ::= clause ( , clause ) *
+//	clause ::= path ( ; path ) * ( ; parameter ) *
 	
 	public static final String DIGIT = "[0-9]";
 	public static final String ALPHA = "[A-Za-z]";
 	public static final String ALPHANUM = DIGIT + '|' + ALPHA;
 	public static final String TOKEN = "(?:" + ALPHANUM + "|_|-)+";
 	public static final String EXTENDED = "(?:" + ALPHANUM + "|_|-|\\.)+";
-	public static final String QUOTED_STRING = "\"(?:[^\"\r\n\u0000]|\\\\\"|\\\\\\\\)*\"";
-	public static final String ARGUMENT = EXTENDED /*+ '|' + QUOTED_STRING*/;
+	public static final String QUOTED_STRING = "\"(?:[^\\\\\"\r\n\u0000]|\\\\\"|\\\\\\\\)*\"";
+	public static final String ARGUMENT = EXTENDED + '|' + QUOTED_STRING;
 	public static final String DIRECTIVE = EXTENDED + ":=(?:" + ARGUMENT + ')';
 	public static final String ATTRIBUTE = EXTENDED + "=(?:" + ARGUMENT + ')';
 	public static final String PARAMETER = "(?:" + DIRECTIVE + ")|(?:" + ATTRIBUTE + ')';
@@ -88,7 +88,7 @@ public interface Grammar {
 	public static final String PATH_SEP = "/";
 	public static final String PATH_UNQUOTED = PATH_SEP + '|' + PATH_SEP + '?' + PATH_ELEMENT + "(?:" + PATH_SEP + PATH_ELEMENT + ")*";
 	public static final String PATH_UNQUOTED_NT = PATH_SEP + '|' + PATH_SEP + '?' + PATH_ELEMENT_NT + "(?:" + PATH_SEP + PATH_ELEMENT_NT + ")*";
-	public static final String PATH = "(?:" + PATH_UNQUOTED_NT + ")|(?:\"" + PATH_UNQUOTED + "\")";
+	public static final String PATH = "(?:" + PATH_UNQUOTED_NT + ")|\"(?:" + PATH_UNQUOTED + ")\"";
 	public static final String CLAUSE = "(?:" + PATH + ")(?:;" + PATH + ")*(?:;(?:" + PARAMETER + "))*";
 	public static final String HEADERCHAR = ALPHANUM + "|_|-";
 	public static final String NAME = ALPHANUM + "(?:" + HEADERCHAR + ")*";
