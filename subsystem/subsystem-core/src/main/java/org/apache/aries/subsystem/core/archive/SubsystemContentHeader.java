@@ -19,19 +19,20 @@ import java.util.Collections;
 
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.VersionRange;
 
 public class SubsystemContentHeader extends AbstractHeader {
 	public static class Content {
 		private final boolean mandatory;
 		private final String name;
 		private final String type;
-		private final Version version;
+		private final VersionRange versionRange;
 		
-		public Content(boolean mandatory, String name, String type, Version version) {
+		public Content(boolean mandatory, String name, String type, VersionRange versionRange) {
 			this.mandatory = mandatory;
 			this.name = name;
 			this.type = type;
-			this.version = version;
+			this.versionRange = versionRange;
 		}
 		
 		public String getName() {
@@ -42,8 +43,8 @@ public class SubsystemContentHeader extends AbstractHeader {
 			return type;
 		}
 		
-		public Version getVersion() {
-			return version;
+		public VersionRange getVersionRange() {
+			return versionRange;
 		}
 		
 		public boolean isMandatory() {
@@ -55,7 +56,7 @@ public class SubsystemContentHeader extends AbstractHeader {
 				.append(';')
 				.append(VersionAttribute.NAME)
 				.append('=')
-				.append(getVersion())
+				.append(getVersionRange())
 				.append(';')
 				.append(TypeAttribute.NAME)
 				.append("=")
@@ -87,11 +88,12 @@ public class SubsystemContentHeader extends AbstractHeader {
 			Attribute attribute = clause.getAttribute(TypeAttribute.NAME);
 			if (attribute != null)
 				type = ((TypeAttribute)attribute).getType();
-			Version version = Version.emptyVersion;
+			VersionRange versionRange = new VersionRange(Version.emptyVersion.toString());
 			attribute = clause.getAttribute(Constants.VERSION_ATTRIBUTE);
-			if (attribute != null)
-				version = ((VersionAttribute)attribute).getVersion();
-			contents.add(new Content(mandatory, name, type, version));
+			if (attribute != null) {
+				versionRange = new VersionRange(attribute.getValue());
+			}
+			contents.add(new Content(mandatory, name, type, versionRange));
 		}
 	}
 

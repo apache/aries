@@ -20,6 +20,12 @@ public class TypeAttribute extends AbstractAttribute {
 	// TODO Add to constants.
 	public static final String NAME = "type";
 	
+	public static TypeAttribute newInstance(String value) {
+		if (value == null || value.length() == 0)
+			return DEFAULT;
+		return new TypeAttribute(value);
+	}
+	
 	public TypeAttribute() {
 		this(DEFAULT_VALUE);
 	}

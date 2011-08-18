@@ -101,7 +101,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.executor"),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-				equinox().version("3.8.0.v20110621"));
+				equinox().version("3.8.0-SNAPSHOT"));
 		options = updateOptions(options);
 		return options;
 	}

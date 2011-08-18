@@ -74,7 +74,7 @@ public class FeatureTest extends SubsystemTest {
 		try {
 			assertSymbolicName("org.apache.aries.subsystem.feature1", subsystem);
 			assertVersion("1.0.0", subsystem);
-			assertConstituents(2, subsystem);
+			assertConstituents(3, subsystem);
 			// TODO Test internal events for installation.
 			startSubsystem(subsystem);
 			// TODO Test internal events for starting.
