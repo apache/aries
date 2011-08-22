@@ -69,6 +69,7 @@ public class EbaMojo
     private static final String APPLICATION_CONTENT = "Application-Content";
     private static final String APPLICATION_EXPORTSERVICE = "Application-ExportService";
     private static final String APPLICATION_IMPORTSERVICE = "Application-ImportService";
+    private static final String APPLICATION_USEBUNDLE = "Use-Bundle";
 
     /**
      * Coverter for maven pom values to OSGi manifest values (pulled in from the maven-bundle-plugin)
@@ -434,6 +435,11 @@ public class EbaMojo
 				FileUtils.fileAppend(fileName, APPLICATION_IMPORTSERVICE + ": "
 						+ instructions.get(APPLICATION_IMPORTSERVICE) + "\n");
 			}
+			if (instructions.containsKey(APPLICATION_USEBUNDLE)) {
+				FileUtils.fileAppend(fileName, APPLICATION_USEBUNDLE + ": "
+						+ instructions.get(APPLICATION_USEBUNDLE) + "\n");
+			}
+                        // Add any use bundle entry
 
 		} catch (Exception e) {
 			throw new MojoExecutionException(
