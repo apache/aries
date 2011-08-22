@@ -19,7 +19,9 @@ package org.apache.aries.plugin.eba;
  * under the License.
  */
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -200,6 +202,83 @@ public class EbaMojoTest
 
         int missing = getSizeOfExpectedFiles(entries, expectedFiles);
         assertEquals("Missing files: " + expectedFiles,  0, missing);
+    }
+
+    public void testApplicationManifestGeneration()
+        throws Exception
+    {
+        File testPom = new File( getBasedir(),
+                                 "target/test-classes/unit/basic-eba-without-manifest/plugin-config.xml" );
+
+        EbaMojo mojo = ( EbaMojo ) lookupMojo( "eba", testPom );
+
+        assertNotNull( mojo );
+
+        String finalName = ( String ) getVariableValueFromObject( mojo, "finalName" );
+
+        String workDir = ( String ) getVariableValueFromObject( mojo, "workDirectory" );
+
+        String outputDir = ( String ) getVariableValueFromObject( mojo, "outputDirectory" );
+
+        mojo.execute();
+
+
+        //check the generated eba file
+        File ebaFile = new File( outputDir, finalName + ".eba" );
+
+        assertTrue( ebaFile.exists() );
+
+        //expected files/directories inside the eba file
+        List expectedFiles = new ArrayList();
+
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.properties" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.xml" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
+        expectedFiles.add( "META-INF/maven/" );
+        expectedFiles.add( "META-INF/APPLICATION.MF" );
+        expectedFiles.add( "META-INF/" );
+        expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
+        expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
+
+        ZipFile eba = new ZipFile( ebaFile );
+
+        Enumeration entries = eba.getEntries();
+
+        assertTrue( entries.hasMoreElements() );
+
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles,  0, missing);
+
+	//Test Application-ImportService Application-ExportService and Use-Bundle inclusion
+        ZipEntry entry = eba.getEntry("META-INF/APPLICATION.MF");
+        BufferedReader br = new BufferedReader(new InputStreamReader(eba.getInputStream(entry)));
+
+        String appServiceExport = new String("Application-ExportService: test.ExportService");
+        String appServiceImport = new String("Application-ImportService: test.ImportService");
+        String useBundle = new String("Use-Bundle: org.apache.aries.test.Bundle;version=1.0.0-SNAPSHOT");
+        Boolean foundAppExport=false;
+        Boolean foundAppImport=false;
+        Boolean foundUseBundle=false;
+        
+        String line;
+        while ((line = br.readLine()) != null) {
+        	if (line.contains(new String("Application-ExportService"))) {
+        		assertEquals(appServiceExport, line);
+        		foundAppExport = true;
+        	}
+        	if (line.contains(new String("Application-ImportService"))) {
+        		assertEquals(appServiceImport, line);
+        		foundAppImport = true;
+        	}
+        	if (line.contains(new String("Use-Bundle"))) {
+        		assertEquals(useBundle, line);
+        		foundUseBundle = true;
+        	}
+		}
+        assertTrue("Found Application-ExportService:", foundAppExport);
+        assertTrue("Found Application-ImportService:", foundAppImport);
+        assertTrue("Found Use-Bundle:", foundUseBundle);
     }
 
     private int getSizeOfExpectedFiles( Enumeration entries, List expectedFiles )
