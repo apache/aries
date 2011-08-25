@@ -56,11 +56,13 @@
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
             <scope>test</scope>
+            <version>1.6.3</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-service</artifactId>
             <scope>test</scope>
+            <version>1.6.3</version>
         </dependency>
         <dependency>
           <groupId>org.ops4j.pax.runner</groupId>
@@ -272,11 +274,41 @@
     		<version>1.0</version>
 		</dependency>
 		<dependency>
+    		<groupId>org.apache.geronimo.specs</groupId>
+    		<artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
+    		<version>1.1.2</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.geronimo.specs</groupId>
+    		<artifactId>geronimo-jaspic_1.0_spec</artifactId>
+    		<version>1.1</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.geronimo.specs</groupId>
+    		<artifactId>geronimo-jaxb_2.2_spec</artifactId>
+    		<version>1.0.1</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.geronimo.specs</groupId>
+    		<artifactId>geronimo-stax-api_1.2_spec</artifactId>
+    		<version>1.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.geronimo.specs</groupId>
+		    <artifactId>geronimo-jaxws_2.2_spec</artifactId>
+		    <version>1.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.servicemix.bundles</groupId>
 			<artifactId>org.apache.servicemix.bundles.wsdl4j-1.6.1</artifactId>
 			<version>4.0-m1</version>
 			<type>bundle</type>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.servicemix.bundles</groupId>
+    		<artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
+    		<version>2.2.1.1_2</version>
 		</dependency>
 		<dependency>
     		<groupId>commons-cli</groupId>

@@ -19,10 +19,10 @@ import static org.apache.aries.itest.ExtraOptions.mavenBundle;
 import static org.apache.aries.itest.ExtraOptions.paxLogging;
 import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.apache.aries.itest.ExtraOptions.transactionBootDelegation;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -374,7 +374,7 @@ public class EJBModellingTest extends AbstractIntegrationTest {
     return testOptions(
         paxLogging("DEBUG"),
         transactionBootDelegation(),
-        vmOption("-Dorg.osgi.framework.system.packages.extra=sun.misc"),
+        vmOption("-Dorg.osgi.framework.system.packages.extra=sun.misc,javax.xml.namespace;version=1.1"),
         // Bundles
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
@@ -397,6 +397,7 @@ public class EJBModellingTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.openwebbeans", "openwebbeans-web"),
         mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javassist"),
         mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.wsdl4j-1.6.1"),
+        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.jaxb-impl"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-annotation_1.1_spec"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-ejb_3.1_spec"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jcdi_1.0_spec"),
@@ -415,6 +416,11 @@ public class EJBModellingTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.geronimo.specs", "geronimo-jacc_1.4_spec"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-validation_1.0_spec"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jaxrs_1.1_spec"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-ws-metadata_2.0_spec"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-jaspic_1.0_spec"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-jaxb_2.2_spec"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-stax-api_1.2_spec"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-jaxws_2.2_spec"),
         mavenBundle("commons-cli", "commons-cli"),
         mavenBundle("commons-lang", "commons-lang"),
         mavenBundle("commons-beanutils", "commons-beanutils"),
