@@ -1,0 +1,5 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: foo
+Export-EJB: ALL
+Import-Package: javax.ejb
+

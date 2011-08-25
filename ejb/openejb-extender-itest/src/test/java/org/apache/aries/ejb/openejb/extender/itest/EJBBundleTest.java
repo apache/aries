@@ -13,349 +13,389 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.ejb.container.itest;
+package org.apache.aries.ejb.openejb.extender.itest;
 
 import static org.apache.aries.itest.ExtraOptions.mavenBundle;
 import static org.apache.aries.itest.ExtraOptions.paxLogging;
 import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.apache.aries.itest.ExtraOptions.transactionBootDelegation;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.aries.application.modelling.ExportedService;
-import org.apache.aries.application.modelling.ModelledResource;
-import org.apache.aries.application.modelling.ModelledResourceManager;
-import org.apache.aries.application.modelling.ModellerException;
-import org.apache.aries.application.modelling.ModellingManager;
-import org.apache.aries.application.modelling.ServiceModeller;
 import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.util.filesystem.FileSystem;
-import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.io.IOUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
+
+import beans.StatelessSessionBean;
+import beans.xml.LocalIface;
+import beans.xml.RemoteIface;
 
 @RunWith(JUnit4TestRunner.class)
-public class EJBModellingTest extends AbstractIntegrationTest {
+public class EJBBundleTest extends AbstractIntegrationTest {
 
-  private ModelledResourceManager mrm;
-  private ModellingManager mm;
-
-  @Before
-  public void setup() {
-    mrm = context().getService(ModelledResourceManager.class);
-    mm = context().getService(ModellingManager.class);
+  private void assertXML(Bundle test, boolean exists) throws Exception {
+    ServiceReference[] local = context().getAllServiceReferences(LocalIface.class.getName(), 
+        "(&(ejb.name=XML)(ejb.type=Singleton))");
+    if(exists) {
+      assertNotNull(local);
+      assertEquals(1, local.length);
+      Object svc = context().getService(local[0]);
+      assertNotNull(svc);
+      assertEquals("A Local Call", svc.getClass().getMethod("getLocalString").invoke(svc));
+    } else {
+      assertNull(local);
+    }
+    
+    ServiceReference[] remote = context().getAllServiceReferences(RemoteIface.class.getName(), 
+    "(&(ejb.name=XML)(ejb.type=Singleton))");
+    if(exists) {
+      assertNotNull(remote);
+      assertEquals(1, remote.length);
+      Object svc = context().getService(remote[0]);
+      assertNotNull(svc);
+      assertEquals("A Remote Call", svc.getClass().getMethod("getRemoteString").invoke(svc));
+    } else {
+      assertNull(remote);
+    }
+  }
+  
+  private void assertAnnotations(Bundle test, boolean exists) throws Exception {
+    ServiceReference[] stateless = context().getAllServiceReferences(StatelessSessionBean.class.getName(), 
+        "(&(ejb.name=Annotated)(ejb.type=Stateless))");
+    if(exists) {
+      assertNotNull(stateless);
+      assertEquals(1, stateless.length);
+      Object svc = context().getService(stateless[0]);
+      assertNotNull(svc);
+      assertEquals("A Stateless Call", svc.getClass().getMethod("getStatelessString").invoke(svc));
+    } else {
+      assertNull(stateless);
+    }
   }
   
   @Test
-  public void modelBasicEJBBundleWithXML() throws Exception {
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
+  public void testEJBJARInZip() throws Exception {
     
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class");
     zos.close();
-    mr = model(baos.toByteArray());
-
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
     
-    assertEquals("Wrong number of services", 2, services.size());
-        
-    assertTrue(services.containsAll(getXMLservices()));
-    assertTrue(Collections.disjoint(services, getAnnotatedservices()));
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+    try {
+      test.start();
+      assertXML(test, true);
+      test.stop();
+      assertXML(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
   
   @Test
   public void testEJBJARAndAnnotatedInZip() throws Exception {
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
     
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class");
     addToZip(zos, "beans/StatelessSessionBean.class");
     addToZip(zos, "beans/StatefulSessionBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
-    
-    assertEquals("Wrong number of services", 3, services.size());
-
-    assertTrue(services.containsAll(getXMLservices()));
-    assertTrue(services.containsAll(getAnnotatedservices()));
+    try {
+      test.start();
+      assertXML(test, true);
+      assertAnnotations(test, true);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
   
   @Test
   public void testAnnotatedOnlyInZip() throws Exception {
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
     
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
+    addToZip(zos, "beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class");
     addToZip(zos, "beans/StatelessSessionBean.class");
     addToZip(zos, "beans/StatefulSessionBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
-    
-    assertEquals("Wrong number of services", 1, services.size());
-    
-    assertTrue(Collections.disjoint(services, getXMLservices()));
-    assertTrue(services.containsAll(getAnnotatedservices()));
+    try {
+      test.start();
+      assertXML(test, false);
+      assertAnnotations(test, true);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
   
   @Test
   public void testEJBJARAndAnnotatedNotOnClasspathInZip() throws Exception {
 
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
-    
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_2.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
     addToZip(zos, "beans/StatelessSessionBean.class", "no/beans/StatelessSessionBean.class");
     addToZip(zos, "beans/StatefulSessionBean.class", "no/beans/StatefulSessionBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
-    
-    assertEquals("Wrong number of services", 2, services.size());
-    
-    assertTrue(services.containsAll(getXMLservices()));
-    assertTrue(Collections.disjoint(services, getAnnotatedservices()));
+    try {
+      test.start();
+      assertXML(test, true);
+      assertAnnotations(test, false);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
 
   @Test
   public void testEJBJARAndAnnotatedOnClasspathInZip() throws Exception {
 
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
-    
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_2.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
     addToZip(zos, "beans/StatelessSessionBean.class", "yes/beans/StatelessSessionBean.class");
     addToZip(zos, "beans/StatefulSessionBean.class", "yes/beans/StatefulSessionBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
-    
-    assertEquals("Wrong number of services", 3, services.size());
-    
-    assertTrue(services.containsAll(getXMLservices()));
-    assertTrue(services.containsAll(getAnnotatedservices()));
+    try {
+      test.start();
+      assertXML(test, true);
+      assertAnnotations(test, true);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
   
   @Test
   public void testEJBJARInWebZip() throws Exception {
 
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
-    
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
-    
-    assertEquals("Wrong number of services", 2, services.size());
-    
-    assertTrue(services.containsAll(getXMLservices()));
-    assertTrue(Collections.disjoint(services, getAnnotatedservices()));
+    try {
+      test.start();
+      assertXML(test, true);
+      assertAnnotations(test, false);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
 
   @Test
   public void testEJBJARInWrongPlaceWebZip() throws Exception {
 
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
-    
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
-
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
     
-    assertEquals("Wrong number of services", 0, services.size());
+    try {
+      test.start();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
   
   @Test
   public void testEJBJARAndAnnotatedInWebZip() throws Exception {
 
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
     
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class");
     addToZip(zos, "beans/StatelessSessionBean.class");
     addToZip(zos, "beans/StatefulSessionBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
-
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
     
-    assertEquals("Wrong number of services", 3, services.size());
-    
-    assertTrue(services.containsAll(getXMLservices()));
-    assertTrue(services.containsAll(getAnnotatedservices()));
+    try {
+      test.start();
+      assertXML(test, true);
+      assertAnnotations(test, true);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
   
   @Test
   public void testAnnotatedOnlyInWebZip() throws Exception {
 
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
-    
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
+    addToZip(zos, "beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class");
     addToZip(zos, "beans/StatelessSessionBean.class");
     addToZip(zos, "beans/StatefulSessionBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
-
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
     
-    assertEquals("Wrong number of services", 1, services.size());
-    
-    assertTrue(Collections.disjoint(services, getXMLservices()));
-    assertTrue(services.containsAll(getAnnotatedservices()));
+    try {
+      test.start();
+      assertXML(test, false);
+      assertAnnotations(test, true);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
   
   @Test
   public void testEJBJARAndAnnotatedNotOnClasspathInWebZip() throws Exception {
 
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
-    
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_4.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
     addToZip(zos, "beans/StatelessSessionBean.class", "no/beans/StatelessSessionBean.class");
     addToZip(zos, "beans/StatefulSessionBean.class", "no/beans/StatefulSessionBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
-
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
     
-    assertEquals("Wrong number of services", 2, services.size());
-    
-    assertTrue(services.containsAll(getXMLservices()));
-    assertTrue(Collections.disjoint(services, getAnnotatedservices()));
+    try {
+      test.start();
+      assertXML(test, true);
+      assertAnnotations(test, false);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
+    } finally {
+      test.uninstall();
+    }
   }
   
   @Test
   public void testEJBJARAndAnnotatedOnClasspathInWebZip() throws Exception {
 
-    context().getService(ServiceModeller.class);
-    ModelledResource mr = null;
-    
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "MANIFEST_4.MF", "META-INF/MANIFEST.MF");
     addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+    addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
+    addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
+    addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
     addToZip(zos, "beans/StatelessSessionBean.class", "yes/beans/StatelessSessionBean.class");
     addToZip(zos, "beans/StatefulSessionBean.class", "yes/beans/StatefulSessionBean.class");
     zos.close();
     
-    mr = model(baos.toByteArray());
-
-    Collection<? extends ExportedService> services = 
-      mr.getExportedServices(); 
+    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
     
-    assertEquals("Wrong number of services", 3, services.size());
-    
-    assertTrue(services.containsAll(getXMLservices()));
-    assertTrue(services.containsAll(getAnnotatedservices()));
-  }
-
-  private ModelledResource model(byte[] bytes) throws ModellerException {
-    ICloseableDirectory dir = null;
     try {
-      dir = FileSystem.getFSRoot(
-           new ByteArrayInputStream(bytes));
-      return mrm.getModelledResource(dir);
+      test.start();
+      assertXML(test, true);
+      assertAnnotations(test, true);
+      test.stop();
+      assertXML(test, false);
+      assertAnnotations(test, false);
+      
     } finally {
-      IOUtils.close(dir);
+      test.uninstall();
     }
-  }
-  
-  private Collection<ExportedService> getXMLservices() {
-    Map<String, Object> serviceProperties = new HashMap<String, Object>();
-    serviceProperties.put("ejb.name", "XML");
-    serviceProperties.put("ejb.type", "Singleton");
-    serviceProperties.put("service.exported.interfaces", "remote.Iface");
-    
-    Map<String, Object> serviceProperties2 = new HashMap<String, Object>();
-    serviceProperties2.put("ejb.name", "XML");
-    serviceProperties2.put("ejb.type", "Singleton");
-    
-    return Arrays.asList(mm.getExportedService("XML", 0, 
-        Arrays.asList("remote.Iface"), serviceProperties), mm.getExportedService(
-            "XML", 0, Arrays.asList("local.Iface"), serviceProperties2));
-  }
-  
-  private Collection<ExportedService> getAnnotatedservices() {
-    Map<String, Object> serviceProperties = new HashMap<String, Object>();
-    serviceProperties.put("ejb.name", "Annotated");
-    serviceProperties.put("ejb.type", "Stateless");
-    
-    return Arrays.asList(mm.getExportedService("Annotated", 0, 
-        Arrays.asList("beans.StatelessSessionBean"), serviceProperties));
   }
   
   private void addToZip(ZipOutputStream zos, String src) throws IOException {
@@ -380,11 +420,9 @@ public class EJBModellingTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+        mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-        mavenBundle("org.apache.aries.ejb", "org.apache.aries.ejb.modeller"),
+        mavenBundle("org.apache.aries.ejb", "org.apache.aries.ejb.openejb.extender"),
         mavenBundle("org.apache.openejb", "openejb-core"),
         mavenBundle("org.apache.openejb", "openejb-api"),
         mavenBundle("org.apache.openejb", "openejb-javaagent"),
@@ -421,6 +459,8 @@ public class EJBModellingTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.geronimo.specs", "geronimo-jaxb_2.2_spec"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-stax-api_1.2_spec"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jaxws_2.2_spec"),
+        //JMS is non optional if *any* EJBs are going to work, not just ones that use it :/
+        mavenBundle("org.apache.geronimo.specs", "geronimo-jms_1.1_spec"),
         mavenBundle("commons-cli", "commons-cli"),
         mavenBundle("commons-lang", "commons-lang"),
         mavenBundle("commons-beanutils", "commons-beanutils"),
@@ -436,7 +476,8 @@ public class EJBModellingTest extends AbstractIntegrationTest {
 //        waitForFrameworkStartup(),
         
 
-        equinox().version("3.5.0"));
+        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+        equinox().version("3.7.0.v20110613"));
   }
 
 }
