@@ -26,9 +26,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.ejb</groupId>
-    <artifactId>org.apache.aries.ejb.modeller.itest</artifactId>
+    <artifactId>org.apache.aries.ejb.openejb.extender.itest</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <name>Aries EJB Modelling iTests</name>
+    <name>Aries EJB Extender iTests</name>
 
      <scm>
          <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/ejb/ejb-modeller-itest</connection>
@@ -46,6 +46,12 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>3.7.0.v20110613</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -104,6 +110,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
+            <artifactId>org.apache.aries.transaction.manager</artifactId>
+            <version>0.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-mvn</artifactId>
             <scope>test</scope>
@@ -116,29 +128,8 @@
           <scope>test</scope>
         </dependency>        
         <dependency>
-        	<groupId>org.apache.aries.application</groupId>
-        	<artifactId>org.apache.aries.application.api</artifactId>
-        	<version>0.3.1-SNAPSHOT</version>
-        	<type>bundle</type>
-        	<scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries.application</groupId>
-        	<artifactId>org.apache.aries.application.modeller</artifactId>
-        	<version>0.3.1-SNAPSHOT</version>
-        	<type>pom</type>
-        	<scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries.application</groupId>
-        	<artifactId>org.apache.aries.application.utils</artifactId>
-        	<version>0.3.1-SNAPSHOT</version>
-        	<type>bundle</type>
-        	<scope>test</scope>
-        </dependency>
-        <dependency>
         	<groupId>org.apache.aries.ejb</groupId>
-        	<artifactId>org.apache.aries.ejb.modeller</artifactId>
+        	<artifactId>org.apache.aries.ejb.openejb.extender</artifactId>
         	<version>0.1-SNAPSHOT</version>
         	<type>bundle</type>
         	<scope>test</scope>
@@ -297,6 +288,11 @@
 		    <groupId>org.apache.geronimo.specs</groupId>
 		    <artifactId>geronimo-jaxws_2.2_spec</artifactId>
 		    <version>1.1</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.geronimo.specs</groupId>
+    		<artifactId>geronimo-jms_1.1_spec</artifactId>
+    		<version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.servicemix.bundles</groupId>
