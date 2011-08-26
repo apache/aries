@@ -49,6 +49,8 @@ public class PersistenceBundleHelper
   public static final String PERSISTENCE_UNIT_HEADER = "Meta-Persistence";
   /** The Web-ContextPath header (as defined in the web application bundle spec) */
   public static final String WEB_CONTEXT_PATH_HEADER = "Web-ContextPath";
+  /** The Export-EJB header (as defined in the web application bundle spec) */
+  public static final String EXPORT_EJB_HEADER = "Export-EJB";
 
   /**
    * This method locates persistence descriptor files based on a combination of
@@ -66,12 +68,13 @@ public class PersistenceBundleHelper
     Dictionary<String, String> headers = bundle.getHeaders();
     String metaPersistence = headers.get(PERSISTENCE_UNIT_HEADER);
     String webContextPath = headers.get(WEB_CONTEXT_PATH_HEADER);
+    String exportEJB = headers.get(EXPORT_EJB_HEADER);
     
     String bundleIdentity = bundle.getSymbolicName() + '/' + bundle.getVersion();
     
     Collection<String> locations;
     
-    if (metaPersistence == null) {
+    if (metaPersistence == null && exportEJB == null) {
       if(webContextPath == null) {
         return Collections.emptySet();
       } else {
@@ -79,7 +82,7 @@ public class PersistenceBundleHelper
        
         String bundleClassPath = headers.get(Constants.BUNDLE_CLASSPATH);
         
-        locations = findWABClassPathLocations(bundleClassPath);
+        locations = findPersistenceXmlOnClassPath(bundleClassPath);
 
         if(_logger.isInfoEnabled())
           _logger.info(NLS.MESSAGES.getMessage("wab.without.meta.persistence.header", bundleIdentity, WEB_CONTEXT_PATH_HEADER, PERSISTENCE_UNIT_HEADER, locations));
@@ -91,7 +94,9 @@ public class PersistenceBundleHelper
       locations = new HashSet<String>();
       locations.add(PERSISTENCE_XML);
       
-      if(!!!metaPersistence.isEmpty()) {
+      if(exportEJB != null && metaPersistence == null){
+        _logger.info(NLS.MESSAGES.getMessage("ejb.without.meta.persistence.header", bundleIdentity, EXPORT_EJB_HEADER, PERSISTENCE_UNIT_HEADER, locations));
+      } else if(!!!metaPersistence.isEmpty()) {
         //Split apart the header to get the individual entries
         for (String s : metaPersistence.split(",")) {
           locations.add(s.trim());
@@ -133,7 +138,7 @@ public class PersistenceBundleHelper
     return persistenceXmlFiles;
   }
 
-  private static Collection<String> findWABClassPathLocations(String bundleClassPath) {
+  private static Collection<String> findPersistenceXmlOnClassPath(String bundleClassPath) {
     
     Collection<String> locations = new HashSet<String>();
     

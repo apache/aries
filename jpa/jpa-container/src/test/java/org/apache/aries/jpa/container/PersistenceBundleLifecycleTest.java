@@ -225,6 +225,29 @@ public class PersistenceBundleLifecycleTest
     testSuccessfulCreationEvent(ref, extenderContext, 3);
     testSuccessfulRegistrationEvent(ref, extenderContext, 3, "webInfClassesOnClassPath", "jarOne", "jarTwo");
   }
+  
+  @Test
+  public void testManager_EJBNoMetaPersistence() throws Exception {
+   
+    
+    BundleContext extenderContext = preExistingBundleSetup();
+    
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
+    hash1.put("javax.persistence.provider", "no.such.Provider");
+    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+        pp, hash1 );
+    
+    ServiceReference ref = reg.getReference();
+    setupEJBBundle();
+    
+    mgr.start(extenderContext);
+    
+    
+    Skeleton.getSkeleton(persistenceBundle).assertCalledExactNumberOfTimes(new MethodCall(Bundle.class, "getEntry", String.class), 1);
+    
+    testSuccessfulCreationEvent(ref, extenderContext, 1);
+    testSuccessfulRegistrationEvent(ref, extenderContext, 1, "root");
+  }
 
   @Test
   public void testManager_OnePreExistingPersistenceBundle_OneExistingProvider() throws Exception
@@ -1263,6 +1286,13 @@ public class PersistenceBundleLifecycleTest
     
     skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("0.0.0"));
     
+  }
+  
+  private void setupEJBBundle() throws Exception {
+    
+    setupWABBundle();
+    persistenceBundle.getHeaders().remove("Web-ContextPath");
+    persistenceBundle.getHeaders().put("Export-EJB", "");
   }
 
   private void buildJarFile(Skeleton skel, URL root, String filePath, String pUnitName) throws URISyntaxException,
