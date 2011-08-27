@@ -19,11 +19,9 @@
 package org.apache.aries.blueprint.itests;
 
 import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+import static org.ops4j.pax.exam.OptionUtils.combine;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -33,7 +31,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
@@ -111,39 +108,28 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
         Option[] options = options(
-            // Log
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-            // Felix Config Admin
-            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-            // Felix mvn url handler
-            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 
+                // this is how you set the default log level when using pax logging (logProfile)
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
-            // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+                // Bundles
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint")
+                // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
+                //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
 
-            // Bundles
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-            mavenBundle("asm", "asm-all"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
-            // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
-            //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-            mavenBundle("org.osgi", "org.osgi.compendium"),
-//            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+                //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
-            /* For debugging, uncomment the next two lines */
-//          vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-//          waitForFrameworkStartup(),
-
-          /* For debugging, uncomment the next two lines
-          and add these imports:
-          import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-          import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
-          */
-            equinox().version("3.5.1")
-        );
+                /* For debugging, uncomment the next two lines */
+                //vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+                //waitForFrameworkStartup(),
+    
+                /* For debugging, uncomment the next two lines
+                and add these imports:
+                import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+                import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+                */
+                );
+        options = combine (getSharedOptions(), options);
         options = updateOptions(options);
         return options;
     }

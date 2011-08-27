@@ -127,6 +127,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-jexl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
            <groupId>org.apache.aries.proxy</groupId>
            <artifactId>org.apache.aries.proxy</artifactId>
      	</dependency>
@@ -155,7 +160,6 @@
         	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
-
     </dependencies>
 
     <build>
