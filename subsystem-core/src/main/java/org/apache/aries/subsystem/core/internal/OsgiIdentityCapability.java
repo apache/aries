@@ -16,8 +16,8 @@ package org.apache.aries.subsystem.core.internal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.Manifest;
 
+import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -56,14 +56,15 @@ public class OsgiIdentityCapability implements Capability {
 				resource,
 				manifest.getSubsystemSymbolicName().getSymbolicName(),
 				manifest.getSubsystemVersion().getVersion(),
-				manifest.getSubsystemType().getValue());
+				// TODO Add to constants.
+				"osgi.subsystem");
 	}
 	
-	public OsgiIdentityCapability(Resource resource, Manifest manifest) {
+	public OsgiIdentityCapability(Resource resource, BundleManifest manifest) {
 		this(
 				resource,
-				manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME),
-				Version.parseVersion(manifest.getMainAttributes().getValue(Constants.BUNDLE_VERSION)),
+				manifest.getHeader(Constants.BUNDLE_SYMBOLICNAME).getValue(),
+				Version.parseVersion(manifest.getHeader(Constants.BUNDLE_VERSION).getValue()),
 				ResourceConstants.IDENTITY_TYPE_BUNDLE);
 	}
 

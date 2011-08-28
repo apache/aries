@@ -19,6 +19,8 @@ public class ManifestVersionHeader extends VersionHeader {
 	public static final String DEFAULT_VALUE = "1.0";
 	public static final String NAME = Attributes.Name.MANIFEST_VERSION.toString();
 	
+	public static final ManifestVersionHeader DEFAULT = new ManifestVersionHeader(DEFAULT_VALUE);
+	
 	public ManifestVersionHeader() {
 		this(DEFAULT_VALUE);
 	}

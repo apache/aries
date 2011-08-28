@@ -18,6 +18,7 @@
  */
 package org.apache.aries.subsystem.itests;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -71,20 +72,9 @@ public class InstallTest extends SubsystemTest {
 	}
 
 	@Test
-	public void testRejectSubsystemWithExistingLocation() throws Exception {
-		Subsystem subsystem = installSubsystemFromFile("feature1.ssa");
-		try {
-			installSubsystemFromFile("feature1.ssa");
-			fail("SubsystemException should have been thrown");
-		}
-		catch (SubsystemException e) {
-			// Pass.
-		}
-		catch (Throwable t) {
-			fail("SubsystemException should have been thrown");
-		}
-		finally {
-			uninstallSubsystem(subsystem);
-		}
+	public void testReturnExistingSubsystemWithSameLocation() throws Exception {
+		Subsystem subsystem1 = installSubsystemFromFile("feature1.ssa");
+		Subsystem subsystem2 = subsystem1.install(subsystem1.getLocation());
+		assertSame(subsystem1, subsystem2);
 	}
 }

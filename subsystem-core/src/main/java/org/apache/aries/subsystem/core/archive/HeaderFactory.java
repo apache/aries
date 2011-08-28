@@ -85,9 +85,12 @@ public class HeaderFactory {
 			return new SubsystemVersionHeader(value);
 		if (name.equals(SubsystemContentHeader.NAME))
 			return new SubsystemContentHeader(value);
-		// TODO Add to constants.
 		if (name.equals(SubsystemTypeHeader.NAME))
 			return new SubsystemTypeHeader(value);
+		if (ExportPackageHeader.NAME.equals(name))
+			return new ExportPackageHeader(value);
+		if (ImportPackageHeader.NAME.equals(name))
+			return new ImportPackageHeader(value);
 		return new GenericHeader(name, value);
 			
 	}

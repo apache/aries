@@ -29,7 +29,7 @@ public class SubsystemSynchronousBundleListener implements SynchronousBundleList
 			return;
 		}
 		Resource resource = bundle.adapt(BundleRevision.class);
-		Collection<AriesSubsystem> subsystems = Activator.getSubsystemManager().getSubsystems(resource);
+		Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(resource);
 		for (AriesSubsystem subsystem : subsystems) {
 			subsystem.bundleChanged(event);
 		}

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.subsystem.core.archive.Archive;
 import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.AriesSubsystem;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
@@ -42,14 +43,12 @@ import org.osgi.service.subsystem.Subsystem;
  * So does the locating of providers for feature content with respect to children of the first parent that is not a feature.
  */
 public class SubsystemEnvironment implements Environment {
-	private final Repository repository;
 	private final Set<Resource> resources = new HashSet<Resource>();
 	private final Map<Resource, Repository> resourceToRepository = new HashMap<Resource, Repository>();
 	private final AriesSubsystem subsystem;
 	
 	public SubsystemEnvironment(AriesSubsystem subsystem) throws IOException, URISyntaxException {
 		this.subsystem = subsystem;
-		repository = new ArchiveRepository(subsystem.getArchive());
 	}
 	
 	@Override
@@ -61,17 +60,14 @@ public class SubsystemEnvironment implements Environment {
 			OsgiIdentityRequirement identity = (OsgiIdentityRequirement)requirement;
 			if (subsystem.isFeature()) {
 				// Features share content resources as well as transitive dependencies.
-				findFeatureContentProviders(capabilities, identity);
-				findContentProviders(capabilities, identity);
+				findConstituentProviders(requirement, capabilities);
 			}
-			else {
-				// Applications and composites do not share content resources, only transitive dependencies.
-				findContentProviders(capabilities, identity);
-			}
+			findArchiveProviders(capabilities, identity, !identity.isTransitiveDependency());
+			findRepositoryServiceProviders(capabilities, identity, !identity.isTransitiveDependency());
 			return capabilities;
 		}
 		// This means we're looking for capabilities satisfying a requirement within a content resource or transitive dependency.
-		findTransitiveDependencyProviders(requirement, capabilities);
+		findArchiveProviders(capabilities, requirement, false);
 		findRepositoryServiceProviders(capabilities, requirement, false);
 		return capabilities;
 	}
@@ -101,44 +97,89 @@ public class SubsystemEnvironment implements Environment {
 		return true;
 	}
 	
-	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement) {
-		for (Capability capability : repository.findProviders(requirement)) {
-			capabilities.add(capability);
-			resourceToRepository.put(capability.getResource(), repository);
-			resources.add(capability.getResource());
-		}
-	}
-	
-	private void findContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement) {
-		findArchiveProviders(capabilities, requirement);
-		findRepositoryServiceProviders(capabilities, requirement, !requirement.isTransitiveDependency());
-	}
-	
-	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement) {
+	private void findConstituentProviders(Requirement requirement, Collection<Capability> capabilities) {
 		Subsystem subsystem = this.subsystem;
-		while (subsystem.getParent() != null && "osgi.feature".equals(subsystem.getParent().getHeaders().get("Subsystem-Type"))) // TODO Add to constants.
+		while (subsystem.getParent() != null) {
 			subsystem = subsystem.getParent();
-		findFeatureContentProviders(capabilities, requirement, subsystem);
+		}
+		findConstituentProviders(subsystem, requirement, capabilities);
 	}
 	
-	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement, Subsystem subsystem) {
+	private void findConstituentProviders(Subsystem subsystem, Requirement requirement, Collection<Capability> capabilities) {
 		for (Resource resource : subsystem.getConstituents()) {
 			for (Capability capability : resource.getCapabilities(requirement.getNamespace())) {
 				if (requirement.matches(capability)) {
 					capabilities.add(capability);
-					resourceToRepository.put(capability.getResource(), repository);
-					resources.add(capability.getResource());
 				}
 			}
 		}
-		findFeatureContentProviders(capabilities, requirement, subsystem.getChildren());
+		findConstituentProviders(subsystem.getChildren(), requirement, capabilities);
 	}
 	
-	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement, Collection<Subsystem> subsystems) {
-		for (Subsystem subsystem : subsystems)
-			if ("osgi.feature".equals(subsystem.getParent().getHeaders().get("Subsystem-Type"))) // TODO Add to constants.
-				findFeatureContentProviders(capabilities, requirement, subsystem);
+	private void findConstituentProviders(Collection<Subsystem> children, Requirement requirement, Collection<Capability> capabilities) {
+		for (Subsystem child : children) {
+			findConstituentProviders(child, requirement, capabilities);
+		}
 	}
+	
+	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, boolean content) {
+		AriesSubsystem subsystem = this.subsystem;
+		while (subsystem.getParent() != null) {
+			subsystem = subsystem.getParent();
+		}
+		findArchiveProviders(capabilities, requirement, subsystem, content);
+	}
+	
+	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, AriesSubsystem subsystem, boolean content) {
+		Archive archive = subsystem.getArchive();
+		// Archive will be null for the root subsystem and for any subsystem that had no content resources included in the archive.
+		if (archive != null) {
+			for (Capability capability : archive.findProviders(requirement)) {
+				capabilities.add(capability);
+				resourceToRepository.put(capability.getResource(), archive);
+				if (content)
+					resources.add(capability.getResource());
+			}
+		}
+		findArchiveProviders(capabilities, requirement, subsystem.getChildren(), content);
+	}
+	
+	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, Collection<Subsystem> children, boolean content) {
+		for (Subsystem child : children) {
+			findArchiveProviders(capabilities, requirement, (AriesSubsystem)child, content);
+		}
+	}
+	
+//	private void findContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement) {
+//		findArchiveProviders(capabilities, requirement);
+//		findRepositoryServiceProviders(capabilities, requirement, !requirement.isTransitiveDependency());
+//	}
+	
+//	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement) {
+//		Subsystem subsystem = this.subsystem;
+//		while (subsystem.getParent() != null && "osgi.feature".equals(subsystem.getParent().getHeaders().get("Subsystem-Type"))) // TODO Add to constants.
+//			subsystem = subsystem.getParent();
+//		findFeatureContentProviders(capabilities, requirement, subsystem);
+//	}
+//	
+//	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement, Subsystem subsystem) {
+//		for (Resource resource : subsystem.getConstituents()) {
+//			for (Capability capability : resource.getCapabilities(requirement.getNamespace())) {
+//				if (requirement.matches(capability)) {
+//					capabilities.add(capability);
+//					resourceToRepository.put(capability.getResource(), repository);
+//					resources.add(capability.getResource());
+//				}
+//			}
+//		}
+//		findFeatureContentProviders(capabilities, requirement, subsystem.getChildren());
+//	}
+//	
+//	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement, Collection<Subsystem> subsystems) {
+//		for (Subsystem subsystem : subsystems)
+//			if ("osgi.feature".equals(subsystem.getParent().getHeaders().get("Subsystem-Type"))) // TODO Add to constants.
+//				findFeatureContentProviders(capabilities, requirement, subsystem);
+//	}
 	
 	private void findRepositoryServiceProviders(Collection<Capability> capabilities, Requirement requirement, boolean content) {
 		Collection<Repository> repositories = Activator.getRepositories();
@@ -149,31 +190,6 @@ public class SubsystemEnvironment implements Environment {
 				if (content)
 					resources.add(capability.getResource());
 			}
-		}
-	}
-	
-	private void findTransitiveDependencyProviders(Requirement requirement, Collection<Capability> capabilities) {
-		Subsystem subsystem = this.subsystem;
-		while (subsystem.getParent() != null) {
-			subsystem = subsystem.getParent();
-		}
-		findTransitiveDependencyProviders(subsystem.getChildren(), requirement, capabilities);
-	}
-	
-	private void findTransitiveDependencyProviders(Subsystem subsystem, Requirement requirement, Collection<Capability> capabilities) {
-		for (Resource resource : subsystem.getConstituents()) {
-			for (Capability capability : resource.getCapabilities(requirement.getNamespace())) {
-				if (requirement.matches(capability)) {
-					capabilities.add(capability);
-				}
-			}
-		}
-		findTransitiveDependencyProviders(subsystem.getChildren(), requirement, capabilities);
-	}
-	
-	private void findTransitiveDependencyProviders(Collection<Subsystem> children, Requirement requirement, Collection<Capability> capabilities) {
-		for (Subsystem child : children) {
-			findTransitiveDependencyProviders(child, requirement, capabilities);
 		}
 	}
 }
