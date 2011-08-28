@@ -13,13 +13,12 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
-import org.osgi.framework.Constants;
-
 public class DirectiveFactory {
 	public static Directive createDirective(String name, String value) {
-		if (Constants.RESOLUTION_DIRECTIVE.equals(name)) {
+		if (ResolutionDirective.NAME.equals(name))
 			return ResolutionDirective.getInstance(value);
-		}
+		if (StartOrderDirective.NAME.equals(name))
+			return new StartOrderDirective(value);
 		return new GenericDirective(name, value);
 	}
 }

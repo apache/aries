@@ -16,6 +16,8 @@ package org.apache.aries.subsystem.core.archive;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -25,18 +27,24 @@ public class SubsystemContentHeader extends AbstractHeader {
 	public static class Content {
 		private final boolean mandatory;
 		private final String name;
+		private final int startOrder;
 		private final String type;
 		private final VersionRange versionRange;
 		
-		public Content(boolean mandatory, String name, String type, VersionRange versionRange) {
+		public Content(boolean mandatory, String name, String type, VersionRange versionRange, int startOrder) {
 			this.mandatory = mandatory;
 			this.name = name;
 			this.type = type;
 			this.versionRange = versionRange;
+			this.startOrder = startOrder;
 		}
 		
 		public String getName() {
 			return name;
+		}
+		
+		public int getStartOrder() {
+			return startOrder;
 		}
 		
 		public String getType() {
@@ -65,6 +73,10 @@ public class SubsystemContentHeader extends AbstractHeader {
 				.append(ResolutionDirective.NAME)
 				.append(":=")
 				.append(isMandatory())
+				.append(';')
+				.append(StartOrderDirective.NAME)
+				.append(":=")
+				.append(getStartOrder())
 				.toString();
 		}
 	}
@@ -72,7 +84,7 @@ public class SubsystemContentHeader extends AbstractHeader {
 	// TODO Add to constants.
 	public static final String NAME = "Subsystem-Content";
 	
-	private final Collection<Content> contents;
+	private final List<Content> contents;
 	
 	public SubsystemContentHeader(String value) {
 		super(NAME, value);
@@ -93,8 +105,18 @@ public class SubsystemContentHeader extends AbstractHeader {
 			if (attribute != null) {
 				versionRange = new VersionRange(attribute.getValue());
 			}
-			contents.add(new Content(mandatory, name, type, versionRange));
+			int startOrder = StartOrderDirective.DEFAULT_VALUE;
+			directive = clause.getDirective(StartOrderDirective.NAME);
+			if (directive != null)
+				startOrder = ((StartOrderDirective)directive).getStartOrder();
+			contents.add(new Content(mandatory, name, type, versionRange, startOrder));
 		}
+		Collections.sort(contents, new Comparator<Content>() {
+			@Override
+			public int compare(Content content1, Content content2) {
+				return ((Integer)content1.getStartOrder()).compareTo(content2.getStartOrder());
+			}
+		});
 	}
 
 	public Collection<Content> getContents() {

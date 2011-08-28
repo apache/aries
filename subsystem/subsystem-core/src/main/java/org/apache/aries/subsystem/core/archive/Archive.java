@@ -23,20 +23,25 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.aries.subsystem.core.resource.ResourceFactory;
+import org.osgi.framework.wiring.Capability;
+import org.osgi.framework.wiring.Requirement;
 import org.osgi.framework.wiring.Resource;
+import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.SubsystemException;
 
-public class Archive {
+public class Archive implements Repository {
 	private DeploymentManifest deploymentManifest;
 	private SubsystemManifest subsystemManifest;
 	
 //	private final DeploymentManifest deploymentManifest;
 	private final File directory;
-	private final Collection<Resource> resources = new ArrayList<Resource>();
+	private final Map<Resource, URL> resources = new HashMap<Resource, URL>();
 //	private final SubsystemManifest subsystemManifest;
 	
 	public Archive(String location, File dir, InputStream content) throws IOException, URISyntaxException {
@@ -90,6 +95,21 @@ public class Archive {
 //			deploymentManifest = new DeploymentManifest(file);
 //	}
 	
+	@Override
+	public Collection<Capability> findProviders(Requirement requirement) {
+		Collection<Capability> capabilities = new ArrayList<Capability>();
+		for (Resource resource : getResources())
+			for (Capability capability : resource.getCapabilities(requirement.getNamespace()))
+				if (requirement.matches(capability))
+					capabilities.add(capability);
+		return capabilities;
+	}
+
+	@Override
+	public URL getContent(Resource resource) {
+		return resources.get(resource);
+	}
+	
 	public synchronized DeploymentManifest getDeploymentManifest() {
 		return deploymentManifest;
 	}
@@ -103,7 +123,7 @@ public class Archive {
 	}
 	
 	public Collection<Resource> getResources() {
-		return Collections.unmodifiableCollection(resources);
+		return Collections.unmodifiableCollection(resources.keySet());
 	}
 	
 	public Collection<String> getResourceNames() {
@@ -209,7 +229,7 @@ public class Archive {
 	private void processResources() throws IOException, URISyntaxException {
 		for (String name : getResourceNames()) {
 			URL url = getURL(name);
-			resources.add(new ResourceFactory().newResource(url));
+			resources.put(new ResourceFactory().newResource(url), url);
 		}
 	}
 }
