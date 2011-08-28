@@ -16,7 +16,7 @@ package org.apache.aries.subsystem.core.archive;
 import org.osgi.framework.Constants;
 
 public class ResolutionDirective extends AbstractDirective {
-	public static final String NAME = "resolution";
+	public static final String NAME = Constants.RESOLUTION_DIRECTIVE;
 	
 	public static final ResolutionDirective MANDATORY = new ResolutionDirective(true);
 	public static final ResolutionDirective OPTIONAL = new ResolutionDirective(false);
@@ -37,7 +37,7 @@ public class ResolutionDirective extends AbstractDirective {
 	private final boolean mandatory;
 	
 	private ResolutionDirective(boolean mandatory) {
-		super(Constants.RESOLUTION_DIRECTIVE, mandatory ? Constants.RESOLUTION_MANDATORY : Constants.RESOLUTION_OPTIONAL);
+		super(NAME, mandatory ? Constants.RESOLUTION_MANDATORY : Constants.RESOLUTION_OPTIONAL);
 		this.mandatory = mandatory;
 	}
 

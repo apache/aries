@@ -15,17 +15,12 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 
-import org.apache.aries.subsystem.core.obr.felix.FelixResourceAdapter;
-import org.apache.aries.subsystem.core.obr.felix.OsgiResourceAdapter;
-import org.apache.felix.bundlerepository.Reason;
+import org.apache.aries.subsystem.core.obr.SubsystemResolver;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleActivator;
@@ -35,21 +30,14 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
-import org.osgi.framework.wiring.Capability;
 import org.osgi.framework.wiring.FrameworkWiring;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.Wire;
 import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.repository.Repository;
-import org.osgi.service.resolver.Environment;
-import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.resolver.Resolver;
 import org.osgi.service.subsystem.Subsystem;
-import org.osgi.service.subsystem.SubsystemException;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +50,6 @@ public class Activator implements BundleActivator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
 	private static BundleContext context;
-	private static SubsystemManager subsystemManager = new SubsystemManager();
 	
 	public static BundleContext getBundleContext() {
 		return context;
@@ -129,59 +116,56 @@ public class Activator implements BundleActivator {
 	 * A naive implementation serving as a placeholder until a real Resolver comes along.
 	 */
 	public static Resolver getResolver() {
-		return new Resolver() {
-			@Override
-			public Map<Resource, List<Wire>> resolve(Environment environment, Requirement... requirements) throws ResolutionException {
-				Collection<Capability> capabilities = new ArrayList<Capability>();
-				for (Requirement requirement : requirements)
-					capabilities.addAll(environment.findProviders(requirement));
-				List<Resource> resources = new ArrayList<Resource>(capabilities.size());
-				for (Capability capability : capabilities)
-					resources.add(capability.getResource());
-				org.apache.felix.bundlerepository.Resolver resolver = getRepositoryAdmin().resolver();
-		        for (Resource resource : resources)
-		            resolver.add(new OsgiResourceAdapter(resource));
-		        if (resolver.resolve()) {
-		        	/* 
-		        	 * TODO For now, these need to go back through the environment in order to be sure the URL is available.
-		        	 * This is because RepositoryAdmin is not going through the environment as part of pulling in transitive
-		        	 * dependencies. Once a "real" Resolver is available, this will no longer be necessary.
-		        	 */
-		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getRequiredResources()) {
-		        		Resource r = new FelixResourceAdapter(resource);
-		        		// Make the environment aware of the resource and its URL.
-		        		environment.findProviders(new OsgiIdentityRequirement(r, true));
-		            	resources.add(r);
-		        	}
-		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getOptionalResources()) {
-		        		Resource r = new FelixResourceAdapter(resource);
-		        		// Make the environment aware of the resource and its URL.
-		        		environment.findProviders(new OsgiIdentityRequirement(r, true));
-		            	resources.add(r);
-		        	}
-		        }
-		        else {
-		            Reason[] reasons = resolver.getUnsatisfiedRequirements();
-		            StringBuilder builder = new StringBuilder("Failed to resolve subsystem").append(System.getProperty("line.separator"));
-		            for (Reason reason : reasons)
-		                builder
-		                	.append("resource = ")
-		                	.append(reason.getResource().getSymbolicName())
-		                	.append(", requirement = ")
-		                	.append(reason.getRequirement().getName())
-		                	.append(System.getProperty("line.separator"));
-		            throw new SubsystemException(builder.toString());
-		        }
-		        Map<Resource, List<Wire>> result = new HashMap<Resource, List<Wire>>(resources.size());
-				for (Resource resource : resources)
-					result.put(resource, Collections.EMPTY_LIST);
-				return result;
-			}
-		};
-	}
-	
-	public static SubsystemManager getSubsystemManager() {
-		return subsystemManager;
+		return new SubsystemResolver();
+//		return new Resolver() {
+//			@Override
+//			public Map<Resource, List<Wire>> resolve(Environment environment, Requirement... requirements) throws ResolutionException {
+//				Collection<Capability> capabilities = new ArrayList<Capability>();
+//				for (Requirement requirement : requirements)
+//					capabilities.addAll(environment.findProviders(requirement));
+//				List<Resource> resources = new ArrayList<Resource>(capabilities.size());
+//				for (Capability capability : capabilities)
+//					resources.add(capability.getResource());
+//				org.apache.felix.bundlerepository.Resolver resolver = getRepositoryAdmin().resolver();
+//		        for (Resource resource : resources)
+//		            resolver.add(new OsgiResourceAdapter(resource));
+//		        if (resolver.resolve()) {
+//		        	/* 
+//		        	 * TODO For now, these need to go back through the environment in order to be sure the URL is available.
+//		        	 * This is because RepositoryAdmin is not going through the environment as part of pulling in transitive
+//		        	 * dependencies. Once a "real" Resolver is available, this will no longer be necessary.
+//		        	 */
+//		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getRequiredResources()) {
+//		        		Resource r = new FelixResourceAdapter(resource);
+//		        		// Make the environment aware of the resource and its URL.
+//		        		environment.findProviders(new OsgiIdentityRequirement(r, true));
+//		            	resources.add(r);
+//		        	}
+//		        	for (org.apache.felix.bundlerepository.Resource resource : resolver.getOptionalResources()) {
+//		        		Resource r = new FelixResourceAdapter(resource);
+//		        		// Make the environment aware of the resource and its URL.
+//		        		environment.findProviders(new OsgiIdentityRequirement(r, true));
+//		            	resources.add(r);
+//		        	}
+//		        }
+//		        else {
+//		            Reason[] reasons = resolver.getUnsatisfiedRequirements();
+//		            StringBuilder builder = new StringBuilder("Failed to resolve subsystem").append(System.getProperty("line.separator"));
+//		            for (Reason reason : reasons)
+//		                builder
+//		                	.append("resource = ")
+//		                	.append(reason.getResource().getSymbolicName())
+//		                	.append(", requirement = ")
+//		                	.append(reason.getRequirement().getName())
+//		                	.append(System.getProperty("line.separator"));
+//		            throw new SubsystemException(builder.toString());
+//		        }
+//		        Map<Resource, List<Wire>> result = new HashMap<Resource, List<Wire>>(resources.size());
+//				for (Resource resource : resources)
+//					result.put(resource, Collections.EMPTY_LIST);
+//				return result;
+//			}
+//		};
 	}
 	
 	private final BundleListener bundleListener = new SubsystemSynchronousBundleListener();

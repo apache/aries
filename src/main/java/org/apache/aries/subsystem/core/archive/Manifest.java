@@ -31,11 +31,17 @@ public abstract class Manifest {
 	protected final java.util.jar.Manifest manifest;
 	
 	public Manifest(InputStream in) throws IOException {
-		manifest = ManifestProcessor.parseManifest(in);
+		this(ManifestProcessor.parseManifest(in));
+	}
+	
+	public Manifest(java.util.jar.Manifest manifest) {
+		this.manifest = manifest;
 		for (Map.Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
 			Header header = HeaderFactory.createHeader(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
 			headers.put(header.getName(), header);
 		}
+		if (headers.get(ManifestVersionHeader.NAME) == null)
+			headers.put(ManifestVersionHeader.NAME, ManifestVersionHeader.DEFAULT);
 	}
 	
 	public Manifest(File manifestFile) throws IOException {

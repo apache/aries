@@ -22,8 +22,12 @@ import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.Resource;
 import org.osgi.service.subsystem.Subsystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubsystemResolverHook implements ResolverHook {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SubsystemResolverHook.class);
+	
 	public void end() {
 		// noop
 	}
@@ -33,21 +37,25 @@ public class SubsystemResolverHook implements ResolverHook {
 	}
 
 	public void filterResolvable(Collection<BundleRevision> candidates) {
-		SubsystemManager manager = Activator.getSubsystemManager();
-		for (Resource candidate : candidates) {
-			Collection<AriesSubsystem> subsystems = manager.getSubsystems(candidate);
-			for (AriesSubsystem subsystem : subsystems) {
-				// TODO Uncomment when features are implemented.
-//				if (subsystem instanceof FeatureSubsystem) {
-//					// Feature subsystems require no isolation.
-//					continue;
-//				}
-				// Otherwise, the candidate is part of an application or composite subsystem requiring isolation.
-				// But only when in the INSTALLING or INSTALLED state.
-				if (EnumSet.of(Subsystem.State.INSTALLING, Subsystem.State.INSTALLED).contains(subsystem.getState())) {
-					candidates.remove(candidate);
+		try {
+			for (Resource candidate : candidates) {
+				Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(candidate);
+				for (AriesSubsystem subsystem : subsystems) {
+					if (subsystem.isFeature()) {
+						// Feature subsystems require no isolation.
+						continue;
+					}
+					// Otherwise, the candidate is part of an application or composite subsystem requiring isolation.
+					// But only when in the INSTALLING or INSTALLED state.
+					if (EnumSet.of(Subsystem.State.INSTALLING, Subsystem.State.INSTALLED).contains(subsystem.getState())) {
+						candidates.remove(candidate);
+					}
 				}
 			}
+		}
+		catch (RuntimeException e) {
+			// This try/catch block is in place because exceptions occurring here are not showing up in the console during testing.
+			LOGGER.debug("Unexpected exception while filtering resolution candidates: " + candidates, e);
 		}
 	}
 

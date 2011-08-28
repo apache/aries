@@ -17,15 +17,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
+import org.apache.aries.subsystem.core.archive.BundleManifest;
+import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
-import org.apache.aries.subsystem.core.internal.OsgiContentCapability;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
-import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.Capability;
 import org.osgi.framework.wiring.Requirement;
 import org.osgi.framework.wiring.Resource;
@@ -34,12 +33,12 @@ public class BundleResource implements Resource {
 	public static BundleResource newInstance(URL content) throws IOException {
 		BundleResource result = new BundleResource(content);
 		result.capabilities.add(new OsgiIdentityCapability(result, result.manifest));
-		result.capabilities.add(new OsgiContentCapability(result, content));
 		return result;
 	}
 	
 	private final List<Capability> capabilities = new ArrayList<Capability>();
-	private final Manifest manifest;
+	private final BundleManifest manifest;
+	private final List<Requirement> requirements = new ArrayList<Requirement>();
 	
 	private BundleResource(InputStream content) throws IOException {
 		JarInputStream jis = new JarInputStream(content);
@@ -47,13 +46,21 @@ public class BundleResource implements Resource {
 			Manifest manifest = jis.getManifest();
 			if (manifest == null)
 				throw new IllegalArgumentException("The jar file contained no manifest");
-			this.manifest = manifest;
+			this.manifest = new BundleManifest(manifest);
 		}
 		finally {
 			try {
 				jis.close();
 			}
 			catch (IOException e) {}
+		}
+		ExportPackageHeader eph = (ExportPackageHeader)manifest.getHeader(ExportPackageHeader.NAME);
+		if (eph != null) {
+			capabilities.addAll(eph.getCapabilities(this));
+		}
+		ImportPackageHeader iph = (ImportPackageHeader)manifest.getHeader(ImportPackageHeader.NAME);
+		if (iph != null) {
+			requirements.addAll(iph.getRequirements(this));
 		}
 	}
 	
@@ -79,16 +86,11 @@ public class BundleResource implements Resource {
 	}
 
 	public List<Capability> getCapabilities(String namespace) {
-		if (namespace == null) {
-			return Collections.unmodifiableList(capabilities);
-		}
 		ArrayList<Capability> result = new ArrayList<Capability>(capabilities.size());
 		for (Capability capability : capabilities) {
-			if (namespace.equals(capability.getNamespace())) {
+			if (namespace == null || namespace.equals(capability.getNamespace()))
 				result.add(capability);
-			}
 		}
-		result.trimToSize();
 		return result;
 	}
 
@@ -100,10 +102,9 @@ public class BundleResource implements Resource {
 		 * 		Fragment-Host
 		 */
 		ArrayList<Requirement> result = new ArrayList<Requirement>();
-		String importPackageHeaderStr = manifest.getMainAttributes().getValue(Constants.IMPORT_PACKAGE);
-		if (importPackageHeaderStr != null) {
-			ImportPackageHeader header = new ImportPackageHeader(importPackageHeaderStr);
-			result.addAll(header.getRequirements(this));
+		for (Requirement requirement : requirements) {
+			if (namespace == null || namespace.equals(requirement.getNamespace()))
+				result.add(requirement);
 		}
 		return result;
 	}

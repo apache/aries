@@ -65,7 +65,7 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			if (directive == null) {
 				StringBuilder builder = new StringBuilder("(&");
 				for (Attribute a : getAttributes()) {
-					a.appendToFilter(builder.append('(')).append(')');
+					a.appendToFilter(builder);
 				}
 				directive = new GenericDirective(Constants.FILTER_DIRECTIVE, builder.append(')').toString());
 				myParameters.put(directive.getName(), directive);
@@ -185,6 +185,8 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			return builder.toString();
 		}
 	}
+	
+	public static final String NAME = Constants.IMPORT_PACKAGE;
 	
 	private static final String REGEX = '(' + Grammar.IMPORT + ")(?:\\,(" + Grammar.IMPORT + "))*";
 	private static final Pattern PATTERN = Pattern.compile(REGEX);

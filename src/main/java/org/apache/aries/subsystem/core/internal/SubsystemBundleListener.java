@@ -19,8 +19,7 @@ import org.osgi.framework.wiring.BundleRevision;
 
 public class SubsystemBundleListener implements BundleListener {
 	public void bundleChanged(BundleEvent event) {
-		SubsystemManager manager = Activator.getSubsystemManager();
-		for (AriesSubsystem subsystem : manager.getSubsystems(event.getBundle().adapt(BundleRevision.class))) {
+		for (AriesSubsystem subsystem : AriesSubsystem.getSubsystems(event.getBundle().adapt(BundleRevision.class))) {
 			// TODO Anything?
 		}
 	}

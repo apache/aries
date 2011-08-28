@@ -34,7 +34,7 @@ public class BundleEventHandler implements EventHandler {
 		}
 		Bundle bundle = (Bundle)event.getProperty(EventConstants.BUNDLE);
 		Resource resource = bundle.adapt(BundleRevision.class);
-		Collection<AriesSubsystem> subsystems = Activator.getSubsystemManager().getSubsystems(resource);
+		Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(resource);
 		for (AriesSubsystem subsystem : subsystems) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			for (String propertyName : event.getPropertyNames()) {

@@ -13,17 +13,8 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.osgi.framework.Constants;
-
 public class BundleManifest extends Manifest {
-	public static final String IMPORT_PACKAGE = Constants.IMPORT_PACKAGE;
-	
-	public BundleManifest(InputStream in) throws IOException {
-		super(in);
+	public BundleManifest(java.util.jar.Manifest manifest) {
+		super(manifest);
 	}
-	
-	
 }
