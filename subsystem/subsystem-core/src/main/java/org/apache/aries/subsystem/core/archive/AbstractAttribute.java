@@ -19,7 +19,7 @@ public abstract class AbstractAttribute extends AbstractParameter implements Att
 	}
 	
 	public StringBuilder appendToFilter(StringBuilder builder) {
-		return builder.append(getName()).append('=').append(getValue());
+		return builder.append('(').append(getName()).append('=').append(getValue()).append(')');
 	}
 
 	public String toString() {

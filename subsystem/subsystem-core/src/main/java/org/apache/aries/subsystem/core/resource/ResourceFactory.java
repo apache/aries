@@ -19,24 +19,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.osgi.framework.wiring.Resource;
+import org.osgi.service.subsystem.SubsystemException;
 
 public class ResourceFactory {
 	public Resource newResource(URL url) throws IOException, URISyntaxException {
-		File file = new File(url.toURI());
-		if (file.exists())
-			return newResource(file);
-		// TODO What next?
-		throw new IllegalArgumentException("Unsupported resource type: " + url);
-	}
-	
-	public Resource newResource(File file) throws IOException, URISyntaxException {
-		String name = file.getName();
-		if (name.endsWith(".jar")) {
-			return BundleResource.newInstance(file.toURI().toURL());
-		}
-		if (name.endsWith(".ssa")) {
-			return SubsystemResource.newInstance(file);
-		}
-		throw new IllegalArgumentException("Unsupported resource type: " + name);
+		if (url.getPath().endsWith(".jar"))
+			return BundleResource.newInstance(url);
+		if (url.getPath().endsWith(".ssa"))
+			return SubsystemResource.newInstance(new File(url.toURI()));
+		throw new SubsystemException("Unsupported resource type: " + url);
 	}
 }

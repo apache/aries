@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.service.subsystem.Subsystem;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 @RunWith(JUnit4TestRunner.class)
 public class FeatureTest extends SubsystemTest {
@@ -71,19 +72,47 @@ public class FeatureTest extends SubsystemTest {
 	@Test
 	public void testFeature1() throws Exception {
 		Subsystem subsystem = installSubsystemFromFile("feature1.ssa");
+		AssertionError error = null;
 		try {
 			assertSymbolicName("org.apache.aries.subsystem.feature1", subsystem);
 			assertVersion("1.0.0", subsystem);
-			assertConstituents(3, subsystem);
+			assertConstituents(4, subsystem);
+			assertChildren(1, subsystem);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.INSTALLING, SubsystemConstants.EventType.INSTALLING, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.INSTALLED, SubsystemConstants.EventType.INSTALLED, 5000);
+			assertSymbolicName("org.apache.aries.subsystem.feature2", subsystem.getChildren().iterator().next());
+			assertVersion("1.0.0", subsystem.getChildren().iterator().next());
+			assertConstituents(1, subsystem.getChildren().iterator().next());
 			// TODO Test internal events for installation.
 			startSubsystem(subsystem);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVING, SubsystemConstants.EventType.RESOLVING, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVED, SubsystemConstants.EventType.RESOLVED, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.STARTING, SubsystemConstants.EventType.STARTING, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.ACTIVE, SubsystemConstants.EventType.STARTED, 5000);
 			// TODO Test internal events for starting.
 			stopSubsystem(subsystem);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.STOPPING, SubsystemConstants.EventType.STOPPING, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVED, SubsystemConstants.EventType.STOPPED, 5000);
 			// TODO Test internal events for stopping.
 		}
+		catch (AssertionError e) {
+			error = e;
+			throw e;
+		}
 		finally {
-			uninstallSubsystem(subsystem);
-			// TODO Test internal events for uninstalling.
+			try {
+				Subsystem child = subsystem.getChildren().iterator().next();
+				uninstallSubsystem(subsystem);
+				assertEvent(child, Subsystem.State.UNINSTALLING, SubsystemConstants.EventType.UNINSTALLING, 5000);
+				assertEvent(child, Subsystem.State.UNINSTALLED, SubsystemConstants.EventType.UNINSTALLED, 5000);
+				// TODO Test internal events for uninstalling.
+				assertNotChild(subsystem, child);
+			}
+			catch (AssertionError e) {
+				if (error == null)
+					throw e;
+				e.printStackTrace();
+			}
 		}
 	}
 }
