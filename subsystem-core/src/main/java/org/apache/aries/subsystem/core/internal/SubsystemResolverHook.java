@@ -15,12 +15,12 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Iterator;
 
 import org.osgi.framework.hooks.resolver.ResolverHook;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.Resource;
 import org.osgi.service.subsystem.Subsystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +38,8 @@ public class SubsystemResolverHook implements ResolverHook {
 
 	public void filterResolvable(Collection<BundleRevision> candidates) {
 		try {
-			for (Resource candidate : candidates) {
-				Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(candidate);
+			for (Iterator<BundleRevision> iterator = candidates.iterator(); iterator.hasNext();) {
+				Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(iterator.next());
 				for (AriesSubsystem subsystem : subsystems) {
 					if (subsystem.isFeature()) {
 						// Feature subsystems require no isolation.
@@ -48,7 +48,7 @@ public class SubsystemResolverHook implements ResolverHook {
 					// Otherwise, the candidate is part of an application or composite subsystem requiring isolation.
 					// But only when in the INSTALLING or INSTALLED state.
 					if (EnumSet.of(Subsystem.State.INSTALLING, Subsystem.State.INSTALLED).contains(subsystem.getState())) {
-						candidates.remove(candidate);
+						iterator.remove();
 					}
 				}
 			}
