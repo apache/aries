@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Resource;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Resource;
 
 public class OsgiContentCapability implements Capability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();

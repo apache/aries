@@ -25,10 +25,10 @@ import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.obr.felix.FelixResourceAdapter;
 import org.apache.aries.subsystem.core.obr.felix.OsgiResourceAdapter;
 import org.apache.felix.bundlerepository.Reason;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.Wire;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
+import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.Wire;
 import org.osgi.service.resolver.Environment;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.resolver.Resolver;
@@ -49,23 +49,32 @@ public class SubsystemResolver implements Resolver {
 			addCapabilities(capabilities, environment, requirement);
 		}
 	}
+
 	@Override
-	public Map<Resource, List<Wire>> resolve(Environment environment, Requirement... requirements) throws ResolutionException {
+	public Map<Resource, List<Wire>> resolve(Environment environment, Collection<Resource> mandatory, Collection<Resource> optional) throws ResolutionException {
 		Collection<Capability> capabilities = new ArrayList<Capability>();
 		/*
 		 * TODO Until an implementation of Resolver comes along, need to find as many resources with capabilities satisfying as
 		 * many requirements as possible. This is because the Felix OBR resolver does not make use of this environment. In particular,
 		 * we need to add resources that come from subsystem archives or constituents as these will not be available otherwise.
 		 */
-		for (Requirement requirement : requirements)
-//			capabilities.addAll(environment.findProviders(requirement));
-			addCapabilities(capabilities, environment, requirement);
-		List<Resource> resources = new ArrayList<Resource>(capabilities.size());
-		for (Capability capability : capabilities)
+		List<Resource> resources = new ArrayList<Resource>();
+		for (Resource resource : mandatory) {
+			resources.add(resource);
+			addCapabilities(capabilities, environment, resource.getRequirements(null));
+		}
+		// TODO Treating optional resources as mandatory for now....
+		for (Resource resource : optional) {
+			resources.add(resource);
+			addCapabilities(capabilities, environment, resource.getRequirements(null));
+		}
+		for (Capability capability : capabilities) {
 			resources.add(capability.getResource());
+		}
 		org.apache.felix.bundlerepository.Resolver resolver = Activator.getRepositoryAdmin().resolver();
-        for (Resource resource : resources)
+        for (Resource resource : resources) {
             resolver.add(new OsgiResourceAdapter(resource));
+        }
         if (resolver.resolve()) {
         	/* 
         	 * TODO For now, these need to go back through the environment in order to be sure the URL is available.
@@ -95,11 +104,13 @@ public class SubsystemResolver implements Resolver {
                 	.append(", requirement = ")
                 	.append(reason.getRequirement().getName())
                 	.append(System.getProperty("line.separator"));
+            // TODO Throw ResolutionException instead.
             throw new SubsystemException(builder.toString());
         }
         Map<Resource, List<Wire>> result = new HashMap<Resource, List<Wire>>(resources.size());
-		for (Resource resource : resources)
+		for (Resource resource : resources) {
 			result.put(resource, Collections.EMPTY_LIST);
+		}
 		return result;
 	}
 }
