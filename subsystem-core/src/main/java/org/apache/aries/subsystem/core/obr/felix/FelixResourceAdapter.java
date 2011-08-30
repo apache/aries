@@ -19,12 +19,12 @@ import java.util.List;
 import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.OsgiContentCapability;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.ResourceConstants;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
+import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.ResourceConstants;
 
-public class FelixResourceAdapter implements org.osgi.framework.wiring.Resource {
+public class FelixResourceAdapter implements Resource {
 	private final org.apache.felix.bundlerepository.Resource resource;
 	
 	public FelixResourceAdapter(final org.apache.felix.bundlerepository.Resource resource) {

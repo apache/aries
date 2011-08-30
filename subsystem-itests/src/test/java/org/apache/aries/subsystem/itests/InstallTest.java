@@ -19,7 +19,6 @@
 package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.service.subsystem.Subsystem;
-import org.osgi.service.subsystem.SubsystemException;
 
 @RunWith(JUnit4TestRunner.class)
 public class InstallTest extends SubsystemTest {
@@ -67,7 +65,8 @@ public class InstallTest extends SubsystemTest {
 		if (createdApplications) {
 			return;
 		}
-		createApplication("feature1", new String[]{"tb1.jar"});
+		createApplication("feature2", new String[]{"tb2.jar"});
+		createApplication("feature1", new String[]{"tb1.jar", "feature2.ssa"});
 		createdApplications = true;
 	}
 

@@ -23,23 +23,24 @@ package org.osgi.service.repository;
 import java.net.URL;
 import java.util.Collection;
 
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
+import org.osgi.framework.resource.Resource;
+import org.osgi.service.resolver.Environment;
 
 /**
  * Represents a repository that contains {@link Resource resources}.
  * 
  * <p>
  * Repositories may be registered as services and may be used as inputs to an
- * {@link org.osgi.service.resolver.Environment#findProviders(Requirement)} operation.
+ * {@link Environment#findProviders(Requirement)} operation.
  * 
  * <p>
  * Repositories registered as services may be filtered using standard service
  * properties.
  * 
  * @ThreadSafe
- * @version $Id: f4cc0fc98cdf67253d3fbca9b39f6a2d6e1464f5 $
+ * @version $Id: bd0cfbdace9a99e3a9d2b16208d7169d3cc6d993 $
  */
 public interface Repository {
   /**
@@ -52,7 +53,7 @@ public interface Repository {
    *  
    * @throws NullPointerException if the requirement is null
    */
-  Collection<Capability> findProviders(Requirement requirement) throws NullPointerException;
+  Collection<Capability> findProviders(Requirement requirement);
 
   /**
    * Lookup the URL where the supplied resource may be accessed, if any.
@@ -68,5 +69,5 @@ public interface Repository {
    *         
    * @throws NullPointerException if the resource is null 
    */
-  URL getContent(Resource resource) throws NullPointerException;
+  URL getContent(Resource resource);
 }

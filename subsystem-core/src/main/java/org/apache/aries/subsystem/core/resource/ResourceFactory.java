@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.osgi.framework.wiring.Resource;
+import org.osgi.framework.resource.Resource;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class ResourceFactory {

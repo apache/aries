@@ -19,9 +19,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class OsgiRequirementAdapter implements Requirement {
-	private final org.osgi.framework.wiring.Requirement requirement;
+	private final org.osgi.framework.resource.Requirement requirement;
 	
-	public OsgiRequirementAdapter(org.osgi.framework.wiring.Requirement requirement) {
+	public OsgiRequirementAdapter(org.osgi.framework.resource.Requirement requirement) {
 		if (requirement == null)
 			throw new NullPointerException("Missing required parameter: requirement");
 		this.requirement = requirement;
