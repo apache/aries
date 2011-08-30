@@ -18,27 +18,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.Wire;
+import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.Wire;
 
 public class DeploymentManifest extends Manifest {
-	public static DeploymentManifest newInstance(SubsystemManifest manifest, SubsystemEnvironment environment) {
+	public static DeploymentManifest newInstance(Archive archive, SubsystemEnvironment environment) {
+		SubsystemManifest manifest = archive.getSubsystemManifest();
 		DeploymentManifest result = new DeploymentManifest();
 		result.headers.put(ManifestVersionHeader.NAME, manifest.getManifestVersion());
-		Collection<Requirement> requirements = new ArrayList<Requirement>();
+		Collection<Resource> resources = new ArrayList<Resource>();
 		for (SubsystemContentHeader.Content content : manifest.getSubsystemContent().getContents()) {
-			Requirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
-			requirements.add(requirement);
+			OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
+			resources.add(environment.findResource(requirement));
 		}
 		// TODO This does not validate that all content bundles were found.
-		Map<Resource, List<Wire>> resolution = Activator.getResolver().resolve(environment, requirements.toArray(new Requirement[requirements.size()]));
+		Map<Resource, List<Wire>> resolution = Activator.getResolver().resolve(environment, resources, Collections.EMPTY_LIST);
 		// TODO Once we have a resolver that actually returns lists of wires, we can use them to compute other manifest headers such as Import-Package.
 		Collection<Resource> deployedContent = new ArrayList<Resource>();
 		Collection<Resource> provisionResource = new ArrayList<Resource>();

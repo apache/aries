@@ -13,7 +13,6 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
-import org.osgi.service.subsystem.SubsystemConstants;
 
 public class HeaderFactory {
 //	public static final String APPLICATIONCONTENT_HEADER = ApplicationContentHeader.NAME;

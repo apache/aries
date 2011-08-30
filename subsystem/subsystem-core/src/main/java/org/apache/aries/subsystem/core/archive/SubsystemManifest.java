@@ -19,9 +19,9 @@ import java.io.InputStream;
 import java.util.Collection;
 
 import org.osgi.framework.Version;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.ResourceConstants;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class SubsystemManifest extends Manifest {

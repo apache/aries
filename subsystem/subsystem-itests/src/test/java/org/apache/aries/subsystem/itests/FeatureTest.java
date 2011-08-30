@@ -78,21 +78,21 @@ public class FeatureTest extends SubsystemTest {
 			assertVersion("1.0.0", subsystem);
 			assertConstituents(4, subsystem);
 			assertChildren(1, subsystem);
-			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.INSTALLING, SubsystemConstants.EventType.INSTALLING, 5000);
-			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.INSTALLED, SubsystemConstants.EventType.INSTALLED, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.INSTALLING, SubsystemConstants.EVENT_TYPE.INSTALLING, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.INSTALLED, SubsystemConstants.EVENT_TYPE.INSTALLED, 5000);
 			assertSymbolicName("org.apache.aries.subsystem.feature2", subsystem.getChildren().iterator().next());
 			assertVersion("1.0.0", subsystem.getChildren().iterator().next());
 			assertConstituents(1, subsystem.getChildren().iterator().next());
 			// TODO Test internal events for installation.
 			startSubsystem(subsystem);
-			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVING, SubsystemConstants.EventType.RESOLVING, 5000);
-			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVED, SubsystemConstants.EventType.RESOLVED, 5000);
-			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.STARTING, SubsystemConstants.EventType.STARTING, 5000);
-			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.ACTIVE, SubsystemConstants.EventType.STARTED, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVING, SubsystemConstants.EVENT_TYPE.RESOLVING, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVED, SubsystemConstants.EVENT_TYPE.RESOLVED, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.STARTING, SubsystemConstants.EVENT_TYPE.STARTING, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.ACTIVE, SubsystemConstants.EVENT_TYPE.STARTED, 5000);
 			// TODO Test internal events for starting.
 			stopSubsystem(subsystem);
-			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.STOPPING, SubsystemConstants.EventType.STOPPING, 5000);
-			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVED, SubsystemConstants.EventType.STOPPED, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.STOPPING, SubsystemConstants.EVENT_TYPE.STOPPING, 5000);
+			assertEvent(subsystem.getChildren().iterator().next(), Subsystem.State.RESOLVED, SubsystemConstants.EVENT_TYPE.STOPPED, 5000);
 			// TODO Test internal events for stopping.
 		}
 		catch (AssertionError e) {
@@ -103,8 +103,8 @@ public class FeatureTest extends SubsystemTest {
 			try {
 				Subsystem child = subsystem.getChildren().iterator().next();
 				uninstallSubsystem(subsystem);
-				assertEvent(child, Subsystem.State.UNINSTALLING, SubsystemConstants.EventType.UNINSTALLING, 5000);
-				assertEvent(child, Subsystem.State.UNINSTALLED, SubsystemConstants.EventType.UNINSTALLED, 5000);
+				assertEvent(child, Subsystem.State.UNINSTALLING, SubsystemConstants.EVENT_TYPE.UNINSTALLING, 5000);
+				assertEvent(child, Subsystem.State.UNINSTALLED, SubsystemConstants.EVENT_TYPE.UNINSTALLED, 5000);
 				// TODO Test internal events for uninstalling.
 				assertNotChild(subsystem, child);
 			}

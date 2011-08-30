@@ -22,9 +22,9 @@ import org.apache.felix.bundlerepository.Property;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class OsgiCapabilityAdapter implements Capability {
-	private final org.osgi.framework.wiring.Capability capability;
+	private final org.osgi.framework.resource.Capability capability;
 	
-	public OsgiCapabilityAdapter(org.osgi.framework.wiring.Capability capability) {
+	public OsgiCapabilityAdapter(org.osgi.framework.resource.Capability capability) {
 		if (capability == null)
 			throw new NullPointerException("Missing required parameter: capability");
 		this.capability = capability;

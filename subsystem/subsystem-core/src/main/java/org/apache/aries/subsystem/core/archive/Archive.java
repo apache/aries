@@ -29,9 +29,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.aries.subsystem.core.resource.ResourceFactory;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
+import org.osgi.framework.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.SubsystemException;
 

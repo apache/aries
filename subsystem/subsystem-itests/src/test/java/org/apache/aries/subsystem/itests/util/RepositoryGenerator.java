@@ -43,7 +43,7 @@ import org.apache.felix.bundlerepository.Resolver;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.osgi.framework.wiring.Resource;
+import org.osgi.framework.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 import org.slf4j.Logger;
@@ -192,7 +192,7 @@ public class RepositoryGenerator {
         Map props = res.getProperties();
         
 
-        Object type = props.get(SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE);
+        Object type = props.get(SubsystemConstants.IDENTITY_TYPE_ATTRIBUTE);
 
         return new FelixResourceAdapter(res);
     }
@@ -232,7 +232,7 @@ public class RepositoryGenerator {
         Map props = resource.getProperties();
         
 
-        Object type = props.get(SubsystemConstants.RESOURCE_TYPE_ATTRIBUTE);
+        Object type = props.get(SubsystemConstants.IDENTITY_TYPE_ATTRIBUTE);
 
         return new FelixResourceAdapter(resource);
     }
@@ -295,7 +295,7 @@ public class RepositoryGenerator {
     	return new org.apache.felix.bundlerepository.Resource() {
 			public Capability[] getCapabilities() {
 				Collection<Capability> result = new ArrayList<Capability>(resource.getCapabilities(null).size());
-				for (org.osgi.framework.wiring.Capability capability : resource.getCapabilities(null)) {
+				for (org.osgi.framework.resource.Capability capability : resource.getCapabilities(null)) {
 					result.add(new Capability() {
 						public String getName() {
 							// TODO Auto-generated method stub
