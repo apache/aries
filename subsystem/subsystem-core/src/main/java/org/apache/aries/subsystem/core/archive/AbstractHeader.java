@@ -21,8 +21,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Version;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.ResourceConstants;
+import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.ResourceConstants;
 
 public abstract class AbstractHeader implements Header {
 	protected static final String REGEX = Grammar.CLAUSE + "(?=,|\\z)";

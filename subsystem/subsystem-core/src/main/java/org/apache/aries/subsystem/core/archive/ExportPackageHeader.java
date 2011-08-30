@@ -21,9 +21,9 @@ import java.util.Map;
 
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.ResourceConstants;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.ResourceConstants;
 
 public class ExportPackageHeader extends AbstractHeader {
 	public static final String NAME = Constants.EXPORT_PACKAGE;

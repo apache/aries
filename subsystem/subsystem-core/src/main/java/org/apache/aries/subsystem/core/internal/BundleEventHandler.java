@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.resource.Resource;
 import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.Resource;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
@@ -40,12 +40,12 @@ public class BundleEventHandler implements EventHandler {
 			for (String propertyName : event.getPropertyNames()) {
 				map.put(propertyName, event.getProperty(propertyName));
 			}
-			map.put(SubsystemConstants.SUBSYSTEM_ID, subsystem.getSubsystemId());
-			map.put(SubsystemConstants.SUBSYSTEM_LOCATION, subsystem.getLocation());
-			map.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, subsystem.getSymbolicName());
-			map.put(SubsystemConstants.SUBSYSTEM_VERSION, String.valueOf(subsystem.getVersion()));
-			map.put(SubsystemConstants.SUBYSTEM_STATE, String.valueOf(subsystem.getState()));
-			Event newEvent = new Event(SubsystemConstants.TOPIC_INTERNALS + event.getTopic(), map);
+			map.put(SubsystemConstants.EVENT_SUBSYSTEM_ID, subsystem.getSubsystemId());
+			map.put(SubsystemConstants.EVENT_SUBSYSTEM_LOCATION, subsystem.getLocation());
+			map.put(SubsystemConstants.EVENT_SUBSYSTEM_SYMBOLICNAME, subsystem.getSymbolicName());
+			map.put(SubsystemConstants.EVENT_SUBSYSTEM_VERSION, String.valueOf(subsystem.getVersion()));
+			map.put(SubsystemConstants.EVENT_SUBYSTEM_STATE, String.valueOf(subsystem.getState()));
+			Event newEvent = new Event(SubsystemConstants.EVENT_TOPIC_INTERNALS + event.getTopic(), map);
 			eventAdmin.postEvent(newEvent);
 		}
 	}

@@ -25,9 +25,9 @@ import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
+import org.osgi.framework.resource.Resource;
 
 public class BundleResource implements Resource {
 	public static BundleResource newInstance(URL content) throws IOException {

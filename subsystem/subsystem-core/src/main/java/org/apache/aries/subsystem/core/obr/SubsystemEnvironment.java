@@ -29,10 +29,10 @@ import org.apache.aries.subsystem.core.archive.Archive;
 import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.AriesSubsystem;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.Wire;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
+import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.Wire;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.Environment;
 import org.osgi.service.subsystem.Subsystem;
@@ -70,6 +70,14 @@ public class SubsystemEnvironment implements Environment {
 		findArchiveProviders(capabilities, requirement, false);
 		findRepositoryServiceProviders(capabilities, requirement, false);
 		return capabilities;
+	}
+	
+	public Resource findResource(OsgiIdentityRequirement requirement) {
+		Collection<Capability> capabilities = findProviders(requirement);
+		if (capabilities.isEmpty()) {
+			return null;
+		}
+		return capabilities.iterator().next().getResource();
 	}
 	
 	public URL getContent(Resource resource) {
@@ -149,37 +157,6 @@ public class SubsystemEnvironment implements Environment {
 			findArchiveProviders(capabilities, requirement, (AriesSubsystem)child, content);
 		}
 	}
-	
-//	private void findContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement) {
-//		findArchiveProviders(capabilities, requirement);
-//		findRepositoryServiceProviders(capabilities, requirement, !requirement.isTransitiveDependency());
-//	}
-	
-//	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement) {
-//		Subsystem subsystem = this.subsystem;
-//		while (subsystem.getParent() != null && "osgi.feature".equals(subsystem.getParent().getHeaders().get("Subsystem-Type"))) // TODO Add to constants.
-//			subsystem = subsystem.getParent();
-//		findFeatureContentProviders(capabilities, requirement, subsystem);
-//	}
-//	
-//	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement, Subsystem subsystem) {
-//		for (Resource resource : subsystem.getConstituents()) {
-//			for (Capability capability : resource.getCapabilities(requirement.getNamespace())) {
-//				if (requirement.matches(capability)) {
-//					capabilities.add(capability);
-//					resourceToRepository.put(capability.getResource(), repository);
-//					resources.add(capability.getResource());
-//				}
-//			}
-//		}
-//		findFeatureContentProviders(capabilities, requirement, subsystem.getChildren());
-//	}
-//	
-//	private void findFeatureContentProviders(Collection<Capability> capabilities, OsgiIdentityRequirement requirement, Collection<Subsystem> subsystems) {
-//		for (Subsystem subsystem : subsystems)
-//			if ("osgi.feature".equals(subsystem.getParent().getHeaders().get("Subsystem-Type"))) // TODO Add to constants.
-//				findFeatureContentProviders(capabilities, requirement, subsystem);
-//	}
 	
 	private void findRepositoryServiceProviders(Collection<Capability> capabilities, Requirement requirement, boolean content) {
 		Collection<Repository> repositories = Activator.getRepositories();

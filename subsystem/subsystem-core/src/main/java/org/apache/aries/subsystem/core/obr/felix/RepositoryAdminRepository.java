@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.felix.bundlerepository.RepositoryAdmin;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
+import org.osgi.framework.resource.Resource;
 import org.osgi.service.repository.Repository;
 
 public class RepositoryAdminRepository implements Repository {

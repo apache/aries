@@ -16,9 +16,9 @@ package org.apache.aries.subsystem.core.obr.felix;
 import java.util.Collections;
 import java.util.Map;
 
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Resource;
 import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Resource;
 
 public class FelixCapabilityAdapter implements Capability {
 	private final org.apache.felix.bundlerepository.Capability capability;

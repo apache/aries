@@ -50,11 +50,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
+import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
+import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.Capability;
-import org.osgi.framework.wiring.Requirement;
-import org.osgi.framework.wiring.Resource;
-import org.osgi.framework.wiring.ResourceConstants;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Participant;
@@ -108,16 +108,16 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return ++lastId;
 	}
 	
-	private static void postEvent(Subsystem subsystem, SubsystemConstants.EventType type) {
+	private static void postEvent(Subsystem subsystem, SubsystemConstants.EVENT_TYPE type) {
 		postEvent(subsystem, type, null);
 	}
 	
-	private static void postEvent(Subsystem subsystem, SubsystemConstants.EventType type, Throwable t) {
+	private static void postEvent(Subsystem subsystem, SubsystemConstants.EVENT_TYPE type, Throwable t) {
 		EventAdmin eventAdmin = Activator.getEventAdmin();
 		if (eventAdmin != null) {
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put(SubsystemConstants.SUBSYSTEM_ID, subsystem.getSubsystemId());
-			map.put(SubsystemConstants.SUBSYSTEM_LOCATION, subsystem.getLocation());
+			map.put(SubsystemConstants.EVENT_SUBSYSTEM_ID, subsystem.getSubsystemId());
+			map.put(SubsystemConstants.EVENT_SUBSYSTEM_LOCATION, subsystem.getLocation());
 			try {
 				map.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, subsystem.getSymbolicName());
 			}
@@ -214,7 +214,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	public DeploymentManifest getDeploymentManifest() throws IOException {
 		if (archive.getDeploymentManifest() == null) {
-			archive.setDeploymentManifest(DeploymentManifest.newInstance(archive.getSubsystemManifest(), environment));
+			archive.setDeploymentManifest(DeploymentManifest.newInstance(archive, environment));
 		}
 		return archive.getDeploymentManifest();
 	}
@@ -323,7 +323,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		subsystem = new AriesSubsystem(location, this);
 		locationToSubsystem.put(location, subsystem);
 		subsystem.setState(Subsystem.State.INSTALLING);
-		postEvent(subsystem, SubsystemConstants.EventType.INSTALLING);
+		postEvent(subsystem, SubsystemConstants.EVENT_TYPE.INSTALLING);
 		children.add(subsystem);
 		constituents.add(subsystem);
 		Activator.getExecutor().execute(new Runnable() {
@@ -332,12 +332,13 @@ public class AriesSubsystem implements Subsystem, Resource {
 					subsystem.initialize(content);
 					subsystem.install();
 					subsystem.setState(Subsystem.State.INSTALLED);
-					postEvent(subsystem, SubsystemConstants.EventType.INSTALLED);
+					postEvent(subsystem, SubsystemConstants.EVENT_TYPE.INSTALLED);
 				}
 				catch (Exception e) {
-					postEvent(subsystem, SubsystemConstants.EventType.FAILED, e);
+					LOGGER.error("Failed to install subsystem: " + subsystem, e);
+					postEvent(subsystem, SubsystemConstants.EVENT_TYPE.FAILED, e);
 					subsystem.setState(Subsystem.State.UNINSTALLED);
-					postEvent(subsystem, SubsystemConstants.EventType.UNINSTALLED);
+					postEvent(subsystem, SubsystemConstants.EVENT_TYPE.UNINSTALLED);
 				}
 			}
 		});
@@ -391,11 +392,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		if (state == State.INSTALLED) {
 			setState(State.RESOLVING);
-			postEvent(this, SubsystemConstants.EventType.RESOLVING);
+			postEvent(this, SubsystemConstants.EVENT_TYPE.RESOLVING);
 		}
 		else {
 			setState(State.STARTING);
-			postEvent(this, SubsystemConstants.EventType.STARTING);
+			postEvent(this, SubsystemConstants.EVENT_TYPE.STARTING);
 		}
 		Activator.getExecutor().execute(new Runnable() {
 			public void run() {
@@ -411,13 +412,13 @@ public class AriesSubsystem implements Subsystem, Resource {
 						setExportIsolationPolicy();
 						// TODO Could avoid calling setState (and notifyAll) here and avoid the need for a lock.
 						setState(State.RESOLVED);
-						postEvent(AriesSubsystem.this, SubsystemConstants.EventType.RESOLVED);
+						postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.RESOLVED);
 						setState(State.STARTING);
-						postEvent(AriesSubsystem.this, SubsystemConstants.EventType.STARTING);
+						postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.STARTING);
 					}
 					catch (Exception e) {
 						setState(State.INSTALLED);
-						postEvent(AriesSubsystem.this, SubsystemConstants.EventType.FAILED, e);
+						postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.FAILED, e);
 						return;
 					}
 				}
@@ -429,7 +430,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 						startResource(resource, coordination);
 					}
 					setState(State.ACTIVE);
-					postEvent(AriesSubsystem.this, SubsystemConstants.EventType.STARTED);
+					postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.STARTED);
 				}
 				catch (Exception e) {
 					coordination.fail(e);
@@ -442,7 +443,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 					catch (CoordinationException e) {
 						LOGGER.error("An error occurred while starting in a resource in subsystem " + this, e);
 						setState(State.RESOLVED);
-						postEvent(AriesSubsystem.this, SubsystemConstants.EventType.FAILED, e);
+						postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.FAILED, e);
 					}
 				}
 			}
@@ -474,7 +475,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			return;
 		}
 		setState(State.STOPPING);
-		postEvent(this, SubsystemConstants.EventType.STOPPING);
+		postEvent(this, SubsystemConstants.EVENT_TYPE.STOPPING);
 		// TODO Need to store the task for cancellation.
 		Activator.getExecutor().execute(new Runnable() {
 			public void run() {
@@ -486,12 +487,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 					catch (Exception e) {
 						LOGGER.error("An error occurred while stopping resource " + resource + " of subsystem " + this, e);
 						// TODO Should FAILED go out for each failure?
-						postEvent(AriesSubsystem.this, SubsystemConstants.EventType.FAILED, e);
+						postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.FAILED, e);
 					}
 				}
 				// TODO Can we automatically assume it actually is resolved?
 				setState(State.RESOLVED);
-				postEvent(AriesSubsystem.this, SubsystemConstants.EventType.STOPPED);
+				postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.STOPPED);
 			}
 		});
 	}
@@ -523,7 +524,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			uninstall();
 		}
 		setState(State.UNINSTALLING);
-		postEvent(this, SubsystemConstants.EventType.UNINSTALLING);
+		postEvent(this, SubsystemConstants.EVENT_TYPE.UNINSTALLING);
 		Activator.getExecutor().execute(new Runnable() {
 			public void run() {
 				for (Iterator<Resource> iterator = constituents.iterator(); iterator.hasNext();) {
@@ -534,7 +535,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 					catch (Exception e) {
 						LOGGER.error("An error occurred while uninstalling resource " + resource + " of subsystem " + this, e);
 						// TODO Should FAILED go out for each failure?
-						postEvent(AriesSubsystem.this, SubsystemConstants.EventType.FAILED, e);
+						postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.FAILED, e);
 					}
 					iterator.remove();
 				}
@@ -542,7 +543,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				locationToSubsystem.remove(location);
 				deleteFile(Activator.getBundleContext().getDataFile("subsystem" + id + System.getProperty("file.separator")));
 				setState(State.UNINSTALLED);
-				postEvent(AriesSubsystem.this, SubsystemConstants.EventType.UNINSTALLED);
+				postEvent(AriesSubsystem.this, SubsystemConstants.EVENT_TYPE.UNINSTALLED);
 			}
 		});
 	}
