@@ -27,28 +27,44 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
-public class AbstractPropertyPlaceholderTest extends AbstractPropertyPlaceholder {
+public class PropertyPlaceholderTest extends PropertyPlaceholder {
     private final Map<String,String> values = new HashMap<String,String>();
     private LateBindingValueMetadata sut;
     
     @Before
     public void setup() {
         values.clear();
-        bind("prop","value");
-        bind("prop2","other");
+        bind("prop1","hello");
+        bind("prop2","world");
+        bind("prop3","10");
+        bind("prop4","20");
     }
     
     @Test
     public void singleProp() {
-        sut = makeProperty("${prop}");
-        assertEquals("value", sut.getStringValue());
+        sut = makeProperty("${prop1}");
+        assertEquals("hello", sut.getStringValue());
     }
     
     @Test
     public void multipleProps() {
-        sut = makeProperty("the ${prop2} ${prop}");
-        assertEquals("the other value", sut.getStringValue());
+        sut = makeProperty("say ${prop1} ${prop2}");
+        assertEquals("say hello world", sut.getStringValue());
     }
+    
+    @Test
+    public void evaluateStringProps() {
+        sut = makeProperty("${prop1+prop2}");
+        assertEquals("helloworld", sut.getStringValue());
+    }
+    
+    @Test
+    public void evaluateIntProps() {
+        sut = makeProperty("${prop3+prop4}");
+        assertEquals("30", sut.getStringValue());
+    }
+    
+    
     
     /*
      * Test helper methods
