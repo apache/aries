@@ -51,4 +51,17 @@ public interface ManagedPersistenceUnitInfo {
    */
   public Map<String, Object> getContainerProperties();
   
+  /**
+   * Called to indicate that this persistence unit has been registered in the OSGi
+   * service registry. Note that because this method is called after the service
+   * is registered other threads and listeners may have already accessed the 
+   * persistence unit service.
+   */
+  public void registered();
+  
+  /**
+   * Called to indicate that this persistence unit has been unregistered from the OSGi
+   * service registry. 
+   */
+  public void unregistered();
 }
