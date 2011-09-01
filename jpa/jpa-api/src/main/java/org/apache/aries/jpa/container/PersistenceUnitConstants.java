@@ -36,4 +36,15 @@ public interface PersistenceUnitConstants {
    *  This allows clients to filter for empty string persistence unit names.
    */
   public static final String EMPTY_PERSISTENCE_UNIT_NAME = "org.apache.aries.jpa.default.unit.name";
+  
+  /**
+   * This property determines whether the Aries JPA container should monitor for DataSourceFactories and only
+   * register the EMF when the DataSource is available
+   */
+  public static final String USE_DATA_SOURCE_FACTORY = "org.apache.aries.jpa.use.data.source.factory";
+  
+  /**
+   * This property name is used to store the JDBC driver class name when using DataSourceFactory integration
+   */
+  public static final String DATA_SOURCE_FACTORY_CLASS_NAME = "org.apache.aries.jpa.data.source.factory.class";
 }

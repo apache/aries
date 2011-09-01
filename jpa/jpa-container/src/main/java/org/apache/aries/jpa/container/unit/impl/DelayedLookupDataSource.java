@@ -21,54 +21,13 @@ package org.apache.aries.jpa.container.unit.impl;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Hashtable;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.aries.jpa.container.impl.NLS;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public abstract class DelayedLookupDataSource implements DataSource {
 
-public class DelayedLookupDataSource implements DataSource {
+  protected abstract DataSource getDs();
 
-  /** Logger */
-  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
-  
-  private DataSource ds = null;
-  
-  private DataSource getDs() {
-    if(ds == null) {
-      try {
-        
-        Hashtable<String, Object> props = new Hashtable<String, Object>();
-        
-        BundleContext bCtx = persistenceBundle.getBundleContext();
-        if(bCtx == null)
-          throw new IllegalStateException(NLS.MESSAGES.getMessage("persistence.bundle.not.active", persistenceBundle.getSymbolicName(), persistenceBundle.getVersion()));
-        props.put("osgi.service.jndi.bundleContext", bCtx);
-        InitialContext ctx = new InitialContext(props);
-        ds = (DataSource) ctx.lookup(jndiName);
-      } catch (NamingException e) {
-        String message = NLS.MESSAGES.getMessage("no.data.source.found", jndiName, persistenceBundle.getSymbolicName(), persistenceBundle.getVersion());
-        _logger.error(message, e);
-        throw new RuntimeException(message, e);
-      }
-    }
-    return ds;
-  }
-
-  private final String jndiName;
-  private final Bundle persistenceBundle;
-  
-  public DelayedLookupDataSource (String jndi, Bundle persistenceBundle) {
-    jndiName = jndi;
-    this.persistenceBundle = persistenceBundle;
-  }
-  
   public Connection getConnection() throws SQLException {
     return getDs().getConnection();
   }
