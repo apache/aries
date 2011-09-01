@@ -21,9 +21,11 @@ package org.apache.aries.blueprint.ext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,8 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
     private List<URL> locations;
     private boolean ignoreMissingLocations;
     private SystemProperties systemProperties = SystemProperties.fallback;
-
+    private transient JexlExpressionParser jexlParser;
+    
     public Map getDefaultProperties() {
         return defaultProperties;
     }
@@ -139,4 +142,101 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         return v != null ? v.toString() : null;
     }
 
+    @Override
+    protected String retrieveValue(String expression) {
+        LOGGER.debug("Retrieving Value from expression: {}", expression);
+        String result = super.retrieveValue(expression);
+        
+        if (result == null){
+            try {
+                Class.forName("org.apache.commons.jexl2.JexlEngine");
+                JexlExpressionParser parser = getJexlParser();
+                try {
+                    Object obj = parser.evaluate(expression);
+                    if (obj!=null) {
+                        result = obj.toString();
+                    }
+                } catch (Exception e) {
+                    LOGGER.info("Could not evaluate expression: {}", expression);
+                    LOGGER.info("Exception:", e);
+                }
+            } catch (ClassNotFoundException e) {
+                LOGGER.info("Could not evaluate expression: {}", expression);
+                LOGGER.info("Exception:", e);
+            }
+        }
+        return result;
+    }
+    
+    private synchronized JexlExpressionParser getJexlParser() {
+        if (jexlParser == null) {
+            jexlParser = new JexlExpressionParser(toMap());
+        }
+        return jexlParser;
+    }
+
+    private Map<String, Object> toMap() {
+        return new Map<String, Object>() {
+            @Override
+            public boolean containsKey(Object o) {
+                return getProperty((String) o) != null;
+            }
+            
+            @Override
+            public Object get(Object o) {
+                return getProperty((String) o);
+            }
+            
+            // following are not important
+            @Override
+            public Object put(String s, Object o) {
+                throw new UnsupportedOperationException();
+            }
+            
+            @Override
+            public int size() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isEmpty() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean containsValue(Object o) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Object remove(Object o) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void putAll(Map<? extends String, ? extends Object> map) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void clear() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Set<String> keySet() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Collection<Object> values() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Set<Entry<String, Object>> entrySet() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
 }

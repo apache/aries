@@ -58,6 +58,7 @@
             org.apache.aries.blueprint.annotation.service;resolution:=optional,
             org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
             org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
+            org.apache.commons.jexl2;resolution:=optional,
             *
         </aries.osgi.import>
         <!-- Export package versions are maintained in packageinfo files -->

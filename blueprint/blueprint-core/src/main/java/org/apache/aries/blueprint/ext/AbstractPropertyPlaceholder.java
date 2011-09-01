@@ -52,6 +52,8 @@ import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for property placeholders.
@@ -59,6 +61,8 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  * @version $Rev$, $Date$
  */
 public abstract class AbstractPropertyPlaceholder implements ComponentDefinitionRegistryProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholder.class);
 
     private String placeholderPrefix = "${";
     private String placeholderSuffix = "}";
@@ -193,11 +197,15 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         return new LateBindingValueMetadata(metadata);
     }
 
+    protected String retrieveValue(String expression) {
+        return getProperty(expression);
+    }
+    
     protected String processString(String str) {
         // TODO: we need to handle escapes on the prefix / suffix
         Matcher matcher = getPattern().matcher(str);
         while (matcher.find()) {
-            String rep = getProperty(matcher.group(1));
+            String rep = retrieveValue(matcher.group(1));
             if (rep != null) {
                 str = str.replace(matcher.group(0), rep);
                 matcher.reset(str);
@@ -229,8 +237,12 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
         public String getStringValue() {
             if (!retrieved) {
+                String v = metadata.getStringValue();
+                LOGGER.debug("Before process: {}", v);
+                retrievedValue = processString(v);
+                LOGGER.debug("After process: {}", retrievedValue);
+                
                 retrieved = true;
-                retrievedValue = processString(metadata.getStringValue());
             }
             return retrievedValue;
         }
