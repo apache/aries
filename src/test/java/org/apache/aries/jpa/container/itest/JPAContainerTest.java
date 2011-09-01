@@ -82,10 +82,6 @@ public class JPAContainerTest extends AbstractIntegrationTest {
 
         //vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
         //waitForFrameworkStartup(),
-       
-//        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa"),
-//        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core"),
-//        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm"),
         
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle"),
         
