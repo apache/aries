@@ -68,6 +68,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.service.jdbc.DataSourceFactory;
 
 public class PersistenceBundleLifecycleTest
 {
@@ -1207,6 +1208,61 @@ public class PersistenceBundleLifecycleTest
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
   }
   
+  @Test
+  public void testDataSourceFactoryLifecycle() throws Exception
+  {
+    //Basic startup
+    BundleContext extenderContext = preExistingBundleSetup();
+    
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
+    hash1.put("javax.persistence.provider", "no.such.Provider");
+    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+        pp, hash1 );
+    ServiceReference ref = reg.getReference();
+
+    setupPersistenceBundle("file25", "");
+    
+    mgr.start(extenderContext);
+    
+    //Check the persistence.xml was looked for
+    Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
+    //Check we didn't use getResource()
+    Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getResource", String.class));
+    
+    //We should create them all, but then wait for the DataSourceFactory services
+    testSuccessfulCreationEvent(ref, extenderContext, 3);
+    testSuccessfulRegistrationEvent(ref, extenderContext, 0);
+    
+    //Register the DSF for alpha and it should appear
+    hash1 = new Hashtable<String, String>();
+    hash1.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "alpha.db.class");
+    reg = persistenceBundle.getBundleContext().registerService(new String[] {DataSourceFactory.class.getName()} ,
+        Skeleton.newMock(DataSourceFactory.class), hash1 );
+    
+    testSuccessfulRegistrationEvent(ref, extenderContext, 1, "alpha");
+    
+    //Register the other DSF
+    hash1 = new Hashtable<String, String>();
+    hash1.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "shared.db.class");
+    persistenceBundle.getBundleContext().registerService(new String[] {DataSourceFactory.class.getName()} ,
+        Skeleton.newMock(DataSourceFactory.class), hash1 );
+    
+    testSuccessfulRegistrationEvent(ref, extenderContext, 3, "alpha", "bravo", "charlie");
+    
+    
+    //Unregister the service for alpha and it should go away again!
+    reg.unregister();
+    
+    ServiceReference[] emfs = extenderContext.getServiceReferences(EntityManagerFactory.class.getName(), null);
+    assertEquals("Too many services registered", 2, emfs.length);
+    
+    assertNotNull(extenderContext.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=bravo)"));
+    assertNotNull(extenderContext.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=charlie)"));
+  }
+  
+  
   private void setupPersistenceBundle21() throws Exception {
     persistenceBundle.getHeaders().put("Meta-Persistence", "OSGI-INF/found.xml, jarfile.jar!/jar.xml,persistence/another.xml, does-not-exist.xml");
     
@@ -1379,8 +1435,12 @@ public class PersistenceBundleLifecycleTest
   {
     Skeleton.getSkeleton(persistenceBundleContext).assertCalledExactNumberOfTimes(new MethodCall(BundleContext.class, "registerService", EntityManagerFactory.class.getName(), EntityManagerFactory.class, Dictionary.class), numberOfPersistenceUnits);
     
-    if(numberOfPersistenceUnits != 0)
-      BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
+    if(numberOfPersistenceUnits == 0) {
+      BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+      return;
+    }
+      
+    BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     
     ServiceReference[] emfs = extenderContext.getServiceReferences(EntityManagerFactory.class.getName(), null);
     
