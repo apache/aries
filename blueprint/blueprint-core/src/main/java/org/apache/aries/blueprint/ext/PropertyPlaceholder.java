@@ -148,13 +148,19 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         String result = super.retrieveValue(expression);
         
         if (result == null){
-            JexlExpressionParser parser = getJexlParser();
             try {
-                Object obj = parser.evaluate(expression);
-                if (obj!=null) {
-                    result = obj.toString();
+                Class.forName("org.apache.commons.jexl2.JexlEngine");
+                JexlExpressionParser parser = getJexlParser();
+                try {
+                    Object obj = parser.evaluate(expression);
+                    if (obj!=null) {
+                        result = obj.toString();
+                    }
+                } catch (Exception e) {
+                    LOGGER.info("Could not evaluate expression: {}", expression);
+                    LOGGER.info("Exception:", e);
                 }
-            } catch (Exception e) {
+            } catch (ClassNotFoundException e) {
                 LOGGER.info("Could not evaluate expression: {}", expression);
                 LOGGER.info("Exception:", e);
             }

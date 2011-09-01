@@ -91,8 +91,8 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest{
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
             // Bundles
-            mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+            mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api"), 
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart(),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testquiescebundle")

@@ -224,7 +224,8 @@ public abstract class AbstractIntegrationTest {
                 mavenBundle("org.apache.aries", "org.apache.aries.util"), 
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("asm", "asm-all"),
-                mavenBundle("org.apache.commons", "commons-jexl"),
+                //no syntax like ${a+b} is used in blueprint-ext of the blueprint samples, so don't need this
+                //mavenBundle("org.apache.commons", "commons-jexl"),
 
                 equinox().version("3.5.0")
                 );
