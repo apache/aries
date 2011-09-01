@@ -18,6 +18,7 @@ package org.apache.aries.jpa.advanced.features.itest;
 import static org.junit.Assert.assertEquals;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.apache.aries.itest.ExtraOptions.*;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
