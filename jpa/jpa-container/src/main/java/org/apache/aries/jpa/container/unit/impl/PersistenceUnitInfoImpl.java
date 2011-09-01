@@ -32,6 +32,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
+import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.annotation.impl.AnnotationScanner;
 import org.apache.aries.jpa.container.annotation.impl.AnnotationScannerFactory;
 import org.apache.aries.jpa.container.impl.NLS;
@@ -52,7 +53,15 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
   private final ServiceReference providerRef;
   
+  private final Boolean useDataSourceFactory;
+  
   private ClassTransformer transformer;
+  
+  private final AtomicReference<DataSourceFactoryDataSource> jtaDSFDS = 
+    new AtomicReference<DataSourceFactoryDataSource>();
+  
+  private final AtomicReference<DataSourceFactoryDataSource> nonJtaDSFDS = 
+    new AtomicReference<DataSourceFactoryDataSource>();
   
   // initialize it lazily because we create a PersistenceUnitInfoImpl when the bundle is INSTALLED state
   private final AtomicReference<ClassLoader> cl = new AtomicReference<ClassLoader>();
@@ -60,11 +69,17 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
-  public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData, final ServiceReference providerRef)
+  public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData, 
+      final ServiceReference providerRef, Boolean globalUsedatasourcefactory)
   {
     bundle = b;
     unit = parsedData;
     this.providerRef = providerRef;
+    //Local override for global DataSourceFactory usage
+    Boolean localUseDataSourceFactory = Boolean.parseBoolean(getInternalProperties().getProperty(
+        PersistenceUnitConstants.USE_DATA_SOURCE_FACTORY, "true"));
+    
+    this.useDataSourceFactory = globalUsedatasourcefactory && localUseDataSourceFactory;
   }
   
   public synchronized void addTransformer(ClassTransformer arg0) {
@@ -114,7 +129,24 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
-      toReturn = new DelayedLookupDataSource(jndiString, bundle);
+      toReturn = new JndiDataSource(jndiString, bundle);
+    } else if(useDataSourceFactory) {
+      toReturn = jtaDSFDS.get();
+      if(toReturn == null) {
+        Properties props = getInternalProperties();
+        String driverName = props.getProperty("javax.persistence.jdbc.driver");
+        if(driverName != null) {
+          if(_logger.isDebugEnabled())
+            _logger.debug(NLS.MESSAGES.getMessage("using.datasource.factory", getPersistenceUnitName(),
+                bundle.getSymbolicName(), bundle.getVersion()));
+          
+          jtaDSFDS.compareAndSet(null, new DataSourceFactoryDataSource(bundle, driverName,
+              props.getProperty("javax.persistence.jdbc.url"), 
+              props.getProperty("javax.persistence.jdbc.user"), 
+              props.getProperty("javax.persistence.jdbc.password")));
+          toReturn = jtaDSFDS.get();
+        }
+      }
     }
     return toReturn;
   }
@@ -152,7 +184,24 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
-      toReturn = new DelayedLookupDataSource(jndiString, bundle);
+      toReturn = new JndiDataSource(jndiString, bundle);
+    } else if(useDataSourceFactory) {
+      toReturn = nonJtaDSFDS.get();
+      if(toReturn == null) {
+        Properties props = getInternalProperties();
+        String driverName = props.getProperty("javax.persistence.jdbc.driver");
+        if(driverName != null) {
+          if(_logger.isDebugEnabled())
+            _logger.debug(NLS.MESSAGES.getMessage("using.datasource.factory", getPersistenceUnitName(),
+                bundle.getSymbolicName(), bundle.getVersion()));
+          
+          nonJtaDSFDS.compareAndSet(null, new DataSourceFactoryDataSource(bundle, driverName,
+              props.getProperty("javax.persistence.jdbc.url"), 
+              props.getProperty("javax.persistence.jdbc.user"), 
+              props.getProperty("javax.persistence.jdbc.password")));
+          toReturn = nonJtaDSFDS.get();
+        }
+      }
     }
     return toReturn;
   }
@@ -173,8 +222,21 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     return (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.SCHEMA_VERSION);
   }
 
-  public Properties getProperties() {
+  private Properties getInternalProperties() {
     return (Properties) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.PROPERTIES);
+  }
+  
+  public Properties getProperties() {
+    Properties p = new Properties();
+    p.putAll(getInternalProperties());
+    
+    String jdbcClass = p.getProperty("javax.persistence.jdbc.driver");
+    if(useDataSourceFactory && jdbcClass != null) {
+      p.setProperty(PersistenceUnitConstants.DATA_SOURCE_FACTORY_CLASS_NAME, 
+          jdbcClass);
+      p.remove("javax.persistence.jdbc.driver");
+    }
+    return p;
   }
 
   public SharedCacheMode getSharedCacheMode() {
@@ -211,6 +273,18 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
       TransformerRegistry reg = TransformerRegistryFactory.getTransformerRegistry();
       reg.removeTransformer(bundle, transformer);
       transformer = null;
+    }
+  }
+  
+  public void unregistered() {
+    DataSourceFactoryDataSource dsfds = jtaDSFDS.get();
+    if(dsfds != null) {
+      dsfds.closeTrackers();
+    }
+    
+    dsfds = nonJtaDSFDS.get();
+    if(dsfds != null) {
+      dsfds.closeTrackers();
     }
   }
   
