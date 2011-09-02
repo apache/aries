@@ -19,7 +19,6 @@
 package org.apache.aries.blueprint.itests.comp;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -30,6 +29,6 @@ public class ListFactory {
             Thread.sleep(new Random().nextInt(100));
         } catch (InterruptedException ie) {}
         System.out.println(Thread.currentThread().getId()+": created");
-        return new ArrayList<Integer>(Arrays.asList(no));
+        return Arrays.asList(no);
     }
 }
