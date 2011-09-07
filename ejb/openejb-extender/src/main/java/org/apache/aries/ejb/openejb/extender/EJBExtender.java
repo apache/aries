@@ -17,8 +17,10 @@
 package org.apache.aries.ejb.openejb.extender;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -50,7 +52,11 @@ import org.apache.openejb.assembler.classic.TransactionServiceInfo;
 import org.apache.openejb.assembler.dynamic.PassthroughFactory;
 import org.apache.openejb.config.ConfigurationFactory;
 import org.apache.openejb.config.EjbModule;
+import org.apache.openejb.config.ValidationContext;
+import org.apache.openejb.jee.EjbJar;
+import org.apache.openejb.jee.oejb3.OpenejbJar;
 import org.apache.openejb.loader.SystemInstance;
+import org.apache.openejb.persistence.JtaEntityManagerRegistry;
 import org.apache.openejb.ri.sp.PseudoSecurityService;
 import org.apache.openejb.util.OpenEjbVersion;
 import org.osgi.framework.Bundle;
@@ -66,8 +72,6 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
   
   private static final Object PROCESSING_OBJECT = new Object();
   private static final Object REMOVING_OBJECT = new Object();
-  private static final String NONE = "NONE";
-  private static final String ALL = "ALL";
   
   private RecursiveBundleTracker tracker;
   
@@ -82,7 +86,11 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
     //Internal setup
     OSGiTransactionManager.init(context);
     AriesProxyService.init(context);
-    
+    try {
+      AriesPersistenceContextIntegration.init(context);
+    } catch (NoClassDefFoundError ncdfe) {
+      //TODO log that no JPA Context integration is available
+    }
     
     //Setup OpenEJB with our own extensions
     setupOpenEJB();
@@ -116,6 +124,16 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
       Thread.currentThread().setContextClassLoader(cl);
     }
     
+    try {
+      //Overwrite existing, default JPA integration with an Aries JPA integrated one
+      Assembler.getContext().put(JtaEntityManagerRegistry.class.getName(), 
+          AriesPersistenceContextIntegration.get());
+      SystemInstance.get().setComponent(JtaEntityManagerRegistry.class, 
+          AriesPersistenceContextIntegration.get());
+    } catch (NoClassDefFoundError ncdfe) {
+      //TODO log that no JPA Context integration is available
+    }
+    
     SecurityServiceInfo ssi = new SecurityServiceInfo();
     ssi.service = "SecurityService";
     ssi.id = "Pseudo Security Service";
@@ -146,6 +164,11 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
     tracker.close();
     AriesProxyService.get().destroy();
     OSGiTransactionManager.get().destroy();
+    try {
+      AriesPersistenceContextIntegration.get().destroy();
+    } catch (NoClassDefFoundError ncdfe) {
+      //TODO log that no JPA Context integration is available
+    }
   }
 
   public Object addingBundle(Bundle bundle, BundleEvent event) {
@@ -185,9 +208,15 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
       if(runningApps.get(bundle) != null)
         return;
       
-      EjbModule ejbModule = new EjbModule(AriesFrameworkUtil.getClassLoaderForced(bundle),
-          null, null, null);
-      
+      //Broken validation for persistence :(
+      EjbModule ejbModule = new EjbModule(AriesFrameworkUtil.getClassLoaderForced(bundle), null, null, null);
+      try {
+        Field f = EjbModule.class.getDeclaredField("validation");
+        f.setAccessible(true);
+        f.set(ejbModule, new ValidationProofValidationContext(ejbModule));
+      } catch (Exception e) {
+        // Hmmm
+      }
       addAltDDs(ejbModule, bundle);
       //We build our own because we can't trust anyone to get the classpath right otherwise!
       ejbModule.setFinder(new OSGiFinder(bundle));
@@ -225,7 +254,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
         try {
           Thread.currentThread().setContextClassLoader(OpenEjbVersion.class.getClassLoader());
           app = new RunningApplication(assembler.createApplication(ejbInfo, 
-              new AppClassLoader(ejbModule.getClassLoader())));
+              new AppClassLoader(ejbModule.getClassLoader())), bundle, ejbInfo.enterpriseBeans);
         } finally {
           Thread.currentThread().setContextClassLoader(cl);
         }
@@ -234,7 +263,8 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
       }
       runningApps.put(bundle, app);
       
-      app.addRegs(registerEJBs(app.getCtx(), bundle));
+      app.init();
+      
       
     } catch (OpenEJBException oee) {
       // TODO Auto-generated catch block
@@ -269,97 +299,9 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
         
       altDDs.put(urlString, u);
     }
-    //Persistence descriptors are handled by Aries JPA
-    altDDs.remove("persistence.xml");
-  }
-
-  private Collection<ServiceRegistration<?>> registerEJBs(AppContext appCtx, Bundle bundle) {
-    
-    Collection<ServiceRegistration<?>> regs = new ArrayList<ServiceRegistration<?>>();
-    
-    Collection<String> names = new HashSet<String>();
-    
-    Dictionary<String, String> d = bundle.getHeaders();
-    String valueOfExportEJBHeader = d.get("Export-EJB");
-    
-    if((valueOfExportEJBHeader == null)||(valueOfExportEJBHeader.equals(""))){
-      return Collections.emptyList();
-    }
-    
-    List<NameValuePair> contentsOfExportEJBHeader = ManifestHeaderProcessor.parseExportString(valueOfExportEJBHeader);
-    for(NameValuePair nvp:contentsOfExportEJBHeader){
-      names.add(nvp.getName());
-    }
-    
-    if(names.contains(NONE)){
-      return Collections.emptyList();
-    }
-    
-    if(names.contains(ALL)){
-      names = new AllCollection<String>();
-    }
-    
-    //Register our session beans
-    for (BeanContext beanContext : appCtx.getDeployments()) {
-      String ejbName = beanContext.getEjbName();
-      //Skip if not a Singleton or stateless bean
-      ContainerType type = beanContext.getContainer().getContainerType();
-      boolean register = type == ContainerType.SINGLETON || type == ContainerType.STATELESS;
-      
-      //Skip if not allowed name
-      register &= names.contains(ejbName);
-      
-      if(!register) {
-        continue;
-      }
-      
-      if (beanContext.isLocalbean()) {
-
-        BeanContext.BusinessLocalBeanHome home = beanContext.getBusinessLocalBeanHome();
-    
-        Dictionary<String, Object> props = new Hashtable<String, Object>(); 
-        
-        props.put("ejb.name", ejbName);
-        props.put("ejb.type", getCasedType(type));
-        regs.add(bundle.getBundleContext().registerService(beanContext.getBeanClass().getName(), 
-            new EJBServiceFactory(home), props));
-      }
-
-  
-      for (Class<?> interfce : beanContext.getBusinessLocalInterfaces()) {
-
-        BeanContext.BusinessLocalHome home = beanContext.getBusinessLocalHome(interfce);
-        
-        Dictionary<String, Object> props = new Hashtable<String, Object>(); 
-        
-        props.put("ejb.name", ejbName);
-        props.put("ejb.type", getCasedType(type));
-        regs.add(bundle.getBundleContext().registerService(interfce.getName(), 
-            new EJBServiceFactory(home), props));
-      }
-      
-      for (Class<?> interfce : beanContext.getBusinessRemoteInterfaces()) {
-
-        List<Class> interfaces = ProxyInterfaceResolver.getInterfaces(beanContext.getBeanClass(), 
-            interfce, beanContext.getBusinessRemoteInterfaces());
-        BeanContext.BusinessRemoteHome home = beanContext.getBusinessRemoteHome(interfaces, interfce);
-        
-        Dictionary<String, Object> props = new Hashtable<String, Object>(); 
-        
-        props.put("sevice.exported.interfaces", interfce.getName());
-        props.put("ejb.name", ejbName);
-        props.put("ejb.type", getCasedType(type));
-        regs.add(bundle.getBundleContext().registerService(interfce.getName(), 
-            new EJBServiceFactory(home), props));
-      }
-    }
-    return regs;
-  }
-
-  private String getCasedType(ContainerType type) {
-    String s = type.toString().substring(0,1).toUpperCase();
-    s += type.toString().substring(1).toLowerCase();
-    return s;
+    //Persistence descriptors are handled by Aries JPA, but OpenEJB fails validation
+    //if we hide them. As a result we switch it off.
+    //altDDs.remove("persistence.xml");
   }
 
   private void stopEJBs(Bundle bundle) {
@@ -369,9 +311,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
       try {
         RunningApplication app = runningApps.remove(bundle);
         if(app != null) {
-          for(ServiceRegistration<?> reg : app.getRegs()) {
-            AriesFrameworkUtil.safeUnregisterService(reg);
-          }
+          app.destroy();
           Assembler assembler = (Assembler) SystemInstance.get().getComponent(Assembler.class);
           assembler.destroyApplication(app.getCtx());
         }
@@ -391,6 +331,29 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
     }
   }
   
+  private static final class ValidationProofValidationContext extends ValidationContext {
+    private ValidationProofValidationContext(EjbModule mod) {
+      super(mod);
+    }
+
+    @Override
+    public boolean hasErrors() {
+      return false;
+    }
+
+    @Override
+    public boolean hasFailures() {
+      return false;
+    }
+
+    @Override
+    public boolean hasWarnings() {
+      return false;
+    }
+
+    
+  }
+
   private static final class AppClassLoader extends ClassLoader {
     private AppClassLoader(ClassLoader parentLoader) {
       super(parentLoader);

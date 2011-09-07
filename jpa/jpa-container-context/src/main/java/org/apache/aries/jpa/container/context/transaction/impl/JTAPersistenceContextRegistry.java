@@ -29,6 +29,7 @@ import javax.persistence.TransactionRequiredException;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
 
+import org.apache.aries.jpa.container.context.JTAPersistenceContextManager;
 import org.apache.aries.jpa.container.context.impl.NLS;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class is used to manage the lifecycle of JTA peristence contexts
  */
-public final class JTAPersistenceContextRegistry extends ServiceTracker {
+public final class JTAPersistenceContextRegistry extends ServiceTracker implements JTAPersistenceContextManager {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
   /** The unique key we use to find our Map */
@@ -76,9 +77,48 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
     open();
   }
 
+  public final EntityManager getExistingPersistenceContext(EntityManagerFactory emf) {
+    
+    ensureTransaction();
+    
+    Map<EntityManagerFactory, EntityManager> contextsForTransaction = getContextsForTransaction(tranRegistry.get());
+    
+    return contextsForTransaction.get(emf);
+  }
+  
+  public final void manageExistingPersistenceContext(EntityManagerFactory emf, EntityManager em) 
+  throws TransactionRequiredException {
+    //Throw the error on to the client
+    ensureTransaction();
+    
+    Map<EntityManagerFactory, EntityManager> contextsForTransaction = getContextsForTransaction(tranRegistry.get());
+
+    if(contextsForTransaction.containsKey(emf))
+      throw new IllegalStateException(NLS.MESSAGES.getMessage("existing.persistence.context"));
+    
+    em.joinTransaction();
+    contextsForTransaction.put(emf, em);
+  }
+
+  /**
+   * Throw a {@link TransactionRequiredException} if there is no active transaction
+   * @throws TransactionRequiredException
+   */
+  private void ensureTransaction() throws TransactionRequiredException{
+    if(!!!isTransactionActive()) {
+      if(jtaIntegrationAvailable())
+        throw new TransactionRequiredException(NLS.MESSAGES.getMessage("no.active.transaction"));
+      else {
+        throw new TransactionRequiredException(NLS.MESSAGES.getMessage("no.transaction.manager"));
+      }
+    }
+  }
+  
   /**
    * Get a PersistenceContext for the current transaction. The persistence context will 
-   * automatically be closed when the transaction completes.
+   * automatically be closed when the transaction completes. This method will create
+   * a new PersistenceContext if none exists for the current transaction, or will 
+   * return any existing PersistenceContext for this transaction.
    * 
    * @param persistenceUnit The peristence unit to create the persitence context from
    * @param properties  Any properties that should be passed on the call to {@code createEntityManager()}. 
@@ -95,28 +135,55 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
       EntityManagerFactory persistenceUnit, Map<?,?> properties, AtomicLong activeCount,
       DestroyCallback cbk) throws TransactionRequiredException
   {
+    
+    EntityManager toReturn = getExistingPersistenceContext(persistenceUnit);
+    
+    if(toReturn != null) {
+      if(_logger.isDebugEnabled())
+        _logger.debug("Re-using a persistence context for transaction " + tranRegistry.get().getTransactionKey());
+      return toReturn;
+    }
+    
+    TransactionSynchronizationRegistry tsr = tranRegistry.get();
+    
+    Map<EntityManagerFactory, EntityManager> contextsForTransaction = getContextsForTransaction(tsr);
+    
+    //Create an EntityManager
+    toReturn = (properties == null) ? persistenceUnit.createEntityManager() : persistenceUnit.createEntityManager(properties);
+    
+    if(_logger.isDebugEnabled())
+      _logger.debug("Created a new persistence context {} for transaction {}.", new Object[] {toReturn, tsr.getTransactionKey()});
+    
+    try {
+      tsr.registerInterposedSynchronization(new EntityManagerClearUp(toReturn, activeCount, cbk));
+    } catch (IllegalStateException e) {
+      String message = NLS.MESSAGES.getMessage("unable.to.register.synchronization", tsr.getTransactionKey());
+      _logger.warn(message);
+      toReturn.close();
+      throw new TransactionRequiredException(message);
+    }
+    contextsForTransaction.put(persistenceUnit, toReturn);
+    activeCount.incrementAndGet();
+
+    return toReturn;
+  }
+
+  /**
+   * Get the map of contexts for the current transaction
+   * @param tsr
+   * @return
+   */
+  private Map<EntityManagerFactory, EntityManager> getContextsForTransaction(
+      TransactionSynchronizationRegistry tsr) {
+    
+    Map<EntityManagerFactory, EntityManager> contextsForTransaction = 
+        (Map<EntityManagerFactory, EntityManager>) tsr.getResource(EMF_MAP_KEY);
+    
     //There will only ever be one thread associated with a transaction at a given time
     //As a result, it is only the outer map that needs to be thread safe.
-    
-    //Throw the error on to the client
-    if(!!!isTransactionActive()) {
-      if(jtaIntegrationAvailable())
-        throw new TransactionRequiredException(NLS.MESSAGES.getMessage("no.active.transaction"));
-      else {
-        throw new TransactionRequiredException(NLS.MESSAGES.getMessage("no.transaction.manager"));
-      }
-    }
-    EntityManager toReturn = null;
-    TransactionSynchronizationRegistry tsr = tranRegistry.get();
-    //Get hold of the Map. If there is no Map already registered then add one.
-    //We don't need to worry about a race condition, as no other thread will
+    //Also we don't need to worry about a race condition, as no other thread will
     //share our transaction and be able to access our Map
-    Map<EntityManagerFactory, EntityManager> contextsForTransaction = (Map<EntityManagerFactory, EntityManager>) tsr.getResource(EMF_MAP_KEY);
-    
-    //If we have a map then find an EntityManager, else create a new Map add it to the registry, and register for cleanup
-    if(contextsForTransaction != null) {
-      toReturn = contextsForTransaction.get(persistenceUnit);
-    } else {
+    if(contextsForTransaction == null) {
       contextsForTransaction = new IdentityHashMap<EntityManagerFactory, EntityManager>();
       try {
         tsr.putResource(EMF_MAP_KEY, contextsForTransaction);
@@ -126,33 +193,9 @@ public final class JTAPersistenceContextRegistry extends ServiceTracker {
         throw new TransactionRequiredException(message);
       }
     }
-    
-    //If we have no previously created EntityManager
-    if(toReturn == null) {
-      toReturn = (properties == null) ? persistenceUnit.createEntityManager() : persistenceUnit.createEntityManager(properties);
-      if(_logger.isDebugEnabled())
-        _logger.debug("Created a new persistence context {} for transaction {}.", new Object[] {toReturn, tsr.getTransactionKey()});
-      try {
-        tsr.registerInterposedSynchronization(new EntityManagerClearUp(toReturn, activeCount, cbk));
-      } catch (IllegalStateException e) {
-        String message = NLS.MESSAGES.getMessage("unable.to.register.synchronization", tsr.getTransactionKey());
-        _logger.warn(message);
-        toReturn.close();
-        throw new TransactionRequiredException(message);
-      }
-      contextsForTransaction.put(persistenceUnit, toReturn);
-      activeCount.incrementAndGet();
-    } else {
-      if(_logger.isDebugEnabled())
-        _logger.debug("Re-using a persistence context for transaction " + tsr.getTransactionKey());
-    }
-    return toReturn;
+    return contextsForTransaction;
   }
   
-  /**
-   * Determine whether there is an active transaction on the thread
-   * @return
-   */
   public final boolean isTransactionActive()
   {
     TransactionSynchronizationRegistry tsr = tranRegistry.get();

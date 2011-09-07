@@ -1,0 +1,6 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: foo
+Export-EJB: ALL
+Meta-Persistence: 
+Import-Package: javax.ejb, javax.persistence, org.apache.derby.jdbc
+
