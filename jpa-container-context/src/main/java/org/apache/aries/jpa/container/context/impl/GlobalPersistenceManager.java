@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.aries.jpa.container.context.JTAPersistenceContextManager;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
@@ -50,6 +51,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
   
   private JTAPersistenceContextRegistry registry;
+  private ServiceRegistration registryReg;
   
   /** 
    *    The list of persistence context managers. Each is valid for exactly one framework
@@ -240,7 +242,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     
     //Register our service
     pcpReg = context.registerService(PersistenceContextProvider.class.getName(), this, null);
-    
+    registryReg = context.registerService(JTAPersistenceContextManager.class.getName(), registry, null);
     try{
       context.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
       //Class was loaded, register
@@ -255,6 +257,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
   public void stop(BundleContext context) throws Exception {
     //Clean up
     AriesFrameworkUtil.safeUnregisterService(pcpReg);
+    AriesFrameworkUtil.safeUnregisterService(registryReg);
     AriesFrameworkUtil.safeUnregisterService(quiesceReg);
     if(quiesceTidyUp != null)
       quiesceTidyUp.callback();

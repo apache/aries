@@ -21,6 +21,7 @@ package org.apache.aries.jpa.container.context.transaction.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -244,6 +245,98 @@ public class JTAPersistenceContextRegistryTest {
     reg.setTransactionKey("");
     contexts.removedService(ref, ref);
     contexts.getCurrentPersistenceContext(emf1, props1, new AtomicLong(), Skeleton.newMock(DestroyCallback.class));
+  }
+  
+  @Test(expected=TransactionRequiredException.class)
+  public void testGetExistingNoTran() {
+    reg.setTransactionKey(null);
+    contexts.getExistingPersistenceContext(emf1);
+  }
+  
+  @Test(expected=TransactionRequiredException.class)
+  public void testGetExistingNoTranSyncRegistry() {
+    reg.setTransactionKey("");
+    contexts.removedService(ref, ref);
+    contexts.getExistingPersistenceContext(emf1);
+  }
+  
+  @Test
+  public void testGetExisting()
+  {
+    reg.setTransactionKey("");
+    
+    assertNull(contexts.getExistingPersistenceContext(emf1));
+    assertNull(contexts.getExistingPersistenceContext(emf2));
+    
+    AtomicLong useCount = new AtomicLong(0);
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    reg.setTransactionKey("");
+    
+    EntityManager em1a = contexts.getCurrentPersistenceContext(emf1, props1, useCount, cbk);
+    EntityManager em1b = contexts.getExistingPersistenceContext(emf1);
+    
+    Skeleton.getSkeleton(emf1).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
+    Skeleton.getSkeleton(emf1).assertNotCalled(new MethodCall(EntityManagerFactory.class, "createEntityManager"));
+    Skeleton.getSkeleton(em1a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
+    assertSame("We should get the same delegate!", em1a, em1b);
+    assertEquals("Expected only one creation", 1, useCount.get());
+    Skeleton.getSkeleton(cbk).assertSkeletonNotCalled();
+    
+    EntityManager em2a = contexts.getCurrentPersistenceContext(emf2, props1, useCount, cbk);
+    EntityManager em2b = contexts.getExistingPersistenceContext(emf2);
+    
+    Skeleton.getSkeleton(emf2).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
+    Skeleton.getSkeleton(emf2).assertNotCalled(new MethodCall(EntityManagerFactory.class, "createEntityManager"));
+    Skeleton.getSkeleton(em2a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
+    assertSame("We should get the same delegate!", em2a, em2b);
+    assertEquals("Expected a second creation", 2, useCount.get());
+    Skeleton.getSkeleton(cbk).assertSkeletonNotCalled();
+    
+    reg.afterCompletion("");
+    
+    Skeleton.getSkeleton(em1a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"),1);
+    Skeleton.getSkeleton(em2a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"),1);
+    assertEquals("Expected creations to be uncounted", 0, useCount.get());
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 2);
+  }
+  
+  @Test
+  public void testManageExisting()
+  {
+    reg.setTransactionKey("");
+    
+    assertNull(contexts.getExistingPersistenceContext(emf1));
+    assertNull(contexts.getExistingPersistenceContext(emf2));
+    
+    EntityManager em1a = emf1.createEntityManager(props1);
+    contexts.manageExistingPersistenceContext(emf1, em1a);
+    
+    Skeleton.getSkeleton(em1a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "joinTransaction"), 1);
+    
+    EntityManager em1b = contexts.getExistingPersistenceContext(emf1);
+    
+    Skeleton.getSkeleton(emf1).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
+    Skeleton.getSkeleton(emf1).assertNotCalled(new MethodCall(EntityManagerFactory.class, "createEntityManager"));
+    Skeleton.getSkeleton(em1a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
+    assertSame("We should get the same delegate!", em1a, em1b);
+    
+    EntityManager em2a = emf2.createEntityManager(props1);
+    contexts.manageExistingPersistenceContext(emf2, em2a);
+    
+    Skeleton.getSkeleton(em2a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "joinTransaction"), 1);
+    
+    EntityManager em2b = contexts.getExistingPersistenceContext(emf2);
+    
+    Skeleton.getSkeleton(emf2).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
+    Skeleton.getSkeleton(emf2).assertNotCalled(new MethodCall(EntityManagerFactory.class, "createEntityManager"));
+    Skeleton.getSkeleton(em2a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
+    assertSame("We should get the same delegate!", em2a, em2b);
+    
+    reg.afterCompletion("");
+    
+    Skeleton.getSkeleton(em1a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
+    Skeleton.getSkeleton(em2a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
   }
   
 }

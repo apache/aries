@@ -26,8 +26,12 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.jpa.container.context.JTAPersistenceContextManager;
+import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
+import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.quiesce.participant.QuiesceParticipant;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Before;
@@ -62,6 +66,29 @@ public class GlobalPersistenceManagerTest {
         sut.start(ctx);
         Skeleton.getSkeleton(framework.getBundleContext()).setReturnValue(
                 new MethodCall(BundleContext.class, "getBundles"), new Bundle[] {framework, client, otherClient});
+    }
+    
+    @Test
+    public void testServices() throws Exception {
+      BundleContext bc = Skeleton.newMock(new BundleContextMock(), BundleContext.class);
+      
+      GlobalPersistenceManager gpm = new GlobalPersistenceManager();
+      
+      BundleContextMock.assertNoServiceExists(PersistenceContextProvider.class.getName());
+      BundleContextMock.assertNoServiceExists(JTAPersistenceContextManager.class.getName());
+      BundleContextMock.assertNoServiceExists(QuiesceParticipant.class.getName());
+      
+      gpm.start(bc);
+      
+      BundleContextMock.assertServiceExists(PersistenceContextProvider.class.getName());
+      BundleContextMock.assertServiceExists(JTAPersistenceContextManager.class.getName());
+      BundleContextMock.assertServiceExists(QuiesceParticipant.class.getName());
+      
+      gpm.stop(bc);
+      
+      BundleContextMock.assertNoServiceExists(PersistenceContextProvider.class.getName());
+      BundleContextMock.assertNoServiceExists(JTAPersistenceContextManager.class.getName());
+      BundleContextMock.assertNoServiceExists(QuiesceParticipant.class.getName());
     }
     
     @Test
