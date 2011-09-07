@@ -54,7 +54,7 @@ public class AdvancedEJBBundleTest extends AbstractOpenEJBTest {
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] jpaConfig() {
     return options( 
-        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
+//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.context"),
