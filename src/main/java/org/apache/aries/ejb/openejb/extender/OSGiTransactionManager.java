@@ -98,6 +98,7 @@ public class OSGiTransactionManager implements TransactionManager,
   }
   
   public void destroy() {
+    INSTANCE.set(null);
     tmTracker.close();
     tsrTracker.close();
   }
