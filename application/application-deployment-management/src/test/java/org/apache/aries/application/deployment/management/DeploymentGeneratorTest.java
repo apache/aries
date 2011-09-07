@@ -59,7 +59,6 @@ import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.apache.aries.util.VersionRange;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -138,6 +137,14 @@ public class DeploymentGeneratorTest
         throws ResolverException
     {
       return null;
+    }
+
+    @Override
+    public Collection<ModelledResource> resolveInIsolation(String appName,
+            String appVersion, Collection<ModelledResource> byValueBundles,
+            Collection<Content> inputs) throws ResolverException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     
