@@ -72,9 +72,10 @@ public class TranSyncRegistryMock
   
   public void afterCompletion(String s)
   {
-    for(Synchronization sync : syncs.get(s))
-      sync.afterCompletion(Status.STATUS_COMMITTED);
-    
+    if(syncs.get(s) != null) {
+      for(Synchronization sync : syncs.remove(s))
+        sync.afterCompletion(Status.STATUS_COMMITTED);
+    }
     resources.remove(s);
   }
 }
