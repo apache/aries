@@ -27,10 +27,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
@@ -38,9 +41,11 @@ import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.spi.repository.RepositoryGenerator;
+import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.utils.AppConstants;
+import org.apache.aries.application.utils.manifest.ContentFactory;
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
@@ -55,8 +60,11 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
-
+import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
+import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
+import static org.osgi.framework.Constants.IMPORT_PACKAGE;
+import static org.osgi.framework.Constants.EXPORT_PACKAGE;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
 @RunWith(JUnit4TestRunner.class)
 public class OBRResolverTest extends AbstractIntegrationTest 
@@ -75,10 +83,10 @@ public class OBRResolverTest extends AbstractIntegrationTest
   public static void createApplications() throws Exception 
   {
     ZipFixture bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
-                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(Constants.IMPORT_PACKAGE, "p.q.r, x.y.z, javax.naming, " + BUNDLE_IN_FRAMEWORK)
-                            .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+                            .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
+                            .attribute(BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(IMPORT_PACKAGE, "p.q.r, x.y.z, javax.naming, " + BUNDLE_IN_FRAMEWORK)
+                            .attribute(BUNDLE_VERSION, "1.0.0").end();
 
     
     FileOutputStream fout = new FileOutputStream(CORE_BUNDLE_BY_VALUE + ".jar");
@@ -86,39 +94,39 @@ public class OBRResolverTest extends AbstractIntegrationTest
     fout.close();
 
     bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(Constants.BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_VALUE)
-                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(Constants.EXPORT_PACKAGE, "p.q.r")
-                            .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+                            .attribute(BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_VALUE)
+                            .attribute(BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(EXPORT_PACKAGE, "p.q.r")
+                            .attribute(BUNDLE_VERSION, "1.0.0").end();
 
     fout = new FileOutputStream(TRANSITIVE_BUNDLE_BY_VALUE + ".jar");
     bundle.writeOut(fout);
     fout.close();
 
     bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(Constants.BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_REFERENCE)
-                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(Constants.EXPORT_PACKAGE, "x.y.z")
-                            .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+                            .attribute(BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_REFERENCE)
+                            .attribute(BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(EXPORT_PACKAGE, "x.y.z")
+                            .attribute(BUNDLE_VERSION, "1.0.0").end();
     
     fout = new FileOutputStream(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar");
     bundle.writeOut(fout);
     fout.close();
 
     bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
-                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(Constants.EXPORT_PACKAGE, "d.e.f")
-                            .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+                            .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
+                            .attribute(BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(EXPORT_PACKAGE, "d.e.f")
+                            .attribute(BUNDLE_VERSION, "1.0.0").end();
     
     fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + ".jar");
     bundle.writeOut(fout);
     fout.close();
 
     bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
-                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(Constants.EXPORT_PACKAGE, "d.e.f").end();
+                            .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
+                            .attribute(BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(EXPORT_PACKAGE, "d.e.f").end();
 
     fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
     bundle.writeOut(fout);
@@ -194,10 +202,50 @@ public class OBRResolverTest extends AbstractIntegrationTest
     //installing requires a valid url for the bundle in repository.xml.
     
     app = manager.resolve(app);
-    
-
-  
   }
+  
+  @Test
+  public void test_resolve_self_contained_app_in_isolation() throws Exception {
+      assertEquals(2, createAndResolveSelfContainedApp("org.osgi.framework").size());
+  }
+  
+  @Test(expected=ResolverException.class)
+  public void test_resolve_non_self_contained_app_in_isolation() throws Exception {
+      createAndResolveSelfContainedApp("org.osgi.service.blueprint");
+  }
+  
+  private Collection<ModelledResource> createAndResolveSelfContainedApp(String extraImport) throws Exception {
+      FileOutputStream fout = new FileOutputStream(new File("a.bundle.jar"));
+      ArchiveFixture.newJar()
+              .manifest()
+                  .attribute(BUNDLE_SYMBOLICNAME, "a.bundle")
+                  .attribute(BUNDLE_VERSION, "1.0.0")
+                  .attribute(BUNDLE_MANIFESTVERSION, "2")
+                  .attribute(IMPORT_PACKAGE, "a.pack.age")
+              .end().writeOut(fout);
+      fout.close();
+          
+      fout = new FileOutputStream(new File("b.bundle.jar"));
+      ArchiveFixture.newJar()
+              .manifest()
+                  .attribute(BUNDLE_SYMBOLICNAME, "b.bundle")
+                  .attribute(BUNDLE_VERSION, "1.0.0")
+                  .attribute(BUNDLE_MANIFESTVERSION, "2")
+                  .attribute(IMPORT_PACKAGE, extraImport)
+                  .attribute(EXPORT_PACKAGE, "a.pack.age")
+              .end().writeOut(fout);
+      fout.close();      
+      
+      ModelledResourceManager mrm = context().getService(ModelledResourceManager.class);
+      ModelledResource aBundle = mrm.getModelledResource(FileSystem.getFSRoot(new File("a.bundle.jar")));
+      ModelledResource bBundle = mrm.getModelledResource(FileSystem.getFSRoot(new File("b.bundle.jar")));
+      
+      AriesApplicationResolver resolver = context().getService(AriesApplicationResolver.class);
+      return resolver.resolveInIsolation("test.app", "1.0.0", 
+              Arrays.asList(aBundle, bBundle), 
+              Arrays.<Content>asList(ContentFactory.parseContent("a.bundle", "1.0.0"), ContentFactory.parseContent("b.bundle", "1.0.0")));
+  }
+  
   @Test
   public void testBlogApp() throws Exception 
   {
