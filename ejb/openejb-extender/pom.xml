@@ -39,6 +39,10 @@
 
     <properties>
 		<aries.osgi.export/>
+		<aries.osgi.import>
+		  org.apache.aries.jpa.container.context;resolution:=optional,
+		  *
+		</aries.osgi.import>
         <aries.osgi.private.pkg>
           org.apache.aries.ejb.*
         </aries.osgi.private.pkg>
@@ -104,6 +108,13 @@
         	<artifactId>org.apache.aries.proxy.api</artifactId>
         	<version>0.4-SNAPSHOT</version>
         	<type>jar</type>
+        	<scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.jpa</groupId>
+        	<artifactId>org.apache.aries.jpa.api</artifactId>
+        	<version>0.3.1-SNAPSHOT</version>
+        	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
     </dependencies>

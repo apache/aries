@@ -432,6 +432,7 @@ public class EJBModellingTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.xbean", "xbean-finder-shaded"),
         mavenBundle("org.apache.xbean", "xbean-naming"),
         mavenBundle("org.apache.xbean", "xbean-reflect"),
+        mavenBundle("org.hsqldb", "hsqldb"),
 //        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
 //        waitForFrameworkStartup(),
         

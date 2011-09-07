@@ -152,6 +152,7 @@ public class AriesProxyService implements ProxyFactory, SingleServiceListener {
   }
   
   public void destroy() {
+    INSTANCE.set(null);
     proxyTracker.close();
   }
   
