@@ -76,6 +76,7 @@ public interface AriesApplicationResolver {
    * @return the BundleInfo for the requested bundle, or null if none could be found.
    */
   BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion);
+  
   /**
    * Resolve an AriesApplication. The resolving process will build a repository from by-value bundles. 
    * It then scans all the required bundles and pull the dependencies required to resolve the bundles.
@@ -90,5 +91,18 @@ public interface AriesApplicationResolver {
    * @throws ResolverException
    */
   Collection<ModelledResource> resolve(String appName, String appVersion, Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException;
+  
+  /**
+   * Resolve an AriesApplication in isolation i.e. without consulting any bundle repositories other than the system repository. This can be used for checking that the application is completely self-contained.
+   * 
+   * Return a collect of modelled resources. This method is called when installing an application
+   * @param appName Application name
+   * @param appVersion application version
+   * @param byValueBundles by value bundles
+   * @param inputs bundle requirement
+   * @return a collection of modelled resource required by this application.
+   * @throws ResolverException
+   */
+  Collection<ModelledResource> resolveInIsolation(String appName, String appVersion, Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException;
 
 }

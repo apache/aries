@@ -27,52 +27,53 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
-import org.apache.aries.application.management.spi.repository.PlatformRepository;
 import org.apache.aries.application.management.spi.resolve.AriesApplicationResolver;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.osgi.framework.Version;
+
 /**
- * AriesApplicationManager requires that there be at least one 
- * AriesApplicationResolver service present. This class provides a null 
- * implementation: it simply returns the bundles that it was provided with - 
- * enough to permit the testing of Aries applications that have no external 
- * dependencies.   
- * It is not intended to be used in a production environment, as the implementation 
- * of the AriesApplicationResolver just returns the bundles included in the application irrespective of 
- * what is specified in application.mf.
+ * AriesApplicationManager requires that there be at least one
+ * AriesApplicationResolver service present. This class provides a null
+ * implementation: it simply returns the bundles that it was provided with -
+ * enough to permit the testing of Aries applications that have no external
+ * dependencies. It is not intended to be used in a production environment, as
+ * the implementation of the AriesApplicationResolver just returns the bundles
+ * included in the application irrespective of what is specified in
+ * application.mf.
  */
 
 public class NoOpResolver implements AriesApplicationResolver {
 
-	Set<BundleInfo> resolvedBundles = new HashSet<BundleInfo>();
-	   
-	   public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) {
-	     resolvedBundles.addAll(app.getBundleInfo());
-	     return app.getBundleInfo();
-	   }
-	 
-	   public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
-	   {
-	     BundleInfo result = null;
-	     for (BundleInfo info : resolvedBundles)
-	     {
-	       if (info.getSymbolicName().equals(bundleSymbolicName) &&
-	           info.getVersion().equals(bundleVersion))
-	       {
-	         result = info;
-	       }
-	     }
-	     return result;
-	   }
-	 
-	   public Collection<ModelledResource> resolve(String appName, String appVersion,
-	       Collection<ModelledResource> byValueBundles, Collection<Content> inputs)
-	       throws ResolverException
-	   {
-	     
-	     return byValueBundles;
-	   }
+    Set<BundleInfo> resolvedBundles = new HashSet<BundleInfo>();
+
+    public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) {
+        resolvedBundles.addAll(app.getBundleInfo());
+        return app.getBundleInfo();
+    }
+
+    public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion) {
+        BundleInfo result = null;
+        for (BundleInfo info : resolvedBundles) {
+            if (info.getSymbolicName().equals(bundleSymbolicName)
+                    && info.getVersion().equals(bundleVersion)) {
+                result = info;
+            }
+        }
+        return result;
+    }
+
+    public Collection<ModelledResource> resolve(String appName,
+            String appVersion, Collection<ModelledResource> byValueBundles,
+            Collection<Content> inputs) throws ResolverException {
+
+        return byValueBundles;
+    }
+
+    @Override
+    public Collection<ModelledResource> resolveInIsolation(String appName,
+            String appVersion, Collection<ModelledResource> byValueBundles,
+            Collection<Content> inputs) throws ResolverException {
+        return byValueBundles;
+    }
 
 }
-
-
