@@ -38,6 +38,11 @@ import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
@@ -194,6 +199,13 @@ public abstract class JPAContextTest extends AbstractIntegrationTest {
     
     EntityManagerFactory emf = getProxyEMF("bp-test-unit");
     
+    doNonTxEmIsCleared(emf);
+    
+  }
+
+  private void doNonTxEmIsCleared(EntityManagerFactory emf)
+      throws NotSupportedException, SystemException, HeuristicMixedException,
+      HeuristicRollbackException, RollbackException {
     final EntityManager managedEm = emf.createEntityManager();
     
     UserTransaction ut = context().getService(UserTransaction.class);
@@ -240,6 +252,16 @@ public abstract class JPAContextTest extends AbstractIntegrationTest {
     assertEquals(2, c.getNumberOfSeats());
     assertEquals(2000, c.getEngineSize());
     assertEquals("red", c.getColour());
+  }
+  
+  @Test
+  public void testNonTxEmIsClearedUsingXADataSourceWrapper() throws Exception {
+    
+    registerClient("bp-xa-test-unit");
+    
+    EntityManagerFactory emf = getProxyEMF("bp-xa-test-unit");
+    
+    doNonTxEmIsCleared(emf);
     
   }
 

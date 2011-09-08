@@ -23,6 +23,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
+
+import org.apache.aries.jpa.container.impl.NLS;
+import org.apache.aries.jpa.container.tx.impl.XADatasourceEnlistingWrapper;
 
 public abstract class DelayedLookupDataSource implements DataSource {
 
@@ -59,5 +63,20 @@ public abstract class DelayedLookupDataSource implements DataSource {
 
   public <T> T unwrap(Class<T> iface) throws SQLException {
     return getDs().unwrap(iface);
+  }
+  
+  protected DataSource wrapXADataSource(XADataSource xaDs) throws IllegalStateException {
+    boolean b;
+    try {
+      Class.forName("javax.transaction.TransactionManager");
+      b = true;
+    } catch (ClassNotFoundException cnfe) {
+      b = false;
+    }
+    
+    if(!b)
+      throw new IllegalStateException(NLS.MESSAGES.getMessage("no.xa.wrapping"));
+    
+    return new XADatasourceEnlistingWrapper(xaDs);
   }
 }
