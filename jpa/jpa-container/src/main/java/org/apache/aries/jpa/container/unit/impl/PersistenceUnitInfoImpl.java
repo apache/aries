@@ -129,7 +129,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
-      toReturn = new JndiDataSource(jndiString, bundle);
+      toReturn = new JndiDataSource(jndiString, getPersistenceUnitName(), bundle, 
+          getTransactionType() == PersistenceUnitTransactionType.JTA);
     } else if(useDataSourceFactory) {
       toReturn = jtaDSFDS.get();
       if(toReturn == null) {
@@ -143,7 +144,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
           jtaDSFDS.compareAndSet(null, new DataSourceFactoryDataSource(bundle, driverName,
               props.getProperty("javax.persistence.jdbc.url"), 
               props.getProperty("javax.persistence.jdbc.user"), 
-              props.getProperty("javax.persistence.jdbc.password")));
+              props.getProperty("javax.persistence.jdbc.password"),
+              getTransactionType() == PersistenceUnitTransactionType.JTA));
           toReturn = jtaDSFDS.get();
         }
       }
@@ -184,7 +186,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
-      toReturn = new JndiDataSource(jndiString, bundle);
+      toReturn = new JndiDataSource(jndiString, getPersistenceUnitName(), bundle, false);
     } else if(useDataSourceFactory) {
       toReturn = nonJtaDSFDS.get();
       if(toReturn == null) {
@@ -198,7 +200,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
           nonJtaDSFDS.compareAndSet(null, new DataSourceFactoryDataSource(bundle, driverName,
               props.getProperty("javax.persistence.jdbc.url"), 
               props.getProperty("javax.persistence.jdbc.user"), 
-              props.getProperty("javax.persistence.jdbc.password")));
+              props.getProperty("javax.persistence.jdbc.password"),
+              false));
           toReturn = nonJtaDSFDS.get();
         }
       }

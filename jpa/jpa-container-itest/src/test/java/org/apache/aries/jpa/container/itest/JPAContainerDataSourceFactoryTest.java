@@ -31,11 +31,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
+import javax.transaction.UserTransaction;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.apache.derby.jdbc.EmbeddedXADataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -95,6 +97,58 @@ public class JPAContainerDataSourceFactoryTest extends AbstractIntegrationTest {
     assertNull(refs);
   }
   
+  @Test
+  public void testDataSourceFactoryXALifecycle() throws Exception {
+    //Wait for startup
+    context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    
+    //Now go
+    ServiceReference[] refs = context().getServiceReferences(
+        EntityManagerFactory.class.getName(), "(&(osgi.unit.name=dsf-xa-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    
+    assertNull(refs);
+    
+    Hashtable<String, Object> props = new Hashtable();
+    props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.apache.derby.jdbc.EmbeddedDriver");
+    
+    ServiceRegistration reg = context().registerService(DataSourceFactory.class.getName(), 
+        new DerbyDataSourceFactory(), props);
+    
+    
+    EntityManagerFactory emf = context().getService(EntityManagerFactory.class, 
+        "(&(osgi.unit.name=dsf-xa-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    
+    
+    EntityManager em = emf.createEntityManager();
+    
+    //Use a JTA tran to show integration
+    UserTransaction ut = context().getService(UserTransaction.class);
+    
+    ut.begin();
+    em.joinTransaction();
+    Car c = new Car();
+    c.setNumberPlate("123456");
+    c.setColour("blue");
+    em.persist(c);
+    
+    ut.commit();
+      
+    em.close();
+    
+    em = emf.createEntityManager();
+    
+    assertEquals("blue", em.find(Car.class, "123456").getColour());
+    
+    reg.unregister();
+    
+    refs = context().getServiceReferences(
+        EntityManagerFactory.class.getName(), "(&(osgi.unit.name=dsf-xa-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    
+    assertNull(refs);
+  }
+  
+  
+  
   private static class DerbyDataSourceFactory implements DataSourceFactory {
 
     public DataSource createDataSource(Properties props) throws SQLException {
@@ -112,8 +166,10 @@ public class JPAContainerDataSourceFactoryTest extends AbstractIntegrationTest {
 
     public XADataSource createXADataSource(Properties props)
         throws SQLException {
-      // TODO Auto-generated method stub
-      return null;
+      EmbeddedXADataSource ds = new EmbeddedXADataSource();
+      ds.setDatabaseName("memory:TEST");
+      ds.setCreateDatabase("create");
+      return ds;
     }
 
     public Driver createDriver(Properties props) throws SQLException {

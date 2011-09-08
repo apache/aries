@@ -23,15 +23,16 @@
   </bean>
   
   
-  <service interface="javax.sql.XADataSource">
+  <service interface="javax.sql.XADataSource" ref="xa">
     <service-properties>
       <entry key="transactional" value="true"/>
     </service-properties>
-    <bean class="org.apache.derby.jdbc.EmbeddedXADataSource">
-    	<property name="databaseName" value="memory:testDB"/>
-    	<property name="createDatabase" value="create"/> 
-  	</bean>
   </service>
+  
+  <bean id="xa" class="org.apache.derby.jdbc.EmbeddedXADataSource">
+  	<property name="databaseName" value="memory:testDB"/>
+    <property name="createDatabase" value="create"/> 
+  </bean>
     
   <reference id="jta" availability="optional" interface="javax.sql.DataSource"
              filter="(transactional=true)"/>
