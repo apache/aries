@@ -47,4 +47,19 @@
      <property name="eclipselink.ddl-generation.output-mode" value="database" />
     </properties>
   </persistence-unit>
+  
+  <persistence-unit name="bp-xa-test-unit" transaction-type="JTA">
+    <description>Test persistence unit for the JPA Container and Context iTests</description>
+    <jta-data-source>blueprint:comp/xa</jta-data-source>
+    <non-jta-data-source>blueprint:comp/nonjta</non-jta-data-source>
+    <class>org.apache.aries.jpa.container.itest.entities.Car</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+     <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
+          to create a database  -->
+     <property name="eclipselink.target-database" value="Derby"/>     
+     <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+     <property name="eclipselink.ddl-generation.output-mode" value="database" />
+    </properties>
+  </persistence-unit>
 </persistence>

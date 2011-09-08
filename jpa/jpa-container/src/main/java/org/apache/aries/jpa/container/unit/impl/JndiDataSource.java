@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
 import org.apache.aries.jpa.container.impl.NLS;
 import org.osgi.framework.Bundle;
@@ -38,11 +39,15 @@ public class JndiDataSource extends DelayedLookupDataSource {
   private AtomicReference<DataSource> ds = new AtomicReference<DataSource>();
   
   private final String jndiName;
+  private final String unitName;
   private final Bundle persistenceBundle;
+  private final boolean jta;
   
-  public JndiDataSource (String jndi, Bundle persistenceBundle) {
+  public JndiDataSource (String jndi, String unit, Bundle persistenceBundle, boolean jta) {
     jndiName = jndi;
+    unitName = unit;
     this.persistenceBundle = persistenceBundle;
+    this.jta = jta;
   }
   
   @Override
@@ -56,7 +61,25 @@ public class JndiDataSource extends DelayedLookupDataSource {
           throw new IllegalStateException(NLS.MESSAGES.getMessage("persistence.bundle.not.active", persistenceBundle.getSymbolicName(), persistenceBundle.getVersion()));
         props.put("osgi.service.jndi.bundleContext", bCtx);
         InitialContext ctx = new InitialContext(props);
-        ds.compareAndSet(null, (DataSource) ctx.lookup(jndiName));
+        
+        Object o = ctx.lookup(jndiName);
+        
+        if(o instanceof XADataSource) {
+          if(jta) {
+            ds.compareAndSet(null,  wrapXADataSource((XADataSource)o));
+          } else {
+            if(o instanceof DataSource)
+              ds.compareAndSet(null, (DataSource)o);
+            else 
+              throw new IllegalArgumentException(NLS.MESSAGES.getMessage("xa.datasource.non.tx", unitName, 
+                  persistenceBundle.getSymbolicName(), persistenceBundle.getVersion(), jndiName));
+          }
+        } else if (o instanceof DataSource) {
+          ds.compareAndSet(null, (DataSource)o);
+        } else {
+          throw new IllegalArgumentException(NLS.MESSAGES.getMessage("not.a.datasource", unitName,
+              persistenceBundle.getSymbolicName(), persistenceBundle.getVersion(), jndiName));
+        }
       } catch (NamingException e) {
         String message = NLS.MESSAGES.getMessage("no.data.source.found", jndiName, persistenceBundle.getSymbolicName(), persistenceBundle.getVersion());
         _logger.error(message, e);

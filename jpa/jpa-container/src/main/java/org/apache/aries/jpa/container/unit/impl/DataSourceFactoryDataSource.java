@@ -42,12 +42,13 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
   private final String driverName;
   private final Bundle persistenceBundle;
   private final Properties props;
+  private final boolean jta;
   
   private final AtomicReference<SingleServiceTracker<DataSourceFactory>> trackerRef =
     new AtomicReference<SingleServiceTracker<DataSourceFactory>>();
   
   public DataSourceFactoryDataSource(Bundle bundle, String driverName, String dbURL, 
-      String dbUserName, String dbPassword) {
+      String dbUserName, String dbPassword, boolean jta) {
     this.persistenceBundle = bundle;
     this.driverName = driverName;
     props = new Properties();
@@ -57,6 +58,8 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
       props.setProperty(DataSourceFactory.JDBC_USER, dbUserName);
     if(dbPassword != null)
       props.setProperty(DataSourceFactory.JDBC_PASSWORD, dbPassword);
+    
+    this.jta = jta;
   }
 
   @Override
@@ -82,7 +85,11 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
       DataSourceFactory dsf = tracker.getService();
       if(dsf != null) {
         try {
-          ds.compareAndSet(null, dsf.createDataSource(props));
+          if(jta) {
+            ds.compareAndSet(null, wrapXADataSource(dsf.createXADataSource(props)));
+          } else {
+            ds.compareAndSet(null, dsf.createDataSource(props));
+          }
         } catch (SQLException e) {
           String message = NLS.MESSAGES.getMessage("datasourcefactory.sql.exception", driverName, props, 
               persistenceBundle.getSymbolicName(), persistenceBundle.getVersion());

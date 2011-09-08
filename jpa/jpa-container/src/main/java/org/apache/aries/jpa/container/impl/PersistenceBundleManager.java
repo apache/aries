@@ -44,6 +44,7 @@ import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
 import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
+import org.apache.aries.jpa.container.tx.impl.OSGiTransactionManager;
 import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactoryImpl;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.aries.util.VersionRange;
@@ -142,6 +143,10 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     if (serviceTracker != null) {
       serviceTracker.close();
     }
+    
+    OSGiTransactionManager otm = OSGiTransactionManager.get();
+    if(otm != null)
+      otm.destroy();
   } 
   public Object addingBundle(Bundle bundle, BundleEvent event) 
   {
