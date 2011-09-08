@@ -46,7 +46,7 @@
 
     <properties>
         <!-- Aries eba-maven-plugin Version -->
-        <ariesEbaMavenPluginVersion>0.3.1-SNAPSHOT</ariesEbaMavenPluginVersion>
+        <ariesEbaMavenPluginVersion>0.4-SNAPSHOT</ariesEbaMavenPluginVersion>
 
         <!-- Aries Application Versions -->
         <ariesApplicationApiVersion>0.3.1-SNAPSHOT</ariesApplicationApiVersion>
