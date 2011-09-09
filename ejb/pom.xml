@@ -26,10 +26,16 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.ejb</groupId>
+    <version>0.1-SNAPSHOT</version>
     <artifactId>ejb</artifactId>
     <packaging>pom</packaging>
     <name>Aries EJB Component</name>
 
+    <properties>
+      <openWebBeansVersion>1.1.1</openWebBeansVersion>
+      <xbeansVersion>3.8</xbeansVersion>
+    </properties>
+    
     <modules>
         <module>ejb-modeller</module>
         <module>ejb-modeller-itest</module>
