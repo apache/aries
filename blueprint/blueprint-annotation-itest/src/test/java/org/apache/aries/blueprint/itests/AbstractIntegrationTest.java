@@ -24,14 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
-import static org.ops4j.pax.exam.OptionUtils.combine;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,8 +39,11 @@ import org.apache.aries.blueprint.sample.Foo;
 import org.junit.After;
 import org.junit.Before;
 import org.ops4j.pax.exam.CoreOptions;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
+import static org.ops4j.pax.exam.OptionUtils.combine;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -206,28 +204,7 @@ public abstract class AbstractIntegrationTest {
             throw new FileNotFoundException( "File [" + filePath + "] could not be found: " + e.getMessage() );
         }
     }
-    
-    protected static Option[] getSharedOptions() {
-        return options(
-                // Log
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-                // Felix Config Admin
-                mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-                // Felix mvn url handler
-                mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-                
-                // Bundles
-                mavenBundle("org.osgi", "org.osgi.compendium"),
-                mavenBundle("org.apache.aries", "org.apache.aries.util"), 
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-                mavenBundle("asm", "asm-all"),
-                //no syntax like ${a+b} is used in blueprint-ext of the blueprint samples, so don't need this
-                //mavenBundle("org.apache.commons", "commons-jexl"),
 
-                equinox().version("3.5.0")
-                );
-    }
 
     protected static Option[] updateOptions(Option[] options) {
         // We need to add pax-exam-junit here when running with the ibm

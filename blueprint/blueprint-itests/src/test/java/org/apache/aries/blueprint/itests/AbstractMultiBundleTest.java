@@ -22,6 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,10 @@ import org.apache.aries.blueprint.testbundlea.NSHandlerTwo;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean.Phase;
 import org.apache.aries.blueprint.testbundleb.TestBean;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 

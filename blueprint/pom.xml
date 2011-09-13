@@ -145,25 +145,20 @@
                 <version>0.3</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.testsupport</groupId>
-                <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.3</version>
+              <groupId>org.apache.aries.testsupport</groupId>
+              <artifactId>org.apache.aries.testsupport.unit</artifactId>
+              <version>0.3</version>
             </dependency>            
             <dependency>
-                <groupId>org.apache.aries.proxy</groupId>
-                <artifactId>org.apache.aries.proxy.api</artifactId>
-                <version>0.3</version>
+            	<groupId>org.apache.aries.proxy</groupId>
+            	<artifactId>org.apache.aries.proxy.api</artifactId>
+            	<version>0.3</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.proxy</groupId>
-        	    <artifactId>org.apache.aries.proxy</artifactId>
-        	    <version>0.3</version>
-        	    <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-jexl</artifactId>
-                <version>2.0</version>
+              <groupId>org.apache.aries.proxy</groupId>
+        	  <artifactId>org.apache.aries.proxy</artifactId>
+        	  <version>0.3</version>
+        	  <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
