@@ -31,12 +31,16 @@ import org.objectweb.asm.commons.Method;
 final class InterfaceUsingWovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
 
   private final Type interfaceType;
+  
+  private final boolean isInterfaceType;
+  
   public InterfaceUsingWovenProxyMethodAdapter(MethodVisitor mv, int access, String name,
       String desc, String methodStaticFieldName, Method currentTransformMethod,
       Type typeBeingWoven, Type interfaceType) {
     super(mv, access, name, desc, methodStaticFieldName, currentTransformMethod,
         typeBeingWoven);
     this.interfaceType = interfaceType;
+    this.isInterfaceType = !!!interfaceType.equals(OBJECT_TYPE);
   }
 
   /**
@@ -81,6 +85,6 @@ final class InterfaceUsingWovenProxyMethodAdapter extends AbstractWovenProxyMeth
   
   @Override
   protected final boolean isTypeToCastToInterface() {
-    return true;
+    return isInterfaceType;
   }
 }

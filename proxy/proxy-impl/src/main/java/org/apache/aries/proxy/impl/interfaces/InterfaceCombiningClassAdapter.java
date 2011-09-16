@@ -101,6 +101,7 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
         }
       }
       
+      adapter.setCurrentInterface(Type.getType(Object.class));
       visitObjectMethods();
       
       adapter.visitEnd();
