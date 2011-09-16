@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.core.obr.felix;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.felix.bundlerepository.Capability;
@@ -44,13 +45,20 @@ public class OsgiCapabilityAdapter implements Capability {
 	public Property[] getProperties() {
 		Map<String, Object> attributes = capability.getAttributes();
 		Collection<Property> result = new ArrayList<Property>(attributes.size());
-		for (final Map.Entry<String, Object> entry : capability.getAttributes().entrySet())
+		for (final Map.Entry<String, Object> entry : capability.getAttributes().entrySet()) {
+			if (entry.getKey().equals(capability.getNamespace())) {
+				result.add(new FelixProperty(getName(), entry.getValue()));
+				continue;
+			}
 			result.add(new FelixProperty(entry));
+		}
 		return result.toArray(new Property[result.size()]);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public Map getPropertiesAsMap() {
-		return capability.getAttributes();
+		Map<String, Object> result = new HashMap<String, Object>(capability.getAttributes());
+		result.put(getName(), result.get(capability.getNamespace()));
+		return result;
 	}
 }

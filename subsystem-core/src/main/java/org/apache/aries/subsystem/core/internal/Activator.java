@@ -116,7 +116,19 @@ public class Activator implements BundleActivator {
 	 * A naive implementation serving as a placeholder until a real Resolver comes along.
 	 */
 	public static Resolver getResolver() {
-		return new SubsystemResolver();
+//		return new SubsystemResolver();
+		ServiceTracker st = new ServiceTracker(context, Resolver.class.getName(), null);
+		try {
+			st.open();
+			return (Resolver)st.waitForService(5000);
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return null;
+		}
+		finally {
+			st.close();
+		}
 	}
 	
 	private final BundleListener bundleListener = new SubsystemSynchronousBundleListener();

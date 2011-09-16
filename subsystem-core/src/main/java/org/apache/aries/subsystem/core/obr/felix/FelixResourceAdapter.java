@@ -23,8 +23,19 @@ import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
+import org.osgi.framework.wiring.BundleRevision;
 
 public class FelixResourceAdapter implements Resource {
+	private static String toFelixNamespace(String namespace) {
+		if (BundleRevision.BUNDLE_NAMESPACE.equals(namespace))
+			return org.apache.felix.bundlerepository.Capability.BUNDLE;
+		if (BundleRevision.HOST_NAMESPACE.equals(namespace))
+			return org.apache.felix.bundlerepository.Capability.FRAGMENT;
+		if (BundleRevision.PACKAGE_NAMESPACE.equals(namespace))
+			return org.apache.felix.bundlerepository.Capability.PACKAGE;
+		return namespace;
+	}
+	
 	private final org.apache.felix.bundlerepository.Resource resource;
 	
 	public FelixResourceAdapter(final org.apache.felix.bundlerepository.Resource resource) {
@@ -55,6 +66,7 @@ public class FelixResourceAdapter implements Resource {
 	}
 	
 	public List<Capability> getCapabilities(String namespace) {
+		namespace = toFelixNamespace(namespace);
 		org.apache.felix.bundlerepository.Capability[] capabilities = resource.getCapabilities();
 		ArrayList<Capability> result = new ArrayList<Capability>(capabilities.length);
 		if (namespace == null || namespace.equals(ResourceConstants.IDENTITY_NAMESPACE)) {
@@ -81,6 +93,7 @@ public class FelixResourceAdapter implements Resource {
 	}
 
 	public List<Requirement> getRequirements(String namespace) {
+		namespace = toFelixNamespace(namespace);
 		org.apache.felix.bundlerepository.Requirement[] requirements = resource.getRequirements();
 		ArrayList<Requirement> result = new ArrayList<Requirement>(requirements.length);
 		for (final org.apache.felix.bundlerepository.Requirement requirement : requirements) {

@@ -42,7 +42,12 @@ public class FelixRequirementAdapter implements Requirement {
 
 	public Map<String, String> getDirectives() {
 		Map<String, String> result = new HashMap<String, String>(1);
-		result.put(Constants.FILTER_DIRECTIVE, requirement.getFilter());
+		/* (1) The Felix OBR specific "mandatory:<*" syntax must be stripped out of the filter.
+		 * (2) The namespace must be translated.
+		 */
+		result.put(Constants.FILTER_DIRECTIVE, requirement.getFilter()
+				.replaceAll("\\(mandatory\\:\\<\\*[^\\)]*\\)", "")
+				.replaceAll(requirement.getName() + '=', getNamespace() + '='));
 		return result;
 	}
 
