@@ -254,7 +254,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())) {
+                if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())
+                        || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
                         if (defaultsRef != null) {
                             throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
@@ -283,7 +284,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())) {
+                if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())
+                        || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
                         BeanProperty prop = context.parseElement(BeanProperty.class, enclosingComponent, e);
                         props.addEntry(createValue(context, prop.getName(), String.class.getName()), prop.getValue());
