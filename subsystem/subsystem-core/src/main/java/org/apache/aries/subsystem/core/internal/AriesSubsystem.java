@@ -700,6 +700,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				}
 			}
 			catch (Exception e) {
+				// TODO Log this exception? If not, who's responsible for logging it?
 				coordination.fail(e);
 			}
 			finally {
@@ -713,7 +714,15 @@ public class AriesSubsystem implements Subsystem, Resource {
 		Bundle bundle;
 		synchronized (resourceToSubsystems) {
 			if (resource instanceof BundleRevision) {
-				resourceToSubsystems.get(resource).add(this);
+				// This means the resource is a bundle that's already been installed, but we still need to establish the resource->subsystem relationship.
+				// TODO The null check is necessary for when the bundle is in the root subsystem. Currently, the root subsystem is not initialized with
+				// these relationships. Need to decide if that would be better.
+				Set<Subsystem> subsystems = resourceToSubsystems.get(resource);
+				if (subsystems == null) {
+					subsystems = new HashSet<Subsystem>();
+					resourceToSubsystems.put(resource, subsystems);
+				}
+				subsystems.add(this);
 				return;
 			}
 			provisionTo = getProvisionTo(resource, transitive);

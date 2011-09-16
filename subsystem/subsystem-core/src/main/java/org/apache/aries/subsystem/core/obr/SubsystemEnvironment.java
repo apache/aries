@@ -69,6 +69,8 @@ public class SubsystemEnvironment implements Environment {
 		// This means we're looking for capabilities satisfying a requirement within a content resource or transitive dependency.
 		findArchiveProviders(capabilities, requirement, false);
 		findRepositoryServiceProviders(capabilities, requirement, false);
+		// TODO The following is a quick fix to ensure this environment always returns capabilities provided by the system bundle. Needs some more thought.
+		findConstituentProviders(requirement, capabilities);
 		return capabilities;
 	}
 	
@@ -89,11 +91,8 @@ public class SubsystemEnvironment implements Environment {
 
 	@Override
 	public Map<Resource, List<Wire>> getWiring() {
-		Map<Resource, List<Wire>> wiring = new HashMap<Resource, List<Wire>>();
-		for (Resource resource : resourceToRepository.keySet()) {
-			wiring.put(resource, Collections.EMPTY_LIST);
-		}
-		return wiring;
+		// TODO When will this ever return an existing wiring?
+		return Collections.EMPTY_MAP;
 	}
 	
 	public boolean isContentResource(Resource resource) {

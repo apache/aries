@@ -102,6 +102,7 @@ public class OsgiIdentityRequirement implements Requirement {
 		this.filter = filter;
 		this.resource = resource;
 		this.transitive = transitive;
+		directives.put(Constants.FILTER_DIRECTIVE, filter.toString());
 		directives.put(ResourceConstants.IDENTITY_SINGLETON_DIRECTIVE, Boolean.FALSE.toString());
 		directives.put(Constants.EFFECTIVE_DIRECTIVE, Constants.EFFECTIVE_RESOLVE);
 	}
