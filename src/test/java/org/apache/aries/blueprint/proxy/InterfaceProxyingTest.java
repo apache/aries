@@ -191,24 +191,34 @@ public class InterfaceProxyingTest {
   
   @Test
   public void testHandlesObjectMethods() throws Exception {
+      TestListener listener = new TestListener();
       List<String> list = Arrays.asList("one", "two", "three");
-      Object proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, Arrays.<Class<?>>asList(List.class), constantly(list), null);
+      Object proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, Arrays.<Class<?>>asList(List.class), constantly(list), listener);
       
       // obeys hashCode and equals, they *are* on the interface
       assertTrue(proxied.equals(Arrays.asList("one", "two", "three")));
+      assertEquals(Collection.class.getMethod("equals", Object.class), listener.getLastMethod());
+      listener.clear();
       assertEquals(Arrays.asList("one", "two", "three").hashCode(), proxied.hashCode());
-      
+      assertEquals(Collection.class.getMethod("hashCode"), listener.getLastMethod());
+      listener.clear();
       // and toString
       assertEquals(list.toString(), proxied.toString());
+      assertEquals(Object.class.getMethod("toString"), listener.getLastMethod());
+      listener.clear();
       
       Runnable runnable = new Runnable() {
         public void run() {}
       };
-      proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, Arrays.<Class<?>>asList(Runnable.class), constantly(runnable), null);
+      proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, Arrays.<Class<?>>asList(Runnable.class), constantly(runnable), listener);
       
       // obeys hashCode and equals, they *are not* on the interface
       assertTrue(proxied.equals(runnable));
+      assertEquals(Object.class.getMethod("equals", Object.class), listener.getLastMethod());
+      listener.clear();
       assertEquals(runnable.hashCode(), proxied.hashCode());
+      assertEquals(Object.class.getMethod("hashCode"), listener.getLastMethod());
+      listener.clear();
   }
   
   private static class TestClassLoader extends ClassLoader {
