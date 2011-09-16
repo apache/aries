@@ -34,7 +34,9 @@ public class FelixCapabilityAdapter implements Capability {
 	}
 
 	public Map<String, Object> getAttributes() {
-		return capability.getPropertiesAsMap();
+		Map<String, Object> result = capability.getPropertiesAsMap();
+		result.put(getNamespace(), result.get(capability.getName()));
+		return result;
 	}
 
 	public Map<String, String> getDirectives() {
