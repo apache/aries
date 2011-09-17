@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
@@ -55,7 +56,7 @@ public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcod
     
     ProxyClassLoader pcl = null;
     
-    HashSet<Class<?>> classSet = createSet(ifaces);
+    LinkedHashSet<Class<?>> classSet = createSet(ifaces);
     
     synchronized (cache) {
       WeakReference<ProxyClassLoader> ref = cache.get(client);
@@ -92,8 +93,8 @@ public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcod
    * @param ifaces
    * @return
    */
-  private static HashSet<Class<?>> createSet(Collection<Class<?>> ifaces) {
-    HashSet<Class<?>> classes = new HashSet<Class<?>>();
+  private static LinkedHashSet<Class<?>> createSet(Collection<Class<?>> ifaces) {
+    LinkedHashSet<Class<?>> classes = new LinkedHashSet<Class<?>>();
     for(Class<?> c : ifaces) {
       //If we already have a class contained then we have already covered its hierarchy
       if(classes.add(c))
