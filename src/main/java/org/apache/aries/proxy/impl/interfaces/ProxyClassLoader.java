@@ -5,6 +5,7 @@ import java.security.PermissionCollection;
 import java.security.Permissions;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,8 +33,8 @@ final class ProxyClassLoader extends ClassLoader {
   }
   
   /** A {@link Map} of classes we already know */
-  private final ConcurrentMap<HashSet<Class<?>>, String> classes = 
-                new ConcurrentHashMap<HashSet<Class<?>>, String>();
+  private final ConcurrentMap<LinkedHashSet<Class<?>>, String> classes = 
+                new ConcurrentHashMap<LinkedHashSet<Class<?>>, String>();
   
   private final ConcurrentMap<String, Class<?>> locatedClasses = 
                 new ConcurrentHashMap<String, Class<?>>();
@@ -96,7 +97,7 @@ final class ProxyClassLoader extends ClassLoader {
       return false;
   }
 
-  public Class<?> createProxyClass(HashSet<Class<?>> createSet) throws UnableToProxyException {
+  public Class<?> createProxyClass(LinkedHashSet<Class<?>> createSet) throws UnableToProxyException {
     
     String className = classes.get(createSet);
     
