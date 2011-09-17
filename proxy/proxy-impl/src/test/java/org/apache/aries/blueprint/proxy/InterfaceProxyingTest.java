@@ -197,10 +197,10 @@ public class InterfaceProxyingTest {
       
       // obeys hashCode and equals, they *are* on the interface
       assertTrue(proxied.equals(Arrays.asList("one", "two", "three")));
-      assertEquals(Collection.class.getMethod("equals", Object.class), listener.getLastMethod());
+      assertEquals(List.class.getMethod("equals", Object.class), listener.getLastMethod());
       listener.clear();
       assertEquals(Arrays.asList("one", "two", "three").hashCode(), proxied.hashCode());
-      assertEquals(Collection.class.getMethod("hashCode"), listener.getLastMethod());
+      assertEquals(List.class.getMethod("hashCode"), listener.getLastMethod());
       listener.clear();
       // and toString
       assertEquals(list.toString(), proxied.toString());
