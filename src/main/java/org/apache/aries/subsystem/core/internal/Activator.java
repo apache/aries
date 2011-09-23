@@ -20,12 +20,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import org.apache.aries.subsystem.core.obr.SubsystemResolver;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleListener;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -131,7 +129,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 	
-	private final BundleListener bundleListener = new SubsystemSynchronousBundleListener();
+//	private final BundleListener bundleListener = new SubsystemSynchronousBundleListener();
 	private final List<ServiceRegistration<?>> registrations = new ArrayList<ServiceRegistration<?>>();
 	
 	public void start(final BundleContext context) throws Exception {
@@ -141,7 +139,7 @@ public class Activator implements BundleActivator {
 		Activator.context = context;
 		register(Subsystem.class.getName(), new SubsystemServiceFactory(), null);
 		register(ResolverHookFactory.class, new SubsystemResolverHookFactory(), null);
-		context.getBundle(0).getBundleContext().addBundleListener(bundleListener);
+//		context.getBundle(0).getBundleContext().addBundleListener(bundleListener);
 		Dictionary<String, Object> properties = new Hashtable<String, Object>();
 		properties.put(EventConstants.EVENT_TOPIC, new String[]{"org/osgi/framework/BundleEvent/*"});
 		register(EventHandler.class, new BundleEventHandler(), properties);
@@ -151,7 +149,7 @@ public class Activator implements BundleActivator {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("subsystem activator stopping");
 		}
-		context.getBundle(0).getBundleContext().removeBundleListener(bundleListener);
+//		context.getBundle(0).getBundleContext().removeBundleListener(bundleListener);
 		for (ServiceRegistration<?> r : registrations) {
 			try {
 				r.unregister();
