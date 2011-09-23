@@ -27,6 +27,7 @@ import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -155,6 +156,12 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
 
                 additionalImportRequired = true;
 
+                // try/finally setup
+                // Add: try {
+                Label l0 = new Label();
+                Label l1 = new Label();
+                mv.visitTryCatchBlock(l0, l1, l1, null);
+                mv.visitLabel(l0);
                 // Add: Util.storeContextClassloader();
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "storeContextClassloader", VOID_RETURN_TYPE);
@@ -179,9 +186,25 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
 
                 super.visitMethodInsn(opcode, owner, name, desc);
 
-                // Add: Util.restoreContextClassloader();
+                // end the try part and do the finally part
+                // Add: } finally { Util.restoreContextClassLoader(); }
+                Label l2 = new Label();
+                mv.visitJumpInsn(GOTO, l2);
+                mv.visitLabel(l1);
+                mv.visitFrame(F_FULL, 2, new Object[] {"[Ljava/lang/String;", "java/lang/ClassLoader"}, 1, new Object[] {"java/lang/Throwable"});
+                mv.visitVarInsn(ASTORE, 2);
                 mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
                         "restoreContextClassloader", VOID_RETURN_TYPE);
+//                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
+//                        "storeContextClassloader", VOID_RETURN_TYPE);
+                mv.visitVarInsn(ALOAD, 2);
+                mv.visitInsn(ATHROW);
+                mv.visitLabel(l2);
+                mv.visitFrame(F_SAME, 0, null, 0, null);
+                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
+                        "restoreContextClassloader", VOID_RETURN_TYPE);
+//                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
+//                        "storeContextClassloader", VOID_RETURN_TYPE);
             } else {
                 super.visitMethodInsn(opcode, owner, name, desc);
             }
