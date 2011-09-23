@@ -65,15 +65,24 @@ public class InstallTest extends SubsystemTest {
 		if (createdApplications) {
 			return;
 		}
-		createApplication("feature2", new String[]{"tb2.jar"});
-		createApplication("feature1", new String[]{"tb1.jar", "feature2.ssa"});
+		createApplication("feature2", new String[]{"tb2.jar", "tb3.jar"});
+		createApplication("feature1", new String[]{"tb1.jar", "feature2.ssa", "tb3.jar"});
 		createdApplications = true;
 	}
 
 	@Test
 	public void testReturnExistingSubsystemWithSameLocation() throws Exception {
 		Subsystem subsystem1 = installSubsystemFromFile("feature1.ssa");
-		Subsystem subsystem2 = subsystem1.install(subsystem1.getLocation());
-		assertSame(subsystem1, subsystem2);
+		try {
+			// Need to wait for the nested feature within feature1 to install. Perhaps use a simpler subsystem for this test?
+			// TODO This needs to be better implemented and put into a utility method on the superclass.
+			while (!subsystem1.getChildren().iterator().next().getState().equals(Subsystem.State.INSTALLED))
+				Thread.sleep(100);
+			Subsystem subsystem2 = subsystem1.install(subsystem1.getLocation());
+			assertSame(subsystem1, subsystem2);
+		}
+		finally {
+			uninstallSubsystem(subsystem1);
+		}
 	}
 }

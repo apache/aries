@@ -30,6 +30,7 @@ public class SubsystemServiceFactory implements ServiceFactory<Subsystem> {
 	
 	public SubsystemServiceFactory() throws Exception {
 		rootSubsystem = new AriesSubsystem();
+		rootSubsystem.initialize(null);
 		Region region = Activator.getRegionDigraph().getRegion(Activator.getBundleContext().getBundle());
 		regionsToSubsystems.put(region, rootSubsystem);
 	}

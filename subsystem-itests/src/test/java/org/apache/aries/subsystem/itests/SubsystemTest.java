@@ -34,6 +34,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.Assert;
+
+import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.obr.felix.RepositoryAdminRepository;
 import org.apache.aries.subsystem.itests.util.RepositoryGenerator;
 import org.apache.aries.subsystem.itests.util.Utils;
@@ -43,6 +46,7 @@ import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.framework.resource.Resource;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
@@ -50,10 +54,10 @@ import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
-import org.osgi.service.subsystem.SubsystemConstants.EVENT_TYPE;;
+import org.osgi.service.subsystem.SubsystemConstants.EVENT_TYPE;
 
 public abstract class SubsystemTest extends IntegrationTest {
-	protected static class SubsystemTestEventHandler implements EventHandler {
+	protected static class SubsystemEventHandler implements EventHandler {
 		private final Map<Long, List<Event>> subsystemIdToEvents = new HashMap<Long, List<Event>>();
 		
 		public void clear() {
@@ -143,8 +147,8 @@ public abstract class SubsystemTest extends IntegrationTest {
 		return options;
 	}
 	
-	protected final SubsystemTestEventHandler subsystemEvents = new SubsystemTestEventHandler();
-	protected final SubsystemTestEventHandler subsystemInternalEvents = new SubsystemTestEventHandler();
+	protected final SubsystemEventHandler subsystemEvents = new SubsystemEventHandler();
+	protected final SubsystemEventHandler subsystemInternalEvents = new SubsystemEventHandler();
 	
 	protected Subsystem rootSubsystem;
 	
@@ -184,6 +188,19 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertChildren(Subsystem parent, Collection<Subsystem> children) {
 		assertTrue("Parent did not contain all children", parent.getChildren().containsAll(children));
+	}
+	
+	protected void assertConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
+		for (Resource resource : subsystem.getConstituents()) {
+			if (symbolicName.equals(ResourceHelper.getSymbolicNameAttribute(resource))) {
+				if (version != null)
+					assertVersion(version, ResourceHelper.getVersionAttribute(resource));
+				if (type != null)
+					assertEquals("Wrong type", type, ResourceHelper.getTypeAttribute(resource));
+				return;
+			}
+		}
+		Assert.fail("Constituent not found: " + symbolicName);
 	}
 	
 	protected void assertConstituents(int size, Subsystem subsystem) {
@@ -320,7 +337,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void assertVersion(Version expected, Subsystem subsystem) {
-		assertEquals("Wrong version: " + subsystem.getVersion(), expected, subsystem.getVersion());
+		assertVersion(expected, subsystem.getVersion());
+	}
+	
+	protected void assertVersion(Version expected, Version actual) {
+		assertEquals("Wrong version", expected, actual);
 	}
 	
 	protected Bundle getSubsystemCoreBundle() {
