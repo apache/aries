@@ -71,7 +71,7 @@ public class ClientWeavingHookTest {
     }
 
     @Test
-    public void testClientWeavingHookBasicServiveLoaderUsage() throws Exception {
+    public void testBasicServiveLoaderUsage() throws Exception {
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
         consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
 
@@ -99,7 +99,7 @@ public class ClientWeavingHookTest {
         String di = wc.getDynamicImports().get(0);
         Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di) || di2.equals(di));
 
-        // Invoke the woven class and check that it propertly sets the TCCL so that the
+        // Invoke the woven class and check that it properly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
@@ -108,7 +108,54 @@ public class ClientWeavingHookTest {
     }
 
     @Test
-    public void testClientWeavingHookAltServiceLoaderLoadUnprocessed() throws Exception {
+    public void testTCCLResetting() throws Exception {
+        ClassLoader cl = new URLClassLoader(new URL [] {});
+        Thread.currentThread().setContextClassLoader(cl);
+        Assert.assertSame("Precondition", cl, Thread.currentThread().getContextClassLoader());
+
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+
+        // Register the bundle that provides the SPI implementation.
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
+
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        Assert.assertNotNull("Precondition", clsUrl);
+
+        String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
+        WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+        Assert.assertEquals(1, wc.getDynamicImports().size());
+        String di1 = "org.apache.aries.spifly;bundle-symbolic-name=spifly;bundle-version=1.9.4";
+        String di2 = "org.apache.aries.spifly;bundle-version=1.9.4;bundle-symbolic-name=spifly";
+        String di = wc.getDynamicImports().get(0);
+        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di) || di2.equals(di));
+
+        // Invoke the woven class and check that it properly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        method.invoke(cls.newInstance(), "hi there");
+
+        Assert.assertSame(cl, Thread.currentThread().getContextClassLoader());
+    }
+
+    @Test
+    public void testTCCLResettingOnException() {
+        // TODO
+    }
+
+    @Test
+    public void testAltServiceLoaderLoadUnprocessed() throws Exception {
         Bundle spiFlyBundle = mockSpiFlyBundle();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -140,7 +187,7 @@ public class ClientWeavingHookTest {
     }
 
     @Test
-    public void testClientWeavingHookMultipleProviders() throws Exception {
+    public void testMultipleProviders() throws Exception {
         Bundle spiFlyBundle = mockSpiFlyBundle();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
