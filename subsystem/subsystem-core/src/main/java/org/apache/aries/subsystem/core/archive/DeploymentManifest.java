@@ -27,6 +27,7 @@ import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.Wire;
+import org.osgi.service.subsystem.SubsystemException;
 
 public class DeploymentManifest extends Manifest {
 	public static DeploymentManifest newInstance(Archive archive, SubsystemEnvironment environment) {
@@ -36,7 +37,12 @@ public class DeploymentManifest extends Manifest {
 		Collection<Resource> resources = new ArrayList<Resource>();
 		for (SubsystemContentHeader.Content content : manifest.getSubsystemContent().getContents()) {
 			OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
-			resources.add(environment.findResource(requirement));
+			Resource resource = environment.findResource(requirement);
+			// If the resource is null, can't continue.
+			// TODO Actually, can continue if resource is optional.
+			if (resource == null)
+				throw new SubsystemException("Resource does not exist: " + resource);
+			resources.add(resource);
 		}
 		// TODO This does not validate that all content bundles were found.
 		Map<Resource, List<Wire>> resolution = Activator.getResolver().resolve(environment, resources, Collections.EMPTY_LIST);

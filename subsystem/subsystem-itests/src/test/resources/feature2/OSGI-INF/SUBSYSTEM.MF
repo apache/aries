@@ -1,4 +1,5 @@
 Subsystem-SymbolicName: org.apache.aries.subsystem.feature2
 Subsystem-Version: 1.0.0
 Subsystem-Type: osgi.feature
-Subsystem-Content: org.apache.aries.subsystem.itests.tb2;version=2.0.0
+Subsystem-Content: org.apache.aries.subsystem.itests.tb2;version=2.0.0,
+ org.apache.aries.subsystem.itests.tb3
