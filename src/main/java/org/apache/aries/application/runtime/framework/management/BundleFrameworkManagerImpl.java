@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
@@ -49,6 +52,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.FrameworkEvent;
 
 public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 {
@@ -212,7 +220,41 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   {
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       BundleFramework framework = getBundleFramework(b);
-      if (framework != null) {
+      if (framework != null) {        
+        for (Bundle bundle : new ArrayList<Bundle>(framework.getBundles())) {
+          framework.uninstall(bundle);
+        }
+        
+        BundleContext ctx = framework.getIsolatedBundleContext();
+        ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
+        if (ref != null) {
+          try {
+            PackageAdmin pa = (PackageAdmin) ctx.getService(ref);
+            if (pa != null) {
+              final Semaphore sem = new Semaphore(0);
+              FrameworkListener listener = new FrameworkListener() {
+                public void frameworkEvent(FrameworkEvent event)
+                {
+                  if (event.getType() == FrameworkEvent.PACKAGES_REFRESHED) {
+                    sem.release();
+                  }
+                }
+              };
+        
+              ctx.addFrameworkListener(listener);
+              pa.refreshPackages(null);
+        
+              try {
+                sem.tryAcquire(60, TimeUnit.SECONDS);
+              } catch (InterruptedException ie) {}
+        
+              ctx.removeFrameworkListener(listener);
+            }
+          } finally {
+            ctx.ungetService(ref);
+          }
+        }
+        
         framework.close();
         
         // clean up our maps so we don't leak memory
@@ -251,8 +293,9 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
       // Stop all bundles inside the framework
       if (framework != null) // App Content
       {
-        for (Bundle bundle : framework.getBundles())
+        for (Bundle bundle : new ArrayList<Bundle>(framework.getBundles())) {
           framework.stop(bundle);
+        }
       }
       
       // Do not stop shared bundles
