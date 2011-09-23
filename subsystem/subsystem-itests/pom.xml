@@ -352,9 +352,46 @@
 							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
 							<includes>
 								<include>org/apache/aries/subsystem/itests/tb2/**</include>
+								<include>org/apache/aries/subsystem/itests/tb3/**</include>
 							</includes>
 							<outputDirectory>src/test/resources/feature2</outputDirectory>
 							<finalName>tb2</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb3-feature1</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/itests/tb3/**</include>
+							</includes>
+							<outputDirectory>src/test/resources/feature1</outputDirectory>
+							<finalName>tb3</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb3-feature2</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/itests/tb3/**</include>
+							</includes>
+							<outputDirectory>src/test/resources/feature2</outputDirectory>
+							<finalName>tb3</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
 					</execution>
@@ -386,6 +423,18 @@
 						<configuration>
 							<sources>
 								<source>src/test/bundles/tb2</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-source-tb3</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/tb3</source>
 							</sources>
 						</configuration>
 					</execution>

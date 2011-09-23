@@ -617,17 +617,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private AriesSubsystem getConstituentOf(Resource resource, AriesSubsystem provisionTo, boolean transitive) {
-		// Application and composite resources become constituents of the application or composite.
-		AriesSubsystem constituentOf;
-		if (transitive) {
-			// Transitive dependencies become constituents of the subsystem into which they were provisioned.
-			constituentOf = provisionTo;
-		} 
-		else {
-			// All other resources become constituents of the subsystem in which they were declared.
-			constituentOf = this;
-		}
-		return constituentOf;
+		// Transitive resources always become constituents of the subsystem to which they were provisioned.
+		if (transitive)
+			return provisionTo;
+		// Non-transitive resources become constituents of the subsystem in which they were declared.
+		return this;
 	}
 	
 	private AriesSubsystem getProvisionTo(Resource resource, boolean transitive) {
@@ -648,7 +642,27 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return provisionTo;
 	}
 	
-	private synchronized void initialize(InputStream content) throws BundleException, IOException, URISyntaxException {
+	/*private*/ synchronized void initialize(InputStream content) throws BundleException, IOException, URISyntaxException {
+		// TODO Begin proof of concept.
+		// This is a proof of concept for initializing the relationships between the root subsystem and bundles
+		// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
+		// since this does not take into account the possibility of already existing bundles going away or new bundles
+		// being installed out of band while this initialization is taking place. Need a bundle event hook for that.
+		if (isRoot()) {
+			for (long id : region.getBundleIds()) {
+				BundleRevision br = Activator.getBundleContext().getBundle(id).adapt(BundleRevision.class);
+				synchronized (resourceToSubsystems) {
+					Set<Subsystem> s = resourceToSubsystems.get(br);
+					if (s == null) {
+						s = new HashSet<Subsystem>();
+						resourceToSubsystems.put(br, s);
+					}
+					s.add(this);
+				}
+			}
+			return;
+		}
+		// TODO End proof of concept.
 		if (content == null)
 			content = new URL(location).openStream();
 		File rootDirectory = Activator.getBundleContext().getDataFile("");
@@ -710,44 +724,42 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private void installBundleResource(Resource resource, Coordination coordination, boolean transitive) throws BundleException, IOException {
-		AriesSubsystem provisionTo;
-		Bundle bundle;
+		AriesSubsystem provisionTo = null;
+		final BundleRevision revision;
 		synchronized (resourceToSubsystems) {
+			provisionTo = getProvisionTo(resource, transitive);
 			if (resource instanceof BundleRevision) {
 				// This means the resource is a bundle that's already been installed, but we still need to establish the resource->subsystem relationship.
-				// TODO The null check is necessary for when the bundle is in the root subsystem. Currently, the root subsystem is not initialized with
-				// these relationships. Need to decide if that would be better.
-				Set<Subsystem> subsystems = resourceToSubsystems.get(resource);
-				if (subsystems == null) {
-					subsystems = new HashSet<Subsystem>();
-					resourceToSubsystems.put(resource, subsystems);
-				}
-				subsystems.add(this);
-				return;
+				revision = (BundleRevision)resource;
 			}
-			provisionTo = getProvisionTo(resource, transitive);
-			URL content = environment.getContent(resource);
-			String location = provisionTo.getSubsystemId() + '@' + provisionTo.getSymbolicName() + '@' + content;
-			bundle = provisionTo.region.installBundle(location, content.openStream());
-			final BundleRevision revision = bundle.adapt(BundleRevision.class);
-			Set<Subsystem> subsystems = new HashSet<Subsystem>();
+			else {
+				URL content = environment.getContent(resource);
+				String location = provisionTo.getSubsystemId() + '@' + provisionTo.getSymbolicName() + '@' + content;
+				Bundle bundle = provisionTo.region.installBundle(location, content.openStream());
+				revision = bundle.adapt(BundleRevision.class);
+			}
+			// TODO The null check is necessary for when the bundle is in the root subsystem. Currently, the root subsystem is not initialized with
+			// these relationships. Need to decide if that would be better.
+			Set<Subsystem> subsystems = resourceToSubsystems.get(revision);
+			if (subsystems == null) {
+				subsystems = new HashSet<Subsystem>();
+				resourceToSubsystems.put(revision, subsystems);
+			}
 			subsystems.add(this);
-			resourceToSubsystems.put(revision, subsystems);
 		}
 		final AriesSubsystem constituentOf = getConstituentOf(resource, provisionTo, transitive);
-		final BundleRevision revision = bundle.adapt(BundleRevision.class);
 		coordination.addParticipant(new Participant() {
 			public void ended(Coordination coordination) throws Exception {
 				constituentOf.constituents.add(revision);
 			}
 	
 			public void failed(Coordination coordination) throws Exception {
-				revision.getBundle().uninstall();
 				synchronized (resourceToSubsystems) {
 					Set<Subsystem> subsystems = resourceToSubsystems.get(revision);
 					subsystems.remove(AriesSubsystem.this);
 					if (subsystems.isEmpty()) {
 						resourceToSubsystems.remove(revision);
+						revision.getBundle().uninstall();
 					}
 				}
 			}
@@ -899,7 +911,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			if (!subsystems.isEmpty()) {
 				return;
 			}
-			subsystems.remove(resource);
+			resourceToSubsystems.remove(resource);
 		}
 		((BundleRevision)resource).getBundle().uninstall();
 	}
