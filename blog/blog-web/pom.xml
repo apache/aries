@@ -49,7 +49,7 @@
                 <configuration>
                     <instructions>
                         <Web-ContextPath>/blog</Web-ContextPath>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Private-Package>org.apache.aries.samples.blog.web.*</Private-Package>
                         <Export-Package>!org.apache.aries.samples.blog.web.*</Export-Package>
                         <Import-Package>
