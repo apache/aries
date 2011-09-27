@@ -31,8 +31,7 @@
   <name>Apache Aries Blueprint Parser</name>
   <version>0.4-SNAPSHOT</version>
   <description>
-      This bundle contains the core implementation of Blueprint 
-      along with the "ext" namespace handler.
+      This bundle contains the blueprint parser in a plain jar.
   </description>
 
   <scm>
