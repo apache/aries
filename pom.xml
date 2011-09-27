@@ -165,12 +165,6 @@
         </dependency>
 
 		<dependency>
-			<groupId>org.eclipse</groupId>
-			<artifactId>osgi</artifactId>
-            <scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.eclipse.equinox</groupId>
 			<artifactId>cm</artifactId>
             <scope>test</scope>
