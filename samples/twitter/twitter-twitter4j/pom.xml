@@ -44,9 +44,9 @@
               <extensions>true</extensions>
               <configuration>
                   <instructions>
-                      <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                      <Bundle-Name>${pom.name}</Bundle-Name>
-                      <Bundle-Version>${pom.version}</Bundle-Version>
+                      <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                      <Bundle-Name>${project.name}</Bundle-Name>
+                      <Bundle-Version>${project.version}</Bundle-Version>
 					  <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>	
 					  <Import-Package>com.sun.syndication.feed.synd;resolution:=optional,com.sun.syndication.io;resolution:=optional,javax.crypto,javax.crypto.spec,javax.xml.parsers,javax.xml.transform,javax.xml.transform.dom,javax.xml.transform.stream,org.slf4j,org.w3c.dom,org.xml.sax,twitter4j;version="2.0.8"</Import-Package>
 					  <Export-Package>twitter4j;version=2.0.8</Export-Package>

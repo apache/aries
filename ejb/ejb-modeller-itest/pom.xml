@@ -361,7 +361,7 @@
 			<artifactId>openwebbeans-ejb</artifactId>
 			<version>${openWebBeansVersion}</version>
 			<type>jar</type>
-			<scope>test-SNAPSHOT</scope>
+			<scope>test</scope>
 		</dependency>
 	    <dependency>
 			<groupId>org.apache.openwebbeans</groupId>
