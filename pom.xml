@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.application</groupId>
     <artifactId>application-modeller-standalone</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Aries Application Modelling</name>
+    <name>Apache Aries Application Modelling Standalone</name>
     <version>0.3.1-SNAPSHOT</version>
     <description>
       Modelling utilities for working with Aries Applications (distribution for offline use).
