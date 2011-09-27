@@ -90,7 +90,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy</artifactId>
+            <artifactId>org.apache.aries.proxy.api</artifactId>
+            <version>0.4-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.impl</artifactId>
             <version>0.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
