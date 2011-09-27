@@ -30,6 +30,7 @@
 	<artifactId>org.apache.aries.application-distro</artifactId>
 	<name>Application distribution</name>
     <version>0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-distro</connection>

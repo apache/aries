@@ -66,34 +66,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
             <version>0.4-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.impl</artifactId>
             <version>0.4-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

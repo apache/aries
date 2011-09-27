@@ -75,6 +75,7 @@
                  bundles to be able to run with 4.2 though!
             -->
             <version>4.3.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -85,40 +86,19 @@
             <artifactId>org.apache.aries.jpa.api</artifactId>
             <groupId>org.apache.aries.jpa</groupId>
             <version>0.3.1-SNAPSHOT</version>
-            
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>                    
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.api</artifactId>
             <version>0.3</version>
             <scope>provided</scope>
-            
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>                    
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <artifactId>org.apache.aries.util</artifactId>
             <groupId>org.apache.aries</groupId>
             <version>0.4-SNAPSHOT</version>
             <scope>provided</scope>
-            
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>                    
-                </exclusion>
-            </exclusions>
-        </dependency>
+            </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
@@ -138,16 +118,9 @@
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <scope>test</scope>
             <version>0.3</version>
-            
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>                    
-                </exclusion>
-            </exclusions>
-        </dependency>
+            <scope>test</scope>
+         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -158,13 +131,13 @@
         	<groupId>org.osgi</groupId>
         	<artifactId>org.osgi.enterprise</artifactId>
         	<version>4.2.0</version>
-        	<type>jar</type>
-        	<scope>compile</scope>
+        	<scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
             <version>1.1.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

@@ -92,17 +92,24 @@
             <groupId>org.apache.geronimo.components</groupId>
             <artifactId>geronimo-transaction</artifactId>
             <version>2.2.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.objectweb.howl</groupId>
             <artifactId>howl</artifactId>
             <version>1.0.1-1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <optional>true</optional>
             <version>2.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

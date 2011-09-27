@@ -80,7 +80,7 @@
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
-             <version>0.3</version>
+            <version>0.3</version>
         </dependency>
 
 
@@ -93,7 +93,6 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

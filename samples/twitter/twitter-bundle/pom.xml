@@ -57,7 +57,7 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.aries.sample.twitter.TwitterQuery</Bundle-Activator>
                         <Private-Package>org.apache.aries.sample.twitter</Private-Package>
 					</instructions>

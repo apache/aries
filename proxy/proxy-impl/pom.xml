@@ -82,19 +82,9 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>4.3.0</version>
+            <scope>provided</scope>
         </dependency>
         
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>                    
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -109,28 +99,7 @@
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
-        	<scope>compile</scope>
             <version>0.4-SNAPSHOT</version>
-            
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>                    
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries</groupId>
-        	<artifactId>org.apache.aries.util</artifactId>
-        	<scope>compile</scope>
-            <version>0.4-SNAPSHOT</version>
-                        
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>                    
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
