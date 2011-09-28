@@ -28,22 +28,28 @@ import org.apache.aries.spifly.WeavingData;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.GeneratorAdapter;
+import org.objectweb.asm.commons.Method;
 
 /**
  * This class implements an ASM ClassVisitor which puts the appropriate ThreadContextClassloader
  * calls around applicable method invocations. It does the actual bytecode weaving.
  */
 public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opcodes {
+    private static final Type CLASSLOADER_TYPE = Type.getType(ClassLoader.class);
+
     private static final String GENERATED_METHOD_NAME = "$$FCCL$$";
 
-    private static final String UTIL_CLASS = Util.class.getName().replace('.', '/');
-    private static final String VOID_RETURN_TYPE = "()V";
+    private static final Type UTIL_CLASS = Type.getType(Util.class);
 
-    private final String targetClass;
+    private static final Type CLASS_TYPE = Type.getType(Class.class);
+    
+    private static final Type String_TYPE = Type.getType(String.class);
+
+    private final Type targetClass;
     private final Set<WeavingData> weavingData;
 
     // Set to true when the weaving code has changed the client such that an additional import
@@ -52,7 +58,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
 
     public TCCLSetterVisitor(ClassVisitor cv, String className, Set<WeavingData> weavingData) {
         super(cv);
-        this.targetClass = className.replace('.', '/');
+        this.targetClass = Type.getType("L" + className.replace('.', '/') + ";");
         this.weavingData = weavingData;
     }
 
@@ -62,7 +68,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         System.out.println("@@@ " + access + ": " + name + "#" + desc + "#" + signature + "~" + Arrays.toString(exceptions));
 
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-        return new TCCLSetterMethodVisitor(mv);
+        return new TCCLSetterMethodVisitor(mv, access, name, desc);
     }
 
     @Override
@@ -81,24 +87,28 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                  continue;
 
              methodNames.add(methodName);
-             MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, methodName,
-                     "(Ljava/lang/Class;)V", "(Ljava/lang/Class<*>;)V", null);
-             mv.visitCode();
+             Method method = new Method(methodName, Type.VOID_TYPE, new Type[] {CLASS_TYPE});
+             
+             GeneratorAdapter mv = new GeneratorAdapter(cv.visitMethod(ACC_PRIVATE + ACC_STATIC, methodName,
+                     method.getDescriptor(), null, null), ACC_PRIVATE + ACC_STATIC, methodName,
+                     method.getDescriptor());
+             
+             //Load the strings, method parameter and target
              mv.visitLdcInsn(wd.getClassName());
              mv.visitLdcInsn(wd.getMethodName());
-             mv.visitVarInsn(ALOAD, 0);
-             String typeIdentifier = "L" + targetClass + ";";
-             mv.visitLdcInsn(Type.getType(typeIdentifier));
-             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class",
-                     "getClassLoader", "()Ljava/lang/ClassLoader;");
-             mv.visitMethodInsn(
-                     INVOKESTATIC,
-                     "org/apache/aries/spifly/Util",
-                     "fixContextClassloader",
-                     "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;Ljava/lang/ClassLoader;)V");
-             mv.visitInsn(RETURN);
-             mv.visitMaxs(4, 1);
-             mv.visitEnd();
+             mv.loadArg(0);
+             mv.visitLdcInsn(targetClass);
+             
+             //Change the class on the stack into a classloader
+             mv.invokeVirtual(CLASS_TYPE, new Method("getClassLoader", 
+                 CLASSLOADER_TYPE, new Type[0]));
+             
+             //Call our util method
+             mv.invokeStatic(UTIL_CLASS, new Method("fixContextClassloader", Type.VOID_TYPE, 
+                 new Type[] {String_TYPE, String_TYPE, CLASS_TYPE, CLASSLOADER_TYPE}));
+             
+             mv.returnValue();
+             mv.endMethod();
         }
 
         super.visitEnd();
@@ -118,12 +128,12 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         return name.toString();
     }
 
-    private class TCCLSetterMethodVisitor extends MethodAdapter implements MethodVisitor
+    private class TCCLSetterMethodVisitor extends GeneratorAdapter implements MethodVisitor
     {
         Type lastLDCType;
 
-        public TCCLSetterMethodVisitor(MethodVisitor mv) {
-            super(mv);
+        public TCCLSetterMethodVisitor(MethodVisitor mv, int access, String name, String descriptor) {
+            super(mv, access, name, descriptor);
         }
 
         /**
@@ -155,17 +165,18 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 System.out.println("+++ Gotcha!");
 
                 additionalImportRequired = true;
-
-                // try/finally setup
-                // Add: try {
-                Label l0 = new Label();
-                Label l1 = new Label();
-                mv.visitTryCatchBlock(l0, l1, l1, null);
-                mv.visitLabel(l0);
+                
+                Label startTry = newLabel();
+                Label endTry = newLabel();
+                
+                //start try block
+                visitTryCatchBlock(startTry, endTry, endTry, null);
+                mark(startTry);
+                
                 // Add: Util.storeContextClassloader();
-                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
-                        "storeContextClassloader", VOID_RETURN_TYPE);
-
+                invokeStatic(UTIL_CLASS, new Method("storeContextClassloader", Type.VOID_TYPE, new Type[0]));
+                
+                
                 // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);
                 if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
                     "load".equals(wd.getMethodName()) &&
@@ -173,6 +184,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                     // ServiceLoader.load() is a special case because it's a general-purpose service loader,
                     // therefore, the target class it the class being passed in to the ServiceLoader.load()
                     // call itself.
+                    
                     mv.visitLdcInsn(lastLDCType);
                 } else {
                     // In any other case, we're not dealing with a general-purpose service loader, but rather
@@ -181,30 +193,27 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                     Type type = Type.getObjectType(owner);
                     mv.visitLdcInsn(type);
                 }
-                mv.visitMethodInsn(INVOKESTATIC, targetClass,
-                        getGeneratedMethodName(wd), "(Ljava/lang/Class;)V");
+                invokeStatic(targetClass, new Method(getGeneratedMethodName(wd),
+                    Type.VOID_TYPE, new Type[] {CLASS_TYPE}));
 
+                //Call the original instruction
                 super.visitMethodInsn(opcode, owner, name, desc);
 
-                // end the try part and do the finally part
-                // Add: } finally { Util.restoreContextClassLoader(); }
-                Label l2 = new Label();
-                mv.visitJumpInsn(GOTO, l2);
-                mv.visitLabel(l1);
-                mv.visitFrame(F_FULL, 2, new Object[] {"[Ljava/lang/String;", "java/lang/ClassLoader"}, 1, new Object[] {"java/lang/Throwable"});
-                mv.visitVarInsn(ASTORE, 2);
-                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
-                        "restoreContextClassloader", VOID_RETURN_TYPE);
-//                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
-//                        "storeContextClassloader", VOID_RETURN_TYPE);
-                mv.visitVarInsn(ALOAD, 2);
-                mv.visitInsn(ATHROW);
-                mv.visitLabel(l2);
-                mv.visitFrame(F_SAME, 0, null, 0, null);
-                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
-                        "restoreContextClassloader", VOID_RETURN_TYPE);
-//                mv.visitMethodInsn(INVOKESTATIC, UTIL_CLASS,
-//                        "storeContextClassloader", VOID_RETURN_TYPE);
+                //If no exception then go to the finally (finally blocks are a catch block with a jump)
+                Label afterCatch = newLabel();
+                goTo(afterCatch);
+                
+                
+                //start the catch 
+                mark(endTry);
+                //Run the restore method then throw on the exception
+                invokeStatic(UTIL_CLASS, new Method("restoreContextClassloader", Type.VOID_TYPE, new Type[0]));
+                throwException();
+                
+                //start the finally
+                mark(afterCatch);
+                //Run the restore and continue
+                invokeStatic(UTIL_CLASS, new Method("restoreContextClassloader", Type.VOID_TYPE, new Type[0]));
             } else {
                 super.visitMethodInsn(opcode, owner, name, desc);
             }
