@@ -47,10 +47,12 @@
       <!-- Export package versions are maintained in packageinfo files -->
       <aries.osgi.export.pkg>
           !org.apache.aries.blueprint.annotation*,
-          org.apache.aries.blueprint*
+          org.apache.aries.blueprint*,
+          org.osgi.service.blueprint;version=1.0.0
       </aries.osgi.export.pkg>
       <aries.osgi.import>
-          !org.apache.aries.blueprint*,
+        !org.osgi.service.blueprint,
+        !org.apache.aries.blueprint*,
         org.apache.aries.util.tracker;resolution:=optional,
         org.osgi.service.event*;resolution:=optional,
         org.osgi.service.framework;resolution:=optional,
