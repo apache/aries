@@ -36,6 +36,7 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableServiceReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -68,7 +69,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0";
-
+    public static final String BLUEPRINT_EXT_NAMESPACE_V1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0";
+    
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String DEFAULT_PROPERTIES_ELEMENT = "default-properties";
     public static final String PROPERTY_ELEMENT = "property";
@@ -80,6 +82,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     public static final String PLACEHOLDER_SUFFIX_ATTRIBUTE = "placeholder-suffix";
     public static final String DEFAULTS_REF_ATTRIBUTE = "defaults-ref";
     public static final String IGNORE_MISSING_LOCATIONS_ATTRIBUTE = "ignore-missing-locations";
+    public static final String EVALUATOR_ATTRIBUTE = "evaluator";
 
     public static final String SYSTEM_PROPERTIES_ATTRIBUTE = "system-properties";
     public static final String SYSTEM_PROPERTIES_NEVER = "never";
@@ -101,12 +104,20 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
     private int idCounter;
+    
+    private BundleContext ctx;
 
+    public void setBundleContext(BundleContext bc) {
+      this.ctx = bc;
+    }
+    
     public URL getSchemaLocation(String namespace) {
         if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(namespace)) {
           return getClass().getResource("blueprint-ext.xsd");
         } else if (BLUEPRINT_EXT_NAMESPACE_V1_1.equals(namespace)) {
           return getClass().getResource("blueprint-ext-1.1.xsd");
+        } else if (BLUEPRINT_EXT_NAMESPACE_V1_2.equals(namespace)) {
+          return getClass().getResource("blueprint-ext-1.2.xsd");
         } else {
           return null;
         }
@@ -247,6 +258,10 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         if (systemProperties != null) {
             metadata.addProperty("systemProperties", createValue(context, systemProperties));
         }
+        String evaluator = element.hasAttribute(EVALUATOR_ATTRIBUTE) ? element.getAttribute(EVALUATOR_ATTRIBUTE) : null;
+        if (evaluator != null) {
+            metadata.addProperty("evaluator", createReference(context, evaluator));
+        }
         // Parse elements
         List<String> locations = new ArrayList<String>();
         NodeList nl = element.getChildNodes();
@@ -255,7 +270,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())
-                        || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e.getNamespaceURI())) {
+                        || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e.getNamespaceURI())
+                        || BLUEPRINT_EXT_NAMESPACE_V1_2.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
                         if (defaultsRef != null) {
                             throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
@@ -285,7 +301,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())
-                        || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e.getNamespaceURI())) {
+                        || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e.getNamespaceURI())
+                        || BLUEPRINT_EXT_NAMESPACE_V1_2.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
                         BeanProperty prop = context.parseElement(BeanProperty.class, enclosingComponent, e);
                         props.addEntry(createValue(context, prop.getName(), String.class.getName()), prop.getValue());
@@ -338,6 +355,15 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     private static IdRefMetadata createIdRef(ParserContext context, String value) {
         MutableIdRefMetadata m = context.createMetadata(MutableIdRefMetadata.class);
         m.setComponentId(value);
+        return m;
+    }
+    
+    private MutableReferenceMetadata createReference(ParserContext context, String value) {
+        MutableReferenceMetadata m = context.createMetadata(MutableReferenceMetadata.class);
+        // use the class instance directly rather than loading the class from the specified the interface name.
+        m.setRuntimeInterface(PropertyEvaluator.class);
+        m.setFilter("(org.apache.aries.blueprint.ext.evaluator.name=" + value + ")");
+        m.setBundleContext(ctx);
         return m;
     }
 

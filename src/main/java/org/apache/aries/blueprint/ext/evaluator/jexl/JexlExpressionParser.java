@@ -18,7 +18,7 @@
  */
 
 
-package org.apache.aries.blueprint.ext;
+package org.apache.aries.blueprint.ext.evaluator.jexl;
 
 import java.util.Map;
 
