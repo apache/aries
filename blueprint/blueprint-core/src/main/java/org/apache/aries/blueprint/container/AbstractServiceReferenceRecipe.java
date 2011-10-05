@@ -46,6 +46,7 @@ import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -120,8 +121,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 // Synchronized block on references so that service events won't interfere with initial references tracking
                 // though this may not be sufficient because we don't control ordering of those events
                 synchronized (references) {
-                    blueprintContainer.getBundleContext().addServiceListener(this, getOsgiFilter());
-                    ServiceReference[] references = blueprintContainer.getBundleContext().getServiceReferences(null, getOsgiFilter());
+                    getBundleContextForServiceLookup().addServiceListener(this, getOsgiFilter());
+                    ServiceReference[] references = getBundleContextForServiceLookup().getServiceReferences(null, getOsgiFilter());
                     if (references != null) {
                         for (ServiceReference reference : references) {
                             this.references.add(reference);
@@ -140,7 +141,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     public void stop() {
         if (started.compareAndSet(true, false)) {
             synchronized (references) {
-                blueprintContainer.getBundleContext().removeServiceListener(this);
+                getBundleContextForServiceLookup().removeServiceListener(this);
                 doStop();
                 for (Iterator<ServiceReference> it = references.iterator(); it.hasNext();) {
                     ServiceReference ref = it.next();
@@ -233,6 +234,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         if (!interfaces.iterator().hasNext()) {
             return new Object();
         } else {
+            //We don't use the #getBundleContextForServiceLookup() method here, the bundle requesting the proxy is the 
+            //blueprint client, not the context of the lookup
             return BlueprintExtender.getProxyManager().createDelegatingProxy(blueprintContainer.getBundleContext().getBundle(), interfaces, dispatcher, null);
         }
     }
@@ -297,6 +300,17 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return null;
     }
 
+    protected BundleContext getBundleContextForServiceLookup() {
+        if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
+            BundleContext context = ((ExtendedServiceReferenceMetadata) metadata).getBundleContext();
+            if(context != null) {
+              return context;
+            }
+        }
+         
+        return blueprintContainer.getBundleContext();
+    }
+    
     protected void setSatisfied(boolean s) {
         // This check will ensure an atomic comparision and set
         // so that it will only be true if the value actually changed

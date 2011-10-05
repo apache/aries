@@ -141,7 +141,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         LOGGER.debug("Binding reference {} to {}", getName(), ref);
         synchronized (monitor) {
             if (trackedServiceReference != null) {
-                blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
+                getBundleContextForServiceLookup().ungetService(trackedServiceReference);
             }
             trackedServiceReference = ref;
             trackedService = null;
@@ -155,7 +155,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         synchronized (monitor) {
             if (trackedServiceReference != null) {
                 unbind(trackedServiceReference, proxy);
-                blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
+                getBundleContextForServiceLookup().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
                 monitor.notifyAll();
@@ -167,6 +167,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         synchronized (monitor) {
             if (isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0
                     && metadata.getAvailability() == ServiceReferenceMetadata.AVAILABILITY_MANDATORY) {
+                //Here we want to get the blueprint bundle itself, so don't use #getBundleContextForServiceLookup()
                 blueprintContainer.getEventDispatcher().blueprintEvent(new BlueprintEvent(BlueprintEvent.WAITING, blueprintContainer.getBundleContext().getBundle(), blueprintContainer.getExtenderBundle(), new String[] { getOsgiFilter() }));
                 monitor.wait(metadata.getTimeout());
             }
@@ -198,7 +199,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             } else {
             
               if (trackedService == null) {
-                  trackedService = blueprintContainer.getService(trackedServiceReference);
+                  trackedService = getBundleContextForServiceLookup().getService(trackedServiceReference);
               }
               
               if (trackedService == null) {
