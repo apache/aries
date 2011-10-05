@@ -33,12 +33,5 @@
             <property name="bundleContext" ref="blueprintBundleContext"/>
         </bean>
     </service>
-
-	<service interface="org.apache.aries.blueprint.ext.PropertyEvaluator">
-        <service-properties>
-            <entry key="org.apache.aries.blueprint.ext.evaluator.name" value="jexl" />
-        </service-properties>
-        <bean class="org.apache.aries.blueprint.ext.evaluator.jexl.JexlPropertyEvaluator"/>
-    </service>
     
 </blueprint>
