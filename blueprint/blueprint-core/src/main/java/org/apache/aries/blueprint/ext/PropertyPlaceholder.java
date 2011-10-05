@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

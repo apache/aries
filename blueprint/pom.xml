@@ -42,6 +42,7 @@
         <module>blueprint-core</module>
         <module>blueprint-cm</module>
         <module>blueprint-bundle</module>
+        <module>blueprint-jexl-evaluator</module>
         <module>blueprint-sample</module>
         <module>blueprint-annotation-api</module>
         <module>blueprint-annotation-impl</module>
