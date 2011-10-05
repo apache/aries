@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.mutable;
 import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.framework.BundleContext;
 
 /**
  * A mutable version of the <code>ServiceReferenceMetadata</code> that allows modifications.
@@ -48,4 +49,6 @@ public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenc
     void setFilter(String filter);
 
     void setRuntimeInterface(Class clazz);
+    
+    void setBundleContext(BundleContext bc);
 }

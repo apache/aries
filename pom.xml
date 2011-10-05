@@ -46,6 +46,11 @@
       <artifactId>org.apache.aries.blueprint.api</artifactId>
       <version>0.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   
