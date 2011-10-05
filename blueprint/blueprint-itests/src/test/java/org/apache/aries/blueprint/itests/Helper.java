@@ -70,6 +70,7 @@ public class Helper {
                     "asm/asm-all",
                     "org.apache.commons/commons-jexl",
                     "org.osgi/org.osgi.compendium"),
+                    mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator"),
                     
                 ((startBlueprint) ? mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint") :
                     mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").noStart())

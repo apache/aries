@@ -1,11 +1,11 @@
-package org.apache.aries.blueprint.ext.evaluator.jexl;
+package org.apache.aries.blueprint.jexl.evaluator;
 
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.aries.blueprint.ext.PropertyEvaluator;
+import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

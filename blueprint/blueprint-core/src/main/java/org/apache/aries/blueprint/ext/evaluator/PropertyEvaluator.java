@@ -1,4 +1,4 @@
-package org.apache.aries.blueprint.ext;
+package org.apache.aries.blueprint.ext.evaluator;
 
 import java.util.Dictionary;
 
