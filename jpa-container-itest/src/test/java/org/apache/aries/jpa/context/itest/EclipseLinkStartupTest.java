@@ -56,7 +56,8 @@ public class EclipseLinkStartupTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
                 // Adding blueprint to the runtime is a hack to placate the
                 // maven bundle plugin.
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
                 mavenBundle("asm", "asm-all"),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
