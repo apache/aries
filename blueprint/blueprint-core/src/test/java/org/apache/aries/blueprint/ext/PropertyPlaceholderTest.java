@@ -52,17 +52,17 @@ public class PropertyPlaceholderTest extends PropertyPlaceholder {
         assertEquals("say hello world", sut.getStringValue());
     }
     
-    @Test
-    public void evaluateStringProps() {
-        sut = makeProperty("${prop1+prop2}");
-        assertEquals("helloworld", sut.getStringValue());
-    }
-    
-    @Test
-    public void evaluateIntProps() {
-        sut = makeProperty("${prop3+prop4}");
-        assertEquals("30", sut.getStringValue());
-    }
+//    @Test
+//    public void evaluateStringProps() {
+//        sut = makeProperty("${prop1+prop2}");
+//        assertEquals("helloworld", sut.getStringValue());
+//    }
+//    
+//    @Test
+//    public void evaluateIntProps() {
+//        sut = makeProperty("${prop3+prop4}");
+//        assertEquals("30", sut.getStringValue());
+//    }
     
     
     

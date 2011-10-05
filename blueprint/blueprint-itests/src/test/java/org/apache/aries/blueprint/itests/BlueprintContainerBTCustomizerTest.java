@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.itests;
 
 import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
@@ -111,6 +112,7 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
         return testOptions(
             paxLogging("DEBUG"),
             Helper.blueprintBundles(),
+//            vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
             equinox().version("3.5.1")
         );
     }

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.aries.blueprint.mutable.MutableServiceReferenceMetadata;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
@@ -41,6 +42,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     protected Collection<ReferenceListener> referenceListeners;
     protected int proxyMethod;
     protected Class runtimeInterface;
+    protected BundleContext bundleContext;
 
     public ServiceReferenceMetadataImpl() {
     }
@@ -133,5 +135,13 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
 
     public void setRuntimeInterface(Class runtimeInterface) {
         this.runtimeInterface = runtimeInterface;
+    }
+    
+    public BundleContext getBundleContext() {
+      return bundleContext;
+    }
+    
+    public void setBundleContext(BundleContext ctx) {
+      this.bundleContext = ctx;
     }
 }

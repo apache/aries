@@ -16,6 +16,7 @@
  */
 package org.apache.aries.blueprint;
 
+import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 
 /**
@@ -32,5 +33,7 @@ public interface ExtendedServiceReferenceMetadata extends ServiceReferenceMetada
     int getProxyMethod();
 
     Class getRuntimeInterface();
+    
+    BundleContext getBundleContext();
 
 }

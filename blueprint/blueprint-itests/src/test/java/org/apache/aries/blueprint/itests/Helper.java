@@ -68,6 +68,7 @@ public class Helper {
                     "org.apache.aries/org.apache.aries.util",
                     "org.apache.aries.proxy/org.apache.aries.proxy",
                     "asm/asm-all",
+                    "org.apache.commons/commons-jexl",
                     "org.osgi/org.osgi.compendium"),
                     
                 ((startBlueprint) ? mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint") :
