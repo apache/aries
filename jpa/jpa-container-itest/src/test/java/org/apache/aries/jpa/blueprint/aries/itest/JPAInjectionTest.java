@@ -56,7 +56,8 @@ public class JPAInjectionTest extends AbstractIntegrationTest {
         // Bundles
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"), 
         mavenBundle("asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
