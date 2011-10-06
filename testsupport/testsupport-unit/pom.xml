@@ -28,7 +28,7 @@
   <artifactId>org.apache.aries.testsupport.unit</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Unit Test Support</name>
-  <version>0.3.1-SNAPSHOT</version>
+  <version>0.4-SNAPSHOT</version>
   <description>
       This bundle provides unit test support.
   </description>
@@ -45,9 +45,10 @@
 
         <aries.osgi.export.pkg>
             org.apache.aries.unittest.fixture,
-            org.apache.aries.mocks;uses:="junit.framework,org.osgi.framework,org.apache.aries.unittest.mocks,org.junit,org.apache.aries.unittest.mocks.ann otations,javax.naming,javax.naming.spi",
-            org.apache.aries.unittest.mocks.annotations;version="0.3.0",org.apache.aries.unittest.mocks;uses:="junit.framework,org.apache.aries.unittest.mocks.annotations",
-            org.apache.aries.unittest.junit;uses:="org.junit",
+            org.apache.aries.mocks,
+            org.apache.aries.unittest.mocks.annotations,
+            org.apache.aries.unittest.mocks,
+            org.apache.aries.unittest.junit,
             org.apache.aries.itest
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg />
