@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+       <groupId>org.apache.aries</groupId>
+       <artifactId>java5-parent</artifactId>
+       <version>0.4-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.apache.aries.versioning</groupId>
+    <artifactId>org.apache.aries.versioning.checker</artifactId>
+    <packaging>pom</packaging>
+    <name>Apache Aries Semantic Versioning Checker</name>
+    <version>0.1.0-SNAPSHOT</version>
+    <description>
+      OSGi Semantic Versioning Checker
+    </description>
+
+     <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/versioning/checker</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/versioning/checker</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/versioning/checker</url>
+     </scm>
+
+
+    <properties>
+        <aries.osgi.symbolic.name>
+            ${project.artifactId};blueprint.graceperiod:=false
+        </aries.osgi.symbolic.name>
+        <aries.osgi.import>
+            org.objectweb.asm*;version=3.2;resolution:=optional,
+            org.osgi.framework;version="[1.5,2)",
+            org.slf4j;version="[1.5,2)",
+            *
+        </aries.osgi.import>
+        <aries.osgi.export.pkg>
+            org.apache.aries.versioning.check;
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.versioning.utils;
+        </aries.osgi.private.pkg>
+	</properties>
+
+	<dependencies>
+    
+            <!-- Dependency on other Aries module bundles -->
+        <dependency>
+             <groupId>org.apache.aries</groupId>
+             <artifactId>org.apache.aries.util</artifactId>
+             <version>0.4-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+            <version>0.3</version>
+        </dependency>
+
+
+        <!--External dependencies. Versions may be specified in default parent -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <optional>true</optional>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+  </dependencies>
+</project>
+
