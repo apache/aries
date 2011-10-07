@@ -31,8 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.resource.spi.IllegalStateException;
-
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
@@ -87,6 +85,8 @@ public class AriesProxyService implements ProxyFactory, SingleServiceListener {
       if(c == null)
         throw new IllegalStateException("Unable to establish any context");
       else if (c.equals(Object.class)) {
+        //This is a toString or similar, just use an interface we know
+        //we can see and that doesn't have any methods on it :)
         c = Serializable.class;
       }
       
