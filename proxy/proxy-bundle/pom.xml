@@ -51,11 +51,11 @@
             org.apache.aries.proxy.weaving;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
-            org.objectweb.asm*;version=3.2;resolution:=optional,
-            org.eclipse.*;resolution:=optional,
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            org.objectweb.asm*;resolution:=optional,
             org.osgi.framework;version="[1.5,2)",
-            org.osgi.framework.hooks.weaving;version="[1.0,1.1)";resolution:=optional,
-            org.osgi.framework.wiring;version="[1.0,2)";resolution:=optional,
+            org.osgi.framework.hooks.weaving;resolution:=optional,
+            org.osgi.framework.wiring;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
@@ -75,6 +75,12 @@
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.impl</artifactId>
             <version>0.4-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.3.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

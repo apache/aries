@@ -48,11 +48,19 @@
         <aries.osgi.activator>
             org.apache.aries.proxy.impl.ProxyManagerActivator
         </aries.osgi.activator>
+        <!-- 
+          We override the import versions for org.osgi.framework because we can operate on
+          a 4.2 framework (we only need 4.3 for weaving which is optional). 
+          We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
+          stabilizing API. This should be removed once the dependency is available at a 
+          version greater than or equal to 1.0.0
+        -->
         <aries.osgi.import.pkg>
-            org.objectweb.asm*;version=3.2;resolution:=optional,
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            org.objectweb.asm*;resolution:=optional,
             org.osgi.framework;version="[1.5,2)",
-            org.osgi.framework.hooks.weaving;version="[1.0,1.1)";resolution:=optional,
-            org.osgi.framework.wiring;version="[1.0,2)";resolution:=optional,
+            org.osgi.framework.hooks.weaving;resolution:=optional,
+            org.osgi.framework.wiring;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
@@ -93,7 +101,7 @@
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
