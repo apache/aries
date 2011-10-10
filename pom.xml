@@ -44,8 +44,19 @@
         <aries.osgi.activator>
             org.apache.aries.jndi.rmi.Activator
         </aries.osgi.activator>
-        <aries.osgi.private.pkg />
-        <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            ${project.artifactId}*
+        </aries.osgi.private.pkg>
+        <aries.osgi.export.pkg/>
+        <!-- 
+          We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
+          stabilizing API. This should be removed once the dependency is available at a 
+          version greater than or equal to 1.0.0
+        -->
+        <aries.osgi.import.pkg>
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            *
+        </aries.osgi.import.pkg>
     </properties>
 
     <dependencies>
@@ -53,7 +64,7 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
             <scope>provided</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
