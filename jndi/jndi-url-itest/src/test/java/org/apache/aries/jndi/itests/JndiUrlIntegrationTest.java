@@ -140,7 +140,8 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
         mavenBundle("org.ops4j.pax.web", "pax-web-extender-war"),
         mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle"),
         
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi"),

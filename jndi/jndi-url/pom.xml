@@ -51,7 +51,13 @@
         <aries.osgi.activator>
             org.apache.aries.jndi.url.Activator
         </aries.osgi.activator>
+        <!-- 
+          We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
+          stabilizing API. This should be removed once the dependency is available at a 
+          version greater than or equal to 1.0.0
+        -->
         <aries.osgi.import.pkg>
+          org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
           org.osgi.service.blueprint.container;resolution:=optional,
           *
         </aries.osgi.import.pkg>
@@ -62,7 +68,7 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
             <scope>provided</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
@@ -88,7 +94,7 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.core</artifactId>
             <scope>test</scope>
-        <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
