@@ -49,9 +49,9 @@
     <inceptionYear>2009</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.5</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/parent-0.5</developerConnection>
-        <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.5</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/parent</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/parent</developerConnection>
+        <url>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/parent</url>
     </scm>
 
     <issueManagement>
