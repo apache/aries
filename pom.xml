@@ -46,7 +46,7 @@
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
         <aries.osgi.import>
-            org.apache.aries.blueprint.annotation,
+            org.apache.aries.blueprint.annotation;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg />
@@ -61,12 +61,12 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
     </dependencies>
 
