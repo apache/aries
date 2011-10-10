@@ -34,9 +34,9 @@
   </description>
 
   <scm>
-     <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.testsupport.unit-0.4</connection>
-     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.testsupport.unit-0.4</developerConnection>
-     <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.testsupport.unit-0.4</url>
+     <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/testsupport/testsupport-unit</connection>
+     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/testsupport/testsupport-unit</developerConnection>
+     <url>http://svn.apache.org/viewvc/aries/trunk/testsupport/testsupport-unit</url>
   </scm>
 
 
