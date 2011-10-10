@@ -46,18 +46,26 @@
         <aries.osgi.activator>
             org.apache.aries.blueprint.container.BlueprintExtender
         </aries.osgi.activator>
+        <!-- 
+          We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
+          stabilizing API. This should be removed once the dependency is available at a 
+          version greater than or equal to 1.0.0
+        -->
         <aries.osgi.import>
             !org.apache.aries.blueprint*,
-            !org.osgi.service.blueprint*,
+            !org.osgi.service.blueprint,
+            org.osgi.service.blueprint.container,
+            org.osgi.service.blueprint.reflect,
             org.eclipse.osgi.internal.loader;resolution:=optional,
             org.eclipse.osgi.framework.internal.core;resolution:=optional,
             org.eclipse.osgi.framework.adaptor;resolution:=optional,
             org.osgi.service.event*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
-            org.osgi.service.cm;version="[1.2.0,2.0.0)",
-            org.apache.aries.blueprint.annotation.service;resolution:=optional,
-            org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
-            org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
+            org.osgi.service.cm,
+            org.apache.aries.blueprint.annotation.service;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.quiesce.manager;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.quiesce.participant;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <!-- Export package versions are maintained in packageinfo files -->
@@ -90,7 +98,13 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
+            <version>0.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -132,7 +146,7 @@
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.api</artifactId>
             <scope>provided</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
 
     </dependencies>
