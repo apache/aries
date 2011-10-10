@@ -52,11 +52,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
             <scope>test</scope>
@@ -75,12 +70,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.sample</artifactId>
-            <scope>test</scope>
-            <version>0.3.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-annotation</artifactId>
             <version>0.3.2-SNAPSHOT</version>
             <scope>test</scope>
@@ -91,18 +80,6 @@
             <version>0.3.2-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>        
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.testbundlea</artifactId>
-            <scope>test</scope>
-            <version>0.3.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
-            <scope>test</scope>
-            <version>0.3.2-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
@@ -131,21 +108,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>1.2.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.compendium</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
@@ -177,7 +139,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>

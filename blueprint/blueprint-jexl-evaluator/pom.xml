@@ -43,8 +43,13 @@
       
       <!-- Export package versions are maintained in packageinfo files -->
       <aries.osgi.export.pkg/>
+      <!-- 
+          We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
+          stabilizing API. This should be removed once the dependency is available at a 
+          version greater than or equal to 1.0.0
+        -->
       <aries.osgi.import>
-        org.apache.aries.blueprint.ext.evaluator;version="[0.3.2,0.4)",      
+        org.apache.aries.blueprint.ext.evaluator;version="$&lt;range;[==,=+)&gt;",      
         org.apache.commons.jexl2,
         org.slf4j,
         org.osgi.service.blueprint
