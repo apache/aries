@@ -27,16 +27,16 @@
 
     <artifactId>org.apache.aries.util</artifactId>
     <packaging>bundle</packaging>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.4</version>
     <name>Apache Aries Util</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/util</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/util</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/util</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-0.4</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-0.4</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.util-0.4</url>
     </scm>
 
     <properties>
