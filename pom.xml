@@ -31,8 +31,7 @@
   <name>Apache Aries Blueprint Annotation Impl</name>
   <version>0.3.2-SNAPSHOT</version>
   <description>
-      This bundle contains the core implementation of Blueprint 
-      along with the "ext" namespace handler.
+      This bundle contains an implementation of Blueprint annotation support 
   </description>
 
      <scm>
@@ -42,28 +41,33 @@
      </scm>
 
   <properties>
+      <aries.osgi.export.pkg />
       <aries.osgi.activator>
           org.apache.aries.blueprint.annotation.impl.Activator
       </aries.osgi.activator>
-      <aries.osgi.export.pkg>
-          org.apache.aries.blueprint.jaxb.*,
+      <aries.osgi.private.pkg>
+          org.apache.aries.blueprint.jaxb,
           org.apache.aries.blueprint.annotation.impl
-      </aries.osgi.export.pkg>
-      <aries.osgi.import>
-          org.apache.aries.blueprint.annotation,
-        *
-      </aries.osgi.import>
+      </aries.osgi.private.pkg>
+        <!-- 
+          We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
+          stabilizing API. This should be removed once the dependency is available at a 
+          version greater than or equal to 1.0.0
+        -->
+        <aries.osgi.import.pkg>
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            *
+        </aries.osgi.import.pkg>
       <aries.osgi.export.service>
           org.apache.aries.blueprint.annotation.AnnotationScannerService
       </aries.osgi.export.service>
-      <aries.osgi.private.pkg />
   </properties>
   
   <dependencies>
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-          <version>0.3.2-SNAPSHOT</version>
+          <version>0.3</version>
       </dependency>
       <dependency>
           <groupId>org.apache.aries</groupId>
