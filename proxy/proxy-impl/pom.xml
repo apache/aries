@@ -35,9 +35,9 @@
     </description>
 
     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy.impl-0.4</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy.impl-0.4</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.proxy.impl-0.4</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-impl</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-impl</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-impl</url>
     </scm>
 
 
