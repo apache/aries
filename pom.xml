@@ -19,16 +19,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>0.3</version>
+          <groupId>org.apache.aries</groupId>
+          <artifactId>java5-parent</artifactId>
+          <version>0.5</version>
+          <relativePath />
     </parent>
 
     <groupId>org.apache.aries.proxy</groupId>
     <artifactId>org.apache.aries.proxy</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Bundle</name>
-    <version>0.4 </version>
+    <version>0.4</version>
     <description>
         This bundle contains the Apache Aries Proxy Service.
     </description>
@@ -39,17 +40,22 @@
         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.proxy-0.4</url>
     </scm>
 
-         
 
     <properties>
+        <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.activator>
             org.apache.aries.proxy.impl.ProxyManagerActivator
         </aries.osgi.activator>
         <aries.osgi.export.pkg>
-            org.apache.aries.proxy;
+            org.apache.aries.proxy;,
+            org.apache.aries.proxy.weaving;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
-            org.eclipse.*;resolution:=optional,
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            org.objectweb.asm*;resolution:=optional,
+            org.osgi.framework;version="[1.5,2)",
+            org.osgi.framework.hooks.weaving;resolution:=optional,
+            org.osgi.framework.wiring;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
@@ -59,39 +65,23 @@
     </properties>
 
     <dependencies>
-    <!--Internal module dependencies -->
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>0.5</version>
+            <version>0.4</version>
+            <scope>provided</scope>
         </dependency>
-     <!-- Dependencies on other aries modules, versions specified in module parent -->
-
-     <!-- External dependencies, versions specified in module parent or default-parent -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <version>4.3.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
