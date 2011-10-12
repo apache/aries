@@ -45,8 +45,9 @@
             org.apache.aries.transaction.exception
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-            org.osgi.framework;version="1.5",
-            org.osgi.service.cm;version="[1.2.0,2.0.0)",
+            org.osgi.framework,
+            org.osgi.service.cm,
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
@@ -59,6 +60,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -68,8 +70,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>0.3</version>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
