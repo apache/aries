@@ -32,9 +32,9 @@
     <name>Aries Quiesce Manager iTests</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.quiesce.manager.itest-0.3.1</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.quiesce.manager.itest-0.3.1</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.quiesce.manager.itest-0.3.1</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/quiesce/quiesce-manager-itest</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/quiesce/quiesce-manager-itest</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/quiesce/quiesce-manager-itest</url>
     </scm>
 
     <dependencies>
