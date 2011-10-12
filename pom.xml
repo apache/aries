@@ -74,10 +74,22 @@
             org.osgi.service.blueprint.container,
             org.osgi.service.blueprint.reflect,
             !org.apache.aries.blueprint.annotation*,
-            org.apache.aries.blueprint*
+            org.apache.aries.blueprint,
+          	org.apache.aries.blueprint.mutable,
+          	org.apache.aries.blueprint.ext.evaluator
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
-            OSGI-INF*
+	        org.apache.aries.blueprint.parser,
+	        org.apache.aries.blueprint.reflect,
+	        org.apache.aries.blueprint.container,
+	        org.apache.aries.blueprint.di,
+	        org.apache.aries.blueprint.ext,
+	        org.apache.aries.blueprint.namespace,
+	        org.apache.aries.blueprint.proxy,
+	        org.apache.aries.blueprint.services,
+	        org.apache.aries.blueprint.utils*,
+	        org.apache.aries.blueprint.compendium.cm,
+	        OSGI-INF*
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
             org.apache.aries.blueprint.ParserService
