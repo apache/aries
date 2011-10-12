@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.quiesce</groupId>
     <artifactId>org.apache.aries.quiesce.manager.itest</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.1</version>
     <name>Aries Quiesce Manager iTests</name>
 
     <dependencies>
@@ -179,4 +179,10 @@
             </build>
         </profile>
     </profiles>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.quiesce.manager.itest-0.3.1</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.quiesce.manager.itest-0.3.1</developerConnection>
+    <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.quiesce.manager.itest-0.3.1</url>
+  </scm>
 </project>
