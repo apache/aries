@@ -41,6 +41,10 @@
     <aries.osgi.export.pkg>
       !org.apache.aries.transaction.jdbc
     </aries.osgi.export.pkg>
+    <aries.osgi.import>
+        org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+        *
+    </aries.osgi.import>
     <aries.osgi.private.pkg>
       org.apache.aries.transaction.jdbc
     </aries.osgi.private.pkg>
@@ -53,7 +57,7 @@
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
