@@ -75,6 +75,7 @@
             org.osgi.service.blueprint.reflect,
             !org.apache.aries.blueprint.annotation*,
             org.apache.aries.blueprint,
+            org.apache.aries.blueprint.services,
           	org.apache.aries.blueprint.mutable,
           	org.apache.aries.blueprint.ext.evaluator
         </aries.osgi.export.pkg>
@@ -86,7 +87,6 @@
 	        org.apache.aries.blueprint.ext,
 	        org.apache.aries.blueprint.namespace,
 	        org.apache.aries.blueprint.proxy,
-	        org.apache.aries.blueprint.services,
 	        org.apache.aries.blueprint.utils*,
 	        org.apache.aries.blueprint.compendium.cm,
 	        OSGI-INF*
