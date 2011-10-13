@@ -46,9 +46,10 @@
             javax.persistence;version="[1.0.0,2.1.0)",
             javax.persistence.criteria;version="[1.1.0,2.1.0)";resolution:=optional,
             javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
-            org.apache.aries.jpa.container.context;version="[0.1.0,1.1.0)",
-            org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
-            org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
+            org.apache.aries.jpa.container.context;version="$&lt;range;[==,=+)&gt;",
+            org.apache.aries.quiesce.manager;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.quiesce.participant;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
       <aries.osgi.activator>
@@ -89,7 +90,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
