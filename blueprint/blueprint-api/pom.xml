@@ -26,7 +26,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.api</artifactId>
     <packaging>bundle</packaging>
-    <version>0.3.2</version>
+    <version>0.3.2-SNAPSHOT</version>
     <name>Apache Aries Blueprint API</name>
     <description>
         This bundle contains the blueprint api 1.0.1 and the corresponding xml schema.
