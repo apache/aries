@@ -50,6 +50,7 @@
           org.apache.aries.blueprint,
           org.apache.aries.blueprint.mutable,
           org.apache.aries.blueprint.ext.evaluator,
+          org.apache.aries.blueprint.services,
           org.osgi.service.blueprint;version=1.0.0
       </aries.osgi.export.pkg>
       <!-- 

@@ -47,6 +47,12 @@
             org.apache.aries.application.modelling.utils.impl
         </aries.osgi.private.pkg>
     	<aries.osgi.export.pkg />
+    	
+    	<aries.osgi.import.pkg>
+    	    org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            *
+    	</aries.osgi.import.pkg>
+       
     </properties>
 
     <dependencies>
