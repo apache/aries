@@ -47,14 +47,13 @@
             javax.persistence.criteria;version="[1.1.0,2.1.0)";resolution:=optional,
             javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
             !javax.transaction,
-            org.apache.aries.jpa.container;version="[0.1.0,1.1.0)",
-            org.apache.aries.jpa.container.parsing;version="[0.1.0,1.1.0)",
-            org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
-            org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
+            org.apache.aries.quiesce.manager;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.quiesce.participant;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             org.osgi.framework;version="[1.5,2)",
-            org.osgi.framework.hooks.weaving;version="[1,1.1)";resolution:=optional,
-            org.osgi.framework.wiring;version="[1,2)";resolution:=optional,
-            org.osgi.service.jdbc;version="[1,2)";resolution:=optional,
+            org.osgi.framework.hooks.weaving;resolution:=optional,
+            org.osgi.framework.wiring;resolution:=optional,
+            org.osgi.service.jdbc;resolution:=optional,
             *
         </aries.osgi.import>
         <aries.osgi.dynamic>
@@ -96,7 +95,7 @@
         <dependency>
             <artifactId>org.apache.aries.util</artifactId>
             <groupId>org.apache.aries</groupId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
             <scope>provided</scope>
             </dependency>
         <dependency>
