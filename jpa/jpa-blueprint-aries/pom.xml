@@ -43,8 +43,7 @@
         <aries.osgi.export.pkg />
         <aries.osgi.import>
             javax.persistence;version="[1.0.0,3.0.0)",
-            org.apache.aries.jpa.container.context;version="[0.1.0,1.1.0)",
-            org.apache.aries.blueprint;version="[0.1.0,1.1.0)",
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.export.service>
@@ -71,8 +70,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>0.3</version>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

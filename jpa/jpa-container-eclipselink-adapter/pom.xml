@@ -39,6 +39,7 @@
     <aries.osgi.import.pkg>
       javax.persistence*;version="[1.1,2.1)",
       !org.eclipse.persistence.*,
+      org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
       *
     </aries.osgi.import.pkg>
     <aries.osgi.failok>true</aries.osgi.failok>
@@ -68,20 +69,20 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jta_1.1_spec</artifactId>
+        <version>1.1.1</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.jpa</artifactId>
       <version>2.1.0</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.aries.transaction</groupId>
-      <artifactId>org.apache.aries.transaction.manager</artifactId>
-      <version>0.3.1-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
     	<groupId>org.apache.aries</groupId>
     	<artifactId>org.apache.aries.util</artifactId>
-    	<version>0.4-SNAPSHOT</version>
+    	<version>0.4</version>
     	<scope>provided</scope>
     </dependency>
   </dependencies>
