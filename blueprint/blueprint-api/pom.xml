@@ -26,16 +26,16 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.api</artifactId>
     <packaging>bundle</packaging>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.2</version>
     <name>Apache Aries Blueprint API</name>
     <description>
         This bundle contains the blueprint api 1.0.1 and the corresponding xml schema.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-api</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-api</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-api</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.api-0.3.2</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.api-0.3.2</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.api-0.3.2</url>
      </scm>
 
     <properties>
