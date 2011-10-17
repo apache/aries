@@ -21,7 +21,7 @@
     <parent>
     <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.5</version>
+        <version>0.5-SNAPSHOT</version>
         <relativePath />
     </parent>
 
@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.proxy.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy API</name>
-    <version>0.4</version>
+    <version>0.4-SNAPSHOT</version>
     <description>
         This bundle contains the Apache Aries Proxy service API.
     </description>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.4</version>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
