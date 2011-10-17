@@ -61,7 +61,7 @@
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
