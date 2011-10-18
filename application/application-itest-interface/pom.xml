@@ -48,8 +48,10 @@
 		</aries.osgi.export.pkg>
 
 		<aries.osgi.private.pkg />
-		<aries.osgi.import.pkg>*
-		</aries.osgi.import.pkg>
+		<aries.osgi.import.pkg>
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            *
+        </aries.osgi.import.pkg>
 	</properties>
 
 </project>
