@@ -146,8 +146,11 @@ public class SharedBundleFramework
       
       compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, BundleFramework.SHARED_BUNDLE_FRAMEWORK);
 
-      // Add blueprint so that it is available to applications.
-      compositeManifest.put(Constants.IMPORT_PACKAGE, RUNTIME_PACKAGES);
+      // Add blueprint so that it is available to applications, unless configuration has already been provided.
+      String existingImports = (String) compositeManifest.get(Constants.IMPORT_PACKAGE);
+      if (existingImports == null){
+        compositeManifest.put(Constants.IMPORT_PACKAGE, RUNTIME_PACKAGES);
+      }
       
       return compositeManifest;
     }
