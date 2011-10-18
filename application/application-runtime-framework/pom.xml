@@ -51,6 +51,10 @@
             org.apache.aries.application.runtime.framework;
 			org.apache.aries.application.runtime.framework.config
         </aries.osgi.private.pkg>
+        <aries.osgi.import.pkg>
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            *
+        </aries.osgi.import.pkg>
     </properties>
     
     <dependencies>
