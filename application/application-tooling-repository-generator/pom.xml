@@ -42,6 +42,10 @@
         <aries.osgi.private.pkg>
             org.apache.aries.application.repository.generator
         </aries.osgi.private.pkg>
+        <aries.osgi.import.pkg>
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            *
+        </aries.osgi.import.pkg>
     </properties>
     <dependencies>
         <dependency>
@@ -204,7 +208,7 @@
             <!--  assembly a zip -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
+                <version>2.2.1</version>
                 <configuration>
                     <descriptors>
                         <descriptor>src/main/assembly/createzip.xml</descriptor>

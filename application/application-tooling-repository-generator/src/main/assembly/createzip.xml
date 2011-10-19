@@ -7,7 +7,6 @@
   </formats>
   <fileSets>
     <fileSet>
-     <directory>/</directory>
       <outputDirectory>META-INF/</outputDirectory>
       <includes>
         <include>LICENSE</include>

@@ -95,7 +95,7 @@
         <dependency>
             <artifactId>org.apache.aries.util</artifactId>
             <groupId>org.apache.aries</groupId>
-            <version>0.4</version>
+            <version>0.4-SNAPSHOT</version>
             <scope>provided</scope>
             </dependency>
         <dependency>
