@@ -1,11 +1,15 @@
-The Subsystems subproject uses RFC 138(Framework hooks).
-You need to download the implementation jar at:
-    http://download.eclipse.org/equinox/
-You need to copy it in your local m2 repository:
-  ~/.m2/repository/org/eclipse/osgi/3.7.0.v20100910/osgi-3.7.0.v20100910.jar
+The Subsystems subproject uses some unreleased and difficult to find equinox artifacts.
 
-I tested using the 3.7M2 stable builds.
+There's a profile to download them automatically like this:
 
-Also, you need to run the following command to index your local m2 repo to ~/.m2/repository/repository.xml file. 
+mvn clean install -Pfetch-external
 
-mvn org.apache.felix:maven-bundle-plugin:2.1.0:index  -DurlTemplate=maven
+The normal build is now in the default profile so if you are running any other profiles you will need
+
+mvn clean install -Pdefault,<your other profiles>
+
+PLEASE if you change the version of these jars used in subsystems UPDATE THE DOWNLOAD INFO in the subsystem root pom.
+
+The downloader is from here:
+
+http://code.google.com/p/maven-external-dependency-plugin/

@@ -13,129 +13,212 @@
 		CONDITIONS OF ANY KIND, either express or implied. See the License for
 		the specific language governing permissions and limitations under the
 		License.
-	--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.4</version>
-        <relativePath />
-    </parent>  
+        <relativePath/>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.aries.subsystem</groupId>
-	<artifactId>subsystem</artifactId>
-	<name>Apache Aries Subsystem</name>
-	<packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.aries.subsystem</groupId>
+    <artifactId>subsystem</artifactId>
+    <name>Apache Aries Subsystem</name>
+    <packaging>pom</packaging>
 
-	<description>Subsystems support for Aries</description>
+    <description>Subsystems support for Aries</description>
 
-<!--
-	<scm>
-		<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem</developerConnection>
-		<url>http://svn.apache.org/viewvc/aries/trunk/subsystem</url>
-	</scm>
+    <!--
+        <scm>
+            <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem</connection>
+            <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem</developerConnection>
+            <url>http://svn.apache.org/viewvc/aries/trunk/subsystem</url>
+        </scm>
 
-	<dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.aries.subsystem</groupId>
-                <artifactId>org.apache.aries.subsystem.api</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.subsystem</groupId>
-                <artifactId>org.apache.aries.subsystem.core</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.subsystem</groupId>
-                <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.subsystem</groupId>
-                <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.testsupport</groupId>
-                <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.api</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.utils</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries</groupId>
-                <artifactId>org.apache.aries.util</artifactId>
-                <version>${version}</version>
-            </dependency>  
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>4.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.utils</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-	        <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>1.2.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.compendium</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.osgi.service.obr</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
-                <version>1.0.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.bundlerepository</artifactId>
-                <version>1.6.4</version>
-            </dependency>
-            
-            
-	    </dependencies>
-	</dependencyManagement>
--->
-    <modules>
-        <module>subsystem-api</module>
-        <module>subsystem-core</module>
-        <module>subsystem-scope-api</module>
-        <module>subsystem-scope-impl</module>
-        <module>subsystem-scope-itests</module>
-        <module>subsystem-obr</module>
-        <module>subsystem-install</module>
-        <module>subsystem-executor</module>
-        <module>subsystem-example</module>
-        <module>subsystem-itests</module>
-    </modules>
+        <dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.aries.subsystem</groupId>
+                    <artifactId>org.apache.aries.subsystem.api</artifactId>
+                    <version>${version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.aries.subsystem</groupId>
+                    <artifactId>org.apache.aries.subsystem.core</artifactId>
+                    <version>${version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.aries.subsystem</groupId>
+                    <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
+                    <version>${version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.aries.subsystem</groupId>
+                    <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
+                    <version>${version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.aries.testsupport</groupId>
+                    <artifactId>org.apache.aries.testsupport.unit</artifactId>
+                    <version>${version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.aries.application</groupId>
+                    <artifactId>org.apache.aries.application.api</artifactId>
+                    <version>${version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.aries.application</groupId>
+                    <artifactId>org.apache.aries.application.utils</artifactId>
+                    <version>${version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.aries</groupId>
+                    <artifactId>org.apache.aries.util</artifactId>
+                    <version>${version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                    <version>4.2.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.apache.felix.utils</artifactId>
+                    <version>1.0.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.apache.felix.configadmin</artifactId>
+                    <version>1.2.4</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.felix</groupId>
+                            <artifactId>org.osgi.compendium</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.apache.felix</groupId>
+                            <artifactId>org.osgi.core</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.service.obr</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.felix</groupId>
+                            <artifactId>org.osgi.core</artifactId>
+                        </exclusion>
+                    </exclusions>
+                    <version>1.0.2</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.apache.felix.bundlerepository</artifactId>
+                    <version>1.6.4</version>
+                </dependency>
+
+
+            </dependencies>
+        </dependencyManagement>
+    -->
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>subsystem-api</module>
+                <module>subsystem-core</module>
+                <module>subsystem-scope-api</module>
+                <module>subsystem-scope-impl</module>
+                <module>subsystem-scope-itests</module>
+                <module>subsystem-obr</module>
+                <module>subsystem-install</module>
+                <module>subsystem-executor</module>
+                <module>subsystem-example</module>
+                <module>subsystem-itests</module>
+            </modules>
+
+        </profile>
+
+        <profile>
+            <id>fetch-external</id>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>ossrh</id>
+                    <name>Sonatype OSS Repository</name>
+                    <url>http://oss.sonatype.org/content/groups/public</url>
+                    <layout>default</layout>
+                </pluginRepository>
+            </pluginRepositories>
+
+
+            <build>
+                <plugins>
+
+                    <!-- EXTERNAL DEPENDENCY RESOLVER -->
+
+                    <plugin>
+                        <groupId>com.savage7.maven.plugins</groupId>
+                        <artifactId>maven-external-dependency-plugin</artifactId>
+                        <version>0.5-SNAPSHOT</version>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <createChecksum>true</createChecksum>
+                            <skipChecksumVerification>false</skipChecksumVerification>
+                            <force>false</force>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.eclipse</groupId>
+                                    <artifactId>osgi</artifactId>
+                                    <version>3.8.0-SNAPSHOT</version>
+                                    <packaging>jar</packaging>
+                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/I20111018-0850/org.eclipse.osgi_3.8.0.v20111017-1643.jar&amp;url=http://download.eclipse.org/equinox/drops/I20111018-0850/org.eclipse.osgi_3.8.0.v20111017-1643.jar&amp;mirror_id=1</downloadUrl>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.equinox</groupId>
+                                    <artifactId>coordinator</artifactId>
+                                    <version>1.0.0.v20110314</version>
+                                    <packaging>jar</packaging>
+                                    <downloadUrl>http://ftp.osuosl.org/pub/eclipse/equinox/drops/R-3.7.1-201109091335/org.eclipse.equinox.coordinator_1.0.0.v20110502.jar</downloadUrl>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.equinox</groupId>
+                                    <artifactId>region</artifactId>
+                                    <version>1.0.0.v20110506</version>
+                                    <packaging>jar</packaging>
+                                    <downloadUrl>http://ftp.osuosl.org/pub/eclipse/equinox/drops/R-3.7.1-201109091335/org.eclipse.equinox.region_1.0.0.v20110524.jar</downloadUrl>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-external-dependencies</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean-external</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>resolve-install-external-dependencies</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>resolve-external</goal>
+                                    <goal>install-external</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+           </build>
+        </profile>
+    </profiles>
+
 
 </project>
