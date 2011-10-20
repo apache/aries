@@ -109,7 +109,7 @@
         
 
         <!-- Aries Testsupport Versions -->
-        <ariesTestsupportUnitVersion>0.3.1-SNAPSHOT</ariesTestsupportUnitVersion>
+        <ariesTestsupportUnitVersion>0.4-SNAPSHOT</ariesTestsupportUnitVersion>
 
         <!-- Aries Transaction Versions -->
         <ariesTransactionBlueprintVersion>0.3.1-SNAPSHOT</ariesTransactionBlueprintVersion>
