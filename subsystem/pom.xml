@@ -135,13 +135,7 @@
             <modules>
                 <module>subsystem-api</module>
                 <module>subsystem-core</module>
-                <module>subsystem-scope-api</module>
-                <module>subsystem-scope-impl</module>
-                <module>subsystem-scope-itests</module>
-                <module>subsystem-obr</module>
-                <module>subsystem-install</module>
                 <module>subsystem-executor</module>
-                <module>subsystem-example</module>
                 <module>subsystem-itests</module>
             </modules>
 
