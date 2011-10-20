@@ -47,6 +47,8 @@ public class JpaBlogSampleWithEbaTest extends AbstractIntegrationTest {
     @Test
     public void test() throws Exception {
 	
+      waitForStart();
+      
 	/* Install and start the blog eba */
 	URL urlToEba = getUrlToEba("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.jpa.eba");
 	AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
