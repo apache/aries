@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.aries.blueprint.NamespaceHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.ops4j.pax.exam.CoreOptions;
@@ -116,7 +117,10 @@ public abstract class AbstractIntegrationTest {
         }
      }
 
-
+  protected void waitForStart() {
+    getOsgiService(NamespaceHandler.class, "(osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/transactions/v1.0.0)", DEFAULT_TIMEOUT);
+  }
+	
 	protected Bundle getInstalledBundle(String symbolicName) {
         for (Bundle b : bundleContext.getBundles()) {
             if (b.getSymbolicName().equals(symbolicName)) {
