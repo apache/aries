@@ -27,13 +27,13 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
     <name>Apache Aries Blueprint Test Bundle B</name>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.2</version>
     <packaging>bundle</packaging>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-testbundleb</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-testbundleb</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/branches/oct-2011-release/blueprint/blueprint-testbundleb</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.testbundleb-0.3.2</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.testbundleb-0.3.2</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.testbundleb-0.3.2</url>
      </scm>
 
     <properties>
