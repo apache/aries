@@ -14,33 +14,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.blueprint.sample;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+package org.apache.aries.blueprint.fragment;
 
 import org.apache.aries.blueprint.annotation.Bean;
-import org.apache.aries.blueprint.annotation.Inject;
-import org.osgi.service.blueprint.container.Converter;
-import org.osgi.service.blueprint.container.ReifiedType;
 
-@Bean(id="converter1")
-public class DateTypeConverter implements Converter {
+@Bean(id="fragment")
+public class FragmentBean {}
 
-    @Inject(name="format", value="yyyy.MM.dd")
-    DateFormat dateFormat;
-    
-    public void setFormat(String format) {
-        this.dateFormat = new SimpleDateFormat(format);
-    }
-    
-    public Object convert(Object source, ReifiedType toType) throws Exception {
-        return this.dateFormat.parse(source.toString());
-    }
-
-    public boolean canConvert(Object fromValue, ReifiedType toType) {
-        return Date.class.isAssignableFrom(toType.getRawClass());
-    }
-
-}

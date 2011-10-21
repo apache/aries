@@ -24,27 +24,24 @@
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
-    <artifactId>org.apache.aries.blueprint.sample-annotation</artifactId>
-    <name>Apache Aries Blueprint Sample for Testing Annotation</name>
+    <artifactId>org.apache.aries.blueprint.sample-fragment</artifactId>
+    <name>Apache Aries Blueprint Sample Fragment for Testing Annotation</name>
     <version>0.3.2</version>
     <packaging>bundle</packaging>
     <description>
-        Example blueprint application, mostly used for annotation tests.
+        Example blueprint fragment, mostly used for annotation tests.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-sample-annotation</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-sample-annotation</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/branches/oct-2011-release/blueprint/blueprint-sample-annotation</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.sample-fragment-0.3.2</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.sample-fragment-0.3.2</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.sample-fragment-0.3.2</url>
      </scm>
 
     <properties>
 		<aries.osgi.export>
-			org.apache.aries.blueprint.sample;-noimport:=true
+			org.apache.aries.blueprint.fragment;-noimport:=true
 		</aries.osgi.export>
-        <aries.osgi.activator>
-            org.apache.aries.blueprint.sample.Activator
-        </aries.osgi.activator>
         <aries.osgi.import>
             org.apache.aries.blueprint.annotation;version="$&lt;range;[==,=+)&gt;",
             *
@@ -81,7 +78,7 @@
 					<configuration>
 						<excludeDependencies>${aries.osgi.exclude.dependencies}</excludeDependencies>
 						<instructions>
-							<Bundle-Blueprint-Annotation>true</Bundle-Blueprint-Annotation>
+							<Fragment-Host>org.apache.aries.blueprint.sample-annotation</Fragment-Host>
 						</instructions>
 					</configuration>
 				</plugin>
