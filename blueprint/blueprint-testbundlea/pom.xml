@@ -31,9 +31,9 @@
     <packaging>bundle</packaging>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/testbundlea</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/testbundlea</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/testbundlea</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-testbundlea</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-testbundlea</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/oct-2011-release/blueprint/blueprint-testbundlea</url>
      </scm>
 
     <properties>
