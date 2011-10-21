@@ -33,9 +33,9 @@
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-sample</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-sample</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/oct-2011-release/blueprint/blueprint-sample</url>
      </scm>
 
     <properties>
