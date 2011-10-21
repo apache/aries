@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.aries.util.VersionRange;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
-import org.osgi.framework.VersionRange;
 
 public class SubsystemContentHeader extends AbstractHeader {
 	public static class Content {
