@@ -37,7 +37,7 @@
      <scm>
          <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</connection>
          <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-core</url>
+         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-jexl-evaluator</url>
      </scm>
   <properties>
       
