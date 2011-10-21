@@ -29,13 +29,13 @@
     <version>0.3.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>
-        Example blueprint application, mostly used for annotation tests.
+        Example blueprint fragment, mostly used for annotation tests.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-sample-annotation</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-sample-annotation</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/branches/oct-2011-release/blueprint/blueprint-sample-annotation</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-sample-fragment</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-sample-fragment</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/oct-2011-release/blueprint/blueprint-sample-fragment</url>
      </scm>
 
     <properties>
