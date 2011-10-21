@@ -34,7 +34,11 @@ import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.apache.openejb.OpenEJBException;
 import org.apache.openejb.assembler.classic.Assembler;
 import org.apache.openejb.assembler.classic.EjbJarInfo;
+import org.apache.openejb.assembler.classic.EnterpriseBeanInfo;
+import org.apache.openejb.assembler.classic.PersistenceContextReferenceInfo;
+import org.apache.openejb.assembler.classic.PersistenceUnitReferenceInfo;
 import org.apache.openejb.assembler.classic.ProxyFactoryInfo;
+import org.apache.openejb.assembler.classic.ReferenceLocationInfo;
 import org.apache.openejb.assembler.classic.SecurityServiceInfo;
 import org.apache.openejb.assembler.classic.TransactionServiceInfo;
 import org.apache.openejb.assembler.dynamic.PassthroughFactory;
@@ -230,6 +234,8 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
         Thread.currentThread().setContextClassLoader(cl);
       }
       
+      processJPAMappings(ejbInfo);
+      
       
       Assembler assembler = (Assembler) SystemInstance.get().getComponent(Assembler.class);
       RunningApplication app = null;
@@ -264,6 +270,22 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
         stopEJBs(bundle);
       }
     }
+  }
+
+  private void processJPAMappings(EjbJarInfo ejbInfo) {
+    for(EnterpriseBeanInfo ebi : ejbInfo.enterpriseBeans){
+      
+      for(PersistenceUnitReferenceInfo pui : ebi.jndiEnc.persistenceUnitRefs) {
+        pui.location = new ReferenceLocationInfo();
+        pui.location.jndiName = "aries/integration/unit/" + pui.persistenceUnitName;
+      }
+      
+      for(PersistenceContextReferenceInfo pci : ebi.jndiEnc.persistenceContextRefs) {
+        pci.location = new ReferenceLocationInfo();
+        pci.location.jndiName = "aries/integration/context/" + pci.persistenceUnitName;
+      }
+    }
+    
   }
 
   private void addAltDDs(EjbModule ejbModule, Bundle bundle) {

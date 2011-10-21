@@ -44,6 +44,7 @@ import org.apache.openejb.assembler.classic.EnterpriseBeanInfo;
 import org.apache.openejb.assembler.classic.PersistenceContextReferenceInfo;
 import org.apache.openejb.assembler.classic.PersistenceUnitReferenceInfo;
 import org.apache.openejb.assembler.classic.ProxyInterfaceResolver;
+import org.apache.openejb.assembler.classic.ReferenceLocationInfo;
 import org.apache.openejb.jee.EnterpriseBean;
 import org.apache.openejb.persistence.JtaEntityManager;
 import org.osgi.framework.Bundle;
@@ -64,8 +65,8 @@ public class RunningApplication implements ServiceTrackerCustomizer {
   
   private ServiceTracker tracker;
   
-  private final ConcurrentMap<String, ConcurrentMap<Context, String>> unitRegistrations = 
-    new ConcurrentHashMap<String, ConcurrentMap<Context, String>>();
+  private final ConcurrentMap<String, ConcurrentMap<Context, PersistenceUnitReferenceInfo>> 
+    unitRegistrations = new ConcurrentHashMap<String, ConcurrentMap<Context, PersistenceUnitReferenceInfo>>();
   
   private final ConcurrentMap<String, ConcurrentMap<Context, PersistenceContextReferenceInfo>> 
     contextRegistrations = new ConcurrentHashMap<String, ConcurrentMap<Context, PersistenceContextReferenceInfo>>();
@@ -76,16 +77,17 @@ public class RunningApplication implements ServiceTrackerCustomizer {
     
     for(EnterpriseBeanInfo bean : enterpriseBeans) {
       for(PersistenceUnitReferenceInfo pui : bean.jndiEnc.persistenceUnitRefs) {
-        ConcurrentMap<Context, String> map = unitRegistrations.get(pui.persistenceUnitName);
+        ConcurrentMap<Context, PersistenceUnitReferenceInfo> map = unitRegistrations.
+           get(pui.persistenceUnitName);
         
         if(map == null) {
-          map = new ConcurrentHashMap<Context, String>();
+          map = new ConcurrentHashMap<Context, PersistenceUnitReferenceInfo>();
           unitRegistrations.put(pui.persistenceUnitName, map);
         }
         
         for(BeanContext eb : ctx.getBeanContexts()) {
           if(eb.getEjbName().equals(bean.ejbName)){
-            map.put(eb.getJndiContext(), pui.referenceName);
+            map.put(eb.getJndiContext(), pui);
             continue;
           }
         }
@@ -223,13 +225,13 @@ public class RunningApplication implements ServiceTrackerCustomizer {
     if(isTrue(reference, PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT) &&
        !!!isTrue(reference, PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE)) {
       
-      Map<Context, String> pUnitRefs = unitRegistrations.
+      Map<Context, PersistenceUnitReferenceInfo> pUnitRefs = unitRegistrations.
              get(reference.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME));
       Map<Context, PersistenceContextReferenceInfo> pCtxRefs = contextRegistrations.
              get(reference.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME));
       
       if(pUnitRefs == null) {
-        pUnitRefs = new HashMap<Context, String>();
+        pUnitRefs = new HashMap<Context, PersistenceUnitReferenceInfo>();
       }
       if(pCtxRefs == null) {
         pCtxRefs = new HashMap<Context, PersistenceContextReferenceInfo>();
@@ -239,9 +241,9 @@ public class RunningApplication implements ServiceTrackerCustomizer {
       
         EntityManagerFactory emf = (EntityManagerFactory)bundle.getBundleContext().getService(reference);
         
-        for(Entry<Context, String> e : pUnitRefs.entrySet()) {
+        for(Entry<Context, PersistenceUnitReferenceInfo> e : pUnitRefs.entrySet()) {
           try {
-            e.getKey().bind(e.getValue(), emf);
+            e.getKey().bind(e.getValue().referenceName, emf);
           } catch (NamingException ex) {
             // TODO Auto-generated catch block
             ex.printStackTrace();
@@ -276,13 +278,13 @@ public class RunningApplication implements ServiceTrackerCustomizer {
 
   public void removedService(ServiceReference reference, Object service) {
     
-    Map<Context, String> pUnitRefs = unitRegistrations.
+    Map<Context, PersistenceUnitReferenceInfo> pUnitRefs = unitRegistrations.
         get(reference.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME));
     Map<Context, PersistenceContextReferenceInfo> pCtxRefs = contextRegistrations.
         get(reference.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME));
 
     if(pUnitRefs == null) {
-      pUnitRefs = new HashMap<Context, String>();
+      pUnitRefs = new HashMap<Context, PersistenceUnitReferenceInfo>();
     }
     if(pCtxRefs == null) {
       pCtxRefs = new HashMap<Context, PersistenceContextReferenceInfo>();
@@ -290,9 +292,9 @@ public class RunningApplication implements ServiceTrackerCustomizer {
     
     if(pUnitRefs.size() > 0 || pCtxRefs.size() > 0) {
     
-      for(Entry<Context, String> e : pUnitRefs.entrySet()) {
+      for(Entry<Context, PersistenceUnitReferenceInfo> e : pUnitRefs.entrySet()) {
         try {
-          e.getKey().unbind(e.getValue());
+          e.getKey().unbind(e.getValue().referenceName);
         } catch (NamingException ex) {
           // TODO Auto-generated catch block
           ex.printStackTrace();
