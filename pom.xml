@@ -31,9 +31,9 @@
     <version>0.3.2-SNAPSHOT</version>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/testquiescebundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/testquiescebundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/testquiescebundle</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-testquiescebundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-testquiescebundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/oct-2011-release/blueprint/blueprint-testquiescebundle</url>
      </scm>
     <properties>
         <aries.osgi.activator>
