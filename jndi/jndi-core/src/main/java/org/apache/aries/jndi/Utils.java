@@ -31,7 +31,9 @@ import javax.naming.NamingException;
 import org.apache.aries.jndi.spi.EnvironmentAugmentation;
 import org.apache.aries.jndi.startup.Activator;
 import org.apache.aries.util.nls.MessageUtil;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -108,7 +110,16 @@ public final class Utils {
         BundleContext result = null;
         while (result == null && cl != null) {
             if (cl instanceof BundleReference) {
-                result = ((BundleReference) cl).getBundle().getBundleContext();
+                Bundle b = ((BundleReference)cl).getBundle();
+                result = b.getBundleContext();
+                if (result == null) {
+                  try {
+                    b.start();
+                    result = b.getBundleContext();
+                  } catch (BundleException e) {
+                  }
+                  break;
+                }
             } else if (cl != null) {
                 cl = cl.getParent();
             }
