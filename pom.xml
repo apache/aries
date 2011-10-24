@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.4</version>
+        <version>0.5</version>
         <relativePath />
     </parent>
 
@@ -60,43 +60,43 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
             <scope>test</scope>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.jexl.evaluator</artifactId>
             <scope>test</scope>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample</artifactId>
             <scope>test</scope>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundlea</artifactId>
             <scope>test</scope>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
             <scope>test</scope>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
@@ -167,7 +167,7 @@
         <dependency>
            <groupId>org.apache.aries.proxy</groupId>
            <artifactId>org.apache.aries.proxy</artifactId>
-           <version>0.4-SNAPSHOT</version>
+           <version>0.4</version>
      	</dependency>
         <dependency>
         	<groupId>org.apache.aries.quiesce</groupId>
@@ -179,21 +179,21 @@
         <dependency>
         	<groupId>org.apache.aries.blueprint</groupId>
         	<artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
-        	<version>0.3.2-SNAPSHOT</version>
+        	<version>0.3.2</version>
         	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.blueprint</groupId>
         	<artifactId>org.apache.aries.blueprint.core</artifactId>
-        	<version>0.3.2-SNAPSHOT</version>
+        	<version>0.4</version>
         	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.blueprint</groupId>
         	<artifactId>org.apache.aries.blueprint.cm</artifactId>
-        	<version>0.3.2-SNAPSHOT</version>
+        	<version>0.3.2</version>
         	<type>bundle</type>
         	<scope>compile</scope>
         </dependency>
