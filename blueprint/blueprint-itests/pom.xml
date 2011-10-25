@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.itests</artifactId>
     <name>Apache Aries Blueprint iTests</name>
-    <version>0.4</version>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
         Integration tests using the standalone blueprint-bundle for the implementation
         and blueprint-sample for the blueprint application to be tested.
