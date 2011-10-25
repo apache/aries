@@ -84,6 +84,10 @@
       <aries.osgi.export.service>
           org.apache.aries.blueprint.ParserService
       </aries.osgi.export.service>
+      <aries.osgi.include.resource>
+          {maven-resources},
+          org/apache/aries/blueprint/blueprint.xsd=${project.build.directory}/sources/org/osgi/service/blueprint/blueprint.xsd
+      </aries.osgi.include.resource>
   </properties>
   
   <dependencies>
@@ -170,19 +174,37 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
-                <directory>../blueprint-api/src/main/resources/org/osgi/service/blueprint</directory>
-                <targetPath>org/apache/aries/blueprint</targetPath>
-                <includes>
-                    <include>blueprint.xsd</include>
-                </includes>
-            </resource>
-            <resource>
                   <directory>${project.build.sourceDirectory}</directory>
                   <includes>
                      <include>**/packageinfo</include>
                   </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.blueprint</groupId>
+                                    <artifactId>org.apache.aries.blueprint.api</artifactId>
+                                    <classifier>sources</classifier>
+                                    <includes>**/blueprint.xsd</includes>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
-  
 </project>
