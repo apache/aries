@@ -100,10 +100,6 @@
         <aries.osgi.import.service>
             org.osgi.service.cm.ConfigurationAdmin;availability:=optional
         </aries.osgi.import.service>
-        <aries.osgi.include.resource>
-            {maven-resources},
-            META-INF/NOTICE=../NOTICE
-        </aries.osgi.include.resource>
         <aries.osgi.failok>
             true
         </aries.osgi.failok>
