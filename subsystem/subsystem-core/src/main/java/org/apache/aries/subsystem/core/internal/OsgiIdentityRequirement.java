@@ -17,12 +17,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.archive.VersionRangeAttribute;
+import org.apache.aries.util.VersionRange;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.framework.VersionRange;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
@@ -46,7 +47,7 @@ public class OsgiIdentityRequirement implements Requirement {
 	private static Filter createFilter(String symbolicName, VersionRange versionRange, String type) {
 		return createFilter(
 				symbolicName,
-				versionRange.toFilterString(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE),
+				VersionRangeAttribute.toFilterString(versionRange),
 				type);
 	}
 	
