@@ -28,16 +28,16 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.itests</artifactId>
     <name>Apache Aries Blueprint iTests</name>
-    <version>0.4</version>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
         Integration tests using the standalone blueprint-bundle for the implementation
         and blueprint-sample for the blueprint application to be tested.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-itests</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-itests</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-itests</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-itests</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/oct-2011-release/blueprint/blueprint-itests</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/oct-2011-release/blueprint/blueprint-itests</url>
      </scm>
 
     <dependencies>
