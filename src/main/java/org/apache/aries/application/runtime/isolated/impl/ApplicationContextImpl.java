@@ -133,29 +133,31 @@ public class ApplicationContextImpl implements AriesApplicationContext
   {
     LOGGER.debug(LOG_ENTRY, "uninstall");
     
-    // Iterate through all of the bundles that were started when this application was started, 
-    // and attempt to stop and uninstall each of them. 
-    for (Iterator<Bundle> bundleIter = _bundles.iterator(); bundleIter.hasNext();) {
-      Bundle bundleToRemove = bundleIter.next();
-
-      try {
-        // If Bundle is active, stop it first.
-        if (bundleToRemove.getState() == Bundle.ACTIVE) {
-          _bundleFrameworkManager.stopBundle(bundleToRemove);
+    if (_state != ApplicationState.UNINSTALLED) {
+      // Iterate through all of the bundles that were started when this application was started, 
+      // and attempt to stop and uninstall each of them. 
+      for (Iterator<Bundle> bundleIter = _bundles.iterator(); bundleIter.hasNext();) {
+        Bundle bundleToRemove = bundleIter.next();
+  
+        try {
+          // If Bundle is active, stop it first.
+          if (bundleToRemove.getState() == Bundle.ACTIVE) {
+            _bundleFrameworkManager.stopBundle(bundleToRemove);
+          }
+  
+          // Delegate the uninstall to the bundleFrameworkManager
+          _bundleFrameworkManager.uninstallBundle(bundleToRemove);
+  
+        } catch (BundleException be) {
+          LOGGER.debug(LOG_EXCEPTION, be);
+          throw be;
         }
-
-        // Delegate the uninstall to the bundleFrameworkManager
-        _bundleFrameworkManager.uninstallBundle(bundleToRemove);
-
-      } catch (BundleException be) {
-        LOGGER.debug(LOG_EXCEPTION, be);
-        throw be;
       }
+      _bundles.clear();
+      
+      _state = ApplicationState.UNINSTALLED;
     }
-    _bundles.clear();
     
-    _state = ApplicationState.UNINSTALLED;
-
     LOGGER.debug(LOG_EXIT, "uninstall");
 
   }
