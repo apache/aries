@@ -159,6 +159,11 @@
             <scope>provided</scope>
             <version>0.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
