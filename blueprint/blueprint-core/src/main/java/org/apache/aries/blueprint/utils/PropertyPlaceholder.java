@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.ext;
+package org.apache.aries.blueprint.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.aries.blueprint.ext.AbstractPropertyPlaceholder;
 import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
