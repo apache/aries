@@ -160,11 +160,11 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
         if (ctx.getApplicationState() != ApplicationState.UNINSTALLED) {
           ctx.uninstall();
         }
-        it.remove();
       } catch (BundleException e)
       {
         LOGGER.debug(LOG_EXCEPTION,e);
       }
+      it.remove();
     }
     
     LOGGER.debug(LOG_EXIT, "close");
@@ -192,7 +192,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     return ctx;
   }
 
-  public void bindBundleFrameworkManager(BundleFrameworkManager bfm)
+  public synchronized void bindBundleFrameworkManager(BundleFrameworkManager bfm)
   {
     LOGGER.debug(LOG_ENTRY, "bindBundleFrameworkManager", bfm);
     
@@ -210,7 +210,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     LOGGER.debug(LOG_EXIT, "bindBundleFrameworkManager");
   }
 
-  public void unbindBundleFrameworkManager(BundleFrameworkManager bfm)
+  public synchronized void unbindBundleFrameworkManager(BundleFrameworkManager bfm)
   {
     LOGGER.debug(LOG_ENTRY, "unbindBundleFrameworkManager", bfm);
     
