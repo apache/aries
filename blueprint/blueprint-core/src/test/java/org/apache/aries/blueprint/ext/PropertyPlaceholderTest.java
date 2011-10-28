@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.blueprint.utils.PropertyPlaceholder;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.blueprint.reflect.ValueMetadata;

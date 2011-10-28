@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
+import org.apache.aries.application.management.AriesApplicationContext.ApplicationState;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.UpdateException;
 import org.apache.aries.application.management.spi.framework.BundleFrameworkManager;
@@ -156,12 +157,14 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     {      
       try {
         ApplicationContextImpl ctx = (ApplicationContextImpl)it.next();
-        ctx.uninstall();
-        it.remove();
+        if (ctx.getApplicationState() != ApplicationState.UNINSTALLED) {
+          ctx.uninstall();
+        }
       } catch (BundleException e)
       {
         LOGGER.debug(LOG_EXCEPTION,e);
       }
+      it.remove();
     }
     
     LOGGER.debug(LOG_EXIT, "close");
@@ -189,10 +192,9 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     return ctx;
   }
 
-  public void bindBundleFrameworkManager(BundleFrameworkManager bfm)
+  public synchronized void bindBundleFrameworkManager(BundleFrameworkManager bfm)
   {
-    LOGGER.debug(LOG_ENTRY, "setBundleFrameworkManager", bfm);
-    LOGGER.debug(LOG_EXIT, "setBundleFrameworkManager");
+    LOGGER.debug(LOG_ENTRY, "bindBundleFrameworkManager", bfm);
     
     Iterator<AriesApplicationContext> it = _appToContextMap.values().iterator();
     while (it.hasNext())
@@ -205,9 +207,10 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
         LOGGER.debug(LOG_EXCEPTION,e);
       }
     }
+    LOGGER.debug(LOG_EXIT, "bindBundleFrameworkManager");
   }
 
-  public void unbindBundleFrameworkManager(BundleFrameworkManager bfm)
+  public synchronized void unbindBundleFrameworkManager(BundleFrameworkManager bfm)
   {
     LOGGER.debug(LOG_ENTRY, "unbindBundleFrameworkManager", bfm);
     

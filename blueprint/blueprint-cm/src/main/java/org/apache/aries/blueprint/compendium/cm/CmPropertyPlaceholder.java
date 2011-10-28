@@ -18,16 +18,14 @@
  */
 package org.apache.aries.blueprint.compendium.cm;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
-import org.apache.aries.blueprint.ext.AbstractPropertyPlaceholder;
-import org.apache.aries.blueprint.ext.PropertyPlaceholder;
+import org.apache.aries.blueprint.utils.PropertyPlaceholder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
