@@ -29,15 +29,15 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
+import org.junit.Assert;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.container.def.options.VMOption;
 import org.ops4j.pax.exam.junit.Configuration;
-import org.ops4j.pax.exam.options.TimeoutOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.BundleRevisionsStateMBean;
 import org.osgi.jmx.framework.PackageStateMBean;
 
@@ -51,8 +51,8 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-                 new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-                 new TimeoutOption( 0 ),
+                //  new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+                //  new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -118,7 +118,13 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
 
         CompositeData wiring = brsMBean.getCurrentWiring(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
-        System.out.println("*** "+wiring);
+
+        Assert.assertEquals(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, wiring.getCompositeType());
+        Assert.assertEquals(a.getBundleId(), wiring.get(BundleRevisionsStateMBean.BUNDLE_ID));
+
+        BundleWiring bw = a.adapt(BundleWiring.class);
+        CompositeData[] capabilities = (CompositeData[]) wiring.get(BundleRevisionsStateMBean.CAPABILITIES);
+        Assert.assertEquals(bw.getCapabilities(BundleRevisionsStateMBean.PACKAGE_NAMESPACE).size(), capabilities.length);
 
         /*
         PackageStateMBean packagaState = getMBean(PackageStateMBean.OBJECTNAME, PackageStateMBean.class);

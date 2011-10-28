@@ -19,9 +19,11 @@ package org.apache.aries.jmx.codec;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.OpenDataException;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
@@ -34,12 +36,10 @@ import org.osgi.jmx.framework.BundleRevisionsStateMBean;
 public class BundleWiringData {
     private final long bundleId;
     private final List<BundleCapability> capabilities;
-    private final String namespace;
     private final List<BundleRequirement> requirements;
 
-    public BundleWiringData(long bundleId, String namespace, List<BundleCapability> capabilities, List<BundleRequirement> requirements, List<BundleWire> requiredWires) {
+    public BundleWiringData(long bundleId, List<BundleCapability> capabilities, List<BundleRequirement> requirements, List<BundleWire> requiredWires) {
         this.bundleId = bundleId;
-        this.namespace = namespace;
         this.capabilities = capabilities;
         this.requirements = requirements;
     }
@@ -50,46 +50,57 @@ public class BundleWiringData {
             items.put(BundleRevisionsStateMBean.BUNDLE_ID, bundleId);
             items.put(BundleRevisionsStateMBean.BUNDLE_REVISION_ID, null);
 
-
-            CompositeData [] reqData = new CompositeData[requirements.size()];
-            for (int i=0; i < requirements.size(); i++) {
-                BundleRequirement requirement = requirements.get(i);
-                Map<String, Object> reqItems = new HashMap<String, Object>();
-
-                TabularData attributes = new TabularDataSupport(BundleRevisionsStateMBean.ATTRIBUTES_TYPE);
-                for (Map.Entry<String, Object> entry : requirement.getAttributes().entrySet()) {
-                    PropertyData<?> pd = PropertyData.newInstance(entry.getKey(), entry.getValue());
-                    attributes.put(pd.toCompositeData());
-                }
-                reqItems.put(BundleRevisionsStateMBean.ATTRIBUTES, attributes);
-
-                TabularData directives = new TabularDataSupport(BundleRevisionsStateMBean.DIRECTIVES_TYPE);
-                for (Map.Entry<String, String> entry : requirement.getDirectives().entrySet()) {
-                    CompositeData directive = new CompositeDataSupport(BundleRevisionsStateMBean.DIRECTIVE_TYPE,
-                        new String[] { BundleRevisionsStateMBean.KEY, BundleRevisionsStateMBean.VALUE },
-                        new Object[] { entry.getKey(), entry.getValue() });
-                    directives.put(directive);
-                }
-                reqItems.put(BundleRevisionsStateMBean.DIRECTIVES, directives);
-                reqItems.put(BundleRevisionsStateMBean.NAMESPACE, requirement.getNamespace());
-
-                CompositeData req = new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE, reqItems);
-                reqData[i] = req;
-            }
-
-//            CompositeDataSupport directive = new CompositeDataSupport(BundleRevisionsStateMBean.DIRECTIVE_TYPE, new String [] {"Key", "Value"}, new Object [] {"Foo", "Bar"});
-//            directives.put(directive);
-//            reqItems.put(BundleRevisionsStateMBean.DIRECTIVES, directives);
-//            reqItems.put(BundleRevisionsStateMBean.NAMESPACE, namespace);
-//            CompositeDataSupport requirements = new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE, reqItems);
-
-            items.put(BundleRevisionsStateMBean.REQUIREMENTS, reqData);
-            items.put(BundleRevisionsStateMBean.CAPABILITIES, null);
+            items.put(BundleRevisionsStateMBean.REQUIREMENTS, getRequirements());
+            items.put(BundleRevisionsStateMBean.CAPABILITIES, getCapabilities());
             items.put(BundleRevisionsStateMBean.BUNDLE_WIRES_TYPE, null);
 
             return new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Can't create CompositeData" + e);
         }
+    }
+
+    private CompositeData[] getCapabilities() throws OpenDataException {
+        CompositeData[] capData = new CompositeData[capabilities.size()];
+        for (int i=0; i < capabilities.size(); i++) {
+            BundleCapability capability = capabilities.get(i);
+            capData[i] = getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_CAPABILITY_TYPE,
+                capability.getNamespace(), capability.getAttributes().entrySet(), capability.getDirectives().entrySet());
+        }
+        return capData;
+    }
+
+    private CompositeData[] getRequirements() throws OpenDataException {
+        CompositeData [] reqData = new CompositeData[requirements.size()];
+        for (int i=0; i < requirements.size(); i++) {
+            BundleRequirement requirement = requirements.get(i);
+            reqData[i] = getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE,
+                    requirement.getNamespace(), requirement.getAttributes().entrySet(), requirement.getDirectives().entrySet());
+        }
+        return reqData;
+    }
+
+    private CompositeData getCapReqCompositeData(CompositeType type, String namespace, Set<Map.Entry<String,Object>> attributeSet, Set<Map.Entry<String,String>> directiveSet) throws OpenDataException {
+        Map<String, Object> reqItems = new HashMap<String, Object>();
+
+        TabularData attributes = new TabularDataSupport(BundleRevisionsStateMBean.ATTRIBUTES_TYPE);
+        for (Map.Entry<String, Object> entry : attributeSet) {
+            PropertyData<?> pd = PropertyData.newInstance(entry.getKey(), entry.getValue());
+            attributes.put(pd.toCompositeData());
+        }
+        reqItems.put(BundleRevisionsStateMBean.ATTRIBUTES, attributes);
+
+        TabularData directives = new TabularDataSupport(BundleRevisionsStateMBean.DIRECTIVES_TYPE);
+        for (Map.Entry<String, String> entry : directiveSet) {
+            CompositeData directive = new CompositeDataSupport(BundleRevisionsStateMBean.DIRECTIVE_TYPE,
+                new String[] { BundleRevisionsStateMBean.KEY, BundleRevisionsStateMBean.VALUE },
+                new Object[] { entry.getKey(), entry.getValue() });
+            directives.put(directive);
+        }
+        reqItems.put(BundleRevisionsStateMBean.DIRECTIVES, directives);
+        reqItems.put(BundleRevisionsStateMBean.NAMESPACE, namespace);
+
+        CompositeData req = new CompositeDataSupport(type, reqItems);
+        return req;
     }
 }
