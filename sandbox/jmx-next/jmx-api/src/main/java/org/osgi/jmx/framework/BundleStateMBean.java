@@ -40,7 +40,7 @@ public interface BundleStateMBean {
 	 * The Object Name for a Bundle State MBean.
 	 */
 	String OBJECTNAME = JmxConstants.OSGI_CORE
-			+ ":type=bundleState,version=1.5";
+			+ ":type=bundleState,version=1.7";
 
 	/**
 	 * The key KEY, used in {@link #KEY_ITEM}.
