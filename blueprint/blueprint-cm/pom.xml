@@ -41,6 +41,10 @@
    </scm>
 
     <properties>
+        <aries.osgi.import>
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            *
+        </aries.osgi.import>
     <!-- Export package versions are maintained in packageinfo files -->
          <aries.osgi.export.pkg/>
          <aries.osgi.private.pkg>

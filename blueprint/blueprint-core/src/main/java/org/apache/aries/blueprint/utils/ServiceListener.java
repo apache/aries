@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.blueprint.container;
+package org.apache.aries.blueprint.utils;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
-import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
