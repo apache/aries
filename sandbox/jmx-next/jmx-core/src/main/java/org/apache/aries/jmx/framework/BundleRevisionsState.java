@@ -17,6 +17,7 @@
 package org.apache.aries.jmx.framework;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
@@ -27,7 +28,11 @@ import org.apache.aries.jmx.codec.BundleWiringData;
 import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.BundleRevisionsStateMBean;
 
 public class BundleRevisionsState implements BundleRevisionsStateMBean {
@@ -62,9 +67,13 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
     public CompositeData getCurrentWiring(long bundleId, String namespace) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
         BundleRevision currentRevision = bundle.adapt(BundleRevision.class);
+        BundleWiring wiring = currentRevision.getWiring();
+        List<BundleCapability> capabilities = wiring.getCapabilities(namespace);
+        List<BundleRequirement> requirements = wiring.getRequirements(namespace);
+        List<BundleWire> requiredWires = wiring.getRequiredWires(namespace);
 
         System.out.println("******** getCurrentWiring: " + bundle);
-        BundleWiringData data = new BundleWiringData(bundle.getBundleId());
+        BundleWiringData data = new BundleWiringData(bundle.getBundleId(), namespace, capabilities, requirements, requiredWires);
         CompositeData compositeData = data.toCompositeData();
         System.out.println("######## " + compositeData);
         return compositeData;
