@@ -308,7 +308,6 @@ public class BundleData {
 
         try {
             return new CompositeDataSupport(BUNDLE_TYPE, allItemNames, itemValues);
-            // return new CompositeDataSupport(BUNDLE_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Failed to create CompositeData for BundleData [" + this.identifier
                     + "]", e);
