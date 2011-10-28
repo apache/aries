@@ -35,6 +35,7 @@ import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.MBeanServiceTracker;
 import org.apache.aries.jmx.cm.ConfigurationAdminMBeanHandler;
+import org.apache.aries.jmx.framework.BundleRevisionsStateMBeanHandler;
 import org.apache.aries.jmx.framework.BundleStateMBeanHandler;
 import org.apache.aries.jmx.framework.FrameworkMBeanHandler;
 import org.apache.aries.jmx.framework.PackageStateMBeanHandler;
@@ -50,9 +51,9 @@ import org.osgi.util.tracker.ServiceTracker;
  * <p>
  * Represent agent for MBeanServers registered in ServiceRegistry. Providing registration and unregistration methods.
  * </p>
- * 
+ *
  * @see JMXAgent
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class JMXAgentImpl implements JMXAgent {
@@ -72,7 +73,7 @@ public class JMXAgentImpl implements JMXAgent {
 
     /**
      * Constructs new JMXAgent.
-     * 
+     *
      * @param logger @see org.apache.aries.jmx.Logger
      */
     public JMXAgentImpl(Logger logger) {
@@ -93,6 +94,9 @@ public class JMXAgentImpl implements JMXAgent {
         MBeanHandler bundleStateHandler = new BundleStateMBeanHandler(bc, logger);
         bundleStateHandler.open();
         mbeansHandlers.add(bundleStateHandler);
+        MBeanHandler revisionsStateHandler = new BundleRevisionsStateMBeanHandler(bc, logger);
+        revisionsStateHandler.open();
+        mbeansHandlers.add(revisionsStateHandler);
         MBeanHandler serviceStateHandler = new ServiceStateMBeanHandler(bc, logger);
         serviceStateHandler.open();
         mbeansHandlers.add(serviceStateHandler);
@@ -167,7 +171,7 @@ public class JMXAgentImpl implements JMXAgent {
                logger.log(LogService.LOG_ERROR, "Name of objectname can't be null ", e);
             } catch (Exception e) {
                logger.log(LogService.LOG_ERROR, "Cannot unregister MBean: " + mBeanHandler, e);
-            } 
+            }
         }
     }
 
@@ -263,7 +267,7 @@ public class JMXAgentImpl implements JMXAgent {
 
     /**
      * Gets all MBeanServers from MBeanServiceTracker.
-     * 
+     *
      * @return array of MBean servers.
      */
     private Object[] getMBeanServers() {

@@ -16,12 +16,14 @@
  */
 package org.apache.aries.jmx.framework;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -33,12 +35,13 @@ import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.jmx.framework.PackageStateMBean;
 
 /**
- * 
- * 
+ *
+ *
  * @version $Rev$ $Date$
  */
 public class PackageStateMBeanTest extends AbstractIntegrationTest {
@@ -46,7 +49,8 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-            CoreOptions.equinox(), 
+            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+            CoreOptions.equinox().version("3.7.0.v20110613"),
             paxLogging("INFO"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
@@ -63,7 +67,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
     public void testMBeanInterface() throws IOException {
         PackageStateMBean packagaState = getMBean(PackageStateMBean.OBJECTNAME, PackageStateMBean.class);
         assertNotNull(packagaState);
-        
+
         long[] exportingBundles = packagaState.getExportingBundles("org.osgi.jmx.framework", "1.5.0");
         assertNotNull(exportingBundles);
         assertTrue("Should find a bundle exporting org.osgi.jmx.framework", exportingBundles.length > 0);

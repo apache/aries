@@ -16,6 +16,9 @@
  */
 package org.apache.aries.jmx.framework;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -24,7 +27,6 @@ import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.modifyBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Customizer;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -54,7 +57,7 @@ import org.osgi.service.cm.ManagedService;
 import org.osgi.service.cm.ManagedServiceFactory;
 
 /**
- * 
+ *
  *
  * @version $Rev$ $Date$
  */
@@ -63,16 +66,17 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-                        CoreOptions.equinox(),
+                        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+                        CoreOptions.equinox().version("3.7.0.v20110613"),
                         paxLogging("INFO"),
-                        
+
                         mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
                         mavenBundle("org.osgi", "org.osgi.compendium"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
                         mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
                         mavenBundle("org.apache.aries", "org.apache.aries.util"),
-                        
+
                         new Customizer() {
                             public InputStream customizeTestProbe(InputStream testProbe) throws Exception {
                                 return modifyBundle(testProbe)
@@ -112,92 +116,92 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 //                              waitForFrameworkStartup()
                         );
     }
-    
+
     @Override
     public void doSetUp() throws Exception {
         waitForMBean(new ObjectName(ServiceStateMBean.OBJECTNAME));
-    }    
-    
+    }
+
     @Test
     public void testMBeanInterface() throws Exception {
-        
+
         ServiceStateMBean mbean = getMBean(ServiceStateMBean.OBJECTNAME, ServiceStateMBean.class);
         assertNotNull(mbean);
-        
+
         //get bundles
-        
+
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         assertNotNull(a);
-        
+
         Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
         assertNotNull(b);
-        
+
         // get services
-        
+
         ServiceReference refA = bundleContext.getServiceReference(InterfaceA.class.getName());
         assertNotNull(refA);
         long serviceAId = (Long) refA.getProperty(Constants.SERVICE_ID);
         assertTrue(serviceAId > -1);
-        
+
         ServiceReference refB = bundleContext.getServiceReference(InterfaceB.class.getName());
         assertNotNull(refB);
         long serviceBId = (Long) refB.getProperty(Constants.SERVICE_ID);
         assertTrue(serviceBId > -1);
-        
+
         ServiceReference[] refs = bundleContext.getServiceReferences(ManagedServiceFactory.class.getName(), "(" + Constants.SERVICE_PID + "=jmx.test.B.factory)");
         assertNotNull(refs);
         assertEquals(1, refs.length);
         ServiceReference msf = refs[0];
 
-        
+
         // getBundleIdentifier
-        
+
         assertEquals(a.getBundleId(), mbean.getBundleIdentifier(serviceAId));
-        
+
         //getObjectClass
-        
+
         String[] objectClass = mbean.getObjectClass(serviceAId);
         assertEquals(2, objectClass.length);
         List<String> classNames = Arrays.asList(objectClass);
         assertTrue(classNames.contains(InterfaceA.class.getName()));
         assertTrue(classNames.contains(ManagedService.class.getName()));
-        
+
         // getProperties
-        
+
         TabularData serviceProperties = mbean.getProperties(serviceBId);
         assertNotNull(serviceProperties);
         assertEquals(JmxConstants.PROPERTIES_TYPE, serviceProperties.getTabularType());
         assertTrue(serviceProperties.values().size() > 1);
-        assertEquals("org.apache.aries.jmx.test.ServiceB", 
+        assertEquals("org.apache.aries.jmx.test.ServiceB",
                 PropertyData.from(serviceProperties.get(new Object[] { Constants.SERVICE_PID })).getValue());
-        
+
         // getUsingBundles
-        
+
         long[] usingBundles = mbean.getUsingBundles(serviceBId);
         assertEquals(1, usingBundles.length);
         assertEquals(a.getBundleId(), usingBundles[0]);
-        
+
         // listServices
-        
+
         TabularData allServices = mbean.listServices();
         assertNotNull(allServices);
         assertEquals(bundleContext.getAllServiceReferences(null, null).length, allServices.values().size());
-        
+
         // notifications
-        
+
         final List<Notification> received = new ArrayList<Notification>();
-      
+
         mbeanServer.addNotificationListener(new ObjectName(ServiceStateMBean.OBJECTNAME), new NotificationListener() {
             public void handleNotification(Notification notification, Object handback) {
                received.add(notification);
             }
         }, null, null);
-        
-      
+
+
         assertNotNull(refB);
         assertNotNull(msf);
         b.stop();
-        refB = bundleContext.getServiceReference(InterfaceB.class.getName()); 
+        refB = bundleContext.getServiceReference(InterfaceB.class.getName());
         refs = bundleContext.getServiceReferences(ManagedServiceFactory.class.getName(), "(" + Constants.SERVICE_PID + "=jmx.test.B.factory)");
         assertNull(refs);
         assertNull(refB);
@@ -207,15 +211,15 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         assertNotNull(refB);
         assertNotNull(refs);
         assertEquals(1, refs.length);
-        
+
         int i = 0;
         while (received.size() < 4 && i < 3) {
             Thread.sleep(1000);
             i++;
         }
-        
+
         assertEquals(4, received.size());
-            
+
     }
 
 }

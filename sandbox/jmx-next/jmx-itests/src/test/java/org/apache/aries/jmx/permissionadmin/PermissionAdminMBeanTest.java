@@ -16,12 +16,14 @@
  */
 package org.apache.aries.jmx.permissionadmin;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.IOException;
 
@@ -31,6 +33,7 @@ import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -40,16 +43,17 @@ import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
 
 /**
- * 
+ *
  *
  * @version $Rev$ $Date$
  */
 public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
-    
+
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-            CoreOptions.equinox(),
+            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+            CoreOptions.equinox().version("3.7.0.v20110613"),
             paxLogging("INFO"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
@@ -71,7 +75,7 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
 //                     waitForFrameworkStartup()
         );
     }
-    
+
     @Override
     public void doSetUp() throws Exception {
         waitForMBean(new ObjectName(PermissionAdminMBean.OBJECTNAME));
@@ -95,39 +99,39 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
         String[] encoded = toEncodedPerm(permissions);
         String[] mBeanDefPermissions = mBean.listDefaultPermissions();
         assertArrayEquals(encoded, mBeanDefPermissions);
-        
+
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         assertNotNull(a);
-        
+
         String location = a.getLocation();
-        
+
         PermissionInfo bundleaPerm = new PermissionInfo("ServicePermission", "ServiceA", "GET");
         mBean.setPermissions(location, new String[]{bundleaPerm.getEncoded()});
-        
+
         String[] serviceBundleaPerm = toEncodedPerm(permAdminService.getPermissions(location));
         String[] mBeanBundleaPerm = mBean.getPermissions(location);
         assertNotNull(mBeanBundleaPerm);
         assertArrayEquals(serviceBundleaPerm, mBeanBundleaPerm);
-        
+
         PermissionInfo defaultPerm = new PermissionInfo("AllPermission", "*", "GET");
         mBean.setDefaultPermissions(new String[]{defaultPerm.getEncoded()});
-        
+
         String[] serviceDefaultPerm = toEncodedPerm(permAdminService.getDefaultPermissions());
         String[] mBeanDefaultPerm = mBean.listDefaultPermissions();
         assertNotNull(mBeanDefaultPerm);
         assertArrayEquals(serviceDefaultPerm, mBeanDefaultPerm);
     }
-    
+
     private String[] toEncodedPerm(PermissionInfo[] permissions){
         assertNotNull(permissions);
         String[] encoded = new String[permissions.length];
         for (int i = 0; i < permissions.length; i++) {
             PermissionInfo info = permissions[i];
             encoded[i] = info.getEncoded();
-        }       
+        }
         return encoded;
     }
-    
+
     private <S> S getService(Class<S> serviceInterface){
         ServiceReference ref =  bundleContext.getServiceReference(serviceInterface.getName());
         if(ref != null){
@@ -135,7 +139,7 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
             if(service != null){
                 return (S)service;
             }
-        }     
+        }
         return null;
     }
 }
