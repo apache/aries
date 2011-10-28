@@ -72,11 +72,8 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
         List<BundleRequirement> requirements = wiring.getRequirements(namespace);
         List<BundleWire> requiredWires = wiring.getRequiredWires(namespace);
 
-        System.out.println("******** getCurrentWiring: " + bundle);
-        BundleWiringData data = new BundleWiringData(bundle.getBundleId(), namespace, capabilities, requirements, requiredWires);
-        CompositeData compositeData = data.toCompositeData();
-        System.out.println("######## " + compositeData);
-        return compositeData;
+        BundleWiringData data = new BundleWiringData(bundle.getBundleId(), capabilities, requirements, requiredWires);
+        return data.toCompositeData();
     }
 
     /* (non-Javadoc)
