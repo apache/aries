@@ -81,7 +81,7 @@ import org.osgi.service.startlevel.StartLevel;
  * <tt>BundleData</tt> represents BundleData Type @see {@link BundleStateMBean#BUNDLE_TYPE}. It is a codec for the
  * <code>CompositeData</code> representing an OSGi BundleData.
  * </p>
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class BundleData {
@@ -227,48 +227,97 @@ public class BundleData {
 
     /**
      * Returns CompositeData representing a BundleData complete state typed by {@link BundleStateMBean#BUNDLE_TYPE}
-     * 
+     *
      * @return
      */
     public CompositeData toCompositeData() {
-        CompositeData result = null;
+        return toCompositeData(BundleStateMBean.BUNDLE_TYPE.keySet());
+    }
+
+    public CompositeData toCompositeData(Collection<String> itemNames) {
         Map<String, Object> items = new HashMap<String, Object>();
-        items.put(EXPORTED_PACKAGES, this.exportedPackages);
-        items.put(FRAGMENT, this.fragment);
-        items.put(FRAGMENTS, toLong(this.fragments));
-        items.put(HOSTS, toLong(this.hosts));
         items.put(IDENTIFIER, this.identifier);
-        items.put(IMPORTED_PACKAGES, this.importedPackages);
-        items.put(LAST_MODIFIED, this.lastModified);
-        items.put(LOCATION, this.location);
-        items.put(PERSISTENTLY_STARTED, this.persistentlyStarted);
-        items.put(REGISTERED_SERVICES, toLong(this.registeredServices));
-        items.put(REMOVAL_PENDING, this.removalPending);
-        items.put(REQUIRED, this.required);
-        items.put(REQUIRED_BUNDLES, toLong(this.requiredBundles));
-        items.put(REQUIRING_BUNDLES, toLong(this.requiringBundles));
-        items.put(SERVICES_IN_USE, toLong(this.servicesInUse));
-        items.put(START_LEVEL, this.bundleStartLevel);
-        items.put(STATE, this.state);
-        items.put(SYMBOLIC_NAME, this.symbolicName);
-        items.put(VERSION, this.version);
-        TabularData headerTable = new TabularDataSupport(HEADERS_TYPE);
-        for (Header header : this.headers) {
-            headerTable.put(header.toCompositeData());
+
+        if (itemNames.contains(EXPORTED_PACKAGES))
+            items.put(EXPORTED_PACKAGES, this.exportedPackages);
+
+        if (itemNames.contains(FRAGMENT))
+            items.put(FRAGMENT, this.fragment);
+
+        if (itemNames.contains(FRAGMENTS))
+            items.put(FRAGMENTS, toLong(this.fragments));
+
+        if (itemNames.contains(HOSTS))
+            items.put(HOSTS, toLong(this.hosts));
+
+        if (itemNames.contains(IMPORTED_PACKAGES))
+            items.put(IMPORTED_PACKAGES, this.importedPackages);
+
+        if (itemNames.contains(LAST_MODIFIED))
+            items.put(LAST_MODIFIED, this.lastModified);
+
+        if (itemNames.contains(LOCATION))
+            items.put(LOCATION, this.location);
+
+        if (itemNames.contains(PERSISTENTLY_STARTED))
+            items.put(PERSISTENTLY_STARTED, this.persistentlyStarted);
+
+        if (itemNames.contains(REGISTERED_SERVICES))
+            items.put(REGISTERED_SERVICES, toLong(this.registeredServices));
+
+        if (itemNames.contains(REMOVAL_PENDING))
+            items.put(REMOVAL_PENDING, this.removalPending);
+
+        if (itemNames.contains(REQUIRED))
+            items.put(REQUIRED, this.required);
+
+        if (itemNames.contains(REQUIRED_BUNDLES))
+            items.put(REQUIRED_BUNDLES, toLong(this.requiredBundles));
+
+        if (itemNames.contains(REQUIRING_BUNDLES))
+            items.put(REQUIRING_BUNDLES, toLong(this.requiringBundles));
+
+        if (itemNames.contains(SERVICES_IN_USE))
+            items.put(SERVICES_IN_USE, toLong(this.servicesInUse));
+
+        if (itemNames.contains(START_LEVEL))
+            items.put(START_LEVEL, this.bundleStartLevel);
+
+        if (itemNames.contains(STATE))
+            items.put(STATE, this.state);
+
+        if (itemNames.contains(SYMBOLIC_NAME))
+            items.put(SYMBOLIC_NAME, this.symbolicName);
+
+        if (itemNames.contains(VERSION))
+            items.put(VERSION, this.version);
+
+        if (itemNames.contains(HEADERS)) {
+            TabularData headerTable = new TabularDataSupport(HEADERS_TYPE);
+            for (Header header : this.headers) {
+                headerTable.put(header.toCompositeData());
+            }
+            items.put(HEADERS, headerTable);
         }
-        items.put(HEADERS, headerTable);
+
+        String[] allItemNames = BUNDLE_TYPE.keySet().toArray(new String [] {});
+        Object[] itemValues = new Object[allItemNames.length];
+        for (int i=0; i < allItemNames.length; i++) {
+            itemValues[i] = items.get(allItemNames[i]);
+        }
+
         try {
-            result = new CompositeDataSupport(BUNDLE_TYPE, items);
+            return new CompositeDataSupport(BUNDLE_TYPE, allItemNames, itemValues);
+            // return new CompositeDataSupport(BUNDLE_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Failed to create CompositeData for BundleData [" + this.identifier
                     + "]", e);
         }
-        return result;
     }
 
     /**
      * Constructs a <code>BundleData</code> object from the given <code>CompositeData</code>
-     * 
+     *
      * @param compositeData
      * @return
      * @throws IlleglArgumentException
