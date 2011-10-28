@@ -16,12 +16,13 @@
  */
 package org.apache.aries.jmx.framework;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,18 +38,20 @@ import org.apache.aries.jmx.codec.BatchActionResult;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.jmx.framework.FrameworkMBean;
 
 /**
  * @version $Rev$ $Date$
  */
-public class FrameworkMBeanTest extends AbstractIntegrationTest {    
+public class FrameworkMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-            CoreOptions.equinox(),
+            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+            CoreOptions.equinox().version("3.7.0.v20110613"),
             paxLogging("INFO"),
 
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
@@ -62,38 +65,38 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     public void doSetUp() throws Exception {
         waitForMBean(new ObjectName(FrameworkMBean.OBJECTNAME));
     }
-    
+
     @Test
     public void testMBeanInterface() throws IOException {
         FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
         assertNotNull(framework);
-        
+
         long[] bundleIds = new long[]{1,2};
         int[] newlevels = new int[]{1,1};
         CompositeData compData = framework.setBundleStartLevels(bundleIds, newlevels);
         assertNotNull(compData);
-        
+
         BatchActionResult batch2 = BatchActionResult.from(compData);
         assertNotNull(batch2.getCompleted());
         assertTrue(batch2.isSuccess());
         assertNull(batch2.getError());
         assertNull(batch2.getRemainingItems());
-                
+
         File file = File.createTempFile("bundletest", ".jar");
-        file.deleteOnExit();        
+        file.deleteOnExit();
         Manifest man = new Manifest();
         man.getMainAttributes().putValue("Manifest-Version", "1.0");
         JarOutputStream jaros = new JarOutputStream(new FileOutputStream(file), man);
         jaros.flush();
         jaros.close();
-        
+
         long bundleId = 0;
         try {
             bundleId = framework.installBundleFromURL(file.getAbsolutePath(), file.toURI().toString());
         } catch (Exception e) {
             fail("Installation of test bundle shouldn't fail");
         }
-        
+
         try{
             framework.uninstallBundle(bundleId);
         } catch (Exception e) {

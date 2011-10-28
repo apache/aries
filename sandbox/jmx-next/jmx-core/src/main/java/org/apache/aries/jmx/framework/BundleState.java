@@ -69,7 +69,7 @@ import org.osgi.service.startlevel.StartLevel;
 
 /**
  * Implementation of <code>BundleStateMBean</code> which emits JMX <code>Notification</code> on <code>Bundle</code>
- * state changes
+ * state changes.
  *
  * @version $Rev$ $Date$
  */
