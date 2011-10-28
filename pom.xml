@@ -28,7 +28,7 @@
   <groupId>org.apache.aries.blueprint</groupId>
   <artifactId>org.apache.aries.blueprint.cm</artifactId>
   <packaging>bundle</packaging>
-  <version>0.3.2</version>
+  <version>0.3.2-SNAPSHOT</version>
   <name>Apache Aries Blueprint CM</name>
   <description>
       This bundle contains the ConfigAdmin namespace for blueprint.
