@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.utils.ServiceListener;
 import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.di.ArrayRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;

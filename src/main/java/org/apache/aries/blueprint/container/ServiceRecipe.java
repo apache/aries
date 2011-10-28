@@ -43,6 +43,7 @@ import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
+import org.apache.aries.blueprint.utils.ServiceListener;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.util.AriesFrameworkUtil;
