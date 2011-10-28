@@ -31,6 +31,8 @@ import static org.apache.aries.jmx.util.FrameworkUtils.resolveBundle;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
@@ -47,14 +49,15 @@ import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
 import org.apache.aries.jmx.JMXThreadFactory;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.codec.BundleData;
-import org.apache.aries.jmx.codec.BundleEventData;
 import org.apache.aries.jmx.codec.BundleData.Header;
+import org.apache.aries.jmx.codec.BundleEventData;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -67,7 +70,7 @@ import org.osgi.service.startlevel.StartLevel;
 /**
  * Implementation of <code>BundleStateMBean</code> which emits JMX <code>Notification</code> on <code>Bundle</code>
  * state changes
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class BundleState extends NotificationBroadcasterSupport implements BundleStateMBean, MBeanRegistration {
@@ -127,6 +130,11 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
             headerTable.put(header.toCompositeData());
         }
         return headerTable;
+    }
+
+    public String getHeader(long bundleId, String key) throws IOException {
+        Bundle bundle = resolveBundle(bundleContext, bundleId);
+        return bundle.getHeaders().get(key);
     }
 
     /**
@@ -257,20 +265,39 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
         return isBundleRequiredByOthers(bundle, packageAdmin);
     }
 
+
+
+    public CompositeData getBundle(long id) throws IOException {
+        Bundle bundle = bundleContext.getBundle(id);
+        if (bundle == null)
+            return null;
+
+        BundleData data = new BundleData(bundleContext, bundle, packageAdmin, startLevel);
+        return data.toCompositeData();
+    }
+
     /**
      * @see org.osgi.jmx.framework.BundleStateMBean#listBundles()
      */
     public TabularData listBundles() throws IOException {
+        return listBundles(BundleStateMBean.BUNDLE_TYPE.keySet());
+    }
+
+    public TabularData listBundles(String ... items) throws IOException {
+        return listBundles(Arrays.asList(items));
+    }
+
+    private TabularData listBundles(Collection<String> items) throws IOException {
         Bundle[] containerBundles = bundleContext.getBundles();
         List<BundleData> bundleDatas = new ArrayList<BundleData>();
         if (containerBundles != null) {
             for (Bundle containerBundle : containerBundles) {
                 bundleDatas.add(new BundleData(bundleContext, containerBundle, packageAdmin, startLevel));
-            } 
+            }
         }
         TabularData bundleTable = new TabularDataSupport(BUNDLES_TYPE);
         for (BundleData bundleData : bundleDatas) {
-            bundleTable.put(bundleData.toCompositeData());
+            bundleTable.put(bundleData.toCompositeData(items));
         }
         return bundleTable;
     }
@@ -357,10 +384,10 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
             }
             catch (Exception e) {
                // ignore
-            }  
+            }
         }
         if (eventDispatcher != null) {
-            eventDispatcher.shutdown(); 
+            eventDispatcher.shutdown();
         }
     }
 
