@@ -23,16 +23,25 @@ import java.util.Map;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.TabularData;
+import javax.management.openmbean.TabularDataSupport;
 
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.jmx.framework.BundleRevisionsStateMBean;
 
 public class BundleWiringData {
-
     private final long bundleId;
+    private final List<BundleCapability> capabilities;
+    private final String namespace;
+    private final List<BundleRequirement> requirements;
 
-    public BundleWiringData(long bundleId, List<BundleWire> requiredWires) {
+    public BundleWiringData(long bundleId, String namespace, List<BundleCapability> capabilities, List<BundleRequirement> requirements, List<BundleWire> requiredWires) {
         this.bundleId = bundleId;
+        this.namespace = namespace;
+        this.capabilities = capabilities;
+        this.requirements = requirements;
     }
 
     public CompositeData toCompositeData() {
@@ -41,13 +50,40 @@ public class BundleWiringData {
             items.put(BundleRevisionsStateMBean.BUNDLE_ID, bundleId);
             items.put(BundleRevisionsStateMBean.BUNDLE_REVISION_ID, null);
 
-            Map<String, Object> reqItems = new HashMap<String, Object>();
-            reqItems.put(BundleRevisionsStateMBean.ATTRIBUTES, null);
-            reqItems.put(BundleRevisionsStateMBean.DIRECTIVES, null);
-            reqItems.put(BundleRevisionsStateMBean.NAMESPACE, "org.foo.bar");
-            CompositeDataSupport requirements = new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE, reqItems);
 
-            items.put(BundleRevisionsStateMBean.REQUIREMENTS, new CompositeData [] {requirements});
+            CompositeData [] reqData = new CompositeData[requirements.size()];
+            for (int i=0; i < requirements.size(); i++) {
+                BundleRequirement requirement = requirements.get(i);
+                Map<String, Object> reqItems = new HashMap<String, Object>();
+
+                TabularData attributes = new TabularDataSupport(BundleRevisionsStateMBean.ATTRIBUTES_TYPE);
+                for (Map.Entry<String, Object> entry : requirement.getAttributes().entrySet()) {
+                    PropertyData<?> pd = PropertyData.newInstance(entry.getKey(), entry.getValue());
+                    attributes.put(pd.toCompositeData());
+                }
+                reqItems.put(BundleRevisionsStateMBean.ATTRIBUTES, attributes);
+
+                TabularData directives = new TabularDataSupport(BundleRevisionsStateMBean.DIRECTIVES_TYPE);
+                for (Map.Entry<String, String> entry : requirement.getDirectives().entrySet()) {
+                    CompositeData directive = new CompositeDataSupport(BundleRevisionsStateMBean.DIRECTIVE_TYPE,
+                        new String[] { BundleRevisionsStateMBean.KEY, BundleRevisionsStateMBean.VALUE },
+                        new Object[] { entry.getKey(), entry.getValue() });
+                    directives.put(directive);
+                }
+                reqItems.put(BundleRevisionsStateMBean.DIRECTIVES, directives);
+                reqItems.put(BundleRevisionsStateMBean.NAMESPACE, requirement.getNamespace());
+
+                CompositeData req = new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE, reqItems);
+                reqData[i] = req;
+            }
+
+//            CompositeDataSupport directive = new CompositeDataSupport(BundleRevisionsStateMBean.DIRECTIVE_TYPE, new String [] {"Key", "Value"}, new Object [] {"Foo", "Bar"});
+//            directives.put(directive);
+//            reqItems.put(BundleRevisionsStateMBean.DIRECTIVES, directives);
+//            reqItems.put(BundleRevisionsStateMBean.NAMESPACE, namespace);
+//            CompositeDataSupport requirements = new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE, reqItems);
+
+            items.put(BundleRevisionsStateMBean.REQUIREMENTS, reqData);
             items.put(BundleRevisionsStateMBean.CAPABILITIES, null);
             items.put(BundleRevisionsStateMBean.BUNDLE_WIRES_TYPE, null);
 
