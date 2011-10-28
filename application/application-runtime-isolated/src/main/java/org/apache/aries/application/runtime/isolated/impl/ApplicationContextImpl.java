@@ -139,21 +139,26 @@ public class ApplicationContextImpl implements AriesApplicationContext
       for (Iterator<Bundle> bundleIter = _bundles.iterator(); bundleIter.hasNext();) {
         Bundle bundleToRemove = bundleIter.next();
   
-        try {
-          // If Bundle is active, stop it first.
-          if (bundleToRemove.getState() == Bundle.ACTIVE) {
-            _bundleFrameworkManager.stopBundle(bundleToRemove);
+        if (bundleToRemove.getState() != Bundle.UNINSTALLED) {
+          try {
+            // If Bundle is active, stop it first.
+            if (bundleToRemove.getState() == Bundle.ACTIVE) {
+              _bundleFrameworkManager.stopBundle(bundleToRemove);
+            }
+          } catch (BundleException be) {
+            LOGGER.debug(LOG_EXCEPTION, be);
           }
   
-          // Delegate the uninstall to the bundleFrameworkManager
-          _bundleFrameworkManager.uninstallBundle(bundleToRemove);
-  
-        } catch (BundleException be) {
-          LOGGER.debug(LOG_EXCEPTION, be);
-          throw be;
+          try {
+            // Delegate the uninstall to the bundleFrameworkManager
+            _bundleFrameworkManager.uninstallBundle(bundleToRemove);
+    
+          } catch (BundleException be) {
+            LOGGER.debug(LOG_EXCEPTION, be);
+          }
         }
+        bundleIter.remove();
       }
-      _bundles.clear();
       
       _state = ApplicationState.UNINSTALLED;
     }
