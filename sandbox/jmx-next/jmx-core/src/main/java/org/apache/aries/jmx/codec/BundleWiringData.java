@@ -31,28 +31,55 @@ import javax.management.openmbean.TabularDataSupport;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.BundleRevisionsStateMBean;
 
 public class BundleWiringData {
     private final long bundleId;
     private final List<BundleCapability> capabilities;
     private final List<BundleRequirement> requirements;
+    private List<BundleWire> requiredWires;
 
     public BundleWiringData(long bundleId, List<BundleCapability> capabilities, List<BundleRequirement> requirements, List<BundleWire> requiredWires) {
         this.bundleId = bundleId;
         this.capabilities = capabilities;
         this.requirements = requirements;
+        this.requiredWires = requiredWires;
     }
 
     public CompositeData toCompositeData() {
         try {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(BundleRevisionsStateMBean.BUNDLE_ID, bundleId);
-            items.put(BundleRevisionsStateMBean.BUNDLE_REVISION_ID, null);
+            items.put(BundleRevisionsStateMBean.BUNDLE_REVISION_ID, null); // TODO
 
             items.put(BundleRevisionsStateMBean.REQUIREMENTS, getRequirements());
             items.put(BundleRevisionsStateMBean.CAPABILITIES, getCapabilities());
-            items.put(BundleRevisionsStateMBean.BUNDLE_WIRES_TYPE, null);
+
+            CompositeData[] reqWiresData = new CompositeData[requiredWires.size()];
+            for (int i=0; i < requiredWires.size(); i++) {
+                BundleWire requiredWire = requiredWires.get(i);
+                Map<String, Object> wireItems = new HashMap<String, Object>();
+                BundleWiring providerWiring = requiredWire.getProviderWiring();
+                wireItems.put(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID, providerWiring.getBundle().getBundleId());
+                wireItems.put(BundleRevisionsStateMBean.PROVIDER_BUNDLE_REVISION_ID, null); // TODO
+                BundleWiring requirerWiring = requiredWire.getRequirerWiring();
+                wireItems.put(BundleRevisionsStateMBean.REQUIRER_BUNDLE_ID, requirerWiring.getBundle().getBundleId());
+                wireItems.put(BundleRevisionsStateMBean.REQUIRER_BUNDLE_REVISION_ID, null); // TODO
+                BundleCapability capability = requiredWire.getCapability();
+                wireItems.put(BundleRevisionsStateMBean.BUNDLE_CAPABILITY,
+                    getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_CAPABILITY_TYPE,
+                    capability.getNamespace(), capability.getAttributes().entrySet(), capability.getDirectives().entrySet()));
+                BundleRequirement requirement = requiredWire.getRequirement();
+                wireItems.put(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT,
+                    getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE,
+                    requirement.getNamespace(), requirement.getAttributes().entrySet(), requirement.getDirectives().entrySet()));
+
+                CompositeData wireData = new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_WIRE_TYPE, wireItems);
+                reqWiresData[i] = wireData;
+            }
+
+            items.put(BundleRevisionsStateMBean.BUNDLE_WIRES_TYPE, reqWiresData);
 
             return new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, items);
         } catch (OpenDataException e) {
@@ -75,7 +102,7 @@ public class BundleWiringData {
         for (int i=0; i < requirements.size(); i++) {
             BundleRequirement requirement = requirements.get(i);
             reqData[i] = getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE,
-                    requirement.getNamespace(), requirement.getAttributes().entrySet(), requirement.getDirectives().entrySet());
+                requirement.getNamespace(), requirement.getAttributes().entrySet(), requirement.getDirectives().entrySet());
         }
         return reqData;
     }

@@ -24,6 +24,9 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
@@ -34,9 +37,15 @@ import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
+import org.ops4j.pax.exam.container.def.options.VMOption;
 import org.ops4j.pax.exam.junit.Configuration;
+import org.ops4j.pax.exam.options.TimeoutOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.BundleRevisionsStateMBean;
 import org.osgi.jmx.framework.PackageStateMBean;
@@ -51,8 +60,8 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-                //  new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-                //  new TimeoutOption( 0 ),
+                  new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+                  new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -112,7 +121,6 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testMBeanInterface() throws IOException {
-        // BundleStateMBean bsMBean = getMBean(BundleStateMBean.OBJECTNAME, BundleStateMBean.class);
         BundleRevisionsStateMBean brsMBean = getMBean(BundleRevisionsStateMBean.OBJECTNAME, BundleRevisionsStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
@@ -123,34 +131,23 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Assert.assertEquals(a.getBundleId(), wiring.get(BundleRevisionsStateMBean.BUNDLE_ID));
 
         BundleWiring bw = a.adapt(BundleWiring.class);
-        CompositeData[] capabilities = (CompositeData[]) wiring.get(BundleRevisionsStateMBean.CAPABILITIES);
-        Assert.assertEquals(bw.getCapabilities(BundleRevisionsStateMBean.PACKAGE_NAMESPACE).size(), capabilities.length);
+        CompositeData[] jmxCapabilities = (CompositeData[]) wiring.get(BundleRevisionsStateMBean.CAPABILITIES);
+        List<BundleCapability> capabilities = bw.getCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+        Assert.assertEquals(capabilities.size(), jmxCapabilities.length);
 
-        /*
-        PackageStateMBean packagaState = getMBean(PackageStateMBean.OBJECTNAME, PackageStateMBean.class);
-        assertNotNull(packagaState);
+        Map<Map<String, Object>, Map<String, String>> m = new HashMap<Map<String,Object>, Map<String,String>>();
+        for (BundleCapability cap : capabilities) {
+            m.put(cap.getAttributes(), cap.getDirectives());
+        }
 
-        long[] exportingBundles = packagaState.getExportingBundles("org.osgi.jmx.framework", "1.5.0");
-        assertNotNull(exportingBundles);
-        assertTrue("Should find a bundle exporting org.osgi.jmx.framework", exportingBundles.length > 0);
+        CompositeData[] jmxRequirements = (CompositeData[]) wiring.get(BundleRevisionsStateMBean.REQUIREMENTS);
+        List<BundleRequirement> requirements = bw.getRequirements(BundleRevision.PACKAGE_NAMESPACE);
+        Assert.assertEquals(requirements.size(), jmxRequirements.length);
 
-        long[] exportingBundles2 = packagaState.getExportingBundles("test", "1.0.0");
-        assertNull("Shouldn't find a bundle exporting test package", exportingBundles2);
+        List<BundleWire> requiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData[] jmxRequiredWires = (CompositeData[]) wiring.get(BundleRevisionsStateMBean.BUNDLE_WIRES_TYPE);
+        // currently the wires only contains the required wires.
+        Assert.assertEquals(requiredWires.size(), jmxRequiredWires.length);
 
-        long[] importingBundlesId = packagaState
-                .getImportingBundles("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
-        assertTrue("Should find bundles importing org.osgi.jmx.framework", importingBundlesId.length > 0);
-
-        TabularData table = packagaState.listPackages();
-        assertNotNull("TabularData containing CompositeData with packages info shouldn't be null", table);
-        assertEquals("TabularData should be a type PACKAGES", PackageStateMBean.PACKAGES_TYPE, table.getTabularType());
-        Collection colData = table.values();
-        assertNotNull("Collection of CompositeData shouldn't be null", colData);
-        assertFalse("Collection of CompositeData should contain elements", colData.isEmpty());
-
-        boolean isRemovalPending = packagaState.isRemovalPending("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
-        assertFalse("Should removal pending on org.osgi.jmx.framework be false", isRemovalPending);
-        */
     }
-
 }
