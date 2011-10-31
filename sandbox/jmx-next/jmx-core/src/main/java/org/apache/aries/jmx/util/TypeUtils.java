@@ -35,6 +35,7 @@ import static org.osgi.jmx.JmxConstants.P_LONG;
 import static org.osgi.jmx.JmxConstants.P_SHORT;
 import static org.osgi.jmx.JmxConstants.SHORT;
 import static org.osgi.jmx.JmxConstants.STRING;
+import static org.osgi.jmx.JmxConstants.VERSION;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -46,9 +47,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.osgi.framework.Version;
+
 /**
  * This class provides common utilities related to type conversions for the MBean implementations
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class TypeUtils {
@@ -87,6 +90,7 @@ public class TypeUtils {
         wrapperTypes.put(SHORT, Short.class);
         wrapperTypes.put(BOOLEAN, Boolean.class);
         wrapperTypes.put(CHARACTER, Character.class);
+        wrapperTypes.put(VERSION, Version.class);
         mathTypes.put(BIGDECIMAL, BigDecimal.class);
         mathTypes.put(BIGINTEGER, BigInteger.class);
         types.put(STRING, String.class);
@@ -97,7 +101,7 @@ public class TypeUtils {
 
     /**
      * Converts a <code>Dictionary</code> object to a <code>Map</code>
-     * 
+     *
      * @param dictionary
      * @return
      */
@@ -113,7 +117,7 @@ public class TypeUtils {
 
     /**
      * Converts primitive long[] array to Long[]
-     * 
+     *
      * @param array
      * @return
      */
@@ -127,7 +131,7 @@ public class TypeUtils {
 
     /**
      * Converts Long[] array to primitive
-     * 
+     *
      * @param array
      * @return
      */
@@ -141,7 +145,7 @@ public class TypeUtils {
 
     /**
      * Converts a String value to an Object of the specified type
-     * 
+     *
      * @param type
      *            one of types listed in {@link #types}
      * @param value
@@ -175,7 +179,7 @@ public class TypeUtils {
                 String parseMethodName = "parse" + new String(simpleTypeName);
                 Method parseMethod = promotedType.getDeclaredMethod(parseMethodName, String.class);
                 result = (T) parseMethod.invoke(null, value);
-            } 
+            }
         } catch (SecurityException e) {
             throw new IllegalArgumentException("Cannot convert value [" + value + "] to type [" + type + "]", e);
         } catch (NoSuchMethodException e) {
