@@ -32,7 +32,7 @@ import org.osgi.jmx.JmxConstants;
  * emits events that clients can use to get notified of the changes in the
  * bundle state of the framework.
  *
- * @version $Revision$
+ * @version $Id: f5d5197fdabb4e0c420bc47812d38fd14edb61d0 $
  * @ThreadSafe
  */
 public interface BundleStateMBean {
@@ -427,7 +427,12 @@ public interface BundleStateMBean {
 																BUNDLE_TYPE,
 																IDENTIFIER);
 
-    CompositeData getBundle(long id) throws IOException;
+	/** New!!
+	 * @param id The Bundle ID
+	 * @return The Bundle Data
+	 * @throws IOException
+	 */
+	CompositeData getBundle(long id) throws IOException;
 
 	/**
 	 * Answer the list of identifiers of the bundles this bundle depends upon
@@ -494,7 +499,9 @@ public interface BundleStateMBean {
 	 *             if the bundle indicated does not exist
 	 */
 	TabularData getHeaders(long bundleId) throws IOException;
+    TabularData getHeaders(long bundleId, String locale) throws IOException;
     String getHeader(long bundleId, String key) throws IOException;
+    String getHeader(long bundleId, String key, String locale) throws IOException;
 
 	/**
 	 * Answer the list of bundle ids of the bundles which host a fragment
