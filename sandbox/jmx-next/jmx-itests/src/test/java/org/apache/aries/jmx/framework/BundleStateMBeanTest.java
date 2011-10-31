@@ -28,13 +28,20 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 import static org.osgi.jmx.framework.BundleStateMBean.OBJECTNAME;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
@@ -109,8 +116,26 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
                                 .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundled")
                                 .set(Constants.BUNDLE_VERSION, "3.0.0")
                                 .set(Constants.REQUIRE_BUNDLE, "org.apache.aries.jmx.test.bundlea;bundle-version=2.0.0")
+                                .build(withBnd())),
+                        provision(newBundle()
+                                .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundlee")
+                                .set(Constants.BUNDLE_DESCRIPTION, "%desc")
+                                .add("OSGI-INF/l10n/bundle.properties", getBundleProps("desc", "Description"))
+                                .add("OSGI-INF/l10n/bundle_nl.properties", getBundleProps("desc", "Omschrijving"))
                                 .build(withBnd()))
                         );
+    }
+
+    private static InputStream getBundleProps(String key, String value) {
+        try {
+            Properties p = new Properties();
+            p.put(key, value);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            p.store(baos, "");
+            return new ByteArrayInputStream(baos.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -265,6 +290,43 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
 
     }
 
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void testHeaderLocalization() throws Exception {
+        BundleStateMBean mbean = getMBean(OBJECTNAME, BundleStateMBean.class);
+        Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundlee");
+
+        CompositeData cd = mbean.getBundle(b.getBundleId());
+        long id = (Long) cd.get(BundleStateMBean.IDENTIFIER);
+        assertEquals("Description", mbean.getHeader(id, Constants.BUNDLE_DESCRIPTION));
+        assertEquals("Description", mbean.getHeader(id, Constants.BUNDLE_DESCRIPTION, "en"));
+        assertEquals("Omschrijving", mbean.getHeader(id, Constants.BUNDLE_DESCRIPTION, "nl"));
+
+        TabularData td = mbean.getHeaders(id);
+        boolean found = false;
+        for (CompositeData d : (Collection<CompositeData>) td.values()) {
+            if (Constants.BUNDLE_DESCRIPTION.equals(d.get(BundleStateMBean.KEY))) {
+                assertEquals("Description", d.get(BundleStateMBean.VALUE));
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
+
+        TabularData tdNL = mbean.getHeaders(id, "nl");
+        boolean foundNL = false;
+        for (CompositeData d : (Collection<CompositeData>) tdNL.values()) {
+            if (Constants.BUNDLE_DESCRIPTION.equals(d.get(BundleStateMBean.KEY))) {
+                assertEquals("Omschrijving", d.get(BundleStateMBean.VALUE));
+                foundNL = true;
+                break;
+            }
+        }
+        assertTrue(foundNL);
+    }
+
+
+    @SuppressWarnings({ "rawtypes", "deprecation" })
     private Version getPackageVersion(String packageName) {
         ServiceReference paRef = context().getServiceReference(PackageAdmin.class.getName());
         PackageAdmin pa = (PackageAdmin) context().getService(paRef);
