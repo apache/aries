@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.management.Notification;
@@ -53,11 +54,11 @@ import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.BundleStateMBean;
-import org.osgi.service.packageadmin.ExportedPackage;
-import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * @version $Rev$ $Date$
@@ -325,14 +326,17 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         assertTrue(foundNL);
     }
 
-
-    @SuppressWarnings({ "rawtypes", "deprecation" })
     private Version getPackageVersion(String packageName) {
-        ServiceReference paRef = context().getServiceReference(PackageAdmin.class.getName());
-        PackageAdmin pa = (PackageAdmin) context().getService(paRef);
-        ExportedPackage pkg = pa.getExportedPackage(packageName);
-        Version version = pkg.getVersion();
-        return version;
+        Bundle systemBundle = context().getBundle(0);
+        BundleWiring wiring = systemBundle.adapt(BundleWiring.class);
+        List<BundleCapability> packages = wiring.getCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+        for (BundleCapability pkg : packages) {
+            Map<String, Object> attrs = pkg.getAttributes();
+            if (attrs.get(BundleRevision.PACKAGE_NAMESPACE).equals(packageName)) {
+                return (Version) attrs.get(Constants.VERSION_ATTRIBUTE);
+            }
+        }
+        throw new IllegalStateException("Package version not found for " + packageName);
     }
 
     private static boolean arrayContains(long value, long[] values) {
