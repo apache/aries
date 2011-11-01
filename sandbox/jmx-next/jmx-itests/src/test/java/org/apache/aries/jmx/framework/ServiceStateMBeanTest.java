@@ -66,6 +66,9 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
+                        // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+                        // new TimeoutOption( 0 ),
+
                         PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
                         CoreOptions.equinox().version("3.7.0.v20110613"),
                         paxLogging("INFO"),
@@ -110,10 +113,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
                                 		",org.osgi.service.cm")
                                 .set(Constants.BUNDLE_ACTIVATOR,
                                         org.apache.aries.jmx.test.bundleb.Activator.class.getName())
-                                .build(withBnd()))//,
-                                /* For debugging, uncomment the next two lines */
-//                              vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-//                              waitForFrameworkStartup()
+                                .build(withBnd()))
                         );
     }
 
@@ -183,9 +183,10 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 
         // listServices
 
+        ServiceReference<?>[] allSvsRefs = bundleContext.getAllServiceReferences(null, null);
         TabularData allServices = mbean.listServices();
         assertNotNull(allServices);
-        assertEquals(bundleContext.getAllServiceReferences(null, null).length, allServices.values().size());
+        assertEquals(allSvsRefs.length, allServices.values().size());
 
         // notifications
 
@@ -222,4 +223,18 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 
     }
 
+    @Test
+    public void testGetServiceIds() throws Exception {
+        ServiceStateMBean mbean = getMBean(ServiceStateMBean.OBJECTNAME, ServiceStateMBean.class);
+
+        ServiceReference<?>[] allSvsRefs = bundleContext.getAllServiceReferences(null, null);
+        long[] expectedServiceIds = new long[allSvsRefs.length];
+        for (int i=0; i < allSvsRefs.length; i++) {
+            expectedServiceIds[i] = (Long) allSvsRefs[i].getProperty(Constants.SERVICE_ID);
+        }
+        long[] actualServiceIds = mbean.getServiceIds();
+        Arrays.sort(expectedServiceIds);
+        Arrays.sort(actualServiceIds);
+        assertTrue(Arrays.equals(expectedServiceIds, actualServiceIds));
+    }
 }

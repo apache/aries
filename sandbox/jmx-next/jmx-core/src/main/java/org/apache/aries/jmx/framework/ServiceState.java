@@ -34,6 +34,7 @@ import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
@@ -55,7 +56,7 @@ import org.osgi.service.log.LogService;
 /**
  * Implementation of <code>ServiceStateMBean</code> which emits JMX <code>Notification</code> for framework
  * <code>ServiceEvent</code> events
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class ServiceState extends NotificationBroadcasterSupport implements ServiceStateMBean, MBeanRegistration {
@@ -148,6 +149,27 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#getServiceIds()
+     */
+    public long[] getServiceIds() throws IOException {
+        try {
+            ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(null, null);
+            long[] ids = new long[refs.length];
+            for (int i=0; i < refs.length; i++) {
+                ServiceReference<?> ref = refs[i];
+                long id = (Long) ref.getProperty(Constants.SERVICE_ID);
+                ids[i] = id;
+            }
+
+            return ids;
+        } catch (InvalidSyntaxException e) {
+            IOException ioe = new IOException();
+            ioe.initCause(e);
+            throw ioe;
+        }
+    }
+
+    /**
      * @see javax.management.MBeanRegistration#postDeregister()
      */
     public void postDeregister() {
@@ -218,7 +240,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
                // ignore
             }
         }
-        if (eventDispatcher != null) {  
+        if (eventDispatcher != null) {
             eventDispatcher.shutdown();
         }
     }
@@ -228,6 +250,28 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
      */
     protected ExecutorService getEventDispatcher() {
         return eventDispatcher;
+    }
+
+    ////// TODO these
+
+    public CompositeData getService(long serviceId) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public CompositeData getProperty(long serviceId, String key) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public TabularData listServices(String clazz, String filter) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public TabularData listServices(String clazz, String filter, String[] serviceTypeItems) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
