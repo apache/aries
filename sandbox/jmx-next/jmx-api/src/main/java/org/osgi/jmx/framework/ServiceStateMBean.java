@@ -1,6 +1,6 @@
 /*
  * Copyright (c) OSGi Alliance (2009, 2010). All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@ package org.osgi.jmx.framework;
 
 import java.io.IOException;
 
+import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.SimpleType;
 import javax.management.openmbean.TabularData;
@@ -30,7 +31,7 @@ import org.osgi.jmx.JmxConstants;
  * This MBean represents the Service state of the framework. This MBean also
  * emits events that clients can use to get notified of the changes in the
  * service state of the framework.
- * 
+ *
  * @version $Revision$
  * @ThreadSafe
  */
@@ -172,7 +173,7 @@ public interface ServiceStateMBean {
 
 	/**
 	 * Answer the list of interfaces that this service implements
-	 * 
+	 *
 	 * @param serviceId
 	 *            the identifier of the service
 	 * @return the list of interfaces
@@ -185,7 +186,7 @@ public interface ServiceStateMBean {
 
 	/**
 	 * Answer the bundle identifier of the bundle which registered the service
-	 * 
+	 *
 	 * @param serviceId
 	 *            the identifier of the service
 	 * @return the identifier for the bundle
@@ -195,12 +196,13 @@ public interface ServiceStateMBean {
 	 *             if the service indicated does not exist
 	 */
 	long getBundleIdentifier(long serviceId) throws IOException;
+	CompositeData getService(long serviceId) throws IOException;
 
 	/**
 	 * Answer the map of properties associated with this service
-	 * 
+	 *
 	 * @see JmxConstants#PROPERTIES_TYPE for the details of the TabularType
-	 * 
+	 *
 	 * @param serviceId
 	 *            the identifier of the service
 	 * @return the table of properties. These include the standard mandatory
@@ -212,12 +214,14 @@ public interface ServiceStateMBean {
 	 *             if the service indicated does not exist
 	 */
 	TabularData getProperties(long serviceId) throws IOException;
+	CompositeData getProperty(long serviceId, String key) throws IOException;
+	long[] getServiceIds() throws IOException;
 
 	/**
 	 * Answer the service state of the system in tabular form.
-	 * 
+	 *
 	 * @see #SERVICES_TYPE for the details of the TabularType
-	 * 
+	 *
 	 * @return the tabular representation of the service state
 	 * @throws IOException
 	 *             If the operation fails
@@ -225,10 +229,12 @@ public interface ServiceStateMBean {
 	 *             if the service indicated does not exist
 	 */
 	TabularData listServices() throws IOException;
+	TabularData listServices(String clazz, String filter) throws IOException;
+    TabularData listServices(String clazz, String filter, String [] serviceTypeItems) throws IOException;
 
 	/**
 	 * Answer the list of identifiers of the bundles that use the service
-	 * 
+	 *
 	 * @param serviceId
 	 *            the identifier of the service
 	 * @return the list of bundle identifiers
