@@ -233,7 +233,10 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
         String directoryName = "";
         String fileName = "";
         if (directoryFullPath.lastIndexOf("/") != -1) {
-            directoryName = directoryFullPath.substring(0, directoryFullPath.lastIndexOf("/"));
+        	// This bundle may be nested within another archive. In that case, we need to trim
+        	// /bundleFileName.jar from the front of the directory. 
+        	int bundleNameLength = bundle.getName().length();
+            directoryName = directoryFullPath.substring(bundleNameLength, directoryFullPath.lastIndexOf("/"));
             fileName = directoryFullPath.substring(directoryFullPath.lastIndexOf("/") + 1);
         } else {
             if (file.isFile()) {
