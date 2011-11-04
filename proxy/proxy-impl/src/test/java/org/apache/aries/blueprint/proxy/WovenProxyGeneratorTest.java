@@ -30,6 +30,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   }
   
   /** An array of classes that will be woven - note no UnweavableParents should be in here! */
-  private static final Class<?>[] CLASSES = new Class<?>[]{TEST_CLASS, ProxyTestClassSuper.class,
+  private static final List<Class<?>> CLASSES = Arrays.asList(new Class<?>[]{TEST_CLASS, ProxyTestClassSuper.class,
     ProxyTestClassFinalMethod.class, ProxyTestClassFinal.class, ProxyTestClassGeneric.class,
     ProxyTestClassGenericSuper.class, ProxyTestClassCovariant.class, ProxyTestClassCovariantOverride.class,
     ProxyTestClassUnweavableChild.class, ProxyTestClassUnweavableSibling.class, ProxyTestClassInner.class, 
@@ -78,7 +79,11 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     ProxyTestClassUnweavableChildWithFinalMethodParent.class, 
     ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class, 
     ProxyTestClassSerializable.class, ProxyTestClassSerializableWithSVUID.class,
-    ProxyTestClassSerializableChild.class, ProxyTestClassSerializableInterface.class};
+    ProxyTestClassSerializableChild.class, ProxyTestClassSerializableInterface.class,
+    ProxyTestClassStaticInitOfChild.class});
+  
+  /** An array of classes that are loaded by the WeavingLoader, but not actually woven **/
+  private static final List<Class<?>> OTHER_CLASSES = Arrays.asList(new Class<?>[] {ProxyTestClassStaticInitOfChildParent.class});
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
@@ -101,7 +106,16 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
       if(bytes == null)
         return super.loadClass(className, b);
       
-      bytes = WovenProxyGenerator.getWovenProxy(bytes, className, this);
+      boolean weave = false;
+      
+      for(Class<?> c : CLASSES) {
+        if(c.getName().equals(className)) {
+          weave = true;
+          break;
+        }
+      }
+      if(weave)
+        bytes = WovenProxyGenerator.getWovenProxy(bytes, className, this);
       
       return defineClass(className, bytes, 0, bytes.length);
     }
@@ -117,7 +131,12 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @BeforeClass
   public static void setUp() throws Exception
   {
-    for(Class<?> clazz : CLASSES) {
+    List<Class<?>> classes = new ArrayList(CLASSES.size() + OTHER_CLASSES.size());
+    
+    classes.addAll(CLASSES);
+    classes.addAll(OTHER_CLASSES);
+    
+    for(Class<?> clazz : classes) {
       InputStream is = clazz.getClassLoader().getResourceAsStream(
           clazz.getName().replace('.', '/') + ".class");
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -381,6 +400,19 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     woven = getProxyClass(ProxyTestClassSerializableWithSVUID.class);
     
     assertFalse(woven.getDeclaredField("serialVersionUID").isSynthetic());
+  }
+  
+  /**
+   * This test covers a weird case on Mac VMs where we sometimes
+   * get a ClassCircularityError if a static initializer in a
+   * non-woven superclass references a subclass that's being
+   * woven, and gets triggered by the weaving process. Not known
+   * to fail on IBM or Sun/Oracle VMs
+   */
+  @Test
+  public void testSuperStaticInitOfChild() throws Exception {
+    Class<?> parent = weavingLoader.loadClass(ProxyTestClassStaticInitOfChildParent.class.getName());
+    parent.getMethod("doStuff").invoke(null);
   }
   
   @Override
