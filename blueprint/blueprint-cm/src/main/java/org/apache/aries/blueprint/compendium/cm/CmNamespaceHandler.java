@@ -42,9 +42,12 @@ import org.apache.aries.blueprint.mutable.MutableComponentMetadata;
 import org.apache.aries.blueprint.mutable.MutableIdRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableMapMetadata;
 import org.apache.aries.blueprint.mutable.MutableRefMetadata;
+import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
+import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.blueprint.utils.PlaceholdersUtils;
 import org.apache.aries.blueprint.utils.ServiceListener;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -54,6 +57,7 @@ import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
@@ -202,7 +206,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         metadata.setInitMethod("init");
         metadata.setDestroyMethod("destroy");
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
-        metadata.addProperty("configAdmin", createConfigAdminProxy(context));
+        metadata.addProperty("configAdmin", createConfigurationAdminRef(context));
         metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
         String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                     ? element.getAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
@@ -318,7 +322,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         factoryMetadata.setRuntimeClass(CmManagedServiceFactory.class);
         factoryMetadata.setInitMethod("init");
         factoryMetadata.setDestroyMethod("destroy");
-        factoryMetadata.addProperty("configAdmin", createConfigAdminProxy(context));
+        factoryMetadata.addProperty("configAdmin", createConfigurationAdminRef(context));
         factoryMetadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         factoryMetadata.addProperty("factoryPid", createValue(context, element.getAttribute(FACTORY_PID_ATTRIBUTE)));
         String autoExport = element.hasAttribute(AUTO_EXPORT_ATTRIBUTE) ? element.getAttribute(AUTO_EXPORT_ATTRIBUTE) : AUTO_EXPORT_DEFAULT;
@@ -422,7 +426,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             metadata.setDestroyMethod("destroy");
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
-        metadata.addProperty("configAdmin", createConfigAdminProxy(context));
+        metadata.addProperty("configAdmin", createConfigurationAdminRef(context));
         metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
         if (element.hasAttribute(UPDATE_ATTRIBUTE)) {
@@ -451,7 +455,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             metadata.setDestroyMethod("destroy");
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
-        metadata.addProperty("configAdmin", createConfigAdminProxy(context));
+        metadata.addProperty("configAdmin", createConfigurationAdminRef(context));
         metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
         String updateStrategy = element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE);
@@ -468,22 +472,6 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return component;
     }
 
-    /**
-     * Create a reference to the ConfigurationAdmin service if not already done
-     * and add it to the registry.
-     *
-     * @param context the parser context
-     * @return a metadata pointing to the config admin
-     */
-    private Metadata createConfigAdminProxy(ParserContext context) {
-        MutableBeanMetadata bean = context.createMetadata(MutableBeanMetadata.class);
-        bean.setRuntimeClass(CmNamespaceHandler.class);
-        bean.setFactoryMethod("getConfigAdmin");
-        bean.setActivation(MutableBeanMetadata.ACTIVATION_LAZY);
-        bean.setScope(MutableBeanMetadata.SCOPE_PROTOTYPE);
-        return bean;
-    }
-
     private void registerManagedObjectManager(ParserContext context, ComponentDefinitionRegistry registry) {
         if (registry.getComponentDefinition(MANAGED_OBJECT_MANAGER_NAME) == null) {
             MutableBeanMetadata beanMetadata = context.createMetadata(MutableBeanMetadata.class);
@@ -492,6 +480,10 @@ public class CmNamespaceHandler implements NamespaceHandler {
             beanMetadata.setRuntimeClass(ManagedObjectManager.class);            
             registry.registerComponentDefinition(beanMetadata);
         }
+    }
+    
+    private MutableReferenceMetadata createConfigurationAdminRef(ParserContext context) {
+        return createServiceRef(getBlueprintBundleContext(context), context, ConfigurationAdmin.class, "(objectClass=" + ConfigurationAdmin.class.getName() + ")");
     }
     
     private static ValueMetadata createValue(ParserContext context, String value) {
@@ -508,6 +500,21 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private static RefMetadata createRef(ParserContext context, String value) {
         MutableRefMetadata m = context.createMetadata(MutableRefMetadata.class);
         m.setComponentId(value);
+        return m;
+    }
+    
+    private MutableReferenceMetadata createServiceRef(BundleContext ctx, ParserContext context, Class<?> cls, String filter) {
+        MutableReferenceMetadata m = context.createMetadata(MutableReferenceMetadata.class);
+        m.setRuntimeInterface(cls);
+        m.setInterface(cls.getName());
+        m.setBundleContext(ctx);
+        m.setActivation(ReferenceMetadata.ACTIVATION_EAGER);
+        m.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
+        
+        if (filter != null) {
+            m.setFilter(filter);
+        }
+        
         return m;
     }
 
@@ -590,4 +597,24 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return interfaceNames;
     }
 
+    /**
+     * Returns the bundle context within the parser context
+     * 
+     * @param parserContext the parser context
+     * @return the bundle context within the parser context (if it exists)
+     */
+    private BundleContext getBlueprintBundleContext(ParserContext parserContext)
+    {
+        BundleContext blueprintContext = null;
+        
+        if (parserContext != null) {
+            ComponentMetadata metaData = parserContext.getComponentDefinitionRegistry().getComponentDefinition("blueprintBundleContext");
+            
+            if (metaData != null) {
+                blueprintContext = (BundleContext)((PassThroughMetadataImpl)metaData).getObject();   
+            }   
+        }
+        
+        return blueprintContext;
+    }
 }

@@ -563,6 +563,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 }
             }
         }
+
+        synchronized (satisfiablesLock) {
+            satisfiables = null;
+        }
     }
 
     private void untrackServiceReference(SatisfiableRecipe recipe, Set<String> stopped, Map<String, List<SatisfiableRecipe>> dependencies) {
