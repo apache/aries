@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Application-ManifestVersion: 1.0
+Application-Name: HelloWorld Manual
+Application-SymbolicName: org.apache.aries.helloworldmnapp
+Application-Version: 1.0
+Application-Content: org.apache.aries.isolated.helloworldmn;version=1.0.0,
+ org.apache.felix.configadmin
+

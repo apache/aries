@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Application-ManifestVersion: 1.0
+Application-Name: HelloWorld BluePrint
+Application-SymbolicName: org.apache.aries.helloworldbpapp
+Application-Version: 1.0
+Application-Content: org.apache.aries.isolated.helloworldbp;version=1.0.0,
+ org.apache.felix.configadmin
+
