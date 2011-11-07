@@ -20,8 +20,11 @@ package org.apache.aries.application.runtime.itests.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -146,6 +149,42 @@ public class IsolationTestUtils {
     repoAdmin.addRepository(new File("repo.xml").toURI().toString());
   }
   
+  public static HelloWorld findHelloWorldService(BundleContext ctx) throws Exception
+  {
+	  if (ctx != null)
+	  {
+	      // Dive into the context and pull out the composite bundle for the app
+	      Filter osgiFilter = FrameworkUtil.createFilter("(" + Constants.OBJECTCLASS + "=" + HelloWorld.class.getName() + ")");
+	      ServiceTracker tracker = new ServiceTracker(ctx, 
+	          osgiFilter,
+	          null);
+	      
+	      tracker.open();
+	      final Object hw = tracker.waitForService(DEFAULT_TIMEOUT);
+	      tracker.close();
+	
+	      if (hw != null) {
+	        // proxy because the class space between the sample app and the test bundle is not consistent
+	        return new HelloWorld() {
+	          public String getMessage() {
+	            try {
+	              Method m = hw.getClass().getMethod("getMessage");
+	              return (String) m.invoke(hw);
+	            } catch (Exception e) {
+	              throw new RuntimeException(e);
+	            }
+	          }
+	        };
+	      } else {
+	        return null;
+	      }	 
+	  }
+	  else
+	  {
+		  return null;
+	  }
+  }
+  
   /**
    * Find the {@link HelloWorld} service for the isolated app
    * @return the service object, suitably proxied so that it can be actually used, or null if the service is not present
@@ -156,32 +195,7 @@ public class IsolationTestUtils {
     BundleContext appContext = IsolationTestUtils.findIsolatedAppBundleContext(runtimeCtx, appName);
     
     if (appContext != null) {  
-      // Dive into the context and pull out the composite bundle for the app
-      Filter osgiFilter = FrameworkUtil.createFilter("(" + Constants.OBJECTCLASS + "=" + HelloWorld.class.getName() + ")");
-      ServiceTracker tracker = new ServiceTracker(appContext, 
-          osgiFilter,
-          null);
-      
-      tracker.open();
-      final Object hw = tracker.waitForService(DEFAULT_TIMEOUT);
-      tracker.close();
-
-      if (hw != null) {
-        // proxy because the class space between the sample app and the test bundle is not consistent
-        return new HelloWorld() {
-          public String getMessage() {
-            try {
-              Method m = hw.getClass().getMethod("getMessage");
-              return (String) m.invoke(hw);
-            } catch (Exception e) {
-              throw new RuntimeException(e);
-            }
-          }
-        };
-      } else {
-        return null;
-      }
-
+    	return findHelloWorldService(appContext);
     } else {
       throw new IllegalStateException("Expected to find isolated app ctx, but didn't");
     }
