@@ -24,10 +24,8 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.itest.RichBundleContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,8 +36,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.framework.CompositeBundle;
 import org.osgi.service.framework.CompositeBundleFactory;
 
@@ -52,17 +48,10 @@ import static org.apache.aries.itest.ExtraOptions.*;
  *
  */
 @RunWith(JUnit4TestRunner.class)
-public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest {
+public class BlueprintContainer2BTCustomizerTest extends BaseBlueprintContainerBTCustomizerTest {
 
     @Test
     public void test() throws Exception {
-        // Create a config to check the property placeholder
-        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);        
-        Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
-        Hashtable props = new Hashtable();
-        props.put("key.b", "10");
-        cf.update(props);
-
         
         ServiceReference sr = bundleContext.getServiceReference("org.osgi.service.framework.CompositeBundleFactory");
         if (sr != null) {
@@ -74,14 +63,7 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
             // frameworkConfig.put("osgi.console", "10000");
             
             // construct composite bundle information
-            Map<String, String> compositeManifest = new HashMap<String, String>();
-            compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, "test-composite");
-            compositeManifest.put(Constants.BUNDLE_VERSION, "1.0.0");
-            // this import-package is used by the blueprint.sample
-            compositeManifest.put(Constants.IMPORT_PACKAGE, "org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\", org.osgi.service.blueprint.container;version=1.0");
-            // this export-package is used by pax junit runner as it needs to see the blueprint sample package 
-            // for the test after the blueprint sample is started.
-            compositeManifest.put(Constants.EXPORT_PACKAGE, "org.apache.aries.blueprint.sample");
+            Map<String, String> compositeManifest = getCompositeManifest();
             
             CompositeBundle cb = cbf.installCompositeBundle(frameworkConfig, "test-composite", compositeManifest);
 
@@ -92,9 +74,15 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
             InputStream is = new URL(mapo.getURL()).openStream();
             Bundle bundle = compositeBundleContext.installBundle(mapo.getURL(), is);
             assertNotNull(bundle);
+            // install and start the cfg admin bundle in the isolated framework
+            Bundle cfgAdminBundle = installConfigurationAdmin(compositeBundleContext);
+            assertNotNull(cfgAdminBundle);            
             
-            // start the composite bundle then the blueprint sample
+            // start the composite bundle, the config admin then the blueprint sample
             cb.start();
+            cfgAdminBundle.start();         
+            // create a config to check the property placeholder
+            applyCommonConfiguration(compositeBundleContext);
             bundle.start();
             
             // start the blueprint bundle and it should detect the previously started blueprint sample
@@ -115,7 +103,7 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
         return testOptions(
             paxLogging("DEBUG"),
             Helper.blueprintBundles(false),
-//            vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
+            //vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
             equinox().version("3.5.0")
         );
     }
