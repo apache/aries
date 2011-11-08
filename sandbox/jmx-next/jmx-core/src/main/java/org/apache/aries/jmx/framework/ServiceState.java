@@ -137,10 +137,17 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
      * @see org.osgi.jmx.framework.ServiceStateMBean#listServices()
      */
     public TabularData listServices() throws IOException {
+        return listServices(null, null);
+    }
+
+    /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#listServices(java.lang.String, java.lang.String)
+     */
+    public TabularData listServices(String clazz, String filter) throws IOException {
         TabularData servicesTable = new TabularDataSupport(SERVICES_TYPE);
         ServiceReference[] allServiceReferences = null;
         try {
-            allServiceReferences = bundleContext.getAllServiceReferences(null, null);
+            allServiceReferences = bundleContext.getAllServiceReferences(clazz, filter);
         } catch (InvalidSyntaxException e) {
             throw new IllegalStateException("Failed to retrieve all service references", e);
         }
@@ -265,13 +272,6 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
      */
     protected ExecutorService getEventDispatcher() {
         return eventDispatcher;
-    }
-
-    ////// TODO these
-
-    public TabularData listServices(String clazz, String filter) throws IOException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public TabularData listServices(String clazz, String filter, String[] serviceTypeItems) throws IOException {

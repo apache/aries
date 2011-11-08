@@ -277,4 +277,21 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
                    ocData.get("Value").equals(form2));
         assertEquals("Array of String", ocData.get("Type"));
     }
+
+    @Test
+    public void testListServices() throws Exception {
+        ServiceStateMBean mbean = getMBean(ServiceStateMBean.OBJECTNAME, ServiceStateMBean.class);
+
+        String filter = "(" + Constants.SERVICE_PID + "=*)";
+        ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(null, filter);
+        TabularData svcData = mbean.listServices(null, filter);
+        assertEquals(refs.length, svcData.size());
+
+        ServiceReference<InterfaceA> sref = bundleContext.getServiceReference(InterfaceA.class);
+        TabularData svcAData = mbean.listServices(InterfaceA.class.getName(), null);
+        assertEquals(1, svcAData.size());
+        CompositeData actualSvc = (CompositeData) svcAData.values().iterator().next();
+        CompositeData expectedSvc = mbean.getService((Long) sref.getProperty(Constants.SERVICE_ID));
+        assertEquals(expectedSvc, actualSvc);
+    }
 }
