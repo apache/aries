@@ -244,7 +244,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetService() throws Exception {
+    public void testGetServiceAndGetProperty() throws Exception {
         ServiceStateMBean mbean = getMBean(ServiceStateMBean.OBJECTNAME, ServiceStateMBean.class);
 
         ServiceReference<InterfaceA> sref = bundleContext.getServiceReference(InterfaceA.class);
@@ -259,5 +259,22 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         Bundle[] ub = sref.getUsingBundles();
         assertEquals("Precondition", 1, ub.length);
         assertTrue(Arrays.equals(new Long[] {ub[0].getBundleId()}, (Long[]) svcData.get("UsingBundles")));
+
+        // Test mbean.getProperty()
+        String pid = (String) sref.getProperty(Constants.SERVICE_PID);
+        CompositeData pidData = mbean.getProperty(serviceID, Constants.SERVICE_PID);
+        assertEquals(pid, pidData.get("Value"));
+        assertEquals("String", pidData.get("Type"));
+
+        CompositeData idData = mbean.getProperty(serviceID, Constants.SERVICE_ID);
+        assertEquals("" + serviceID, idData.get("Value"));
+        assertEquals("Long", idData.get("Type"));
+
+        CompositeData ocData = mbean.getProperty(serviceID, Constants.OBJECTCLASS);
+        String form1 = InterfaceA.class.getName() + "," + ManagedService.class.getName();
+        String form2 = ManagedService.class.getName() + "," + InterfaceA.class.getName();
+        assertTrue(ocData.get("Value").equals(form1) ||
+                   ocData.get("Value").equals(form2));
+        assertEquals("Array of String", ocData.get("Type"));
     }
 }
