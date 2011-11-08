@@ -237,6 +237,9 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
         	// /bundleFileName.jar from the front of the directory. 
         	int bundleNameLength = bundle.getName().length();
             directoryName = directoryFullPath.substring(bundleNameLength, directoryFullPath.lastIndexOf("/"));
+            if (directoryName.startsWith("/") && directoryName.length() > 1) { 
+            	directoryName = directoryName.substring(1);
+            }
             fileName = directoryFullPath.substring(directoryFullPath.lastIndexOf("/") + 1);
         } else {
             if (file.isFile()) {
