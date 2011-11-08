@@ -110,6 +110,14 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#getProperty(long, java.lang.String)
+     */
+    public CompositeData getProperty(long serviceId, String key) throws IOException {
+        ServiceReference reference = resolveService(bundleContext, serviceId);
+            return PropertyData.newInstance(key, reference.getProperty(key)).toCompositeData();
+    }
+
+    /**
      * @see org.osgi.jmx.framework.ServiceStateMBean#getUsingBundles(long)
      */
     public long[] getUsingBundles(long serviceId) throws IOException {
@@ -122,16 +130,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
      * @see org.osgi.jmx.framework.ServiceStateMBean#getService(long)
      */
     public CompositeData getService(long serviceId) throws IOException {
-        try {
-            ServiceReference[] srefs = bundleContext.getAllServiceReferences(null, "(" + Constants.SERVICE_ID + "=" + serviceId + ")");
-            if (srefs.length >= 0) {
-                return new ServiceData(srefs[0]).toCompositeData();
-            } else {
-                return null;
-            }
-        } catch (InvalidSyntaxException e) {
-            return null;
-        }
+        return new ServiceData(resolveService(bundleContext, serviceId)).toCompositeData();
     }
 
     /**
@@ -269,11 +268,6 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     ////// TODO these
-
-    public CompositeData getProperty(long serviceId, String key) throws IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     public TabularData listServices(String clazz, String filter) throws IOException {
         // TODO Auto-generated method stub
