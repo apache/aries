@@ -41,7 +41,7 @@ import org.osgi.jmx.framework.ServiceStateMBean;
  * <tt>ServiceData</tt> represents Service Type @see {@link ServiceStateMBean#SERVICE_TYPE}. It is a codec for the
  * <code>CompositeData</code> representing an OSGi <code>ServiceReference</code>.
  * </p>
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class ServiceData {
@@ -50,23 +50,23 @@ public class ServiceData {
      * @see ServiceStateMBean#IDENTIFIER_ITEM
      */
     private long serviceId;
-    
+
     /**
      * @see ServiceStateMBean#BUNDLE_IDENTIFIER_ITEM
      */
     private long bundleId;
-    
+
     /**
      * @see ServiceStateMBean#OBJECT_CLASS_ITEM
      */
     private String[] serviceInterfaces;
-    
+
     // keep properties for next version of the spec
     ///**
     // * @see ServiceStateMBean#PROPERTIES_ITEM
     // */
     //private List<PropertyData<? extends Object>> properties = new ArrayList<PropertyData<? extends Object>>();
-    
+
     /**
      * @see ServiceStateMBean#USING_BUNDLES_ITEM
      */
@@ -116,7 +116,7 @@ public class ServiceData {
 
     /**
      * Constructs a <code>ServiceData</code> object from the given <code>CompositeData</code>
-     * 
+     *
      * @param compositeData
      * @return
      * @throws IlleglArugmentException
