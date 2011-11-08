@@ -119,6 +119,22 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#getService(long)
+     */
+    public CompositeData getService(long serviceId) throws IOException {
+        try {
+            ServiceReference[] srefs = bundleContext.getAllServiceReferences(null, "(" + Constants.SERVICE_ID + "=" + serviceId + ")");
+            if (srefs.length >= 0) {
+                return new ServiceData(srefs[0]).toCompositeData();
+            } else {
+                return null;
+            }
+        } catch (InvalidSyntaxException e) {
+            return null;
+        }
+    }
+
+    /**
      * @see org.osgi.jmx.framework.ServiceStateMBean#listServices()
      */
     public TabularData listServices() throws IOException {
@@ -253,11 +269,6 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     ////// TODO these
-
-    public CompositeData getService(long serviceId) throws IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     public CompositeData getProperty(long serviceId, String key) throws IOException {
         // TODO Auto-generated method stub
