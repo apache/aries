@@ -230,7 +230,7 @@ public interface ServiceStateMBean {
 	 */
 	TabularData listServices() throws IOException;
 	TabularData listServices(String clazz, String filter) throws IOException;
-    TabularData listServices(String clazz, String filter, String [] serviceTypeItems) throws IOException;
+    TabularData listServices(String clazz, String filter, String ... serviceTypeItems) throws IOException;
 
 	/**
 	 * Answer the list of identifiers of the bundles that use the service
