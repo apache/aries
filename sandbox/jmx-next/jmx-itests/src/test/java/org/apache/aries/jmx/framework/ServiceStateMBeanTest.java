@@ -31,6 +31,7 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,9 +51,7 @@ import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Customizer;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.container.def.options.VMOption;
 import org.ops4j.pax.exam.junit.Configuration;
-import org.ops4j.pax.exam.options.TimeoutOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -71,8 +70,8 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-                        new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-                        new TimeoutOption( 0 ),
+                        // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+                        // new TimeoutOption( 0 ),
 
                         PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
                         CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -288,10 +287,32 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         assertEquals(refs.length, svcData.size());
 
         ServiceReference<InterfaceA> sref = bundleContext.getServiceReference(InterfaceA.class);
-        TabularData svcAData = mbean.listServices(InterfaceA.class.getName(), null);
-        assertEquals(1, svcAData.size());
-        CompositeData actualSvc = (CompositeData) svcAData.values().iterator().next();
+        TabularData svcTab = mbean.listServices(InterfaceA.class.getName(), null);
+        assertEquals(1, svcTab.size());
+        CompositeData actualSvc = (CompositeData) svcTab.values().iterator().next();
         CompositeData expectedSvc = mbean.getService((Long) sref.getProperty(Constants.SERVICE_ID));
         assertEquals(expectedSvc, actualSvc);
+    }
+
+    @Test
+    public void testListServicesSelectiveItems() throws Exception {
+        ServiceStateMBean mbean = getMBean(ServiceStateMBean.OBJECTNAME, ServiceStateMBean.class);
+
+        String filter = "(|(service.pid=org.apache.aries.jmx.test.ServiceB)(service.pid=jmx.test.B.factory))";
+        ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(null, filter);
+        TabularData svcData = mbean.listServices(null, filter, ServiceStateMBean.BUNDLE_IDENTIFIER);
+        assertEquals(refs.length, svcData.size());
+
+        long id = refs[0].getBundle().getBundleId();
+        for (ServiceReference<?> ref : refs) {
+            assertEquals("Precondition", id, ref.getBundle().getBundleId());
+        }
+
+        for (CompositeData cd : new ArrayList<CompositeData>((Collection<CompositeData>) svcData.values())) {
+            assertEquals(id, cd.get(ServiceStateMBean.BUNDLE_IDENTIFIER));
+            assertNotNull(cd.get(ServiceStateMBean.IDENTIFIER));
+            assertNull(cd.get(ServiceStateMBean.OBJECT_CLASS));
+            assertNull(cd.get(ServiceStateMBean.USING_BUNDLES));
+        }
     }
 }

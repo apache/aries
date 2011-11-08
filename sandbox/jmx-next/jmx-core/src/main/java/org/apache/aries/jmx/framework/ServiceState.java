@@ -21,6 +21,8 @@ import static org.apache.aries.jmx.util.FrameworkUtils.resolveService;
 import static org.osgi.jmx.JmxConstants.PROPERTIES_TYPE;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -144,6 +146,17 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
      * @see org.osgi.jmx.framework.ServiceStateMBean#listServices(java.lang.String, java.lang.String)
      */
     public TabularData listServices(String clazz, String filter) throws IOException {
+        return listServices(clazz, filter, ServiceStateMBean.SERVICE_TYPE.keySet());
+    }
+
+    /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#listServices(java.lang.String, java.lang.String, java.lang.String...)
+     */
+    public TabularData listServices(String clazz, String filter, String ... serviceTypeItems) throws IOException {
+        return listServices(clazz, filter, Arrays.asList(serviceTypeItems));
+    }
+
+    private TabularData listServices(String clazz, String filter, Collection<String> serviceTypeItems) throws IOException {
         TabularData servicesTable = new TabularDataSupport(SERVICES_TYPE);
         ServiceReference[] allServiceReferences = null;
         try {
@@ -153,7 +166,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
         }
         if (allServiceReferences != null) {
             for (ServiceReference reference : allServiceReferences) {
-                servicesTable.put(new ServiceData(reference).toCompositeData());
+                servicesTable.put(new ServiceData(reference).toCompositeData(serviceTypeItems));
             }
         }
         return servicesTable;
@@ -273,10 +286,4 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     protected ExecutorService getEventDispatcher() {
         return eventDispatcher;
     }
-
-    public TabularData listServices(String clazz, String filter, String[] serviceTypeItems) throws IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }
