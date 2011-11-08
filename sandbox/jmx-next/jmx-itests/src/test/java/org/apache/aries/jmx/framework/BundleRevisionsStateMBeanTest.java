@@ -24,11 +24,20 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.TabularData;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
+import org.apache.aries.jmx.codec.PropertyData;
 import org.junit.Assert;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
@@ -37,22 +46,20 @@ import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.BundleRevisionsStateMBean;
 import org.osgi.jmx.framework.PackageStateMBean;
 
-/**
- *
- *
- * @version $Rev: 1190259 $ $Date: 2011-10-28 12:46:48 +0100 (Fri, 28 Oct 2011) $
- */
 public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
-
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-                //  new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-                //  new TimeoutOption( 0 ),
+            // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+            // new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -111,46 +118,111 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testMBeanInterface() throws IOException {
-        // BundleStateMBean bsMBean = getMBean(BundleStateMBean.OBJECTNAME, BundleStateMBean.class);
+    public void testGetCurrentWiring() throws IOException {
         BundleRevisionsStateMBean brsMBean = getMBean(BundleRevisionsStateMBean.OBJECTNAME, BundleRevisionsStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        CompositeData jmxWiring = brsMBean.getCurrentWiring(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
 
-        CompositeData wiring = brsMBean.getCurrentWiring(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
-
-        Assert.assertEquals(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, wiring.getCompositeType());
-        Assert.assertEquals(a.getBundleId(), wiring.get(BundleRevisionsStateMBean.BUNDLE_ID));
+        Assert.assertEquals(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, jmxWiring.getCompositeType());
+        Assert.assertEquals(a.getBundleId(), jmxWiring.get(BundleRevisionsStateMBean.BUNDLE_ID));
 
         BundleWiring bw = a.adapt(BundleWiring.class);
-        CompositeData[] capabilities = (CompositeData[]) wiring.get(BundleRevisionsStateMBean.CAPABILITIES);
-        Assert.assertEquals(bw.getCapabilities(BundleRevisionsStateMBean.PACKAGE_NAMESPACE).size(), capabilities.length);
+        CompositeData[] jmxCapabilities = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.CAPABILITIES);
+        List<BundleCapability> capabilities = bw.getCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+        Assert.assertEquals(capabilities.size(), jmxCapabilities.length);
 
-        /*
-        PackageStateMBean packagaState = getMBean(PackageStateMBean.OBJECTNAME, PackageStateMBean.class);
-        assertNotNull(packagaState);
+        Map<Map<String, Object>, Map<String, String>> expectedCapabilities = capabilitiesToMap(capabilities);
+        Map<Map<String, Object>, Map<String, String>> actualCapabilities = jmxCapReqToMap(jmxCapabilities);
+        Assert.assertEquals(expectedCapabilities, actualCapabilities);
 
-        long[] exportingBundles = packagaState.getExportingBundles("org.osgi.jmx.framework", "1.5.0");
-        assertNotNull(exportingBundles);
-        assertTrue("Should find a bundle exporting org.osgi.jmx.framework", exportingBundles.length > 0);
+        CompositeData[] jmxRequirements = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.REQUIREMENTS);
+        List<BundleRequirement> requirements = bw.getRequirements(BundleRevision.PACKAGE_NAMESPACE);
+        Assert.assertEquals(requirements.size(), jmxRequirements.length);
 
-        long[] exportingBundles2 = packagaState.getExportingBundles("test", "1.0.0");
-        assertNull("Shouldn't find a bundle exporting test package", exportingBundles2);
+        Map<Map<String, Object>, Map<String, String>> expectedRequirements = requirementsToMap(requirements);
+        Map<Map<String, Object>, Map<String, String>> actualRequirements = jmxCapReqToMap(jmxRequirements);
+        Assert.assertEquals(expectedRequirements, actualRequirements);
 
-        long[] importingBundlesId = packagaState
-                .getImportingBundles("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
-        assertTrue("Should find bundles importing org.osgi.jmx.framework", importingBundlesId.length > 0);
+        List<BundleWire> requiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData[] jmxRequiredWires = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.BUNDLE_WIRES_TYPE);
+        // currently the wires only contains the required wires
+        // should we have separate JMX slots for provided and required wires instead?
+        Assert.assertEquals(requiredWires.size(), jmxRequiredWires.length);
 
-        TabularData table = packagaState.listPackages();
-        assertNotNull("TabularData containing CompositeData with packages info shouldn't be null", table);
-        assertEquals("TabularData should be a type PACKAGES", PackageStateMBean.PACKAGES_TYPE, table.getTabularType());
-        Collection colData = table.values();
-        assertNotNull("Collection of CompositeData shouldn't be null", colData);
-        assertFalse("Collection of CompositeData should contain elements", colData.isEmpty());
+        Set<List<Object>> expectedWires = new HashSet<List<Object>>();
+        for (BundleWire wire : requiredWires) {
+            List<Object> data = new ArrayList<Object>();
 
-        boolean isRemovalPending = packagaState.isRemovalPending("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
-        assertFalse("Should removal pending on org.osgi.jmx.framework be false", isRemovalPending);
-        */
+            data.add(wire.getCapability().getRevision().getBundle().getBundleId());
+            data.add(wire.getCapability().getAttributes());
+            data.add(wire.getCapability().getDirectives());
+            data.add(wire.getRequirement().getRevision().getBundle().getBundleId());
+            data.add(wire.getRequirement().getAttributes());
+            data.add(wire.getRequirement().getDirectives());
+            expectedWires.add(data);
+        }
+
+        Set<List<Object>> actualWires = new HashSet<List<Object>>();
+        for (CompositeData wire : jmxRequiredWires) {
+            List<Object> data = new ArrayList<Object>();
+            data.add(wire.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID));
+            // TODO bundle revision id
+            data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
+            data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
+            data.add(wire.get(BundleRevisionsStateMBean.REQUIRER_BUNDLE_ID));
+            data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
+            data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
+            actualWires.add(data);
+        }
+
+        Assert.assertEquals(expectedWires, actualWires);
     }
 
+    private Map<Map<String, Object>, Map<String, String>> capabilitiesToMap(List<BundleCapability> capabilities) {
+        Map<Map<String, Object>, Map<String, String>> map = new HashMap<Map<String,Object>, Map<String,String>>();
+        for (BundleCapability cap : capabilities) {
+            map.put(cap.getAttributes(), cap.getDirectives());
+        }
+        return map;
+    }
+
+    private Map<Map<String, Object>, Map<String, String>> requirementsToMap(List<BundleRequirement> requirements) {
+        Map<Map<String, Object>, Map<String, String>> map = new HashMap<Map<String,Object>, Map<String,String>>();
+        for (BundleRequirement req : requirements) {
+            map.put(req.getAttributes(), req.getDirectives());
+        }
+        return map;
+    }
+
+    private Map<Map<String, Object>, Map<String, String>> jmxCapReqToMap(CompositeData[] jmxCapabilitiesOrRequirements) {
+        Map<Map<String, Object>, Map<String, String>> actualCapabilities = new HashMap<Map<String,Object>, Map<String,String>>();
+        for (CompositeData jmxCapReq : jmxCapabilitiesOrRequirements) {
+            Map<String, Object> aMap = getJmxAttributes(jmxCapReq);
+            Map<String, String> dMap = getJmxDirectives(jmxCapReq);
+            actualCapabilities.put(aMap, dMap);
+        }
+        return actualCapabilities;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getJmxAttributes(CompositeData jmxCapReq) {
+        TabularData jmxAttributes = (TabularData) jmxCapReq.get(BundleRevisionsStateMBean.ATTRIBUTES);
+        Map<String, Object> aMap = new HashMap<String, Object>();
+        for (CompositeData jmxAttr : (Collection<CompositeData>) jmxAttributes.values()) {
+            PropertyData<Object> pd = PropertyData.from(jmxAttr);
+            aMap.put(pd.getKey(), pd.getValue());
+        }
+        return aMap;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getJmxDirectives(CompositeData jmxCapReq) {
+        TabularData jmxDirectives = (TabularData) jmxCapReq.get(BundleRevisionsStateMBean.DIRECTIVES);
+        Map<String, String> dMap = new HashMap<String, String>();
+        for (CompositeData jmxDir : (Collection<CompositeData>) jmxDirectives.values()) {
+            dMap.put((String) jmxDir.get(BundleRevisionsStateMBean.KEY), (String) jmxDir.get(BundleRevisionsStateMBean.VALUE));
+        }
+        return dMap;
+    }
 }

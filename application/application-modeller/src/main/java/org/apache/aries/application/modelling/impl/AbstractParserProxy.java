@@ -323,6 +323,9 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	      blacklisted |= iface.equals("javax.transaction.UserTransaction");
 	      blacklisted |= iface.equals("javax.transaction.TransactionSynchronizationRegistry");
 	      
+	      // ConfigurationAdmin - detect interface
+	      blacklisted |= iface.equals("org.osgi.service.cm.ConfigurationAdmin");
+	               
 	      // Don't provision against JNDI references
 	      if (blueprintFilter != null && blueprintFilter.trim().length() != 0) { 
 	        Map<String, String> filter = ManifestHeaderProcessor.parseFilter(blueprintFilter);

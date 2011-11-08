@@ -25,6 +25,7 @@ import static org.osgi.jmx.framework.ServiceStateMBean.OBJECT_CLASS;
 import static org.osgi.jmx.framework.ServiceStateMBean.SERVICE_TYPE;
 import static org.osgi.jmx.framework.ServiceStateMBean.USING_BUNDLES;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ import org.osgi.jmx.framework.ServiceStateMBean;
  * <tt>ServiceData</tt> represents Service Type @see {@link ServiceStateMBean#SERVICE_TYPE}. It is a codec for the
  * <code>CompositeData</code> representing an OSGi <code>ServiceReference</code>.
  * </p>
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class ServiceData {
@@ -50,23 +51,23 @@ public class ServiceData {
      * @see ServiceStateMBean#IDENTIFIER_ITEM
      */
     private long serviceId;
-    
+
     /**
      * @see ServiceStateMBean#BUNDLE_IDENTIFIER_ITEM
      */
     private long bundleId;
-    
+
     /**
      * @see ServiceStateMBean#OBJECT_CLASS_ITEM
      */
     private String[] serviceInterfaces;
-    
+
     // keep properties for next version of the spec
     ///**
     // * @see ServiceStateMBean#PROPERTIES_ITEM
     // */
     //private List<PropertyData<? extends Object>> properties = new ArrayList<PropertyData<? extends Object>>();
-    
+
     /**
      * @see ServiceStateMBean#USING_BUNDLES_ITEM
      */
@@ -94,29 +95,46 @@ public class ServiceData {
      * @return
      */
     public CompositeData toCompositeData() {
-        CompositeData result = null;
+        return toCompositeData(ServiceStateMBean.SERVICE_TYPE.keySet());
+    }
+
+    public CompositeData toCompositeData(Collection<String> itemNames) {
         Map<String, Object> items = new HashMap<String, Object>();
+
         items.put(IDENTIFIER, this.serviceId);
-        items.put(BUNDLE_IDENTIFIER, this.bundleId);
-        items.put(OBJECT_CLASS, this.serviceInterfaces);
+
+        if (itemNames.contains(BUNDLE_IDENTIFIER))
+            items.put(BUNDLE_IDENTIFIER, this.bundleId);
+
+        if (itemNames.contains(OBJECT_CLASS))
+            items.put(OBJECT_CLASS, this.serviceInterfaces);
+
         //TabularData propertiesTable = new TabularDataSupport(PROPERTIES_TYPE);
         //for (PropertyData<? extends Object> propertyData : this.properties) {
         //    propertiesTable.put(propertyData.toCompositeData());
         //}
         // items.put(PROPERTIES, propertiesTable);
-        items.put(USING_BUNDLES, toLong(this.usingBundles));
+
+        if (itemNames.contains(USING_BUNDLES))
+            items.put(USING_BUNDLES, toLong(this.usingBundles));
+
+        String[] allItemNames = SERVICE_TYPE.keySet().toArray(new String [] {});
+        Object[] itemValues = new Object[allItemNames.length];
+        for (int i=0; i < allItemNames.length; i++) {
+            itemValues[i] = items.get(allItemNames[i]);
+        }
+
         try {
-            result = new CompositeDataSupport(SERVICE_TYPE, items);
+            return new CompositeDataSupport(SERVICE_TYPE, allItemNames, itemValues);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Failed to create CompositeData for ServiceReference with "
                     + Constants.SERVICE_ID + " [" + this.serviceId + "]", e);
         }
-        return result;
     }
 
     /**
      * Constructs a <code>ServiceData</code> object from the given <code>CompositeData</code>
-     * 
+     *
      * @param compositeData
      * @return
      * @throws IlleglArugmentException

@@ -115,11 +115,23 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     /**
      * @see org.osgi.jmx.framework.BundleStateMBean#getHeaders(long)
      */
-    @SuppressWarnings("unchecked")
     public TabularData getHeaders(long bundleId) throws IOException, IllegalArgumentException {
         Bundle bundle = resolveBundle(bundleContext, bundleId);
-        List<Header> headers = new ArrayList<Header>();
         Dictionary<String, String> bundleHeaders = bundle.getHeaders();
+        return getHeaders(bundleHeaders);
+    }
+
+    /**
+     * @see org.osgi.jmx.framework.BundleStateMBean#getHeaders(long, java.lang.String)
+     */
+    public TabularData getHeaders(long bundleId, String locale) throws IOException, IllegalArgumentException {
+        Bundle bundle = resolveBundle(bundleContext, bundleId);
+        Dictionary<String, String> bundleHeaders = bundle.getHeaders(locale);
+        return getHeaders(bundleHeaders);
+    }
+
+    private TabularData getHeaders(Dictionary<String, String> bundleHeaders) {
+        List<Header> headers = new ArrayList<Header>();
         Enumeration<String> keys = bundleHeaders.keys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
@@ -132,9 +144,20 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
         return headerTable;
     }
 
+    /**
+     * @see org.osgi.jmx.framework.BundleStateMBean#getHeader(long, java.lang.String)
+     */
     public String getHeader(long bundleId, String key) throws IOException {
         Bundle bundle = resolveBundle(bundleContext, bundleId);
         return bundle.getHeaders().get(key);
+    }
+
+    /**
+     * @see org.osgi.jmx.framework.BundleStateMBean#getHeader(long, java.lang.String, java.lang.String)
+     */
+    public String getHeader(long bundleId, String key, String locale) throws IOException {
+        Bundle bundle = resolveBundle(bundleContext, bundleId);
+        return bundle.getHeaders(locale).get(key);
     }
 
     /**

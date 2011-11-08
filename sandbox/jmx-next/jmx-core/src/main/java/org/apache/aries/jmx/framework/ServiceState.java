@@ -21,6 +21,8 @@ import static org.apache.aries.jmx.util.FrameworkUtils.resolveService;
 import static org.osgi.jmx.JmxConstants.PROPERTIES_TYPE;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -34,6 +36,7 @@ import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
@@ -55,7 +58,7 @@ import org.osgi.service.log.LogService;
 /**
  * Implementation of <code>ServiceStateMBean</code> which emits JMX <code>Notification</code> for framework
  * <code>ServiceEvent</code> events
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class ServiceState extends NotificationBroadcasterSupport implements ServiceStateMBean, MBeanRegistration {
@@ -109,6 +112,14 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#getProperty(long, java.lang.String)
+     */
+    public CompositeData getProperty(long serviceId, String key) throws IOException {
+        ServiceReference reference = resolveService(bundleContext, serviceId);
+            return PropertyData.newInstance(key, reference.getProperty(key)).toCompositeData();
+    }
+
+    /**
      * @see org.osgi.jmx.framework.ServiceStateMBean#getUsingBundles(long)
      */
     public long[] getUsingBundles(long serviceId) throws IOException {
@@ -118,19 +129,44 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#getService(long)
+     */
+    public CompositeData getService(long serviceId) throws IOException {
+        return new ServiceData(resolveService(bundleContext, serviceId)).toCompositeData();
+    }
+
+    /**
      * @see org.osgi.jmx.framework.ServiceStateMBean#listServices()
      */
     public TabularData listServices() throws IOException {
+        return listServices(null, null);
+    }
+
+    /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#listServices(java.lang.String, java.lang.String)
+     */
+    public TabularData listServices(String clazz, String filter) throws IOException {
+        return listServices(clazz, filter, ServiceStateMBean.SERVICE_TYPE.keySet());
+    }
+
+    /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#listServices(java.lang.String, java.lang.String, java.lang.String...)
+     */
+    public TabularData listServices(String clazz, String filter, String ... serviceTypeItems) throws IOException {
+        return listServices(clazz, filter, Arrays.asList(serviceTypeItems));
+    }
+
+    private TabularData listServices(String clazz, String filter, Collection<String> serviceTypeItems) throws IOException {
         TabularData servicesTable = new TabularDataSupport(SERVICES_TYPE);
         ServiceReference[] allServiceReferences = null;
         try {
-            allServiceReferences = bundleContext.getAllServiceReferences(null, null);
+            allServiceReferences = bundleContext.getAllServiceReferences(clazz, filter);
         } catch (InvalidSyntaxException e) {
             throw new IllegalStateException("Failed to retrieve all service references", e);
         }
         if (allServiceReferences != null) {
             for (ServiceReference reference : allServiceReferences) {
-                servicesTable.put(new ServiceData(reference).toCompositeData());
+                servicesTable.put(new ServiceData(reference).toCompositeData(serviceTypeItems));
             }
         }
         return servicesTable;
@@ -145,6 +181,27 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
         String description = "A ServiceEvent issued from the Framework describing a service lifecycle change";
         MBeanNotificationInfo info = new MBeanNotificationInfo(types, name, description);
         return new MBeanNotificationInfo[] { info };
+    }
+
+    /**
+     * @see org.osgi.jmx.framework.ServiceStateMBean#getServiceIds()
+     */
+    public long[] getServiceIds() throws IOException {
+        try {
+            ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(null, null);
+            long[] ids = new long[refs.length];
+            for (int i=0; i < refs.length; i++) {
+                ServiceReference<?> ref = refs[i];
+                long id = (Long) ref.getProperty(Constants.SERVICE_ID);
+                ids[i] = id;
+            }
+
+            return ids;
+        } catch (InvalidSyntaxException e) {
+            IOException ioe = new IOException();
+            ioe.initCause(e);
+            throw ioe;
+        }
     }
 
     /**
@@ -218,7 +275,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
                // ignore
             }
         }
-        if (eventDispatcher != null) {  
+        if (eventDispatcher != null) {
             eventDispatcher.shutdown();
         }
     }
@@ -229,5 +286,4 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     protected ExecutorService getEventDispatcher() {
         return eventDispatcher;
     }
-
 }

@@ -49,6 +49,8 @@
       <module>application-modeller-common-test</module>
       <module>application-noop-resolver</module>
       <module>application-obr-resolver</module>
+      <module>application-resolve-transform-cm</module>
+      <module>application-resolve-transform-cm-itests</module>
       <module>application-runtime</module>
 	    <module>application-runtime-isolated</module>
 	    <module>application-runtime-framework</module>

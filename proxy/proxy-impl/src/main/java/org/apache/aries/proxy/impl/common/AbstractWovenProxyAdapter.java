@@ -19,6 +19,7 @@
 package org.apache.aries.proxy.impl.common;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -241,13 +242,9 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
             nonObjectSupers.add(nextSuper);
             nextSuper = nextSuper.getSuperclass();
           }
-          try {
-            superHasNoArgsConstructor = (superClass.getDeclaredConstructor().
-                     getModifiers() & Modifier.PRIVATE) == 0;
-          } catch (NoSuchMethodException nsme) {
-            // This is a no-op here, but means we need to add a no-Args that
-            // delegates to Object#<init>() yuck :(
-          }
+          //Don't use reflection - it can be dangerous
+          superHasNoArgsConstructor = superHasNoArgsConstructor(superName, name);
+
         } else {
           superHasNoArgsConstructor = true;
         }
@@ -274,6 +271,31 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
     }
   }
 
+  /**
+   * This method allows us to determine whether a superclass has a
+   * non-private no-args constructor without causing it to initialize.
+   * This avoids a potential ClassCircularityError on Mac VMs if the
+   * initialization references the subclass being woven. Odd, but seen
+   * in the wild!
+   */
+  private final boolean superHasNoArgsConstructor(String superName, String name) {
+    
+    ConstructorFinder cf = new ConstructorFinder();
+    
+    try {
+      InputStream is = loader.getResourceAsStream(superName +".class");
+    
+      if(is == null)
+        throw new IOException();
+      
+      new ClassReader(is).accept(cf, ClassReader.SKIP_FRAMES + ClassReader.SKIP_DEBUG + ClassReader.SKIP_CODE);
+    } catch (IOException ioe) {
+      UnableToProxyException u = new UnableToProxyException(name, ioe);
+      throw new RuntimeException(NLS.MESSAGES.getMessage("cannot.load.superclass", superName.replace('/', '.'), typeBeingWoven.getClassName()), u);
+    }
+    return cf.hasNoArgsConstructor();
+  }
+  
   private boolean checkInterfacesForSerializability(String[] interfaces) throws ClassNotFoundException {
     for(String iface : interfaces)
     {

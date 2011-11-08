@@ -197,6 +197,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+		    <groupId>org.apache.aries.application</groupId>
+		    <artifactId>org.apache.aries.application.resolve.transform.cm</artifactId>
+		    <version>0.3.1-SNAPSHOT</version>
+       	</dependency>
+        <dependency>
              <groupId>org.apache.aries.application</groupId>
              <artifactId>org.apache.aries.application.default.local.platform</artifactId>
             <version>0.3.1-SNAPSHOT</version>
