@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The Tracked and AbstractTracked inner classes are copied from felix framework 4.0.1.
+ *
  * @version $Rev$ $Date$
  */
 public class BundleHookBundleTracker<T> extends BundleTracker {
