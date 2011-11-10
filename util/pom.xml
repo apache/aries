@@ -53,9 +53,7 @@
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
             !org.apache.aries.util*,
-            org.osgi.framework.hooks.bundle;resolution:=optional,
             org.osgi.framework.launch;resolution:=optional,
-            org.osgi.framework.wiring.*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
             org.eclipse.osgi.internal.loader;resolution:=optional,
             org.eclipse.osgi.framework.internal.core;resolution:=optional,
@@ -64,8 +62,7 @@
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.util.internal,
-            org.apache.aries.util.filesystem.impl,
-            org.apache.aries.util.tracker.hook
+            org.apache.aries.util.filesystem.impl
         </aries.osgi.private.pkg>
     </properties>
 
@@ -73,7 +70,6 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

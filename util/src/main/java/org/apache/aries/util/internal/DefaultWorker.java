@@ -39,8 +39,7 @@ public class DefaultWorker implements FrameworkUtilWorker, BundleListener, Frame
 
   static
   {
-    Bundle bundle = FrameworkUtil.getBundle(DefaultWorker.class);
-    BundleContext myContext = bundle == null? null: bundle.getBundleContext();
+    BundleContext myContext = FrameworkUtil.getBundle(DefaultWorker.class).getBundleContext();
     
     // This may be created during framework shutdown when the bundle context is null.
     // So we need to cope and not NPE during construction.
@@ -57,7 +56,7 @@ public class DefaultWorker implements FrameworkUtilWorker, BundleListener, Frame
     ClassLoader cl = get(b);
     
     if (cl != null) return cl;
-
+    
     // so first off try to get the real classloader. We can do this by loading a known class
     // such as the bundle activator. There is no guarantee this will work, so we have a back door too.
     String activator = (String) b.getHeaders().get(Constants.BUNDLE_ACTIVATOR);
