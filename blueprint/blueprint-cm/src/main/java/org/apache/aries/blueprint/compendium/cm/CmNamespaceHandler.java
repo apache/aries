@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.aries.blueprint.ext.PlaceholdersUtils;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
@@ -45,7 +46,6 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
-import org.apache.aries.blueprint.utils.PlaceholdersUtils;
 import org.apache.aries.blueprint.utils.ServiceListener;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;

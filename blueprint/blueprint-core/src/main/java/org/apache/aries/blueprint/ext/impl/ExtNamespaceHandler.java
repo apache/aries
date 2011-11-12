@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.ext;
+package org.apache.aries.blueprint.ext.impl;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,6 +27,8 @@ import java.util.Set;
 
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.ParserContext;
+import org.apache.aries.blueprint.ext.PlaceholdersUtils;
+import org.apache.aries.blueprint.ext.PropertyPlaceholder;
 import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutableCollectionMetadata;
@@ -37,8 +39,6 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableServiceReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
-import org.apache.aries.blueprint.utils.PlaceholdersUtils;
-import org.apache.aries.blueprint.utils.PropertyPlaceholder;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
