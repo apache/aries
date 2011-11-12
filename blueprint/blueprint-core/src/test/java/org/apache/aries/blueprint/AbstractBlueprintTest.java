@@ -27,7 +27,7 @@ import javax.xml.validation.Schema;
 
 import junit.framework.TestCase;
 
-import org.apache.aries.blueprint.ext.ExtNamespaceHandler;
+import org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
