@@ -29,7 +29,7 @@
               </array>
             </entry>
         </service-properties>
-        <bean class="org.apache.aries.blueprint.ext.ExtNamespaceHandler">
+        <bean class="org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler">
             <property name="bundleContext" ref="blueprintBundleContext"/>
         </bean>
     </service>
