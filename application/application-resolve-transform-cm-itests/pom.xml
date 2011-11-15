@@ -95,12 +95,6 @@
             <scope>test</scope>
         </dependency>       
         <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.utils</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
         	<groupId>org.eclipse</groupId>
         	<artifactId>osgi</artifactId>
         	<version>3.5.0.v20090520</version>
