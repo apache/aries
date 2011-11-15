@@ -172,11 +172,7 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
-                <directory>../blueprint-api/src/main/resources/org/osgi/service/blueprint</directory>
-                <targetPath>org/apache/aries/blueprint</targetPath>
-                <includes>
-                    <include>blueprint.xsd</include>
-                </includes>
+                <directory>${basedir}/target/extra-resources</directory>
             </resource>
             <resource>
                   <directory>${project.build.sourceDirectory}</directory>
@@ -185,6 +181,29 @@
                   </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/extra-resources/org/apache/aries/blueprint</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>../blueprint-api/src/main/resources/org/osgi/service/blueprint</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
   
 </project>
