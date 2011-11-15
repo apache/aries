@@ -25,7 +25,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.4</version>
-        <relativePath />
+        <relativePath>../../parent/default-parent/java5-parent</relativePath>
     </parent>
    
     <groupId>org.apache.aries.jndi</groupId>
