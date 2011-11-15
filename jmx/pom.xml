@@ -30,7 +30,7 @@
     <artifactId>jmx</artifactId>
     <name>Apache Aries JMX</name>
     <packaging>pom</packaging>
-
+    <version>0.3.1-SNAPSHOT</version>
 
     <description>Implementation of the JMX Management Model Specification - reactor pom</description>
 

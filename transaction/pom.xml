@@ -30,6 +30,7 @@
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>transaction</artifactId>
     <packaging>pom</packaging>
+    <version>0.3.1-SNAPSHOT</version>
     <name>Apache Aries Transaction - reactor pom</name>
 
     <modules>
