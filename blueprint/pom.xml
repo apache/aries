@@ -30,6 +30,7 @@
     <artifactId>blueprint</artifactId>
     <name>Apache Aries Blueprint</name>
     <packaging>pom</packaging>
+    <version>0.4-SNAPSHOT</version>
 
     <description>
         Implementation of the Blueprint Container Specification
