@@ -30,7 +30,6 @@
     <artifactId>ejb</artifactId>
     <packaging>pom</packaging>
     <name>Aries EJB Component</name>
-    <version>0.1-SNAPSHOT</version>
 
     <properties>
       <openWebBeansVersion>1.1.1</openWebBeansVersion>
