@@ -30,6 +30,7 @@
     <artifactId>jndi</artifactId>
     <name>Apache Aries JNDI</name>
     <packaging>pom</packaging>
+    <version>0.3.1-SNAPSHOT</version>
 
     <description>
         JNDI support for OSGi - Reactor POM
