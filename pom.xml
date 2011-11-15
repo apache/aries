@@ -29,6 +29,7 @@
     <artifactId>jpa</artifactId>
     <packaging>pom</packaging>
     <name>Aries JPA Component</name>
+    <version>0.3.1-SNAPSHOT</version>
 
     <modules>
         <module>jpa-api</module>
