@@ -29,7 +29,7 @@
   <artifactId>org.apache.aries.blueprint.core</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Blueprint Core</name>
-  <version>0.3.2-SNAPSHOT</version>
+  <version>0.4.1-SNAPSHOT</version>
   <description>
       This bundle contains the core implementation of Blueprint 
       along with the "ext" namespace handler.
@@ -86,6 +86,10 @@
       <aries.osgi.export.service>
           org.apache.aries.blueprint.ParserService
       </aries.osgi.export.service>
+      <aries.osgi.include.resource>
+          {maven-resources},
+          org/apache/aries/blueprint/blueprint.xsd=${project.build.directory}/sources/org/osgi/service/blueprint/blueprint.xsd
+      </aries.osgi.include.resource>
   </properties>
   
   <dependencies>
@@ -103,13 +107,13 @@
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>blueprint-parser</artifactId>
-          <version>0.4-SNAPSHOT</version>
+          <version>0.4</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>org.apache.aries</groupId>
           <artifactId>org.apache.aries.util</artifactId>
-          <version>0.4-SNAPSHOT</version>
+          <version>0.4</version>
       </dependency>
       <dependency>
           <groupId>org.osgi</groupId>
@@ -156,7 +160,7 @@
       <dependency>
           <groupId>org.apache.aries.proxy</groupId>
           <artifactId>org.apache.aries.proxy.api</artifactId>
-          <version>0.4-SNAPSHOT</version>
+          <version>0.4</version>
       </dependency>
       <dependency>
           <groupId>junit</groupId>
@@ -172,9 +176,6 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
-                <directory>${basedir}/target/extra-resources</directory>
-            </resource>
-            <resource>
                   <directory>${project.build.sourceDirectory}</directory>
                   <includes>
                      <include>**/packageinfo</include>
@@ -183,27 +184,29 @@
         </resources>
         <plugins>
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
+                        <id>unpack-sources</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/extra-resources/org/apache/aries/blueprint</outputDirectory>
-                            <resources>          
-                                <resource>
-                                    <directory>../blueprint-api/src/main/resources/org/osgi/service/blueprint</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>              
-                        </configuration>            
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.blueprint</groupId>
+                                    <artifactId>org.apache.aries.blueprint.api</artifactId>
+                                    <classifier>sources</classifier>
+                                    <includes>**/blueprint.xsd</includes>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-  
 </project>

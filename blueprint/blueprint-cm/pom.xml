@@ -28,7 +28,7 @@
   <groupId>org.apache.aries.blueprint</groupId>
   <artifactId>org.apache.aries.blueprint.cm</artifactId>
   <packaging>bundle</packaging>
-  <version>0.3.2-SNAPSHOT</version>
+  <version>0.3.3-SNAPSHOT</version>
   <name>Apache Aries Blueprint CM</name>
   <description>
       This bundle contains the ConfigAdmin namespace for blueprint.
@@ -46,7 +46,11 @@
             *
         </aries.osgi.import>
     <!-- Export package versions are maintained in packageinfo files -->
-         <aries.osgi.export.pkg/>
+         <aries.osgi.export.pkg />
+         <aries.osgi.import.pkg>
+             org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+             *
+         </aries.osgi.import.pkg>
          <aries.osgi.private.pkg>
              org.apache.aries.blueprint.compendium.cm
          </aries.osgi.private.pkg>
@@ -61,7 +65,7 @@
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>org.apache.aries.blueprint.core</artifactId>
-          <version>0.3.2-SNAPSHOT</version>
+          <version>0.4.1-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>org.osgi</groupId>
