@@ -21,8 +21,8 @@
     <parent>
         <artifactId>java5-parent</artifactId>
         <groupId>org.apache.aries</groupId>
-        <version>0.4</version>
-        <relativePath>../parent/default-parent/java5-parent</relativePath>
+        <version>0.5</version>
+        <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.ejb</groupId>
