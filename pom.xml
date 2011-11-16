@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.blueprint.sample</artifactId>
     <name>Apache Aries Blueprint Sample</name>
     <packaging>bundle</packaging>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.3-SNAPSHOT</version>
     <description>
         Example blueprint application, mostly used for integration tests.
     </description>
@@ -46,7 +46,7 @@
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
         <aries.osgi.private.pkg />
-        <aries.osgi.import.pkg > *
+        <aries.osgi.import.pkg> *
         </aries.osgi.import.pkg>
     </properties>
 
