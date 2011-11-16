@@ -28,7 +28,7 @@
   <artifactId>org.apache.aries.testsupport.unit</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Unit Test Support</name>
-  <version>0.4-SNAPSHOT</version>
+  <version>0.5-SNAPSHOT</version>
   <description>
       This bundle provides unit test support.
   </description>

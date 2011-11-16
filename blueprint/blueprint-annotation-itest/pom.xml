@@ -28,16 +28,16 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.annotation.itests</artifactId>
     <name>Apache Aries Blueprint Annotation iTests</name>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.3-SNAPSHOT</version>
     <description>
         Integration tests using the standalone blueprint-bundle for the implementation
         and blueprint-sample-annotation for the blueprint application to be tested.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itests</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itests</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-annotation-itests</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itest</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itest</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-annotation-itest</url>
      </scm>
 
     <dependencies>
@@ -55,29 +55,29 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
             <scope>test</scope>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-annotation</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3.2</version>
             <scope>test</scope>
         </dependency>        
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-fragment</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3.2</version>
             <scope>test</scope>
         </dependency>        
         <dependency>
@@ -144,12 +144,12 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.impl</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
           <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>0.4-SNAPSHOT</version>
+          <version>0.4</version>
           <scope>test</scope>
         </dependency>
     </dependencies>

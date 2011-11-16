@@ -27,7 +27,8 @@
 
     <artifactId>org.apache.aries.util-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
+
     <name>Apache Aries Util</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries
