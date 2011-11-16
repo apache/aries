@@ -68,12 +68,12 @@
         <ariesApplicationUtilsVersion>0.3.1-SNAPSHOT</ariesApplicationUtilsVersion>
 
         <!-- Aries Blueprint Versions -->
-        <ariesBlueprintAnnotationApiVersion>0.3.2-SNAPSHOT</ariesBlueprintAnnotationApiVersion>
-        <ariesBlueprintAnnotationImplVersion>0.3.2-SNAPSHOT</ariesBlueprintAnnotationImplVersion>
-        <ariesBlueprintApiVersion>0.3.2-SNAPSHOT</ariesBlueprintApiVersion>
-        <ariesBlueprintVersion>0.3.2-SNAPSHOT</ariesBlueprintVersion>
-        <ariesBlueprintCmVersion>0.3.2-SNAPSHOT</ariesBlueprintCmVersion>
-        <ariesBlueprintCoreVersion>0.3.2-SNAPSHOT</ariesBlueprintCoreVersion>
+        <ariesBlueprintAnnotationApiVersion>0.3.2</ariesBlueprintAnnotationApiVersion>
+        <ariesBlueprintAnnotationImplVersion>0.3.2</ariesBlueprintAnnotationImplVersion>
+        <ariesBlueprintApiVersion>0.3.1</ariesBlueprintApiVersion>
+        <ariesBlueprintVersion>0.4</ariesBlueprintVersion>
+        <ariesBlueprintCmVersion>0.3.2</ariesBlueprintCmVersion>
+        <ariesBlueprintCoreVersion>0.4</ariesBlueprintCoreVersion>
 
         <!-- Aries Jmx Versions -->
         <ariesJmxiApiVersion>0.3.1-SNAPSHOT</ariesJmxiApiVersion>
@@ -99,17 +99,17 @@
         <ariesJpaContainerContextVersion>0.3.1-SNAPSHOT</ariesJpaContainerContextVersion>
         
         <!-- Aries Proxy Versions -->
-        <ariesProxyApiVersion>0.4-SNAPSHOT</ariesProxyApiVersion>
-        <ariesProxyVersion>0.4-SNAPSHOT</ariesProxyVersion>
-        <ariesProxyImplVersion>0.4-SNAPSHOT</ariesProxyImplVersion>
+        <ariesProxyApiVersion>0.4</ariesProxyApiVersion>
+        <ariesProxyVersion>0.4</ariesProxyVersion>
+        <ariesProxyImplVersion>0.4</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
-        <ariesQuiesceApiVersion>0.3.1-SNAPSHOT</ariesQuiesceApiVersion>
-        <ariesQuiesceManagerVersion>0.3.1-SNAPSHOT</ariesQuiesceManagerVersion>
+        <ariesQuiesceApiVersion>0.3</ariesQuiesceApiVersion>
+        <ariesQuiesceManagerVersion>0.3.1</ariesQuiesceManagerVersion>
         
 
         <!-- Aries Testsupport Versions -->
-        <ariesTestsupportUnitVersion>0.4-SNAPSHOT</ariesTestsupportUnitVersion>
+        <ariesTestsupportUnitVersion>0.4</ariesTestsupportUnitVersion>
 
         <!-- Aries Transaction Versions -->
         <ariesTransactionBlueprintVersion>0.3.1-SNAPSHOT</ariesTransactionBlueprintVersion>
@@ -118,7 +118,7 @@
         <ariesTransactionWrappersVersion>0.3.1-SNAPSHOT</ariesTransactionWrappersVersion>
 
         <!-- Aries Util Versions -->
-        <ariesUtilVersion>0.4-SNAPSHOT</ariesUtilVersion>
+        <ariesUtilVersion>0.4</ariesUtilVersion>
 
         <!-- Aries Web Versions -->
         <ariesWebVersion>0.3.1-SNAPSHOT</ariesWebVersion>
