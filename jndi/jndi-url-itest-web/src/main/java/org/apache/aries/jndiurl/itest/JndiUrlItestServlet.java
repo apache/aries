@@ -52,7 +52,9 @@ public class JndiUrlItestServlet extends HttpServlet{
       String thirdListEntry = listService.get(2);
       result.append(thirdListEntry);
     } catch (NamingException nx) { 
-      throw new IOException (nx);
+      IOException ex = new IOException (nx.getMessage());
+      ex.initCause(nx);
+      throw ex;
     }
     resp.getWriter().print(result.toString());
     resp.getWriter().close();
