@@ -21,8 +21,8 @@
     <parent>
           <groupId>org.apache.aries</groupId>
           <artifactId>java5-parent</artifactId>
-          <version>0.5-SNAPSHOT</version>
-          <relativePath>../../parent/default-parent/java5-parent</relativePath>
+          <version>0.5</version>
+          <relativePath />
     </parent>
 
     <groupId>org.apache.aries.quiesce</groupId>
