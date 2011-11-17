@@ -206,6 +206,11 @@
     </dependencies>
 
     <build>
+        <testResources>
+             <testResource>
+                <directory>${project.build.directory}/test-resources</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -232,7 +237,7 @@
                             <goal>generate-depends-file</goal>
                         </goals>
                         <configuration>
-                            <outputFile>${project.build.directory}/test-classes/META-INF/maven/dependencies.properties</outputFile>
+                            <outputFile>${project.build.directory}/test-resources/META-INF/maven/dependencies.properties</outputFile>
                         </configuration>
                     </execution>
                 </executions>
