@@ -129,8 +129,8 @@
         <cmVersion>3.2.0-v20070116</cmVersion>
         <servicesVersion>3.1.200-v20070605</servicesVersion>
         <asmVersion>3.2</asmVersion>
-        <paxLoggingApiVersion>1.4</paxLoggingApiVersion>
-        <paxLoggingServiceVersion>1.4</paxLoggingServiceVersion>
+        <paxLoggingApiVersion>1.5.0</paxLoggingApiVersion>
+        <paxLoggingServiceVersion>1.5.0</paxLoggingServiceVersion>
         <derbyVersion>10.5.3.0_1</derbyVersion>
         <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
         <commonsLangVersion>2.5</commonsLangVersion>
