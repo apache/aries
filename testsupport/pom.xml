@@ -30,6 +30,7 @@
     <artifactId>testsupport</artifactId>
     <name>Apache Aries Test Support</name>
     <packaging>pom</packaging>
+    <version>0.5-SNAPSHOT</version>
 
     <description>
         Test Support for OSGi - reactor pom
