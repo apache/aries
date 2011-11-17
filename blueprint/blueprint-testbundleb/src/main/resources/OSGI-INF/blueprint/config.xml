@@ -21,6 +21,8 @@
            xmlns:one="http://ns.handler.one"
            xmlns:two="http://ns.handler.two"
            xmlns:three="http://ns.handler.three"
+           xmlns:four="http://ns.handler.four"
+           xmlns:fourim="http://ns.handler.four.import"
            default-availability="optional">
 
   <!-- Default test.. no other ns interaction. -->
@@ -62,5 +64,13 @@
   <reference activation="eager" 
     availability="optional" 
     interface="org.apache.aries.blueprint.testbundlea.InterfaceWithDependency" />
+    
+  <!-- NShandler four test, make sure the schema can be parsed - ARIES-626 Part 1 -->
+  <four:nshandlerfour four:id="FOUR">
+      <four:stuff>
+          <stuff xmlns="">foo</stuff>
+      </four:stuff>
+  </four:nshandlerfour> 
+    
 </blueprint>
 
