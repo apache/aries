@@ -25,6 +25,7 @@
    <complexType name="Imported">
         <sequence>
             <element name="stuff" type="xsd:string"/>
+            <any minOccurs="0"/>
         </sequence>
    </complexType>
    <attribute name="attrib" type="xsd:string"/>
