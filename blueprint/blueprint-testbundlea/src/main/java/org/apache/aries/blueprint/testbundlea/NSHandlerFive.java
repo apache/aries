@@ -35,14 +35,14 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class NSHandlerFour implements NamespaceHandler{
-    public static String NSURI = "http://ns.handler.four";
-    private static String ELT_NAME = "nshandlerfour";
+public class NSHandlerFive implements NamespaceHandler{
+    public static String NSURI = "http://ns.handler.five";
+    private static String ELT_NAME = "nshandlerfive";
     private static String ATTRIB_ID = "id";
 
 
-    public static class Four {
-        public Four() {
+    public static class Five {
+        public Five() {
         }
     }
     //process elements
@@ -53,7 +53,7 @@ public class NSHandlerFour implements NamespaceHandler{
             MutableBeanMetadata bm = context.createMetadata(MutableBeanMetadata.class);
             bm.setId(id);
             bm.setScope("PROTOTYPE");
-            bm.setClassName(Four.class.getName());
+            bm.setClassName(Five.class.getName());
             retval = bm;
         }
         return retval;
@@ -61,11 +61,15 @@ public class NSHandlerFour implements NamespaceHandler{
 
     //supply schema back to blueprint.
     public URL getSchemaLocation(String namespace) {
-        return this.getClass().getResource("nshandlerfour.xsd");
+        System.out.println("Schemans: " + namespace);
+        if (NSURI.equals(namespace)) {
+            return this.getClass().getResource("nshandlerfive.xsd");
+        }
+        return this.getClass().getResource("nshandlerfiveimport.xsd");
     }
 
     public Set<Class> getManagedClasses() {
-        Class cls = Four.class;
+        Class cls = Five.class;
         return Collections.singleton(cls);
     }
 
