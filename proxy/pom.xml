@@ -30,6 +30,7 @@
     <artifactId>proxy</artifactId>
     <name>Apache Aries Class Proxy</name>
     <packaging>pom</packaging>
+    <version>0.4.1-SNAPSHOT</version>
 
     <description>
        A common proxy class generation service that can be used by blueprint and jndi and others.
