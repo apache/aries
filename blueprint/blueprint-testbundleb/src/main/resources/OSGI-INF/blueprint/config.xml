@@ -25,6 +25,8 @@
            xmlns:fourim="http://ns.handler.four.import"
            xmlns:five="http://ns.handler.five"
            xmlns:fiveim="http://ns.handler.five.import"
+           xmlns:six="http://ns.handler.six"
+           xmlns:sixim="http://ns.handler.six.import"
            default-availability="optional">
 
   <!-- Default test.. no other ns interaction. -->
@@ -73,12 +75,18 @@
           <stuff xmlns="">foo</stuff>
       </four:stuff>
   </four:nshandlerfour> 
-  <!-- NShandler four test, make sure the schema can be parsed - ARIES-626 Part 2 -->
+  <!-- NShandler five test, make sure the schema can be parsed - ARIES-626 Part 2 -->
   <five:nshandlerfive five:id="FIVE" fiveim:attrib="foo">
       <five:stuff>
           <fiveim:stuff>foo</fiveim:stuff>
       </five:stuff>
   </five:nshandlerfive> 
-    
+  <!-- NShandler four test, make sure the schema can be parsed with
+       external URL to schema - ARIES-626 Part 3 -->
+  <six:nshandlersix six:id="SIX" sixim:attrib="foo">
+      <six:stuff>
+          <sixim:stuff>foo</sixim:stuff>
+      </six:stuff>
+  </six:nshandlersix> 
 </blueprint>
 

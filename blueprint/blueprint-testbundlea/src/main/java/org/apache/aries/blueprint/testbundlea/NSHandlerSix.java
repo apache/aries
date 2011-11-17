@@ -35,11 +35,10 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class NSHandlerFive implements NamespaceHandler{
-    public static String NSURI = "http://ns.handler.five";
-    private static String ELT_NAME = "nshandlerfive";
+public class NSHandlerSix implements NamespaceHandler{
+    public static String NSURI = "http://ns.handler.six";
+    private static String ELT_NAME = "nshandlersix";
     private static String ATTRIB_ID = "id";
-
 
     //process elements
     public Metadata parse(Element element, ParserContext context) {
@@ -59,9 +58,9 @@ public class NSHandlerFive implements NamespaceHandler{
     public URL getSchemaLocation(String namespace) {
         System.out.println("Schemans: " + namespace);
         if (NSURI.equals(namespace)) {
-            return this.getClass().getResource("nshandlerfive.xsd");
+            return this.getClass().getResource("nshandlersix.xsd");
         }
-        return this.getClass().getResource("nshandlerfiveimport.xsd");
+        return this.getClass().getResource("nshandlersiximport.xsd");
     }
 
     public Set<Class> getManagedClasses() {

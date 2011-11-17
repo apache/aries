@@ -36,12 +36,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.Source;
 import javax.xml.XMLConstants;
+
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
@@ -54,7 +59,9 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Default implementation of the NamespaceHandlerRegistry.
@@ -229,7 +236,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             }
         }
         if (schema == null) {
-            List<StreamSource> schemaSources = new ArrayList<StreamSource>();
+            final List<StreamSource> schemaSources = new ArrayList<StreamSource>();
             try {
                 schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/aries/blueprint/blueprint.xsd")));
                 // Create a schema for all namespaces known at this point
@@ -242,7 +249,77 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                         schemaSources.add(new StreamSource(url.openStream(), url.toExternalForm()));
                     }
                 }
-                schema = getSchemaFactory().newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+                SchemaFactory factory = getSchemaFactory();
+                factory.setResourceResolver(new LSResourceResolver() {
+                    public LSInput resolveResource(String type, 
+                                                   final String namespaceURI, 
+                                                   final String publicId,
+                                                   String systemId, String baseURI) {
+                        
+                        URI uri = URI.create((String) namespaceURI);
+                        Set<NamespaceHandler> hs = NamespaceHandlerRegistryImpl.this.handlers.get(uri);
+                        if (hs == null) {
+                            return null;
+                        }
+                        for (NamespaceHandler h : hs) {
+                            final URL url = h.getSchemaLocation(namespaceURI);
+                            if (url != null) {
+                                try {
+                                    final StreamSource source 
+                                        = new StreamSource(url.openStream(), url.toExternalForm());
+                                    schemaSources.add(source);
+                                    return new LSInput() {
+                                        public Reader getCharacterStream() {
+                                            return null;
+                                        }
+                                        public void setCharacterStream(Reader characterStream) {
+                                        }
+                                        public InputStream getByteStream() {
+                                            return source.getInputStream();
+                                        }
+                                        public void setByteStream(InputStream byteStream) {
+                                        }
+                                        public String getStringData() {
+                                            return null;
+                                        }
+                                        public void setStringData(String stringData) {
+                                        }
+                                        public String getSystemId() {
+                                            return url.toExternalForm();
+                                        }
+                                        public void setSystemId(String systemId) {
+                                        }
+                                        public String getPublicId() {
+                                            return publicId;
+                                        }
+                                        public void setPublicId(String publicId) {
+                                        }
+                                        public String getBaseURI() {
+                                            return null;
+                                        }
+                                        public void setBaseURI(String baseURI) {
+                                        }
+                                        public String getEncoding() {
+                                            return null;
+                                        }
+                                        public void setEncoding(String encoding) {
+                                        }
+                                        public boolean getCertifiedText() {
+                                            return false;
+                                        }
+                                        public void setCertifiedText(boolean certifiedText) {
+                                        }
+                                    };
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                    
+                });
+                schema = factory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
                 // Remove schemas that are fully included
                 for (Iterator<Map<URI, NamespaceHandler>> iterator = schemas.keySet().iterator(); iterator.hasNext();) {
                     Map<URI, NamespaceHandler> key = iterator.next();
@@ -286,7 +363,6 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     }
 
     private SchemaFactory getSchemaFactory() {
-        SchemaFactory schemaFactory = null;
         if (schemaFactory == null) {
             schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         }
