@@ -27,6 +27,8 @@
     
     <bean id="NSHandlerThree" class="org.apache.aries.blueprint.testbundlea.NSHandlerThree">
     </bean>
+    <bean id="NSHandlerFour" class="org.apache.aries.blueprint.testbundlea.NSHandlerFour">
+    </bean>
     
     <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="NSHandlerOne">
         <service-properties>
@@ -43,6 +45,11 @@
     <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="NSHandlerThree">
         <service-properties>
             <entry key="osgi.service.blueprint.namespace" value="http://ns.handler.three"/>
+        </service-properties>
+    </service>
+    <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="NSHandlerFour">
+        <service-properties>
+            <entry key="osgi.service.blueprint.namespace" value="http://ns.handler.four"/>
         </service-properties>
     </service>
     
