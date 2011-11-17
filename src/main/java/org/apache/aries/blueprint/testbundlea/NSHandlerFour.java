@@ -40,11 +40,6 @@ public class NSHandlerFour implements NamespaceHandler{
     private static String ELT_NAME = "nshandlerfour";
     private static String ATTRIB_ID = "id";
 
-
-    public static class Four {
-        public Four() {
-        }
-    }
     //process elements
     public Metadata parse(Element element, ParserContext context) {
         Metadata retval = null;       
@@ -53,7 +48,7 @@ public class NSHandlerFour implements NamespaceHandler{
             MutableBeanMetadata bm = context.createMetadata(MutableBeanMetadata.class);
             bm.setId(id);
             bm.setScope("PROTOTYPE");
-            bm.setClassName(Four.class.getName());
+            bm.setClassName(TestBean.class.getName());
             retval = bm;
         }
         return retval;
@@ -65,7 +60,7 @@ public class NSHandlerFour implements NamespaceHandler{
     }
 
     public Set<Class> getManagedClasses() {
-        Class cls = Four.class;
+        Class cls = TestBean.class;
         return Collections.singleton(cls);
     }
 
