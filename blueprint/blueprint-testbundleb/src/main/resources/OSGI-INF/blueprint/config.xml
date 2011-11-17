@@ -86,6 +86,7 @@
   <six:nshandlersix six:id="SIX" sixim:attrib="foo">
       <six:stuff>
           <sixim:stuff>foo</sixim:stuff>
+          <mytest:foo xmlns:mytest="http://ns.handler.mytest">blah</mytest:foo>
       </six:stuff>
   </six:nshandlersix> 
 </blueprint>

@@ -16,17 +16,11 @@
     limitations under the License.
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
-        targetNamespace="http://ns.handler.six.import" 
-        xmlns:tns="http://ns.handler.six.import"
+        targetNamespace="http://ns.handler.mytest" 
+        xmlns:tns="http://ns.handler.mytest"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
         elementFormDefault="qualified" 
         attributeFormDefault="qualified" >
 
-   <complexType name="Imported">
-        <sequence>
-            <element name="stuff" type="xsd:string"/>
-            <any minOccurs="0"/>
-        </sequence>
-   </complexType>
-   <attribute name="attrib" type="xsd:string"/>
+    <element name="foo" type="xsd:string"/>
 </schema>
