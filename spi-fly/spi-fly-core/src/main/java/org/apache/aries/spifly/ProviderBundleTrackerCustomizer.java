@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -60,7 +61,15 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             return null;
         }
 
-        if (bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER) == null) {
+        List<String> providedServices = null;
+        if (bundle.getHeaders().get("Provide-Capability") != null) {
+            providedServices = readProvideCapability(bundle.getHeaders());
+        }
+        if (providedServices == null && bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER) != null) {
+            providedServices = new ArrayList<String>();
+        }
+
+        if (providedServices == null) {
             log(LogService.LOG_INFO, "No '"
                     + SpiFlyConstants.SPI_PROVIDER_HEADER
                     + "' Manifest header. Skipping bundle: "
@@ -106,34 +115,81 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         new InputStreamReader(serviceFile.openStream()));
                 String className = null;
                 while((className = reader.readLine()) != null) {
-                    Class<?> cls = bundle.loadClass(className);
-                    Object o = cls.newInstance();
-                    log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
+                    try {
+                        if (className.startsWith("#"))
+                            continue; // a comment
 
-                    Hashtable<String, Object> props = new Hashtable<String, Object>();
-                    props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
+                        Class<?> cls = bundle.loadClass(className);
+                        Object o = cls.newInstance();
+                        log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
 
-                    String s = serviceFile.toExternalForm();
-                    int idx = s.lastIndexOf('/');
-                    String registrationClassName = className;
-                    if (s.length() > idx) {
-                        registrationClassName = s.substring(idx + 1);
+                        Hashtable<String, Object> props = new Hashtable<String, Object>();
+                        props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
+
+                        String s = serviceFile.toExternalForm();
+                        int idx = s.lastIndexOf('/');
+                        String registrationClassName = className;
+                        if (s.length() > idx) {
+                            registrationClassName = s.substring(idx + 1);
+                        }
+
+                        ServiceRegistration reg = bundle.getBundleContext()
+                                .registerService(registrationClassName, o, props);
+                        registrations.add(reg);
+
+                        activator.registerProviderBundle(registrationClassName, bundle);
+                        log(LogService.LOG_INFO, "Registered service: " + reg);
+                    } catch (Exception e) {
+                        log(LogService.LOG_WARNING,
+                                "Could not load SPI implementation referred from " + serviceFile, e);
                     }
-
-                    ServiceRegistration reg = bundle.getBundleContext()
-                            .registerService(registrationClassName, o, props);
-                    registrations.add(reg);
-
-                    activator.registerProviderBundle(registrationClassName, bundle);
-                    log(LogService.LOG_INFO, "Registered service: " + reg);
                 }
-            } catch (Exception e) {
-                log(LogService.LOG_WARNING,
-                        "Could not load SPI implementation referred from " + serviceFile, e);
+            } catch (IOException e) {
+                log(LogService.LOG_WARNING, "Could not read SPI metadata from " + serviceFile, e);
             }
         }
 
         return registrations;
+    }
+
+    // An empty list returned means 'all SPIs'
+    // A return value of null means no SPIs
+    // A populated list means: only these SPIs
+    private List<String> readProvideCapability(Dictionary<?,?> headers) {
+        if (headers.get(SpiFlyConstants.PROVIDE_CAPABILITY) == null)
+            return null;
+
+        String pc = headers.get(SpiFlyConstants.PROVIDE_CAPABILITY).toString();
+        for (String c : pc.split(",")) { // TODO cover situation where ',' is inside a string (e.g. service:List<String>).
+            c = c.trim();
+            int idx = c.indexOf(';');
+            if (idx < 0)
+                continue;
+
+            String ns = c.substring(0, idx);
+            if (!SpiFlyConstants.SPI_CAPABILITY_NAMESPACE.equals(ns))
+                continue;
+
+            List<String> providedServices = new ArrayList<String>();
+            String attrs = c.substring(idx);
+            for (String attr : attrs.split(";")) {
+                attr = attr.trim();
+                if (attr.startsWith("service=")) {
+                    String val = attr.substring("service=".length());
+                    providedServices.add(val);
+                } else if (attr.startsWith("service:String=")) {
+                    String val = attr.substring("service:String=".length());
+                    providedServices.add(val);
+                } else if (attr.startsWith("service:List<String>=")) {
+                    String val = attr.substring("service:List<String>=".length());
+                    for (String v : val.split(",")) {
+                        providedServices.add(v.trim());
+                    }
+                }
+            }
+            return providedServices; // An empty array means all SPIs
+        }
+        return null;
     }
 
     private List<URL> getMetaInfServiceURLsFromJar(URL url) {

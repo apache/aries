@@ -132,7 +132,7 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public Set<WeavingData> getWeavingData(Bundle b) {
-        // Simply return the value as it's already an unmovable set.
+        // Simply return the value as it's already an immutable set.
         Set<WeavingData> wd = bundleWeavingData.get(b);
         if (wd == null)
             return null;
