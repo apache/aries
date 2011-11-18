@@ -19,8 +19,14 @@
 package org.apache.aries.spifly.api;
 
 public interface SpiFlyConstants {
+    String PROVIDE_CAPABILITY = "Provide-Capability";
+    String REQUIRE_CAPABILITY = "Require-Capability";
+
     String SPI_CONSUMER_HEADER = "SPI-Consumer";
     String SPI_PROVIDER_HEADER = "SPI-Provider";
+
+    String SPI_CAPABILITY_NAMESPACE = "osgi.spi.provider";
+    String EXTENDER_CAPABILITY_NAMESPACE = "osgi.jse.serviceloader";
 
     String PROCESSED_SPI_CONSUMER_HEADER = "X-SpiFly-Processed-SPI-Consumer";
 
