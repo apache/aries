@@ -162,50 +162,42 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     return props;
   }  
     
-  @Override
-public List<Content> getApplicationContents()
+  public List<Content> getApplicationContents()
   {
     return Collections.unmodifiableList(this.appContents);
   }
 
-  @Override
-public List<ServiceDeclaration> getApplicationExportServices()
+  public List<ServiceDeclaration> getApplicationExportServices()
   {
     return Collections.unmodifiableList(this.exportServices);
   }
 
-  @Override
-public List<ServiceDeclaration> getApplicationImportServices()
+  public List<ServiceDeclaration> getApplicationImportServices()
   {
     return Collections.unmodifiableList(this.importServices);
   }
 
-  @Override
-public String getApplicationSymbolicName()
+  public String getApplicationSymbolicName()
   {
     return this.appSymbolicName;
   }
 
-  @Override
-public Version getApplicationVersion()
+  public Version getApplicationVersion()
   {
     return this.appVersion;
   }
 
-  @Override
-public String getApplicationName() 
+  public String getApplicationName() 
   {
     return this.appName;
   }
   
-  @Override
-public String getApplicationScope() 
+  public String getApplicationScope() 
   {
     return appScope;
   }
   
-  @Override
-public boolean equals(Object other)
+  public boolean equals(Object other)
   {
     if (other == this) return true;
     if (other == null) return false;
@@ -222,15 +214,13 @@ public int hashCode()
     return appScope.hashCode();
   }
 
-  @Override
-public void store(File f) throws IOException {
+  public void store(File f) throws IOException {
     FileOutputStream fos = new FileOutputStream (f);
     store(fos);
     fos.close();
   }
 
-  @Override
-public void store(OutputStream out) throws IOException {
+  public void store(OutputStream out) throws IOException {
     if (manifest != null) {
       Attributes att = manifest.getMainAttributes();
       if ((att.getValue(Attributes.Name.MANIFEST_VERSION.toString())) == null) {
@@ -240,8 +230,7 @@ public void store(OutputStream out) throws IOException {
     }
   }
 
-  @Override
-public Collection<Content> getUseBundles()
+  public Collection<Content> getUseBundles()
   {
     return this.useBundle;
   }
