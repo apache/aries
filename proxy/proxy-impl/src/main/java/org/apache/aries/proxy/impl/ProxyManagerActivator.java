@@ -50,7 +50,7 @@ public class ProxyManagerActivator implements BundleActivator
         //if ASM is available then we should also try weaving
         Class<?> cls = Class.forName("org.apache.aries.proxy.impl.weaving.ProxyWeavingHook");
         context.registerService("org.osgi.framework.hooks.weaving.WeavingHook",
-            cls.newInstance(), null);
+            cls.getConstructor(BundleContext.class).newInstance(context), null);
       } catch (Throwable t) {
         //We don't care about this, we just won't have registered the hook
       }
