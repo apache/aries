@@ -659,7 +659,8 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       URLConnection jarCon = jarUrl.openConnection();
       jarCon.connect();
       InputStream in = jarCon.getInputStream();
-      File temp = new File(getLocalPlatform().getTemporaryDirectory() + bundleFileName);
+      File dir = getLocalPlatform().getTemporaryDirectory();
+      File temp = new File(dir, bundleFileName);
       OutputStream out = new FileOutputStream(temp);
       IOUtils.copy(in, out);
       IOUtils.close(out);
@@ -667,6 +668,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       result.add(modelledResourceManager.getModelledResource(null, FileSystem.getFSRoot(temp)));
       // delete the temp file
       temp.delete();
+      IOUtils.deleteRecursive(dir);
     }
     _logger.debug(LOG_EXIT, "getByValueBundles", new Object[]{result});
     return result;
