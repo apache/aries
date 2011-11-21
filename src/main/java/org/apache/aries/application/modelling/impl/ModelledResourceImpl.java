@@ -238,55 +238,42 @@ public class ModelledResourceImpl implements ModelledResource
   }
 
 
-  @Override
   public String getLocation() {
     logger.debug(LOG_ENTRY, "getLocation");
     logger.debug(LOG_EXIT, "getLocation", _fileURI);
     return _fileURI;
   }
 
-
-  @Override
   public ExportedBundle getExportedBundle() {
     logger.debug(LOG_ENTRY, "getExportedBundle");
     logger.debug(LOG_EXIT, "getExportedBundle",  _exportedBundle);
     return _exportedBundle;
   }
 
-
-  @Override
   public Collection<ExportedPackage> getExportedPackages() {
     logger.debug(LOG_ENTRY, "getExportedPackages");
     logger.debug(LOG_EXIT, "getExportedPackages",  _exportedPackages);
     return Collections.unmodifiableCollection(_exportedPackages);
   }
   
-
-
-  @Override
   public Collection<ImportedPackage> getImportedPackages() {
     logger.debug(LOG_ENTRY, "getImportedPackages");
     logger.debug(LOG_EXIT, "getImportedPackages",  _importedPackages);
     return Collections.unmodifiableCollection(_importedPackages);
   }
 
-  @Override
   public Collection<ExportedService> getExportedServices() {
     logger.debug(LOG_ENTRY, "getExportedServices");
     logger.debug(LOG_EXIT, "getExportedServices",  _exportedServices);
     return Collections.unmodifiableCollection(_exportedServices);
   }
 
-
-  @Override
   public Collection<ImportedService> getImportedServices() {
     logger.debug(LOG_ENTRY, "getImportedServices");
     logger.debug(LOG_EXIT, "getImportedServices",  _exportedServices);
     return Collections.unmodifiableCollection(_importedServices);
   }
 
-
-  @Override
   public String getSymbolicName() {
     logger.debug(LOG_ENTRY, "getSymbolicName");
     String result = _exportedBundle.getSymbolicName();
@@ -294,8 +281,6 @@ public class ModelledResourceImpl implements ModelledResource
     return result;
   }
   
-
-  @Override
   public String getVersion() {
     logger.debug(LOG_ENTRY, "getVersion");
     String result = _exportedBundle.getVersion();
@@ -303,8 +288,6 @@ public class ModelledResourceImpl implements ModelledResource
     return result;
   }
 
-
-  @Override
   public String toDeploymentString() {
     logger.debug(LOG_ENTRY, "toDeploymentString");
     String result = _exportedBundle.toDeploymentString();
@@ -312,30 +295,25 @@ public class ModelledResourceImpl implements ModelledResource
     return result;
   }
 
-
-  @Override
   public ResourceType getType() {
     logger.debug(LOG_ENTRY, "getType");
     logger.debug(LOG_EXIT, "getType",  ResourceType.BUNDLE);
     return _resourceType;
   }
   
-  @Override
   public String toString() {
     return toDeploymentString();
   }
 
 
-  @Override
-public Collection<ImportedBundle> getRequiredBundles() {
+  public Collection<ImportedBundle> getRequiredBundles() {
     logger.debug(LOG_ENTRY, "getRequiredBundles");
     logger.debug(LOG_EXIT, "getRequiredBundles",  _requiredBundles);
     return Collections.unmodifiableCollection(_requiredBundles);
   }
 
 
-  @Override
-public ImportedBundle getFragmentHost() {
+  public ImportedBundle getFragmentHost() {
     logger.debug(LOG_ENTRY, "getFragmentHost");
     ImportedBundle result = _exportedBundle.getFragmentHost();
     logger.debug(LOG_EXIT, "getFragmentHost",  result);
@@ -343,8 +321,7 @@ public ImportedBundle getFragmentHost() {
   }
 
 
-  @Override
-public boolean isFragment() {
+  public boolean isFragment() {
     logger.debug(LOG_ENTRY, "isFragment");
     boolean result = _exportedBundle.isFragment();
     logger.debug(LOG_EXIT, "isFragment",  result);

@@ -101,7 +101,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * @param resolvedBundle the bundle that has been provisioned.
    * @param resolvedVersion the specific version provisioned.
    */
-  @Override
   public void addBundle(ModelledResource modelledBundle)
   {
     logger.debug(LOG_ENTRY, "addBundle", new Object[]{modelledBundle});
@@ -159,7 +158,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * Get the value corresponding to the Deployed-Content header in the deployment.mf.
    * @return a manifest entry, or an empty string if there is no content.
    */
-  @Override
   public String getContent()
   {
     return createManifestString(deployedContent);
@@ -169,7 +167,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * Get the value corresponding to the Deployed-Use-Bundle header in the deployment.mf.
    * @return a manifest entry, or an empty string if there is no content.
    */
-  @Override
   public String getUseBundle()
   {
     return createManifestString(deployedUseBundle);
@@ -179,7 +176,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * Get the value corresponding to the Provision-Bundle header in the deployment.mf.
    * @return a manifest entry, or an empty string if there is no content.
    */
-  @Override
   public String getProvisionBundle()
   {
     return createManifestString(deployedProvisionBundle);
@@ -190,7 +186,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * @return a manifest entry, or an empty string if there is no content.
    * @throws ResolverException if the requirements could not be resolved.
    */
-  @Override
   public String getImportPackage() throws ResolverException
   {
     logger.debug(LOG_ENTRY, "getImportPackage");
@@ -240,7 +235,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    *   b) the service was not available internally when the app was first deployed
    *   
    */
-  @Override
   public String getDeployedImportService() { 
     logger.debug(LOG_ENTRY,"getDeployedImportService");
     Collection<ImportedService> deployedBundleServiceImports = new ArrayList<ImportedService>();
@@ -415,7 +409,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * Get the set of bundles that are going to be deployed into an isolated framework
    * @return a set of bundle metadata
    */
-  @Override
   public Collection<ModelledResource> getDeployedContent()
   {
     logger.debug(LOG_ENTRY, "getDeployedContent");
@@ -431,7 +424,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * needs to be called something else. 
    *
    */
-  @Override
   public Collection<ModelledResource> getDeployedProvisionBundle () 
   { 
     logger.debug(LOG_ENTRY,"getDeployedProvisionBundle");
@@ -445,7 +437,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * @return a set of bundle metadata.
    * @throws ResolverException if the requirements could not be resolved.
    */
-  @Override
   public Collection<ModelledResource> getRequiredUseBundle() throws ResolverException
   {
     logger.debug(LOG_ENTRY, "getRequiredUseBundle");
@@ -467,7 +458,6 @@ public final class DeployedBundlesImpl implements DeployedBundles
   /** This method will be overridden by a PostResolveTransformer returning an extended version of
    * DeployedBundles 
    */
-  @Override
   public Map<String, String> getExtraHeaders() {
     logger.debug (LOG_ENTRY, "getExtraHeaders");
     Map<String, String> result = Collections.emptyMap();
