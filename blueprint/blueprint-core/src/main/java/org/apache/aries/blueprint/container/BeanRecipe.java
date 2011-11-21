@@ -18,8 +18,6 @@
  */
 package org.apache.aries.blueprint.container;
 
-import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,16 +31,15 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.proxy.Collaborator;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
 import org.osgi.framework.Bundle;
@@ -53,6 +50,8 @@ import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
 
 /**
  * A <code>Recipe</code> to create POJOs.
@@ -687,7 +686,7 @@ public class BeanRecipe extends AbstractRecipe {
                 // we have a class from the framework parent, so use our bundle for proxying.
                 b = blueprintContainer.getBundleContext().getBundle();
               }
-              intercepted = BlueprintExtender.getProxyManager().createInterceptingProxy(b, 
+              intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
                   ProxyUtils.asList(original.getClass()), original, 
                   new Collaborator(interceptorLookupKey, interceptors));
             } catch (org.apache.aries.proxy.UnableToProxyException e) {
