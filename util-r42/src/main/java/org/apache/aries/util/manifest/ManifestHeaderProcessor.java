@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import org.apache.aries.util.ManifestHeaderUtils;
 import org.apache.aries.util.VersionRange;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
 
 
 public class ManifestHeaderProcessor
@@ -41,6 +42,31 @@ public class ManifestHeaderProcessor
   private static final String GREATER_EQ_OP = ">=";
 
   /**
+   * A GenericMetadata is either a Generic Capability or a Generic Requirement
+   */
+  public static class GenericMetadata {
+    private final String namespace;
+    private final Map<String, Object> attributes = new HashMap<String, Object>();
+    private final Map<String, String> directives = new HashMap<String, String>();
+
+    public GenericMetadata(String namespace) {
+      this.namespace = namespace;
+    }
+
+    public String getNamespace() {
+      return namespace;
+    }
+
+    public Map<String, Object> getAttributes() {
+      return attributes;
+    }
+
+    public Map<String, String> getDirectives() {
+      return directives;
+    }
+  }
+
+  /**
    * A simple class to associate two types.
    *
    * @param <N> The type for the 'Name'
@@ -49,7 +75,7 @@ public class ManifestHeaderProcessor
   public static class NameValuePair {
     private String name;
     private Map<String,String> attributes;
-    
+
     public NameValuePair(String name, Map<String,String> value)
     {
       this.name = name;
@@ -63,7 +89,7 @@ public class ManifestHeaderProcessor
     {
       this.name = name;
     }
-    
+
     public Map<String,String> getAttributes()
     {
       return attributes;
@@ -72,7 +98,7 @@ public class ManifestHeaderProcessor
     {
       this.attributes = value;
     }
-    
+
     @Override
     public String toString(){
       return "{"+name.toString()+"::"+attributes.toString()+"}";
@@ -102,9 +128,9 @@ public class ManifestHeaderProcessor
       return true;
     }
   }
-  
+
   /**
-   * Intended to provide a standard way to add Name/Value's to 
+   * Intended to provide a standard way to add Name/Value's to
    * aggregations of Name/Value's.
    *
    * @param <N> Type of 'Name'
@@ -121,17 +147,17 @@ public class ManifestHeaderProcessor
 
   /**
    * Map of Name -> Value.
-   * 
+   *
    * @param <N> Type of 'Name'
    * @param <V> Type of 'Value'
    */
   public static class NameValueMap extends HashMap<String, Map<String,String>> implements NameValueCollection, Map<String, Map<String,String>>{
 	private static final long serialVersionUID = -6446338858542599141L;
-	
+
 	public void addToCollection(String n, Map<String,String> v){
       this.put(n,v);
     }
-	
+
 	@Override
 	public String toString(){
       StringBuilder sb = new StringBuilder();
@@ -146,19 +172,19 @@ public class ManifestHeaderProcessor
       return sb.toString();
     }
   }
-  
+
   /**
    * List of Name/Value
    *
    * @param <N> Type of 'Name'
    * @param <V> Type of 'Value'
    */
-  public static class NameValueList extends ArrayList<NameValuePair> implements NameValueCollection, List<NameValuePair> {    
+  public static class NameValueList extends ArrayList<NameValuePair> implements NameValueCollection, List<NameValuePair> {
 	private static final long serialVersionUID = 1808636823825029983L;
-	
+
 	public void addToCollection(String n, Map<String,String> v){
       this.add(new NameValuePair(n,v));
-    } 
+    }
 	@Override
     public String toString(){
       StringBuffer sb = new StringBuffer();
@@ -167,18 +193,18 @@ public class ManifestHeaderProcessor
       for(NameValuePair nvp : this){
         if(!first)sb.append(",");
         first=false;
-        sb.append(nvp.toString());        
+        sb.append(nvp.toString());
       }
       sb.append("}");
       return sb.toString();
     }
   }
-  
+
   /**
-   * 
+   *
    * Splits a delimiter separated string, tolerating presence of non separator commas
    * within double quoted segments.
-   * 
+   *
    * Eg.
    * com.ibm.ws.eba.helloWorldService;version="[1.0.0, 1.0.0]" &
    * com.ibm.ws.eba.helloWorldService;version="1.0.0"
@@ -191,23 +217,23 @@ public class ManifestHeaderProcessor
   public static List<String> split(String value, String delimiter)
   {
     return ManifestHeaderUtils.split(value, delimiter);
-  }  
-  
- 
+  }
+
+
   /**
    * Internal method to parse headers with the format<p>
-   *   [Name](;[Name])*(;[attribute-name]=[attribute-value])*<br> 
+   *   [Name](;[Name])*(;[attribute-name]=[attribute-value])*<br>
    * Eg.<br>
    *   rumplestiltskin;thing=value;other=something<br>
    *   littleredridinghood
    *   bundle1;bundle2;other=things
    *   bundle1;bundle2
-   *   
+   *
    * @param s data to parse
-   * @return a list of NameValuePair, with the Name being the name component, 
-   *         and the Value being a NameValueMap of key->value mappings.   
+   * @return a list of NameValuePair, with the Name being the name component,
+   *         and the Value being a NameValueMap of key->value mappings.
    */
-  private static List<NameValuePair> genericNameWithNameValuePairProcess(String s){    
+  private static List<NameValuePair> genericNameWithNameValuePairProcess(String s){
     String name;
     Map<String,String> params = null;
     List<NameValuePair> nameValues = new ArrayList<NameValuePair>();
@@ -217,19 +243,19 @@ public class ManifestHeaderProcessor
       name = s;
       params = new HashMap<String, String>();
       pkgs.add(name);
-    }else{       
+    }else{
       name = s.substring(0,index).trim();
       String tail = s.substring(index+1).trim();
-      
+
       pkgs.add(name); // add the first package
       StringBuilder parameters = new StringBuilder();
-          
-      
+
+
       // take into consideration of multiple packages separated by ';'
       // while they share the same attributes or directives
       List<String> tailParts = split(tail, ";");
       boolean firstParameter =false;
-      
+
       for (String part : tailParts) {
         // if it is not a parameter and no parameter appears in front of it, it must a package
         if (!!!(part.contains("=")))  {
@@ -238,30 +264,30 @@ public class ManifestHeaderProcessor
           if (!!!(firstParameter))
             pkgs.add(part);
         } else {
-          if (!!!(firstParameter)) 
+          if (!!!(firstParameter))
             firstParameter = true;
 
           parameters.append(part + ";");
         }
-      }          
-      
+      }
+
       if (parameters.length() != 0) {
         //remove the final ';' if there is one
         if (parameters.toString().endsWith(";")) {
-         
+
           parameters = parameters.deleteCharAt(parameters.length() -1);
-        }       
-        
+        }
+
         params = genericNameValueProcess(parameters.toString());
       }
-      
+
     }
     for (String pkg : pkgs) {
       nameValues.add(new NameValuePair(pkg,params));
-    }  
-    
+    }
+
     return nameValues;
-   
+
   }
 
   /**
@@ -271,68 +297,68 @@ public class ManifestHeaderProcessor
    *   thing=value;other=something<br>
    * <p>
    * Note. Directives (name:=value) are represented in the map with name suffixed by ':'
-   *   
+   *
    * @param s data to parse
    * @return a NameValueMap, with attribute-name -> attribute-value.
    */
   private static Map<String,String> genericNameValueProcess(String s){
-    Map<String,String> params = new HashMap<String,String>();  
+    Map<String,String> params = new HashMap<String,String>();
     List<String> parameters = split(s, ";");
     for(String parameter : parameters) {
       List<String> parts = split(parameter,"=");
-      // do a check, otherwise we might get NPE   
+      // do a check, otherwise we might get NPE
       if (parts.size() ==2) {
         String second = parts.get(1).trim();
         if (second.startsWith("\"") && second.endsWith("\""))
           second = second.substring(1,second.length()-1);
-        
+
         String first = parts.get(0).trim();
-        
-        // make sure for directives we clear out any space as in "directive  :=value"        
+
+        // make sure for directives we clear out any space as in "directive  :=value"
         if (first.endsWith(":")) {
             first = first.substring(0, first.length()-1).trim()+":";
         }
-        
+
         params.put(first, second);
       }
     }
 
     return params;
   }
-  
+
   /**
-   * Processes an import/export style header.. <p> 
+   * Processes an import/export style header.. <p>
    *  pkg1;attrib=value;attrib=value,pkg2;attrib=value,pkg3;attrib=value
-   * 
+   *
    * @param out The collection to add each package name + attrib map to.
    * @param s The data to parse
    */
   private static void genericImportExportProcess(NameValueCollection out, String s){
     List<String> packages = split(s, ",");
-    for(String pkg : packages){   
+    for(String pkg : packages){
       List<NameValuePair> ps = genericNameWithNameValuePairProcess(pkg);
       for (NameValuePair p : ps) {
         out.addToCollection(p.getName(), p.getAttributes());
       }
-    }    
+    }
   }
-  
+
   /**
    * Parse an export style header.<p>
    *   pkg1;attrib=value;attrib=value,pkg2;attrib=value,pkg3;attrib=value2
    * <p>
    * Result is returned as a list, as export does allow duplicate package exports.
-   * 
+   *
    * @param list The data to parse.
-   * @return List of NameValuePairs, where each Name in the list is an exported package, 
-   *         with its associated Value being a NameValueMap of any attributes declared. 
+   * @return List of NameValuePairs, where each Name in the list is an exported package,
+   *         with its associated Value being a NameValueMap of any attributes declared.
    */
   public static List<NameValuePair> parseExportString(String s){
     NameValueList retval = new NameValueList();
     genericImportExportProcess(retval, s);
     return retval;
   }
-  
+
   /**
    * Parse an export style header in a list.<p>
    *   pkg1;attrib=value;attrib=value
@@ -340,54 +366,144 @@ public class ManifestHeaderProcessor
    *   pkg3;attrib=value2
    * <p>
    * Result is returned as a list, as export does allow duplicate package exports.
-   * 
+   *
    * @param list The data to parse.
-   * @return List of NameValuePairs, where each Name in the list is an exported package, 
-   *         with its associated Value being a NameValueMap of any attributes declared. 
+   * @return List of NameValuePairs, where each Name in the list is an exported package,
+   *         with its associated Value being a NameValueMap of any attributes declared.
    */
   public static List<NameValuePair> parseExportList(List<String> list){
     NameValueList retval = new NameValueList();
-    for(String pkg : list){   
+    for(String pkg : list){
       List<NameValuePair> ps = genericNameWithNameValuePairProcess(pkg);
       for (NameValuePair p : ps) {
         retval.addToCollection(p.getName(), p.getAttributes());
       }
-    } 
+    }
     return retval;
   }
-  
+
   /**
    * Parse an import style header.<p>
    *   pkg1;attrib=value;attrib=value,pkg2;attrib=value,pkg3;attrib=value
    * <p>
    * Result is returned as a set, as import does not allow duplicate package imports.
-   * 
+   *
    * @param s The data to parse.
-   * @return Map of NameValuePairs, where each Key in the Map is an imported package, 
-   *         with its associated Value being a NameValueMap of any attributes declared. 
-   */  
+   * @return Map of NameValuePairs, where each Key in the Map is an imported package,
+   *         with its associated Value being a NameValueMap of any attributes declared.
+   */
   public static Map<String, Map<String, String>> parseImportString(String s){
     NameValueMap retval = new NameValueMap();
     genericImportExportProcess(retval, s);
-    return retval;    
+    return retval;
   }
-  
+
+  /**
+   * Parse a generic capability header. For example<br/>
+   *   com.acme.myns;mylist:List<String>="nl,be,fr,uk";myver:Version=1.3;long:Long="1234";d:Double="3.14";myattr=xyz,
+   *   com.acme.myns;myattr=abc
+   * @param s The header to be parsed
+   * @return A list of GenericMetadata objects each representing an individual capability. The values in the attribute map
+   *   are of the specified datatype.
+   */
+  public static List<GenericMetadata> parseCapabilityString(String s) {
+    return parseGenericMetadata(s);
+  }
+
+  /**
+   * Parse a generic capability header. For example<br/>
+   *   com.acme.myns;mylist:List<String>="nl,be,fr,uk";myver:Version=1.3;long:Long="1234";d:Double="3.14";myattr=xyz,
+   *   com.acme.myns;myattr=abc
+   * @param s The header to be parsed
+   * @return A list of GenericMetadata objects each representing an individual capability. The values in the attribute map
+   *   are of the specified datatype.
+   */
+  public static List<GenericMetadata> parseRequirementString(String s) {
+    return parseGenericMetadata(s);
+  }
+
+  private static List<GenericMetadata> parseGenericMetadata(String s) {
+    List<GenericMetadata> capabilities = new ArrayList<GenericMetadata>();
+
+    List<String> entries = split(s, ",");
+    for(String e : entries){
+      List<NameValuePair> nvpList = genericNameWithNameValuePairProcess(e);
+
+      for(NameValuePair nvp : nvpList) {
+        String namespace = nvp.getName();
+        GenericMetadata cap = new GenericMetadata(namespace);
+        capabilities.add(cap);
+
+        Map<String, String> attrMap = nvp.getAttributes();
+        for (Map.Entry<String, String> entry : attrMap.entrySet()) {
+          String k = entry.getKey();
+          String v = entry.getValue();
+          if (k.contains(":")) {
+            if (k.endsWith(":")) {
+              // a directive
+              cap.getDirectives().put(k.substring(0, k.length() - 1), v);
+            } else {
+              // an attribute with its datatype specified
+              parseTypedAttribute(k, v, cap);
+            }
+          } else {
+            // ordinary (String) attribute
+            cap.getAttributes().put(k, v);
+          }
+        }
+      }
+    }
+
+    return capabilities;
+  }
+
+  private static void parseTypedAttribute(String k, String v, GenericMetadata cap) {
+    int idx = k.indexOf(':');
+    String name = k.substring(0, idx);
+    String type = k.substring(idx + 1);
+
+    if (type.startsWith("List<") && type.endsWith(">")) {
+      String subtype = type.substring("List<".length(), type.length() - 1).trim();
+      List<Object> l = new ArrayList<Object>();
+      for (String s : v.split(",")) {
+        l.add(getTypedValue(k, subtype, s));
+      }
+      cap.getAttributes().put(name, l);
+    } else {
+      cap.getAttributes().put(name, getTypedValue(k, type.trim(), v));
+    }
+  }
+
+  private static Object getTypedValue(String k, String type, String v) {
+    if ("String".equals(type)) {
+      return v;
+    } else if ("Long".equals(type)) {
+      return Long.parseLong(v);
+    } else if ("Double".equals(type)) {
+      return Double.parseDouble(v);
+    } else if ("Version".equals(type)) {
+      return Version.parseVersion(v);
+    }
+    throw new IllegalArgumentException(k + "=" + v);
+  }
+
+
   /**
    * Parse a bundle symbolic name.<p>
    *   bundlesymbolicname;attrib=value;attrib=value
    * <p>
-   * 
+   *
    * @param s The data to parse.
-   * @return NameValuePair with Name being the BundleSymbolicName, 
-   *         and Value being any attribs declared for the name. 
-   */   
+   * @return NameValuePair with Name being the BundleSymbolicName,
+   *         and Value being any attribs declared for the name.
+   */
   public static NameValuePair parseBundleSymbolicName(String s){
     return genericNameWithNameValuePairProcess(s).get(0); // should just return the first one
   }
-  
+
   /**
-   * Parse a version range.. 
-   * 
+   * Parse a version range..
+   *
    * @param s
    * @return VersionRange object.
    * @throws IllegalArgumentException if the String could not be parsed as a VersionRange
@@ -395,10 +511,10 @@ public class ManifestHeaderProcessor
   public static VersionRange parseVersionRange(String s) throws IllegalArgumentException{
     return new VersionRange(s);
   }
-  
+
   /**
-   * Parse a version range and indicate if the version is an exact version 
-   * 
+   * Parse a version range and indicate if the version is an exact version
+   *
    * @param s
    * @param exactVersion
    * @return VersionRange object.
@@ -415,7 +531,7 @@ public class ManifestHeaderProcessor
 	 * Filter strings generated by this method will therefore tend to break the
 	 * standard OSGi Filter class. The OBR stanza can be stripped out later if
 	 * required.
-	 * 
+	 *
 	 * @param attribs
 	 * @return filter string
 	 */
@@ -537,10 +653,10 @@ public class ManifestHeaderProcessor
    * include a stanza of the form, (mandatory:<*mandatoryAttribute) Filter
    * strings generated by this method will therefore tend to break the standard
    * OSGi Filter class. The OBR stanza can be stripped out later if required.
-   * 
+   *
    * We may wish to consider relocating this method since VersionRange has its
    * own top level class.
-   * 
+   *
    * @param type
    * @param name
    * @param attribs
@@ -655,8 +771,8 @@ public class ManifestHeaderProcessor
 
     return result;
   }
-	  
-  public static Map<String,String> parseFilter(String filter) 
+
+  public static Map<String,String> parseFilter(String filter)
   {
     Map<String,String> result;
     if (filter.startsWith("(&")) {
@@ -666,6 +782,5 @@ public class ManifestHeaderProcessor
     }
     return result;
   }
-
 }
 
