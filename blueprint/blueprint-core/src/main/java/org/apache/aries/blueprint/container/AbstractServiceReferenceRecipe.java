@@ -226,7 +226,19 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         if (!interfaces.iterator().hasNext()) {
             return new Object();
         } else {
-            //We don't use the #getBundleContextForServiceLookup() method here, the bundle requesting the proxy is the 
+            // Check class proxying
+            boolean proxyClass = false;
+            if (metadata instanceof ExtendedServiceReferenceMetadata) {
+                proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
+            }
+            if (!proxyClass) {
+                for (Class cl : interfaces) {
+                    if (!cl.isInterface()) {
+                        throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='classes' attribute needs to be added to this service reference.");
+                    }
+                }
+            }
+            //We don't use the #getBundleContextForServiceLookup() method here, the bundle requesting the proxy is the
             //blueprint client, not the context of the lookup
             return blueprintContainer.getProxyManager().createDelegatingProxy(blueprintContainer.getBundleContext().getBundle(), interfaces, dispatcher, null);
         }

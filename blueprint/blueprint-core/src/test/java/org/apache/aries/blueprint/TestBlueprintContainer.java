@@ -21,13 +21,18 @@ package org.apache.aries.blueprint;
 import org.apache.aries.blueprint.container.BlueprintContainerImpl;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
+import org.apache.aries.proxy.ProxyManager;
 
 public class TestBlueprintContainer extends BlueprintContainerImpl {
 
     private ComponentDefinitionRegistryImpl registry;
     
     public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry) {
-        super(new TestBundleContext(), null, null, null, null, null, null);
+        this(registry, null);
+    }
+
+    public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry, ProxyManager proxyManager) {
+        super(new TestBundleContext(), null, null, null, null, null, proxyManager);
         this.registry = registry;
         if (registry != null) {
             registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
