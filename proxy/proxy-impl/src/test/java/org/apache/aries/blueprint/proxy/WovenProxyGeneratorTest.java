@@ -414,7 +414,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     Class<?> parent = weavingLoader.loadClass(ProxyTestClassStaticInitOfChildParent.class.getName());
     parent.getMethod("doStuff").invoke(null);
   }
-  
+
   @Override
   protected Object getProxyInstance(Class<?> proxyClass) {
     try {
