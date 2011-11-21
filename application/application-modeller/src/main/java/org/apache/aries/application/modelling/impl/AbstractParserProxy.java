@@ -54,7 +54,6 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	    _modellingManager = m;
 	  }
 
-	  @Override
 	  public List<? extends WrappedServiceMetadata> parse(List<URL> blueprintsToParse) throws Exception {
 	    _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintsToParse});
 	    ComponentDefinitionRegistry cdr = parseCDR (blueprintsToParse);
@@ -63,7 +62,6 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	    return result;
 	  }
 	   
-	  @Override
 	  public List<? extends WrappedServiceMetadata> parse(URL blueprintToParse) throws Exception {
 	    _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintToParse});
 	    List<URL> list = new ArrayList<URL>();
@@ -74,7 +72,6 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	    return result;
 	  }
 
-	  @Override
 	  public List<? extends WrappedServiceMetadata> parse(InputStream blueprintToParse) throws Exception {
 	    _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintToParse});
 	    ComponentDefinitionRegistry cdr = parseCDR (blueprintToParse);
@@ -84,7 +81,6 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	  }
 	 
 
-	  @Override
 	  public ParsedServiceElements parseAllServiceElements(InputStream blueprintToParse) throws Exception {
 	    _logger.debug(LOG_ENTRY, "parseAllServiceElements", new Object[]{blueprintToParse});
 	    ComponentDefinitionRegistry cdr = parseCDR (blueprintToParse);
