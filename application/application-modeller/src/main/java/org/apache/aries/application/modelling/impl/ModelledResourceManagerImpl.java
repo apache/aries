@@ -90,13 +90,11 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
    * @return ParsedServiceElementsImpl 
    * @throws OpenFailureException 
    */
-  @Override
   public ParsedServiceElements getServiceElements (IDirectory archive) throws ModellerException { 
       BundleManifest bm = BundleManifest.fromBundle(archive);
       return getServiceElements(bm, archive);
   }
   
-  @Override
   public ParsedServiceElements getServiceElements(InputStreamProvider archive) throws ModellerException {
       ICloseableDirectory dir = null;
       try {
@@ -156,7 +154,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
     return result;
   }
 
-  @Override
   public ModelledResource getModelledResource(IDirectory bundle) throws ModellerException {
       try {
           return getModelledResource(bundle.toURL().toURI().toString(), bundle);
@@ -167,7 +164,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
       }
   }
 
-  @Override
   public ModelledResource getModelledResource(String uri, InputStreamProvider bundle) throws ModellerException {
       ICloseableDirectory dir = null;
       try {
@@ -180,7 +176,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
       }
   }
   
-  @Override
   public ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException{
     _logger.debug(LOG_ENTRY, "getModelledResource", new Object[]{uri, bundle});
 
@@ -277,7 +272,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
           this.bpParser = bpParser;
       }
 
-      @Override
       public boolean hasNext() {
           valid = false;
           ZipEntry entry;
@@ -306,7 +300,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
           return valid;
       }
 
-      @Override
       public InputStream next() {
           if (!valid) throw new IllegalStateException();
           
@@ -322,7 +315,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
           };
       }
 
-      @Override
       public void remove() {
           throw new UnsupportedOperationException();
       }

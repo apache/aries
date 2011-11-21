@@ -54,38 +54,31 @@ public final class DeploymentContentImpl implements DeploymentContent {
     _content = new ContentImpl (deployedContent);
   }
   
-  @Override
-public Version getExactVersion() {
+  public Version getExactVersion() {
     return getVersion().getExactVersion();
   }
 
-  @Override
-public String getAttribute(String key) {
+  public String getAttribute(String key) {
     return _content.getAttribute(key);
   }
 
-  @Override
-public Map<String, String> getAttributes() {
+  public Map<String, String> getAttributes() {
     return _content.getAttributes();
   }
 
-  @Override
-public String getContentName() {
+  public String getContentName() {
     return _content.getContentName();
   }
 
-  @Override
-public String getDirective(String key) {
+  public String getDirective(String key) {
     return _content.getDirective(key);
   }
 
-  @Override
-public Map<String, String> getDirectives() {
+  public Map<String, String> getDirectives() {
     return _content.getDirectives();
   }
 
-  @Override
-public VersionRange getVersion() {
+  public VersionRange getVersion() {
     String deployedVersion = _content.getAttribute(AppConstants.DEPLOYMENT_BUNDLE_VERSION);
     VersionRange vr = null;
     if (deployedVersion != null && deployedVersion.length() > 0) {
@@ -107,13 +100,11 @@ public VersionRange getVersion() {
     }
   }
   
-  @Override
-public int hashCode() {
+  public int hashCode() {
     return _content.hashCode();
   }
 
-  @Override
-public Map<String, String> getNameValueMap() {
+  public Map<String, String> getNameValueMap() {
     return _content.getNameValueMap();
   }
   

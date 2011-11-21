@@ -53,26 +53,20 @@ public class ModellingHelperImpl implements ModellingHelper
   private static final  Logger logger = LoggerFactory.getLogger(ModellingHelperImpl.class);
 
   
-  @Override
   public boolean areMandatoryAttributesPresent(
       Map<String, String> consumerAttributes, Provider p) {
     return areMandatoryAttributesPresent_(consumerAttributes, p);
   }
 
-
-  @Override
   public ImportedBundle buildFragmentHost(String fragmentHostHeader)
       throws InvalidAttributeException {
     return buildFragmentHost_(fragmentHostHeader);
   }
 
-
-  @Override
   public ImportedPackage intersectPackage(ImportedPackage p1, ImportedPackage p2) {
     return intersectPackage_(p1, p2);
   }
   
-  @Override
   public DeployedBundles createDeployedBundles(String assetName,
       Collection<ImportedBundle> appContentNames,
       Collection<ImportedBundle> appUseBundleNames,
