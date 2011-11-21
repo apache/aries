@@ -64,6 +64,7 @@ import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
+import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -146,8 +147,10 @@ public class BlueprintContainerImpl
     private List<ServiceRecipe> services;
     private AccessControlContext accessControlContext;
     private final IdSpace tempRecipeIdSpace = new IdSpace();
-    
-    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<Object> pathList) {
+    private ProxyManager proxyManager;
+
+    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher,
+                                  NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<Object> pathList, ProxyManager proxyManager) {
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
         this.eventDispatcher = eventDispatcher;
@@ -160,10 +163,15 @@ public class BlueprintContainerImpl
         if (System.getSecurityManager() != null) {
             this.accessControlContext = createAccessControlContext();
         }
+        this.proxyManager = proxyManager;
     }
 
     public Bundle getExtenderBundle() {
         return extenderBundle;
+    }
+
+    public ProxyManager getProxyManager() {
+        return proxyManager;
     }
 
     public <T extends Processor> List<T> getProcessors(Class<T> clazz) {

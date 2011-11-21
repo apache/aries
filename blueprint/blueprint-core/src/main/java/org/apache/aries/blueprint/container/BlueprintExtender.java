@@ -78,7 +78,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private RecursiveBundleTracker bt;
     private ServiceRegistration parserServiceReg;
     private ServiceRegistration quiesceParticipantReg;
-    private static SingleServiceTracker<ProxyManager> proxyManager;
+    private SingleServiceTracker<ProxyManager> proxyManager;
     
     public void start(BundleContext ctx) {
         LOGGER.debug("Starting blueprint extender...");
@@ -178,14 +178,6 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         LOGGER.debug("Blueprint extender stopped");
     }
     
-    /**
-     * @return the proxy manager. This will return null if the blueprint is not yet managing bundles.
-     */
-    public static ProxyManager getProxyManager()
-    {
-      return proxyManager.getService();
-    }
-
     private List<Bundle> getBundlesToDestroy() {
         List<Bundle> bundlesToDestroy = new ArrayList<Bundle>();
         for (Bundle bundle : containers.keySet()) {
@@ -315,7 +307,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 // ServiceReference, or just not do this check, which could be quite harmful.
                 boolean compatible = isCompatible(bundle);
                 if (compatible) {
-                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, pathList);
+                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, pathList, proxyManager.getService());
                     containers.put(bundle, blueprintContainer);
                     String val = context.getProperty("org.apache.aries.blueprint.synchronous");
                     if (Boolean.parseBoolean(val)) {

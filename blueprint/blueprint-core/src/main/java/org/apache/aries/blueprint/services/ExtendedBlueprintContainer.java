@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Processor;
-import org.apache.aries.blueprint.container.ServiceRecipe;
 import org.apache.aries.blueprint.di.Repository;
+import org.apache.aries.proxy.ProxyManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -62,5 +62,7 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     AccessControlContext getAccessControlContext();
 
     void reload();
+
+    ProxyManager getProxyManager();
             
 }
