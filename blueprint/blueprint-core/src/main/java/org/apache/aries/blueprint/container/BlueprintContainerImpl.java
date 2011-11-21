@@ -99,7 +99,11 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
-public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerSet.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
+@SuppressWarnings("deprecation") // due to the deprecated org.apache.aries.blueprint.ExtendedBlueprintContainer
+public class BlueprintContainerImpl 
+    implements ExtendedBlueprintContainer, NamespaceHandlerSet.Listener, 
+    Runnable, SatisfiableRecipe.SatisfactionListener,
+    org.apache.aries.blueprint.ExtendedBlueprintContainer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
