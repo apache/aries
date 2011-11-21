@@ -45,7 +45,6 @@ import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ServiceListener;
 import org.apache.aries.proxy.InvocationListener;
-import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -491,7 +490,7 @@ public class ServiceRecipe extends AbstractRecipe {
                 }
                 InvocationListener collaborator = new Collaborator(cm, interceptors);
 
-                intercepted = BlueprintExtender.getProxyManager().createInterceptingProxy(b, 
+                intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
                         getClassesForProxying(), original, collaborator);
             } catch (Exception u) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
