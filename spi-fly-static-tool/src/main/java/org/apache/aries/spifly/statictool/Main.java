@@ -153,7 +153,8 @@ public class Main {
             className = className.substring(0, className.length() - ".class".length());
             className = className.replace(File.separator, ".");
 
-            Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(consumerHeader);
+            // TODO support Require-Capability in addition to SPI-Consumer
+            Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(SpiFlyConstants.SPI_CONSUMER_HEADER, consumerHeader);
             InputStream is = new FileInputStream(f);
             byte[] b;
             try {

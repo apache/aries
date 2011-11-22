@@ -42,7 +42,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 
-public class ProviderBundleTrackerCustomizerTest2 {
+public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     @Test
     public void testAddingRemovedBundle() throws Exception {
         Bundle spiBundle = EasyMock.createMock(Bundle.class);
