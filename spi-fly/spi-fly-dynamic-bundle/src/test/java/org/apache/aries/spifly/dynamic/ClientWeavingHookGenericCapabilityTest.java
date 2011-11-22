@@ -220,11 +220,10 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("All three services should be invoked in the correct order", "ollehHELLO5", result);
     }
 
-    /* Not yet supported in the generic capability model
     @Test
     public void testClientSpecifyingProvider() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active; filter:=\"(bundle-symbolic-name=impl2)\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -232,7 +231,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
 
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
@@ -250,6 +249,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);
     }
 
+    /* Not yet supported in the generic capability model
     @Test
     public void testClientSpecifyingProviderVersion() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -669,6 +669,7 @@ public class ClientWeavingHookGenericCapabilityTest {
 
         Bundle consumerBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(consumerBundle.getSymbolicName()).andReturn("testConsumer").anyTimes();
+        EasyMock.expect(consumerBundle.getVersion()).andReturn(new Version(1, 2, 3)).anyTimes();
         EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();

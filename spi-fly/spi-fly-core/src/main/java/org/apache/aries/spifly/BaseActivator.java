@@ -21,7 +21,9 @@ package org.apache.aries.spifly;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,9 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTracker;
@@ -194,6 +198,12 @@ public abstract class BaseActivator implements BundleActivator {
                     if (b.getBundleId() == desc.getBundleID()) {
                         bundles.add(b);
                     }
+                } else if (desc.getFilter() != null) {
+                    Dictionary<String, Object> d = new Hashtable<String, Object>();
+                    d.put(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, b.getSymbolicName());
+                    d.put(SpiFlyConstants.BUNDLE_VERSION_ATTRIBUTE, b.getVersion());
+                    if (desc.getFilter().match(d))
+                        bundles.add(b);
                 } else {
                     if (b.getSymbolicName().equals(desc.getSymbolicName())) {
                         if (desc.getVersion() == null || b.getVersion().equals(desc.getVersion())) {
