@@ -184,10 +184,17 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
 
         public synchronized void destroy() {
             if (reference != null) {
-                reference.getBundle().getBundleContext().ungetService(reference);
+                ServiceReference ref = reference;
                 reference = null;
                 service = null;
                 proxy = null;
+                Bundle bundle = ref.getBundle();
+                if (bundle != null) {
+                    BundleContext ctx = bundle.getBundleContext();
+                    if (ctx != null) {
+                        ctx.ungetService(reference);
+                    }
+                }
             }
         }
 
