@@ -18,6 +18,7 @@
  */
 package org.apache.aries.spifly;
 
+import org.osgi.framework.Filter;
 import org.osgi.framework.Version;
 
 class BundleDescriptor {
@@ -26,6 +27,7 @@ class BundleDescriptor {
     final String symbolicName;
     final Version version;
     final long bundleID;
+    final Filter filter;
 
     BundleDescriptor(String symbolicName) {
         this(symbolicName, null);
@@ -35,16 +37,29 @@ class BundleDescriptor {
         this.symbolicName = symbolicName;
         this.version = version;
         this.bundleID = BUNDLE_ID_UNSPECIFIED;
+        this.filter = null;
     }
 
     BundleDescriptor(long bundleID) {
         this.bundleID = bundleID;
         this.symbolicName = null;
         this.version = null;
+        this.filter = null;
+    }
+
+    BundleDescriptor(Filter filter) {
+        this.filter = filter;
+        this.bundleID = BUNDLE_ID_UNSPECIFIED;
+        this.symbolicName = null;
+        this.version = null;
     }
 
     public long getBundleID() {
         return bundleID;
+    }
+
+    public Filter getFilter() {
+        return filter;
     }
 
     public String getSymbolicName() {

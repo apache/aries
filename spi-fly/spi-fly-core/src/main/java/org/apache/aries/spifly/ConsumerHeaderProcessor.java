@@ -19,7 +19,6 @@
 package org.apache.aries.spifly;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -29,6 +28,9 @@ import org.apache.aries.spifly.HeaderParser.PathElement;
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 
 public class ConsumerHeaderProcessor {
@@ -177,7 +179,16 @@ public class ConsumerHeaderProcessor {
                 ar.addRestriction(0, Class.class.getName());
                 MethodRestriction mr = new MethodRestriction("load", ar);
 
-                List<BundleDescriptor> allowedBundles = Collections.emptyList();
+                List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
+                String filterString = req.getDirectives().get("filter");
+                if (filterString != null) {
+                    try {
+                        Filter filter = FrameworkUtil.createFilter(filterString);
+                        allowedBundles.add(new BundleDescriptor(filter));
+                    } catch (InvalidSyntaxException e) {
+                        throw new IllegalArgumentException("Syntax error in filter " + filterString + " which appears in " + consumerHeader);
+                    }
+                }
 
                 weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
             }
