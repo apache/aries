@@ -91,7 +91,7 @@ public abstract class BaseActivator implements BundleActivator {
 
         Object consumerHeader = bundle.getHeaders().get(consumerHeaderName);
         if (consumerHeader instanceof String) {
-            Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader((String) consumerHeader);
+            Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(consumerHeaderName, (String) consumerHeader);
             bundleWeavingData.put(bundle, Collections.unmodifiableSet(wd));
 
             for (WeavingData w : wd) {

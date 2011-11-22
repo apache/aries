@@ -19,12 +19,16 @@
 package org.apache.aries.spifly;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.apache.aries.spifly.HeaderParser.PathElement;
+import org.apache.aries.spifly.api.SpiFlyConstants;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
 import org.osgi.framework.Version;
 
 public class ConsumerHeaderProcessor {
@@ -48,15 +52,19 @@ public class ConsumerHeaderProcessor {
      * is a list of bundle identifiers separated by a '|' sign. The bundle identifier starts with the Symbolic name
      * and can optionally contain a version suffix. E.g. bundle=impl2:version=1.2.3 or bundle=impl2|impl4.
      * <li><tt>bundleId</tt> - restrict wiring to the bundle with the specified bundle ID. Typically used when
-     * the service should be forceably picked up from the system bundle (<tt>bundleId=0</tt>). Multiple bundle IDs
+     * the service should be forcibly picked up from the system bundle (<tt>bundleId=0</tt>). Multiple bundle IDs
      * can be specified separated by a '|' sign.
      * </ul>
      *
-     * @param consumerBundle the consuming bundle.
+     * @param consumerHeaderName the name of the header (either Require-Capability or SPI-Consumer)
      * @param consumerHeader the <tt>SPI-Consumer</tt> header.
      * @return an instance of the {@link WeavingData} class.
      */
-    public static Set<WeavingData> processHeader(String consumerHeader) {
+    public static Set<WeavingData> processHeader(String consumerHeaderName, String consumerHeader) {
+        if (SpiFlyConstants.REQUIRE_CAPABILITY.equals(consumerHeaderName)) {
+            return processRequireCapabilityHeader(consumerHeader);
+        }
+
         Set<WeavingData> weavingData = new HashSet<WeavingData>();
 
         for (PathElement element : HeaderParser.parseHeader(consumerHeader)) {
@@ -116,11 +124,7 @@ public class ConsumerHeaderProcessor {
                     throw new IllegalArgumentException("Must at least specify class name and method name: " + name);
                 }
             }
-            ConsumerRestriction restriction = new ConsumerRestriction(className, methodRestriction);
 
-            // TODO is this correct? Why is it added to a set?
-            Set<ConsumerRestriction> restrictions = new HashSet<ConsumerRestriction>();
-            restrictions.add(restriction);
 
             String bsn = element.getAttribute("bundle");
             if (bsn != null) {
@@ -154,13 +158,46 @@ public class ConsumerHeaderProcessor {
                 }
             }
 
-            // TODO this can be done in the WeavingData itself?
-            String[] argClasses = restriction.getMethodRestriction(methodName).getArgClasses();
-
-            WeavingData wd = new WeavingData(className, methodName, argClasses, restrictions,
-                    allowedBundles.size() == 0 ? null : allowedBundles);
-            weavingData.add(wd);
+            weavingData.add(createWeavingData(className, methodName, methodRestriction, allowedBundles));
         }
         return weavingData;
+    }
+
+    private static Set<WeavingData> processRequireCapabilityHeader(String consumerHeader) {
+        Set<WeavingData> weavingData = new HashSet<WeavingData>();
+
+        List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(consumerHeader);
+        for (GenericMetadata req : requirements) {
+            if (SpiFlyConstants.SPI_CAPABILITY_NAMESPACE.equals(req.getNamespace())) {
+                if (!"active".equals(req.getDirectives().get("effective"))) {
+                    continue;
+                }
+
+                ArgRestrictions ar = new ArgRestrictions();
+                ar.addRestriction(0, Class.class.getName());
+                MethodRestriction mr = new MethodRestriction("load", ar);
+
+                List<BundleDescriptor> allowedBundles = Collections.emptyList();
+
+                weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+            }
+        }
+
+        return weavingData;
+    }
+
+    private static WeavingData createWeavingData(String className, String methodName,
+            MethodRestriction methodRestriction, List<BundleDescriptor> allowedBundles) {
+        ConsumerRestriction restriction = new ConsumerRestriction(className, methodRestriction);
+
+        // TODO is this correct? Why is it added to a set?
+        Set<ConsumerRestriction> restrictions = new HashSet<ConsumerRestriction>();
+        restrictions.add(restriction);
+
+        // TODO this can be done in the WeavingData itself?
+        String[] argClasses = restriction.getMethodRestriction(methodName).getArgClasses();
+
+        return new WeavingData(className, methodName, argClasses, restrictions,
+                allowedBundles.size() == 0 ? null : allowedBundles);
     }
 }

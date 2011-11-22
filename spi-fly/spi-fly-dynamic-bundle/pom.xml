@@ -95,6 +95,7 @@ JRE through META-INF/services resources).
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
+                        <Bundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</Bundle-Activator>
                         <Import-Package>
                             *
                         </Import-Package>
@@ -106,7 +107,6 @@ JRE through META-INF/services resources).
                             org.apache.aries.spifly.dynamic
                         </Private-Package>
                         <Embed-Dependency>org.apache.aries.spifly.*;scope=compile;inline=true</Embed-Dependency>
-                        <Bundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
