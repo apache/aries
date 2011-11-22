@@ -107,7 +107,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("olleh", result);
     }
 
-/*
+
     @Test
     public void testTCCLResetting() throws Exception {
         ClassLoader cl = new URLClassLoader(new URL [] {});
@@ -115,14 +115,14 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertSame("Precondition", cl, Thread.currentThread().getContextClassLoader());
 
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
-        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+        consumerHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active");
 
         // Register the bundle that provides the SPI implementation.
         Bundle providerBundle = mockProviderBundle("impl1", 1);
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
 
         Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
 
         Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
@@ -150,6 +150,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertSame(cl, Thread.currentThread().getContextClassLoader());
     }
 
+
     @Test
     public void testTCCLResettingOnException() {
         // TODO
@@ -160,7 +161,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Bundle spiFlyBundle = mockSpiFlyBundle();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active");
         Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
 
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
@@ -192,10 +193,10 @@ public class ClientWeavingHookGenericCapabilityTest {
         Bundle spiFlyBundle = mockSpiFlyBundle();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active");
 
         Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
 
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
@@ -219,6 +220,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("All three services should be invoked in the correct order", "ollehHELLO5", result);
     }
 
+    /* Not yet supported in the generic capability model
     @Test
     public void testClientSpecifyingProvider() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -277,7 +279,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Object result = method.invoke(cls.newInstance(), "hello");
         Assert.assertEquals("Only the services from bundle impl2 should be selected", "Updated!hello!Updated", result);
     }
-
+    */
     @Test
     public void testClientMultipleTargetBundles() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -344,6 +346,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("All providers should be selected for this one", "ollehimpl4", result);
     }
 
+    /* Not yet supported in the generic capability model
     @Test
     public void testClientSpecificProviderLoadArgument() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -548,11 +551,11 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> result = (Class<?>) method.invoke(cls.newInstance());
         Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
     }
+    */
 
     private Bundle mockSpiFlyBundle(Bundle ... bundles) throws Exception {
         return mockSpiFlyBundle("spifly", new Version(1, 0, 0), bundles);
     }
-*/
 
     private Bundle mockSpiFlyBundle(String bsn, Version version, Bundle ... bundles) throws Exception {
         Bundle spiFlyBundle = EasyMock.createMock(Bundle.class);
@@ -679,6 +682,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         return consumerBundle;
     }
 
+    /*
     private Bundle mockSystemBundle() {
         Bundle systemBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(systemBundle.getBundleId()).andReturn(0L).anyTimes();
@@ -687,6 +691,7 @@ public class ClientWeavingHookGenericCapabilityTest {
 
         return systemBundle;
     }
+    */
 
     // A classloader that loads anything starting with org.apache.aries.spifly.dynamic.impl1 from it
     // and the rest from the parent. This is to mimic a bundle that holds a specific SPI implementation.
