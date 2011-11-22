@@ -65,7 +65,7 @@
                             org.apache.aries.spifly.examples.client2.impl
                         </Private-Package>
                         <Bundle-Activator>org.apache.aries.spifly.examples.client2.impl.Activator</Bundle-Activator>
-                        <SPI-Consumer>*</SPI-Consumer>
+                        <Require-Capability>osgi.spi.provider; effective:=active</Require-Capability>
                     </instructions>
                 </configuration>
             </plugin>
