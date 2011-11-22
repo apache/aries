@@ -194,7 +194,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                 if (bundle != null) {
                     BundleContext ctx = bundle.getBundleContext();
                     if (ctx != null) {
-                        ctx.ungetService(reference);
+                        ctx.ungetService(ref);
                     }
                 }
             }
