@@ -53,9 +53,9 @@
           org.apache.aries.blueprint.ext.evaluator,
           org.apache.aries.blueprint.services,
           org.apache.aries.blueprint.utils,
-          org.apache.aries.blueprint.container,
-          org.apache.aries.blueprint.di,
-          org.apache.aries.blueprint.reflect,
+          org.apache.aries.blueprint.container;deprecated="true",
+          org.apache.aries.blueprint.di;deprecated="true",
+          org.apache.aries.blueprint.reflect;deprecated="true",
           org.osgi.service.blueprint;version=1.0.0
       </aries.osgi.export.pkg>
       <!-- 
