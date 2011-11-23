@@ -86,6 +86,7 @@
             org.apache.aries.blueprint.container,
             org.apache.aries.blueprint.di,
             org.apache.aries.blueprint.reflect,
+            org.apache.aries.blueprint.compendium.cm,
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
 	        org.apache.aries.blueprint.parser,
@@ -96,7 +97,6 @@
 	        org.apache.aries.blueprint.namespace,
 	        org.apache.aries.blueprint.proxy,
 	        org.apache.aries.blueprint.utils.*,
-	        org.apache.aries.blueprint.compendium.cm,
 	        OSGI-INF*
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
