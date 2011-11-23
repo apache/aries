@@ -83,10 +83,10 @@
             org.apache.aries.blueprint.ext,
             org.apache.aries.blueprint.ext.evaluator,
             org.apache.aries.blueprint.utils,
-            org.apache.aries.blueprint.container,
-            org.apache.aries.blueprint.di,
-            org.apache.aries.blueprint.reflect,
-            org.apache.aries.blueprint.compendium.cm,
+            org.apache.aries.blueprint.container;deprecated="true",
+            org.apache.aries.blueprint.di;deprecated="true",
+            org.apache.aries.blueprint.reflect;deprecated="true",
+            org.apache.aries.blueprint.compendium.cm;deprecated="true",
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
 	        org.apache.aries.blueprint.parser,
