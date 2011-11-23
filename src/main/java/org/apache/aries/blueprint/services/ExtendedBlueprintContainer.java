@@ -53,6 +53,10 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
     <T extends Processor> List<T> getProcessors(Class<T> type);
 
+    /**
+     * To be removed as internal API
+     */
+    @Deprecated
     Repository getRepository();
     
     ServiceRegistration registerService(String[] classes, Object service, Dictionary properties);
