@@ -45,15 +45,11 @@
             org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
-    <!-- Export package versions are maintained in packageinfo files -->
-         <aries.osgi.export.pkg />
-         <aries.osgi.import.pkg>
-             org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
-             *
-         </aries.osgi.import.pkg>
-         <aries.osgi.private.pkg>
-             org.apache.aries.blueprint.compendium.cm
-         </aries.osgi.private.pkg>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export.pkg>
+            org.apache.aries.blueprint.compendium.cm*
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg />
      </properties>
 
   <dependencies>
