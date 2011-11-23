@@ -30,7 +30,9 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintListener;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 
 /**
  * TODO: javadoc
@@ -68,5 +70,15 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     void reload();
 
     ProxyManager getProxyManager();
-            
+    
+
+    /**
+     * Inject (or reinject) an Object instance with the blueprint properties defined by a BeanMetadata
+     * 
+     * Throws IllegalArgumentException if the bean metadata does not exist in this blueprint container
+     * Throws ComponentDefinitionException if the injection process fails - this may have rendered the supplied Object unusable by partially completing the injection process
+     */
+    void injectBeanInstance(BeanMetadata bmd, Object o) 
+        throws IllegalArgumentException, ComponentDefinitionException;
+        
 }
