@@ -72,11 +72,11 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 public class RecipeBuilder {
 
     private final Set<String> names = new HashSet<String>();
-    private final ExtendedBlueprintContainer blueprintContainer;
+    private final BlueprintContainerImpl blueprintContainer;
     private final ComponentDefinitionRegistry registry;
     private final IdSpace recipeIdSpace;
 
-    public RecipeBuilder(ExtendedBlueprintContainer blueprintContainer, IdSpace recipeIdSpace) {
+    public RecipeBuilder(BlueprintContainerImpl blueprintContainer, IdSpace recipeIdSpace) {
         this.recipeIdSpace = recipeIdSpace;
         this.blueprintContainer = blueprintContainer;
         this.registry = blueprintContainer.getComponentDefinitionRegistry();

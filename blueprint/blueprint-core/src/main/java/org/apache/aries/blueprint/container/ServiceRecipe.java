@@ -70,7 +70,7 @@ public class ServiceRecipe extends AbstractRecipe {
     final static String LOG_ENTRY = "Method entry: {}, args {}";
     final static String LOG_EXIT = "Method exit: {}, returning {}";
 
-    private final ExtendedBlueprintContainer blueprintContainer;
+    private final BlueprintContainerImpl blueprintContainer;
     private final ServiceMetadata metadata;
     private final Recipe serviceRecipe;
     private final CollectionRecipe listenersRecipe;
@@ -90,7 +90,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private Collection<DestroyCallback> destroyCallbacks = new ArrayList<DestroyCallback>();
     
     public ServiceRecipe(String name,
-                         ExtendedBlueprintContainer blueprintContainer,
+                         BlueprintContainerImpl blueprintContainer,
                          ServiceMetadata metadata,
                          Recipe serviceRecipe,
                          CollectionRecipe listenersRecipe,

@@ -53,6 +53,9 @@
           org.apache.aries.blueprint.ext.evaluator,
           org.apache.aries.blueprint.services,
           org.apache.aries.blueprint.utils,
+          org.apache.aries.blueprint.container,
+          org.apache.aries.blueprint.di,
+          org.apache.aries.blueprint.reflect,
           org.osgi.service.blueprint;version=1.0.0
       </aries.osgi.export.pkg>
       <!-- 
@@ -74,9 +77,10 @@
       </aries.osgi.import>
       <aries.osgi.private.pkg>
         org.apache.aries.blueprint.parser,
-        org.apache.aries.blueprint.reflect,
         org.apache.aries.blueprint.container,
         org.apache.aries.blueprint.di,
+        org.apache.aries.blueprint.utils,
+        org.apache.aries.blueprint.reflect,
         org.apache.aries.blueprint.ext.impl,
         org.apache.aries.blueprint.namespace,
         org.apache.aries.blueprint.proxy,
