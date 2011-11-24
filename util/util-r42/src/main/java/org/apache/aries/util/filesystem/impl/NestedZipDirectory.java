@@ -31,33 +31,29 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import org.apache.aries.util.IORuntimeException;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NestedZipDirectory extends NestedZipFile implements IDirectory {
-	
-	private static final Logger logger = LoggerFactory.getLogger(NestedZipDirectory.class.getName());
-	
 	public NestedZipDirectory(IFile archive, ZipEntry entry, NestedZipDirectory parent, NestedCloseableDirectory cache) {
 		super(archive, entry, parent, cache);
 	}
-	
+
 	public NestedZipDirectory(IFile archive, String pathInZip, NestedZipDirectory parent, NestedCloseableDirectory cache) {
 		super(archive, pathInZip, parent, cache);
 	}
-	
+
 	public NestedZipDirectory(IFile archive) {
 		super(archive);
 	}
-	
+
 	public NestedZipDirectory(NestedZipDirectory other, NestedCloseableDirectory cache) {
 		super(other, cache);
 	}
-	
+
 	public IDirectory convert() {
 		return this;
 	}
@@ -73,7 +69,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 	public List<IFile> listAllFiles() {
 		return listFiles(true);
 	}
-	
+
 	private List<IFile> listFiles(boolean includeFilesInNestedSubdirs) {
 			Map<String, ZipEntry> entriesByName = new LinkedHashMap<String, ZipEntry>();
 			for (ZipEntry entry : getAllEntries()) {
@@ -88,10 +84,10 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 				if (ze.isDirectory()) files.add(new NestedZipDirectory(archive, ze, parent, cache));
 				else files.add(new NestedZipFile(archive, ze, parent, cache));
 			}
-			
+
 			return files;
 	}
-	
+
 	private List<? extends ZipEntry> getAllEntries() {
 		if (cache != null && !!!cache.isClosed()) {
 			return Collections.list(cache.getZipFile().entries());
@@ -99,37 +95,36 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 			ZipInputStream zis = null;
 			try {
 				zis = new ZipInputStream(archive.open());
-				
+
 				List<ZipEntry> result = new ArrayList<ZipEntry>();
 				ZipEntry entry = zis.getNextEntry();
 				while (entry != null) {
 					result.add(entry);
 					entry = zis.getNextEntry();
 				}
-				
-				return result;				
+
+				return result;
 			} catch (IOException e) {
-				logger.error("IOException reading nested ZipFile", e);
-				return Collections.emptyList();
+				throw new IORuntimeException("IOException reading nested ZipFile", e);
 			} finally {
 				IOUtils.close(zis);
 			}
-		}		
+		}
 	}
-	
+
 	private NestedZipDirectory buildParent(ZipEntry entry, Map<String,ZipEntry> entries) {
 		NestedZipDirectory result = this;
-		
+
 		String path = entry.getName().substring(getNameInZip().length());
 		String[] segments = path.split("/");
-		
+
 		if (segments != null && segments.length > 1) {
 			StringBuilder entryPath = new StringBuilder(getNameInZip());
 			for (int i=0; i<segments.length-1; i++) {
 				String p = segments[i];
 				entryPath.append(p).append("/");
 				ZipEntry ze = entries.get(entryPath.toString());
-				
+
 				if (ze != null) {
 					result = new NestedZipDirectory(archive, ze, result, cache);
 				} else {
@@ -137,7 +132,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -155,30 +150,29 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 				ZipEntry p = zip.getEntry(path.toString());
 				if (p != null) entries.put(path.toString(), p);
 			}
-			
+
 			ze = zip.getEntry(name);
-			
+
 		} else {
 			ZipInputStream zis = null;
-			
+
 			try {
 				zis = new ZipInputStream(archive.open());
-				
+
 				ze = zis.getNextEntry();
-				
+
 				while (ze != null && !!!ze.getName().equals(name)) {
 					if (name.startsWith(ze.getName())) entries.put(ze.getName(), ze);
-					
+
 					ze = zis.getNextEntry();
 				}
 			} catch (IOException e) {
-				logger.error("IOException reading nested ZipFile", e);
-				return null;
+				throw new IORuntimeException("IOException reading nested ZipFile", e);
 			} finally {
 				IOUtils.close(zis);
 			}
 		}
-		
+
 		if (ze != null) {
 			NestedZipDirectory parent = buildParent(ze, entries);
 			if (ze.isDirectory()) return new NestedZipDirectory(archive, ze, parent, cache);
@@ -188,7 +182,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 		}
 	}
 
-	
+
 	public boolean isDirectory() {
 		return true;
 	}
@@ -207,11 +201,9 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 
 	public ICloseableDirectory toCloseable() {
 		try {
-			return new NestedCloseableDirectory(archive, this);			
+			return new NestedCloseableDirectory(archive, this);
 		} catch (IOException e) {
-			logger.error("Exception while creating extracted version of nested zip file", e);
-			return null;
-		}		
+			throw new IORuntimeException("Exception while creating extracted version of nested zip file", e);
+		}
 	}
-
 }

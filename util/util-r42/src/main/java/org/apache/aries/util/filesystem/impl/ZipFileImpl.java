@@ -28,19 +28,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.aries.util.IORuntimeException;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of IFile that represents a file entry in a zip.
  */
 public class ZipFileImpl implements IFile
 {
-  /** A logger */
-  private static final Logger logger = LoggerFactory.getLogger(ZipFileImpl.class.getName());
-
   /** The name of the file */
   private String name;
   /** The size of the file */
@@ -59,10 +55,10 @@ public class ZipFileImpl implements IFile
   private final String zipPathToRoot;
   /** The closeable directory that caches the open ZipFile */
   protected final ZipCloseableDirectory cache;
-  
+
   /**
    * This constructor is used to create a file entry within the zip.
-   * 
+   *
    * @param zip1    the zip file the entry is in.
    * @param entry1  the entry this IFile represents.
    * @param parent1 the parent directory.
@@ -71,25 +67,25 @@ public class ZipFileImpl implements IFile
   {
     this.zip = zip1;
     this.entry = entry1;
-    
+
     this.zipPathToRoot = parent1.getZipPathToRoot();
 
     name = zipPathToRoot + entry1.getName();
-    
+
     if (entry1.isDirectory()) name = name.substring(0, name.length() - 1);
-    
+
     lastModified = entry1.getTime();
     size = entry1.getSize();
-    
+
     url = ((ZipFileImpl)parent1).url;
-    
+
     this.parent = parent1;
     this.cache = cache;
   }
-  
+
   /**
    * This is called to construct the root directory of the zip.
-   * 
+   *
    * @param zip1 the zip file this represents.
    * @param fs   the file on the fs.
    * @param rootName the name of this zipfile relative to the IFile filesystem root
@@ -99,7 +95,7 @@ public class ZipFileImpl implements IFile
   {
     this.zip = zip1;
     this.entry = null;
-    
+
     if (parent == null) {
         name = "";
         zipPathToRoot = "";
@@ -109,13 +105,13 @@ public class ZipFileImpl implements IFile
     	name = parent.getName() + "/" + zip1.getName();
     	zipPathToRoot = name+"/";
     }
-    
+
     lastModified = zip1.lastModified();
     size = zip1.length();
     url = zip1.toURI().toURL().toExternalForm();
     this.cache = null;
   }
-  
+
   public ZipFileImpl(ZipFileImpl other, ZipCloseableDirectory cache) {
 	  name = other.name;
 	  size = other.size;
@@ -134,17 +130,17 @@ public class ZipFileImpl implements IFile
   public String getZipPathToRoot() {
 	  return zipPathToRoot;
   }
-  
+
   public IDirectory convert()
   {
     return null;
   }
-  
+
   public IDirectory convertNested() {
 	  if (isDirectory()) return convert();
-	  else if (FileSystemImpl.isValidZip(this)) return new NestedZipDirectory(this); 
+	  else if (FileSystemImpl.isValidZip(this)) return new NestedZipDirectory(this);
 	  else return null;
-  }	
+  }
 
   public long getLastModified()
   {
@@ -155,8 +151,8 @@ public class ZipFileImpl implements IFile
   {
     return name;
   }
-  
-  public String getNameInZip() 
+
+  public String getNameInZip()
   {
 	  if (entry == null) return "";
 	  else {
@@ -191,7 +187,7 @@ public class ZipFileImpl implements IFile
     InputStream is = new SpecialZipInputStream(entry);
     return is;
   }
-  
+
   public IDirectory getRoot()
   {
     return parent.getRoot();
@@ -200,11 +196,11 @@ public class ZipFileImpl implements IFile
   public URL toURL() throws MalformedURLException
   {
     URL result;
-    
+
     if(name.equals(zipPathToRoot))
       result = new URL(url);
     else {
-      
+
       String entryURL = "jar:" + url + "!/";
       if(entry != null)
         entryURL += entry.getName();
@@ -213,7 +209,7 @@ public class ZipFileImpl implements IFile
       }
       result = new URL(entryURL);
     }
-      
+
     return result;
   }
 
@@ -222,11 +218,11 @@ public class ZipFileImpl implements IFile
   {
     if (obj == null) return false;
     if (obj == this) return true;
-    
+
     if (obj.getClass() == getClass()) {
       return toString().equals(obj.toString());
     }
-    
+
     return false;
   }
 
@@ -242,7 +238,7 @@ public class ZipFileImpl implements IFile
 	  if (name != null && name.length() != 0) return url.substring(5)+ "/" + name;
 	  else return url.substring(5);
   }
-  
+
   ZipFile openZipFile(){
     ZipFile z = null;
 
@@ -251,15 +247,13 @@ public class ZipFileImpl implements IFile
     } else {
 	    try {
 	      z = new ZipFile(zip);
-	    } catch (ZipException e) {
-	      logger.error ("ZipException in ZipFileImpl.openZipFile", e);
 	    } catch (IOException e) {
-	      logger.error ("IOException in ZipFileImpl.openZipFile", e);
+	      throw new IORuntimeException("IOException in ZipFileImpl.openZipFile", e);
 	    }
     }
     return z;
   }
-  
+
   void closeZipFile(ZipFile z){
 	  if (cache != null && cache.getZipFile() == z) {
 		  // do nothing
@@ -268,11 +262,11 @@ public class ZipFileImpl implements IFile
 			  z.close();
 		  }
 		  catch (IOException e) {
-			  logger.error ("IOException in ZipFileImpl.closeZipFile", e);
+			  throw new IORuntimeException("IOException in ZipFileImpl.closeZipFile", e);
 		  }
 	  }
   }
-  
+
   /**
    * A simple class to delegate to the InputStream of the constructor
    * and to call close on the zipFile when we close the stream.
@@ -282,25 +276,25 @@ public class ZipFileImpl implements IFile
 
     private ZipFile zipFile;
     private InputStream is;
-    
+
     public SpecialZipInputStream(ZipEntry anEntry){
       try{
       this.zipFile = openZipFile();
       this.is = zipFile.getInputStream(anEntry);
       }
       catch (ZipException e) {
-        logger.error ("ZipException in SpecialZipInputStream()", e);
+        throw new IORuntimeException("ZipException in SpecialZipInputStream()", e);
       } catch (IOException e) {
-        logger.error ("IOException in SpecialZipInputStream()", e);        
+        throw new IORuntimeException("IOException in SpecialZipInputStream()", e);
       }
     }
-    
+
     @Override
     public int read() throws IOException
     {
       return is.read();
     }
-    
+
     @Override
     public void close() throws IOException{
         //call close on the input stream, probably does nothing
@@ -308,7 +302,7 @@ public class ZipFileImpl implements IFile
         //call close on the zip file, important for tidying up
         closeZipFile(zipFile);
     }
-    
+
   }
 
 }
