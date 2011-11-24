@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -92,7 +92,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
           }
         });
         eventDispatcher = new BlueprintEventDispatcher(ctx, executors);
-        containers = new HashMap<Bundle, BlueprintContainerImpl>();
+        containers = new ConcurrentHashMap<Bundle, BlueprintContainerImpl>();
 
         int stateMask = Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE
         | Bundle.STOPPING;
