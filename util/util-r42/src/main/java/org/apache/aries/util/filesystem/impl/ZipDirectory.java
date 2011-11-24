@@ -30,26 +30,23 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.aries.util.IORuntimeException;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A directory in the zip.
  */
 public class ZipDirectory extends ZipFileImpl implements IDirectory
 {
-  private static final Logger logger = LoggerFactory.getLogger(ZipDirectory.class.getName());
-
   /** The root of the zip FS. */
   private final IDirectory root;
   private final boolean zipRoot;
-  
+
   /**
    * Constructs a directory in the zip.
-   * 
+   *
    * @param zip1   the zip file.
    * @param entry1 the entry in the zip representing this dir.
    * @param parent the parent directory.
@@ -66,7 +63,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
    * @param file
    * @param fs
    * @param parent
-   * @throws MalformedURLException 
+   * @throws MalformedURLException
    */
   public ZipDirectory(File fs, IDirectory parent) throws MalformedURLException
   {
@@ -74,7 +71,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     root = (parent == null) ? this : parent.getRoot();
     zipRoot = true;
   }
-  
+
   public ZipDirectory(ZipDirectory other, ZipCloseableDirectory cache) {
 	  super(other, cache);
 	  root = other.root;
@@ -84,11 +81,11 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   public IFile getFile(String name)
   {
     IFile result = null;
-    
+
     String entryName = isZipRoot() ? name : getNameInZip() + "/" + name;
-    
+
     ZipEntry entryFile = getEntry(entryName);
-    
+
     if (entryFile != null) {
       if (!!!entryFile.isDirectory()) {
         result = new ZipFileImpl(zip, entryFile, buildParent(entryFile), cache);
@@ -107,24 +104,24 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   private ZipDirectory buildParent(ZipEntry foundEntry)
   {
     ZipDirectory result = this;
-    
+
     String name = foundEntry.getName();
-    
+
     name = name.substring(getNameInZip().length());
-    
+
     String[] paths = name.split("/");
-    
+
     StringBuilder baseBuilderCrapThingToGetRoundFindBugs = new StringBuilder(getNameInZip());
-    
+
     if (!!!isZipRoot()) baseBuilderCrapThingToGetRoundFindBugs.append('/');
-    // Build 'result' as a chain of ZipDirectories. This will only work if java.util.ZipFile recognises every 
-    // directory in the chain as being a ZipEntry in its own right. 
+    // Build 'result' as a chain of ZipDirectories. This will only work if java.util.ZipFile recognises every
+    // directory in the chain as being a ZipEntry in its own right.
     outer: if (paths != null && paths.length > 1) {
       for (int i = 0; i < paths.length - 1; i++) {
         String path = paths[i];
         baseBuilderCrapThingToGetRoundFindBugs.append(path);
         ZipEntry dirEntry = getEntry(baseBuilderCrapThingToGetRoundFindBugs.toString());
-        if (dirEntry == null) { 
+        if (dirEntry == null) {
           result = this;
           break outer;
         }
@@ -149,7 +146,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   {
 	  return listFiles(true);
   }
-  
+
   private List<IFile> listFiles(boolean includeFilesInNestedSubdirs)
   {
 	  List<IFile> files = new ArrayList<IFile>();
@@ -168,15 +165,15 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 		  }
 
 	  }
-	  
+
 	  closeZipFile(z);
-	  return files;	  
+	  return files;
   }
-  
+
   /**
    * This method works out if the provided entry is inside this directory. It
    * returns false if it is not, or if it is in a sub-directory.
-   * 
+   *
    * @param possibleEntry
    * @param whether files in subdirectories are to be included
    * @return true if it is in this directory.
@@ -210,7 +207,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     return false;
   }
 
-  public InputStream open() 
+  public InputStream open()
   {
     throw new UnsupportedOperationException();
   }
@@ -219,11 +216,11 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   {
     return root;
   }
-  
+
   public boolean isZipRoot() {
 	  return zipRoot;
   }
-    
+
   // Although we only delegate to our super class if we removed this Findbugs
   // would correctly point out that we add fields in this class, but do not
   // take them into account for the equals method. In fact this is not a problem
@@ -235,17 +232,17 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   {
     return super.equals(other);
   }
-  
+
   @Override
   public int hashCode()
   {
     return super.hashCode();
   }
-  
+
   private ZipEntry getEntry(String entryName) {
     ZipFile z = openZipFile();
     ZipEntry entryFile = null;
-    
+
     if (z != null) {
       entryFile = z.getEntry(entryName);
       closeZipFile(z);
@@ -257,8 +254,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 	  try {
 		  return new ZipCloseableDirectory(zip, this);
 	  } catch (IOException e) {
-		  logger.error("IOException opening zip file", this);
-		  return null;
+		  throw new IORuntimeException("IOException opening zip file: " + this, e);
 	  }
   }
 }

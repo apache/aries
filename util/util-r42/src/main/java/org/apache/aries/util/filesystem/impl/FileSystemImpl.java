@@ -26,21 +26,17 @@ import java.io.InputStream;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import org.apache.aries.util.IORuntimeException;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FileSystemImpl {
-
-	private static final Logger _logger = LoggerFactory.getLogger(FileSystemImpl.class.getName());
-
 	/**
 	 * This method gets the IDirectory that represents the root of a virtual file
 	 * system. The provided file can either identify a directory, or a zip file.
-	 * 
+	 *
 	 * @param fs the zip file.
 	 * @return   the root of the virtual FS.
 	 */
@@ -55,17 +51,16 @@ public class FileSystemImpl {
 				try {
 					dir = new ZipDirectory(fs, parent);
 				} catch (IOException e) {
-					_logger.error ("IOException in IDirectory.getFSRoot", e);
+					throw new IORuntimeException("IOException in IDirectory.getFSRoot", e);
 				}
 			}
 		}
 		else {
-			// since this method does not throw an exception but just returns null, make sure we do not lose the error
-			_logger.error("File not found in IDirectory.getFSRoot", new FileNotFoundException(fs.getPath()));
+			throw new IORuntimeException("File not found in IDirectory.getFSRoot", new FileNotFoundException(fs.getPath()));
 		}
 		return dir;
 	}
-	
+
 	/**
 	 * Check whether a file is actually a valid zip
 	 * @param zip
@@ -77,11 +72,10 @@ public class FileSystemImpl {
 			zf.close();
 			return true;
 		} catch (IOException e) {
-			_logger.debug("Not a valid zip: "+zip);
-			return false;
+			throw new IORuntimeException("Not a valid zip: "+zip, e);
 		}
 	}
-	
+
 	/**
 	 * Check whether a file is actually a valid zip
 	 * @param zip
@@ -94,8 +88,7 @@ public class FileSystemImpl {
 			zis = new ZipInputStream(zip.open());
 			return zis.getNextEntry() != null;
 		} catch (IOException e) {
-			_logger.debug("Not a valid zip: "+zip);
-			return false;
+			throw new IORuntimeException("Not a valid zip: "+zip, e);
 		} finally {
 			IOUtils.close(zis);
 		}
@@ -106,21 +99,20 @@ public class FileSystemImpl {
     try {
       tempFile = File.createTempFile("inputStreamExtract", ".zip");
     } catch (IOException e1) {
-      _logger.error ("IOException in IDirectory.getFSRoot", e1);
-      return null;
+      throw new IORuntimeException("IOException in IDirectory.getFSRoot", e1);
     }
-    FileOutputStream fos = null; 
+    FileOutputStream fos = null;
     try {
       fos = new FileOutputStream(tempFile);
-      IOUtils.copy(is, fos);  
+      IOUtils.copy(is, fos);
     } catch (IOException e) {
       return null;
     } finally {
       IOUtils.close(fos);
     }
-    
+
     IDirectory dir = getFSRoot(tempFile, null);
-    
+
     if(dir == null)
       return null;
     else

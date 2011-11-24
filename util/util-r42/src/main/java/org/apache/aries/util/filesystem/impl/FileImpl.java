@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.aries.util.IORuntimeException;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 
@@ -42,7 +43,7 @@ public class FileImpl implements IFile
   protected File rootDirFile;
   /** The name of this file in the vFS */
   private String name;
-  
+
   /**
    * @param f        this file.
    * @param rootFile the root of the vFS.
@@ -52,11 +53,11 @@ public class FileImpl implements IFile
     file = f;
     this.rootDirFile = rootFile;
     rootDir = rootFile.getAbsolutePath();
-    
+
     if (f.equals(rootFile)) name = "";
     else name = file.getAbsolutePath().substring(rootDir.length() + 1).replace('\\', '/');
   }
-  
+
   public IDirectory convert()
   {
     return null;
@@ -120,11 +121,11 @@ public class FileImpl implements IFile
   {
     if (obj == null) return false;
     if (obj == this) return true;
-    
+
     if (obj.getClass() == getClass()) {
       return file.equals(((FileImpl)obj).file);
     }
-    
+
     return false;
   }
 
@@ -133,7 +134,7 @@ public class FileImpl implements IFile
   {
     return file.hashCode();
   }
-  
+
   @Override
   public String toString()
   {
@@ -141,7 +142,14 @@ public class FileImpl implements IFile
   }
 
   public IDirectory convertNested() {
-	  if (isDirectory()) return convert();
-	  else return FileSystemImpl.getFSRoot(file, getParent());
+	if (isDirectory()) {
+	  return convert();
+	} else {
+	  try {
+        return FileSystemImpl.getFSRoot(file, getParent());
+      } catch (IORuntimeException e) {
+        return null;
+      }
+	}
   }
 }
