@@ -28,15 +28,13 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.apache.aries.util.IORuntimeException;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.internal.MessageUtil;
 import org.apache.aries.util.io.IOUtils;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Entity class to retrieve and represent a bundle manifest (valid or invalid).
@@ -44,12 +42,11 @@ import org.slf4j.LoggerFactory;
 public class BundleManifest
 {
   private static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
-  private static final Logger _logger = LoggerFactory.getLogger(BundleManifest.class.getName());
 
   /**
    * Read a manifest from a jar input stream. This will find the manifest even if it is NOT
    * the first file in the archive.
-   * 
+   *
    * @param is
    * @return
    */
@@ -66,22 +63,21 @@ public class BundleManifest
           if (entry.getName().equals(MANIFEST_PATH))
             return new BundleManifest(jarIs);
         }
-        
+
         return null;
       }
     }
     catch (IOException e) {
-      _logger.error ("IOException in BundleManifest()", e);
-      return null;
+      throw new IORuntimeException("IOException in BundleManifest()", e);
     }
     finally {
       IOUtils.close(jarIs);
     }
   }
-  
+
   /**
    * Retrieve a BundleManifest from the given jar file
-   * 
+   *
    * @param f
    * @return
    */
@@ -99,17 +95,16 @@ public class BundleManifest
         return fromBundle(is);
       }
     } catch (IOException e) {
-      _logger.error ("IOException in BundleManifest.fromBundle(IFile)", e);
-      return null;
+      throw new IORuntimeException("IOException in BundleManifest.fromBundle(IFile)", e);
     }
     finally {
       IOUtils.close(is);
     }
   }
-  
+
   /**
    * Retrieve a bundle manifest from the given jar file, which can be exploded or compressed
-   * 
+   *
    * @param f
    * @return
    */
@@ -121,8 +116,7 @@ public class BundleManifest
           return new BundleManifest(new FileInputStream(manifestFile));
         }
         catch (IOException e) {
-          _logger.error ("IOException in BundleManifest.fromBundle(File)", e);
-          return null;
+          throw new IORuntimeException("IOException in BundleManifest.fromBundle(File)", e);
         }
       else
         return null;
@@ -132,17 +126,16 @@ public class BundleManifest
         return fromBundle(new FileInputStream(f));
       }
       catch (IOException e) {
-        _logger.error ("IOException in BundleManifest.fromBundle(File)", e);
-        return null;
+        throw new IORuntimeException("IOException in BundleManifest.fromBundle(File)", e);
       }
     }
     else {
       throw new IllegalArgumentException(MessageUtil.getMessage("UTIL0016E", f.getAbsolutePath()));
     }
   }
-  
+
   private Manifest manifest;
-  
+
   /**
    * Create a BundleManifest object from the InputStream to the manifest (not to the bundle)
    * @param manifestIs
@@ -151,7 +144,7 @@ public class BundleManifest
   public BundleManifest(InputStream manifestIs) throws IOException {
     this(ManifestProcessor.parseManifest(manifestIs));
   }
-  
+
   /**
    * Create a BundleManifest object from a common Manifest object
    * @param m
@@ -159,7 +152,7 @@ public class BundleManifest
   public BundleManifest(Manifest m) {
     manifest = m;
   }
-  
+
   public String getSymbolicName() {
     String rawSymName = manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
 
@@ -168,29 +161,29 @@ public class BundleManifest
       NameValuePair info = ManifestHeaderProcessor.parseBundleSymbolicName(rawSymName);
       result = info.getName();
     }
-    
+
     return result;
   }
-  
+
   public Version getVersion() {
     String specifiedVersion = manifest.getMainAttributes().getValue(Constants.BUNDLE_VERSION);
     Version result = (specifiedVersion == null) ? Version.emptyVersion : new Version(specifiedVersion);
-    
+
     return result;
   }
-  
+
   public String getManifestVersion() {
     return manifest.getMainAttributes().getValue(Constants.BUNDLE_MANIFESTVERSION);
   }
-  
+
   public Attributes getRawAttributes() {
     return manifest.getMainAttributes();
   }
-  
+
   public Manifest getRawManifest() {
     return manifest;
   }
-  
+
   public boolean isValid() {
     return getManifestVersion() != null && getSymbolicName() != null;
   }
