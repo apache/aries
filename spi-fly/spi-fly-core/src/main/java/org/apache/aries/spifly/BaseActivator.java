@@ -177,7 +177,7 @@ public abstract class BaseActivator implements BundleActivator {
         return bundles;
     }
 
-    private Map<String, Object> getCustomBundleAttributes(String name, Bundle b) {
+    public Map<String, Object> getCustomBundleAttributes(String name, Bundle b) {
         SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.get(name);
         if (map == null)
             return Collections.emptyMap();
