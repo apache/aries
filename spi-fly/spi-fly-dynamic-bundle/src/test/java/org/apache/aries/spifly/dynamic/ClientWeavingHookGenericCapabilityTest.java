@@ -249,11 +249,10 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);
     }
 
-    /* Not yet supported in the generic capability model
     @Test
     public void testClientSpecifyingProviderVersion() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "java.util.ServiceLoader#load(java.lang.Class);bundle=impl2:version=1.2.3");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active; filter:=\"(&(bundle-symbolic-name=impl2)(bundle-version=1.2.3))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -263,7 +262,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle3);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle3);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle3);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
@@ -279,7 +278,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Object result = method.invoke(cls.newInstance(), "hello");
         Assert.assertEquals("Only the services from bundle impl2 should be selected", "Updated!hello!Updated", result);
     }
-    */
+
     @Test
     public void testClientMultipleTargetBundles() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
