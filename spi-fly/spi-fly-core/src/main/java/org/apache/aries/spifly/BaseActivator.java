@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -183,7 +184,7 @@ public abstract class BaseActivator implements BundleActivator {
 
         for (Map.Entry<ConsumerRestriction, List<BundleDescriptor>> entry : restrictions.entrySet()) {
             if (entry.getKey().matches(className, methodName, args)) {
-                return getBundles(entry.getValue());
+                return getBundles(entry.getValue(), className, methodName, args);
             }
         }
 
@@ -191,7 +192,8 @@ public abstract class BaseActivator implements BundleActivator {
         return Collections.emptySet();
     }
 
-    private Collection<Bundle> getBundles(List<BundleDescriptor> descriptors) {
+    private Collection<Bundle> getBundles(List<BundleDescriptor> descriptors, String className, String methodName,
+            Map<Pair<Integer, String>, String> args) {
         if (descriptors == null) {
             return null;
         }
@@ -207,6 +209,14 @@ public abstract class BaseActivator implements BundleActivator {
                     Dictionary<String, Object> d = new Hashtable<String, Object>();
                     d.put(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, b.getSymbolicName());
                     d.put(SpiFlyConstants.BUNDLE_VERSION_ATTRIBUTE, b.getVersion());
+
+                    if (ServiceLoader.class.getName().equals(className) &&
+                        "load".equals(methodName)) {
+                        String type = args.get(new Pair<Integer, String>(0, Class.class.getName()));
+                        if (type != null) {
+                            d.put(SpiFlyConstants.SERVICE_ATTRIBUTE, type);
+                        }
+                    }
                     if (desc.getFilter().match(d))
                         bundles.add(b);
                 } else {
