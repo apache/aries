@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -313,7 +314,7 @@ public class ClientWeavingHookGenericCapabilityTest {
     }
 
     @Test
-    public void testClientSpecificProviderLoadArgument() throws Exception {
+    public void testServiceFiltering() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
                 "osgi.spi.provider; effective:=active; filter:=\"(|(service=org.apache.aries.mytest.MySPI)" +
@@ -359,7 +360,7 @@ public class ClientWeavingHookGenericCapabilityTest {
     }
 
     @Test
-    public void testClientSpecificProviderLoadArgument2() throws Exception {
+    public void testServiceFilteringAlternative() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
                 "osgi.spi.provider; effective:=active; filter:=\"(|(!(service=org.apache.aries.mytest.AltSPI))" +
@@ -405,7 +406,7 @@ public class ClientWeavingHookGenericCapabilityTest {
     }
 
     @Test
-    public void testClientSpecificProviderLoadArgument3() throws Exception {
+    public void testServiceFilteringNarrow() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
                 "osgi.spi.provider; effective:=active; filter:=\"" +
@@ -451,8 +452,38 @@ public class ClientWeavingHookGenericCapabilityTest {
     }
 
     @Test
-    public void testCustomAttributeMatching() {
-        // TODO
+    public void testFilteringCustomAttribute() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active; filter:=\"(approval=global)\"");
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
+        Map<String, Object> attrs1 = new HashMap<String, Object>();
+        attrs1.put("approval", "local");
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, attrs1);
+
+        Map<String, Object> attrs2 = new HashMap<String, Object>();
+        attrs2.put("approval", "global");
+        attrs2.put("other", "attribute");
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, attrs2);
+
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);
     }
 
     private Bundle mockSpiFlyBundle(Bundle ... bundles) throws Exception {
