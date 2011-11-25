@@ -282,8 +282,8 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testClientMultipleTargetBundles() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER,
-                "java.util.ServiceLoader#load(java.lang.Class);bundle=impl1|impl4");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
+                "osgi.spi.provider; effective:=active; filter:=\"(|(bundle-symbolic-name=impl1)(bundle-symbolic-name=impl4))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -295,7 +295,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
@@ -312,46 +312,12 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("All providers should be selected for this one", "ollehimpl4", result);
     }
 
-    @Test
-    public void testClientMultipleTargetBundles2() throws Exception {
-        Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER,
-                "java.util.ServiceLoader#load(java.lang.Class);bundleId=1|4");
-
-        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
-        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
-        Bundle providerBundle4 = mockProviderBundle("impl4", 4);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
-
-        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
-        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
-        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
-
-        // Weave the TestClient class.
-        URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
-        wh.weave(wc);
-
-        // Invoke the woven class and check that it propertly sets the TCCL so that the
-        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
-        Class<?> cls = wc.getDefinedClass();
-        Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All providers should be selected for this one", "ollehimpl4", result);
-    }
-
-    /* Not yet supported in the generic capability model
     @Test
     public void testClientSpecificProviderLoadArgument() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER,
-                "java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.MySPI])," +
-                "java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.AltSPI]);bundle=impl4");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
+                "osgi.spi.provider; effective:=active; filter:=\"(|(service=org.apache.aries.mytest.MySPI)" +
+                "(&(service=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -363,7 +329,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
 
         Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
@@ -393,51 +359,30 @@ public class ClientWeavingHookGenericCapabilityTest {
     }
 
     @Test
-    public void testClientSpecifyingDifferentMethodsLimitedToDifferentProviders() throws Exception {
-        Dictionary<String, String> headers1 = new Hashtable<String, String>();
-        headers1.put(SpiFlyConstants.SPI_CONSUMER_HEADER,
-                "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=impl3," +
-                "java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.MySPI]);bundle=impl4");
-
-        Dictionary<String, String> headers2 = new Hashtable<String, String>();
-        headers2.put(SpiFlyConstants.SPI_CONSUMER_HEADER,
-                "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=system.bundle," +
-                "java.util.ServiceLoader#load;bundle=impl1");
-
-        Dictionary<String, String> headers3 = new Hashtable<String, String>();
-        headers3.put(SpiFlyConstants.SPI_CONSUMER_HEADER,
-                "org.acme.blah#someMethod();bundle=mybundle");
+    public void testClientSpecificProviderLoadArgument2() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
+                "osgi.spi.provider; effective:=active; filter:=\"(|(!(service=org.apache.aries.mytest.AltSPI))" +
+                "(&(service=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
-        Bundle providerBundle3 = mockProviderBundle("impl3", 3);
         Bundle providerBundle4 = mockProviderBundle("impl4", 4);
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
-        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle3);
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
 
-        Bundle consumerBundle1 = mockConsumerBundle(headers1, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
-        activator.addConsumerWeavingData(consumerBundle1, SpiFlyConstants.SPI_CONSUMER_HEADER);
-        Bundle consumerBundle2 = mockConsumerBundle(headers2, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
-        activator.addConsumerWeavingData(consumerBundle2, SpiFlyConstants.SPI_CONSUMER_HEADER);
-        Bundle consumerBundle3 = mockConsumerBundle(headers3, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
-        activator.addConsumerWeavingData(consumerBundle3, SpiFlyConstants.SPI_CONSUMER_HEADER);
-        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle1, consumerBundle2, consumerBundle3,
-                providerBundle1, providerBundle2, providerBundle3, providerBundle4);
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
-        testConsumerBundleWeaving(consumerBundle1, wh, "impl4", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
-        testConsumerBundleWeaving(consumerBundle2, wh, "olleh", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-        testConsumerBundleWeaving(consumerBundle3, wh, "", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-    }
-
-    private void testConsumerBundleWeaving(Bundle consumerBundle, WeavingHook wh, String testClientResult, String jaxpClientResult) throws Exception {
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, TestClient.class.getName(), consumerBundle);
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
@@ -445,112 +390,70 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals(testClientResult, result);
+        Assert.assertEquals("All providers should be selected for this one", "ollehHELLO5impl4", result);
 
-        URL clsUrl2 = getClass().getResource("JaxpClient.class");
-        WovenClass wc2 = new MyWovenClass(clsUrl2, JaxpClient.class.getName(), consumerBundle);
+        // Weave the AltTestClient class.
+        URL cls2Url = getClass().getResource("AltTestClient.class");
+        WovenClass wc2 = new MyWovenClass(cls2Url, "org.apache.aries.spifly.dynamic.AltTestClient", consumerBundle);
         wh.weave(wc2);
 
+        // Invoke the AltTestClient
         Class<?> cls2 = wc2.getDefinedClass();
-        Method method2 = cls2.getMethod("test", new Class [] {});
-        Class<?> result2 = (Class<?>) method2.invoke(cls2.newInstance());
-        Assert.assertEquals(jaxpClientResult, result2.getName());
+        Method method2 = cls2.getMethod("test", new Class [] {long.class});
+        Object result2 = method2.invoke(cls2.newInstance(), 4096);
+        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L*4096L, result2);
     }
 
     @Test
-    public void testJAXPClientWantsJREImplementation1() throws Exception {
-        Bundle systembundle = mockSystemBundle();
-
+    public void testClientSpecificProviderLoadArgument3() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance()");
-        Bundle consumerBundle = mockConsumerBundle(headers, systembundle);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
+                "osgi.spi.provider; effective:=active; filter:=\"" +
+                "(&(service=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4))\"");
 
-        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, systembundle).getBundleContext(), activator);
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Bundle providerBundle2 = mockProviderBundle("impl2", 2);
+        Bundle providerBundle4 = mockProviderBundle("impl4", 4);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
 
-        URL clsUrl = getClass().getResource("JaxpClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
+        // Invoke the woven class and check that it propertly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
         Class<?> cls = wc.getDefinedClass();
-        Method method = cls.getMethod("test", new Class [] {});
-        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", result.getName());
-    }
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals("No providers should be selected here", "", result);
 
-    // If there is an alternate implementation it should always be favoured over the JRE one
-    @Test
-    public void testJAXPClientWantsAltImplementation1() throws Exception {
-        Bundle systembundle = mockSystemBundle();
+        // Weave the AltTestClient class.
+        URL cls2Url = getClass().getResource("AltTestClient.class");
+        WovenClass wc2 = new MyWovenClass(cls2Url, "org.apache.aries.spifly.dynamic.AltTestClient", consumerBundle);
+        wh.weave(wc2);
 
-        Bundle providerBundle = mockProviderBundle("impl3", 1);
-        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
-
-        Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance()");
-        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
-
-        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
-
-        URL clsUrl = getClass().getResource("JaxpClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
-        wh.weave(wc);
-
-        Class<?> cls = wc.getDefinedClass();
-        Method method = cls.getMethod("test", new Class [] {});
-        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
-    }
-
-    @Test
-    public void testJAXPClientWantsJREImplementation2() throws Exception {
-        Bundle systembundle = mockSystemBundle();
-
-        Bundle providerBundle = mockProviderBundle("impl3", 1);
-        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
-
-        Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundleId=0");
-        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
-
-        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
-
-        URL clsUrl = getClass().getResource("JaxpClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
-        wh.weave(wc);
-
-        Class<?> cls = wc.getDefinedClass();
-        Method method = cls.getMethod("test", new Class [] {});
-        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", result.getName());
+        // Invoke the AltTestClient
+        Class<?> cls2 = wc2.getDefinedClass();
+        Method method2 = cls2.getMethod("test", new Class [] {long.class});
+        Object result2 = method2.invoke(cls2.newInstance(), 4096);
+        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L*4096L, result2);
     }
 
     @Test
-    public void testJAXPClientWantsAltImplementation2() throws Exception {
-        Bundle systembundle = mockSystemBundle();
-
-        Bundle providerBundle = mockProviderBundle("impl3", 1);
-        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
-
-        Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=impl3");
-        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle, systembundle);
-        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
-
-        WeavingHook wh = new ClientWeavingHook(mockSpiFlyBundle(consumerBundle, providerBundle, systembundle).getBundleContext(), activator);
-
-        URL clsUrl = getClass().getResource("JaxpClient.class");
-        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.JaxpClient", consumerBundle);
-        wh.weave(wc);
-
-        Class<?> cls = wc.getDefinedClass();
-        Method method = cls.getMethod("test", new Class [] {});
-        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
-        Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
+    public void testCustomAttributeMatching() {
+        // TODO
     }
-    */
 
     private Bundle mockSpiFlyBundle(Bundle ... bundles) throws Exception {
         return mockSpiFlyBundle("spifly", new Version(1, 0, 0), bundles);
