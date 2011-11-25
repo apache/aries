@@ -21,7 +21,6 @@ package org.apache.aries.spifly;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -61,8 +60,8 @@ public abstract class BaseActivator implements BundleActivator {
     private final ConcurrentMap<Bundle, Set<WeavingData>> bundleWeavingData =
         new ConcurrentHashMap<Bundle, Set<WeavingData>>();
 
-    private final ConcurrentMap<String, SortedMap<Long, Bundle>> registeredProviders =
-            new ConcurrentHashMap<String, SortedMap<Long, Bundle>>();
+    private final ConcurrentMap<String, SortedMap<Long, Pair<Bundle, Map<String, Object>>>> registeredProviders =
+            new ConcurrentHashMap<String, SortedMap<Long, Pair<Bundle, Map<String, Object>>>>();
 
     private final ConcurrentMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>> consumerRestrictions =
             new ConcurrentHashMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>>();
@@ -154,18 +153,44 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public void registerProviderBundle(String registrationClassName, Bundle bundle) {
-        registeredProviders.putIfAbsent(registrationClassName, Collections.synchronizedSortedMap(new TreeMap<Long, Bundle>()));
-        SortedMap<Long, Bundle> map = registeredProviders.get(registrationClassName);
-        map.put(bundle.getBundleId(), bundle);
+        registerProviderBundle(registrationClassName, bundle, Collections.<String, Object>emptyMap());
+    }
+
+    public void registerProviderBundle(String registrationClassName, Bundle bundle, Map<String, Object> customAttributes) {
+        registeredProviders.putIfAbsent(registrationClassName,
+                Collections.synchronizedSortedMap(new TreeMap<Long, Pair<Bundle, Map<String, Object>>>()));
+
+        SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.get(registrationClassName);
+        map.put(bundle.getBundleId(), new Pair<Bundle, Map<String, Object>>(bundle, customAttributes));
     }
 
     public Collection<Bundle> findProviderBundles(String name) {
-        SortedMap<Long, Bundle> map = registeredProviders.get(name);
-        return map == null ? Collections.<Bundle>emptyList() : map.values();
+        SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.get(name);
+        if (map == null)
+            return Collections.emptyList();
+
+        List<Bundle> bundles = new ArrayList<Bundle>(map.size());
+        for(Pair<Bundle, Map<String, Object>> value : map.values()) {
+            bundles.add(value.getLeft());
+        }
+
+        return bundles;
+    }
+
+    private Map<String, Object> getCustomBundleAttributes(String name, Bundle b) {
+        SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.get(name);
+        if (map == null)
+            return Collections.emptyMap();
+
+        Pair<Bundle, Map<String, Object>> data = map.get(b.getBundleId());
+        if (data == null)
+            return Collections.emptyMap();
+
+        return data.getRight();
     }
 
     // TODO unRegisterProviderBundle();
-    public void registerConsumerBundle( Bundle consumerBundle,
+    public void registerConsumerBundle(Bundle consumerBundle,
             Set<ConsumerRestriction> restrictions, List<BundleDescriptor> allowedBundles) {
         consumerRestrictions.putIfAbsent(consumerBundle, new HashMap<ConsumerRestriction, List<BundleDescriptor>>());
         Map<ConsumerRestriction, List<BundleDescriptor>> map = consumerRestrictions.get(consumerBundle);
@@ -206,7 +231,7 @@ public abstract class BaseActivator implements BundleActivator {
                         bundles.add(b);
                     }
                 } else if (desc.getFilter() != null) {
-                    Dictionary<String, Object> d = new Hashtable<String, Object>();
+                    Hashtable<String, Object> d = new Hashtable<String, Object>();
                     d.put(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, b.getSymbolicName());
                     d.put(SpiFlyConstants.BUNDLE_VERSION_ATTRIBUTE, b.getVersion());
 
@@ -215,6 +240,7 @@ public abstract class BaseActivator implements BundleActivator {
                         String type = args.get(new Pair<Integer, String>(0, Class.class.getName()));
                         if (type != null) {
                             d.put(SpiFlyConstants.SERVICE_ATTRIBUTE, type);
+                            d.putAll(getCustomBundleAttributes(type, b));
                         }
                     }
                     if (desc.getFilter().match(d))
@@ -232,7 +258,6 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     // TODO unRegisterConsumerBundle();
-
     private class LogServiceTracker extends ServiceTracker {
         public LogServiceTracker(BundleContext context) {
             super(context, LogService.class.getName(), null);
