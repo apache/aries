@@ -23,15 +23,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 import org.apache.aries.spifly.api.SpiFlyConstants;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
@@ -62,8 +67,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         List<String> providedServices = null;
+        Map<String, Object> customAttributes = new HashMap<String, Object>();
         if (bundle.getHeaders().get("Provide-Capability") != null) {
-            providedServices = readProvideCapability(bundle.getHeaders());
+            providedServices = readProvideCapability(bundle.getHeaders(), customAttributes);
         }
         if (providedServices == null && bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER) != null) {
             providedServices = new ArrayList<String>();
@@ -119,6 +125,15 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         if (className.startsWith("#"))
                             continue; // a comment
 
+                        String s = serviceFile.toExternalForm();
+                        int idx = s.lastIndexOf('/');
+                        String registrationClassName = className;
+                        if (s.length() > idx) {
+                            registrationClassName = s.substring(idx + 1);
+                        }
+                        if (providedServices.size() > 0 && !providedServices.contains(registrationClassName))
+                            continue;
+
                         Class<?> cls = bundle.loadClass(className);
                         Object o = cls.newInstance();
                         log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
@@ -126,18 +141,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         Hashtable<String, Object> props = new Hashtable<String, Object>();
                         props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
 
-                        String s = serviceFile.toExternalForm();
-                        int idx = s.lastIndexOf('/');
-                        String registrationClassName = className;
-                        if (s.length() > idx) {
-                            registrationClassName = s.substring(idx + 1);
-                        }
-
                         ServiceRegistration reg = bundle.getBundleContext()
                                 .registerService(registrationClassName, o, props);
                         registrations.add(reg);
 
-                        activator.registerProviderBundle(registrationClassName, bundle);
+                        activator.registerProviderBundle(registrationClassName, bundle, customAttributes);
                         log(LogService.LOG_INFO, "Registered service: " + reg);
                     } catch (Exception e) {
                         log(LogService.LOG_WARNING,
@@ -155,39 +163,32 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     // An empty list returned means 'all SPIs'
     // A return value of null means no SPIs
     // A populated list means: only these SPIs
-    private List<String> readProvideCapability(Dictionary<?,?> headers) {
-        if (headers.get(SpiFlyConstants.PROVIDE_CAPABILITY) == null)
+    @SuppressWarnings("unchecked")
+    private List<String> readProvideCapability(Dictionary<?,?> headers, Map<String, Object> customAttributes) {
+        Object capabilityHeader = headers.get(SpiFlyConstants.PROVIDE_CAPABILITY);
+        if (capabilityHeader == null)
             return null;
 
-        String pc = headers.get(SpiFlyConstants.PROVIDE_CAPABILITY).toString();
-        for (String c : pc.split(",")) { // TODO cover situation where ',' is inside a string (e.g. service:List<String>).
-            c = c.trim();
-            int idx = c.indexOf(';');
-            if (idx < 0)
+        List<GenericMetadata> capabilities = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader.toString());
+        for (GenericMetadata cap : capabilities) {
+            if (!SpiFlyConstants.SPI_CAPABILITY_NAMESPACE.equals(cap.getNamespace()))
                 continue;
 
-            String ns = c.substring(0, idx);
-            if (!SpiFlyConstants.SPI_CAPABILITY_NAMESPACE.equals(ns))
-                continue;
-
-            List<String> providedServices = new ArrayList<String>();
-            String attrs = c.substring(idx);
-            for (String attr : attrs.split(";")) {
-                attr = attr.trim();
-                if (attr.startsWith("service=")) {
-                    String val = attr.substring("service=".length());
-                    providedServices.add(val);
-                } else if (attr.startsWith("service:String=")) {
-                    String val = attr.substring("service:String=".length());
-                    providedServices.add(val);
-                } else if (attr.startsWith("service:List<String>=")) {
-                    String val = attr.substring("service:List<String>=".length());
-                    for (String v : val.split(",")) {
-                        providedServices.add(v.trim());
+            List<String> serviceNames = new ArrayList<String>();
+            for (Map.Entry<String, Object> entry : cap.getAttributes().entrySet()) {
+                if (SpiFlyConstants.SERVICE_ATTRIBUTE.equals(entry.getKey())) {
+                    if (entry.getValue() instanceof String) {
+                        serviceNames.add((String) entry.getValue());
+                    } else if (entry.getValue() instanceof String []) {
+                        serviceNames.addAll(Arrays.asList((String []) entry.getValue()));
+                    } else if (entry.getValue() instanceof List) {
+                        serviceNames.addAll((List<String>) entry.getValue());
                     }
+                } else {
+                    customAttributes.put(entry.getKey(), entry.getValue());
                 }
             }
-            return providedServices; // An empty array means all SPIs
+            return serviceNames;
         }
         return null;
     }
