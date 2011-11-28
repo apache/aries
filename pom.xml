@@ -126,8 +126,15 @@
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.modeller</artifactId>
         	<version>0.3.1-SNAPSHOT</version>
-        	<type>pom</type>
+        	<type>bundle</type>
         	<scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>application-modeller-standalone</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
+            <type>bundle</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
