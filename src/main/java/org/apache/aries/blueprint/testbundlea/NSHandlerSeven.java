@@ -35,9 +35,9 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class NSHandlerSix implements NamespaceHandler{
-    public static String NSURI = "http://ns.handler.six";
-    private static String ELT_NAME = "nshandlersix";
+public class NSHandlerSeven implements NamespaceHandler{
+    public static String NSURI = "http://ns.handler.seven";
+    private static String ELT_NAME = "nshandlerseven";
     private static String ATTRIB_ID = "id";
 
     //process elements
@@ -57,9 +57,9 @@ public class NSHandlerSix implements NamespaceHandler{
     //supply schema back to blueprint.
     public URL getSchemaLocation(String namespace) {
         if (NSURI.equals(namespace)) {
-            return this.getClass().getResource("nshandlersix.xsd");
+            return this.getClass().getResource("nshandlerseven.xsd");
         }
-        return this.getClass().getResource("nshandlersiximport.xsd");
+        return null;
     }
 
     public Set<Class> getManagedClasses() {
