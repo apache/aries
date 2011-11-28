@@ -33,6 +33,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.spifly.impl1.MySPIImpl1;
 import org.apache.aries.spifly.impl2.MySPIImpl2a;
 import org.apache.aries.spifly.impl2.MySPIImpl2b;
@@ -111,7 +112,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     @Test
-    public void testServiceSubsetSelection() throws Exception {
+    public void testServiceSubsetSelectionAndRegistrationProperties() throws Exception {
         Bundle spiBundle = EasyMock.createMock(Bundle.class);
         EasyMock.replay(spiBundle);
 
@@ -132,6 +133,8 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(1, registrations.size());
         assertEquals("org.apache.aries.mytest.MySPI", registrations.iterator().next().getReference().getProperty(Constants.OBJECTCLASS));
+        assertNotNull(registrations.iterator().next().getReference().getProperty(SpiFlyConstants.SPI_PROVIDER_URL));
+        assertEquals("global", registrations.iterator().next().getReference().getProperty("approval"));
     }
 
     @Test
@@ -273,13 +276,27 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
 
         EasyMock.expect(implBC.
-            registerService((String) EasyMock.anyObject(), EasyMock.anyObject(), (Dictionary<?,?>)EasyMock.anyObject())).
+            registerService((String) EasyMock.anyObject(), EasyMock.anyObject(), (Dictionary<String,?>)EasyMock.anyObject())).
             andAnswer(new IAnswer<ServiceRegistration>() {
                 @Override
+                @SuppressWarnings("unchecked")
                 public ServiceRegistration answer() throws Throwable {
+                    final String className = (String) EasyMock.getCurrentArguments()[0];
+                    final Dictionary<String,?> registrationProps =
+                            (Dictionary<String, ?>) EasyMock.getCurrentArguments()[2];
+
                     ServiceReference sref = EasyMock.createMock(ServiceReference.class);
-                    EasyMock.expect(sref.getProperty(Constants.OBJECTCLASS)).andReturn(
-                        EasyMock.getCurrentArguments()[0]);
+                    EasyMock.expect(sref.getProperty(EasyMock.anyObject(String.class))).andAnswer(new IAnswer<Object>() {
+                        @Override
+                        public Object answer() throws Throwable {
+                            Object prop = EasyMock.getCurrentArguments()[0];
+                            if (Constants.OBJECTCLASS.equals(prop)) {
+                                return className;
+                            } else {
+                                return registrationProps.get(prop);
+                        }
+                        }
+                    }).anyTimes();
                     EasyMock.replay(sref);
 
                     ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
