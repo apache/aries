@@ -77,6 +77,11 @@
             <artifactId>blueprint-parser</artifactId>
             <version>0.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.aries.ejb</groupId>
+            <artifactId>org.apache.aries.ejb.modeller</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
