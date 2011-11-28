@@ -140,6 +140,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                         Hashtable<String, Object> props = new Hashtable<String, Object>();
                         props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
+                        props.putAll(customAttributes);
 
                         ServiceRegistration reg = bundle.getBundleContext()
                                 .registerService(registrationClassName, o, props);
