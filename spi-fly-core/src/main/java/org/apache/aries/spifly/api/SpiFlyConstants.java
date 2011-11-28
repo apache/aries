@@ -28,8 +28,12 @@ public interface SpiFlyConstants {
 
     String SPI_CAPABILITY_NAMESPACE = "osgi.spi.provider";
     String EXTENDER_CAPABILITY_NAMESPACE = "osgi.jse.serviceloader";
+
     String BUNDLE_VERSION_ATTRIBUTE = "bundle-version";
     String SERVICE_ATTRIBUTE = "service";
+
+    String EFFECTIVE_DIRECTIVE = "effective";
+    String SERVICE_REGISTRY_DIRECTIVE = "service-registry";
 
     String PROCESSED_SPI_CONSUMER_HEADER = "X-SpiFly-Processed-SPI-Consumer";
 

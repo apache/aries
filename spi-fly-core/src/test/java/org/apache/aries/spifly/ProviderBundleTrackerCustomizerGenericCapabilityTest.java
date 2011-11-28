@@ -102,7 +102,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         EasyMock.replay(sreg);
 
         BundleContext implBC = mockSPIBundleContext(sreg);
-        Bundle implBundle = mockSPIBundle(implBC, "osgi.spi.provider; effective:=active; approval=global");
+        Bundle implBundle = mockSPIBundle(implBC, "osgi.spi.provider; effective:=active; service-registry:=true; approval=global");
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(1, registrations.size());
@@ -181,7 +181,48 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
     @Test
     public void testNoServiceRegistration() throws Exception {
+        Bundle spiBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.replay(spiBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
 
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
+
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
+        EasyMock.replay(sreg);
+
+        BundleContext implBC = mockSPIBundleContext(sreg);
+        Bundle implBundle = mockSPIBundle(implBC, "osgi.spi.provider; effective:=active; service-registry:=false");
+
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        assertEquals(0, registrations.size());
+        Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
+        assertEquals(1, bundles.size());
+        assertSame(implBundle, bundles.iterator().next());
+    }
+
+    @Test
+    public void testNoEffectiveValue() throws Exception {
+        Bundle spiBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.replay(spiBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
+
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
+        EasyMock.replay(sreg);
+
+        BundleContext implBC = mockSPIBundleContext(sreg);
+        Bundle implBundle = mockSPIBundle(implBC, "osgi.spi.provider");
+
+        assertNull(customizer.addingBundle(implBundle, null));
+        Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
+        assertEquals(0, bundles.size());
     }
 
     @Test
