@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -38,6 +39,9 @@ import org.apache.aries.spifly.impl1.MySPIImpl1;
 import org.apache.aries.spifly.impl2.MySPIImpl2a;
 import org.apache.aries.spifly.impl2.MySPIImpl2b;
 import org.apache.aries.spifly.impl3.MySPIImpl3;
+import org.apache.aries.spifly.impl4.MySPIImpl4a;
+import org.apache.aries.spifly.impl4.MySPIImpl4b;
+import org.apache.aries.spifly.impl4.MySPIImpl4c;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.Test;
@@ -123,10 +127,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
 
-        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
-        EasyMock.replay(sreg);
-
-        BundleContext implBC = mockSPIBundleContext4(sreg);
+        BundleContext implBC = mockSPIBundleContext4();
         Bundle implBundle =
             mockSPIBundle4(implBC, "osgi.spi.provider; effective:=active; service=org.apache.aries.mytest.MySPI; approval=global");
 
@@ -138,13 +139,49 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     @Test
-    public void testMultipleServiceInstances() throws Exception {
-        // TODO
+    public void testMultipleServiceInstancesAndTypes() throws Exception {
+        Bundle spiBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.replay(spiBundle);
+
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
+
+        BundleContext implBC = mockSPIBundleContext4();
+        Bundle implBundle =
+            mockSPIBundle4(implBC, "osgi.spi.provider; effective:=active");
+
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        assertEquals(3, registrations.size());
+
+        boolean foundA = false, foundB = false, foundC = false;
+        for (ServiceRegistration sreg : registrations) {
+            ServiceReference sref = sreg.getReference();
+            String objectClassName = sref.getProperty(Constants.OBJECTCLASS).toString();
+            String serviceImplClassName = sref.getProperty("serviceObject").getClass().getName();
+            if (MySPIImpl4a.class.getName().equals(serviceImplClassName)) {
+                assertEquals("org.apache.aries.mytest.MySPI", objectClassName);
+                foundA = true;
+            } else if (MySPIImpl4b.class.getName().equals(serviceImplClassName)) {
+                assertEquals("org.apache.aries.mytest.MySPI2", objectClassName);
+                foundB = true;
+            } else if (MySPIImpl4c.class.getName().equals(serviceImplClassName)) {
+                assertEquals("org.apache.aries.mytest.MySPI2", objectClassName);
+                foundC = true;
+            }
+        }
+
+        assertTrue(foundA);
+        assertTrue(foundB);
+        assertTrue(foundC);
     }
 
     @Test
-    public void testMultipleServiceTypes() throws Exception {
-        // TODO
+    public void testNoServiceRegistration() throws Exception {
+
     }
 
     @Test
@@ -272,7 +309,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         return implBundle;
     }
 
-    private BundleContext mockSPIBundleContext4(ServiceRegistration sreg) {
+    private BundleContext mockSPIBundleContext4() {
         BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
 
         EasyMock.expect(implBC.
@@ -282,6 +319,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 @SuppressWarnings("unchecked")
                 public ServiceRegistration answer() throws Throwable {
                     final String className = (String) EasyMock.getCurrentArguments()[0];
+                    final Object serviceObject = EasyMock.getCurrentArguments()[1];
                     final Dictionary<String,?> registrationProps =
                             (Dictionary<String, ?>) EasyMock.getCurrentArguments()[2];
 
@@ -292,9 +330,12 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                             Object prop = EasyMock.getCurrentArguments()[0];
                             if (Constants.OBJECTCLASS.equals(prop)) {
                                 return className;
+                            } else if ("serviceObject".equals(prop)) {
+                                // just used by the test to check the service object that was registered.
+                                return serviceObject;
                             } else {
                                 return registrationProps.get(prop);
-                        }
+                            }
                         }
                     }).anyTimes();
                     EasyMock.replay(sref);
@@ -304,7 +345,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                     EasyMock.replay(sreg);
                     return sreg;
                 }
-            });
+            }).anyTimes();
 
         EasyMock.replay(implBC);
         return implBC;
