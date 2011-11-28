@@ -1,2 +1,5 @@
+# A comment
 org.apache.aries.spifly.impl4.MySPIImpl4b
+# Another comment
 org.apache.aries.spifly.impl4.MySPIImpl4c
+# A final comment
