@@ -68,9 +68,16 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         List<String> providedServices = null;
         Map<String, Object> customAttributes = new HashMap<String, Object>();
+        Map<String, String> directives = new HashMap<String, String>();
         if (bundle.getHeaders().get("Provide-Capability") != null) {
-            providedServices = readProvideCapability(bundle.getHeaders(), customAttributes);
+            providedServices = readProvideCapability(bundle.getHeaders(), directives, customAttributes);
+
+            if (!"active".equals(directives.get(SpiFlyConstants.EFFECTIVE_DIRECTIVE))) {
+                log(LogService.LOG_INFO, "Effective is not equal to 'active'. Not processing bundle " + bundle.getSymbolicName());
+                return null;
+            }
         }
+
         if (providedServices == null && bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER) != null) {
             providedServices = new ArrayList<String>();
         }
@@ -142,12 +149,15 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
                         props.putAll(customAttributes);
 
-                        ServiceRegistration reg = bundle.getBundleContext()
-                                .registerService(registrationClassName, o, props);
-                        registrations.add(reg);
+                        if (!"false".equalsIgnoreCase(directives.get(SpiFlyConstants.SERVICE_REGISTRY_DIRECTIVE))) {
+                            ServiceRegistration reg = bundle.getBundleContext()
+                                    .registerService(registrationClassName, o, props);
+                            registrations.add(reg);
+                            log(LogService.LOG_INFO, "Registered service: " + reg);
+                        }
 
                         activator.registerProviderBundle(registrationClassName, bundle, customAttributes);
-                        log(LogService.LOG_INFO, "Registered service: " + reg);
+                        log(LogService.LOG_INFO, "Registered provider: " + registrationClassName + " in bundle " + bundle.getSymbolicName());
                     } catch (Exception e) {
                         log(LogService.LOG_WARNING,
                                 "Could not load SPI implementation referred from " + serviceFile, e);
@@ -165,7 +175,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     // A return value of null means no SPIs
     // A populated list means: only these SPIs
     @SuppressWarnings("unchecked")
-    private List<String> readProvideCapability(Dictionary<?,?> headers, Map<String, Object> customAttributes) {
+    private List<String> readProvideCapability(Dictionary<?,?> headers, Map<String, String> directives, Map<String, Object> customAttributes) {
         Object capabilityHeader = headers.get(SpiFlyConstants.PROVIDE_CAPABILITY);
         if (capabilityHeader == null)
             return null;
@@ -189,6 +199,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     customAttributes.put(entry.getKey(), entry.getValue());
                 }
             }
+
+            directives.putAll(cap.getDirectives());
             return serviceNames;
         }
         return null;
