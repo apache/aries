@@ -301,8 +301,18 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                             return null;
                         }
                         for (NamespaceHandler h : hs) {
-                            final URL url = h.getSchemaLocation(namespaceURI);
+                            URL url = h.getSchemaLocation(namespaceURI);
                             if (url != null) {
+                                // handling include-relative-path case
+                                if (systemId != null && !systemId.matches("^[a-z][-+.0-9a-z]*:.*")) {
+                                    try {
+                                        url = new URL(url, systemId);
+                                    } catch (Exception e) {
+                                        // ignore and use the given systemId
+                                    }
+                                }
+                                
+                                
                                 try {
                                     final StreamSource source 
                                         = new StreamSource(url.openStream(), url.toExternalForm());
