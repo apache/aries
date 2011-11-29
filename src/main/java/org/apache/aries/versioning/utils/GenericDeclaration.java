@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,7 +19,6 @@
  * under the License.
  */
 package org.apache.aries.versioning.utils;
-
 import java.lang.reflect.Modifier;
 
 import org.objectweb.asm.Opcodes;
@@ -31,7 +32,7 @@ public abstract class GenericDeclaration
   
   public GenericDeclaration(int access, String name, String signature) {
     int updatedAccess = access;
-    // Ignore the native or synchronized modifier as they do not affect binary compatibility
+    // ignore the native or synchronized modifier as they do not affect binary compatibility
     if (Modifier.isNative(access)) {
       updatedAccess = updatedAccess - Opcodes.ACC_NATIVE;
     }
@@ -84,7 +85,7 @@ public abstract class GenericDeclaration
     int result = 1;
     result = prime * result + access;
     result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((signature == null) ? 0 : signature.hashCode());
+    
     return result;
   }
   @Override
@@ -98,9 +99,7 @@ public abstract class GenericDeclaration
     if (name == null) {
       if (other.name != null) return false;
     } else if (!name.equals(other.name)) return false;
-    if (signature == null) {
-      if (other.signature != null) return false;
-    } else if (!signature.equals(other.signature)) return false;
+    
     return true;
   }
 

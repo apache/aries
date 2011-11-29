@@ -17,7 +17,6 @@
  * under the License.
  */
 package org.apache.aries.versioning.utils;
-
 import java.lang.reflect.Modifier;
 
 
@@ -40,10 +39,9 @@ public class MethodDeclaration extends GenericDeclaration
   public int hashCode()
   {
     final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((desc == null) ? 0 : desc.hashCode());
-    result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
-    result = prime * result + ((getSignature() == null) ? 0 : getSignature().hashCode());
+    //int result = super.hashCode();
+    int result = prime  + ((desc == null) ? 0 : desc.hashCode());
+    result = prime * result + ((getName() == null) ? 0 : getName().hashCode());    
     return result;
   }
 
@@ -52,7 +50,7 @@ public class MethodDeclaration extends GenericDeclaration
   public boolean equals(Object obj)
   {
     if (this == obj) return true;
-    if (getClass() != obj.getClass()) return false;
+    //if (getClass() != obj.getClass()) return false;
     MethodDeclaration other = (MethodDeclaration) obj;
     if (desc == null) {
       if (other.desc != null) return false;
@@ -60,9 +58,7 @@ public class MethodDeclaration extends GenericDeclaration
     if (getName() == null) {
       if (other.getName() != null) return false;
     } else if (!getName().equals(other.getName())) return false;
-    if (getSignature() == null) {
-      if (other.getSignature() != null) return false;
-    } else if (!getSignature().equals(other.getSignature())) return false;
+    
     return true;
   }
 

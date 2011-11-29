@@ -46,6 +46,8 @@ import org.apache.aries.util.manifest.BundleManifest;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
 import org.apache.aries.versioning.utils.BinaryCompatibilityStatus;
+import org.apache.aries.versioning.utils.ClassDeclaration;
+import org.apache.aries.versioning.utils.FieldDeclaration;
 import org.apache.aries.versioning.utils.MethodDeclaration;
 import org.apache.aries.versioning.utils.SemanticVersioningClassVisitor;
 import org.apache.aries.versioning.utils.SemanticVersioningUtils;
@@ -54,13 +56,14 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlOneLineBreak;
+import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlTwoLineBreaks;;
 public class SemanticVersioningChecker {
 
   private static final Logger _logger = LoggerFactory.getLogger(SemanticVersioningChecker.class);
   private URLClassLoader newJarsLoader;
   private URLClassLoader oldJarsLoader;
-  private final String xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
+  private static final String xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
   /**
    * This method is to scan the current location against base and process each individual jars 
    * in the current location against the jar with the same symbolic names in the base and produce a xml report specified by versioningReport.
@@ -249,7 +252,7 @@ public class SemanticVersioningChecker {
         minorChange.setChange(true);
         if (minorChange.isChange()) {
           reason = "The package " + pkgName + " has gained at least one class : " + getClassName(changeClass)+ ".";
-          minorChange.update(reason, changeClass);
+          minorChange.update(reason, changeClass, false);
           break;
         }
       }
@@ -261,7 +264,7 @@ public class SemanticVersioningChecker {
       firstXsd = xsdIterator.next();
 
       reason = "In the package " + pkgName + ", The schema file(s) are added: " + curXsds.keySet()+ ".";
-      minorChange.update(reason, firstXsd.getName());
+      minorChange.update(reason, firstXsd.getName(), false);
     }
   }
 
@@ -286,7 +289,7 @@ public class SemanticVersioningChecker {
       // check whether the xsd have been deleted or changed or added
       if (curXsd == null) {  
         reason = "In the package " + pkgName + ", The schema file has been deleted: " + file.getKey()+ ".";
-        majorChange.update(reason, changeClass);
+        majorChange.update(reason, changeClass, false);
         break;                      
       } else {
         // check whether it is the same
@@ -297,7 +300,7 @@ public class SemanticVersioningChecker {
         if (!!!(curFileContent.equals(oldFileContent))) {
 
           reason = "In the package " + pkgName + ", The schema file has been updated: " + file.getKey()+ ".";
-          majorChange.update(reason, changeClass);
+          majorChange.update(reason, changeClass, false);
           break;
         }
       }
@@ -315,21 +318,32 @@ public class SemanticVersioningChecker {
   private void visitPackage(String pkgName, Map<String, IFile> baseClazz,
       Map<String, IFile> curClazz, VersionChange majorChange, VersionChange minorChange)
   {
-    String reason;
+    StringBuilder major_reason = new StringBuilder();
+    StringBuilder minor_reason = new StringBuilder();
+    boolean is_major_change = false;
+    boolean is_minor_change = false;
+    String fatal_class = null;
+    boolean foundNewAbstract = false;
     for (Map.Entry<String, IFile> file : baseClazz.entrySet()) {
       // scan the latest version of the class
       IFile curFile = curClazz.get(file.getKey());
       String changeClass = file.getValue().getName();
       //Scan the base version
       SemanticVersioningClassVisitor oldcv = getVisitor(file.getValue(), oldJarsLoader);
-      if ((oldcv.getClassDeclaration() != null)) {
+      // skip the property files as they are compiled as class file as well
+      ClassDeclaration cd = oldcv.getClassDeclaration();
+      if ((cd != null) && (!SemanticVersioningUtils.isPropertyFile(cd))) {
+        
         if (curFile == null) {
           // the class we are scanning has been deleted from the current version of WAS
           // This should be a major increase
-          reason = "In the package " + pkgName + ", The class/interface has been deleted: " + getClassName(changeClass) + ".";
-          majorChange.update(reason, changeClass);
-
-          break;
+          major_reason.append(htmlTwoLineBreaks + "The class/interface " + getClassName(changeClass) + " has been deleted from the package." );
+          //majorChange.update(reason, changeClass);
+          is_major_change = true;
+          // only replace the fatal class if not set as the class won't be found in cmvc due to the fact it has been deleted.
+          if (fatal_class == null) {
+            fatal_class = changeClass;
+          }
         } else {
           // check for binary compatibility
           // load the class from the current version of WAS
@@ -337,23 +351,90 @@ public class SemanticVersioningChecker {
           curClazz.remove(file.getKey());
           SemanticVersioningClassVisitor newcv = getVisitor(curFile, newJarsLoader);
           // check for binary compatibility
-          BinaryCompatibilityStatus bcs = newcv.getClassDeclaration().getBinaryCompatibleStatus(oldcv.getClassDeclaration());
-          if (bcs.isCompatible()) {
-            // check to see whether there are extra methods
-            MethodDeclaration extraMethod = newcv.getClassDeclaration().getExtraMethods(oldcv.getClassDeclaration());
-            if (extraMethod != null) {
-              // This should be a minor increase
-              reason = "In the package " + pkgName + ", the " + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc()) + " has been added to the class or its super classes/interfaces " + getClassName(changeClass) + ".";
-              minorChange.update(reason, changeClass);
-            }
+          ClassDeclaration newcd = newcv.getClassDeclaration();
+          BinaryCompatibilityStatus bcs = newcd.getBinaryCompatibleStatus(oldcv.getClassDeclaration());
+
+          if (!bcs.isCompatible()) {
+            major_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass)+ " class or its supers, the following changes have been made since the last release of WAS.");
+            // break binary compatibility
+            major_reason.append( bcs.getReason());
+            is_major_change = true;
+            fatal_class = changeClass;
           } else {
-            // break binary compatibility 
-            reason = "In the package " + pkgName + ", binary incompatibility occurred in the class " + getClassName(changeClass)+ ". " + bcs.getReason();
-            majorChange.update(reason, changeClass);
-            break; 
+            //check to see whether more methods are added
+            ClassDeclaration oldcd = oldcv.getClassDeclaration();
+            Collection<MethodDeclaration> extraMethods = newcd.getExtraMethods(oldcd);
+
+            boolean containsConcrete = false;
+            boolean containsAbstract = false;
+
+            boolean abstractClass = newcd.isAbstract();
+
+            StringBuilder subRemarks = new StringBuilder();
+            String concreteSubRemarks = null;
+            for (MethodDeclaration extraMethod : extraMethods) {
+              //only interested in the visible methods not the system generated ones
+              if (!extraMethod.getName().contains("$")) {
+                if (abstractClass ) {
+                  if (extraMethod.isAbstract()) {
+                    foundNewAbstract = true;
+                    containsAbstract = true;
+                    subRemarks.append(htmlOneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc()));
+                  } else {
+                    //only list one abstract method, no need to list all
+                    containsConcrete = true;
+                    concreteSubRemarks=htmlOneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc());
+                  }
+                }
+                else {
+                  containsConcrete = true;
+                  concreteSubRemarks=htmlOneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc());
+                  break;
+                }
+              }
+            }
+            
+            if (containsConcrete || containsAbstract) {
+              is_minor_change = true;
+              if (!is_major_change) {
+                fatal_class = changeClass;
+              }
+              if ( containsAbstract) {
+
+                minor_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass)+ " class or its supers, the following abstract methods have been added since the last release of WAS.");
+                minor_reason.append(subRemarks);
+              } else {
+                minor_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass)+ " class or its supers, the following method has been added since the last release of WAS.");
+                minor_reason.append(concreteSubRemarks);
+              }
+            }
+            //check to see whether there are extra public/protected fields if there is no additional methods
+              
+              if (!is_minor_change){
+                for (FieldDeclaration field : newcd.getExtraFields(oldcd)) {
+                  if (field.isPublic() || field.isProtected()) {
+                    is_minor_change = true;
+                    String extraFieldRemarks = htmlOneLineBreak + " " + SemanticVersioningUtils.transform(field.getDesc()) + " "+ field.getName() ;
+                    if (!is_major_change) {
+                      fatal_class = changeClass;
+                    }
+                    minor_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass)+ " class or its supers, the following fields have been added since the last release of WAS.");
+                    minor_reason.append(extraFieldRemarks);
+                    break;
+                  }
+                }
+                
+              }
+            
           }
         }
       }
+    }
+    if (is_major_change) {
+      majorChange.update(major_reason.toString(), fatal_class, false);
+    }
+    if (is_minor_change) {
+      minorChange.update(minor_reason.toString(), fatal_class, (foundNewAbstract? true: false));
     }
   }
 
@@ -604,6 +685,13 @@ public class SemanticVersioningChecker {
     boolean change = false;
     String reason= null;
     String changeClass = null;
+    boolean moreAbstractMethod = false;
+    
+    
+    public boolean isMoreAbstractMethod()
+    {
+      return moreAbstractMethod;
+    }
     public boolean isChange()
     {
       return change;
@@ -620,10 +708,11 @@ public class SemanticVersioningChecker {
     {
       return changeClass;
     }
-    public void update(String reason, String changeClass) {
+    public void update(String reason, String changeClass, boolean moreAbstractMethod) {
       this.change = true;
       this.reason = reason;
       this.changeClass = changeClass;
+      this.moreAbstractMethod = moreAbstractMethod;
     }
   }
 
