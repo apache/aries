@@ -22,14 +22,37 @@ package org.apache.aries.versioning.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 public class SemanticVersioningUtils
 {
+ 
+  public static final String classExt = ".class";
+  public static final String javaExt = ".java";
+  public static final String schemaExt = ".xsd";
+  public static final String jarExt = ".jar";
 
-  public static String classExt = ".class";
-  public static String javaExt = ".java";
-  public static String schemaExt = ".xsd";
-  public static String jarExt = ".jar";
-
+  public static final String SEVERITY_2 = "2";
+  public static final String SEVERITY_3 = "3";
+  public static final String SEVERITY_4 = "4";
+  public static final String CONSTRUTOR = "<init>";
+  public static final String MAJOR_CHANGE = "major";
+  public static final String MINOR_CHANGE = "minor";
+  public static final String NO_CHANGE = "no";
+  public static final String REVERT_CHANGE = "revert the changes";
+  public static final String oneLineBreak = "\r\n";
+  public static final String htmlOneLineBreak = "&#13;&#10;";
+  public static final String htmlTwoLineBreaks = htmlOneLineBreak + htmlOneLineBreak;
+  public static final String twoLineBreaks = oneLineBreak + oneLineBreak;
+  public static final String PROPERTY_FILE_IDENTIFIER="java/util/ListResourceBundle";
+  public static final String CLINIT="<clinit>";
+  public static final String SERIALIZABLE_CLASS_IDENTIFIER="java/io/Serializable";
+  public static final String SERIAL_VERSION_UTD="serialVersionUID";
+  public static final String ENUM_CLASS="java/lang/Enum";
   public static boolean isLessAccessible(GenericDeclaration before, GenericDeclaration after) {
 
     if (before.getAccess() == after.getAccess()) {
@@ -55,30 +78,57 @@ public class SemanticVersioningUtils
 
     return false;
   }
+  
+  /**
+   * ASM Type descriptor look up table
+   * @author emily
+   *
+   */
+  private enum TypeDescriptor{
+     I("int"), Z("boolean"),  C("char"), B("byte"), 
+     S("short"), F("float"), J("long"), D("double"), V("void");
 
+     String desc;
+     TypeDescriptor(String desc) {
+       this.desc = desc;
+     }
+     String getDesc(){
+       return desc;
+     }
+     private static final Map<String, TypeDescriptor> stringToEnum = new HashMap<String, TypeDescriptor>();
+     static {
+       for (TypeDescriptor td : values()) {
+         stringToEnum.put(td.toString(), td);
+       }
+     }
+     public static TypeDescriptor fromString(String symbol) {
+       return stringToEnum.get(symbol);
+     }
+     
+  }
   /**
    * Transform ASM method desc to a human readable form
-   * e.g.
+   * Method declaration in source file Method descriptor
    * void m(int i, float f) <= (IF)V
    * int m(Object o) <= (Ljava/lang/Object;)I
    * int[] m(int i, String s) <= (ILjava/lang/String;)[I
    * Object m(int[] i) <= ([I)Ljava/lang/Object;
-   * @param methodName method name
-   * @param methodDesc binary form method description
+   * @param methodName
+   * @param methodDesc
    * @return
    */
   public static String getReadableMethodSignature( String methodName, String methodDesc) {
     // need to find the return type first, which is outside the ()
     int lastBrace = methodDesc.lastIndexOf(")");
-    String constructorSymbol = "<init>";
+   
     // parameter
     StringBuilder methodSignature = new StringBuilder();
     if (lastBrace == -1) {
-      // This is odd, don't attempt to transform. Just return back. Won't happen unless byte code weaving is not behaving.
+      // this is odd, don't attempt to transform. Just return back. Won't happen unless byte code weaving is not behaving.
       return "method " + methodName + methodDesc;
     }
     String param = methodDesc.substring(1, lastBrace);
-    if (constructorSymbol.equals(methodName)) {
+    if (CONSTRUTOR.equals(methodName)) {
       //This means the method is a constructor. In the binary form, the constructor carries a name 'init'. Let's use the source
       // code proper name
       methodSignature.append("constructor with parameter list ");
@@ -95,41 +145,13 @@ public class SemanticVersioningUtils
     methodSignature.append(")");
     return methodSignature.toString();
   }
-
-  /**
-   * ASM Type descriptor look up table
-   * @author emily
-   *
-   */
-  private enum TypeDescriptor{
-    I("int"), Z("boolean"),  C("char"), B("byte"), 
-    S("short"), F("float"), J("long"), D("double"), V("void");
-
-    String desc;
-    TypeDescriptor(String desc) {
-      this.desc = desc;
-    }
-    String getDesc(){
-      return desc;
-    }
-    private static final Map<String, TypeDescriptor> stringToEnum = new HashMap<String, TypeDescriptor>();
-    static {
-      for (TypeDescriptor td : values()) {
-        stringToEnum.put(td.toString(), td);
-      }
-    }
-    public static TypeDescriptor fromString(String symbol) {
-      return stringToEnum.get(symbol);
-    }
-
-  }
-  private static String transform(String asmDesc)
+  public static String transform(String asmDesc)
   {
     String separator = ", ";
     int brkCount = 0;
     StringBuilder returnStr = new StringBuilder();
     //remove the '['s
-
+   
     while (asmDesc.length() > 0) {
       while(asmDesc.startsWith("[")){
         asmDesc = asmDesc.substring(1);
@@ -138,9 +160,12 @@ public class SemanticVersioningUtils
       while (asmDesc.startsWith("L")) {
         //remove the L and ;
         int semiColonIndex = asmDesc.indexOf(";");
-
-
-
+        
+          
+       if (semiColonIndex == -1) {
+         //This is odd. The asm binary code is invalid. Do not attempt to transform.
+         return asmDesc; 
+       }
         returnStr.append(asmDesc.substring(1, semiColonIndex));
         asmDesc = asmDesc.substring(semiColonIndex + 1);
         for (int index =0; index < brkCount; index ++) {
@@ -152,7 +177,7 @@ public class SemanticVersioningUtils
 
       TypeDescriptor td = null;
       while ( (asmDesc.length() > 0) && ( td = TypeDescriptor.fromString(asmDesc.substring(0,1))) != null) {
-
+        
         returnStr.append(td.getDesc());
         for (int index =0; index < brkCount; index ++) {
           returnStr.append("[]");
@@ -162,15 +187,25 @@ public class SemanticVersioningUtils
         asmDesc = asmDesc.substring(1);
       } 
 
-
+      
     }
     String finalStr = returnStr.toString();
     if (finalStr.endsWith(separator)){
       finalStr = finalStr.substring(0, finalStr.lastIndexOf(separator));
     }
+    //replace "/" with "." as bytecode uses / in the package names
+    finalStr = finalStr.replaceAll("/", ".");
     return finalStr;
   }
-
-
+  /**
+   * Return whether the binary is property file. If the binary implements the interface of java.util.ListResourceBundle
+   * @param cd
+   * @return
+   */
+  public static boolean isPropertyFile (ClassDeclaration cd) {
+    Collection<String> supers = cd.getAllSupers();
+    return (supers.contains(PROPERTY_FILE_IDENTIFIER));
+  }
+  
 
 }

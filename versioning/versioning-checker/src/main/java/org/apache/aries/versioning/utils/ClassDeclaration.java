@@ -17,7 +17,6 @@
  * under the License.
  */
 package org.apache.aries.versioning.utils;
-
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
@@ -29,9 +28,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Type;
 
-
+import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlOneLineBreak;
+import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlTwoLineBreaks;
 public class ClassDeclaration extends GenericDeclaration
 {
 
@@ -51,16 +52,38 @@ public class ClassDeclaration extends GenericDeclaration
   private final Map<String, Set<MethodDeclaration>> methods;
 
   private final Map<String, Set<MethodDeclaration>> methodsInUpperChain = new HashMap<String, Set<MethodDeclaration>>();
-  private final Map<String, Collection<FieldDeclaration>> fieldsInUpperChain = new HashMap<String, Collection<FieldDeclaration>>();
+  private final Map<String, FieldDeclaration> fieldsInUpperChain = new HashMap<String, FieldDeclaration>();
   private final Collection<String> supers = new ArrayList<String> ();
 
 
   private final URLClassLoader jarsLoader;
 
   private final BinaryCompatibilityStatus binaryCompatible = new BinaryCompatibilityStatus(true, null);
+  private final SerialVersionClassVisitor serialVisitor ;
+  
   public Map<String, FieldDeclaration> getFields()
   {
     return fields;
+  }
+  public Map<String, FieldDeclaration> getAllFields() {
+    Map<String, FieldDeclaration> allFields = new HashMap<String, FieldDeclaration>(getFields());
+    Map<String, FieldDeclaration> fieldsFromSupers = getFieldsInUpperChain();
+    putIfAbsent(allFields, fieldsFromSupers);
+   
+    
+    return allFields;
+  }
+  private void putIfAbsent(Map<String, FieldDeclaration> allFields,
+      Map<String, FieldDeclaration> fieldsFromSupers)
+  {
+    for (Map.Entry<String, FieldDeclaration> superFieldEntry : fieldsFromSupers.entrySet()) {
+      String fieldName = superFieldEntry.getKey();
+      FieldDeclaration fd = superFieldEntry.getValue();
+      if (allFields.get(fieldName) == null) {
+        allFields.put(fieldName, fd);
+      }
+     
+    }
   }
   /**
    * Get the methods in the current class plus the methods in the upper chain
@@ -69,7 +92,18 @@ public class ClassDeclaration extends GenericDeclaration
   public Map<String, Set<MethodDeclaration>> getAllMethods() {
 
     Map<String, Set<MethodDeclaration>> methods = new HashMap<String, Set<MethodDeclaration>>(getMethods());
-    methods.putAll(getMethodsInUpperChain());
+    Map<String, Set<MethodDeclaration>> methodsFromSupers = getMethodsInUpperChain();
+    for (Map.Entry<String, Set<MethodDeclaration>> superMethodsEntry : methodsFromSupers.entrySet()) {
+      Set<MethodDeclaration> overloadingMethods = methods.get(superMethodsEntry.getKey());
+      if (overloadingMethods != null) {
+      overloadingMethods.addAll(superMethodsEntry.getValue());
+      } else {
+        methods.put(superMethodsEntry.getKey(), superMethodsEntry.getValue());
+      }
+      
+    }
+   
+    
     return methods;
   }
 
@@ -88,14 +122,28 @@ public class ClassDeclaration extends GenericDeclaration
     this.fields = new HashMap<String, FieldDeclaration>();
     this.methods = new HashMap<String, Set<MethodDeclaration>>();
     this.jarsLoader = loader;
+    this.serialVisitor = null;
   }
 
+  public ClassDeclaration(int access, String name, String signature, String superName,
+      String[] interfaces, URLClassLoader loader, SerialVersionClassVisitor cv)
+  {
+    super(access, name, signature);
+    this.superName = superName;
+    this.interfaces = interfaces;
+    this.fields = new HashMap<String, FieldDeclaration>();
+    this.methods = new HashMap<String, Set<MethodDeclaration>>();
+    this.jarsLoader = loader;
+    this.serialVisitor = cv;
+  }
   private void getFieldsRecursively(String superClass) {
 
     if ((superClass != null) ) {
       // load the super class of the cd
       try {
-        SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader);
+        ClassVisitor cw = new EmptyClassVisitor();
+        SerialVersionClassVisitor cv = new SerialVersionClassVisitor(cw);
+        SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
         ClassReader cr = new ClassReader(jarsLoader.getResourceAsStream(superClass + SemanticVersioningUtils.classExt));
         if (cr != null) {
           cr.accept(svc, 0);
@@ -118,7 +166,10 @@ public class ClassDeclaration extends GenericDeclaration
   {
     if ((superClass != null) ) {
       // load the super class of the cd
-      SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader);
+      ClassVisitor cw = new EmptyClassVisitor();
+      SerialVersionClassVisitor cv = new SerialVersionClassVisitor(cw);
+      
+      SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
       // use URLClassLoader to load the class
       try {
         ClassReader cr = new ClassReader(jarsLoader.getResourceAsStream(superClass  + SemanticVersioningUtils.classExt));
@@ -140,7 +191,7 @@ public class ClassDeclaration extends GenericDeclaration
   }
 
 
-  public Map<String, Collection<FieldDeclaration>> getFieldsInUpperChain() {
+  public Map<String, FieldDeclaration> getFieldsInUpperChain() {
     if (fieldsInUpperChain.isEmpty()) {
       getFieldsRecursively(getSuperName());
       for (String ifs : getInterfaces()) {
@@ -151,16 +202,8 @@ public class ClassDeclaration extends GenericDeclaration
   }
 
   private void addFieldInUpperChain(Map<String, FieldDeclaration> fields) {
-    for (Map.Entry<String, FieldDeclaration> field : fields.entrySet()) {
-      String fieldName = field.getKey();
-      Set<FieldDeclaration> fds = new HashSet<FieldDeclaration>();
-      if (fieldsInUpperChain.get(fieldName) != null) {
-        fds.addAll(fieldsInUpperChain.get(fieldName));
-      } 
-
-      fds.add(fields.get(fieldName));
-      fieldsInUpperChain.put(fieldName, fds);
-    }
+    putIfAbsent(fieldsInUpperChain, fields);
+   
   }
   public Map<String, Set<MethodDeclaration>> getMethodsInUpperChain() {
     if (methodsInUpperChain.isEmpty()) {
@@ -180,6 +223,7 @@ public class ClassDeclaration extends GenericDeclaration
         mds.addAll(methodsInUpperChain.get(methodName));
       }
       mds.addAll(method.getValue());
+      
       methodsInUpperChain.put(methodName, mds);
     }
   }
@@ -188,7 +232,10 @@ public class ClassDeclaration extends GenericDeclaration
 
     if (className!= null)  {
       // load the super class of the cd
-      SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader);
+      ClassVisitor cw = new EmptyClassVisitor();
+      SerialVersionClassVisitor cv = new SerialVersionClassVisitor(cw);
+      
+      SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
       try {
         ClassReader cr = new ClassReader(jarsLoader.getResourceAsStream(className + SemanticVersioningUtils.classExt));
         cr.accept(svc, 0);
@@ -253,26 +300,26 @@ public class ClassDeclaration extends GenericDeclaration
     if (old == null) {
       return binaryCompatible;
     }
-    BinaryCompatibilityStatus bcs = getClassSignatureBinaryCompatibleStatus(old);
-    if (!!!bcs.isCompatible()) {
-      return bcs;
-    } else {
-      bcs = getAllMethodsBinaryCompatibleStatus(old);
-      if (!!!bcs.isCompatible()) {
-        return bcs;
-      } else {
-        bcs = getFieldsBinaryCompatibleStatus(old);
-        if (!!!bcs.isCompatible()) {
-          return bcs;
-        } else {
-          bcs = areAllSuperPresent(old);
-          if (!!!bcs.isCompatible()) {
-            return bcs;
-          }
-        }
+    StringBuilder reason = new StringBuilder();
+    boolean isCompatible = true;
+
+    Set<BinaryCompatibilityStatus>  bcsSet = new HashSet<BinaryCompatibilityStatus>();
+    bcsSet.add(getClassSignatureBinaryCompatibleStatus(old));
+    bcsSet.add(getAllMethodsBinaryCompatibleStatus(old));
+    bcsSet.add(getAllFieldsBinaryCompatibleStatus(old));
+    bcsSet.add(getAllSuperPresentStatus(old));
+    bcsSet.add(getSerializableBackCompatable(old));
+    for (BinaryCompatibilityStatus bcs: bcsSet) {
+      if (!bcs.isCompatible()){
+        isCompatible = false;
+        reason.append(bcs.getReason());
       }
     }
-    return binaryCompatible;
+    if (!isCompatible) {
+      return new BinaryCompatibilityStatus(isCompatible, reason.toString());
+    } else{
+      return binaryCompatible;
+    }
 
   }
 
@@ -285,107 +332,160 @@ public class ClassDeclaration extends GenericDeclaration
     // if a class was not abstract but changed to abstract
     // not final changed to final
     // public changed to non-public
-    StringBuilder reason = new StringBuilder("The class "  + getName() );
-    boolean compatible = false;
+    String prefix = " The class "  + getName();
+    StringBuilder reason = new StringBuilder();
+    boolean compatible = true;
     if (!!!originalClass.isAbstract() && isAbstract()) {
-      reason.append(" was not abstract but is changed to be abstract.") ;
-    } else if (!!!originalClass.isFinal() && isFinal()){
-      reason.append( " was not final but is changed to be final.");
-    } else if (originalClass.isPublic() && !!! isPublic()) {
-      reason.append(" was public but is changed to be non-public.");
-    } else {
-      compatible = true;
-    }
+      reason.append(prefix + " was not abstract but is changed to be abstract.") ;
+      compatible = false;
+    } 
+    if (!!!originalClass.isFinal() && isFinal()){
+      reason.append(prefix + " was not final but is changed to be final.");
+      compatible = false;
+    } 
+    if (originalClass.isPublic() && !!! isPublic()) {
+      reason.append(prefix + " was public but is changed to be non-public.");
+      compatible = false;
+    } 
     return new BinaryCompatibilityStatus(compatible, compatible? null: reason.toString());
   }
 
-  public BinaryCompatibilityStatus getFieldsBinaryCompatibleStatus(ClassDeclaration originalClass) {
+  public BinaryCompatibilityStatus getAllFieldsBinaryCompatibleStatus(ClassDeclaration originalClass) {
     // for each field to see whether the same field has changed
     // not final -> final
     // static <-> nonstatic
-
-    for (Map.Entry<String, FieldDeclaration> entry : originalClass.getFields().entrySet()) {
-
+    Map<String, FieldDeclaration> oldFields = originalClass.getAllFields();
+    Map<String, FieldDeclaration> newFields = getAllFields();
+    return areFieldsBinaryCompatible(oldFields, newFields);
+  }
+  private BinaryCompatibilityStatus areFieldsBinaryCompatible(Map<String, FieldDeclaration> oldFields, Map<String, FieldDeclaration> currentFields) {
+    
+    boolean overallCompatible = true;
+    StringBuilder reason = new StringBuilder();
+    
+    for (Map.Entry<String, FieldDeclaration> entry : oldFields.entrySet()) {
       FieldDeclaration bef_fd = entry.getValue();
-      FieldDeclaration cur_fd = getFields().get(entry.getKey());
+      FieldDeclaration cur_fd = currentFields.get(entry.getKey());
+      
+      boolean compatible = isFieldBinaryCompatible( reason, bef_fd, cur_fd) ;
+      if (!compatible) {
+        overallCompatible = compatible;
+      } 
+      
+    }
+    if (!overallCompatible) {
+      return new BinaryCompatibilityStatus(overallCompatible, reason.toString());
+    } else {
+      return binaryCompatible;
+    }
+  }
+  private boolean isFieldBinaryCompatible( StringBuilder reason,
+      FieldDeclaration bef_fd, FieldDeclaration cur_fd)
+  {
+    String fieldName = bef_fd.getName();
+    //only interested in the public or protected fields
 
-      String fieldName = bef_fd.getName();
-      //only interested in the public or protected fields
-      boolean compatible = true;
-      if (bef_fd.isPublic() || bef_fd.isProtected()) {
-        StringBuilder reason = new StringBuilder("The public or protected field "  +fieldName);
+    boolean compatible = true;
+    
+    if (bef_fd.isPublic() || bef_fd.isProtected()) {
+      String prefix = htmlOneLineBreak + "The " + (bef_fd.isPublic()? "public" : "protcted") + " field "  +fieldName;
 
-        if (cur_fd == null) {
-          reason.append(" has been deleted.");
-          compatible =  false;
-        } else if ((!!!bef_fd.isFinal()) && (cur_fd.isFinal())) {
+
+      if (cur_fd == null) {
+        reason.append(prefix + " has been deleted.");
+        compatible =  false;
+      } else {
+
+        if ((!!!bef_fd.isFinal()) && (cur_fd.isFinal())) {
           // make sure it has not been changed to final
-          reason.append(" was not final but has been changed to be final.");
+          reason.append(prefix + " was not final but has been changed to be final.");
           compatible = false;
 
-        } else if (bef_fd.isStatic() != cur_fd.isStatic()) {
+        }  if (bef_fd.isStatic() != cur_fd.isStatic()) {
           // make sure it the static signature has not been changed
-          reason.append( " was static but is changed to be non static or vice versa.");
+          reason.append(prefix+ " was static but is changed to be non static or vice versa.");
           compatible = false;
         }
         // check to see the field type is the same 
-        else if (!!!Type.getType(bef_fd.getDesc()).equals(Type.getType(cur_fd.getDesc()))) {
-          reason.append(" has different type.");
+        if (!isFieldTypeSame(bef_fd, cur_fd) ) {
+          reason.append(prefix + " has changed its type.");
           compatible = false;
 
-        } else if (SemanticVersioningUtils.isLessAccessible(bef_fd, cur_fd)) {
-          // check whether the new field is less accessible than the old one         
-          reason.append(" is less accessible.");
+        }  if (SemanticVersioningUtils.isLessAccessible(bef_fd, cur_fd)) {
+          // check whether the new field is less accessible than the old one
+          reason.append(prefix + " becomes less accessible.");
           compatible = false;
         }
-        if (!!!compatible) {
-          return new BinaryCompatibilityStatus(compatible, reason.toString());
+
+      }
+    }
+    return compatible;
+  }
+
+  /**
+   * Return whether the serializable class is binary compatible. The serial verison uid change breaks binary compatibility.
+   * @param old
+   * @return
+   */
+  private BinaryCompatibilityStatus getSerializableBackCompatable(ClassDeclaration old ) {
+    // It does not matter one of them is not seralizable.
+    boolean serializableBackCompatible = true;
+    String reason = null;
+    if ((getAllSupers().contains(SemanticVersioningUtils.SERIALIZABLE_CLASS_IDENTIFIER)) && (old.getAllSupers().contains(SemanticVersioningUtils.SERIALIZABLE_CLASS_IDENTIFIER))){
+      // check to see whether the serializable id is the same
+      //ignore if it is enum
+      if ((!getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS) && (!old.getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS)))) {
+        long oldValue = getSerialVersionUID(old) ;
+        long curValue = getSerialVersionUID(this);
+        if ((oldValue != curValue)) {
+          serializableBackCompatible = false;
+          reason = htmlOneLineBreak + "The serializable class is no longer back compatible as the value of SerialVersionUID has changed from " + oldValue + " to " + curValue + ".";
         }
       }
     }
-    // need to check the newly added fields do not cause binary compatibility issue:
-    // e.g. the new fields has less access than the old one
-    // the new field is static(instance) while the old one is instance(static) respectively.
-    Collection<String> curFields = getFields().keySet();
-    Collection<String> oldFields = originalClass.getFields().keySet();
-    curFields.removeAll(oldFields);
-    Map<String, Collection<FieldDeclaration>> superFields = new HashMap<String, Collection<FieldDeclaration>>();
-    if (!!!(curFields.isEmpty())) {
-      superFields = getFieldsInUpperChain();
-    }
-    // for each new field we need to find out whether it may cause binary incompatibility
-    for ( String newFieldName : curFields) {
-      // check whether the new field has the same field name in the super with the same type
-      boolean existInSuper = false;
-      if (superFields.containsKey(newFieldName)) {
-        FieldDeclaration newfd = getFields().get(newFieldName);
-        Collection<FieldDeclaration> superfd = superFields.get(newFieldName);
-        FieldDeclaration oldfd = null;
-        if ((superfd != null) ) {
-          for (FieldDeclaration fd : superfd) {
-            if (newfd.equals(fd)) {
-              oldfd = fd;
-              existInSuper = true;
-              break;
-            }
-          }
-        }
-        if ((existInSuper) && ((SemanticVersioningUtils.isLessAccessible(oldfd, newfd)) || (oldfd.isStatic() != newfd.isStatic()))){
-
-          return new BinaryCompatibilityStatus(false, "The new field " + newfd.getName() + " conflicts with the same field in its super class. For more details, check the Binary Compatibility section(Chapter 13) of the Java Specification.");
-        }
-      }
+    
+    if (!serializableBackCompatible) {
+      return new BinaryCompatibilityStatus(serializableBackCompatible, reason);
     }
     return binaryCompatible;
   }
-
+  
+  private long getSerialVersionUID(ClassDeclaration cd) {
+    FieldDeclaration serialID = cd.getAllFields().get(SemanticVersioningUtils.SERIAL_VERSION_UTD);
+    if (serialID != null) {
+      if (serialID.isFinal() && serialID.isStatic() && Type.LONG_TYPE.equals(Type.getType(serialID.getDesc()))) {
+        if (serialID.getValue() != null){
+          return ((Long)(serialID.getValue())).longValue();
+        } else {
+          return 0;
+        }
+      }
+    }
+    // get the generated value
+    return cd.getSerialVisitor().getComputeSerialVersionUID();
+  }
+  private boolean isFieldTypeSame (FieldDeclaration bef_fd, FieldDeclaration cur_fd) {
+    boolean descSame = bef_fd.getDesc().equals(cur_fd.getDesc());
+    if (descSame) {
+      // check whether the signatures are the same
+      if ((bef_fd.getSignature() == null) && (cur_fd.getSignature() == null)) {
+      
+        return true;
+      }
+      if ((bef_fd.getSignature() != null) && (bef_fd.getSignature().equals(cur_fd.getSignature()))) {
+         return true;
+      }
+    }
+    return false;
+    
+  }
   private BinaryCompatibilityStatus getAllMethodsBinaryCompatibleStatus(ClassDeclaration originalClass) {
     //  for all methods
     // no methods should have deleted
     // method return type has not changed
     // method changed from not abstract -> abstract
-    Map<String, Set<MethodDeclaration>> oldMethods = originalClass.getMethods();
-    Map<String, Set<MethodDeclaration>> newMethods = getMethods();
+    Map<String, Set<MethodDeclaration>> oldMethods = originalClass.getAllMethods();
+    Map<String, Set<MethodDeclaration>> newMethods = getAllMethods();
     return  areMethodsBinaryCompatible(oldMethods, newMethods) ;
   }
 
@@ -393,6 +493,8 @@ public class ClassDeclaration extends GenericDeclaration
       Map<String, Set<MethodDeclaration>> oldMethods, Map<String, Set<MethodDeclaration>> newMethods)
   {
 
+    StringBuilder reason = new StringBuilder();
+    boolean compatible = true;
     Map<String, Collection<MethodDeclaration>> extraMethods = new HashMap<String, Collection<MethodDeclaration>>();
 
     for (Map.Entry<String, Set<MethodDeclaration>> me : newMethods.entrySet()) {
@@ -409,37 +511,38 @@ public class ClassDeclaration extends GenericDeclaration
       // for each overloading methods
       outer: for (MethodDeclaration md : oldMDSigs) {
         String mdName = md.getName();
-        StringBuilder reason = new StringBuilder("The "  + SemanticVersioningUtils.getReadableMethodSignature(mdName, md.getDesc()) );
+
+        String prefix = htmlOneLineBreak  +"The "  + SemanticVersioningUtils.getReadableMethodSignature(mdName, md.getDesc());
         if (md.isProtected() || md.isPublic()) {
+          boolean found = false;
           if (newMDSigs !=  null) {
             // try to find it in the current class
             for (MethodDeclaration new_md : newMDSigs) {
               // find the method with the same return type, parameter list 
               if ((md.equals(new_md))) {
+                found = true;
                 // If the old method is final but the new one is not or vice versa
                 // If the old method is static but the new one is non static
                 // If the old method is not abstract but the new is
 
-
-                boolean compatible = true;
                 if ( !!!Modifier.isFinal(md.getAccess()) && !!!Modifier.isStatic(md.getAccess()) && Modifier.isFinal(new_md.getAccess())) {
                   compatible = false;
-                  reason.append(" was not final but has been changed to be final.");
-                } else if (Modifier.isStatic(md.getAccess()) != Modifier.isStatic(new_md.getAccess())){
+                  reason.append(prefix + " was not final but has been changed to be final.");
+                } 
+                if (Modifier.isStatic(md.getAccess()) != Modifier.isStatic(new_md.getAccess())){
                   compatible = false;
-                  reason.append(" has changed from static to non-static or vice versa.");
-                } else if ((Modifier.isAbstract(new_md.getAccess()) == true) && (Modifier.isAbstract(md.getAccess()) == false)) {
+                  reason.append(prefix + " has changed from static to non-static or vice versa.");
+                } 
+                if ((Modifier.isAbstract(new_md.getAccess()) == true) && (Modifier.isAbstract(md.getAccess()) == false)) {
                   compatible = false;
-                  reason.append( " has changed from non abstract to abstract. ");
+                  reason.append( prefix + " has changed from non abstract to abstract. ");
                 }
-                else if (SemanticVersioningUtils.isLessAccessible(md, new_md)) {
+                if (SemanticVersioningUtils.isLessAccessible(md, new_md)) {
                   compatible = false;
-                  reason.append(" is less accessible.");
+                  reason.append(prefix + " is less accessible.");
                 }
-                if (!!!compatible) {
-                  return new BinaryCompatibilityStatus(compatible, reason.toString());
-                }
-                else {
+
+                if (compatible) {
                   // remove from the extra map
                   Collection<MethodDeclaration> mds = extraMethods.get(methodName);
                   mds.remove(new_md);
@@ -453,20 +556,20 @@ public class ClassDeclaration extends GenericDeclaration
           // 
           // if we are here, it means that we have not found the method with the same description and signature
           // which means that the method has been deleted. Let's make sure it is not moved to its upper chain.
-          if (!!!isMethodInSuperClass(md)) {
+          if ( !found){
+            if (!isMethodInSuperClass(md)) {
 
-            reason.append(" has been deleted or its return type or parameter list has changed.");
-            return new BinaryCompatibilityStatus(false, reason.toString());
-
-
-          } else {
-            if (newMDSigs != null) {
-              for (MethodDeclaration new_md : newMDSigs) {
-                // find the method with the same return type, parameter list 
-                if ((md.equals(new_md)))  {
-                  Collection<MethodDeclaration> mds = extraMethods.get(methodName);
-                  mds.remove(new_md);
-                  extraMethods.put(methodName, mds);
+              compatible = false;
+              reason.append(prefix + " has been deleted or its return type or parameter list has changed.");
+            } else {
+              if (newMDSigs != null) {
+                for (MethodDeclaration new_md : newMDSigs) {
+                  // find the method with the same return type, parameter list 
+                  if ((md.equals(new_md)))  {
+                    Collection<MethodDeclaration> mds = extraMethods.get(methodName);
+                    mds.remove(new_md);
+                    extraMethods.put(methodName, mds);
+                  }
                 }
               }
             }
@@ -478,48 +581,63 @@ public class ClassDeclaration extends GenericDeclaration
     // Check the newly added method has not caused binary incompatibility
     for (Map.Entry<String, Collection<MethodDeclaration>> extraMethodSet : extraMethods.entrySet()){
       for (MethodDeclaration md : extraMethodSet.getValue()) {
-        if (isNewMethodSpecialCase(md)){
-          String reason = "The newly added " + SemanticVersioningUtils.getReadableMethodSignature(md.getName(), md.getDesc()) + " conflicts with the same method in its super class. For more details, check the Binary Compatibility section(Chapter 13) of the Java Specification.";
-          return new BinaryCompatibilityStatus(false, reason);
+        String head = htmlOneLineBreak  +"The "  + SemanticVersioningUtils.getReadableMethodSignature(md.getName(), md.getDesc());
+        if (isNewMethodSpecialCase(md, head, reason)){
+          compatible = false;
         }
       }
     }
-
-
-    return  binaryCompatible;
+    if (compatible){
+      return  binaryCompatible;
+    }
+    else {
+      return new BinaryCompatibilityStatus(compatible, reason.toString());
+    }
   }
-  public MethodDeclaration getExtraMethods(ClassDeclaration old ) {
-    // Need to find whether there are new abstract methods added.
+  /**
+   * Return the newly added fields
+   * @param old
+   * @return
+   */
+  public Collection<FieldDeclaration> getExtraFields(ClassDeclaration old) {
+    Map<String, FieldDeclaration> oldFields = old.getAllFields();
+    Map<String, FieldDeclaration> newFields = getAllFields();
+    Map<String, FieldDeclaration> extraFields = new HashMap<String, FieldDeclaration>(newFields);
+    for (String key : oldFields.keySet()) {
+      extraFields.remove(key);
+    }
+    return extraFields.values();
+  }
+  /**
+   * Return the extra non-private methods
+   * @param old
+   * @return
+   */
+  public Collection<MethodDeclaration> getExtraMethods(ClassDeclaration old ) {
+    // Need to find whether there are new methods added.
+    Collection<MethodDeclaration> extraMethods = new HashSet<MethodDeclaration>();
+    Map<String, Set<MethodDeclaration>> currMethodsMap = getAllMethods();
+    Map<String, Set<MethodDeclaration>> oldMethodsMap = old.getAllMethods();
 
-    if (Modifier.isAbstract(getAccess())) {
-      Map<String, Set<MethodDeclaration>> currMethodsMap = getAllMethods();
+    for (Map.Entry<String, Set<MethodDeclaration>> currMethod : currMethodsMap.entrySet()) {
+      String methodName = currMethod.getKey();
+      Collection<MethodDeclaration> newMethods = currMethod.getValue();
 
-      Map<String, Set<MethodDeclaration>> oldMethodsMap = old.getAllMethods();
-      // only interested in an abstract class
-
-      for (Map.Entry<String, Set<MethodDeclaration>> currMethod : currMethodsMap.entrySet()) {
-        String methodName = currMethod.getKey();
-        Collection<MethodDeclaration> newMethods = currMethod.getValue();
-
-        // for each abstract method, we look for whether it exists in the old class
-        Collection<MethodDeclaration> oldMethods = oldMethodsMap.get(methodName);
-        for (MethodDeclaration new_md : newMethods) {
+      // for each  method, we look for whether it exists in the old class
+      Collection<MethodDeclaration> oldMethods = oldMethodsMap.get(methodName);
+      for (MethodDeclaration new_md : newMethods) {
+        if (!new_md.isPrivate()){
           if (oldMethods == null) {
-            return new_md;
+            extraMethods.add(new_md);
           } else {
-            if (oldMethods.contains(new_md)) {
-              continue;
-            } else {
-              return new_md;
+            if (!oldMethods.contains(new_md)) {
+              extraMethods.add(new_md);
             }
           }
         }
       }
-      // if we reach here, it means we have scanned all methods in the new classes. All of them are in the original class. No new method is added!
-      return null;
     }
-    // not to worry as it is not abstract class:o
-    return null;
+    return extraMethods;
   }
 
   public boolean isMethodInSuperClass(MethodDeclaration md){
@@ -537,32 +655,55 @@ public class ClassDeclaration extends GenericDeclaration
     return false;
   }
 
+  
   /**
    * The newly added method is less accessible than the old one in the super or is a static (respectively instance) method.
    * @param md
    * @return
    */
-  public boolean isNewMethodSpecialCase(MethodDeclaration md){
+  public boolean isNewMethodSpecialCase(MethodDeclaration md, String prefix, StringBuilder reason){
     // scan the super class and interfaces
     String methodName = md.getName();
+    boolean special = false;
     Collection<MethodDeclaration> overloaddingMethods = getMethodsInUpperChain().get(methodName);
     if (overloaddingMethods != null) {
       for (MethodDeclaration value : overloaddingMethods) {
         // method signature and name same and also the method should not be less accessible
-        if (md.equals(value) && (SemanticVersioningUtils.isLessAccessible(md, value) || value.isStatic()!=md.isStatic())) {
-          return true;
+        if (!SemanticVersioningUtils.CONSTRUTOR.equals(md.getName())) {
+          if (md.equals(value)) {
+            if (SemanticVersioningUtils.isLessAccessible(value, md)) {
+              special =true;
+              reason.append(prefix + " is less accessible than the same method in its parent.");
+            }
+            if (value.isStatic()) {
+              if (!md.isStatic()) {
+                special =true;
+                reason.append(prefix + " is non-static but the same method in its parent is static.");
+              }
+            } else {
+              if (md.isStatic()) {
+                special =true;
+                reason.append(prefix + " is static but the same method is its parent is not static.");
+              }
+            }
+          }
         }
       }
     }
-    return false;
+    return special;
   }
-  public BinaryCompatibilityStatus areAllSuperPresent(ClassDeclaration old) {
+  public BinaryCompatibilityStatus getAllSuperPresentStatus(ClassDeclaration old) {
     Collection<String> oldSupers = old.getAllSupers();
     boolean containsAll = getAllSupers().containsAll(oldSupers);
     if (!!!containsAll) {
       oldSupers.removeAll(getAllSupers());
-      return new BinaryCompatibilityStatus(false, "The superclasses or superinterfaces have stopped being super: " + oldSupers.toString());
+      return new BinaryCompatibilityStatus(false, htmlTwoLineBreaks  +"The superclasses or superinterfaces have stopped being super: " + oldSupers.toString() + ".");
     }
     return binaryCompatible;
   }
+  public SerialVersionClassVisitor getSerialVisitor()
+  {
+    return serialVisitor;
+  }
+  
 }

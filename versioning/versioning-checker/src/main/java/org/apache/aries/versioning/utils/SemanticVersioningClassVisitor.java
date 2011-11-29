@@ -17,7 +17,6 @@
  * under the License.
  */
 package org.apache.aries.versioning.utils;
-
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 
@@ -33,6 +32,12 @@ public class SemanticVersioningClassVisitor implements ClassVisitor
   private ClassDeclaration classDeclaration;
   private boolean needVisit = false;
   private URLClassLoader loader = null;
+  private SerialVersionClassVisitor cv = null;
+  public SemanticVersioningClassVisitor(URLClassLoader newJarLoader, SerialVersionClassVisitor cv) {
+    this.loader = newJarLoader;
+    this.cv = cv;
+  }
+
   public SemanticVersioningClassVisitor(URLClassLoader newJarLoader) {
     this.loader = newJarLoader;
   }
@@ -48,14 +53,18 @@ public class SemanticVersioningClassVisitor implements ClassVisitor
    * java.lang.String, java.lang.String, java.lang.String, java.lang.String)
    */
   // visit the header of the class
+  @Override
   public void  visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
     // only interested in public class
-    if (Modifier.isPublic(access) || (Modifier.isProtected(access))) {
-    classDeclaration = new ClassDeclaration(access, name, signature, superName, interfaces, loader);
-    needVisit = true;
-    
-    } 
+    if (cv != null) {
+      cv.visit(version, access, name, signature, superName, interfaces);
     }
+    if (Modifier.isPublic(access) || (Modifier.isProtected(access))) {
+      classDeclaration = new ClassDeclaration(access, name, signature, superName, interfaces, loader, cv);
+      needVisit = true;
+
+    } 
+  }
   /*
    * (non-Javadoc)
    * 
@@ -67,9 +76,11 @@ public class SemanticVersioningClassVisitor implements ClassVisitor
   @Override
   public FieldVisitor visitField(int access, String name, String desc,
       String signature, Object value) {
+    if (cv != null) {
+      cv.visitField(access, name, desc, signature, value);
+    }
     if (needVisit) {
-      FieldDeclaration fd = new FieldDeclaration(access, name, desc, signature);
-
+      FieldDeclaration fd = new FieldDeclaration(access, name, desc, signature, value);
       classDeclaration.addFields(fd);
     }
     return null;
@@ -87,7 +98,10 @@ public class SemanticVersioningClassVisitor implements ClassVisitor
       String signature, String[] exceptions) {
 
 
-    if (needVisit) {
+    if (cv != null) {
+      cv.visitMethod(access, name, desc, signature, exceptions);
+    }
+    if (needVisit && (!SemanticVersioningUtils.CLINIT.equals(name))) {
       MethodDeclaration md = new MethodDeclaration(access, name, desc, signature, exceptions);
       classDeclaration.addMethods(md);
     }
@@ -103,31 +117,31 @@ public class SemanticVersioningClassVisitor implements ClassVisitor
   {
     // no-op    
   }
- 
+
   @Override
   public void visitEnd()
   {
-  //no-op
-    
+    //no-op
+
   }
   @Override
   public void visitInnerClass(String name, String outerName, String innerName, int access)
   {
     //no-op
     //The inner class will be scanned on its own. However, the method level class will be excluded, as they won't be public or protected.
-   
+
   }
   @Override
   public void visitOuterClass(String owner, String name, String desc)
   {
-  //no op
-    
+    //no op
+
   }
   @Override
   public void visitSource(String arg0, String arg1)
   {
     //no-op
-    
+
   }
 
 
