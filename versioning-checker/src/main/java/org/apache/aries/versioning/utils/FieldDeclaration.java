@@ -19,27 +19,31 @@
 package org.apache.aries.versioning.utils;
 
 
+
 public class FieldDeclaration extends GenericDeclaration
 {
-  private String desc;
-  FieldDeclaration(int access, String name, String desc, String signature) {
+  private final String desc;
+  private final Object value;
+  FieldDeclaration(int access, String name, String desc, String signature, Object value) {
     super(access, name, signature);
     this.desc = desc;
+    this.value = value;
   }
 
   public String getDesc()
   {
     return desc;
   }
+  public Object getValue() {
+    return value;
+  }
 
   @Override
   public int hashCode()
   {
     final int prime = 31;
-    int result = super.hashCode();
+    int result = 1;
     result = prime * result + ((getName()== null) ? 0 : getName().hashCode());
-    result = prime * result + ((desc == null) ? 0 : desc.hashCode());
-    result = prime * result + ((getSignature() == null) ? 0 : getSignature().hashCode());
     return result;
   }
 
@@ -52,12 +56,6 @@ public class FieldDeclaration extends GenericDeclaration
     if (getName() == null) {
       if (other.getName() != null) return false;
     } else if (!getName().equals(other.getName())) return false;
-    if (desc == null) {
-      if (other.desc != null) return false;
-    } else if (!desc.equals(other.desc)) return false;
-    if (getSignature() == null) {
-      if (other.getSignature() != null) return false;
-    } else if (!getSignature().equals(other.getSignature())) return false;
     return true;
   }
 
