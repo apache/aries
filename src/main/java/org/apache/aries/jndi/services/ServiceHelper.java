@@ -209,7 +209,7 @@ public final class ServiceHelper
   /** A cache of proxies returned to the client */
   private static final ConcurrentMap<ServiceKey, WeakReference<Object>> proxyCache = new ConcurrentHashMap<ServiceKey, WeakReference<Object>>();
   private static final CacheClearoutListener cacheClearoutListener = new CacheClearoutListener(proxyCache);
-  public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(ServiceHelper.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
+  private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(ServiceHelper.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
 
   public static Object getService(BundleContext ctx, OsgiName lookupName, String id,
                                   boolean dynamicRebind, Map<String, Object> env, boolean requireProxy) throws NamingException
