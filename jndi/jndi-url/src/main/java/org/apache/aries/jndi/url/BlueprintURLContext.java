@@ -42,7 +42,7 @@ import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
 import javax.naming.ServiceUnavailableException;
 
-import org.apache.aries.jndi.services.ServiceHelper;
+import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -410,6 +410,8 @@ public class BlueprintURLContext implements Context
     return result;
   }
   
+  private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(BlueprintURLContext.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
+
   /**
    * Obtain a BlueprintContainerService for the given bundle. If the service isn't there, wait for up 
    * to the blueprint.graceperiod defined for that bundle for one to be published. 
@@ -445,7 +447,7 @@ public class BlueprintURLContext implements Context
       st.close();
     }
     if (result == null) { 
-      throw new ServiceUnavailableException (ServiceHelper.MESSAGES.getMessage("no.blueprint.container", b.getSymbolicName() + '/' + b.getVersion()));
+      throw new ServiceUnavailableException (MESSAGES.getMessage("no.blueprint.container", b.getSymbolicName() + '/' + b.getVersion()));
     }
     return result;
   }
