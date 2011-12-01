@@ -553,7 +553,7 @@ public class ManifestHeaderProcessorTest
       String s =
           "com.acme.dictionary; effective:=resolve; from:String=nl; to=de; version:Version=3.4.0.test;somedir:=test, " +
           "com.acme.dictionary; filter:=\"(&(width>=1000)(height>=1000))\", " +
-          "com.acme.ip2location;country:List<String>=\"nl,be,fr,uk\";version:Version=1.3;long:Long=" + Long.MAX_VALUE + ";d:Double=\"2.2250738585072012e-308\"";
+          "com.acme.ip2location;country:List<String>=\"nl,be,fr,uk\";version:Version=1.3;long:Long=" + Long.MAX_VALUE + ";d:Double=\"3.141592653589793\"";
 
       List<GenericMetadata> capabilities = ManifestHeaderProcessor.parseCapabilityString(s);
       testCapabilitiesOrRequirements(capabilities);
@@ -564,7 +564,7 @@ public class ManifestHeaderProcessorTest
       String s =
           "com.acme.dictionary; effective:=resolve; from:String=nl; to=de; version:Version=3.4.0.test;somedir:=test, " +
           "com.acme.dictionary; filter:=\"(&(width>=1000)(height>=1000))\", " +
-          "com.acme.ip2location;country:List<String>=\"nl,be,fr,uk\";version:Version=1.3;long:Long=" + Long.MAX_VALUE + ";d:Double=\"2.2250738585072012e-308\"";
+          "com.acme.ip2location;country:List<String>=\"nl,be,fr,uk\";version:Version=1.3;long:Long=" + Long.MAX_VALUE + ";d:Double=\"3.141592653589793\"";
 
       List<GenericMetadata> capabilities = ManifestHeaderProcessor.parseRequirementString(s);
       testCapabilitiesOrRequirements(capabilities);
@@ -617,6 +617,6 @@ public class ManifestHeaderProcessorTest
       assertEquals(new Version(1, 3, 0), cap.getAttributes().get("version"));
       assertEquals(Arrays.asList("nl", "be", "fr", "uk"), cap.getAttributes().get("country"));
       assertEquals(Long.MAX_VALUE, cap.getAttributes().get("long"));
-      assertEquals(0, new Double("2.2250738585072012e-308").compareTo((Double) cap.getAttributes().get("d")));
+      assertEquals(0, new Double("3.141592653589793").compareTo((Double) cap.getAttributes().get("d")));
     }
 }
