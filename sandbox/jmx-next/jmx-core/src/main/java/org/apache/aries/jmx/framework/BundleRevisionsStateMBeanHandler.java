@@ -21,6 +21,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.framework.wiring.BundleRevisionsState;
 import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
 import org.osgi.jmx.framework.wiring.BundleRevisionsStateMBean;
