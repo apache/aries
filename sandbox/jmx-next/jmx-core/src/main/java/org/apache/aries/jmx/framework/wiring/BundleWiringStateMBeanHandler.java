@@ -23,32 +23,32 @@ import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
-import org.osgi.jmx.framework.wiring.BundleRevisionsStateMBean;
+import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
 import org.osgi.service.log.LogService;
 
-public class BundleRevisionsStateMBeanHandler implements MBeanHandler {
+public class BundleWiringStateMBeanHandler implements MBeanHandler {
     private final String name;
     private final BundleContext bundleContext;
     private final Logger logger;
 
     private StandardMBean mbean;
-    private BundleRevisionsState revisionsStateMBean;
+    private BundleWiringState revisionsStateMBean;
 
-    public BundleRevisionsStateMBeanHandler(BundleContext bundleContext, Logger logger) {
+    public BundleWiringStateMBeanHandler(BundleContext bundleContext, Logger logger) {
         this.bundleContext = bundleContext;
         this.logger = logger;
-        this.name = BundleRevisionsStateMBean.OBJECTNAME;
+        this.name = BundleWiringStateMBean.OBJECTNAME;
     }
 
     /* (non-Javadoc)
      * @see org.apache.aries.jmx.MBeanHandler#open()
      */
     public void open() {
-        revisionsStateMBean = new BundleRevisionsState(bundleContext, logger);
+        revisionsStateMBean = new BundleWiringState(bundleContext, logger);
         try {
-            mbean = new RegistrableStandardEmitterMBean(revisionsStateMBean, BundleRevisionsStateMBean.class);
+            mbean = new RegistrableStandardEmitterMBean(revisionsStateMBean, BundleWiringStateMBean.class);
         } catch (NotCompliantMBeanException e) {
-            logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + BundleRevisionsStateMBean.class.getName(), e);
+            logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + BundleWiringStateMBean.class.getName(), e);
         }
     }
 
