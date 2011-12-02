@@ -24,7 +24,7 @@
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
-    <artifactId>org.apache.aries.blueprint-compatibility</artifactId>
+    <artifactId>org.apache.aries.blueprint.compatibility</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Blueprint Compatiblity Fragment Bundle</name>
     <version>0.4.1-SNAPSHOT</version>
