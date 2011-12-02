@@ -29,15 +29,15 @@
     <artifactId>org.apache.aries.jndi.rmi</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI RMI Handler</name>
-    <version>0.3.1</version>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
       This bundle contains the JNDI RMI handler
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.rmi-0.3.1</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.rmi-0.3.1</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jndi.rmi-0.3.1</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-rmi</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-rmi</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/dec-2011-jndi-release/jndi/jndi-rmi</url>
      </scm>
 
     <properties>
