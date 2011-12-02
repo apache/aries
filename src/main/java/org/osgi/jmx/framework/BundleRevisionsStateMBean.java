@@ -210,7 +210,7 @@ public interface BundleRevisionsStateMBean {
      * and <code>namespace</code>
      *
      */
-    ArrayType getCurrentRevisionDeclaredRequirements(long bundleId,
+    CompositeData[] getCurrentRevisionDeclaredRequirements(long bundleId,
             String namespace) throws IOException;
 
     /**
@@ -245,12 +245,11 @@ public interface BundleRevisionsStateMBean {
      *
      * @param bundleId
      * @param namespace
-     * @param inUse
      * @return the declared requirements for all revisions of <code>bundleId</code>
      *
      */
     ArrayType getRevisionsDeclaredRequirements(long bundleId,
-            String namespace, boolean inUse) throws IOException;
+            String namespace) throws IOException;
 
     /**
      * Returns the capabilities for all revisions of the bundle.
@@ -260,11 +259,10 @@ public interface BundleRevisionsStateMBean {
      *
      * @param bundleId
      * @param namespace
-     * @param inUse
      * @return the declared capabilities for all revisions of <code>bundleId</code>
      */
     ArrayType getRevisionsDeclaredCapabilities(long bundleId,
-            String namespace, boolean inUse) throws IOException;
+            String namespace) throws IOException;
 
     /**
      * Returns the bundle wirings for all revisions of the bundle.
