@@ -35,7 +35,7 @@ import org.osgi.jmx.JmxConstants;
  * Particularly, the limitations are:
  *  - Cannot retrieve references to resources (e.g. class) of a particular bundle wiring.
  */
-public interface BundleRevisionsStateMBean {
+public interface BundleWiringStateMBean {
     /*
      * The Object Name for a Bundle Revisions MBean.
      */
@@ -202,8 +202,8 @@ public interface BundleRevisionsStateMBean {
 
     TabularType BUNDLE_WIRING_CLOSURE_TYPE = Item.tabularType("BUNDLE_WIRING_CLOSURE",
             "A table of bundle wirings describing a full wiring closure",
-            BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE,
-            BundleRevisionsStateMBean.BUNDLE_ID, BundleRevisionsStateMBean.BUNDLE_REVISION_ID);
+            BundleWiringStateMBean.BUNDLE_WIRING_TYPE,
+            BundleWiringStateMBean.BUNDLE_ID, BundleWiringStateMBean.BUNDLE_REVISION_ID);
 
     /**
      * Returns the requirements for the current bundle revision.
