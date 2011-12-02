@@ -45,7 +45,6 @@ import org.apache.aries.blueprint.mutable.MutableMapMetadata;
 import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
-import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.blueprint.utils.ServiceListener;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -483,7 +482,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
     
     private MutableReferenceMetadata createConfigurationAdminRef(ParserContext context) {
-        return createServiceRef(getBlueprintBundleContext(context), context, ConfigurationAdmin.class, "(objectClass=" + ConfigurationAdmin.class.getName() + ")");
+        return createServiceRef(context, ConfigurationAdmin.class, "(objectClass=" + ConfigurationAdmin.class.getName() + ")");
     }
     
     private static ValueMetadata createValue(ParserContext context, String value) {
@@ -503,11 +502,10 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return m;
     }
     
-    private MutableReferenceMetadata createServiceRef(BundleContext ctx, ParserContext context, Class<?> cls, String filter) {
+    private MutableReferenceMetadata createServiceRef(ParserContext context, Class<?> cls, String filter) {
         MutableReferenceMetadata m = context.createMetadata(MutableReferenceMetadata.class);
         m.setRuntimeInterface(cls);
         m.setInterface(cls.getName());
-        m.setBundleContext(ctx);
         m.setActivation(ReferenceMetadata.ACTIVATION_EAGER);
         m.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
         
@@ -595,26 +593,5 @@ public class CmNamespaceHandler implements NamespaceHandler {
             }
         }
         return interfaceNames;
-    }
-
-    /**
-     * Returns the bundle context within the parser context
-     * 
-     * @param parserContext the parser context
-     * @return the bundle context within the parser context (if it exists)
-     */
-    private BundleContext getBlueprintBundleContext(ParserContext parserContext)
-    {
-        BundleContext blueprintContext = null;
-        
-        if (parserContext != null) {
-            ComponentMetadata metaData = parserContext.getComponentDefinitionRegistry().getComponentDefinition("blueprintBundleContext");
-            
-            if (metaData != null) {
-                blueprintContext = (BundleContext)((PassThroughMetadataImpl)metaData).getObject();   
-            }   
-        }
-        
-        return blueprintContext;
     }
 }
