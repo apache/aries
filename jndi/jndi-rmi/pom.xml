@@ -35,9 +35,9 @@
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-rmi</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-rmi</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-rmi</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-rmi</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-rmi</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/dec-2011-jndi-release/jndi/jndi-rmi</url>
      </scm>
 
     <properties>

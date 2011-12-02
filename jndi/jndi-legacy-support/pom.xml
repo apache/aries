@@ -35,9 +35,9 @@
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-legacy-support</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-legacy-support</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-legacy-support</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-legacy-support</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-legacy-support</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/dec-2011-jndi-release/jndi/jndi-legacy-support</url>
      </scm>
 
     <properties>

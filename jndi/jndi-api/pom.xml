@@ -24,9 +24,9 @@
     </parent>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-api</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-api</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-api</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-api</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-api</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/dec-2011-jndi-release/jndi/jndi-api</url>
      </scm>
 
     <groupId>org.apache.aries.jndi</groupId>

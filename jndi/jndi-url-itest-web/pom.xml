@@ -35,9 +35,9 @@
     <packaging>bundle</packaging>
     
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest-web</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest-web</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-url-itest-web</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-url-itest-web</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-url-itest-web</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/dec-2011-jndi-release/jndi/jndi-url-itest-web</url>
      </scm>
 
      <properties>
