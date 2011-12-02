@@ -50,5 +50,11 @@ public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenc
 
     void setRuntimeInterface(Class clazz);
     
+    /**
+     * Used to set a {@link BundleContext} for this reference lookup. If this
+     * is set to null (or left unset) then the bundle context of the blueprint
+     * bundle will be used (normal behaviour)
+     * @param bc
+     */
     void setBundleContext(BundleContext bc);
 }
