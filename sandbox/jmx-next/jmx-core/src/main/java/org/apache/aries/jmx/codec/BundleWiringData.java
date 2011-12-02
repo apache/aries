@@ -91,7 +91,43 @@ public class BundleWiringData {
         return reqData;
     }
 
-    static CompositeData getCapReqCompositeData(CompositeType type, String namespace, Set<Map.Entry<String,Object>> attributeSet, Set<Map.Entry<String,String>> directiveSet) throws OpenDataException {
+    public static CompositeData[] getCapabilitiesCompositeData(List<BundleCapability> bundleCapabilities) {
+        try {
+            CompositeData[] data = new CompositeData[bundleCapabilities.size()];
+
+            for (int i=0; i < bundleCapabilities.size(); i++) {
+                BundleCapability requirement = bundleCapabilities.get(i);
+
+                CompositeData cd = BundleWiringData.getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_CAPABILITY_TYPE,
+                    requirement.getNamespace(), requirement.getAttributes().entrySet(), requirement.getDirectives().entrySet());
+                data[i] = cd;
+            }
+
+            return data;
+        } catch (OpenDataException e) {
+            throw new IllegalStateException("Can't create CompositeData", e);
+        }
+    }
+
+    public static CompositeData[] getRequirementsCompositeData(List<BundleRequirement> bundleRequirements) {
+        try {
+            CompositeData[] data = new CompositeData[bundleRequirements.size()];
+
+            for (int i=0; i < bundleRequirements.size(); i++) {
+                BundleRequirement requirement = bundleRequirements.get(i);
+
+                CompositeData cd = BundleWiringData.getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE,
+                    requirement.getNamespace(), requirement.getAttributes().entrySet(), requirement.getDirectives().entrySet());
+                data[i] = cd;
+            }
+
+            return data;
+        } catch (OpenDataException e) {
+            throw new IllegalStateException("Can't create CompositeData", e);
+        }
+    }
+
+    private static CompositeData getCapReqCompositeData(CompositeType type, String namespace, Set<Map.Entry<String,Object>> attributeSet, Set<Map.Entry<String,String>> directiveSet) throws OpenDataException {
         Map<String, Object> reqItems = new HashMap<String, Object>();
 
         TabularData attributes = new TabularDataSupport(BundleRevisionsStateMBean.ATTRIBUTES_TYPE);

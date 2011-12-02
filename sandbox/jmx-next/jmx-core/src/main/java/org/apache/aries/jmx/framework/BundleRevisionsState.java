@@ -28,7 +28,6 @@ import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
 import org.apache.aries.jmx.Logger;
-import org.apache.aries.jmx.codec.BundleRequirementsData;
 import org.apache.aries.jmx.codec.BundleWiringData;
 import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
@@ -57,8 +56,7 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
         Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
         BundleRevision revision = bundle.adapt(BundleRevision.class);
 
-        BundleRequirementsData data = new BundleRequirementsData(revision.getDeclaredRequirements(namespace));
-        return data.toCompositeData();
+        return BundleWiringData.getRequirementsCompositeData(revision.getDeclaredRequirements(namespace));
     }
 
     /* (non-Javadoc)
@@ -77,17 +75,6 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
         BundleRevision currentRevision = bundle.adapt(BundleRevision.class);
         Map<BundleRevision, Integer> revisionIDMap = getCurrentRevisionTransitiveRevisionsClosure(bundleId, namespace);
         return getRevisionWiring(currentRevision, 0, namespace, revisionIDMap);
-    }
-
-    private CompositeData getRevisionWiring(BundleRevision revision, int revisionID, String namespace, Map<BundleRevision, Integer> revisionIDMap) {
-        BundleWiring wiring = revision.getWiring();
-        List<BundleCapability> capabilities = wiring.getCapabilities(namespace);
-        List<BundleRequirement> requirements = wiring.getRequirements(namespace);
-        List<BundleWire> providedWires = wiring.getProvidedWires(namespace);
-        List<BundleWire> requiredWires = wiring.getRequiredWires(namespace);
-
-        BundleWiringData data = new BundleWiringData(wiring.getBundle().getBundleId(), revisionID, capabilities, requirements, providedWires, requiredWires, revisionIDMap);
-        return data.toCompositeData();
     }
 
     /* (non-Javadoc)
@@ -129,6 +116,17 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
                 populateTransitiveRevisions(namespace, revision, allRevisions);
             }
         }
+    }
+
+    private CompositeData getRevisionWiring(BundleRevision revision, int revisionID, String namespace, Map<BundleRevision, Integer> revisionIDMap) {
+        BundleWiring wiring = revision.getWiring();
+        List<BundleCapability> capabilities = wiring.getCapabilities(namespace);
+        List<BundleRequirement> requirements = wiring.getRequirements(namespace);
+        List<BundleWire> providedWires = wiring.getProvidedWires(namespace);
+        List<BundleWire> requiredWires = wiring.getRequiredWires(namespace);
+
+        BundleWiringData data = new BundleWiringData(wiring.getBundle().getBundleId(), revisionID, capabilities, requirements, providedWires, requiredWires, revisionIDMap);
+        return data.toCompositeData();
     }
 
     /* (non-Javadoc)
