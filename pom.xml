@@ -24,19 +24,19 @@
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
-    <artifactId>org.apache.aries.blueprint-compatibility</artifactId>
+    <artifactId>org.apache.aries.blueprint.core.compatibility</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Aries Blueprint Compatiblity Fragment Bundle</name>
+    <name>Apache Aries Blueprint Core Compatiblity Fragment Bundle</name>
     <version>0.4.1-SNAPSHOT</version>
     <description>
-        This bundle contains extra classes and exports to allow Blueprint to be compatible
+        This bundle contains extra classes and exports to allow Blueprint core to be compatible
         with previous versions of Blueprint.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-compatibility</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-compatibility</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-compatibility</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-core-compatibility</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-core-compatibility</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-core-compatibility</url>
     </scm>
 
     <properties>
@@ -44,14 +44,13 @@
             org.apache.aries.blueprint.container;deprecated="true",
             org.apache.aries.blueprint.di;deprecated="true",
             org.apache.aries.blueprint.reflect;deprecated="true",
-            org.apache.aries.blueprint.compendium.cm;deprecated="true",
         </aries.osgi.export>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint</artifactId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
             <version>0.4.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -71,7 +70,7 @@
                 </executions>
                 <configuration>
                     <instructions>
-                        <Fragment-Host>org.apache.aries.blueprint</Fragment-Host>
+                        <Fragment-Host>org.apache.aries.blueprint.core</Fragment-Host>
                         <Export-Package>${aries.osgi.export}</Export-Package>
                         <Import-Package>!*</Import-Package>
                     </instructions>
