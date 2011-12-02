@@ -30,30 +30,35 @@ import javax.management.openmbean.TabularDataSupport;
 
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.jmx.framework.BundleRevisionsStateMBean;
 
 public class BundleWiringData {
     private final long bundleId;
+    private final int revisionId;
     private final List<BundleCapability> capabilities;
     private final List<BundleRequirement> requirements;
     private final List<BundleWire> providedWires;
     private final List<BundleWire> requiredWires;
+    private final Map<BundleRevision, Integer> revisionIDMap;
 
-    public BundleWiringData(long bundleId, List<BundleCapability> capabilities, List<BundleRequirement> requirements,
-            List<BundleWire> providedWires, List<BundleWire> requiredWires) {
+    public BundleWiringData(long bundleId, int revisionId, List<BundleCapability> capabilities, List<BundleRequirement> requirements,
+            List<BundleWire> providedWires, List<BundleWire> requiredWires, Map<BundleRevision, Integer> revisionIDMap) {
         this.bundleId = bundleId;
+        this.revisionId = revisionId;
         this.capabilities = capabilities;
         this.requirements = requirements;
         this.providedWires = providedWires;
         this.requiredWires = requiredWires;
+        this.revisionIDMap = revisionIDMap;
     }
 
     public CompositeData toCompositeData() {
         try {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(BundleRevisionsStateMBean.BUNDLE_ID, bundleId);
-            items.put(BundleRevisionsStateMBean.BUNDLE_REVISION_ID, null); // TODO
+            items.put(BundleRevisionsStateMBean.BUNDLE_REVISION_ID, revisionId);
 
             items.put(BundleRevisionsStateMBean.REQUIREMENTS, getRequirements());
             items.put(BundleRevisionsStateMBean.CAPABILITIES, getCapabilities());
@@ -126,14 +131,14 @@ public class BundleWiringData {
 
             BundleCapability capability = requiredWire.getCapability();
             wireItems.put(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID, capability.getRevision().getBundle().getBundleId());
-            wireItems.put(BundleRevisionsStateMBean.PROVIDER_BUNDLE_REVISION_ID, null); // TODO
+            wireItems.put(BundleRevisionsStateMBean.PROVIDER_BUNDLE_REVISION_ID, revisionIDMap.get(capability.getRevision()));
             wireItems.put(BundleRevisionsStateMBean.BUNDLE_CAPABILITY,
                     getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_CAPABILITY_TYPE,
                     capability.getNamespace(), capability.getAttributes().entrySet(), capability.getDirectives().entrySet()));
 
             BundleRequirement requirement = requiredWire.getRequirement();
             wireItems.put(BundleRevisionsStateMBean.REQUIRER_BUNDLE_ID, requirement.getRevision().getBundle().getBundleId());
-            wireItems.put(BundleRevisionsStateMBean.REQUIRER_BUNDLE_REVISION_ID, null); // TODO
+            wireItems.put(BundleRevisionsStateMBean.REQUIRER_BUNDLE_REVISION_ID, revisionIDMap.get(requirement.getRevision()));
 
             wireItems.put(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT,
                 getCapReqCompositeData(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT_TYPE,

@@ -17,11 +17,15 @@
 package org.apache.aries.jmx.framework;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
+import javax.management.openmbean.TabularData;
+import javax.management.openmbean.TabularDataSupport;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.codec.BundleRequirementsData;
@@ -71,22 +75,60 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
     public CompositeData getCurrentWiring(long bundleId, String namespace) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
         BundleRevision currentRevision = bundle.adapt(BundleRevision.class);
-        BundleWiring wiring = currentRevision.getWiring();
+        Map<BundleRevision, Integer> revisionIDMap = getCurrentRevisionTransitiveRevisionsClosure(bundleId, namespace);
+        return getRevisionWiring(currentRevision, 0, namespace, revisionIDMap);
+    }
+
+    private CompositeData getRevisionWiring(BundleRevision revision, int revisionID, String namespace, Map<BundleRevision, Integer> revisionIDMap) {
+        BundleWiring wiring = revision.getWiring();
         List<BundleCapability> capabilities = wiring.getCapabilities(namespace);
         List<BundleRequirement> requirements = wiring.getRequirements(namespace);
         List<BundleWire> providedWires = wiring.getProvidedWires(namespace);
         List<BundleWire> requiredWires = wiring.getRequiredWires(namespace);
 
-        BundleWiringData data = new BundleWiringData(bundle.getBundleId(), capabilities, requirements, providedWires, requiredWires);
+        BundleWiringData data = new BundleWiringData(wiring.getBundle().getBundleId(), revisionID, capabilities, requirements, providedWires, requiredWires, revisionIDMap);
         return data.toCompositeData();
     }
 
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getCurrentWiringClosure(long)
      */
-    public CompositeData getCurrentWiringClosure(long rootBundleId) throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+    public TabularData getCurrentWiringClosure(long rootBundleId, String namespace) throws IOException {
+        Map<BundleRevision, Integer> revisionIDMap = getCurrentRevisionTransitiveRevisionsClosure(rootBundleId, namespace);
+
+        TabularData td = new TabularDataSupport(BundleRevisionsStateMBean.BUNDLE_WIRING_CLOSURE_TYPE);
+        for (Map.Entry<BundleRevision, Integer> entry : revisionIDMap.entrySet()) {
+            td.put(getRevisionWiring(entry.getKey(), entry.getValue(), namespace, revisionIDMap));
+        }
+
+        return td;
+    }
+
+    // The current revision being passed in always gets assigned revision ID 0
+    // All the other revision IDs unique, but don't increase monotonous.
+    private Map<BundleRevision, Integer> getCurrentRevisionTransitiveRevisionsClosure(long rootBundleId, String namespace) throws IOException {
+        Map<BundleRevision, Integer> revisionIDMap = new HashMap<BundleRevision, Integer>();
+
+        Bundle rootBundle = FrameworkUtils.resolveBundle(bundleContext, rootBundleId);
+        BundleRevision rootRevision = rootBundle.adapt(BundleRevision.class);
+        populateTransitiveRevisions(namespace, rootRevision, revisionIDMap);
+
+        // Set the root revision ID to 0,
+        // TODO check if there is already a revision with ID 0 and if so swap them. Quite a small chance that this will be needed
+        revisionIDMap.put(rootRevision, 0);
+        return revisionIDMap;
+    }
+
+    private void populateTransitiveRevisions(String namespace, BundleRevision rootRevision, Map<BundleRevision, Integer> allRevisions) {
+        allRevisions.put(rootRevision, rootRevision.hashCode());
+        BundleWiring wiring = rootRevision.getWiring();
+        List<BundleWire> wires = wiring.getRequiredWires(namespace);
+        for (BundleWire wire : wires) {
+            BundleRevision revision = wire.getCapability().getRevision();
+            if (!allRevisions.containsKey(revision)) {
+                populateTransitiveRevisions(namespace, revision, allRevisions);
+            }
+        }
     }
 
     /* (non-Javadoc)

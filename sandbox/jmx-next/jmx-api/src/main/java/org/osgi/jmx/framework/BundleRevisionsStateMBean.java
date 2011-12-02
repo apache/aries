@@ -21,6 +21,7 @@ import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.SimpleType;
+import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularType;
 
 import org.osgi.jmx.Item;
@@ -121,12 +122,12 @@ public interface BundleRevisionsStateMBean {
     String PROVIDER_BUNDLE_REVISION_ID = "ProviderBundleRevisionId";
     Item PROVIDER_BUNDLE_REVISION_ID_ITEM = new Item(PROVIDER_BUNDLE_REVISION_ID,
             "A local id for the bundle revision that is the provider of the capability",
-            SimpleType.STRING);
+            SimpleType.INTEGER);
 
     String REQUIRER_BUNDLE_REVISION_ID = "RequirerBundleRevisionId";
     Item REQUIRER_BUNDLE_REVISION_ID_ITEM =  new Item(REQUIRER_BUNDLE_REVISION_ID,
             "A local id for the bundle revision that is the requirer of the requirement",
-            SimpleType.STRING);
+            SimpleType.INTEGER);
 
     /**
      * Describes the live association between a provider of
@@ -148,7 +149,7 @@ public interface BundleRevisionsStateMBean {
     String BUNDLE_REVISION_ID = "BundleRevisionId";
     Item BUNDLE_REVISION_ID_ITEM = new Item(BUNDLE_REVISION_ID,
             "The local identifier of the bundle revision",
-            SimpleType.STRING);
+            SimpleType.INTEGER);
 
     String BUNDLE_ID = "BundleId";
     Item BUNDLE_ID_ITEM = new Item(BUNDLE_ID,
@@ -184,7 +185,7 @@ public interface BundleRevisionsStateMBean {
         Item.compositeType("BUNDLE_WIRING",
                 "Describes the runtime association between a provider and a requirer",
                 BUNDLE_ID_ITEM,               /* Long */
-                BUNDLE_REVISION_ID_ITEM,      /* Long (local scope) */
+                BUNDLE_REVISION_ID_ITEM,      /* Integer (local scope) */
                 REQUIREMENTS_ITEM,            /* REQUIREMENT_TYPE [] */
                 CAPABILITIES_ITEM,            /* CAPABILITIES_TYPE [] */
                 REQUIRED_WIRES_ITEM,          /* BUNDLE_WIRE_TYPE [] */
@@ -199,6 +200,10 @@ public interface BundleRevisionsStateMBean {
     ArrayType REVISIONS_CAPABILITY_TYPE_ARRAY =
         Item.arrayType(2, BUNDLE_CAPABILITY_TYPE);
 
+    TabularType BUNDLE_WIRING_CLOSURE_TYPE = Item.tabularType("BUNDLE_WIRING_CLOSURE",
+            "A table of bundle wirings describing a full wiring closure",
+            BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE,
+            BundleRevisionsStateMBean.BUNDLE_ID, BundleRevisionsStateMBean.BUNDLE_REVISION_ID);
 
     /**
      * Returns the requirements for the current bundle revision.
@@ -235,7 +240,19 @@ public interface BundleRevisionsStateMBean {
      * and <code>namespace</code>
      */
     CompositeData getCurrentWiring(long bundleId, String namespace) throws IOException;
-    CompositeData getCurrentWiringClosure(long rootBundleId) throws IOException;
+
+    /**
+     * Returns the bundle wiring closure for the current revision of the specified bundle.
+     *
+     * @see #BUNDLE_WIRING_CLOSURE_TYPE for the details of the TabularType
+     *
+     * @param rootBundleId the root bundle of the closure.
+     * @param namespace the namespace of the capabilities and requirements involved in this wiring.
+     * @return a tabular representation of all the wiring in the closure. The bundle revision ids
+     * only have meaning in the context of the current result. The revision of the rootBundle is set
+     * to 0.
+     */
+    TabularData getCurrentWiringClosure(long rootBundleId, String namespace) throws IOException;
 
     /**
      * Returns the requirements for all revisions of the bundle.
