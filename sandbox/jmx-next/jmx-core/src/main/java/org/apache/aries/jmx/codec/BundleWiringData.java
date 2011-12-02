@@ -54,7 +54,8 @@ public class BundleWiringData {
 
             items.put(BundleRevisionsStateMBean.REQUIREMENTS, getRequirements());
             items.put(BundleRevisionsStateMBean.CAPABILITIES, getCapabilities());
-            items.put(BundleRevisionsStateMBean.BUNDLE_WIRES_TYPE, getRequiredWires());
+            items.put(BundleRevisionsStateMBean.REQUIRED_WIRES, getRequiredWires());
+            items.put(BundleRevisionsStateMBean.PROVIDED_WIRES, null); // TODO
 
             return new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, items);
         } catch (OpenDataException e) {
