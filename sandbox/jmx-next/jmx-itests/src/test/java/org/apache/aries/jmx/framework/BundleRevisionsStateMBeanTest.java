@@ -52,7 +52,7 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.PackageStateMBean;
-import org.osgi.jmx.framework.wiring.BundleRevisionsStateMBean;
+import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
 
 public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
@@ -119,33 +119,33 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetCurrentRevisionDeclaredRequirements() throws IOException {
-        BundleRevisionsStateMBean brsMBean = getMBean(BundleRevisionsStateMBean.OBJECTNAME, BundleRevisionsStateMBean.class);
+        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         BundleRevision br = a.adapt(BundleRevision.class);
 
         List<BundleRequirement> requirements = br.getDeclaredRequirements(BundleRevision.PACKAGE_NAMESPACE);
-        CompositeData[] jmxRequirements = brsMBean.getCurrentRevisionDeclaredRequirements(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
+        CompositeData[] jmxRequirements = brsMBean.getCurrentRevisionDeclaredRequirements(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
         Assert.assertEquals(requirements.size(), jmxRequirements.length);
         // TODO more test content
     }
 
     @Test
     public void testGetCurrentWiring() throws IOException {
-        BundleRevisionsStateMBean brsMBean = getMBean(BundleRevisionsStateMBean.OBJECTNAME, BundleRevisionsStateMBean.class);
+        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        CompositeData jmxWiring = brsMBean.getCurrentWiring(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
+        CompositeData jmxWiring = brsMBean.getCurrentWiring(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
 
-        Assert.assertEquals(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, jmxWiring.getCompositeType());
-        Assert.assertEquals(a.getBundleId(), jmxWiring.get(BundleRevisionsStateMBean.BUNDLE_ID));
+        Assert.assertEquals(BundleWiringStateMBean.BUNDLE_WIRING_TYPE, jmxWiring.getCompositeType());
+        Assert.assertEquals(a.getBundleId(), jmxWiring.get(BundleWiringStateMBean.BUNDLE_ID));
 
         BundleWiring bw = a.adapt(BundleWiring.class);
         assertBundleWiring(bw, jmxWiring);
     }
 
     private void assertBundleWiring(BundleWiring bundleWiring, CompositeData jmxWiring) {
-        CompositeData[] jmxCapabilities = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.CAPABILITIES);
+        CompositeData[] jmxCapabilities = (CompositeData[]) jmxWiring.get(BundleWiringStateMBean.CAPABILITIES);
         List<BundleCapability> capabilities = bundleWiring.getCapabilities(BundleRevision.PACKAGE_NAMESPACE);
         Assert.assertEquals(capabilities.size(), jmxCapabilities.length);
 
@@ -153,7 +153,7 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Map<Map<String, Object>, Map<String, String>> actualCapabilities = jmxCapReqToMap(jmxCapabilities);
         Assert.assertEquals(expectedCapabilities, actualCapabilities);
 
-        CompositeData[] jmxRequirements = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.REQUIREMENTS);
+        CompositeData[] jmxRequirements = (CompositeData[]) jmxWiring.get(BundleWiringStateMBean.REQUIREMENTS);
         List<BundleRequirement> requirements = bundleWiring.getRequirements(BundleRevision.PACKAGE_NAMESPACE);
         Assert.assertEquals(requirements.size(), jmxRequirements.length);
 
@@ -162,7 +162,7 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Assert.assertEquals(expectedRequirements, actualRequirements);
 
         List<BundleWire> requiredWires = bundleWiring.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
-        CompositeData[] jmxRequiredWires = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.REQUIRED_WIRES);
+        CompositeData[] jmxRequiredWires = (CompositeData[]) jmxWiring.get(BundleWiringStateMBean.REQUIRED_WIRES);
         Assert.assertEquals(requiredWires.size(), jmxRequiredWires.length);
 
         Set<List<Object>> expectedRequiredWires = new HashSet<List<Object>>();
@@ -181,19 +181,19 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Set<List<Object>> actualRequiredWires = new HashSet<List<Object>>();
         for (CompositeData wire : jmxRequiredWires) {
             List<Object> data = new ArrayList<Object>();
-            data.add(wire.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID));
+            data.add(wire.get(BundleWiringStateMBean.PROVIDER_BUNDLE_ID));
             // TODO bundle revision id
-            data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
-            data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
-            data.add(wire.get(BundleRevisionsStateMBean.REQUIRER_BUNDLE_ID));
-            data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
-            data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
+            data.add(getJmxAttributes((CompositeData) wire.get(BundleWiringStateMBean.BUNDLE_CAPABILITY)));
+            data.add(getJmxDirectives((CompositeData) wire.get(BundleWiringStateMBean.BUNDLE_CAPABILITY)));
+            data.add(wire.get(BundleWiringStateMBean.REQUIRER_BUNDLE_ID));
+            data.add(getJmxAttributes((CompositeData) wire.get(BundleWiringStateMBean.BUNDLE_REQUIREMENT)));
+            data.add(getJmxDirectives((CompositeData) wire.get(BundleWiringStateMBean.BUNDLE_REQUIREMENT)));
             actualRequiredWires.add(data);
         }
         Assert.assertEquals(expectedRequiredWires, actualRequiredWires);
 
         List<BundleWire> providedWires = bundleWiring.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
-        CompositeData[] jmxProvidedWires = (CompositeData []) jmxWiring.get(BundleRevisionsStateMBean.PROVIDED_WIRES);
+        CompositeData[] jmxProvidedWires = (CompositeData []) jmxWiring.get(BundleWiringStateMBean.PROVIDED_WIRES);
         Assert.assertEquals(providedWires.size(), jmxProvidedWires.length);
 
         HashSet<List<Object>> expectedProvidedWires = new HashSet<List<Object>>();
@@ -211,12 +211,12 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Set<List<Object>> actualProvidedWires = new HashSet<List<Object>>();
         for (CompositeData wire : jmxProvidedWires) {
             List<Object> data = new ArrayList<Object>();
-            data.add(wire.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID));
-            data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
-            data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
-            data.add(wire.get(BundleRevisionsStateMBean.REQUIRER_BUNDLE_ID));
-            data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
-            data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
+            data.add(wire.get(BundleWiringStateMBean.PROVIDER_BUNDLE_ID));
+            data.add(getJmxAttributes((CompositeData) wire.get(BundleWiringStateMBean.BUNDLE_CAPABILITY)));
+            data.add(getJmxDirectives((CompositeData) wire.get(BundleWiringStateMBean.BUNDLE_CAPABILITY)));
+            data.add(wire.get(BundleWiringStateMBean.REQUIRER_BUNDLE_ID));
+            data.add(getJmxAttributes((CompositeData) wire.get(BundleWiringStateMBean.BUNDLE_REQUIREMENT)));
+            data.add(getJmxDirectives((CompositeData) wire.get(BundleWiringStateMBean.BUNDLE_REQUIREMENT)));
             actualProvidedWires.add(data);
         }
         Assert.assertEquals(expectedProvidedWires, actualProvidedWires);
@@ -224,10 +224,10 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testCurrentWiringClosure() throws Exception {
-        BundleRevisionsStateMBean brsMBean = getMBean(BundleRevisionsStateMBean.OBJECTNAME, BundleRevisionsStateMBean.class);
+        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        TabularData jmxWiringClosure = brsMBean.getCurrentWiringClosure(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
+        TabularData jmxWiringClosure = brsMBean.getCurrentWiringClosure(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
 
         CompositeData jmxWiringA = jmxWiringClosure.get(new Object [] {a.getBundleId(), 0});
         assertBundleWiring(a.adapt(BundleWiring.class), jmxWiringA);
@@ -249,10 +249,10 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
     }
 
     private int findRevisionID(CompositeData jmxWiring, Bundle bundle) {
-        CompositeData[] requiredWires = (CompositeData []) jmxWiring.get(BundleRevisionsStateMBean.REQUIRED_WIRES);
+        CompositeData[] requiredWires = (CompositeData []) jmxWiring.get(BundleWiringStateMBean.REQUIRED_WIRES);
         for (CompositeData req : requiredWires) {
-            if (new Long(bundle.getBundleId()).equals(req.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID))) {
-                return (Integer) req.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_REVISION_ID);
+            if (new Long(bundle.getBundleId()).equals(req.get(BundleWiringStateMBean.PROVIDER_BUNDLE_ID))) {
+                return (Integer) req.get(BundleWiringStateMBean.PROVIDER_BUNDLE_REVISION_ID);
             }
         }
         return -1;
@@ -286,7 +286,7 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> getJmxAttributes(CompositeData jmxCapReq) {
-        TabularData jmxAttributes = (TabularData) jmxCapReq.get(BundleRevisionsStateMBean.ATTRIBUTES);
+        TabularData jmxAttributes = (TabularData) jmxCapReq.get(BundleWiringStateMBean.ATTRIBUTES);
         Map<String, Object> aMap = new HashMap<String, Object>();
         for (CompositeData jmxAttr : (Collection<CompositeData>) jmxAttributes.values()) {
             PropertyData<Object> pd = PropertyData.from(jmxAttr);
@@ -297,10 +297,10 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
 
     @SuppressWarnings("unchecked")
     private Map<String, String> getJmxDirectives(CompositeData jmxCapReq) {
-        TabularData jmxDirectives = (TabularData) jmxCapReq.get(BundleRevisionsStateMBean.DIRECTIVES);
+        TabularData jmxDirectives = (TabularData) jmxCapReq.get(BundleWiringStateMBean.DIRECTIVES);
         Map<String, String> dMap = new HashMap<String, String>();
         for (CompositeData jmxDir : (Collection<CompositeData>) jmxDirectives.values()) {
-            dMap.put((String) jmxDir.get(BundleRevisionsStateMBean.KEY), (String) jmxDir.get(BundleRevisionsStateMBean.VALUE));
+            dMap.put((String) jmxDir.get(BundleWiringStateMBean.KEY), (String) jmxDir.get(BundleWiringStateMBean.VALUE));
         }
         return dMap;
     }

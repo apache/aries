@@ -39,7 +39,7 @@ import org.apache.aries.jmx.framework.BundleStateMBeanHandler;
 import org.apache.aries.jmx.framework.FrameworkMBeanHandler;
 import org.apache.aries.jmx.framework.PackageStateMBeanHandler;
 import org.apache.aries.jmx.framework.ServiceStateMBeanHandler;
-import org.apache.aries.jmx.framework.wiring.BundleRevisionsStateMBeanHandler;
+import org.apache.aries.jmx.framework.wiring.BundleWiringStateMBeanHandler;
 import org.apache.aries.jmx.permissionadmin.PermissionAdminMBeanHandler;
 import org.apache.aries.jmx.provisioning.ProvisioningServiceMBeanHandler;
 import org.apache.aries.jmx.useradmin.UserAdminMBeanHandler;
@@ -94,7 +94,7 @@ public class JMXAgentImpl implements JMXAgent {
         MBeanHandler bundleStateHandler = new BundleStateMBeanHandler(bc, logger);
         bundleStateHandler.open();
         mbeansHandlers.add(bundleStateHandler);
-        MBeanHandler revisionsStateHandler = new BundleRevisionsStateMBeanHandler(bc, logger);
+        MBeanHandler revisionsStateHandler = new BundleWiringStateMBeanHandler(bc, logger);
         revisionsStateHandler.open();
         mbeansHandlers.add(revisionsStateHandler);
         MBeanHandler serviceStateHandler = new ServiceStateMBeanHandler(bc, logger);
