@@ -27,16 +27,16 @@
     <artifactId>org.apache.aries.jndi</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI Bundle</name>
-    <version>0.3.1</version>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
         This bundle contains the core JNDI along with the OSGi url handler.
         It's composed of the jndi-api, jndi-core and jndi-url modules.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi-0.3.1</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi-0.3.1</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jndi-0.3.1</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-bundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-bundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/dec-2011-jndi-release/jndi/jndi-bundle</url>
      </scm>
 
     <properties>
