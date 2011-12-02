@@ -37,7 +37,7 @@ import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.jmx.framework.BundleRevisionsStateMBean;
+import org.osgi.jmx.framework.wiring.BundleRevisionsStateMBean;
 
 public class BundleRevisionsState implements BundleRevisionsStateMBean {
     private final BundleContext bundleContext;

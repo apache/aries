@@ -43,6 +43,7 @@
         <aries.osgi.export.pkg>
             org.osgi.jmx;uses:="javax.management.openmbean",
             org.osgi.jmx.framework;uses:="org.osgi.jmx,javax.management.openmbean",
+            org.osgi.jmx.framework.wiring;uses:="org.osgi.jmx,javax.management.openmbean",
             org.osgi.jmx.service.cm;uses:="javax.management.openmbean",
             org.osgi.jmx.service.permissionadmin;uses:="org.osgi.jmx",
             org.osgi.jmx.service.provisioning;uses:="javax.management.openmbean",
