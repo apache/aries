@@ -150,11 +150,6 @@ public interface BundleRevisionsStateMBean {
             "The local identifier of the bundle revision",
             SimpleType.STRING);
 
-    String BUNDLE_WIRES_TYPE = "BundleWiresType";
-    Item BUNDLE_WIRES_TYPE_ARRAY_ITEM = new Item(BUNDLE_WIRES_TYPE,
-            "The bundle wires of a bundle revision",
-            BUNDLE_WIRES_TYPE_ARRAY);
-
     String BUNDLE_ID = "BundleId";
     Item BUNDLE_ID_ITEM = new Item(BUNDLE_ID,
             "The bundle identifier of the bundle revision",
@@ -175,6 +170,16 @@ public interface BundleRevisionsStateMBean {
             "The bundle capabilities of a bundle revision wiring",
             CAPABILITY_TYPE_ARRAY);
 
+    String PROVIDED_WIRES = "ProvidedWires";
+    Item PROVIDED_WIRES_ITEM = new Item(PROVIDED_WIRES,
+            "The bundle wires to the capabilities provided by this bundle wiring.",
+            BUNDLE_WIRES_TYPE_ARRAY);
+
+    String REQUIRED_WIRES = "RequiredWires";
+    Item REQUIRED_WIRES_ITEM = new Item(REQUIRED_WIRES,
+            "The bundle wires to requirements in use by this bundle wiring",
+            BUNDLE_WIRES_TYPE_ARRAY);
+
     CompositeType BUNDLE_WIRING_TYPE =
         Item.compositeType("BUNDLE_WIRING",
                 "Describes the runtime association between a provider and a requirer",
@@ -182,7 +187,8 @@ public interface BundleRevisionsStateMBean {
                 BUNDLE_REVISION_ID_ITEM,      /* Long (local scope) */
                 REQUIREMENTS_ITEM,            /* REQUIREMENT_TYPE [] */
                 CAPABILITIES_ITEM,            /* CAPABILITIES_TYPE [] */
-                BUNDLE_WIRES_TYPE_ARRAY_ITEM  /* BUNLDE_WIRE_TYPE [] */
+                REQUIRED_WIRES_ITEM,          /* BUNDLE_WIRE_TYPE [] */
+                PROVIDED_WIRES_ITEM           /* BUNDLE_WIRE_TYPE [] */
                 );
     ArrayType BUNDLE_WIRING_TYPE_ARRAY =
         Item.arrayType(1, BUNDLE_WIRING_TYPE);

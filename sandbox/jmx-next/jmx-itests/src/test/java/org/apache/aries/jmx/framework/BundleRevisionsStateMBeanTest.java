@@ -43,7 +43,9 @@ import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
+import org.ops4j.pax.exam.container.def.options.VMOption;
 import org.ops4j.pax.exam.junit.Configuration;
+import org.ops4j.pax.exam.options.TimeoutOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleCapability;
@@ -58,8 +60,8 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-            // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-            // new TimeoutOption( 0 ),
+            new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+            new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -145,7 +147,7 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Assert.assertEquals(expectedRequirements, actualRequirements);
 
         List<BundleWire> requiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
-        CompositeData[] jmxRequiredWires = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.BUNDLE_WIRES_TYPE);
+        CompositeData[] jmxRequiredWires = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.REQUIRED_WIRES);
         // currently the wires only contains the required wires
         // should we have separate JMX slots for provided and required wires instead?
         Assert.assertEquals(requiredWires.size(), jmxRequiredWires.length);
