@@ -23,7 +23,7 @@ import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
-import org.osgi.jmx.framework.BundleRevisionsStateMBean;
+import org.osgi.jmx.framework.wiring.BundleRevisionsStateMBean;
 import org.osgi.service.log.LogService;
 
 public class BundleRevisionsStateMBeanHandler implements MBeanHandler {

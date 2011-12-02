@@ -32,7 +32,7 @@ import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
-import org.osgi.jmx.framework.BundleRevisionsStateMBean;
+import org.osgi.jmx.framework.wiring.BundleRevisionsStateMBean;
 
 public class BundleWiringData {
     private final long bundleId;
