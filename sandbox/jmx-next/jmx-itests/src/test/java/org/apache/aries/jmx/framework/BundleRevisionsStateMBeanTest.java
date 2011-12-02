@@ -148,11 +148,9 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
 
         List<BundleWire> requiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
         CompositeData[] jmxRequiredWires = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.REQUIRED_WIRES);
-        // currently the wires only contains the required wires
-        // should we have separate JMX slots for provided and required wires instead?
         Assert.assertEquals(requiredWires.size(), jmxRequiredWires.length);
 
-        Set<List<Object>> expectedWires = new HashSet<List<Object>>();
+        Set<List<Object>> expectedRequiredWires = new HashSet<List<Object>>();
         for (BundleWire wire : requiredWires) {
             List<Object> data = new ArrayList<Object>();
 
@@ -162,10 +160,10 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
             data.add(wire.getRequirement().getRevision().getBundle().getBundleId());
             data.add(wire.getRequirement().getAttributes());
             data.add(wire.getRequirement().getDirectives());
-            expectedWires.add(data);
+            expectedRequiredWires.add(data);
         }
 
-        Set<List<Object>> actualWires = new HashSet<List<Object>>();
+        Set<List<Object>> actualRequiredWires = new HashSet<List<Object>>();
         for (CompositeData wire : jmxRequiredWires) {
             List<Object> data = new ArrayList<Object>();
             data.add(wire.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID));
@@ -175,10 +173,39 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
             data.add(wire.get(BundleRevisionsStateMBean.REQUIRER_BUNDLE_ID));
             data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
             data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
-            actualWires.add(data);
+            actualRequiredWires.add(data);
+        }
+        Assert.assertEquals(expectedRequiredWires, actualRequiredWires);
+
+        List<BundleWire> providedWires = bw.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData[] jmxProvidedWires = (CompositeData []) jmxWiring.get(BundleRevisionsStateMBean.PROVIDED_WIRES);
+        Assert.assertEquals(providedWires.size(), jmxProvidedWires.length);
+
+        HashSet<List<Object>> expectedProvidedWires = new HashSet<List<Object>>();
+        for (BundleWire wire : providedWires) {
+            List<Object> data = new ArrayList<Object>();
+            data.add(wire.getCapability().getRevision().getBundle().getBundleId());
+            data.add(wire.getCapability().getAttributes());
+            data.add(wire.getCapability().getDirectives());
+            data.add(wire.getRequirement().getRevision().getBundle().getBundleId());
+            data.add(wire.getRequirement().getAttributes());
+            data.add(wire.getRequirement().getDirectives());
+            expectedProvidedWires.add(data);
         }
 
-        Assert.assertEquals(expectedWires, actualWires);
+        Set<List<Object>> actualProvidedWires = new HashSet<List<Object>>();
+        for (CompositeData wire : jmxProvidedWires) {
+            List<Object> data = new ArrayList<Object>();
+            data.add(wire.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID));
+            // TODO bundle revision id
+            data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
+            data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
+            data.add(wire.get(BundleRevisionsStateMBean.REQUIRER_BUNDLE_ID));
+            data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
+            data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_REQUIREMENT)));
+            actualProvidedWires.add(data);
+        }
+        Assert.assertEquals(expectedProvidedWires, actualProvidedWires);
     }
 
     private Map<Map<String, Object>, Map<String, String>> capabilitiesToMap(List<BundleCapability> capabilities) {

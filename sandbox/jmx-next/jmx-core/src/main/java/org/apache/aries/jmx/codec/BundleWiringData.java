@@ -37,12 +37,15 @@ public class BundleWiringData {
     private final long bundleId;
     private final List<BundleCapability> capabilities;
     private final List<BundleRequirement> requirements;
-    private List<BundleWire> requiredWires;
+    private final List<BundleWire> providedWires;
+    private final List<BundleWire> requiredWires;
 
-    public BundleWiringData(long bundleId, List<BundleCapability> capabilities, List<BundleRequirement> requirements, List<BundleWire> requiredWires) {
+    public BundleWiringData(long bundleId, List<BundleCapability> capabilities, List<BundleRequirement> requirements,
+            List<BundleWire> providedWires, List<BundleWire> requiredWires) {
         this.bundleId = bundleId;
         this.capabilities = capabilities;
         this.requirements = requirements;
+        this.providedWires = providedWires;
         this.requiredWires = requiredWires;
     }
 
@@ -55,7 +58,7 @@ public class BundleWiringData {
             items.put(BundleRevisionsStateMBean.REQUIREMENTS, getRequirements());
             items.put(BundleRevisionsStateMBean.CAPABILITIES, getCapabilities());
             items.put(BundleRevisionsStateMBean.REQUIRED_WIRES, getRequiredWires());
-            items.put(BundleRevisionsStateMBean.PROVIDED_WIRES, null); // TODO
+            items.put(BundleRevisionsStateMBean.PROVIDED_WIRES, getProvidedWires());
 
             return new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, items);
         } catch (OpenDataException e) {
@@ -107,10 +110,18 @@ public class BundleWiringData {
         return req;
     }
 
+    private CompositeData[] getProvidedWires() throws OpenDataException {
+        return getWiresCompositeData(providedWires);
+    }
+
     private CompositeData[] getRequiredWires() throws OpenDataException {
-        CompositeData[] reqWiresData = new CompositeData[requiredWires.size()];
-        for (int i=0; i < requiredWires.size(); i++) {
-            BundleWire requiredWire = requiredWires.get(i);
+        return getWiresCompositeData(requiredWires);
+    }
+
+    private CompositeData[] getWiresCompositeData(List<BundleWire> wires) throws OpenDataException {
+        CompositeData[] reqWiresData = new CompositeData[wires.size()];
+        for (int i=0; i < wires.size(); i++) {
+            BundleWire requiredWire = wires.get(i);
             Map<String, Object> wireItems = new HashMap<String, Object>();
 
             BundleCapability capability = requiredWire.getCapability();
