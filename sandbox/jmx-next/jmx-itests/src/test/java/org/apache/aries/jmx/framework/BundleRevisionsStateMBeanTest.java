@@ -127,7 +127,7 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         List<BundleRequirement> requirements = br.getDeclaredRequirements(BundleRevision.PACKAGE_NAMESPACE);
         CompositeData[] jmxRequirements = brsMBean.getCurrentRevisionDeclaredRequirements(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
         Assert.assertEquals(requirements.size(), jmxRequirements.length);
-
+        // TODO more test content
     }
 
     @Test
@@ -141,8 +141,12 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Assert.assertEquals(a.getBundleId(), jmxWiring.get(BundleRevisionsStateMBean.BUNDLE_ID));
 
         BundleWiring bw = a.adapt(BundleWiring.class);
+        assertBundleWiring(bw, jmxWiring);
+    }
+
+    private void assertBundleWiring(BundleWiring bundleWiring, CompositeData jmxWiring) {
         CompositeData[] jmxCapabilities = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.CAPABILITIES);
-        List<BundleCapability> capabilities = bw.getCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+        List<BundleCapability> capabilities = bundleWiring.getCapabilities(BundleRevision.PACKAGE_NAMESPACE);
         Assert.assertEquals(capabilities.size(), jmxCapabilities.length);
 
         Map<Map<String, Object>, Map<String, String>> expectedCapabilities = capabilitiesToMap(capabilities);
@@ -150,14 +154,14 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         Assert.assertEquals(expectedCapabilities, actualCapabilities);
 
         CompositeData[] jmxRequirements = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.REQUIREMENTS);
-        List<BundleRequirement> requirements = bw.getRequirements(BundleRevision.PACKAGE_NAMESPACE);
+        List<BundleRequirement> requirements = bundleWiring.getRequirements(BundleRevision.PACKAGE_NAMESPACE);
         Assert.assertEquals(requirements.size(), jmxRequirements.length);
 
         Map<Map<String, Object>, Map<String, String>> expectedRequirements = requirementsToMap(requirements);
         Map<Map<String, Object>, Map<String, String>> actualRequirements = jmxCapReqToMap(jmxRequirements);
         Assert.assertEquals(expectedRequirements, actualRequirements);
 
-        List<BundleWire> requiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
+        List<BundleWire> requiredWires = bundleWiring.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
         CompositeData[] jmxRequiredWires = (CompositeData[]) jmxWiring.get(BundleRevisionsStateMBean.REQUIRED_WIRES);
         Assert.assertEquals(requiredWires.size(), jmxRequiredWires.length);
 
@@ -188,7 +192,7 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         }
         Assert.assertEquals(expectedRequiredWires, actualRequiredWires);
 
-        List<BundleWire> providedWires = bw.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
+        List<BundleWire> providedWires = bundleWiring.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
         CompositeData[] jmxProvidedWires = (CompositeData []) jmxWiring.get(BundleRevisionsStateMBean.PROVIDED_WIRES);
         Assert.assertEquals(providedWires.size(), jmxProvidedWires.length);
 
@@ -208,7 +212,6 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
         for (CompositeData wire : jmxProvidedWires) {
             List<Object> data = new ArrayList<Object>();
             data.add(wire.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID));
-            // TODO bundle revision id
             data.add(getJmxAttributes((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
             data.add(getJmxDirectives((CompositeData) wire.get(BundleRevisionsStateMBean.BUNDLE_CAPABILITY)));
             data.add(wire.get(BundleRevisionsStateMBean.REQUIRER_BUNDLE_ID));
@@ -217,6 +220,42 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
             actualProvidedWires.add(data);
         }
         Assert.assertEquals(expectedProvidedWires, actualProvidedWires);
+    }
+
+    @Test
+    public void testCurrentWiringClosure() throws Exception {
+        BundleRevisionsStateMBean brsMBean = getMBean(BundleRevisionsStateMBean.OBJECTNAME, BundleRevisionsStateMBean.class);
+
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        TabularData jmxWiringClosure = brsMBean.getCurrentWiringClosure(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
+
+        CompositeData jmxWiringA = jmxWiringClosure.get(new Object [] {a.getBundleId(), 0});
+        assertBundleWiring(a.adapt(BundleWiring.class), jmxWiringA);
+
+        Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
+        int bRevID = findRevisionID(jmxWiringA, b);
+        CompositeData jmxWiringB = jmxWiringClosure.get(new Object [] {b.getBundleId(), bRevID});
+        assertBundleWiring(b.adapt(BundleWiring.class), jmxWiringB);
+
+        Bundle cm = context().getBundleByName("org.apache.felix.configadmin");
+        int cmRevID = findRevisionID(jmxWiringA, cm);
+        CompositeData jmxWiringCM = jmxWiringClosure.get(new Object [] {cm.getBundleId(), cmRevID});
+        assertBundleWiring(cm.adapt(BundleWiring.class), jmxWiringCM);
+
+        Bundle sb = context().getBundle(0);
+        int sbRevID = findRevisionID(jmxWiringA, sb);
+        CompositeData jmxWiringSB = jmxWiringClosure.get(new Object [] {sb.getBundleId(), sbRevID});
+        assertBundleWiring(sb.adapt(BundleWiring.class), jmxWiringSB);
+    }
+
+    private int findRevisionID(CompositeData jmxWiring, Bundle bundle) {
+        CompositeData[] requiredWires = (CompositeData []) jmxWiring.get(BundleRevisionsStateMBean.REQUIRED_WIRES);
+        for (CompositeData req : requiredWires) {
+            if (new Long(bundle.getBundleId()).equals(req.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_ID))) {
+                return (Integer) req.get(BundleRevisionsStateMBean.PROVIDER_BUNDLE_REVISION_ID);
+            }
+        }
+        return -1;
     }
 
     private Map<Map<String, Object>, Map<String, String>> capabilitiesToMap(List<BundleCapability> capabilities) {
