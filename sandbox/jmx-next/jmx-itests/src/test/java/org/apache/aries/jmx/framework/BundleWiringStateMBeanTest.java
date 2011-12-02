@@ -54,7 +54,7 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.PackageStateMBean;
 import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
 
-public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
+public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
