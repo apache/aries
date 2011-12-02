@@ -37,14 +37,14 @@ import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.jmx.framework.wiring.BundleRevisionsStateMBean;
+import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
 
-public class BundleRevisionsState implements BundleRevisionsStateMBean {
+public class BundleWiringState implements BundleWiringStateMBean {
     private final BundleContext bundleContext;
     private final Logger logger;
 
 
-    public BundleRevisionsState(BundleContext bundleContext, Logger logger) {
+    public BundleWiringState(BundleContext bundleContext, Logger logger) {
         this.bundleContext = bundleContext;
         this.logger = logger;
     }
@@ -83,7 +83,7 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
     public TabularData getCurrentWiringClosure(long rootBundleId, String namespace) throws IOException {
         Map<BundleRevision, Integer> revisionIDMap = getCurrentRevisionTransitiveRevisionsClosure(rootBundleId, namespace);
 
-        TabularData td = new TabularDataSupport(BundleRevisionsStateMBean.BUNDLE_WIRING_CLOSURE_TYPE);
+        TabularData td = new TabularDataSupport(BundleWiringStateMBean.BUNDLE_WIRING_CLOSURE_TYPE);
         for (Map.Entry<BundleRevision, Integer> entry : revisionIDMap.entrySet()) {
             td.put(getRevisionWiring(entry.getKey(), entry.getValue(), namespace, revisionIDMap));
         }
