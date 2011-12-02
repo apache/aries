@@ -120,6 +120,19 @@ public class BundleRevisionsStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testGetCurrentRevisionDeclaredRequirements() throws IOException {
+        BundleRevisionsStateMBean brsMBean = getMBean(BundleRevisionsStateMBean.OBJECTNAME, BundleRevisionsStateMBean.class);
+
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        BundleWiring bw = a.adapt(BundleWiring.class);
+
+        List<BundleRequirement> requirements = bw.getRequirements(BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData[] jmxRequirements = brsMBean.getCurrentRevisionDeclaredRequirements(a.getBundleId(), BundleRevisionsStateMBean.PACKAGE_NAMESPACE);
+        Assert.assertEquals(requirements.size(), jmxRequirements.length);
+
+    }
+
+    @Test
     public void testGetCurrentWiring() throws IOException {
         BundleRevisionsStateMBean brsMBean = getMBean(BundleRevisionsStateMBean.OBJECTNAME, BundleRevisionsStateMBean.class);
 
