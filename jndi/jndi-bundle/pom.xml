@@ -34,9 +34,9 @@
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-bundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-bundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-bundle</url>
      </scm>
 
     <properties>
