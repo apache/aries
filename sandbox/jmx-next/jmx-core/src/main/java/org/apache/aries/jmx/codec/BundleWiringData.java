@@ -62,7 +62,7 @@ public class BundleWiringData {
 
             return new CompositeDataSupport(BundleRevisionsStateMBean.BUNDLE_WIRING_TYPE, items);
         } catch (OpenDataException e) {
-            throw new IllegalStateException("Can't create CompositeData" + e);
+            throw new IllegalStateException("Can't create CompositeData", e);
         }
     }
 
@@ -86,7 +86,7 @@ public class BundleWiringData {
         return reqData;
     }
 
-    private CompositeData getCapReqCompositeData(CompositeType type, String namespace, Set<Map.Entry<String,Object>> attributeSet, Set<Map.Entry<String,String>> directiveSet) throws OpenDataException {
+    static CompositeData getCapReqCompositeData(CompositeType type, String namespace, Set<Map.Entry<String,Object>> attributeSet, Set<Map.Entry<String,String>> directiveSet) throws OpenDataException {
         Map<String, Object> reqItems = new HashMap<String, Object>();
 
         TabularData attributes = new TabularDataSupport(BundleRevisionsStateMBean.ATTRIBUTES_TYPE);

@@ -24,6 +24,7 @@ import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
 
 import org.apache.aries.jmx.Logger;
+import org.apache.aries.jmx.codec.BundleRequirementsData;
 import org.apache.aries.jmx.codec.BundleWiringData;
 import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
@@ -48,9 +49,12 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getCurrentRevisionDeclaredRequirements(long, java.lang.String)
      */
-    public ArrayType getCurrentRevisionDeclaredRequirements(long bundleId, String namespace) {
-        // TODO Auto-generated method stub
-        return null;
+    public CompositeData[] getCurrentRevisionDeclaredRequirements(long bundleId, String namespace) throws IOException {
+        Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
+        BundleWiring wiring = bundle.adapt(BundleWiring.class);
+
+        BundleRequirementsData data = new BundleRequirementsData(wiring.getRequirements(namespace));
+        return data.toCompositeData();
     }
 
     /* (non-Javadoc)
@@ -88,7 +92,7 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getRevisionsDeclaredRequirements(long, java.lang.String, boolean)
      */
-    public ArrayType getRevisionsDeclaredRequirements(long bundleId, String namespace, boolean inUse) {
+    public ArrayType getRevisionsDeclaredRequirements(long bundleId, String namespace) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -96,7 +100,7 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getRevisionsDeclaredCapabilities(long, java.lang.String, boolean)
      */
-    public ArrayType getRevisionsDeclaredCapabilities(long bundleId, String namespace, boolean inUse) {
+    public ArrayType getRevisionsDeclaredCapabilities(long bundleId, String namespace) {
         // TODO Auto-generated method stub
         return null;
     }
