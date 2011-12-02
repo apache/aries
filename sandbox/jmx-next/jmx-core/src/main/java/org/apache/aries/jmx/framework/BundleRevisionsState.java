@@ -51,9 +51,9 @@ public class BundleRevisionsState implements BundleRevisionsStateMBean {
      */
     public CompositeData[] getCurrentRevisionDeclaredRequirements(long bundleId, String namespace) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
-        BundleWiring wiring = bundle.adapt(BundleWiring.class);
+        BundleRevision revision = bundle.adapt(BundleRevision.class);
 
-        BundleRequirementsData data = new BundleRequirementsData(wiring.getRequirements(namespace));
+        BundleRequirementsData data = new BundleRequirementsData(revision.getDeclaredRequirements(namespace));
         return data.toCompositeData();
     }
 
