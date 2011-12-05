@@ -21,7 +21,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -30,17 +30,17 @@
     <version>0.3.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testbundlea</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testbundlea</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/branches/trunk/blueprint-testbundlea</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testbundlea</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testbundlea</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/trunk/blueprint-testbundlea</url>
+    </scm>
 
     <properties>
         <aries.osgi.activator>
             org.apache.aries.blueprint.testbundlea.Activator
         </aries.osgi.activator>
-        <aries.osgi.private.pkg />
+        <aries.osgi.private.pkg/>
         <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
     </properties>
 

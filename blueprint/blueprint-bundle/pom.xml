@@ -20,7 +20,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -33,11 +33,11 @@
         It's composed of the blueprint-api, blueprint-core and blueprint-cm modules.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-bundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-bundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-bundle</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-bundle</url>
+    </scm>
 
     <properties>
         <aries.osgi.symbolic.name>
@@ -79,25 +79,25 @@
             !org.apache.aries.blueprint.annotation*,
             org.apache.aries.blueprint,
             org.apache.aries.blueprint.services,
-          	org.apache.aries.blueprint.mutable,
+            org.apache.aries.blueprint.mutable,
             org.apache.aries.blueprint.ext,
             org.apache.aries.blueprint.ext.evaluator,
             org.apache.aries.blueprint.utils,
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
-	        org.apache.aries.blueprint.parser,
-	        org.apache.aries.blueprint.reflect,
+            org.apache.aries.blueprint.parser,
+            org.apache.aries.blueprint.reflect,
             org.apache.aries.blueprint.container,
             org.apache.aries.blueprint.di,
             org.apache.aries.blueprint.ext.impl,
-	        org.apache.aries.blueprint.namespace,
-	        org.apache.aries.blueprint.proxy,
-	        org.apache.aries.blueprint.utils.*,
+            org.apache.aries.blueprint.namespace,
+            org.apache.aries.blueprint.proxy,
+            org.apache.aries.blueprint.utils.*,
             org.apache.aries.blueprint.container,
             org.apache.aries.blueprint.di,
             org.apache.aries.blueprint.reflect,
             org.apache.aries.blueprint.compendium.cm,
-	        OSGI-INF*
+            OSGI-INF*
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
             org.apache.aries.blueprint.ParserService
@@ -195,7 +195,7 @@
                                 </includes>
                             </artifactSet>
                             <filters>
-                                 <filter>
+                                <filter>
                                     <artifact>org.apache.aries.blueprint:org.apache.aries.blueprint.api</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>

@@ -17,70 +17,70 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
-  </parent>
+        <relativePath/>
+    </parent>
 
-  <groupId>org.apache.aries.blueprint</groupId>
-  <artifactId>org.apache.aries.blueprint.jexl.evaluator</artifactId>
-  <packaging>bundle</packaging>
-  <name>Apache Aries Blueprint JEXL evaluator</name>
-  <version>0.1.1-SNAPSHOT</version>
-  <description>
-      This bundle contains a plugin to the "ext" namespace handler for evaluating expressions using JEXL
-  </description>
+    <groupId>org.apache.aries.blueprint</groupId>
+    <artifactId>org.apache.aries.blueprint.jexl.evaluator</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Aries Blueprint JEXL evaluator</name>
+    <version>0.1.1-SNAPSHOT</version>
+    <description>
+        This bundle contains a plugin to the "ext" namespace handler for evaluating expressions using JEXL
+    </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-jexl-evaluator</url>
-     </scm>
-  <properties>
-      
-      <!-- Export package versions are maintained in packageinfo files -->
-      <aries.osgi.export.pkg />
-      <!-- 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-jexl-evaluator</url>
+    </scm>
+    <properties>
+
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export.pkg/>
+        <!--
           We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
           stabilizing API. This should be removed once the dependency is available at a 
           version greater than or equal to 1.0.0
         -->
-      <aries.osgi.import>
-        org.apache.aries.blueprint.ext.evaluator;version="$&lt;range;[==,=+)&gt;",      
-        org.apache.commons.jexl2,
-        org.slf4j,
-        org.osgi.service.blueprint
-      </aries.osgi.import>
-      <aries.osgi.private.pkg>
-        org.apache.aries.blueprint.jexl.evaluator
-      </aries.osgi.private.pkg>
-  </properties>
-  
-  <dependencies>
-      <dependency>
-          <groupId>org.apache.aries.blueprint</groupId>
-          <artifactId>org.apache.aries.blueprint.core</artifactId>
-          <version>0.4</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-jexl</artifactId>
-          <version>2.0</version>
-          <exclusions>
-              <exclusion>
-                  <groupId>commons-logging</groupId>
-                  <artifactId>commons-logging</artifactId>
-              </exclusion>
-          </exclusions>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-          <scope>provided</scope>
-      </dependency>
-  </dependencies>
-  
+        <aries.osgi.import>
+            org.apache.aries.blueprint.ext.evaluator;version="$&lt;range;[==,=+)&gt;",
+            org.apache.commons.jexl2,
+            org.slf4j,
+            org.osgi.service.blueprint
+        </aries.osgi.import>
+        <aries.osgi.private.pkg>
+            org.apache.aries.blueprint.jexl.evaluator
+        </aries.osgi.private.pkg>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-jexl</artifactId>
+            <version>2.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
 </project>

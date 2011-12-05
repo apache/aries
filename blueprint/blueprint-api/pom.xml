@@ -20,7 +20,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -32,29 +32,29 @@
         This bundle contains the blueprint api 1.0.1 and the corresponding xml schema.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-api</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-api</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-api</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-api</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-api</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-api</url>
+    </scm>
 
     <properties>
-         <!-- Export package versions are maintained in packageinfo files -->
-         <aries.osgi.export.pkg>
-             org.osgi.service.blueprint*
-         </aries.osgi.export.pkg>
-         <aries.osgi.import>
-             *
-         </aries.osgi.import>
-         <aries.osgi.private.pkg />
-     </properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export.pkg>
+            org.osgi.service.blueprint*
+        </aries.osgi.export.pkg>
+        <aries.osgi.import>
+            *
+        </aries.osgi.import>
+        <aries.osgi.private.pkg/>
+    </properties>
 
-     <dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-    
+
 </project>
