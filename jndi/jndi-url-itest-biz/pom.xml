@@ -31,13 +31,13 @@
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
     <name>Apache Aries JNDI "business logic" test bundle for Aries jndi-url iTests</name>
-    <version>0.3.1</version>
+    <version>0.3.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.url.itest.biz-0.3.1</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.url.itest.biz-0.3.1</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jndi.url.itest.biz-0.3.1</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-url-itest-biz</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/dec-2011-jndi-release/jndi/jndi-url-itest-biz</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/branches/dec-2011-jndi-release/jndi/jndi-url-itest-biz</url>
      </scm>
 
      <properties> 
