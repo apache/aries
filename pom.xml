@@ -91,31 +91,53 @@
             {maven-resources},
             org/apache/aries/blueprint/blueprint.xsd=${project.build.directory}/sources/org/osgi/service/blueprint/blueprint.xsd
         </aries.osgi.include.resource>
+
+        <blueprint.annotation.api.version>0.3</blueprint.annotation.api.version>
+        <blueprint.api.version>0.3</blueprint.api.version>
+        <blueprint.parser.version>0.4</blueprint.parser.version>
+        <proxy.api.version>0.4</proxy.api.version>
+        <proxy.impl.version>0.4</proxy.impl.version>
+        <quiesce.api.version>0.3</quiesce.api.version>
+        <util.version>0.4</util.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint.annotation.api.version>0.3.3-SNAPSHOT</blueprint.annotation.api.version>
+                <blueprint.api.version>0.3.2-SNAPSHOT</blueprint.api.version>
+                <blueprint.parser.version>0.4.1-SNAPSHOT</blueprint.parser.version>
+                <proxy.api.version>0.4.1-SNAPSHOT</proxy.api.version>
+                <proxy.impl.version>0.4.1-SNAPSHOT</proxy.impl.version>
+                <quiesce.api.version>0.3.1-SNAPSHOT</quiesce.api.version>
+                <util.version>0.5-SNAPSHOT</util.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>0.3</version>
+            <version>${blueprint.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
             <optional>true</optional>
-            <version>0.3</version>
+            <version>${blueprint.annotation.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-parser</artifactId>
-            <version>0.4</version>
+            <version>${blueprint.parser.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.4</version>
+            <version>${util.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -125,11 +147,6 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -151,7 +168,7 @@
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.api</artifactId>
-            <version>0.3</version>
+            <version>${quiesce.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
@@ -162,12 +179,12 @@
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.api</artifactId>
-            <version>0.4</version>
+            <version>${proxy.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>0.4</version>
+            <version>${proxy.impl.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -206,7 +223,6 @@
                                 <artifactItem>
                                     <groupId>org.apache.aries.blueprint</groupId>
                                     <artifactId>org.apache.aries.blueprint.api</artifactId>
-                                    <classifier>sources</classifier>
                                     <includes>**/blueprint.xsd</includes>
                                 </artifactItem>
                             </artifactItems>
