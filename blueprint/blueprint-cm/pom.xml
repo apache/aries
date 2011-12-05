@@ -52,7 +52,7 @@
         </aries.osgi.private.pkg>
 
         <blueprint.api.version>0.3</blueprint.api.version>
-        <blueprint.core.version>0.4</blueprint.core.version>
+        <blueprint.core.version>0.4.1-SNAPSHOT</blueprint.core.version>
         <blueprint.parser.version>0.4</blueprint.parser.version>
     </properties>
 
