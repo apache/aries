@@ -61,7 +61,20 @@
         <aries.osgi.export.service>
             org.apache.aries.blueprint.annotation.AnnotationScannerService
         </aries.osgi.export.service>
+
+        <blueprint.annotation.api.version>0.3</blueprint.annotation.api.version>
+        <util.version>0.4</util.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint.annotation.api.version>0.3.3-SNAPSHOT</blueprint.annotation.api.version>
+                <util.version>0.5-SNAPSHOT</util.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
