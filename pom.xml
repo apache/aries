@@ -40,11 +40,25 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-parser</url>
     </scm>
 
+    <properties>
+        <blueprint.api.version>0.3</blueprint.api.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint.api.version>0.3.2-SNAPSHOT</blueprint.api.version>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>0.3</version>
+            <version>${blueprint.api.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
