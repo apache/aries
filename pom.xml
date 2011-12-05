@@ -22,7 +22,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -34,11 +34,11 @@
         and blueprint-sample for the blueprint application to be tested.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-itests</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-itests</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-itests</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-itests</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-itests</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-itests</url>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -165,23 +165,23 @@
             <version>3.2</version>
         </dependency>
         <dependency>
-           <groupId>org.apache.aries.proxy</groupId>
-           <artifactId>org.apache.aries.proxy</artifactId>
-           <version>0.4</version>
-     	</dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy</artifactId>
+            <version>0.4</version>
+        </dependency>
         <dependency>
-        	<groupId>org.apache.aries.quiesce</groupId>
-        	<artifactId>org.apache.aries.quiesce.api</artifactId>
-        	<type>bundle</type>
-        	<scope>provided</scope>
+            <groupId>org.apache.aries.quiesce</groupId>
+            <artifactId>org.apache.aries.quiesce.api</artifactId>
+            <type>bundle</type>
+            <scope>provided</scope>
             <version>0.3</version>
         </dependency>
         <dependency>
-        	<groupId>org.apache.aries.blueprint</groupId>
-        	<artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
-        	<version>0.3.3-SNAPSHOT</version>
-        	<type>bundle</type>
-        	<scope>compile</scope>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
+            <version>0.3.3-SNAPSHOT</version>
+            <type>bundle</type>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
@@ -190,18 +190,18 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-        	<groupId>org.apache.aries.blueprint</groupId>
-        	<artifactId>org.apache.aries.blueprint.core</artifactId>
-        	<version>0.4.1-SNAPSHOT</version>
-        	<type>bundle</type>
-        	<scope>compile</scope>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>0.4.1-SNAPSHOT</version>
+            <type>bundle</type>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-        	<groupId>org.apache.aries.blueprint</groupId>
-        	<artifactId>org.apache.aries.blueprint.cm</artifactId>
-        	<version>0.3.3-SNAPSHOT</version>
-        	<type>bundle</type>
-        	<scope>compile</scope>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.cm</artifactId>
+            <version>0.3.3-SNAPSHOT</version>
+            <type>bundle</type>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
@@ -219,12 +219,12 @@
 
     <build>
         <testResources>
-             <testResource>
+            <testResource>
                 <directory>${project.build.directory}/test-resources</directory>
             </testResource>
             <testResource>
-               <directory>src/test/resources</directory>
-           </testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
         </testResources>
         <plugins>
             <plugin>
