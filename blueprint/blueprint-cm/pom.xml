@@ -50,24 +50,39 @@
         <aries.osgi.private.pkg>
             org.apache.aries.blueprint.compendium.cm
         </aries.osgi.private.pkg>
+
+        <blueprint.api.version>0.3</blueprint.api.version>
+        <blueprint.core.version>0.4</blueprint.core.version>
+        <blueprint.parser.version>0.4</blueprint.parser.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint.api.version>0.3.2-SNAPSHOT</blueprint.api.version>
+                <blueprint.core.version>0.4.1-SNAPSHOT</blueprint.core.version>
+                <blueprint.parser.version>0.4.1-SNAPSHOT</blueprint.parser.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>0.3</version>
+            <version>${blueprint.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-parser</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>${blueprint.parser.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>${blueprint.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
