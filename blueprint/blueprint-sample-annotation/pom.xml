@@ -20,7 +20,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -32,16 +32,16 @@
         Example blueprint application, mostly used for annotation tests.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-annotation</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-annotation</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample-annotation</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-annotation</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-annotation</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample-annotation</url>
+    </scm>
 
     <properties>
-		<aries.osgi.export>
-			org.apache.aries.blueprint.sample;-noimport:=true
-		</aries.osgi.export>
+        <aries.osgi.export>
+            org.apache.aries.blueprint.sample;-noimport:=true
+        </aries.osgi.export>
         <aries.osgi.activator>
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
@@ -49,7 +49,7 @@
             org.apache.aries.blueprint.annotation;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
-        <aries.osgi.private.pkg />
+        <aries.osgi.private.pkg/>
     </properties>
 
     <dependencies>
@@ -70,25 +70,25 @@
         </dependency>
     </dependencies>
 
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<extensions>true</extensions>
-					<inherited>true</inherited>
-					<configuration>
-						<excludeDependencies>${aries.osgi.exclude.dependencies}</excludeDependencies>
-						<instructions>
-							<Bundle-Blueprint-Annotation>true</Bundle-Blueprint-Annotation>
-						</instructions>
-					</configuration>
-				</plugin>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <extensions>true</extensions>
+                    <inherited>true</inherited>
+                    <configuration>
+                        <excludeDependencies>${aries.osgi.exclude.dependencies}</excludeDependencies>
+                        <instructions>
+                            <Bundle-Blueprint-Annotation>true</Bundle-Blueprint-Annotation>
+                        </instructions>
+                    </configuration>
+                </plugin>
 
-			</plugins>
-		</pluginManagement>
-	</build>
-    
+            </plugins>
+        </pluginManagement>
+    </build>
+
 
 </project>

@@ -20,7 +20,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -32,21 +32,21 @@
         Example blueprint application, mostly used for integration tests.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample</url>
+    </scm>
 
     <properties>
-		<aries.osgi.export>
-			org.apache.aries.blueprint.sample;-noimport:=true
-		</aries.osgi.export>
+        <aries.osgi.export>
+            org.apache.aries.blueprint.sample;-noimport:=true
+        </aries.osgi.export>
         <aries.osgi.activator>
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
-        <aries.osgi.private.pkg />
-        <aries.osgi.import.pkg> *
+        <aries.osgi.private.pkg/>
+        <aries.osgi.import.pkg>*
         </aries.osgi.import.pkg>
     </properties>
 

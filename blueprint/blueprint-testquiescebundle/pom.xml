@@ -21,7 +21,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -30,17 +30,17 @@
     <packaging>bundle</packaging>
     <version>0.3.3-SNAPSHOT</version>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testquiescebundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testquiescebundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-testquiescebundle</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testquiescebundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testquiescebundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-testquiescebundle</url>
+    </scm>
     <properties>
         <aries.osgi.activator>
             org.apache.aries.blueprint.testquiescebundle.Activator
         </aries.osgi.activator>
-        <aries.osgi.private.pkg />
-        <aries.osgi.import.pkg> *
+        <aries.osgi.private.pkg/>
+        <aries.osgi.import.pkg>*
         </aries.osgi.import.pkg>
         <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
     </properties>

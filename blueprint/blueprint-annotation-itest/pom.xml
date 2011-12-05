@@ -22,7 +22,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>0.5</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -34,11 +34,11 @@
         and blueprint-sample-annotation for the blueprint application to be tested.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itest</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itest</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-annotation-itest</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itest</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itest</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-annotation-itest</url>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -73,13 +73,13 @@
             <artifactId>org.apache.aries.blueprint.sample-annotation</artifactId>
             <version>0.3.2</version>
             <scope>test</scope>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-fragment</artifactId>
             <version>0.3.2</version>
             <scope>test</scope>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
@@ -129,7 +129,7 @@
             <artifactId>asm-all</artifactId>
             <scope>test</scope>
             <version>3.2</version>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-finder</artifactId>
@@ -147,10 +147,10 @@
             <version>0.3.2</version>
         </dependency>
         <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>0.4</version>
-          <scope>test</scope>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <version>0.4</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
