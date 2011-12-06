@@ -58,8 +58,8 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-            // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-            // new TimeoutOption( 0 ),
+            //new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+            //new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -127,7 +127,26 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
         List<BundleRequirement> requirements = br.getDeclaredRequirements(BundleRevision.PACKAGE_NAMESPACE);
         CompositeData[] jmxRequirements = brsMBean.getCurrentRevisionDeclaredRequirements(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
         Assert.assertEquals(requirements.size(), jmxRequirements.length);
-        // TODO more test content
+
+        Map<Map<String, Object>, Map<String, String>> expectedRequirements = requirementsToMap(requirements);
+        Map<Map<String, Object>, Map<String, String>> actualRequirements = jmxCapReqToMap(jmxRequirements);
+        Assert.assertEquals(expectedRequirements, actualRequirements);
+    }
+
+    @Test
+    public void testGetCurrentRevisionDeclaredCapabilities() throws IOException {
+        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
+
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        BundleRevision br = a.adapt(BundleRevision.class);
+
+        List<BundleCapability> capabilities = br.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData[] jmxCapabilities = brsMBean.getCurrentRevisionDeclaredCapabilities(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
+        Assert.assertEquals(capabilities.size(), jmxCapabilities.length);
+
+        Map<Map<String, Object>, Map<String, String>> expectedCapabilities = capabilitiesToMap(capabilities);
+        Map<Map<String, Object>, Map<String, String>> actualCapabilities = jmxCapReqToMap(jmxCapabilities);
+        Assert.assertEquals(expectedCapabilities, actualCapabilities);
     }
 
     @Test
