@@ -35,6 +35,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleRevisions;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
@@ -109,7 +110,7 @@ public class BundleWiringState implements BundleWiringStateMBean {
     }
 
     private void populateTransitiveRevisions(String namespace, BundleRevision rootRevision, Map<BundleRevision, Integer> allRevisions) {
-        allRevisions.put(rootRevision, rootRevision.hashCode());
+        allRevisions.put(rootRevision, System.identityHashCode(rootRevision));
         BundleWiring wiring = rootRevision.getWiring();
         List<BundleWire> wires = wiring.getRequiredWires(namespace);
         for (BundleWire wire : wires) {
@@ -134,17 +135,35 @@ public class BundleWiringState implements BundleWiringStateMBean {
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getRevisionsDeclaredRequirements(long, java.lang.String, boolean)
      */
-    public ArrayType getRevisionsDeclaredRequirements(long bundleId, String namespace) {
-        // TODO Auto-generated method stub
-        return null;
+    public TabularData getRevisionsDeclaredRequirements(long bundleId, String namespace) throws IOException {
+        Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
+        BundleRevisions revisions = bundle.adapt(BundleRevisions.class);
+
+        TabularData td = new TabularDataSupport(BundleWiringStateMBean.REVISIONS_REQUIREMENTS_TYPE);
+        for (BundleRevision revision : revisions.getRevisions()) {
+            td.put(BundleWiringData.getRevisionRequirements(
+                    revision.getBundle().getBundleId(),
+                    System.identityHashCode(revision),
+                    revision.getDeclaredRequirements(namespace)));
+        }
+        return td;
     }
 
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getRevisionsDeclaredCapabilities(long, java.lang.String, boolean)
      */
-    public ArrayType getRevisionsDeclaredCapabilities(long bundleId, String namespace) {
-        // TODO Auto-generated method stub
-        return null;
+    public TabularData getRevisionsDeclaredCapabilities(long bundleId, String namespace) throws IOException {
+        Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
+        BundleRevisions revisions = bundle.adapt(BundleRevisions.class);
+
+        TabularData td = new TabularDataSupport(BundleWiringStateMBean.REVISIONS_CAPABILITIES_TYPE);
+        for (BundleRevision revision : revisions.getRevisions()) {
+            td.put(BundleWiringData.getRevisionCapabilities(
+                    revision.getBundle().getBundleId(),
+                    System.identityHashCode(revision),
+                    revision.getDeclaredCapabilities(namespace)));
+        }
+        return td;
     }
 
     /* (non-Javadoc)
