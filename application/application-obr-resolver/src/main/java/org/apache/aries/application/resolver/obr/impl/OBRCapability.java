@@ -25,6 +25,7 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,6 +100,12 @@ public class OBRCapability implements Capability
           if (value instanceof String[]) {
             String newValue = Arrays.toString((String[])value);
             value = newValue.substring(1, newValue.length() - 1);
+          } else if (value instanceof Collection) {
+            //We can't rely on Collections having a sensible toString() as it isn't
+            //part of the API (although all base Java ones do). We can use an array
+            //to get consistency
+            String newValue = Arrays.toString(((Collection<?>)value).toArray());
+            value = newValue.substring(1, newValue.length() - 1);
           }
           
           return String.valueOf(value);
@@ -112,7 +119,7 @@ public class OBRCapability implements Capability
           if (Constants.VERSION_ATTRIBUTE.equals(name) || (Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name))) {
             type =  "version";
           } else if (Constants.OBJECTCLASS.equals(name) || (Constants.MANDATORY_DIRECTIVE + ":").equals(name) ||
-              entry.getValue() instanceof String[])
+              entry.getValue() instanceof String[] || entry.getValue() instanceof Collection)
             type = "set";
           return type;
         }

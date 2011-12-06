@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.apache.aries.application.InvalidAttributeException;
@@ -123,13 +125,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	          
 	          Metadata value = entry.getValue();
 	          if (value instanceof CollectionMetadata) { 
-	            List<Metadata> values = ((CollectionMetadata)value).getValues();
-	            String[] theseValues = new String[values.size()];
-	            for (int i=0; i < values.size(); i++) { 
-	              Metadata m = values.get(i); 
-	              theseValues[i] = ((ValueMetadata)m).getStringValue();
-	            }
-	            serviceProps.put(key, theseValues);
+	            processMultiValueProperty(serviceProps, key, value);
 	          } else { 
 	            serviceProps.put(key, ((ValueMetadata)entry.getValue()).getStringValue());
 	          }
@@ -170,9 +166,46 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	    }
 	    _logger.debug(LOG_EXIT, "parseAllServiceElements", new Object[]{result});
 	    return result; 
-	  }	  
+	  }
+    private void processMultiValueProperty(Map<String, Object> serviceProps,
+        String key, Metadata value) {
+      List<Metadata> values = ((CollectionMetadata)value).getValues();
+      Class<?> collectionClass = ((CollectionMetadata)value).getCollectionClass();
+      Object collectionValue;
+      
+      if(Collection.class.isAssignableFrom(collectionClass)) {
+        Collection<String> theseValues = getCollectionFromClass(collectionClass);
+        for(Metadata m : values) {
+          theseValues.add(((ValueMetadata)m).getStringValue());
+        }
+        collectionValue = theseValues;
+      } else {
+        String[] theseValues = new String[values.size()];
+        for (int i=0; i < values.size(); i++) { 
+          Metadata m = values.get(i); 
+          theseValues[i] = ((ValueMetadata)m).getStringValue();
+        }
+        collectionValue = theseValues;
+      }
+      serviceProps.put(key, collectionValue);
+    }	  
 	  
-	  /**
+	  private Collection<String> getCollectionFromClass(Class<?> collectionClass) {
+	    
+	    if(List.class.isAssignableFrom(collectionClass)) {
+	      return new ArrayList<String>();
+	    } else if (Set.class.isAssignableFrom(collectionClass)) {
+	      return new HashSet<String>();
+	    } else if (Queue.class.isAssignableFrom(collectionClass)) {
+	      //This covers Queue and Deque, which is caught by the isAssignableFrom check
+	      //as a sub-interface of Queue
+	      return new LinkedList<String>();
+	    } else {
+	      throw new IllegalArgumentException(collectionClass.getName());
+	    }
+	  }
+	  
+    /**
 	   * Extract References metadata from a ComponentDefinitionRegistry. 
 	   * @param cdr                       ComponentDefinitionRegistry
 	   * @return List<WrappedReferenceMetadata>

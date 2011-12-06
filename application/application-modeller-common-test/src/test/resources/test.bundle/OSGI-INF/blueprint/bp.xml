@@ -25,10 +25,37 @@
   </bean>
   
   <service id="myService" ref="myBean" interface="foo.bar.MyService">
-  	<service-properties>
-  	  <entry key="priority" value="9"/>
-  	  <entry key="volume" value="11"/>
-  	</service-properties>
+    <service-properties>
+      <entry key="priority" value="9"/>
+      <entry key="volume" value="11"/>
+      <entry key="property.list" >
+        <list value-type="java.lang.String">
+          <value>1</value>
+          <value>2</value>
+          <value>3</value>
+          <value>2</value>
+          <value>1</value>
+        </list>
+      </entry>
+      <entry key="property.set" >
+        <set value-type="java.lang.String">
+          <value>1</value>
+          <value>2</value>
+          <value>3</value>
+          <value>2</value>
+          <value>1</value>
+        </set>
+      </entry>
+      <entry key="property.array" >
+        <array value-type="java.lang.String">
+          <value>1</value>
+          <value>2</value>
+          <value>3</value>
+          <value>2</value>
+          <value>1</value>
+        </array>
+      </entry>
+    </service-properties>
   </service>
   
   <!-- Services for which we can generate no name should not be exposed -->

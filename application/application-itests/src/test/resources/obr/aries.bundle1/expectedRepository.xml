@@ -45,6 +45,17 @@
 <p n="objectClass" t="set" v="aries.ws.eba.export"/>
 <p n="service.ranking" v="0"/>
 </capability>
+<capability name="service">
+<p n="service" v="service"/>
+<p n="objectClass" t="set" v="org.apache.aries.sample.HelloWorld"/>
+<p n="service.ranking" v="0"/>
+<p n="osgi.service.blueprint.compname" v="hello"/>
+<p n="priority" v="9"/>
+<p n="volume" v="11"/>
+<p n="property.list" t="set" v="1, 2, 3, 2, 1"/>
+<p n="property.set" t="set" v="1, 2, 3"/>
+<p n="property.array" t="set" v="1, 2, 3, 2, 1"/>
+</capability>
 <require extend="false" filter="(&amp;(package=org.osgi.framework)(version&gt;=1.3.0))" multiple="false" name="package" optional="false">Requires package with attributes {package=org.osgi.framework, version=1.3.0}</require>
 <require extend="false" filter="(&amp;(package=aries.ws.event)(version&gt;=1.0.0))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.ws.event, version=1.0.0}</require>
 <require extend="false" filter="(&amp;(package=aries.wsspi.application.aries)(version&gt;=0.0.0)(company=yang)(mandatory:&lt;*company))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.wsspi.application.aries, version=0.0.0, company=yang}</require>

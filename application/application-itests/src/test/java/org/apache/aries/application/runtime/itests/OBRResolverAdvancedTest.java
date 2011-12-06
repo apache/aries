@@ -169,7 +169,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     //create the bundle
     bundle = ArchiveFixture.newJar()
     .binary("META-INF/MANIFEST.MF", OBRResolverAdvancedTest.class.getClassLoader().getResourceAsStream("obr/aries.bundle1/META-INF/MANIFEST.MF")).end()
-    .binary("OSGI-INF/blueprint/blueprint.xml", OBRResolverAdvancedTest.class.getClassLoader().getResourceAsStream("obr/hello-world-client.xml")).end();
+    .binary("OSGI-INF/blueprint/blueprint.xml", OBRResolverAdvancedTest.class.getClassLoader().getResourceAsStream("obr/hello-world-client.xml")).end()
+    .binary("OSGI-INF/blueprint/anotherBlueprint.xml", OBRResolverAdvancedTest.class.getClassLoader().getResourceAsStream("obr/aries.bundle1/OSGI-INF/blueprint/sample-blueprint.xml")).end();
     fout = new FileOutputStream(REPO_BUNDLE + ".jar");
     bundle.writeOut(fout);
     fout.close();
