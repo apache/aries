@@ -166,10 +166,36 @@ public interface BundleWiringStateMBean {
             "The bundle requirements of a bundle revision wiring",
             REQUIREMENT_TYPE_ARRAY);
 
+    CompositeType REVISION_REQUIREMENTS_TYPE =
+        Item.compositeType("REVISION_REQUIREMENTS",
+            "Describes the requirements for a bundle revision",
+            BUNDLE_ID_ITEM,
+            BUNDLE_REVISION_ID_ITEM,
+            REQUIREMENTS_ITEM);
+
+    TabularType REVISIONS_REQUIREMENTS_TYPE =
+        Item.tabularType("REVISIONS_REQUIREMENTS",
+            "The bundle requirements for all bundle revisions",
+            REVISION_REQUIREMENTS_TYPE,
+            BUNDLE_ID, BUNDLE_REVISION_ID);
+
     String CAPABILITIES = "Capabilities";
     Item CAPABILITIES_ITEM = new Item(CAPABILITIES,
             "The bundle capabilities of a bundle revision wiring",
             CAPABILITY_TYPE_ARRAY);
+
+    CompositeType REVISION_CAPABILITIES_TYPE =
+        Item.compositeType("REVISION_CAPABILITIES",
+            "Describes the capabilities for a bundle revision",
+            BUNDLE_ID_ITEM,
+            BUNDLE_REVISION_ID_ITEM,
+            CAPABILITIES_ITEM);
+
+    TabularType REVISIONS_CAPABILITIES_TYPE =
+        Item.tabularType("REVISIONS_CAPABILITIES",
+            "The bundle capabilities for all bundle revisions",
+            REVISION_CAPABILITIES_TYPE,
+            BUNDLE_ID, BUNDLE_REVISION_ID);
 
     String PROVIDED_WIRES = "ProvidedWires";
     Item PROVIDED_WIRES_ITEM = new Item(PROVIDED_WIRES,
@@ -202,8 +228,8 @@ public interface BundleWiringStateMBean {
 
     TabularType BUNDLE_WIRING_CLOSURE_TYPE = Item.tabularType("BUNDLE_WIRING_CLOSURE",
             "A table of bundle wirings describing a full wiring closure",
-            BundleWiringStateMBean.BUNDLE_WIRING_TYPE,
-            BundleWiringStateMBean.BUNDLE_ID, BundleWiringStateMBean.BUNDLE_REVISION_ID);
+            BUNDLE_WIRING_TYPE,
+            BUNDLE_ID, BUNDLE_REVISION_ID);
 
     /**
      * Returns the requirements for the current bundle revision.
@@ -265,7 +291,7 @@ public interface BundleWiringStateMBean {
      * @return the declared requirements for all revisions of <code>bundleId</code>
      *
      */
-    ArrayType getRevisionsDeclaredRequirements(long bundleId,
+    TabularData getRevisionsDeclaredRequirements(long bundleId,
             String namespace) throws IOException;
 
     /**
@@ -278,7 +304,7 @@ public interface BundleWiringStateMBean {
      * @param namespace
      * @return the declared capabilities for all revisions of <code>bundleId</code>
      */
-    ArrayType getRevisionsDeclaredCapabilities(long bundleId,
+    TabularData getRevisionsDeclaredCapabilities(long bundleId,
             String namespace) throws IOException;
 
     /**
