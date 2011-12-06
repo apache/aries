@@ -62,9 +62,11 @@ public class BundleWiringState implements BundleWiringStateMBean {
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getCurrentRevisionDeclaredCapabilities(long, java.lang.String)
      */
-    public ArrayType getCurrentRevisionDeclaredCapabilities(long bundleId, String namespace) {
-        // TODO Auto-generated method stub
-        return null;
+    public CompositeData[] getCurrentRevisionDeclaredCapabilities(long bundleId, String namespace) throws IOException {
+        Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
+        BundleRevision revision = bundle.adapt(BundleRevision.class);
+
+        return BundleWiringData.getCapabilitiesCompositeData(revision.getDeclaredCapabilities(namespace));
     }
 
     /* (non-Javadoc)
