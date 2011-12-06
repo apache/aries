@@ -227,7 +227,7 @@ public interface BundleWiringStateMBean {
      * @return the declared capabilities for the current revision of <code>bundleId</code>
      * and <code>namespace</code>
      */
-    ArrayType getCurrentRevisionDeclaredCapabilities(long bundleId,
+    CompositeData[] getCurrentRevisionDeclaredCapabilities(long bundleId,
             String namespace) throws IOException;
 
     /**
