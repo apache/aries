@@ -49,6 +49,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleRevisions;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.PackageStateMBean;
@@ -58,8 +59,8 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-            //new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-            //new TimeoutOption( 0 ),
+            // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+            // new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -143,6 +144,48 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
         List<BundleCapability> capabilities = br.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
         CompositeData[] jmxCapabilities = brsMBean.getCurrentRevisionDeclaredCapabilities(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
         Assert.assertEquals(capabilities.size(), jmxCapabilities.length);
+
+        Map<Map<String, Object>, Map<String, String>> expectedCapabilities = capabilitiesToMap(capabilities);
+        Map<Map<String, Object>, Map<String, String>> actualCapabilities = jmxCapReqToMap(jmxCapabilities);
+        Assert.assertEquals(expectedCapabilities, actualCapabilities);
+    }
+
+    @Test
+    public void testGetRevisionsDeclaredRequirements() throws IOException {
+        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
+
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        BundleRevisions revisions = a.adapt(BundleRevisions.class);
+
+        Assert.assertEquals("Precondition", 1, revisions.getRevisions().size());
+
+        TabularData jmxRequirementsTable = brsMBean.getRevisionsDeclaredRequirements(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
+        Assert.assertEquals(1, jmxRequirementsTable.size());
+
+        List<BundleRequirement> requirements = revisions.getRevisions().iterator().next().getDeclaredRequirements(BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData jmxRevRequirements = (CompositeData) jmxRequirementsTable.values().iterator().next();
+        CompositeData[] jmxRequirements = (CompositeData[]) jmxRevRequirements.get(BundleWiringStateMBean.REQUIREMENTS);
+
+        Map<Map<String, Object>, Map<String, String>> expectedRequirements = requirementsToMap(requirements);
+        Map<Map<String, Object>, Map<String, String>> actualRequirements = jmxCapReqToMap(jmxRequirements);
+        Assert.assertEquals(expectedRequirements, actualRequirements);
+    }
+
+    @Test
+    public void testGetRevisionsDeclaredCapabilities() throws IOException {
+        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
+
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        BundleRevisions revisions = a.adapt(BundleRevisions.class);
+
+        Assert.assertEquals("Precondition", 1, revisions.getRevisions().size());
+
+        TabularData jmxCapabilitiesTable = brsMBean.getRevisionsDeclaredCapabilities(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
+        Assert.assertEquals(1, jmxCapabilitiesTable.size());
+
+        List<BundleCapability> capabilities = revisions.getRevisions().iterator().next().getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData jmxRevCapabilities = (CompositeData) jmxCapabilitiesTable.values().iterator().next();
+        CompositeData[] jmxCapabilities = (CompositeData[]) jmxRevCapabilities.get(BundleWiringStateMBean.CAPABILITIES);
 
         Map<Map<String, Object>, Map<String, String>> expectedCapabilities = capabilitiesToMap(capabilities);
         Map<Map<String, Object>, Map<String, String>> actualCapabilities = jmxCapReqToMap(jmxCapabilities);

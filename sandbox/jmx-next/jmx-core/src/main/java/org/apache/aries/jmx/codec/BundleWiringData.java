@@ -60,8 +60,8 @@ public class BundleWiringData {
             items.put(BundleWiringStateMBean.BUNDLE_ID, bundleId);
             items.put(BundleWiringStateMBean.BUNDLE_REVISION_ID, revisionId);
 
-            items.put(BundleWiringStateMBean.REQUIREMENTS, getRequirements());
-            items.put(BundleWiringStateMBean.CAPABILITIES, getCapabilities());
+            items.put(BundleWiringStateMBean.REQUIREMENTS, getRequirements(requirements));
+            items.put(BundleWiringStateMBean.CAPABILITIES, getCapabilities(capabilities));
             items.put(BundleWiringStateMBean.REQUIRED_WIRES, getRequiredWires());
             items.put(BundleWiringStateMBean.PROVIDED_WIRES, getProvidedWires());
 
@@ -71,24 +71,48 @@ public class BundleWiringData {
         }
     }
 
-    private CompositeData[] getCapabilities() throws OpenDataException {
-        CompositeData[] capData = new CompositeData[capabilities.size()];
-        for (int i=0; i < capabilities.size(); i++) {
-            BundleCapability capability = capabilities.get(i);
+    private static CompositeData[] getCapabilities(List<BundleCapability> capabilityList) throws OpenDataException {
+        CompositeData[] capData = new CompositeData[capabilityList.size()];
+        for (int i=0; i < capabilityList.size(); i++) {
+            BundleCapability capability = capabilityList.get(i);
             capData[i] = getCapReqCompositeData(BundleWiringStateMBean.BUNDLE_CAPABILITY_TYPE,
                 capability.getNamespace(), capability.getAttributes().entrySet(), capability.getDirectives().entrySet());
         }
         return capData;
     }
 
-    private CompositeData[] getRequirements() throws OpenDataException {
-        CompositeData [] reqData = new CompositeData[requirements.size()];
-        for (int i=0; i < requirements.size(); i++) {
-            BundleRequirement requirement = requirements.get(i);
+    private static CompositeData[] getRequirements(List<BundleRequirement> requirementList) throws OpenDataException {
+        CompositeData [] reqData = new CompositeData[requirementList.size()];
+        for (int i=0; i < requirementList.size(); i++) {
+            BundleRequirement requirement = requirementList.get(i);
             reqData[i] = getCapReqCompositeData(BundleWiringStateMBean.BUNDLE_REQUIREMENT_TYPE,
                 requirement.getNamespace(), requirement.getAttributes().entrySet(), requirement.getDirectives().entrySet());
         }
         return reqData;
+    }
+
+    public static CompositeData getRevisionCapabilities(long bundleId, int revisionId, List<BundleCapability> bundleCapabilities) {
+        try {
+            Map<String, Object> items = new HashMap<String, Object>();
+            items.put(BundleWiringStateMBean.BUNDLE_ID, bundleId);
+            items.put(BundleWiringStateMBean.BUNDLE_REVISION_ID, revisionId);
+            items.put(BundleWiringStateMBean.CAPABILITIES, getCapabilities(bundleCapabilities));
+            return new CompositeDataSupport(BundleWiringStateMBean.REVISION_CAPABILITIES_TYPE, items);
+        } catch (OpenDataException e) {
+            throw new IllegalStateException("Can't create CompositeData", e);
+        }
+    }
+
+    public static CompositeData getRevisionRequirements(long bundleId, int revisionId, List<BundleRequirement> bundleRequirements) {
+        try {
+            Map<String, Object> items = new HashMap<String, Object>();
+            items.put(BundleWiringStateMBean.BUNDLE_ID, bundleId);
+            items.put(BundleWiringStateMBean.BUNDLE_REVISION_ID, revisionId);
+            items.put(BundleWiringStateMBean.REQUIREMENTS, getRequirements(bundleRequirements));
+            return new CompositeDataSupport(BundleWiringStateMBean.REVISION_REQUIREMENTS_TYPE, items);
+        } catch (OpenDataException e) {
+            throw new IllegalStateException("Can't create CompositeData", e);
+        }
     }
 
     public static CompositeData[] getCapabilitiesCompositeData(List<BundleCapability> bundleCapabilities) {
