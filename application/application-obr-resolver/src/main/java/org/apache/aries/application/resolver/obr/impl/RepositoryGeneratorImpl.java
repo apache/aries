@@ -157,7 +157,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
       String name = (String) entry.getName();
       String objectAttrs = entry.getValue();
 
-      String type = getType(name);
+      String type = (entry.getType() == null) ? getType(name) : entry.getType();
 
       // remove the beginning " and tailing "
       if (objectAttrs.startsWith("\"") && objectAttrs.endsWith("\""))
