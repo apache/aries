@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ParsedServiceElements;
@@ -218,6 +219,10 @@ public class ParserProxyTest {
     Map<String, Object> props = new HashMap<String, Object>();
     props.put ("priority", "9");
     props.put("volume", "11");
+    props.put("property.list", Arrays.asList("1", "2", "3", "2", "1"));
+    //Deliberately miss off duplicate entries and reorder, the parser should still match this
+    props.put("property.set", new TreeSet<String>(Arrays.asList("2", "3", "1")));
+    props.put("property.array", new String[]{"1", "2", "3", "2", "1"});
     props.put("osgi.service.blueprint.compname", "myBean");
     expectedResults.add(_modellingManager.getExportedService("myService", 0, Arrays.asList("foo.bar.MyService"), props));
 
