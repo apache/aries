@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -195,7 +196,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	    if(List.class.isAssignableFrom(collectionClass)) {
 	      return new ArrayList<String>();
 	    } else if (Set.class.isAssignableFrom(collectionClass)) {
-	      return new HashSet<String>();
+	      return new LinkedHashSet<String>();
 	    } else if (Queue.class.isAssignableFrom(collectionClass)) {
 	      //This covers Queue and Deque, which is caught by the isAssignableFrom check
 	      //as a sub-interface of Queue
