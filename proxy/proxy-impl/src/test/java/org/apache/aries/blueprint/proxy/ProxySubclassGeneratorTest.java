@@ -276,6 +276,9 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   
   private Object getProxyInstance(Class<?> proxyClass, InvocationHandler ih) {
     try {
+      if(proxyClass.equals(ProxyTestClassChildOfAbstract.class))
+        return proxyClass.newInstance();
+      
       return proxyClass.getConstructor(InvocationHandler.class).newInstance(ih);
     } catch (Exception e) {
       return null;

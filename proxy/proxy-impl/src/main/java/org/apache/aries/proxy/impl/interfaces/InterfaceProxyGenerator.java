@@ -22,20 +22,26 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.EmptyVisitor;
 import org.osgi.framework.Bundle;
 
 /**
  * This class is used to aggregate several interfaces into a real class which implements all of them
+ * It also allows you specify a superclass that the class should implement - this will add delegating
+ * method overrides for any abstract methods in the hierarchy, but not override any non-abstract methods.
+ * To be safely used as a supertype the superclass should be a WovenProxy.
  */
 public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcodes {
 
@@ -45,18 +51,20 @@ public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcod
   /**
    * Generate a new proxy instance implementing the supplied interfaces and using the supplied
    * dispatcher and listener
-   * @param ifaces
+   * @param client the bundle that is trying to generate this proxy (can be null)
+   * @param superclass The superclass to use (or null for Object)
+   * @param ifaces The set of interfaces to implement (may be empty if superclass is non null)
    * @param dispatcher
    * @param listener
    * @return
    * @throws UnableToProxyException
    */
-  public static final Object getProxyInstance(Bundle client, Collection<Class<?>> ifaces, 
-      Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException{
+  public static final Object getProxyInstance(Bundle client, Class<? extends WovenProxy> superclass,
+      Collection<Class<?>> ifaces, Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException{
     
     ProxyClassLoader pcl = null;
     
-    LinkedHashSet<Class<?>> classSet = createSet(ifaces);
+    SortedSet<Class<?>> interfaces = createSet(ifaces);
     
     synchronized (cache) {
       WeakReference<ProxyClassLoader> ref = cache.get(client);
@@ -64,7 +72,7 @@ public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcod
       if(ref != null)
         pcl = ref.get();
       
-      if (pcl != null && pcl.isInvalid(classSet)) {
+      if (pcl != null && pcl.isInvalid(interfaces)) {
           pcl = null;
           cache.remove(client);
       }
@@ -75,7 +83,7 @@ public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcod
       }
     }
     
-    Class<?> c = pcl.createProxyClass(classSet);
+    Class<?> c = pcl.createProxyClass(superclass, interfaces);
         
     try {
       Constructor<?> con = c.getDeclaredConstructor(Callable.class, InvocationListener.class);
@@ -93,8 +101,12 @@ public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcod
    * @param ifaces
    * @return
    */
-  private static LinkedHashSet<Class<?>> createSet(Collection<Class<?>> ifaces) {
-    LinkedHashSet<Class<?>> classes = new LinkedHashSet<Class<?>>();
+  private static SortedSet<Class<?>> createSet(Collection<Class<?>> ifaces) {
+    SortedSet<Class<?>> classes = new TreeSet<Class<?>>(new Comparator<Class<?>>() {
+      public int compare(Class<?> object1, Class<?> object2) {
+        return object1.getName().compareTo(object2.getName());
+      }
+    });
     for(Class<?> c : ifaces) {
       //If we already have a class contained then we have already covered its hierarchy
       if(classes.add(c))
