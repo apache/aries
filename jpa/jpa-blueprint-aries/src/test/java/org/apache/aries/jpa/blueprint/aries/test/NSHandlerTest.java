@@ -110,9 +110,9 @@ public class NSHandlerTest {
     }
     
     public<T extends Metadata> T createMetadata(Class<T> clazz) {
-      if (clazz.isAssignableFrom(ReferenceMetadata.class))
+      if (ReferenceMetadata.class.isAssignableFrom(clazz))
         return clazz.cast(new ReferenceMetadataImpl());
-      else if (clazz.isAssignableFrom(RefMetadata.class))
+      else if (RefMetadata.class.isAssignableFrom(clazz))
         return clazz.cast(new RefMetadataImpl());
       else
         return clazz.cast(new BeanMetadataImpl());
