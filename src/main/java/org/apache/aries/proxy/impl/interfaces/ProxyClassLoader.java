@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
@@ -115,7 +116,11 @@ final class ProxyClassLoader extends ClassLoader {
       return false;
   }
 
-  public Class<?> createProxyClass(LinkedHashSet<Class<?>> createSet) throws UnableToProxyException {
+  public Class<?> createProxyClass(Class<? extends WovenProxy> superclass, SortedSet<Class<?>> interfaces) throws UnableToProxyException {
+    
+    LinkedHashSet<Class<?>> createSet = new LinkedHashSet<Class<?>>(interfaces);
+    //Even a null superclass helps with key uniqueness
+    createSet.add(superclass);
     
     String className = classes.get(createSet);
     
@@ -131,7 +136,9 @@ final class ProxyClassLoader extends ClassLoader {
     Lock wLock = ifacesLock.writeLock();
     wLock.lock();
     try {
-      ifaces.addAll(createSet);
+      //We want the superclass, but only if it isn't null
+      ifaces.addAll(interfaces);
+      if(superclass != null) ifaces.add(superclass);
     } finally {
       wLock.unlock();
     }
@@ -139,7 +146,7 @@ final class ProxyClassLoader extends ClassLoader {
     className = "Proxy" + AbstractWovenProxyAdapter.getSanitizedUUIDString();
     
     InterfaceCombiningClassAdapter icca = new InterfaceCombiningClassAdapter(
-        className, this, createSet);
+        className, this, superclass, interfaces);
     
     //Use a special protection domain that grants AllPermission to our Proxy
     //object. This is important so that we never get in the way of any security

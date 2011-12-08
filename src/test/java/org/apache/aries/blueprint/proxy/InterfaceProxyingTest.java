@@ -81,7 +81,7 @@ public class InterfaceProxyingTest {
     
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class));
     
-    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(null), null);
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
     
     assertTrue(o instanceof Closeable);
   }
@@ -92,7 +92,7 @@ public class InterfaceProxyingTest {
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class,
         Iterable.class, Map.class));
     
-    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(null), null);
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
     
     assertTrue(o instanceof Closeable);
     assertTrue(o instanceof Iterable);
@@ -111,7 +111,7 @@ public class InterfaceProxyingTest {
     TestCallable tc = new TestCallable();
     
     Callable o = (Callable) InterfaceProxyGenerator.getProxyInstance(testBundle, 
-        classes, tc, tl);
+        null, classes, tc, tl);
     
     assertCalled(tl, false, false, false);
     
@@ -167,8 +167,8 @@ public class InterfaceProxyingTest {
   public void testCaching() throws Exception {
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class));
     
-    Object o1 = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(null), null);
-    Object o2 = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(null), null);
+    Object o1 = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
+    Object o2 = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
     
     assertSame(o1.getClass(), o2.getClass());
   }
@@ -180,7 +180,7 @@ public class InterfaceProxyingTest {
     final TestCallable tc = new TestCallable();
     tc.setReturn(5);
     
-    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, classes, constantly(tc), null);
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(tc), null);
     
     assertTrue(o instanceof ProxyTestInterface);
     
@@ -193,14 +193,16 @@ public class InterfaceProxyingTest {
   public void testHandlesObjectMethods() throws Exception {
       TestListener listener = new TestListener();
       List<String> list = Arrays.asList("one", "two", "three");
-      Object proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, Arrays.<Class<?>>asList(List.class), constantly(list), listener);
+      Object proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, null, Arrays.<Class<?>>asList(List.class), constantly(list), listener);
       
-      // obeys hashCode and equals, they *are* on the interface
+      // obeys hashCode and equals, they *are* on the interface (actually they're
+      // on several interfaces, we process them in alphabetical order, so Collection
+      // comes ahead of List.
       assertTrue(proxied.equals(Arrays.asList("one", "two", "three")));
-      assertEquals(List.class.getMethod("equals", Object.class), listener.getLastMethod());
+      assertEquals(Collection.class.getMethod("equals", Object.class), listener.getLastMethod());
       listener.clear();
       assertEquals(Arrays.asList("one", "two", "three").hashCode(), proxied.hashCode());
-      assertEquals(List.class.getMethod("hashCode"), listener.getLastMethod());
+      assertEquals(Collection.class.getMethod("hashCode"), listener.getLastMethod());
       listener.clear();
       // and toString
       assertEquals(list.toString(), proxied.toString());
@@ -210,7 +212,7 @@ public class InterfaceProxyingTest {
       Runnable runnable = new Runnable() {
         public void run() {}
       };
-      proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, Arrays.<Class<?>>asList(Runnable.class), constantly(runnable), listener);
+      proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, null, Arrays.<Class<?>>asList(Runnable.class), constantly(runnable), listener);
       
       // obeys hashCode and equals, they *are not* on the interface
       assertTrue(proxied.equals(runnable));
@@ -250,7 +252,7 @@ public class InterfaceProxyingTest {
       
       Class<?> clazz = loader.loadClass("org.apache.aries.blueprint.proxy.TestInterface");
       
-      Object proxy = InterfaceProxyGenerator.getProxyInstance(bundle, Arrays.<Class<?>>asList(clazz), constantly(null), null);
+      Object proxy = InterfaceProxyGenerator.getProxyInstance(bundle, null, Arrays.<Class<?>>asList(clazz), constantly(null), null);
       assertTrue(clazz.isInstance(proxy));
       
       /* Now again but with a changed classloader as if the bundle had refreshed */
@@ -261,7 +263,7 @@ public class InterfaceProxyingTest {
       
       Class<?> clazzToo = loaderToo.loadClass("org.apache.aries.blueprint.proxy.TestInterface");
       
-      Object proxyToo = InterfaceProxyGenerator.getProxyInstance(bundle, Arrays.<Class<?>>asList(clazzToo), constantly(null), null);
+      Object proxyToo = InterfaceProxyGenerator.getProxyInstance(bundle, null, Arrays.<Class<?>>asList(clazzToo), constantly(null), null);
       assertTrue(clazzToo.isInstance(proxyToo));
   }
   

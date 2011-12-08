@@ -29,15 +29,17 @@ import org.objectweb.asm.commons.Method;
  */
 final class InterfaceUsingWovenProxyAdapter extends AbstractWovenProxyAdapter {
 
-  private Type currentIfaceType;
+  private Type currentMethodDeclaringType;
+  private boolean currentMethodDeclaringTypeIsInterface;
   
   public InterfaceUsingWovenProxyAdapter(ClassVisitor writer, String className,
       ClassLoader loader) {
     super(writer, className, loader);
   }
 
-  public final void setCurrentInterface(Type type) {
-    currentIfaceType = type;
+  public final void setCurrentMethodDeclaringType(Type type, boolean isInterface) {
+    currentMethodDeclaringType = type;
+    currentMethodDeclaringTypeIsInterface = isInterface;
   }
   
   /**
@@ -48,11 +50,12 @@ final class InterfaceUsingWovenProxyAdapter extends AbstractWovenProxyAdapter {
       String methodStaticFieldName) {
     return new InterfaceUsingWovenProxyMethodAdapter(cv.visitMethod(
         access, name, desc, signature, exceptions), access, name, desc,
-        methodStaticFieldName, currentMethod, typeBeingWoven, currentIfaceType);
+        methodStaticFieldName, currentMethod, typeBeingWoven, 
+        currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
   }
 
   @Override
   protected final Type getDeclaringTypeForCurrentMethod() {
-    return currentIfaceType;
+    return currentMethodDeclaringType;
   }
 }
