@@ -31,6 +31,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +44,17 @@ import org.apache.aries.blueprint.proxy.pkg.ProxyTestClassUnweavableSuperWithDef
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.AsmProxyManager;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
 import org.apache.aries.proxy.impl.weaving.WovenProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
+import org.apache.aries.unittest.mocks.MethodCall;
+import org.apache.aries.unittest.mocks.Skeleton;
+import org.apache.aries.util.ClassLoaderProxy;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
 
 
 public class WovenProxyGeneratorTest extends AbstractProxyTest
@@ -80,10 +86,10 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class, 
     ProxyTestClassSerializable.class, ProxyTestClassSerializableWithSVUID.class,
     ProxyTestClassSerializableChild.class, ProxyTestClassSerializableInterface.class,
-    ProxyTestClassStaticInitOfChild.class});
+    ProxyTestClassStaticInitOfChild.class, ProxyTestClassAbstract.class});
   
   /** An array of classes that are loaded by the WeavingLoader, but not actually woven **/
-  private static final List<Class<?>> OTHER_CLASSES = Arrays.asList(new Class<?>[] {ProxyTestClassStaticInitOfChildParent.class});
+  private static final List<Class<?>> OTHER_CLASSES = Arrays.asList(new Class<?>[] {ProxyTestClassStaticInitOfChildParent.class, ProxyTestClassChildOfAbstract.class});
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
@@ -418,6 +424,14 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Override
   protected Object getProxyInstance(Class<?> proxyClass) {
     try {
+      if(proxyClass.getName().equals(ProxyTestClassAbstract.class.getName())) {
+        Collection<Class<?>> coll = new ArrayList<Class<?>>();
+        coll.add(proxyClass);
+        return new AsmProxyManager().createNewProxy(null, coll, new Callable() {
+          public Object call() throws Exception {
+            return null;
+          }}, null);
+      }
       return proxyClass.newInstance();
     } catch (Exception e) {
       return null;
@@ -460,6 +474,37 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testWovenProxyIsSynthetic(){
     assertTrue(WovenProxy.class.isSynthetic());
+  }
+  
+  /**
+   * This test checks that we can add interfaces to classes that don't implement
+   * them using dynamic subclassing. This is a little odd, but it came for
+   * free with support for proxying abstract classes!
+   * @throws Exception 
+   */
+  @Test
+  public void testWovenClassPlusInterfaces() throws Exception {
+    Bundle b = (Bundle) Skeleton.newMock(new Class<?>[] {Bundle.class, ClassLoaderProxy.class});
+    
+    Skeleton.getSkeleton(b).setReturnValue(new MethodCall(
+        ClassLoaderProxy.class, "getClassLoader"), weavingLoader);
+    
+    Object toCall = new AsmProxyManager().createDelegatingProxy(b, Arrays.asList(
+        getProxyClass(ProxyTestClassAbstract.class), Callable.class), new Callable() {
+
+          public Object call() throws Exception {
+            return weavingLoader.loadClass(ProxyTestClassChildOfAbstract.class.getName()).newInstance();
+          }
+      
+    }, null);
+    
+    //Should proxy the abstract method on the class
+    Method m = getProxyClass(ProxyTestClassAbstract.class).getMethod("getMessage");
+    assertEquals("Working", m.invoke(toCall));
+    
+    //Should be a callable too!
+    assertEquals("Callable Works too!", ((Callable)toCall).call());
+    
   }
 }
 

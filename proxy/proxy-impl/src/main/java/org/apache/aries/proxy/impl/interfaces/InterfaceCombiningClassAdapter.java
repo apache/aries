@@ -19,10 +19,15 @@
 package org.apache.aries.proxy.impl.interfaces;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassWriter;
+import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -35,6 +40,8 @@ import org.objectweb.asm.commons.Method;
  */
 final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcodes {
   
+  /** The superclass we should use */
+  private final Class<? extends WovenProxy> superclass;
   /** The interfaces we need to implement */
   private final Collection<Class<?>> interfaces;
   /** The {@link ClassWriter} we use to write our class */
@@ -52,37 +59,38 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
    * @param interfaces
    */
    InterfaceCombiningClassAdapter(String className,
-      ClassLoader loader, Collection<Class<?>> interfaces) {
+      ClassLoader loader, Class<? extends WovenProxy> superclass, Collection<Class<?>> interfaces) {
     writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader);
     adapter = new InterfaceUsingWovenProxyAdapter(writer, className, loader);
     
     this.interfaces = interfaces;
+    this.superclass = superclass;
     String[] interfaceNames = new String[interfaces.size()];
     
     int i = 0;
     for(Class<?> in : interfaces) {
-      interfaceNames[i] = Type.getType(in).getInternalName();
+      interfaceNames[i] = Type.getInternalName(in);
       i++;
     }
     
     adapter.visit(V1_6, ACC_PUBLIC | ACC_SYNTHETIC, className, null,
-        AbstractWovenProxyAdapter.OBJECT_TYPE.getInternalName(), interfaceNames);
+        (superclass == null) ? AbstractWovenProxyAdapter.OBJECT_TYPE.getInternalName() :
+                               Type.getInternalName(superclass), interfaceNames);
   }
 
 
   @Override
   public final MethodVisitor visitMethod(int access, String name, String desc,
       String sig, String[] arg4) {
-    //We're going to implement this method, so make it non abstract!
-    access &= ~ACC_ABSTRACT;
     //If we already implement this method (from another interface) then we don't
     //want a duplicate. We also don't want to copy any static init blocks (these
     //initialize static fields on the interface that we don't copy
     if(adapter.getKnownMethods().contains(new Method(name, desc)) || 
         "<clinit>".equals(name))
       return null;
-    else 
-      return adapter.visitMethod(access, name, desc, null, arg4);
+    else {//We're going to implement this method, so make it non abstract!
+      return adapter.visitMethod(access & ~ACC_ABSTRACT, name, desc, null, arg4);
+    }
   }
   
   /**
@@ -93,7 +101,7 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
   final byte[] generateBytes() throws UnableToProxyException {
     if(!!!done) {
       for(Class<?> c : interfaces) {
-        adapter.setCurrentInterface(Type.getType(c));
+        adapter.setCurrentMethodDeclaringType(Type.getType(c), true);
         try {
           AbstractWovenProxyAdapter.readClass(c, this);
         } catch (IOException e) {
@@ -101,7 +109,15 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
         }
       }
       
-      adapter.setCurrentInterface(Type.getType(Object.class));
+      Class<?> clazz = superclass;
+      
+      while(clazz != null && (clazz.getModifiers() & Modifier.ABSTRACT) != 0) {
+        adapter.setCurrentMethodDeclaringType(Type.getType(clazz), false);
+        visitAbstractMethods(clazz);
+        clazz = clazz.getSuperclass();
+      }
+      
+      adapter.setCurrentMethodDeclaringType(Type.getType(Object.class), false);
       visitObjectMethods();
       
       adapter.visitEnd();
@@ -110,6 +126,22 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
     return writer.toByteArray();
   }
   
+  private void visitAbstractMethods(Class<?> clazz) {
+    for(java.lang.reflect.Method m : clazz.getDeclaredMethods()) {
+      int modifiers = m.getModifiers();
+      if((modifiers & Modifier.ABSTRACT) != 0) {
+        List<String> exceptions = new ArrayList<String>();
+        for(Class<?> c : m.getExceptionTypes()) {
+          exceptions.add(Type.getInternalName(c));
+        }
+        MethodVisitor visitor = visitMethod(modifiers, m.getName(), Method.getMethod(m).getDescriptor(), 
+            null, exceptions.toArray(new String[exceptions.size()]));
+        if (visitor != null) visitor.visitEnd();
+      }
+    }
+  }
+
+
   /**
    * Make sure that the three common Object methods toString, equals and hashCode are redirected to the delegate
    * even if they are not on any of the interfaces

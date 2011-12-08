@@ -111,9 +111,13 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     // move the existing class name to become the superclass
     // modify the version of the dynamic subclass to be Java 1.6
     int newVersion = Opcodes.V1_6;
-    // keep the same access and signature as the superclass
+    // keep the same access and signature as the superclass (unless it's abstract)
     // remove all the superclass interfaces because they will be inherited
     // from the superclass anyway
+    if((access & ACC_ABSTRACT) != 0) {
+      //If the super was abstract the subclass should not be!
+      access &= ~ACC_ABSTRACT;
+    }
     cv.visit(newVersion, access, newClassName, signature, name, null);
 
     // add a private field for the invocation handler
@@ -279,11 +283,16 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
      * Check the method access and handle the method types we don't want to
      * copy: final methods (issue warnings if these are not methods from
      * java.* classes) static methods (initialiser and others) private
-     * methods constructors (for now we don't copy any constructors)
-     * abstract (we don't proxy/implement but we must copy the method or the
-     * subclass is invalid) everything else we process to proxy
+     * methods, constructors (for now we don't copy any constructors)
+     * everything else we process to proxy. Abstract methods should be made
+     * non-abstract so that they can be proxied.
      */
-
+    
+    if((access & ACC_ABSTRACT) != 0) {
+      //If the method is abstract then it should not be in the concrete subclass!
+      access &= ~ACC_ABSTRACT;
+    }
+    
     LOGGER.debug("Method name: {} with descriptor: {}", name, desc);
 
     MethodVisitor methodVisitorToReturn = null;
@@ -316,10 +325,6 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     } else if ((access & ACC_STATIC) != 0) {
       // don't copy static methods
       methodVisitorToReturn = null;
-    } else if ((access & ACC_ABSTRACT) != 0) {
-      // if we find an abstract method we need to copy it as is to make
-      // the subclass valid
-      methodVisitorToReturn = cv.visitMethod(access, name, desc, signature, exceptions);
     } else if (!(((access & ACC_PUBLIC) != 0) || ((access & ACC_PROTECTED) != 0) || ((access & ACC_PRIVATE) != 0))) {
       // the default (package) modifier value is 0, so by using & with any
       // of the other

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -348,5 +349,25 @@ public abstract class AbstractProxyTest {
     //An inner class has no no-args (the parent gets added as an arg) so we can't
     //get an instance
     assertNotNull(getProxyClass(ProxyTestClassInner.class));
+  }
+  
+  /**
+   * Test an abstract class
+   */
+  @Test
+  public void testAbstractClass() throws Exception
+  {
+    Object ptca = getProxyInstance(getProxyClass(ProxyTestClassAbstract.class));
+    ptca = setDelegate(ptca, new Callable<Object>() {
+
+      public Object call() throws Exception {
+        //We have to use a proxy instance here because we need it to be a subclass
+        //of the one from the weaving loader in the weaving test...
+        return getProxyInstance(ProxyTestClassChildOfAbstract.class);
+      }
+    });
+    
+    Method m = ptca.getClass().getDeclaredMethod("getMessage");
+    assertEquals("Working", m.invoke(ptca));
   }
 }
