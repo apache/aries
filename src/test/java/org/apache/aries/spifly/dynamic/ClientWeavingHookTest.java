@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class ClientWeavingHookTest {
 
         // Register the bundle that provides the SPI implementation.
         Bundle providerBundle = mockProviderBundle("impl1", 1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
 
         Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
@@ -118,7 +119,7 @@ public class ClientWeavingHookTest {
 
         // Register the bundle that provides the SPI implementation.
         Bundle providerBundle = mockProviderBundle("impl1", 1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
 
         Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
@@ -176,7 +177,7 @@ public class ClientWeavingHookTest {
 
         // ok the weaving is done, now prepare the registry for the call
         Bundle providerBundle = mockProviderBundle("impl1", 1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
@@ -207,8 +208,8 @@ public class ClientWeavingHookTest {
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
 
         // Register in reverse order to make sure the order in which bundles are sorted is correct
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI files from impl1 and impl2 are visible.
@@ -225,8 +226,8 @@ public class ClientWeavingHookTest {
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
@@ -255,9 +256,9 @@ public class ClientWeavingHookTest {
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Bundle providerBundle3 = mockProviderBundle("impl2_123", 3, new Version(1, 2, 3));
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle3);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle3, new HashMap<String, Object>());
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle3);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
@@ -286,11 +287,11 @@ public class ClientWeavingHookTest {
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Bundle providerBundle4 = mockProviderBundle("impl4", 4);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, new HashMap<String, Object>());
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
@@ -319,11 +320,11 @@ public class ClientWeavingHookTest {
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Bundle providerBundle4 = mockProviderBundle("impl4", 4);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, new HashMap<String, Object>());
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
@@ -353,11 +354,11 @@ public class ClientWeavingHookTest {
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Bundle providerBundle4 = mockProviderBundle("impl4", 4);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, new HashMap<String, Object>());
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
@@ -409,12 +410,12 @@ public class ClientWeavingHookTest {
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Bundle providerBundle3 = mockProviderBundle("impl3", 3);
         Bundle providerBundle4 = mockProviderBundle("impl4", 4);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2);
-        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle3);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4);
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, new HashMap<String, Object>());
+        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle3, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, new HashMap<String, Object>());
 
         Bundle consumerBundle1 = mockConsumerBundle(headers1, providerBundle1, providerBundle2, providerBundle3, providerBundle4);
         activator.addConsumerWeavingData(consumerBundle1, SpiFlyConstants.SPI_CONSUMER_HEADER);
@@ -481,7 +482,7 @@ public class ClientWeavingHookTest {
         Bundle systembundle = mockSystemBundle();
 
         Bundle providerBundle = mockProviderBundle("impl3", 1);
-        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
+        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle, new HashMap<String, Object>());
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance()");
@@ -505,7 +506,7 @@ public class ClientWeavingHookTest {
         Bundle systembundle = mockSystemBundle();
 
         Bundle providerBundle = mockProviderBundle("impl3", 1);
-        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
+        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle, new HashMap<String, Object>());
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundleId=0");
@@ -529,7 +530,7 @@ public class ClientWeavingHookTest {
         Bundle systembundle = mockSystemBundle();
 
         Bundle providerBundle = mockProviderBundle("impl3", 1);
-        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle);
+        activator.registerProviderBundle("javax.xml.parsers.DocumentBuilderFactory", providerBundle, new HashMap<String, Object>());
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "javax.xml.parsers.DocumentBuilderFactory#newInstance();bundle=impl3");
