@@ -24,6 +24,7 @@ import static org.junit.Assert.assertSame;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.ServiceLoader;
 
@@ -90,7 +91,7 @@ public class UtilTest {
             }
         }).anyTimes();
         EasyMock.replay(providerBundle);
-        activator.registerProviderBundle(MySPI.class.getName(), providerBundle);
+        activator.registerProviderBundle(MySPI.class.getName(), providerBundle, new HashMap<String, Object>());
 
         Bundle clientBundle = EasyMock.createMock(Bundle.class);
         EasyMock.replay(clientBundle);
