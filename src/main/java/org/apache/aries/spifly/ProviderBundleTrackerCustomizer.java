@@ -79,7 +79,12 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         if (providedServices == null && bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER) != null) {
-            providedServices = new ArrayList<String>();
+            String header = bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER).toString().trim();
+            if ("*".equals(header)) {
+                providedServices = new ArrayList<String>();
+            } else {
+                providedServices = Arrays.asList(header.split(","));
+            }
         }
 
         if (providedServices == null) {
@@ -91,6 +96,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         } else {
             log(LogService.LOG_INFO, "Examining bundle for SPI provider: "
                     + bundle.getSymbolicName());
+        }
+
+        for (String svc : providedServices) {
+            // Eagerly register any services that are explicitly listed, as they may not be found in META-INF/services
+            activator.registerProviderBundle(svc, bundle, customAttributes);
         }
 
         URL servicesDir = bundle.getResource("/" + METAINF_SERVICES);

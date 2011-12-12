@@ -152,11 +152,8 @@ public abstract class BaseActivator implements BundleActivator {
         return wd;
     }
 
-    public void registerProviderBundle(String registrationClassName, Bundle bundle) {
-        registerProviderBundle(registrationClassName, bundle, Collections.<String, Object>emptyMap());
-    }
-
     public void registerProviderBundle(String registrationClassName, Bundle bundle, Map<String, Object> customAttributes) {
+        registrationClassName = registrationClassName.trim();
         registeredProviders.putIfAbsent(registrationClassName,
                 Collections.synchronizedSortedMap(new TreeMap<Long, Pair<Bundle, Map<String, Object>>>()));
 
