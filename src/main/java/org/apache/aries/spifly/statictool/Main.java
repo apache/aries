@@ -159,9 +159,9 @@ public class Main {
             byte[] b;
             try {
                 ClassReader cr = new ClassReader(is);
-                ClassWriter cw = new ClassWriter(0);
+                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
                 ClassVisitor cv = new TCCLSetterVisitor(cw, className, wd);
-                cr.accept(cv, 0);
+                cr.accept(cv, ClassReader.SKIP_FRAMES);
                 b = cw.toByteArray();
             } finally {
                 is.close();
