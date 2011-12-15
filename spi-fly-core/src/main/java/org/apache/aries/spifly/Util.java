@@ -19,6 +19,7 @@
 package org.apache.aries.spifly;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,6 +120,15 @@ public class Util {
         // be 4.2 compliant.
         // Here we're just finding any class in the bundle, load that and then use its classloader.
 
+        try {
+            Method adaptMethod = b.getClass().getMethod("adapt", Class.class);
+            if (adaptMethod != null) {
+                return getBundleClassLoaderViaAdapt(b, adaptMethod);
+            }
+        } catch (Exception e) {
+            // No Bundle.adapt(), use the fallback approach to find the bundle classloader
+        }
+
         List<String> rootPaths = new ArrayList<String>();
         rootPaths.add("/");
 
@@ -155,6 +165,27 @@ public class Util {
             }
         }
         throw new RuntimeException("Could not obtain classloader for bundle " + b);
+    }
+
+    private static ClassLoader getBundleClassLoaderViaAdapt(Bundle b, Method adaptMethod) {
+        // This method uses reflection to avoid a hard dependency on OSGi 4.3 APIs
+        try {
+            // Load the BundleRevision and BundleWiring classes from the System Bundle.
+            Bundle systemBundle = b.getBundleContext().getBundle(0);
+
+            Class<?> bundleRevisionClass = systemBundle.loadClass("org.osgi.framework.wiring.BundleRevision");
+            Object bundleRevision = adaptMethod.invoke(b, bundleRevisionClass);
+
+            Method getWiringMethod = bundleRevisionClass.getDeclaredMethod("getWiring");
+            Object bundleWiring = getWiringMethod.invoke(bundleRevision);
+
+            Class<?> bundleWiringClass = systemBundle.loadClass("org.osgi.framework.wiring.BundleWiring");
+            Method getClassLoaderMethod = bundleWiringClass.getDeclaredMethod("getClassLoader");
+
+            return (ClassLoader) getClassLoaderMethod.invoke(bundleWiring);
+        } catch (Exception e) {
+            throw new RuntimeException("Can't obtain Bundle Class Loader for bundle: " + b, e);
+        }
     }
 
     private static ClassLoader getClassLoaderViaBundleClassPath(Bundle b, URL url) {

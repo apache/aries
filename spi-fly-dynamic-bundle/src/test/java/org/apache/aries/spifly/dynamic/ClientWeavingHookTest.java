@@ -614,6 +614,10 @@ public class ClientWeavingHookTest {
         for(String className : classNames) {
             classResources.add("/" + className.replace('.', '/') + ".class");
         }
+
+        BundleContext bc = EasyMock.createNiceMock(BundleContext.class);
+        EasyMock.replay(bc);
+
         Bundle providerBundle = EasyMock.createMock(Bundle.class);
         String bsn = subdir;
         int idx = bsn.indexOf('_');
@@ -622,6 +626,7 @@ public class ClientWeavingHookTest {
         }
         EasyMock.expect(providerBundle.getSymbolicName()).andReturn(bsn).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(id).anyTimes();
+        EasyMock.expect(providerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(providerBundle.getVersion()).andReturn(version).anyTimes();
         EasyMock.expect(providerBundle.getEntryPaths("/")).andAnswer(new IAnswer<Enumeration<String>>() {
             @Override
