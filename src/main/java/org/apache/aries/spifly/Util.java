@@ -121,7 +121,7 @@ public class Util {
         // Here we're just finding any class in the bundle, load that and then use its classloader.
 
         try {
-            Method adaptMethod = b.getClass().getMethod("adapt", Class.class);
+            Method adaptMethod = Bundle.class.getMethod("adapt", Class.class);
             if (adaptMethod != null) {
                 return getBundleClassLoaderViaAdapt(b, adaptMethod);
             }
