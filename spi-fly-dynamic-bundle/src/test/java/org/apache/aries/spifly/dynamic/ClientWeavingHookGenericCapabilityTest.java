@@ -72,7 +72,7 @@ public class ClientWeavingHookGenericCapabilityTest {
     }
 
     @Test
-    public void testBasicServiveLoaderUsage() throws Exception {
+    public void testBasicServiceLoaderUsage() throws Exception {
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
         consumerHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active");
 
@@ -762,6 +762,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         public BundleWiring getBundleWiring() {
             BundleWiring bw = EasyMock.createMock(BundleWiring.class);
             EasyMock.expect(bw.getBundle()).andReturn(bundleContainingOriginalClass);
+            EasyMock.expect(bw.getClassLoader()).andReturn(getClass().getClassLoader());
             EasyMock.replay(bw);
             return bw;
         }
