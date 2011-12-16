@@ -54,8 +54,9 @@ public class ClientWeavingHook implements WeavingHook {
         if (wd != null) {
 	        activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());
 
-	        ClassReader cr = new ClassReader(wovenClass.getBytes());
-	        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+            ClassReader cr = new ClassReader(wovenClass.getBytes());
+            ClassWriter cw = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES,
+                wovenClass.getBundleWiring().getClassLoader());
 	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw, wovenClass.getClassName(), wd);
 	        cr.accept(tsv, ClassReader.SKIP_FRAMES);
 	        wovenClass.setBytes(cw.toByteArray());
