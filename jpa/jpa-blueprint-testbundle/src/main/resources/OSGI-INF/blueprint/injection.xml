@@ -31,5 +31,14 @@
       <jpa:context property="persistenceContext" unitname="test-context"/>
     </bean>
   </service>
+  
+    <service interface="org.apache.aries.jpa.blueprint.itest.JPATestBean">
+    <service-properties>
+       <entry key="lifecycle" value="true"/>
+    </service-properties>
+    <bean class="org.apache.aries.jpa.blueprint.itest.JPATestBean">
+      <jpa:context property="persistenceContext" unitname="bp-test-unit"/>
+    </bean>
+  </service>
             
 </blueprint>
