@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2010, 2011). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2010-2012). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.osgi.jmx.framework.wiring;
 
 import java.io.IOException;
 
+import javax.management.JMException;
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
@@ -229,103 +230,140 @@ public interface BundleWiringStateMBean {
 
     /**
      * Returns the requirements for the current bundle revision.
-     * The ArrayType is typed by the {@link #REQUIREMENT_TYPE_ARRAY}.
      *
-     * @param bundleId
-     * @param namespace
+     * @see #REQUIREMENT_TYPE_ARRAY for the details of the CompositeData.
+     *
+     * @param bundleId The bundle ID.
+     * @param namespace The name space of the requirements to be returned by this operation.
      * @return the declared requirements for the current revision of <code>bundleId</code>
-     * and <code>namespace</code>
-     *
+     * and <code>namespace</code>.
+     * @throws JMException if there is a JMX problem.
+     * @throws IOException if the connection could not be made because of a communication problem.
      */
-    CompositeData[] getCurrentRevisionDeclaredRequirements(long bundleId,
-            String namespace) throws IOException;
+    CompositeData[] getCurrentRevisionDeclaredRequirements(long bundleId, String namespace)
+            throws IOException, JMException;
 
     /**
      * Returns the capabilities for the current bundle revision.
-     * The ArrayType is typed by the {@link #CAPABILITY_TYPE_ARRAY}
      *
-     * @param bundleId
-     * @param namespace
+     * @see #CAPABILITY_TYPE_ARRAY for the details of the CompositeData.
+     *
+     * @param bundleId The bundle ID.
+     * @param namespace The name space of the capabilities to be returned by this operation.
      * @return the declared capabilities for the current revision of <code>bundleId</code>
-     * and <code>namespace</code>
+     * and <code>namespace</code>.
+     * @throws JMException if there is a JMX problem.
+     * @throws IOException if the connection could not be made because of a communication problem.
      */
-    CompositeData[] getCurrentRevisionDeclaredCapabilities(long bundleId,
-            String namespace) throws IOException;
+    CompositeData[] getCurrentRevisionDeclaredCapabilities(long bundleId, String namespace)
+            throws IOException, JMException;
 
     /**
      * Returns the bundle wiring for the current bundle revision.
-     * The ArrayType is typed by the {@link #BUNDLE_WIRING_TYPE}
      *
-     * @param bundleId
-     * @param namespace
-     * @return the wires for the current revision of <code>bundleId</code>
-     * and <code>namespace</code>
+     * @see #BUNDLE_WIRING_TYPE for the details of the CompositeData.
+     *
+     * @param bundleId The bundle ID.
+     * @param namespace The name space of the requirements and capabilities for which to return information.
+     * @return the wiring information for the current revision of <code>bundleId</code>
+     * and <code>namespace</code>.
+     * @throws JMException if there is a JMX problem.
+     * @throws IOException if the connection could not be made because of a communication problem.
      */
-    CompositeData getCurrentWiring(long bundleId, String namespace) throws IOException;
+    CompositeData getCurrentWiring(long bundleId, String namespace)
+            throws IOException, JMException;
 
     /**
-     * Returns the bundle wiring closure for the current revision of the specified bundle.
+     * Returns the bundle wiring closure for the current revision of the specified bundle. The
+     * wiring closure contains all the wirings from the root bundle revision to all bundle revisions
+     * it is wired to and all their transitive wirings.
      *
-     * @see #BUNDLE_WIRING_CLOSURE_TYPE for the details of the TabularType
+     * @see #BUNDLE_WIRING_CLOSURE_TYPE for the details of the TabularData.
      *
      * @param rootBundleId the root bundle of the closure.
-     * @param namespace the namespace of the capabilities and requirements involved in this wiring.
-     * @return a tabular representation of all the wiring in the closure. The bundle revision ids
+     * @param namespace The name space of the requirements and capabilities for which to return information.
+     * @return a tabular representation of all the wirings in the closure. The bundle revision IDs
      * only have meaning in the context of the current result. The revision of the rootBundle is set
-     * to 0.
+     * to 0. Therefore the root bundle of the closure can be looked up in the table by its bundle ID and
+     * revision 0.
+     * @throws JMException if there is a JMX problem.
+     * @throws IOException if the connection could not be made because of a communication problem.
      */
-    TabularData getCurrentWiringClosure(long rootBundleId, String namespace) throws IOException;
+    TabularData getCurrentWiringClosure(long rootBundleId, String namespace)
+            throws IOException, JMException;
 
     /**
      * Returns the requirements for all revisions of the bundle.
-     * The ArrayType is typed by the {@link #REVISIONS_REQUIREMENT_TYPE_ARRAY}.
+     *
+     * @see #REVISIONS_REQUIREMENT_TYPE_ARRAY for the details of TabularData.
+     *
      * The requirements are in no particular order, and may change in
      *  subsequent calls to this operation.
      *
-     * @param bundleId
-     * @param namespace
-     * @return the declared requirements for all revisions of <code>bundleId</code>
-     *
+     * @param bundleId The bundle ID.
+     * @param namespace The name space of the requirements to be returned by this operation.
+     * @return the declared requirements for all revisions of <code>bundleId</code>.
+     * @throws JMException if there is a JMX problem.
+     * @throws IOException if the connection could not be made because of a communication problem.
      */
-    TabularData getRevisionsDeclaredRequirements(long bundleId,
-            String namespace) throws IOException;
+    TabularData getRevisionsDeclaredRequirements(long bundleId, String namespace)
+            throws IOException, JMException;
+
 
     /**
      * Returns the capabilities for all revisions of the bundle.
-     * The ArrayType is typed by the {@link #REVISIONS_CAPABILITY_TYPE_ARRAY}
+     *
+     * @see #REVISIONS_CAPABILITY_TYPE_ARRAY for the details of TabularData.
+     *
      * The capabilities are in no particular order, and may change in
      *  subsequent calls to this operation.
      *
-     * @param bundleId
-     * @param namespace
+     * @param bundleId The bundle ID.
+     * @param namespace The name space of the capabilities to be returned by this operation.
      * @return the declared capabilities for all revisions of <code>bundleId</code>
+     * @throws JMException if there is a JMX problem.
+     * @throws IOException if the connection could not be made because of a communication problem.
      */
-    TabularData getRevisionsDeclaredCapabilities(long bundleId,
-            String namespace) throws IOException;
+    TabularData getRevisionsDeclaredCapabilities(long bundleId, String namespace)
+            throws IOException, JMException;
 
     /**
      * Returns the bundle wirings for all revisions of the bundle.
-     * The ArrayType is typed by the {@link #BUNDLE_WIRING_TYPE_ARRAY}
+     *
+     * @see #BUNDLE_WIRING_TYPE_ARRAY for the details of TabularData.
+     *
      * The bundle wirings are in no particular order, and may
      *  change in subsequent calls to this operations.
      *
-     * @param bundleId
-     * @param namespace
-     * @return the wires for all revisions of <code>bundleId</code>
+     * @param bundleId The bundle ID.
+     * @param namespace The name space of the requirements and capabilities for which to return information.
+     * @return the wiring information for all revisions of <code>bundleId</code> and <code>namespace</code>.
+     * @throws JMException if there is a JMX problem.
+     * @throws IOException if the connection could not be made because of a communication problem.
      */
-    TabularData getRevisionsWiring(long bundleId, String namespace) throws IOException;
+    TabularData getRevisionsWiring(long bundleId, String namespace)
+            throws IOException, JMException;
 
     /**
-     * Returns a closure of all bundle wirings linked by their
-     *  bundle wires, starting at <code>rootBundleId</code>.
-     * The ArrayType is typed by the {@link #BUNDLE_WIRING_TYPE_ARRAY}
-     * The bundle wirings are in no particular order, and may
-     *  change in subsequent calls to this operation. Furthermore,
-     * the bundle wiring IDs are local and cannot be reused across invocations.
+     * Returns the bundle wiring closure for all revisions of the specified bundle. The
+     * wiring closure contains all the wirings from the root bundle revision to all bundle revisions
+     * it is wired to and all their transitive wirings.
      *
-     * @param rootBundleId
-     * @param namespace
+     * @see #BUNDLE_WIRING_TYPE_ARRAY for the details of TabularData.
+     *
+     * The bundle wirings are in no particular order, and may
+     * change in subsequent calls to this operation. Furthermore,
+     * the bundle revision IDs are local and cannot be reused across invocations.
+     *
+     * @param rootBundleId The root bundle ID.
+     * @param namespace The name space of the requirements and capabilities for which to return information.
      * @return a closure of bundle wirings linked together by wires.
+     * @return a tabular representation of all the wirings in the closures. The bundle revision IDs
+     * only have meaning in the context of the current result.
+     * @throws JMException if there is a JMX problem.
+     * @throws IOException if the connection could not be made because of a communication problem.
      */
-    TabularData getRevisionsWiringClosure(long rootBundleId, String namespace) throws IOException;
+    TabularData getRevisionsWiringClosure(long rootBundleId, String namespace)
+            throws IOException, JMException;
+
 }
