@@ -206,6 +206,22 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
         assertBundleWiring(bw, jmxWiring);
     }
 
+    @Test
+    public void testRevisionsWiring() throws IOException {
+        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
+
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        TabularData jmxWiringTable = brsMBean.getRevisionsWiring(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
+
+        Assert.assertEquals(1, jmxWiringTable.size());
+        CompositeData jmxWiring = (CompositeData) jmxWiringTable.values().iterator().next();
+        Assert.assertEquals(BundleWiringStateMBean.BUNDLE_WIRING_TYPE, jmxWiring.getCompositeType());
+        Assert.assertEquals(a.getBundleId(), jmxWiring.get(BundleWiringStateMBean.BUNDLE_ID));
+
+        BundleWiring bw = a.adapt(BundleWiring.class);
+        assertBundleWiring(bw, jmxWiring);
+    }
+
     private void assertBundleWiring(BundleWiring bundleWiring, CompositeData jmxWiring) {
         CompositeData[] jmxCapabilities = (CompositeData[]) jmxWiring.get(BundleWiringStateMBean.CAPABILITIES);
         List<BundleCapability> capabilities = bundleWiring.getCapabilities(BundleRevision.PACKAGE_NAMESPACE);
