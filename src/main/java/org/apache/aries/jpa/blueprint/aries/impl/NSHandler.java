@@ -19,6 +19,8 @@
 package org.apache.aries.jpa.blueprint.aries.impl;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -106,6 +108,10 @@ public class NSHandler implements NamespaceHandler {
 
     /** The blueprint attribute value to make a bean eager */
     private static final String ACTIVATION_EAGER = "EAGER";
+    
+    /** The interface to proxy for managed persistence contexts */
+    private static final Collection<Class<?>> IFACES = Arrays.asList(new Class<?>[] {EntityManager.class});
+    
     /** The {@link PersistenceManager} to register contexts with */
     private PersistenceContextProvider manager;
     /** Used to indicate whether the PersistenceContextProvider is available */
@@ -336,11 +342,15 @@ public class NSHandler implements NamespaceHandler {
      * @return
      */
     private ComponentMetadata createInjectionBeanMetedata(ParserContext ctx,
-        ComponentMetadata factory) {
+        MutableReferenceMetadata factory) {
 
         if (_logger.isDebugEnabled())
             _logger.debug("Creating a managed persistence context definition for injection");
 
+        //We want the EntityManager objects created from this factory to be damped too
+        
+        factory.setProxyChildBeanClasses(IFACES);
+        
         // Register the factory bean, and then create an entitymanager from it
         ctx.getComponentDefinitionRegistry().registerComponentDefinition(
                 factory);
