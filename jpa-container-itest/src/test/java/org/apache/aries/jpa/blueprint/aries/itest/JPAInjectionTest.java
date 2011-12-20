@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.framework.BundleException;
 
 @RunWith(JUnit4TestRunner.class)
 public class JPAInjectionTest extends AbstractIntegrationTest {
@@ -45,6 +46,17 @@ public class JPAInjectionTest extends AbstractIntegrationTest {
     assertTrue("No constructor context injection", bean.constructorPContextAvailable());
     
     assertTrue("No persistence unit injection", bean.pUnitAvailable());
+    assertTrue("No persistence context injection", bean.pContextAvailable());
+  }
+  
+  @Test
+  public void testLifecycle() throws Exception {
+    JPATestBean bean = context().getService(JPATestBean.class, "(lifecycle=true)");
+    
+    assertTrue("No persistence context injection", bean.pContextAvailable());
+    
+    context().getBundleByName("org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle").update();
+    
     assertTrue("No persistence context injection", bean.pContextAvailable());
   }
 
@@ -70,6 +82,7 @@ public class JPAInjectionTest extends AbstractIntegrationTest {
         mavenBundle("commons-lang", "commons-lang"),
         mavenBundle("commons-collections", "commons-collections"),
         mavenBundle("commons-pool", "commons-pool"),
+        mavenBundle("org.apache.derby", "derby"),
         mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
         mavenBundle("org.apache.openjpa", "openjpa"),
 
@@ -78,6 +91,8 @@ public class JPAInjectionTest extends AbstractIntegrationTest {
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm"),
         
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.blueprint.itest.bundle"),
+        //For lifecycle testing
+        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle"),
         
         equinox().version("3.5.0"));
   }
