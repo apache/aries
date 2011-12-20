@@ -326,6 +326,32 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
         assertBundleWiring(sb.adapt(BundleWiring.class), jmxWiringSB);
     }
 
+    @Test
+    public void testRevisionsWiringClosure() throws Exception {
+        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
+
+        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        TabularData jmxWiringClosure = brsMBean.getRevisionsWiringClosure(a.getBundleId(), BundleWiringStateMBean.PACKAGE_NAMESPACE);
+
+        CompositeData jmxWiringA = jmxWiringClosure.get(new Object [] {a.getBundleId(), 0});
+        assertBundleWiring(a.adapt(BundleWiring.class), jmxWiringA);
+
+        Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
+        int bRevID = findRevisionID(jmxWiringA, b);
+        CompositeData jmxWiringB = jmxWiringClosure.get(new Object [] {b.getBundleId(), bRevID});
+        assertBundleWiring(b.adapt(BundleWiring.class), jmxWiringB);
+
+        Bundle cm = context().getBundleByName("org.apache.felix.configadmin");
+        int cmRevID = findRevisionID(jmxWiringA, cm);
+        CompositeData jmxWiringCM = jmxWiringClosure.get(new Object [] {cm.getBundleId(), cmRevID});
+        assertBundleWiring(cm.adapt(BundleWiring.class), jmxWiringCM);
+
+        Bundle sb = context().getBundle(0);
+        int sbRevID = findRevisionID(jmxWiringA, sb);
+        CompositeData jmxWiringSB = jmxWiringClosure.get(new Object [] {sb.getBundleId(), sbRevID});
+        assertBundleWiring(sb.adapt(BundleWiring.class), jmxWiringSB);
+    }
+
     private int findRevisionID(CompositeData jmxWiring, Bundle bundle) {
         CompositeData[] requiredWires = (CompositeData []) jmxWiring.get(BundleWiringStateMBean.REQUIRED_WIRES);
         for (CompositeData req : requiredWires) {

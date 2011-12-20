@@ -185,8 +185,25 @@ public class BundleWiringState implements BundleWiringStateMBean {
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getWiringClosure(long, java.lang.String)
      */
-    public TabularData getWiringClosure(long rootBundleId, String namespace) {
-        // TODO Auto-generated method stub
-        return null;
+    public TabularData getRevisionsWiringClosure(long rootBundleId, String namespace) throws IOException {
+        Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, rootBundleId);
+        BundleRevisions revisions = bundle.adapt(BundleRevisions.class);
+
+        Map<BundleRevision, Integer> revisionIDMap = new HashMap<BundleRevision, Integer>();
+        for (BundleRevision revision : revisions.getRevisions()) {
+            populateTransitiveRevisions(namespace, revision, revisionIDMap);
+        }
+
+        // Set the root current revision ID to 0,
+        // TODO check if there is already a revision with ID 0 and if so swap them. Quite a small chance that this will be needed
+        BundleRevision revision = bundle.adapt(BundleRevision.class);
+        revisionIDMap.put(revision, 0);
+
+        TabularData td = new TabularDataSupport(BundleWiringStateMBean.BUNDLE_WIRING_CLOSURE_TYPE);
+        for (Map.Entry<BundleRevision, Integer> entry : revisionIDMap.entrySet()) {
+            td.put(getRevisionWiring(entry.getKey(), entry.getValue(), namespace, revisionIDMap));
+        }
+
+        return td;
     }
 }
