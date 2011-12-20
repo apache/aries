@@ -338,5 +338,5 @@ public interface BundleWiringStateMBean {
      * @param namespace
      * @return a closure of bundle wirings linked together by wires.
      */
-    TabularData getWiringClosure(long rootBundleId, String namespace) throws IOException;
+    TabularData getRevisionsWiringClosure(long rootBundleId, String namespace) throws IOException;
 }
