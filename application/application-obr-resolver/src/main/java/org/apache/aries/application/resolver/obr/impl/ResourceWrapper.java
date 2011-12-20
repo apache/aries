@@ -81,4 +81,7 @@ public class ResourceWrapper implements Resource {
         return false;
     }
 
+    public String toString() {
+        return resource.toString();
+    }
 }
