@@ -21,9 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
@@ -97,10 +95,13 @@ public class BundleWiringState implements BundleWiringStateMBean {
     // The current revision being passed in always gets assigned revision ID 0
     // All the other revision IDs unique, but don't increase monotonous.
     private Map<BundleRevision, Integer> getCurrentRevisionTransitiveRevisionsClosure(long rootBundleId, String namespace) throws IOException {
-        Map<BundleRevision, Integer> revisionIDMap = new HashMap<BundleRevision, Integer>();
-
         Bundle rootBundle = FrameworkUtils.resolveBundle(bundleContext, rootBundleId);
         BundleRevision rootRevision = rootBundle.adapt(BundleRevision.class);
+        return getRevisionTransitiveClosure(rootRevision, namespace);
+    }
+
+    private Map<BundleRevision, Integer> getRevisionTransitiveClosure(BundleRevision rootRevision, String namespace) {
+        Map<BundleRevision, Integer> revisionIDMap = new HashMap<BundleRevision, Integer>();
         populateTransitiveRevisions(namespace, rootRevision, revisionIDMap);
 
         // Set the root revision ID to 0,
@@ -169,24 +170,23 @@ public class BundleWiringState implements BundleWiringStateMBean {
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getRevisionsWiring(long, java.lang.String)
      */
-    public ArrayType getRevisionsWiring(long bundleId, String namespace) {
-        // TODO Auto-generated method stub
-        return null;
+    public TabularData getRevisionsWiring(long bundleId, String namespace) throws IOException {
+        Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
+        BundleRevisions revisions = bundle.adapt(BundleRevisions.class);
+
+        TabularData td = new TabularDataSupport(BundleWiringStateMBean.REVISIONS_BUNDLE_WIRING_TYPE);
+        for (BundleRevision revision : revisions.getRevisions()) {
+            Map<BundleRevision, Integer> revisionIDMap = getRevisionTransitiveClosure(revision, namespace);
+            td.put(getRevisionWiring(revision, System.identityHashCode(revision), namespace, revisionIDMap));
+        }
+        return td;
     }
 
     /* (non-Javadoc)
      * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#getWiringClosure(long, java.lang.String)
      */
-    public ArrayType getWiringClosure(long rootBundleId, String namespace) {
+    public TabularData getWiringClosure(long rootBundleId, String namespace) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.osgi.jmx.framework.BundleRevisionsStateMBean#matches(javax.management.openmbean.CompositeType, javax.management.openmbean.CompositeType)
-     */
-    public boolean matches(CompositeType provider, CompositeType requirer) {
-        // TODO Auto-generated method stub
-        return false;
     }
 }
