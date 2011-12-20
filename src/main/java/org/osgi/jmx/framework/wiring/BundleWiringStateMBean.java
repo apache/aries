@@ -217,6 +217,12 @@ public interface BundleWiringStateMBean {
                 REQUIRED_WIRES_ITEM,          /* BUNDLE_WIRE_TYPE [] */
                 PROVIDED_WIRES_ITEM           /* BUNDLE_WIRE_TYPE [] */
                 );
+    TabularType REVISIONS_BUNDLE_WIRING_TYPE =
+        Item.tabularType("REVISIONS_BUNDLE_WIRING",
+            "The bundle wiring for all bundle revisions",
+            BUNDLE_WIRING_TYPE,
+            BUNDLE_ID, BUNDLE_REVISION_ID);
+    /*
     ArrayType BUNDLE_WIRING_TYPE_ARRAY =
         Item.arrayType(1, BUNDLE_WIRING_TYPE);
 
@@ -225,6 +231,7 @@ public interface BundleWiringStateMBean {
 
     ArrayType REVISIONS_CAPABILITY_TYPE_ARRAY =
         Item.arrayType(2, BUNDLE_CAPABILITY_TYPE);
+    */
 
     TabularType BUNDLE_WIRING_CLOSURE_TYPE = Item.tabularType("BUNDLE_WIRING_CLOSURE",
             "A table of bundle wirings describing a full wiring closure",
@@ -317,7 +324,7 @@ public interface BundleWiringStateMBean {
      * @param namespace
      * @return the wires for all revisions of <code>bundleId</code>
      */
-    ArrayType getRevisionsWiring(long bundleId, String namespace) throws IOException;
+    TabularData getRevisionsWiring(long bundleId, String namespace) throws IOException;
 
     /**
      * Returns a closure of all bundle wirings linked by their
@@ -331,22 +338,5 @@ public interface BundleWiringStateMBean {
      * @param namespace
      * @return a closure of bundle wirings linked together by wires.
      */
-    ArrayType getWiringClosure(long rootBundleId, String namespace) throws IOException;
-
-    /**
-     * Returns true if capability provided by <code>provider</code> matches
-     *  with the requirement being required by <code>requirer</code>.
-     * The <code>provider</code>'s CompositeType is typed by the
-     *  {@link #BUNDLE_CAPABILITY_TYPE}
-     * The <code>requirer</code>'s CompositeType is typed by the
-     *  {@link #BUNDLE_REQUIREMENT_TYPE}
-     *
-     * REVIEW This method would have worked better should the requirements and
-     *  capabilities have an ID
-     *
-     * @param requirer bundle id of the bundle requirer
-     * @param provider bundle id of the bundle provider
-     * @return true if capability matches with requirement.
-     */
-    boolean matches(CompositeType provider, CompositeType requirer) throws IOException;
+    TabularData getWiringClosure(long rootBundleId, String namespace) throws IOException;
 }
