@@ -31,6 +31,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
@@ -42,6 +45,7 @@ import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
+import org.apache.aries.proxy.UnableToProxyException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -59,6 +63,49 @@ import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
  * @version $Rev$, $Date$
  */
 public class BeanRecipe extends AbstractRecipe {
+
+    public class VoidableCallable implements Callable<Object>, Voidable {
+
+        private final AtomicReference<Object> ref = new AtomicReference<Object>();
+        
+        private final Semaphore sem = new Semaphore(1);
+        
+        private final ThreadLocal<Object> deadlockDetector = new ThreadLocal<Object>();
+        
+        public void voidReference() {
+            ref.set(null);
+        }
+
+        public Object call() throws ComponentDefinitionException {
+            Object o = ref.get();
+            
+            if (o == null) {
+                if(deadlockDetector.get() != null) {
+                    deadlockDetector.remove();
+                    throw new ComponentDefinitionException("Construction cycle detected for bean " + name);
+                }
+                
+                sem.acquireUninterruptibly();
+                try {
+                    o = ref.get();
+                    if (o == null) {
+                        deadlockDetector.set(this);
+                        try {
+                            o = internalCreate2();
+                            ref.set(o);
+                        } finally {
+                            deadlockDetector.remove();
+                        }
+                    }
+                } finally {
+                  sem.release();
+                }
+            }
+            
+            return o;
+        }
+
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BeanRecipe.class);
 
@@ -701,6 +748,29 @@ public class BeanRecipe extends AbstractRecipe {
         
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
+        if (factory instanceof ReferenceRecipe) {
+            ReferenceRecipe rr = (ReferenceRecipe) factory;
+            if (rr.getProxyChildBeanClasses() != null) {
+                return createProxyBean(rr);
+            }
+        } 
+        
+        return internalCreate2();
+    }
+    
+    private Object createProxyBean(ReferenceRecipe rr) {
+        try {
+            VoidableCallable vc = new VoidableCallable();
+            rr.addVoidableChild(vc);
+            return blueprintContainer.getProxyManager().createDelegatingProxy(
+                blueprintContainer.getBundleContext().getBundle(), rr.getProxyChildBeanClasses(),
+                vc, vc.call());
+        } catch (UnableToProxyException e) {
+            throw new ComponentDefinitionException(e);
+        }
+    }
+    
+    protected Object internalCreate2() throws ComponentDefinitionException {
         
         instantiateExplicitDependencies();
 
