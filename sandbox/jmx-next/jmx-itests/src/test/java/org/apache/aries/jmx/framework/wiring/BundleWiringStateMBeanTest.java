@@ -23,7 +23,6 @@ import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -119,7 +118,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetCurrentRevisionDeclaredRequirements() throws IOException {
+    public void testGetCurrentRevisionDeclaredRequirements() throws Exception {
         BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
@@ -135,7 +134,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetCurrentRevisionDeclaredCapabilities() throws IOException {
+    public void testGetCurrentRevisionDeclaredCapabilities() throws Exception {
         BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
@@ -151,7 +150,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetRevisionsDeclaredRequirements() throws IOException {
+    public void testGetRevisionsDeclaredRequirements() throws Exception {
         BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
@@ -172,7 +171,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetRevisionsDeclaredCapabilities() throws IOException {
+    public void testGetRevisionsDeclaredCapabilities() throws Exception {
         BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
@@ -193,7 +192,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetCurrentWiring() throws IOException {
+    public void testGetCurrentWiring() throws Exception {
         BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
@@ -207,7 +206,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testRevisionsWiring() throws IOException {
+    public void testRevisionsWiring() throws Exception {
         BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
 
         Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
