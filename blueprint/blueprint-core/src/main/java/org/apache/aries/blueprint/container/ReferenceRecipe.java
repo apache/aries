@@ -18,7 +18,11 @@
  */
 package org.apache.aries.blueprint.container;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -59,6 +63,9 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     private Object defaultBean;
     private final Object monitor = new Object();
 
+    private final Collection<Class<?>> proxyChildBeanClasses;
+    private final Collection<WeakReference<Voidable>> proxiedChildren;
+    
     public ReferenceRecipe(String name,
                            ExtendedBlueprintContainer blueprintContainer,
                            ReferenceMetadata metadata,
@@ -66,6 +73,15 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                            List<Recipe> explicitDependencies) {
         super(name, blueprintContainer, metadata, listenersRecipe, explicitDependencies);
         this.metadata = metadata;
+        if(metadata instanceof ExtendedReferenceMetadata) 
+            proxyChildBeanClasses = ((ExtendedReferenceMetadata) metadata).getProxyChildBeanClasses();
+        else 
+            proxyChildBeanClasses = null;
+        
+        if (proxyChildBeanClasses != null)
+            proxiedChildren = new ArrayList<WeakReference<Voidable>>();
+        else
+            proxiedChildren = null;
     }
 
     @Override
@@ -140,13 +156,15 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     private void bind(ServiceReference ref) {
         LOGGER.debug("Binding reference {} to {}", getName(), ref);
         synchronized (monitor) {
-            if (trackedServiceReference != null) {
-                getBundleContextForServiceLookup().ungetService(trackedServiceReference);
-            }
+            ServiceReference oldReference = trackedServiceReference;
             trackedServiceReference = ref;
             trackedService = null;
-            monitor.notifyAll();
+            voidProxiedChildren();
             bind(trackedServiceReference, proxy);
+            if (oldReference != null) {
+                getBundleContextForServiceLookup().ungetService(oldReference);
+            }
+            monitor.notifyAll();
         }
     }
 
@@ -155,9 +173,11 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         synchronized (monitor) {
             if (trackedServiceReference != null) {
                 unbind(trackedServiceReference, proxy);
-                getBundleContextForServiceLookup().ungetService(trackedServiceReference);
+                ServiceReference oldReference = trackedServiceReference;
                 trackedServiceReference = null;
                 trackedService = null;
+                voidProxiedChildren();
+                getBundleContextForServiceLookup().ungetService(oldReference);
                 monitor.notifyAll();
             }
         }
@@ -219,6 +239,34 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             }
             return trackedServiceReference;
         }
+    }
+    
+    private void voidProxiedChildren() {
+        if(proxyChildBeanClasses != null) {
+            synchronized(proxiedChildren) {
+                for(Iterator<WeakReference<Voidable>> it = proxiedChildren.iterator(); it.hasNext();) {
+                    Voidable v = it.next().get();
+                    if(v == null)
+                        it.remove();
+                    else
+                      v.voidReference();
+                }
+            }
+        }
+    }
+    
+    public void addVoidableChild(Voidable v) {
+        if(proxyChildBeanClasses != null) {
+            synchronized (proxiedChildren) {
+                proxiedChildren.add(new WeakReference<Voidable>(v));
+            }
+        } else {
+            throw new IllegalStateException("Proxying of child beans is disabled for this recipe");
+        }
+    }
+    
+    public Collection<Class<?>> getProxyChildBeanClasses() {
+        return proxyChildBeanClasses;
     }
 
     public class ServiceDispatcher implements Callable<Object> {

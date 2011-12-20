@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.mutable;
 
+import java.util.Collection;
+
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 
 /**
@@ -30,5 +32,7 @@ public interface MutableReferenceMetadata extends ExtendedReferenceMetadata, Mut
     void setTimeout(long timeout);
 
     void setDefaultBean(String value);
+    
+    void setProxyChildBeanClasses(Collection<Class<?>> classes);
 
 }
