@@ -18,9 +18,13 @@
  */
 package org.apache.aries.blueprint;
 
+import java.util.Collection;
+
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 public interface ExtendedReferenceMetadata extends ReferenceMetadata 
 {
     public String getDefaultBean();
+    
+    public Collection<Class<?>> getProxyChildBeanClasses();
 }
