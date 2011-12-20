@@ -131,7 +131,7 @@ public interface BundleWiringStateMBean {
 
     /**
      * Describes the live association between a provider of
-     *  a capability and a requirer of the corresponding requirement.
+     * a capability and a requirer of the corresponding requirement.
      */
     CompositeType BUNDLE_WIRE_TYPE =
         Item.compositeType("BUNDLE_WIRE",
@@ -143,7 +143,7 @@ public interface BundleWiringStateMBean {
                 REQUIRER_BUNDLE_ID_ITEM,
                 REQUIRER_BUNDLE_REVISION_ID_ITEM
                 );
-    ArrayType BUNDLE_WIRES_TYPE_ARRAY =
+    ArrayType<CompositeType> BUNDLE_WIRES_TYPE_ARRAY =
         Item.arrayType(1, BUNDLE_WIRE_TYPE);
 
     String BUNDLE_REVISION_ID = "BundleRevisionId";
@@ -156,9 +156,9 @@ public interface BundleWiringStateMBean {
             "The bundle identifier of the bundle revision",
             SimpleType.LONG);
 
-    ArrayType REQUIREMENT_TYPE_ARRAY =
+    ArrayType<CompositeType> REQUIREMENT_TYPE_ARRAY =
         Item.arrayType(1, BUNDLE_REQUIREMENT_TYPE);
-    ArrayType CAPABILITY_TYPE_ARRAY =
+    ArrayType<CompositeType> CAPABILITY_TYPE_ARRAY =
         Item.arrayType(1, BUNDLE_CAPABILITY_TYPE);
 
     String REQUIREMENTS = "Requirements";
@@ -210,28 +210,17 @@ public interface BundleWiringStateMBean {
     CompositeType BUNDLE_WIRING_TYPE =
         Item.compositeType("BUNDLE_WIRING",
                 "Describes the runtime association between a provider and a requirer",
-                BUNDLE_ID_ITEM,               /* Long */
-                BUNDLE_REVISION_ID_ITEM,      /* Integer (local scope) */
-                REQUIREMENTS_ITEM,            /* REQUIREMENT_TYPE [] */
-                CAPABILITIES_ITEM,            /* CAPABILITIES_TYPE [] */
-                REQUIRED_WIRES_ITEM,          /* BUNDLE_WIRE_TYPE [] */
-                PROVIDED_WIRES_ITEM           /* BUNDLE_WIRE_TYPE [] */
-                );
+                BUNDLE_ID_ITEM,
+                BUNDLE_REVISION_ID_ITEM,
+                REQUIREMENTS_ITEM,
+                CAPABILITIES_ITEM,
+                REQUIRED_WIRES_ITEM,
+                PROVIDED_WIRES_ITEM);
     TabularType REVISIONS_BUNDLE_WIRING_TYPE =
         Item.tabularType("REVISIONS_BUNDLE_WIRING",
             "The bundle wiring for all bundle revisions",
             BUNDLE_WIRING_TYPE,
             BUNDLE_ID, BUNDLE_REVISION_ID);
-    /*
-    ArrayType BUNDLE_WIRING_TYPE_ARRAY =
-        Item.arrayType(1, BUNDLE_WIRING_TYPE);
-
-    ArrayType REVISIONS_REQUIREMENT_TYPE_ARRAY =
-        Item.arrayType(2, BUNDLE_REQUIREMENT_TYPE);
-
-    ArrayType REVISIONS_CAPABILITY_TYPE_ARRAY =
-        Item.arrayType(2, BUNDLE_CAPABILITY_TYPE);
-    */
 
     TabularType BUNDLE_WIRING_CLOSURE_TYPE = Item.tabularType("BUNDLE_WIRING_CLOSURE",
             "A table of bundle wirings describing a full wiring closure",
