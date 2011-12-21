@@ -265,6 +265,14 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     }
 
     /**
+     * @see org.osgi.jmx.framework.BundleStateMBean#isActivationPolicyUsed(long)
+     */
+    public boolean isActivationPolicyUsed(long bundleId) throws IOException {
+        Bundle bundle = resolveBundle(bundleContext, bundleId);
+        return startLevel.isBundleActivationPolicyUsed(bundle);
+    }
+
+    /**
      * @see org.osgi.jmx.framework.BundleStateMBean#isPersistentlyStarted(long)
      */
     public boolean isPersistentlyStarted(long bundleId) throws IOException, IllegalArgumentException {
