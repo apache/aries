@@ -19,6 +19,8 @@ package org.apache.aries.jmx.framework;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +28,7 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.codec.BatchActionResult;
 import org.apache.aries.jmx.codec.BatchInstallResult;
+import org.apache.aries.jmx.codec.BatchRefreshResult;
 import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -224,9 +227,45 @@ public class Framework implements FrameworkMBean {
        packageAdmin.refreshPackages(bundles);
     }
 
+    /**
+     * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundlesAndWait(long[])
+     */
     public CompositeData refreshBundlesAndWait(long[] bundleIdentifiers) throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+        final CountDownLatch latch = new CountDownLatch(1);
+        FrameworkListener listener = new FrameworkListener() {
+            public void frameworkEvent(FrameworkEvent event) {
+                if (FrameworkEvent.PACKAGES_REFRESHED == event.getType()) {
+                    latch.countDown();
+                }
+            }
+        };
+        try {
+            context.addFrameworkListener(listener);
+            try {
+                Bundle [] bundles = new Bundle[bundleIdentifiers.length];
+                for (int i=0; i < bundleIdentifiers.length; i++) {
+                    bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
+                }
+                packageAdmin.refreshPackages(bundles);
+                boolean result = latch.await(30, TimeUnit.SECONDS);
+
+                List<Long> successList = new ArrayList<Long>();
+                for (Bundle bundle : bundles) {
+                    int state = bundle.getState();
+                    if ((state & (Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE)) > 0) {
+                        successList.add(bundle.getBundleId());
+                    }
+                }
+
+                return new BatchRefreshResult(result, successList.toArray(new Long[] {})).toCompositeData();
+            } catch (InterruptedException e) {
+                IOException ex = new IOException();
+                ex.initCause(e);
+                throw ex;
+            }
+        } finally {
+            context.removeFrameworkListener(listener);
+        }
     }
 
     /**
