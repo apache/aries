@@ -19,14 +19,26 @@ package org.apache.aries.jmx.framework;
 import static org.apache.aries.itest.ExtraOptions.mavenBundle;
 import static org.apache.aries.itest.ExtraOptions.paxLogging;
 import static org.apache.aries.itest.ExtraOptions.testOptions;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.provision;
+import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
+import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
@@ -40,6 +52,13 @@ import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.Configuration;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleRevisions;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.FrameworkMBean;
 
 /**
@@ -50,6 +69,9 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
+//                 new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+//                 new TimeoutOption( 0 ),
+
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
             paxLogging("INFO"),
@@ -57,13 +79,93 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
-            mavenBundle("org.apache.aries", "org.apache.aries.util")
+            mavenBundle("org.apache.aries", "org.apache.aries.util"),
+
+            provision(newBundle()
+                    .add(org.apache.aries.jmx.test.bundlea.api.InterfaceA.class)
+                    .add(org.apache.aries.jmx.test.bundlea.impl.A2.class)
+                    .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundlea")
+                    .set(Constants.BUNDLE_VERSION, "1")
+                    .set(Constants.EXPORT_PACKAGE, "org.apache.aries.jmx.test.bundlea.api")
+                    .build(withBnd())),
+            provision(newBundle()
+                    .add(org.apache.aries.jmx.test.bundleb.api.InterfaceB.class)
+                    .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundleb")
+                    .set(Constants.IMPORT_PACKAGE, "org.apache.aries.jmx.test.bundlea.api," +
+                            "org.apache.aries.jmx.test.bundlea.impl;resolution:=optional")
+                    .build(withBnd()))
         );
     }
 
     @Override
     public void doSetUp() throws Exception {
         waitForMBean(new ObjectName(FrameworkMBean.OBJECTNAME));
+    }
+
+    @Test
+    public void testRefresh() throws Exception {
+        Bundle bundleA = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        Bundle bundleB = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
+
+        BundleRevision br = bundleB.adapt(BundleRevision.class);
+        BundleWiring bw = bundleB.adapt(BundleWiring.class);
+
+        List<BundleWire> initialRequiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
+        assertEquals(1, initialRequiredWires.size());
+        BundleWire wire = initialRequiredWires.get(0);
+        Map<String, Object> capabilityAttributes = wire.getCapability().getAttributes();
+        assertEquals("Precondition", bundleA.getSymbolicName(), capabilityAttributes.get(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE));
+        assertEquals("Precondition", new Version("1.0"), capabilityAttributes.get(Constants.BUNDLE_VERSION_ATTRIBUTE));
+        assertEquals("Precondition", "org.apache.aries.jmx.test.bundlea.api", capabilityAttributes.get(BundleRevision.PACKAGE_NAMESPACE));
+
+        // Create an updated version of Bundle A, which an extra export and version 1.1
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+        manifest.getMainAttributes().putValue(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundlea");
+        manifest.getMainAttributes().putValue(Constants.BUNDLE_VERSION, "1.1");
+        manifest.getMainAttributes().putValue(Constants.EXPORT_PACKAGE, "org.apache.aries.jmx.test.bundlea.api,org.apache.aries.jmx.test.bundlea.impl");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JarOutputStream jos = new JarOutputStream(baos, manifest);
+        addResourceToJar("org/apache/aries/jmx/test/bundlea/api/InterfaceA.class", jos, bundleA);
+        addResourceToJar("org/apache/aries/jmx/test/bundlea/impl/A2.class", jos, bundleA);
+        jos.close();
+
+        assertEquals("Precondition", 1, bundleA.adapt(BundleRevisions.class).getRevisions().size());
+        bundleA.update(new ByteArrayInputStream(baos.toByteArray()));
+        assertEquals("There should be 2 revisions now", 2, bundleA.adapt(BundleRevisions.class).getRevisions().size());
+        assertEquals("No refresh called, the bundle wiring for B should still be the old one",
+                bw, bundleB.adapt(BundleWiring.class));
+
+        FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
+        assertTrue(framework.refreshBundleAndWait(bundleB.getBundleId()));
+
+        List<BundleWire> requiredWires = bundleB.adapt(BundleWiring.class).getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
+        assertEquals(2, requiredWires.size());
+        List<String> imported = new ArrayList<String>();
+        for (BundleWire w : requiredWires) {
+            Map<String, Object> ca = w.getCapability().getAttributes();
+            assertEquals(bundleA.getSymbolicName(), ca.get(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE));
+            imported.add(ca.get(BundleRevision.PACKAGE_NAMESPACE).toString());
+
+            if ("org.apache.aries.jmx.test.bundlea.impl".equals(ca.get(BundleRevision.PACKAGE_NAMESPACE))) {
+                // Came across an issue where equinox was reporting the other package as still coming from from the 1.0 bundle
+                // not sure if this is a bug or not...
+                assertEquals(new Version("1.1"), ca.get(Constants.BUNDLE_VERSION_ATTRIBUTE));
+            }
+        }
+        assertEquals(Arrays.asList("org.apache.aries.jmx.test.bundlea.api", "org.apache.aries.jmx.test.bundlea.impl"), imported);
+    }
+
+    private void addResourceToJar(String resourceName, JarOutputStream jos, Bundle bundle) throws IOException {
+        InputStream intfIs = bundle.getResource("/" + resourceName).openStream();
+        JarEntry entry = new JarEntry(resourceName);
+        jos.putNextEntry(entry);
+        try {
+            Streams.pump(intfIs, jos);
+        } finally {
+            jos.closeEntry();
+        }
     }
 
     @Test
@@ -103,5 +205,4 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
             fail("Uninstallation of test bundle shouldn't fail");
         }
     }
-
 }
