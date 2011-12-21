@@ -151,7 +151,7 @@ public interface FrameworkMBean {
 																	COMPLETED_ITEM,
 																	ERROR_ITEM,
 																	REMAINING_ID_ITEM,
-																	SUCCESS_ITEM //
+																	SUCCESS_ITEM
 															);
 
 	/**
@@ -201,8 +201,25 @@ public interface FrameworkMBean {
 																	COMPLETED_ITEM,
 																	ERROR_ITEM,
 																	REMAINING_LOCATION_ITEM,
-																	SUCCESS_ITEM //
+																	SUCCESS_ITEM
 															);
+
+    /**
+     * The Composite Type which represents the result of a batch resolve
+     * operation. It is used in {@link #refreshBundlesAndWait(String[])}.
+     *
+     * This Composite Type consists of the following items:
+     * <ul>
+     * <li>{@link #COMPLETED_ITEM}</li>
+     * <li>{@link #SUCCESS_ITEM}</li>
+     * </ul>
+     */
+    CompositeType   BATCH_RESOLVE_RESULT_TYPE       = Item
+                                                            .compositeType(
+                                                                    "BATCH_RESOLVE_RESULT",
+                                                                    "This type encapsulates a bundle batch resolve action result",
+                                                                    COMPLETED_ITEM,
+                                                                    SUCCESS_ITEM);
 
 	/**
 	 * Retrieve the framework start level

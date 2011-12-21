@@ -69,8 +69,8 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-//                 new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-//                 new TimeoutOption( 0 ),
+            //  new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+            //  new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -103,11 +103,10 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testRefresh() throws Exception {
+    public void testRefreshBundleAndWait() throws Exception {
         Bundle bundleA = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         Bundle bundleB = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
 
-        BundleRevision br = bundleB.adapt(BundleRevision.class);
         BundleWiring bw = bundleB.adapt(BundleWiring.class);
 
         List<BundleWire> initialRequiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
@@ -139,6 +138,62 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
 
         FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
         assertTrue(framework.refreshBundleAndWait(bundleB.getBundleId()));
+
+        List<BundleWire> requiredWires = bundleB.adapt(BundleWiring.class).getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
+        assertEquals(2, requiredWires.size());
+        List<String> imported = new ArrayList<String>();
+        for (BundleWire w : requiredWires) {
+            Map<String, Object> ca = w.getCapability().getAttributes();
+            assertEquals(bundleA.getSymbolicName(), ca.get(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE));
+            imported.add(ca.get(BundleRevision.PACKAGE_NAMESPACE).toString());
+
+            if ("org.apache.aries.jmx.test.bundlea.impl".equals(ca.get(BundleRevision.PACKAGE_NAMESPACE))) {
+                // Came across an issue where equinox was reporting the other package as still coming from from the 1.0 bundle
+                // not sure if this is a bug or not...
+                assertEquals(new Version("1.1"), ca.get(Constants.BUNDLE_VERSION_ATTRIBUTE));
+            }
+        }
+        assertEquals(Arrays.asList("org.apache.aries.jmx.test.bundlea.api", "org.apache.aries.jmx.test.bundlea.impl"), imported);
+    }
+
+    @Test
+    public void testRefreshBundlesAndWait() throws Exception {
+        Bundle bundleA = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        Bundle bundleB = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
+
+        BundleWiring bw = bundleB.adapt(BundleWiring.class);
+
+        List<BundleWire> initialRequiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
+        assertEquals(1, initialRequiredWires.size());
+        BundleWire wire = initialRequiredWires.get(0);
+        Map<String, Object> capabilityAttributes = wire.getCapability().getAttributes();
+        assertEquals("Precondition", bundleA.getSymbolicName(), capabilityAttributes.get(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE));
+        assertEquals("Precondition", new Version("1.0"), capabilityAttributes.get(Constants.BUNDLE_VERSION_ATTRIBUTE));
+        assertEquals("Precondition", "org.apache.aries.jmx.test.bundlea.api", capabilityAttributes.get(BundleRevision.PACKAGE_NAMESPACE));
+
+        // Create an updated version of Bundle A, which an extra export and version 1.1
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+        manifest.getMainAttributes().putValue(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundlea");
+        manifest.getMainAttributes().putValue(Constants.BUNDLE_VERSION, "1.1");
+        manifest.getMainAttributes().putValue(Constants.EXPORT_PACKAGE, "org.apache.aries.jmx.test.bundlea.api,org.apache.aries.jmx.test.bundlea.impl");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JarOutputStream jos = new JarOutputStream(baos, manifest);
+        addResourceToJar("org/apache/aries/jmx/test/bundlea/api/InterfaceA.class", jos, bundleA);
+        addResourceToJar("org/apache/aries/jmx/test/bundlea/impl/A2.class", jos, bundleA);
+        jos.close();
+
+        assertEquals("Precondition", 1, bundleA.adapt(BundleRevisions.class).getRevisions().size());
+        bundleA.update(new ByteArrayInputStream(baos.toByteArray()));
+        assertEquals("There should be 2 revisions now", 2, bundleA.adapt(BundleRevisions.class).getRevisions().size());
+        assertEquals("No refresh called, the bundle wiring for B should still be the old one",
+                bw, bundleB.adapt(BundleWiring.class));
+
+        FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
+        CompositeData result = framework.refreshBundlesAndWait(new long[] {bundleB.getBundleId()});
+        assertTrue((Boolean) result.get(FrameworkMBean.SUCCESS));
+        assertTrue(Arrays.equals(new Long[] {bundleB.getBundleId()}, (Long []) result.get(FrameworkMBean.COMPLETED)));
 
         List<BundleWire> requiredWires = bundleB.adapt(BundleWiring.class).getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
         assertEquals(2, requiredWires.size());
