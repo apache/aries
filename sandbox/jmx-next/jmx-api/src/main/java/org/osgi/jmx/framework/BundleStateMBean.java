@@ -198,10 +198,24 @@ public interface BundleStateMBean {
 	 */
 	Item LAST_MODIFIED_ITEM = new Item(LAST_MODIFIED,
 			"The last modification time of the bundle", SimpleType.LONG);
+
+	/**
+	 * The key ACTIVATION_POLICY_USED, used in {@link #ACTIVATION_POLICY_USED_ITEM}.
+	 */
+	String ACTIVATION_POLICY_USED = "ActivationPolicyUsed";
+
+	/**
+	 * The item containing the indication whether the bundle activation policy
+	 * must be used in {@link #BUNDLE_TYPE}. The key is {@link #ACTIVATION_POLICY_USED} and
+	 * the type is {@link SimpleType#BOOLEAN}.
+	 */
+	Item ACTIVATION_POLICY_USED_ITEM = new Item(ACTIVATION_POLICY_USED,
+	        "Whether the bundle activation policy must be used", SimpleType.BOOLEAN);
+
 	/**
 	 * The key PERSISTENTLY_STARTED, used in {@link #PERSISTENTLY_STARTED_ITEM}.
 	 */
-	String			PERSISTENTLY_STARTED		= "PersistentlyStarted";
+	String PERSISTENTLY_STARTED = "PersistentlyStarted";
 
 	/**
 	 * The item containing the indication of persistently started in
@@ -396,6 +410,7 @@ public interface BundleStateMBean {
 	 * <li>{@link #IMPORTED_PACKAGES}</li>
 	 * <li>{@link #LAST_MODIFIED}</li>
 	 * <li>{@link #LOCATION}</li>
+	 * <li>{@link #ACTIVATION_POLICY_USED}</li>
 	 * <li>{@link #PERSISTENTLY_STARTED}</li>
 	 * <li>{@link #REGISTERED_SERVICES}</li>
 	 * <li>{@link #REMOVAL_PENDING}</li>
@@ -414,7 +429,8 @@ public interface BundleStateMBean {
 			"This type encapsulates OSGi bundles", EXPORTED_PACKAGES_ITEM,
 			FRAGMENT_ITEM, FRAGMENTS_ITEM, HEADERS_ITEM, HOSTS_ITEM,
 			IDENTIFIER_ITEM, IMPORTED_PACKAGES_ITEM, LAST_MODIFIED_ITEM,
-			LOCATION_ITEM, PERSISTENTLY_STARTED_ITEM, REGISTERED_SERVICES_ITEM,
+			LOCATION_ITEM, ACTIVATION_POLICY_USED_ITEM,
+			PERSISTENTLY_STARTED_ITEM, REGISTERED_SERVICES_ITEM,
 			REMOVAL_PENDING_ITEM, REQUIRED_ITEM, REQUIRED_BUNDLES_ITEM,
 			REQUIRING_BUNDLES_ITEM, START_LEVEL_ITEM, STATE_ITEM,
 			SERVICES_IN_USE_ITEM, SYMBOLIC_NAME_ITEM, VERSION_ITEM);
@@ -622,6 +638,21 @@ public interface BundleStateMBean {
 	 *             if the bundle indicated does not exist
 	 */
 	String getSymbolicName(long bundleId) throws IOException;
+
+	/**
+	 * Answer whether the specified bundle's autostart setting indicates that
+	 * the activation policy declared in the bundle's manifest must be used.
+	 *
+	 * @param bundleId
+     *            the identifier of the bundle
+	 * @return true if the bundle's autostart setting indicates the activation policy
+	 * declared in the manifest must be used. false if the bundle must be eagerly activated.
+     * @throws IOException
+     *             if the operation fails
+     * @throws IllegalArgumentException
+     *             if the bundle indicated does not exist
+	 */
+	boolean isActivationPolicyUsed(long bundleId) throws IOException;
 
 	/**
 	 * Answer if the bundle is persistently started when its start level is

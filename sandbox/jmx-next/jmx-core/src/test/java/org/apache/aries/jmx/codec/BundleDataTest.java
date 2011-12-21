@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.osgi.jmx.framework.BundleStateMBean.ACTIVATION_POLICY_USED;
 import static org.osgi.jmx.framework.BundleStateMBean.BUNDLES_TYPE;
 import static org.osgi.jmx.framework.BundleStateMBean.BUNDLE_TYPE;
 import static org.osgi.jmx.framework.BundleStateMBean.EXPORTED_PACKAGES;
@@ -73,21 +74,21 @@ import org.osgi.service.packageadmin.RequiredBundle;
 import org.osgi.service.startlevel.StartLevel;
 
 /**
- * 
+ *
  *
  * @version $Rev$ $Date$
  */
 public class BundleDataTest {
 
-    
+
     @Test
     public void testToCompositeData() throws Exception {
-        
+
         Bundle bundle = mock(Bundle.class);
         BundleContext context = mock(BundleContext.class);
         PackageAdmin packageAdmin = mock(PackageAdmin.class);
         StartLevel startLevel = mock(StartLevel.class);
-        
+
         Bundle b1 = mock(Bundle.class);
         when(b1.getSymbolicName()).thenReturn("b1");
         when(b1.getBundleId()).thenReturn(new Long(44));
@@ -98,26 +99,26 @@ public class BundleDataTest {
         when(b3.getSymbolicName()).thenReturn("b3");
         when(b3.getBundleId()).thenReturn(new Long(66));
         when(context.getBundles()).thenReturn(new Bundle[] { bundle, b1, b2, b3 });
-      
+
         when(bundle.getSymbolicName()).thenReturn("test");
         when(bundle.getVersion()).thenReturn(Version.emptyVersion);
         when(bundle.getBundleId()).thenReturn(new Long(1));
         when(bundle.getLastModified()).thenReturn(new Long(12345));
         when(bundle.getLocation()).thenReturn("location");
-        
+
         //headers
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(Constants.BUNDLE_SYMBOLICNAME, "test");
         headers.put(Constants.BUNDLE_VERSION, "0.0.0");
         when(bundle.getHeaders()).thenReturn(headers);
-        
+
         //exported packages
         ExportedPackage exported = mock(ExportedPackage.class);
         when(exported.getName()).thenReturn("org.apache.aries.jmx");
         when(exported.getVersion()).thenReturn(new Version("1.0.0"));
         when(exported.getExportingBundle()).thenReturn(bundle);
         when(packageAdmin.getExportedPackages(bundle)).thenReturn(new ExportedPackage[] { exported });
-        
+
         //imported packages
         ExportedPackage ep1 = mock(ExportedPackage.class);
         when(ep1.getImportingBundles()).thenReturn(new Bundle[] { bundle, b2, b3 });
@@ -130,11 +131,11 @@ public class BundleDataTest {
         when(ep2.getVersion()).thenReturn(Version.parseVersion("2.0.1"));
         when(ep2.getExportingBundle()).thenReturn(b2);
         headers.put(Constants.DYNAMICIMPORT_PACKAGE, "*");
-  
+
         when(packageAdmin.getExportedPackages(b1)).thenReturn(new ExportedPackage[] { ep1 });
         when(packageAdmin.getExportedPackages(b2)).thenReturn(new ExportedPackage[] { ep2 });
         when(packageAdmin.getExportedPackages(b3)).thenReturn(null);
-        
+
         //required bundles
         RequiredBundle rb1 = mock(RequiredBundle.class);
         when(rb1.getBundle()).thenReturn(b1);
@@ -149,7 +150,7 @@ public class BundleDataTest {
         when(packageAdmin.getRequiredBundles("b1")).thenReturn(new RequiredBundle[] { rb1 });
         when(packageAdmin.getRequiredBundles("b2")).thenReturn(new RequiredBundle[] { rb2 });
         when(packageAdmin.getRequiredBundles("b3")).thenReturn(new RequiredBundle[] { rb3 });
-        
+
         //services in use
         ServiceReference s1 = mock(ServiceReference.class);
         when(s1.getProperty(Constants.SERVICE_ID)).thenReturn(new Long(15));
@@ -157,12 +158,12 @@ public class BundleDataTest {
         when(s2.getProperty(Constants.SERVICE_ID)).thenReturn(new Long(16));
         ServiceReference s3 = mock(ServiceReference.class);
         when(s3.getProperty(Constants.SERVICE_ID)).thenReturn(new Long(17));
-        
+
         when(bundle.getServicesInUse()).thenReturn(new ServiceReference[] { s1, s2, s3 });
-        
+
         BundleData b = new BundleData(context, bundle, packageAdmin, startLevel);
         CompositeData compositeData = b.toCompositeData();
-        
+
         assertEquals("test", compositeData.get(SYMBOLIC_NAME));
         assertEquals("0.0.0", compositeData.get(VERSION));
         TabularData headerTable = (TabularData) compositeData.get(HEADERS);
@@ -173,16 +174,16 @@ public class BundleDataTest {
         assertEquals("test", value);
         String key = (String)header.get(KEY);
         assertEquals(Constants.BUNDLE_SYMBOLICNAME, key);
-        
-        
+
+
         TabularData bundleTable = new TabularDataSupport(BUNDLES_TYPE);
         bundleTable.put(b.toCompositeData());
-   
+
         CompositeData bundleData = bundleTable.get(new Object[]{Long.valueOf(1)});
         assertNotNull(bundleData);
         String location = (String) bundleData.get(LOCATION);
         assertEquals("location", location);
-        
+
         assertArrayEquals(new String[] { "org.apache.aries.jmx;1.0.0"} , (String[]) compositeData.get(EXPORTED_PACKAGES));
         assertArrayEquals(new String[] { "org.apache.aries.jmx.b1;0.0.0" , "org.apache.aries.jmx.b2;2.0.1"}, (String[]) compositeData.get(IMPORTED_PACKAGES));
         assertEquals(toSet(new long[] { 44, 55, 66 }), toSet((Long[]) compositeData.get(REQUIRED_BUNDLES)));
@@ -190,10 +191,10 @@ public class BundleDataTest {
         assertEquals("UNKNOWN", compositeData.get(STATE)); //default no return stub
         assertEquals(0,((Long[]) compositeData.get(HOSTS)).length);
         assertEquals(0, ((Long[]) compositeData.get(FRAGMENTS)).length);
-        
+
     }
 
-   
+
     @Test
     public void testFromCompositeData() throws Exception {
 
@@ -206,6 +207,7 @@ public class BundleDataTest {
         items.put(IMPORTED_PACKAGES, new String[] { "org.apache.aries.jmx.b1;0.0.0" , "org.apache.aries.jmx.b2;2.0.1"});
         items.put(LAST_MODIFIED, new Long(8797));
         items.put(LOCATION, "");
+        items.put(ACTIVATION_POLICY_USED, true);
         items.put(PERSISTENTLY_STARTED, false);
         items.put(REGISTERED_SERVICES, new Long[0]);
         items.put(REMOVAL_PENDING, false);
@@ -222,9 +224,9 @@ public class BundleDataTest {
         headerTable.put(new Header("b", "b").toCompositeData());
         items.put(HEADERS, headerTable);
         CompositeData compositeData = new CompositeDataSupport(BUNDLE_TYPE, items);
-        
+
         BundleData b = BundleData.from(compositeData);
-        
+
         assertEquals("test", b.getSymbolicName());
         assertEquals("0.0.0", b.getVersion());
         assertEquals(2, b.getHeaders().size());
@@ -239,25 +241,25 @@ public class BundleDataTest {
 
     @Test
     public void testHeaderToCompositeData() throws Exception{
-        
+
         Header h1 = new Header("a", "b");
         CompositeData compositeData = h1.toCompositeData();
-       
+
         assertEquals("a", compositeData.get(KEY));
         assertEquals("b", compositeData.get(VALUE));
-        
+
     }
-    
+
     @Test
     public void testHeaderFromCompositeData() throws Exception {
-        
+
         CompositeData compositeData = new CompositeDataSupport(HEADER_TYPE, new String[] { KEY, VALUE } , new String [] { "c", "d" });
         Header header = Header.from(compositeData);
         assertEquals("c", header.getKey());
         assertEquals("d", header.getValue());
-        
+
     }
-        
+
     private static Set<Long> toSet(long[] array) {
         Set<Long> set = new HashSet<Long>();
         for (long value : array) {
@@ -265,7 +267,7 @@ public class BundleDataTest {
         }
         return set;
     }
-    
+
     private static Set<Long> toSet(Long[] array) {
         Set<Long> set = new HashSet<Long>();
         for (Long value : array) {
