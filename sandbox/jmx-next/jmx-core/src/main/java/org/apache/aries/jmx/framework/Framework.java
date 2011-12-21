@@ -19,6 +19,8 @@ package org.apache.aries.jmx.framework;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.openmbean.CompositeData;
 
@@ -27,6 +29,8 @@ import org.apache.aries.jmx.codec.BatchInstallResult;
 import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.jmx.framework.FrameworkMBean;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.startlevel.StartLevel;
@@ -36,7 +40,7 @@ import org.osgi.service.startlevel.StartLevel;
  * <tt>Framework</tt> represents {@link FrameworkMBean} implementation.
  * </p>
  * @see FrameworkMBean
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class Framework implements FrameworkMBean {
@@ -47,7 +51,7 @@ public class Framework implements FrameworkMBean {
 
     /**
      * Constructs new FrameworkMBean.
-     * 
+     *
      * @param context bundle context of jmx bundle.
      * @param startLevel @see {@link StartLevel} service reference.
      * @param packageAdmin @see {@link PackageAdmin} service reference.
@@ -118,7 +122,7 @@ public class Framework implements FrameworkMBean {
      */
     public CompositeData installBundles(String[] locations) throws IOException {
         if(locations == null){
-           return new BatchInstallResult("Failed to install bundles locations can't be null").toCompositeData(); 
+           return new BatchInstallResult("Failed to install bundles locations can't be null").toCompositeData();
         }
         long[] ids = new long[locations.length];
         for (int i = 0; i < locations.length; i++) {
@@ -142,11 +146,11 @@ public class Framework implements FrameworkMBean {
      */
     public CompositeData installBundlesFromURL(String[] locations, String[] urls) throws IOException {
         if(locations == null || urls == null){
-            return new BatchInstallResult("Failed to install bundles arguments can't be null").toCompositeData(); 
+            return new BatchInstallResult("Failed to install bundles arguments can't be null").toCompositeData();
         }
-        
+
         if(locations.length != urls.length){
-            return new BatchInstallResult("Failed to install bundles size of arguments should be same").toCompositeData(); 
+            return new BatchInstallResult("Failed to install bundles size of arguments should be same").toCompositeData();
         }
         long[] ids = new long[locations.length];
         for (int i = 0; i < locations.length; i++) {
@@ -173,13 +177,41 @@ public class Framework implements FrameworkMBean {
     }
 
     /**
+     * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundleAndWait(long)
+     */
+    public boolean refreshBundleAndWait(long bundleIdentifier) throws IOException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        FrameworkListener listener = new FrameworkListener() {
+            public void frameworkEvent(FrameworkEvent event) {
+                if (FrameworkEvent.PACKAGES_REFRESHED == event.getType()) {
+                    latch.countDown();
+                }
+            }
+        };
+        try {
+            context.addFrameworkListener(listener);
+            try {
+                Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
+                packageAdmin.refreshPackages(new Bundle [] { bundle });
+                return latch.await(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                IOException ex = new IOException();
+                ex.initCause(e);
+                throw ex;
+            }
+        } finally {
+            context.removeFrameworkListener(listener);
+        }
+    }
+
+    /**
      * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundles(long[])
      */
-    public void refreshBundles(long[] bundleIdentifiers) throws IOException {    
+    public void refreshBundles(long[] bundleIdentifiers) throws IOException {
        Bundle[] bundles = null;
-       if(bundleIdentifiers != null) {       
+       if(bundleIdentifiers != null) {
           bundles = new Bundle[bundleIdentifiers.length];
-          for (int i = 0; i < bundleIdentifiers.length; i++) {  
+          for (int i = 0; i < bundleIdentifiers.length; i++) {
               try {
                   bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
               } catch (Exception e) {
@@ -190,6 +222,11 @@ public class Framework implements FrameworkMBean {
           }
        }
        packageAdmin.refreshPackages(bundles);
+    }
+
+    public CompositeData refreshBundlesAndWait(long[] bundleIdentifiers) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /**
@@ -205,9 +242,9 @@ public class Framework implements FrameworkMBean {
      */
     public boolean resolveBundles(long[] bundleIdentifiers) throws IOException {
        Bundle[] bundles = null;
-       if(bundleIdentifiers != null) {       
+       if(bundleIdentifiers != null) {
           bundles = new Bundle[bundleIdentifiers.length];
-          for (int i = 0; i < bundleIdentifiers.length; i++) {       
+          for (int i = 0; i < bundleIdentifiers.length; i++) {
               try {
                   bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
               } catch (Exception e) {
@@ -253,11 +290,11 @@ public class Framework implements FrameworkMBean {
      */
     public CompositeData setBundleStartLevels(long[] bundleIdentifiers, int[] newlevels) throws IOException {
         if (bundleIdentifiers == null || newlevels == null) {
-            return new BatchActionResult("Failed to setBundleStartLevels arguments can't be null").toCompositeData(); 
+            return new BatchActionResult("Failed to setBundleStartLevels arguments can't be null").toCompositeData();
         }
-        
+
         if (bundleIdentifiers != null && newlevels != null && bundleIdentifiers.length != newlevels.length) {
-            return new BatchActionResult("Failed to setBundleStartLevels size of arguments should be same").toCompositeData(); 
+            return new BatchActionResult("Failed to setBundleStartLevels size of arguments should be same").toCompositeData();
         }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
@@ -292,7 +329,7 @@ public class Framework implements FrameworkMBean {
             IOException ioex = new IOException("Setting the initial start level to " + newlevel + " failed with message: " + e.getMessage());
             ioex.initCause(e);
             throw ioex;
-        }        
+        }
     }
 
     /**
@@ -328,7 +365,7 @@ public class Framework implements FrameworkMBean {
      */
     public CompositeData startBundles(long[] bundleIdentifiers) throws IOException {
         if (bundleIdentifiers == null) {
-            return new BatchActionResult("Failed to start bundles, bundle id's can't be null").toCompositeData(); 
+            return new BatchActionResult("Failed to start bundles, bundle id's can't be null").toCompositeData();
         }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
@@ -359,7 +396,7 @@ public class Framework implements FrameworkMBean {
      */
     public CompositeData stopBundles(long[] bundleIdentifiers) throws IOException {
         if (bundleIdentifiers == null) {
-            return new BatchActionResult("Failed to stop bundles, bundle id's can't be null").toCompositeData(); 
+            return new BatchActionResult("Failed to stop bundles, bundle id's can't be null").toCompositeData();
         }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
@@ -390,7 +427,7 @@ public class Framework implements FrameworkMBean {
      */
     public CompositeData uninstallBundles(long[] bundleIdentifiers) throws IOException {
         if (bundleIdentifiers == null) {
-            return new BatchActionResult("Failed uninstall bundles, bundle id's can't be null").toCompositeData(); 
+            return new BatchActionResult("Failed uninstall bundles, bundle id's can't be null").toCompositeData();
         }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
@@ -436,7 +473,7 @@ public class Framework implements FrameworkMBean {
                 } catch (IOException ioe) {
 
                 }
-            }          
+            }
         }
     }
 
@@ -462,11 +499,11 @@ public class Framework implements FrameworkMBean {
      */
     public CompositeData updateBundlesFromURL(long[] bundleIdentifiers, String[] urls) throws IOException {
         if(bundleIdentifiers == null || urls == null){
-            return new BatchActionResult("Failed to update bundles arguments can't be null").toCompositeData(); 
+            return new BatchActionResult("Failed to update bundles arguments can't be null").toCompositeData();
         }
-        
+
         if(bundleIdentifiers != null && urls != null && bundleIdentifiers.length != urls.length){
-            return new BatchActionResult("Failed to update bundles size of arguments should be same").toCompositeData(); 
+            return new BatchActionResult("Failed to update bundles size of arguments should be same").toCompositeData();
         }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
@@ -494,7 +531,7 @@ public class Framework implements FrameworkMBean {
 
     /**
      * Create {@link BatchActionResult}, when the operation fail.
-     * 
+     *
      * @param bundleIdentifiers bundle ids for operation.
      * @param i index of loop pointing on which operation fails.
      * @param t Throwable thrown by failed operation.
