@@ -28,7 +28,7 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.codec.BatchActionResult;
 import org.apache.aries.jmx.codec.BatchInstallResult;
-import org.apache.aries.jmx.codec.BatchRefreshResult;
+import org.apache.aries.jmx.codec.BatchResolveResult;
 import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -183,28 +183,8 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundleAndWait(long)
      */
     public boolean refreshBundleAndWait(long bundleIdentifier) throws IOException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        FrameworkListener listener = new FrameworkListener() {
-            public void frameworkEvent(FrameworkEvent event) {
-                if (FrameworkEvent.PACKAGES_REFRESHED == event.getType()) {
-                    latch.countDown();
-                }
-            }
-        };
-        try {
-            context.addFrameworkListener(listener);
-            try {
-                Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
-                packageAdmin.refreshPackages(new Bundle [] { bundle });
-                return latch.await(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                IOException ex = new IOException();
-                ex.initCause(e);
-                throw ex;
-            }
-        } finally {
-            context.removeFrameworkListener(listener);
-        }
+        Bundle[] bundleArray = new Bundle[1];
+        return refreshBundlesAndWait(new long[] {bundleIdentifier}, bundleArray);
     }
 
     /**
@@ -231,6 +211,12 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundlesAndWait(long[])
      */
     public CompositeData refreshBundlesAndWait(long[] bundleIdentifiers) throws IOException {
+        Bundle [] bundles = new Bundle[bundleIdentifiers.length];
+        boolean result = refreshBundlesAndWait(bundleIdentifiers, bundles);
+        return constructResolveResult(bundles, result);
+    }
+
+    private boolean refreshBundlesAndWait(long[] bundleIdentifiers, Bundle[] bundles) throws IOException {
         final CountDownLatch latch = new CountDownLatch(1);
         FrameworkListener listener = new FrameworkListener() {
             public void frameworkEvent(FrameworkEvent event) {
@@ -242,22 +228,11 @@ public class Framework implements FrameworkMBean {
         try {
             context.addFrameworkListener(listener);
             try {
-                Bundle [] bundles = new Bundle[bundleIdentifiers.length];
                 for (int i=0; i < bundleIdentifiers.length; i++) {
                     bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
                 }
                 packageAdmin.refreshPackages(bundles);
-                boolean result = latch.await(30, TimeUnit.SECONDS);
-
-                List<Long> successList = new ArrayList<Long>();
-                for (Bundle bundle : bundles) {
-                    int state = bundle.getState();
-                    if ((state & (Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE)) > 0) {
-                        successList.add(bundle.getBundleId());
-                    }
-                }
-
-                return new BatchRefreshResult(result, successList.toArray(new Long[] {})).toCompositeData();
+                return latch.await(30, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 IOException ex = new IOException();
                 ex.initCause(e);
@@ -266,6 +241,21 @@ public class Framework implements FrameworkMBean {
         } finally {
             context.removeFrameworkListener(listener);
         }
+    }
+
+    private CompositeData constructResolveResult(Bundle[] bundles, boolean result) {
+        if (bundles == null)
+            bundles = context.getBundles();
+
+        List<Long> successList = new ArrayList<Long>();
+        for (Bundle bundle : bundles) {
+            int state = bundle.getState();
+            if ((state & (Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE)) > 0) {
+                successList.add(bundle.getBundleId());
+            }
+        }
+
+        return new BatchResolveResult(result, successList.toArray(new Long[] {})).toCompositeData();
     }
 
     /**
@@ -280,20 +270,36 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#resolveBundles(long[])
      */
     public boolean resolveBundles(long[] bundleIdentifiers) throws IOException {
-       Bundle[] bundles = null;
-       if(bundleIdentifiers != null) {
-          bundles = new Bundle[bundleIdentifiers.length];
-          for (int i = 0; i < bundleIdentifiers.length; i++) {
-              try {
-                  bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
-              } catch (Exception e) {
-                  IOException ex = new IOException("Unable to find bundle with id " + bundleIdentifiers[i]);
-                  ex.initCause(e);
-                  throw ex;
-              }
-          }
-       }
-       return packageAdmin.resolveBundles(bundles);
+        Bundle[] bundles = null;
+        if (bundleIdentifiers != null)
+            bundles = new Bundle[bundleIdentifiers.length];
+
+        return resolveBundles(bundleIdentifiers, bundles);
+    }
+
+    private boolean resolveBundles(long[] bundleIdentifiers, Bundle[] bundles) throws IOException {
+        if (bundleIdentifiers != null) {
+            for (int i = 0; i < bundleIdentifiers.length; i++) {
+                try {
+                    bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
+                } catch (Exception e) {
+                    IOException ex = new IOException("Unable to find bundle with id " + bundleIdentifiers[i]);
+                    ex.initCause(e);
+                    throw ex;
+                }
+            }
+        }
+
+        return packageAdmin.resolveBundles(bundles);
+    }
+
+    public CompositeData resolve(long[] bundleIdentifiers) throws IOException {
+        Bundle[] bundles = null;
+        if (bundleIdentifiers != null)
+            bundles = new Bundle[bundleIdentifiers.length];
+
+        boolean result = resolveBundles(bundleIdentifiers, bundles);
+        return constructResolveResult(bundles, result);
     }
 
     /**
