@@ -328,6 +328,14 @@ public interface FrameworkMBean {
 	boolean resolveBundles(long[] bundleIdentifiers) throws IOException;
 
 	/**
+	 * Same as {@link #resolveBundles(long[])} but with a more detailed return type.
+	 * @param bundleIdentifiers
+	 * @return
+	 * @throws IOException
+	 */
+	CompositeData resolve(long[] bundleIdentifiers) throws IOException;
+
+	/**
 	 * Restart the framework by updating the system bundle
 	 *
 	 * @throws IOException if the operation failed
