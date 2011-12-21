@@ -25,11 +25,11 @@ import javax.management.openmbean.OpenDataException;
 
 import org.osgi.jmx.framework.FrameworkMBean;
 
-public class BatchRefreshResult extends BatchResult {
+public class BatchResolveResult {
     private final boolean success;
     private final Long[] successfulBundles;
 
-    public BatchRefreshResult(boolean success, Long[] successfulBundles) {
+    public BatchResolveResult(boolean success, Long[] successfulBundles) {
         this.success = success;
         this.successfulBundles = successfulBundles;
     }
