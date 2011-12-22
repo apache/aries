@@ -47,7 +47,7 @@
             org.apache.aries.jndi.spi
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-            net.sf.cglib*;resolution:=optional,
+            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
