@@ -38,7 +38,7 @@ public interface FrameworkMBean {
 	 * The fully qualified object name of this mbean.
 	 */
 	String			OBJECTNAME						= JmxConstants.OSGI_CORE
-															+ ":type=framework,version=1.5";
+															+ ":type=framework,version=1.7";
 
 	/**
 	 * The SUCCESS, used in {@link #SUCCESS_ITEM}.
