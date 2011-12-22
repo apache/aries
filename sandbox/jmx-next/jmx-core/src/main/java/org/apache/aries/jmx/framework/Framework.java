@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +36,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.jmx.framework.FrameworkMBean;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.startlevel.StartLevel;
@@ -66,6 +69,27 @@ public class Framework implements FrameworkMBean {
     }
 
     /**
+     * @see org.osgi.jmx.framework.FrameworkMBean#getDependencyClosureBundles(long[])
+     */
+    public long[] getDependencyClosure(long[] bundles) throws IOException {
+        FrameworkWiring fw = context.getBundle(0).adapt(FrameworkWiring.class);
+
+        List<Bundle> bl = new ArrayList<Bundle>();
+        for (int i=0; i < bundles.length; i++) {
+            bl.add(context.getBundle(bundles[i]));
+        }
+
+        Collection<Bundle> rc = fw.getDependencyClosure(bl);
+
+        Iterator<Bundle> it = rc.iterator();
+        long[] result = new long[rc.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = it.next().getBundleId();
+        }
+        return result;
+    }
+
+    /**
      * @see org.osgi.jmx.framework.FrameworkMBean#getFrameworkStartLevel()
      */
     public int getFrameworkStartLevel() throws IOException {
@@ -77,6 +101,21 @@ public class Framework implements FrameworkMBean {
      */
     public int getInitialBundleStartLevel() throws IOException {
         return startLevel.getInitialBundleStartLevel();
+    }
+
+    /**
+     * @see org.osgi.jmx.framework.FrameworkMBean#getRemovalPendingBundles()
+     */
+    public long[] getRemovalPendingBundles() throws IOException {
+        FrameworkWiring fw = context.getBundle(0).adapt(FrameworkWiring.class);
+
+        Collection<Bundle> rc = fw.getRemovalPendingBundles();
+        Iterator<Bundle> it = rc.iterator();
+        long[] result = new long[rc.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = it.next().getBundleId();
+        }
+        return result;
     }
 
     /**

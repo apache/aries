@@ -36,8 +36,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -59,6 +63,7 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleRevisions;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.jmx.framework.FrameworkMBean;
 
 /**
@@ -69,8 +74,8 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         return testOptions(
-            //  new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
-            //  new TimeoutOption( 0 ),
+            // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+            // new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
             CoreOptions.equinox().version("3.7.0.v20110613"),
@@ -102,8 +107,44 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
         waitForMBean(new ObjectName(FrameworkMBean.OBJECTNAME));
     }
 
+
+    @Test
+    public void testGetDependencyClosure() throws Exception {
+        FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
+
+        Bundle bundleA = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        Bundle bundleB = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
+
+        BundleWiring bw = bundleB.adapt(BundleWiring.class);
+
+        List<BundleWire> initialRequiredWires = bw.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);
+        assertEquals(1, initialRequiredWires.size());
+        BundleWire wire = initialRequiredWires.get(0);
+        Map<String, Object> capabilityAttributes = wire.getCapability().getAttributes();
+        assertEquals("Precondition", bundleA.getSymbolicName(), capabilityAttributes.get(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE));
+        assertEquals("Precondition", new Version("1.0"), capabilityAttributes.get(Constants.BUNDLE_VERSION_ATTRIBUTE));
+        assertEquals("Precondition", "org.apache.aries.jmx.test.bundlea.api", capabilityAttributes.get(BundleRevision.PACKAGE_NAMESPACE));
+
+        Collection<Bundle> expectedDC = context().getBundle(0).adapt(FrameworkWiring.class).getDependencyClosure(Collections.singleton(bundleA));
+        Set<Long> expectedClosure = new TreeSet<Long>();
+        for (Bundle b : expectedDC) {
+            expectedClosure.add(b.getBundleId());
+        }
+
+        long[] actualDC = framework.getDependencyClosure(new long [] {bundleA.getBundleId()});
+        Set<Long> actualClosure = new TreeSet<Long>();
+        for (long l : actualDC) {
+            actualClosure.add(l);
+        }
+
+        assertEquals(expectedClosure, actualClosure);
+    }
+
     @Test
     public void testRefreshBundleAndWait() throws Exception {
+        FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
+        FrameworkWiring frameworkWiring = context().getBundle(0).adapt(FrameworkWiring.class);
+
         Bundle bundleA = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
         Bundle bundleB = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
 
@@ -130,13 +171,20 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
         addResourceToJar("org/apache/aries/jmx/test/bundlea/impl/A2.class", jos, bundleA);
         jos.close();
 
+        assertEquals("Precondition", 0, frameworkWiring.getRemovalPendingBundles().size());
+        assertEquals(0, framework.getRemovalPendingBundles().length);
+
         assertEquals("Precondition", 1, bundleA.adapt(BundleRevisions.class).getRevisions().size());
         bundleA.update(new ByteArrayInputStream(baos.toByteArray()));
         assertEquals("There should be 2 revisions now", 2, bundleA.adapt(BundleRevisions.class).getRevisions().size());
         assertEquals("No refresh called, the bundle wiring for B should still be the old one",
                 bw, bundleB.adapt(BundleWiring.class));
 
-        FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
+        assertEquals("Precondition", 1, frameworkWiring.getRemovalPendingBundles().size());
+        assertEquals(1, framework.getRemovalPendingBundles().length);
+        assertEquals(frameworkWiring.getRemovalPendingBundles().iterator().next().getBundleId(),
+                framework.getRemovalPendingBundles()[0]);
+
         assertTrue(framework.refreshBundleAndWait(bundleB.getBundleId()));
 
         List<BundleWire> requiredWires = bundleB.adapt(BundleWiring.class).getRequiredWires(BundleRevision.PACKAGE_NAMESPACE);

@@ -221,7 +221,28 @@ public interface FrameworkMBean {
                                                                     COMPLETED_ITEM,
                                                                     SUCCESS_ITEM);
 
-	/**
+    /**
+     * Returns the dependency closure for the specified bundles.
+     *
+     * <p>
+     * A graph of bundles is computed starting with the specified bundles. The
+     * graph is expanded by adding any bundle that is either wired to a package
+     * that is currently exported by a bundle in the graph or requires a bundle
+     * in the graph. The graph is fully constructed when there is no bundle
+     * outside the graph that is wired to a bundle in the graph. The graph may
+     * contain {@code UNINSTALLED} bundles that are
+     * {@link #getRemovalPendingBundles() removal pending}.
+     *
+     * @param bundles The initial bundles IDs for which to generate the dependency
+     *        closure.
+     * @return A bundle ID array containing a snapshot of the dependency closure of
+     *         the specified bundles, or an empty array if there were no
+     *         specified bundles.
+     * @throws IOException if the operation failed
+     */
+    long[] getDependencyClosure(long[] bundles) throws IOException;
+
+    /**
 	 * Retrieve the framework start level
 	 *
 	 * @return the framework start level
@@ -237,6 +258,18 @@ public interface FrameworkMBean {
 	 * @throws IOException if the operation failed
 	 */
 	int getInitialBundleStartLevel() throws IOException;
+
+	/**
+     * Returns the bundles IDs that have non-current, in use bundle wirings. This
+     * is typically the bundles which have been updated or uninstalled since the
+     * last call to {@link #refreshBundles(long[])}.
+     *
+     * @return A bundle ID array containing a snapshot of the bundles which
+     *         have non-current, in use bundle wirings, or an empty
+     *         array if there are no such bundles.
+     * @throws IOException if the operation failed
+     */
+    long[] getRemovalPendingBundles() throws IOException;
 
 	/**
 	 * Install the bundle indicated by the bundleLocations
