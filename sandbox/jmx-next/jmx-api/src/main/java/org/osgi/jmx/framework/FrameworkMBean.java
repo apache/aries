@@ -259,6 +259,18 @@ public interface FrameworkMBean {
 	 */
 	int getInitialBundleStartLevel() throws IOException;
 
+    /**
+     * Returns the value of the specified property. If the key is not found in
+     * the Framework properties, the system properties are then searched. The
+     * method returns {@code null} if the property is not found.
+     *
+     * @param key The name of the requested property.
+     * @return The value of the requested property, or {@code null} if the
+     *         property is undefined.
+     * @throws IOException if the operation failed
+     */
+    String getProperty(String key);
+
 	/**
      * Returns the bundles IDs that have non-current, in use bundle wirings. This
      * is typically the bundles which have been updated or uninstalled since the

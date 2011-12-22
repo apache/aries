@@ -107,6 +107,18 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
         waitForMBean(new ObjectName(FrameworkMBean.OBJECTNAME));
     }
 
+    @Test
+    public void testGetProperty() throws Exception {
+        FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
+
+        String expectedVer = context().getProperty(Constants.FRAMEWORK_VERSION);
+        String actualVer = framework.getProperty(Constants.FRAMEWORK_VERSION);
+        assertEquals(expectedVer, actualVer);
+
+        String expectedTmp = context().getProperty("java.io.tmpdir");
+        String actualTmp = framework.getProperty("java.io.tmpdir");
+        assertEquals(expectedTmp, actualTmp);
+    }
 
     @Test
     public void testGetDependencyClosure() throws Exception {
