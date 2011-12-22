@@ -41,15 +41,12 @@ public interface BundleWiringStateMBean {
      * The Object Name for a Bundle Revisions MBean.
      */
     String OBJECTNAME = JmxConstants.OSGI_CORE
-        + ":type=wiringState,version=1.0";
+        + ":type=wiringState,version=1.7";
 
-    /*
-     * Namespaces
-     *
+    /**
+     * To be specified on any operation that takes a 'namespace' argument when results from all namespaces are wanted.
      */
-    String BUNDLE_NAMESPACE = "osgi.wiring.bundle";
-    String HOST_NAMESPACE = "osgi.wiring.host";
-    String PACKAGE_NAMESPACE = "osgi.wiring.package";
+    String ALL_NAMESPACE = "osgi.wiring.all";
 
     /*
      * Items, CompositeData, TabularData, ArrayTypes
@@ -75,7 +72,6 @@ public interface BundleWiringStateMBean {
             "The directives of a capability or requirement",
             DIRECTIVES_TYPE);
 
-    // REVIEW should we reuse from JmxConstants here or create our own?
     TabularType ATTRIBUTES_TYPE = Item.tabularType("ATTRIBUTES",
             "Describes attributes of a capability or requirement",
             JmxConstants.PROPERTY_TYPE, JmxConstants.KEY
