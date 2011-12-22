@@ -40,7 +40,7 @@ public interface ServiceStateMBean {
 	 * The fully qualified object name of this mbean.
 	 */
 	String OBJECTNAME = JmxConstants.OSGI_CORE
-			+ ":type=serviceState,version=1.5";
+			+ ":type=serviceState,version=1.7";
 	/**
 	 * The key BUNDLE_IDENTIFIER, used in {@link #BUNDLE_IDENTIFIER_ITEM}.
 	 */
