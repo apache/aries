@@ -104,6 +104,13 @@ public class Framework implements FrameworkMBean {
     }
 
     /**
+     * @see org.osgi.jmx.framework.FrameworkMBean#getProperty(java.lang.String)
+     */
+    public String getProperty(String key) {
+        return context.getProperty(key);
+    }
+
+    /**
      * @see org.osgi.jmx.framework.FrameworkMBean#getRemovalPendingBundles()
      */
     public long[] getRemovalPendingBundles() throws IOException {
