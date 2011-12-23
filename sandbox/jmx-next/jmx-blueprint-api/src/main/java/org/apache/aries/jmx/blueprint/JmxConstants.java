@@ -24,11 +24,11 @@ import javax.management.openmbean.SimpleType;
 
 /**
  * Constants.
- * 
+ *
  * Additionally, this class contains a number of utility types that are used in
  * different places in the specification. These are {@link #LONG_ARRAY_TYPE},
  * {@link #STRING_ARRAY_TYPE}, and {@link #PRIMITIVE_BYTE_ARRAY_TYPE}.
- * 
+ *
  * @Immutable
  */
 public class JmxConstants {
@@ -41,15 +41,15 @@ public class JmxConstants {
     }
 
 
-    public static final ArrayType/*<Byte>*/    BYTE_ARRAY_TYPE   = Item
+    public static final ArrayType<Byte>    BYTE_ARRAY_TYPE   = Item
                                                                     .arrayType(
                                                                             1,
                                                                             SimpleType.BYTE);
-    
+
     /**
      * The MBean Open type for an array of strings
      */
-    public static final ArrayType/*<String>*/    STRING_ARRAY_TYPE   = Item
+    public static final ArrayType<String>    STRING_ARRAY_TYPE   = Item
                                                                     .arrayType(
                                                                             1,
                                                                             SimpleType.STRING);
