@@ -28,6 +28,7 @@ import org.apache.aries.jmx.framework.BundleState;
 import org.apache.aries.jmx.framework.Framework;
 import org.apache.aries.jmx.framework.PackageState;
 import org.apache.aries.jmx.framework.ServiceState;
+import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -79,16 +80,16 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   private static final String PROVISIONING_SERVICE = "org.osgi.service.provisioning.ProvisioningService";
 
   private Logger logger;
-  
+
   private class MBeanServiceProxy<T> implements ServiceFactory
   {
     private Factory<T> objectFactory;
     private AtomicReference<T> result = new AtomicReference<T>();
-    
+
     private MBeanServiceProxy(Factory<T> factory) {
       objectFactory = factory;
     }
-    
+
     public Object getService(Bundle bundle, ServiceRegistration registration)
     {
       if (result.get() == null) {
@@ -96,7 +97,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
       }
       return result.get();
     }
-    
+
     public void ungetService(Bundle bundle, ServiceRegistration registration, Object service)
     {
     }
@@ -106,7 +107,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   {
     public abstract T create();
   }
-  
+
   private abstract class BaseFactory<T> implements Factory<T>
   {
     public abstract T create(PackageAdmin pa, StartLevel sl);
@@ -114,21 +115,21 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
     {
       StartLevel sl = null;
       PackageAdmin pa = null;
-      
+
       ServiceReference slRef = _startLevel.get();
       if (slRef != null) {
         sl = (StartLevel) ctx.getService(slRef);
       }
       ServiceReference paRef = _packageAdmin.get();
-      
+
       if (paRef != null) {
         pa = (PackageAdmin) ctx.getService(paRef);
       }
-      
+
       if (pa == null) {
         ctx.ungetService(slRef);
       }
-      
+
       if (sl != null && pa != null) {
         return create(pa, sl);
       } else {
@@ -141,14 +142,14 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   {
     ctx = context;
     logger = new Logger(ctx);
-    
+
     Filter filter = getFilter(context, PACKAGE_ADMIN, START_LEVEL,
         PERMISSION_ADMIN, CONFIG_ADMIN, USER_ADMIN,
         PROVISIONING_SERVICE);
 
     tracker = new ServiceTracker(context, filter, this);
     tracker.open();
-    
+
     registerMBean(ServiceStateMBean.class.getName(), new Factory<ServiceStateMBean>() {
       public ServiceStateMBean create()
       {
@@ -160,7 +161,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   private Filter getFilter(BundleContext ctx, String ... services) throws InvalidSyntaxException
   {
     StringBuilder builder = new StringBuilder("(|");
-    
+
     for (String type : services) {
       builder.append('(');
       builder.append(Constants.OBJECTCLASS);
@@ -168,7 +169,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
       builder.append(type);
       builder.append(')');
     }
-    
+
     builder.append(')');
     return ctx.createFilter(builder.toString());
   }
@@ -181,9 +182,9 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   public Object addingService(ServiceReference reference)
   {
     Object tracked = null;
-    
+
     String[] types = (String[]) reference.getProperty(Constants.OBJECTCLASS);
-    
+
     for (String t : types) {
       if (PACKAGE_ADMIN.equals(t)) {
         foundPackageAdmin(reference);
@@ -205,7 +206,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
         tracked = reference;
       }
     }
-    
+
     return tracked;
   }
 
@@ -213,13 +214,13 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   {
     synchronized (result) {
       ServiceRegistration reg = registerAnMbean(type, factory, objectName);
-      
+
       if (!!!result.compareAndSet(null, reg)) {
         reg.unregister();
       }
     }
   }
-  
+
   private <T> void registerMBean(String type, Factory<T> factory, String objectName, ConcurrentMap<Long, ServiceRegistration> mbeans,
       ServiceReference referencedServices, String underlyingType)
   {
@@ -227,7 +228,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
       Class.forName(underlyingType);
       if (referencedServices.isAssignableTo(ctx.getBundle(), underlyingType)) {
         ServiceRegistration reg = registerAnMbean(type, factory, objectName);
-  
+
         Long id = (Long) reg.getReference().getProperty(Constants.SERVICE_ID);
         mbeans.put(id, reg);
       }
@@ -238,21 +239,21 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   private <T> ServiceRegistration registerAnMbean(String type, Factory<T> factory, String objectName)
   {
     Hashtable<String, Object> properties = new Hashtable<String, Object>();
-    properties.put("jmx.objectname", objectName);
-    
+    properties.put("jmx.objectname", ObjectNameUtils.createFullObjectName(ctx, objectName));
+
     Object service = new MBeanServiceProxy<T>(factory);
-    
+
     ServiceRegistration reg = ctx.registerService(type, service, properties);
     return reg;
   }
-  
+
   private void foundPermissionAdmin(final ServiceReference reference)
   {
     registerMBean(PermissionAdminMBean.class.getName(), new Factory<PermissionAdminMBean>() {
       public PermissionAdminMBean create()
       {
         PermissionAdmin service = (PermissionAdmin) ctx.getService(reference);
-        
+
         if (service == null) return null;
         else return new org.apache.aries.jmx.permissionadmin.PermissionAdmin(service);
       }
@@ -265,7 +266,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
         public ProvisioningServiceMBean create()
         {
           ProvisioningService service = (ProvisioningService) ctx.getService(reference);
-          
+
           if (service == null) return null;
           else return new org.apache.aries.jmx.provisioning.ProvisioningService(service);
         }
@@ -281,7 +282,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
           public UserAdminMBean create()
           {
             UserAdmin service = (UserAdmin) ctx.getService(reference);
-            
+
             if (service == null) return null;
             else return new org.apache.aries.jmx.useradmin.UserAdmin(service);
           }
@@ -297,7 +298,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
       public ConfigurationAdminMBean create()
       {
         ConfigurationAdmin service = (ConfigurationAdmin) ctx.getService(reference);
-        
+
         if (service == null) return null;
         else return new org.apache.aries.jmx.cm.ConfigurationAdmin(service);
       }
@@ -317,12 +318,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
       public PackageStateMBean create()
       {
         PackageAdmin service = (PackageAdmin) ctx.getService(reference);
-        
+
         if (service == null) return null;
         else return new PackageState(ctx, service);
       }
     }, PackageStateMBean.OBJECTNAME, _packageStateMbean);
-    
+
     if (_packageAdmin.compareAndSet(null, reference)) {
       registerBundleStateAndFrameworkIfPossible();
     }
@@ -360,7 +361,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   public void removedService(ServiceReference reference, Object service)
   {
     String[] types = (String[]) reference.getProperty(Constants.OBJECTCLASS);
-    
+
     for (String t : types) {
       if (PACKAGE_ADMIN.equals(t)) {
         lostPackageAdmin(reference);
@@ -376,7 +377,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
         lostProvisioningService(reference);
       }
     }
-    
+
   }
 
   private void lostProvisioningService(ServiceReference reference)
@@ -393,7 +394,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   {
     unregister(reference, _configAdminMBeans);
   }
-  
+
   private void unregister(ServiceReference reference, ConcurrentMap<Long, ServiceRegistration> mbeans)
   {
     Long id = (Long) reference.getProperty(Constants.SERVICE_ID);
@@ -419,7 +420,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
     if (_packageAdmin.compareAndSet(reference, null)) {
       safeUnregister(_bundleState);
       safeUnregister(_framework);
-      
+
       safeUnregister(_packageStateMbean);
     }
   }
