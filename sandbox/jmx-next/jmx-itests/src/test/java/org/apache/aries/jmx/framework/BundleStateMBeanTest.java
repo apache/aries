@@ -146,8 +146,9 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testMBeanInterface() throws Exception {
+        ObjectName objectName = waitForMBean(new ObjectName(BundleStateMBean.OBJECTNAME));
 
-        BundleStateMBean mbean = getMBean(OBJECTNAME, BundleStateMBean.class);
+        BundleStateMBean mbean = getMBean(objectName, BundleStateMBean.class);
         assertNotNull(mbean);
 
         //get bundles
@@ -269,7 +270,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
 
         final List<Notification> received = new ArrayList<Notification>();
 
-        mbeanServer.addNotificationListener(new ObjectName(BundleStateMBean.OBJECTNAME), new NotificationListener() {
+        mbeanServer.addNotificationListener(objectName, new NotificationListener() {
             public void handleNotification(Notification notification, Object handback) {
                received.add(notification);
             }

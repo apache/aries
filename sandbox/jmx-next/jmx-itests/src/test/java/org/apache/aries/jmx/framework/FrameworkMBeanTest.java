@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,6 +106,16 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     @Override
     public void doSetUp() throws Exception {
         waitForMBean(new ObjectName(FrameworkMBean.OBJECTNAME));
+    }
+
+    @Test
+    public void testObjectName() throws Exception {
+        Set<ObjectName> names = mbeanServer.queryNames(new ObjectName(FrameworkMBean.OBJECTNAME + ",*"), null);
+        assertEquals(1, names.size());
+        ObjectName name = names.iterator().next();
+        Hashtable<String, String> props = name.getKeyPropertyList();
+        assertEquals(context().getProperty(Constants.FRAMEWORK_UUID), props.get("uuid"));
+        assertEquals(context().getBundle(0).getSymbolicName(), props.get("framework"));
     }
 
     @Test

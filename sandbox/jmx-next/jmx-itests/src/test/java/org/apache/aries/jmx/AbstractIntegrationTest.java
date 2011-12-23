@@ -18,7 +18,9 @@ package org.apache.aries.jmx;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import javax.management.InstanceNotFoundException;
+
+import java.util.Set;
+
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.MBeanServerInvocationHandler;
@@ -36,7 +38,7 @@ import org.osgi.framework.ServiceRegistration;
  */
 @RunWith(JUnit4TestRunner.class)
 public class AbstractIntegrationTest extends org.apache.aries.itest.AbstractIntegrationTest {
-    
+
     ServiceRegistration registration;
     ServiceReference reference;
     protected MBeanServer mbeanServer;
@@ -47,7 +49,7 @@ public class AbstractIntegrationTest extends org.apache.aries.itest.AbstractInte
 
         registration = bundleContext.registerService(MBeanServer.class
                 .getCanonicalName(), mbeanServer, null);
-            
+
         String key = MBeanServer.class.getCanonicalName();
         System.out.println(key);
 
@@ -55,55 +57,66 @@ public class AbstractIntegrationTest extends org.apache.aries.itest.AbstractInte
         assertNotNull(reference);
         MBeanServer mbeanService = (MBeanServer) bundleContext.getService(reference);
         assertNotNull(mbeanService);
-        
+
         doSetUp();
     }
-    
+
     /**
      * A hook for subclasses.
-     * 
+     *
      * @throws Exception
      */
     protected void doSetUp() throws Exception {}
-    
+
     @After
     public void tearDown() throws Exception {
         bundleContext.ungetService(reference);
         //plainRegistration.unregister();
     }
-    
-    protected void waitForMBean(ObjectName name) throws Exception {
-        waitForMBean(name, 10);        
+
+    protected ObjectName waitForMBean(ObjectName name) throws Exception {
+        return waitForMBean(name, 10);
     }
-    
-    protected void waitForMBean(ObjectName name, int timeoutInSeconds) throws Exception {
+
+    protected ObjectName waitForMBean(ObjectName name, int timeoutInSeconds) throws Exception {
         int i=0;
         while (true) {
-            try {
-                mbeanServer.getObjectInstance(name);
-                break;
-            } catch (InstanceNotFoundException e) {
-                if (i == timeoutInSeconds) {
-                    throw new Exception(name + " mbean is not available after waiting " + timeoutInSeconds + " seconds");
-                }
-            }
+            ObjectName queryName = new ObjectName(name.toString() + ",*");
+            Set<ObjectName> result = mbeanServer.queryNames(queryName, null);
+            if (result.size() > 0)
+                return result.iterator().next();
+
+            if (i == timeoutInSeconds)
+                throw new Exception(name + " mbean is not available after waiting " + timeoutInSeconds + " seconds");
+
             i++;
             Thread.sleep(1000);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     protected <T> T getMBean(String name, Class<T> type) {
         ObjectName objectName = null;
         try {
-            objectName = new ObjectName(name);
+            objectName = new ObjectName(name + ",*");
         } catch (Exception e) {
             fail(e.toString());
         }
         assertNotNull(mbeanServer);
         assertNotNull(objectName);
-        T mbean = MBeanServerInvocationHandler.newProxyInstance(mbeanServer, objectName,
+
+        Set<ObjectName> names = mbeanServer.queryNames(objectName, null);
+        if (names.size() == 0) {
+            fail("Object name not found: " + objectName);
+        }
+
+        T mbean = MBeanServerInvocationHandler.newProxyInstance(mbeanServer, names.iterator().next(),
                 type, false);
         return mbean;
-    }    
+    }
+
+    protected <T> T getMBean(ObjectName objectName, Class<T> type) {
+        T mbean = MBeanServerInvocationHandler.newProxyInstance(mbeanServer, objectName, type, false);
+        return mbean;
+    }
 }

@@ -16,31 +16,40 @@
  */
 package org.apache.aries.jmx.framework;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.apache.aries.jmx.Logger;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.startlevel.StartLevel;
 
-import static org.mockito.Mockito.*;
-
 /**
- * 
+ *
  *
  * @version $Rev$ $Date$
  */
 public class BundleStateMBeanHandlerTest {
 
-    
+
     @Test
     public void testOpenAndClose() throws Exception {
-        
+
         BundleContext context = mock(BundleContext.class);
+        when(context.getProperty(Constants.FRAMEWORK_UUID)).thenReturn("some-uuid");
+
         Logger logger = mock(Logger.class);
-        
+
+        Bundle mockSystemBundle = mock(Bundle.class);
+        when(mockSystemBundle.getSymbolicName()).thenReturn("the.sytem.bundle");
+        when(context.getBundle(0)).thenReturn(mockSystemBundle);
+
         ServiceReference packageAdminRef = mock(ServiceReference.class);
         PackageAdmin packageAdmin = mock(PackageAdmin.class);
         when(context.getServiceReference(PackageAdmin.class.getName())).thenReturn(packageAdminRef);
@@ -49,16 +58,16 @@ public class BundleStateMBeanHandlerTest {
         StartLevel startLevel = mock(StartLevel.class);
         when(context.getServiceReference(StartLevel.class.getName())).thenReturn(startLevelRef);
         when(context.getService(startLevelRef)).thenReturn(startLevel);
-        
+
         BundleStateMBeanHandler handler = new BundleStateMBeanHandler(context, logger);
         handler.open();
-        
+
         assertNotNull(handler.getMbean());
-        
+
         handler.close();
         verify(context).ungetService(packageAdminRef);
         verify(context).ungetService(startLevelRef);
-        
+
     }
 
 }
