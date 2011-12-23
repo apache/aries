@@ -136,13 +136,13 @@ public class Item {
 	 *            The element type
 	 * @return A new Array Type
 	 */
-	public static <T extends OpenType<?>> ArrayType<T> arrayType(int dim, T elementType) {
-		try {
-			return new ArrayType<T>(dim, elementType);
-		} catch (OpenDataException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	public static <T> ArrayType<T> arrayType(int dim, OpenType<T> elementType) {
+	    try {
+	        return new ArrayType<T>(dim, elementType);
+	    } catch (OpenDataException e) {
+	        throw new RuntimeException(e);
+	    }
+	 }
 
 	/**
 	 * Extend a Composite Type by adding new items. Items can override items in
