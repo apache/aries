@@ -27,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Set;
 
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
@@ -37,6 +39,7 @@ import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.Configuration;
+import org.osgi.framework.Constants;
 import org.osgi.jmx.framework.PackageStateMBean;
 
 /**
@@ -61,6 +64,16 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
     @Override
     public void doSetUp() throws Exception {
         waitForMBean(new ObjectName(PackageStateMBean.OBJECTNAME));
+    }
+
+    @Test
+    public void testObjectName() throws Exception {
+        Set<ObjectName> names = mbeanServer.queryNames(new ObjectName(PackageStateMBean.OBJECTNAME + ",*"), null);
+        assertEquals(1, names.size());
+        ObjectName name = names.iterator().next();
+        Hashtable<String, String> props = name.getKeyPropertyList();
+        assertEquals(context().getProperty(Constants.FRAMEWORK_UUID), props.get("uuid"));
+        assertEquals(context().getBundle(0).getSymbolicName(), props.get("framework"));
     }
 
     @Test

@@ -19,6 +19,7 @@ package org.apache.aries.jmx.framework.wiring;
 import static org.apache.aries.itest.ExtraOptions.mavenBundle;
 import static org.apache.aries.itest.ExtraOptions.paxLogging;
 import static org.apache.aries.itest.ExtraOptions.testOptions;
+import static org.junit.Assert.assertEquals;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -114,6 +116,16 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
     @Override
     public void doSetUp() throws Exception {
         waitForMBean(new ObjectName(BundleWiringStateMBean.OBJECTNAME));
+    }
+
+    @Test
+    public void testObjectName() throws Exception {
+        Set<ObjectName> names = mbeanServer.queryNames(new ObjectName(BundleWiringStateMBean.OBJECTNAME + ",*"), null);
+        assertEquals(1, names.size());
+        ObjectName name = names.iterator().next();
+        Hashtable<String, String> props = name.getKeyPropertyList();
+        assertEquals(context().getProperty(Constants.FRAMEWORK_UUID), props.get("uuid"));
+        assertEquals(context().getBundle(0).getSymbolicName(), props.get("framework"));
     }
 
     @Test
