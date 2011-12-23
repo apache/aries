@@ -28,13 +28,14 @@ import javax.management.openmbean.TabularType;
 import org.osgi.jmx.Item;
 import org.osgi.jmx.JmxConstants;
 
+
 /**
  * This MBean represents the bundle wiring state.
+ * <p>
+ * It can be used to retrieve the declared capabilities, declared requirements, and wiring
+ * for the current and past revisions of bundles.
  *
- * Note that not all information from the BundleWiring Java API is provided.
- *
- * Particularly, the limitations are:
- *  - Cannot retrieve references to resources (e.g. class) of a particular bundle wiring.
+ * @ThreadSafe
  */
 public interface BundleWiringStateMBean {
     /*
@@ -140,7 +141,7 @@ public interface BundleWiringStateMBean {
                 REQUIRER_BUNDLE_ID_ITEM,
                 REQUIRER_BUNDLE_REVISION_ID_ITEM
                 );
-    ArrayType<CompositeType> BUNDLE_WIRES_TYPE_ARRAY =
+    ArrayType<CompositeData> BUNDLE_WIRES_TYPE_ARRAY =
         Item.arrayType(1, BUNDLE_WIRE_TYPE);
 
     String BUNDLE_REVISION_ID = "BundleRevisionId";
@@ -153,9 +154,9 @@ public interface BundleWiringStateMBean {
             "The bundle identifier of the bundle revision",
             SimpleType.LONG);
 
-    ArrayType<CompositeType> REQUIREMENT_TYPE_ARRAY =
+    ArrayType<CompositeData> REQUIREMENT_TYPE_ARRAY =
         Item.arrayType(1, BUNDLE_REQUIREMENT_TYPE);
-    ArrayType<CompositeType> CAPABILITY_TYPE_ARRAY =
+    ArrayType<CompositeData> CAPABILITY_TYPE_ARRAY =
         Item.arrayType(1, BUNDLE_CAPABILITY_TYPE);
 
     String REQUIREMENTS = "Requirements";
