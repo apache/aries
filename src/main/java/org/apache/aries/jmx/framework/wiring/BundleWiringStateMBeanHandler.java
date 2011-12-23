@@ -21,6 +21,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
 import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
@@ -37,7 +38,7 @@ public class BundleWiringStateMBeanHandler implements MBeanHandler {
     public BundleWiringStateMBeanHandler(BundleContext bundleContext, Logger logger) {
         this.bundleContext = bundleContext;
         this.logger = logger;
-        this.name = BundleWiringStateMBean.OBJECTNAME;
+        this.name = ObjectNameUtils.createFullObjectName(bundleContext, BundleWiringStateMBean.OBJECTNAME);
     }
 
     /* (non-Javadoc)

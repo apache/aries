@@ -40,7 +40,7 @@ public class UserAdminMBeanHandler extends AbstractCompendiumHandler {
 
     /**
      * Constructs new UserAdminMBeanHandler.
-     * 
+     *
      * @param agentContext JMXAgentContext instance.
      */
     public UserAdminMBeanHandler(JMXAgentContext agentContext) {
@@ -51,8 +51,8 @@ public class UserAdminMBeanHandler extends AbstractCompendiumHandler {
      * @see org.apache.aries.jmx.AbstractCompendiumHandler#constructInjectMBean(java.lang.Object)
      */
     @Override
-    protected StandardMBean constructInjectMBean(Object targetService) {       
-        UserAdminMBean uaMBean = new UserAdmin((org.osgi.service.useradmin.UserAdmin) targetService); 
+    protected StandardMBean constructInjectMBean(Object targetService) {
+        UserAdminMBean uaMBean = new UserAdmin((org.osgi.service.useradmin.UserAdmin) targetService);
         StandardMBean mbean = null;
         try {
             mbean = new StandardMBean(uaMBean, UserAdminMBean.class);
@@ -64,9 +64,9 @@ public class UserAdminMBeanHandler extends AbstractCompendiumHandler {
     }
 
     /**
-     * @see org.apache.aries.jmx.MBeanHandler#getName()
+     * @see org.apache.aries.jmx.AbstractCompendiumHandler#getBaseName()
      */
-    public String getName() {
+    public String getBaseName() {
         return UserAdminMBean.OBJECTNAME;
     }
 

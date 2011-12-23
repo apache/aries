@@ -23,6 +23,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
 import org.osgi.jmx.framework.ServiceStateMBean;
@@ -33,7 +34,7 @@ import org.osgi.service.log.LogService;
  * Implementation of <code>MBeanHandler</code> which manages the <code>ServiceState</code>
  * MBean implementation
  * @see MBeanHandler
- * </p> 
+ * </p>
  *
  * @version $Rev$ $Date$
  */
@@ -44,12 +45,12 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
     private ServiceState serviceStateMBean;
     private BundleContext bundleContext;
     private Logger logger;
-    
-    
+
+
     public ServiceStateMBeanHandler(BundleContext bundleContext, Logger logger) {
         this.bundleContext = bundleContext;
         this.logger = logger;
-        this.name = OBJECTNAME;
+        this.name = ObjectNameUtils.createFullObjectName(bundleContext, OBJECTNAME);
     }
 
     /**
@@ -63,7 +64,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
             logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + ServiceStateMBean.class.getName(), e);
         }
     }
-    
+
     /**
      * @see org.apache.aries.jmx.MBeanHandler#getMbean()
      */
@@ -87,7 +88,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
            serviceStateMBean.shutDownDispatcher();
        }
     }
-    
-    
+
+
 
 }

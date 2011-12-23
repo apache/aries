@@ -21,6 +21,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.jmx.framework.PackageStateMBean;
@@ -31,7 +32,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  * <p>
  * <tt>PackageStateMBeanHandler</tt> represents MBeanHandler which
  * holding information about {@link PackageStateMBean}.</p>
- * 
+ *
  * @see MBeanHandler
  *
  * @version $Rev$ $Date$
@@ -45,13 +46,13 @@ public class PackageStateMBeanHandler implements MBeanHandler {
 
     /**
      * Constructs new PackageStateMBeanHandler.
-     * 
+S     *
      * @param context bundle context of JMX bundle.
      * @param logger @see {@link Logger}.
      */
     public PackageStateMBeanHandler(BundleContext context, Logger logger) {
         this.context = context;
-        this.name = PackageStateMBean.OBJECTNAME;
+        this.name = ObjectNameUtils.createFullObjectName(context, PackageStateMBean.OBJECTNAME);
         this.logger = logger;
     }
 
