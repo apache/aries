@@ -51,7 +51,6 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleRevisions;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.jmx.framework.PackageStateMBean;
 import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
 
 public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
@@ -114,7 +113,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Override
     public void doSetUp() throws Exception {
-        waitForMBean(new ObjectName(PackageStateMBean.OBJECTNAME));
+        waitForMBean(new ObjectName(BundleWiringStateMBean.OBJECTNAME));
     }
 
     @Test

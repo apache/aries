@@ -31,14 +31,14 @@ import org.osgi.service.log.LogService;
  * <tt>PermissionAdminMBeanHandler</tt> represents MBeanHandler which
  * holding information about {@link PermissionAdminMBean}.</p>
  * @see MBeanHandler
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class PermissionAdminMBeanHandler extends AbstractCompendiumHandler {
 
     /**
      * Constructs new PermissionAdminMBeanHandler.
-     * 
+     *
      * @param agentContext JMXAgentContext instance.
      */
     public PermissionAdminMBeanHandler(JMXAgentContext agentContext) {
@@ -63,9 +63,9 @@ public class PermissionAdminMBeanHandler extends AbstractCompendiumHandler {
 
 
     /**
-     * @see org.apache.aries.jmx.MBeanHandler#getName()
+     * @see org.apache.aries.jmx.AbstractCompendiumHandler#getBaseName()
      */
-    public String getName() {
+    protected String getBaseName() {
         return PermissionAdminMBean.OBJECTNAME;
     }
 }
