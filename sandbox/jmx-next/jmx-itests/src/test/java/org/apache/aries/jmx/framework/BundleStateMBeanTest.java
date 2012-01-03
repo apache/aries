@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -302,6 +303,23 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
 
         assertEquals(2, received.size());
 
+    }
+
+    @Test
+    public void testBundleIDsAttribute() throws Exception{
+        Set<Long> expectedIDs = new HashSet<Long>();
+        for (Bundle b : context().getBundles()) {
+            expectedIDs.add(b.getBundleId());
+        }
+
+        BundleStateMBean mbean = getMBean(OBJECTNAME, BundleStateMBean.class);
+        long[] actual = mbean.getBundleIds();
+        Set<Long> actualIDs = new HashSet<Long>();
+        for (long id : actual) {
+            actualIDs.add(id);
+        }
+
+        assertEquals(expectedIDs, actualIDs);
     }
 
     @Test
