@@ -32,9 +32,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.management.Notification;
@@ -287,6 +289,47 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         assertTrue(ocData.get("Value").equals(form1) ||
                    ocData.get("Value").equals(form2));
         assertEquals("Array of String", ocData.get("Type"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testServicePropertiesInListServices() throws Exception {
+        ServiceStateMBean mbean = getMBean(ServiceStateMBean.OBJECTNAME, ServiceStateMBean.class);
+
+        ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(InterfaceA.class.getName(), null);
+        assertEquals("Precondition", 1, refs.length);
+        ServiceReference<?> ref = refs[0];
+
+        TabularData svcTab = mbean.listServices();
+        CompositeData svcData = svcTab.get(new Object [] {ref.getProperty(Constants.SERVICE_ID)});
+
+        Set<String> expectedOCs = new HashSet<String>(Arrays.asList(
+                InterfaceA.class.getName(), ManagedService.class.getName()));
+        Set<String> actualOCs = new HashSet<String>(
+                Arrays.asList((String [])svcData.get(Constants.OBJECTCLASS)));
+        assertEquals(expectedOCs, actualOCs);
+
+        Map<String, Object> expectedProperties = new HashMap<String, Object>();
+        for (String key : ref.getPropertyKeys()) {
+            Object value = ref.getProperty(key);
+            if (value.getClass().isArray())
+                continue;
+
+            expectedProperties.put(key, value);
+        }
+
+        Map<String, Object> actualProperties = new HashMap<String, Object>();
+        TabularData actualProps = (TabularData) svcData.get(ServiceStateMBean.PROPERTIES);
+        for (CompositeData cd : (Collection<CompositeData>) actualProps.values()) {
+            Object type = cd.get(JmxConstants.TYPE);
+            if (JmxConstants.STRING.equals(type)) {
+                actualProperties.put((String) cd.get(JmxConstants.KEY), cd.get(JmxConstants.VALUE));
+            } else if (JmxConstants.LONG.equals(type)) {
+                actualProperties.put((String) cd.get(JmxConstants.KEY), Long.valueOf(cd.get(JmxConstants.VALUE).toString()));
+            }
+        }
+
+        assertEquals(expectedProperties, actualProperties);
     }
 
     @Test

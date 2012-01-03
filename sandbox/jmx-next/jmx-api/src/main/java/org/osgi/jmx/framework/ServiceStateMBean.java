@@ -82,6 +82,18 @@ public interface ServiceStateMBean {
 			"The identifier of the service", SimpleType.LONG);
 
 	/**
+	 * The key PROPERTIES, used in {@link #PROPERTIES_ITEM}.
+	 */
+	String PROPERTIES = "Properties";
+
+	/**
+	 * The item containing service properties in {@link #SERVICE_TYPE}. The key
+	 * is {@link #PROPERTIES} and the type is {@link JmxConstants#PROPERTIES_TYPE}.
+	 */
+	Item PROPERTIES_ITEM = new Item(PROPERTIES,
+	        "The service properties", JmxConstants.PROPERTIES_TYPE);
+
+	/**
 	 * The key USING_BUNDLES, used in {@link #USING_BUNDLES_ITEM}.
 	 */
 	String USING_BUNDLES = "UsingBundles";
@@ -106,7 +118,7 @@ public interface ServiceStateMBean {
 	 */
 	CompositeType SERVICE_TYPE = Item.compositeType("SERVICE",
 			"This type encapsulates an OSGi service", BUNDLE_IDENTIFIER_ITEM,
-			IDENTIFIER_ITEM, OBJECT_CLASS_ITEM,
+			IDENTIFIER_ITEM, OBJECT_CLASS_ITEM, PROPERTIES_ITEM,
 			USING_BUNDLES_ITEM);
 
 	/**
