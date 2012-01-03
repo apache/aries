@@ -81,7 +81,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         PackageStateMBean packagaState = getMBean(PackageStateMBean.OBJECTNAME, PackageStateMBean.class);
         assertNotNull(packagaState);
 
-        long[] exportingBundles = packagaState.getExportingBundles("org.osgi.jmx.framework", "1.5.0");
+        long[] exportingBundles = packagaState.getExportingBundles("org.osgi.jmx.framework", "1.7.0");
         assertNotNull(exportingBundles);
         assertTrue("Should find a bundle exporting org.osgi.jmx.framework", exportingBundles.length > 0);
 
@@ -89,7 +89,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         assertNull("Shouldn't find a bundle exporting test package", exportingBundles2);
 
         long[] importingBundlesId = packagaState
-                .getImportingBundles("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
+                .getImportingBundles("org.osgi.jmx.framework", "1.7.0", exportingBundles[0]);
         assertTrue("Should find bundles importing org.osgi.jmx.framework", importingBundlesId.length > 0);
 
         TabularData table = packagaState.listPackages();
@@ -99,7 +99,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         assertNotNull("Collection of CompositeData shouldn't be null", colData);
         assertFalse("Collection of CompositeData should contain elements", colData.isEmpty());
 
-        boolean isRemovalPending = packagaState.isRemovalPending("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
+        boolean isRemovalPending = packagaState.isRemovalPending("org.osgi.jmx.framework", "1.7.0", exportingBundles[0]);
         assertFalse("Should removal pending on org.osgi.jmx.framework be false", isRemovalPending);
     }
 

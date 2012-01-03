@@ -43,12 +43,13 @@
         </aries.osgi.activator>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export>
-            org.osgi.jmx;uses:="javax.management.openmbean",
-            org.osgi.jmx.framework;uses:="org.osgi.jmx,javax.management.openmbean",
-            org.osgi.jmx.service.cm;uses:="javax.management.openmbean",
-            org.osgi.jmx.service.permissionadmin;uses:="org.osgi.jmx",
-            org.osgi.jmx.service.provisioning;uses:="javax.management.openmbean",
-            org.osgi.jmx.service.useradmin;uses:="org.osgi.jmx,javax.management.openmbean",
+            org.osgi.jmx,
+            org.osgi.jmx.framework,
+            org.osgi.jmx.framework.wiring,
+            org.osgi.jmx.service.cm,
+            org.osgi.jmx.service.permissionadmin,
+            org.osgi.jmx.service.provisioning,
+            org.osgi.jmx.service.useradmin,
             org.apache.aries.jmx.codec
         </aries.osgi.export>
         <aries.osgi.import>
