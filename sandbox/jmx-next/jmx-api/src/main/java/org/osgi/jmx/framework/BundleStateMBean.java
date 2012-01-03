@@ -450,6 +450,8 @@ public interface BundleStateMBean {
 	 */
 	CompositeData getBundle(long id) throws IOException;
 
+	long[] getBundleIds() throws IOException;
+
 	/**
 	 * Answer the list of identifiers of the bundles this bundle depends upon
 	 *
