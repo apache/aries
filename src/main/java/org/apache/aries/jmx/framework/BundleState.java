@@ -296,8 +296,6 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
         return isBundleRequiredByOthers(bundle, packageAdmin);
     }
 
-
-
     public CompositeData getBundle(long id) throws IOException {
         Bundle bundle = bundleContext.getBundle(id);
         if (bundle == null)
@@ -305,6 +303,15 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
 
         BundleData data = new BundleData(bundleContext, bundle, packageAdmin, startLevel);
         return data.toCompositeData();
+    }
+
+    public long[] getBundleIds() throws IOException {
+        Bundle[] bundles = bundleContext.getBundles();
+        long[] ids = new long[bundles.length];
+        for (int i=0; i < bundles.length; i++) {
+            ids[i] = bundles[i].getBundleId();
+        }
+        return ids;
     }
 
     /**
