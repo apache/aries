@@ -22,19 +22,25 @@ import static org.apache.aries.jmx.util.TypeUtils.toPrimitive;
 import static org.osgi.jmx.framework.ServiceStateMBean.BUNDLE_IDENTIFIER;
 import static org.osgi.jmx.framework.ServiceStateMBean.IDENTIFIER;
 import static org.osgi.jmx.framework.ServiceStateMBean.OBJECT_CLASS;
+import static org.osgi.jmx.framework.ServiceStateMBean.PROPERTIES;
 import static org.osgi.jmx.framework.ServiceStateMBean.SERVICE_TYPE;
 import static org.osgi.jmx.framework.ServiceStateMBean.USING_BUNDLES;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.TabularData;
+import javax.management.openmbean.TabularDataSupport;
 
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.jmx.JmxConstants;
 import org.osgi.jmx.framework.ServiceStateMBean;
 
 /**
@@ -62,11 +68,10 @@ public class ServiceData {
      */
     private String[] serviceInterfaces;
 
-    // keep properties for next version of the spec
-    ///**
-    // * @see ServiceStateMBean#PROPERTIES_ITEM
-    // */
-    //private List<PropertyData<? extends Object>> properties = new ArrayList<PropertyData<? extends Object>>();
+    /**
+     * @see ServiceStateMBean#PROPERTIES_ITEM
+     */
+    private List<PropertyData<? extends Object>> properties = new ArrayList<PropertyData<? extends Object>>();
 
     /**
      * @see ServiceStateMBean#USING_BUNDLES_ITEM
@@ -77,7 +82,7 @@ public class ServiceData {
         super();
     }
 
-    public ServiceData(ServiceReference serviceReference) throws IllegalArgumentException {
+    public ServiceData(ServiceReference<?> serviceReference) throws IllegalArgumentException {
         if (serviceReference == null) {
             throw new IllegalArgumentException("Argument serviceReference cannot be null");
         }
@@ -85,9 +90,9 @@ public class ServiceData {
         this.bundleId = serviceReference.getBundle().getBundleId();
         this.serviceInterfaces = (String[]) serviceReference.getProperty(Constants.OBJECTCLASS);
         this.usingBundles = getBundleIds(serviceReference.getUsingBundles());
-        //for (String propertyKey: serviceReference.getPropertyKeys()) {
-        //    this.properties.add(PropertyData.newInstance(propertyKey, serviceReference.getProperty(propertyKey)));
-        //}
+        for (String propertyKey: serviceReference.getPropertyKeys()) {
+            this.properties.add(PropertyData.newInstance(propertyKey, serviceReference.getProperty(propertyKey)));
+        }
     }
 
     /**
@@ -109,11 +114,12 @@ public class ServiceData {
         if (itemNames.contains(OBJECT_CLASS))
             items.put(OBJECT_CLASS, this.serviceInterfaces);
 
-        //TabularData propertiesTable = new TabularDataSupport(PROPERTIES_TYPE);
-        //for (PropertyData<? extends Object> propertyData : this.properties) {
-        //    propertiesTable.put(propertyData.toCompositeData());
-        //}
-        // items.put(PROPERTIES, propertiesTable);
+        TabularData propertiesTable = new TabularDataSupport(JmxConstants.PROPERTIES_TYPE);
+        for (PropertyData<? extends Object> propertyData : this.properties) {
+            propertiesTable.put(propertyData.toCompositeData());
+        }
+        items.put(PROPERTIES, propertiesTable);
+
 
         if (itemNames.contains(USING_BUNDLES))
             items.put(USING_BUNDLES, toLong(this.usingBundles));
@@ -152,11 +158,11 @@ public class ServiceData {
         serviceData.bundleId = (Long) compositeData.get(BUNDLE_IDENTIFIER);
         serviceData.serviceInterfaces = (String[]) compositeData.get(OBJECT_CLASS);
         serviceData.usingBundles = toPrimitive((Long[]) compositeData.get(USING_BUNDLES));
-        // TabularData propertiesTable = (TabularData) compositeData.get(PROPERTIES);
-        // Collection<CompositeData> propertyData = (Collection<CompositeData>) propertiesTable.values();
-        // for (CompositeData propertyRow: propertyData) {
-        //     serviceData.properties.add(PropertyData.from(propertyRow));
-        // }
+        TabularData propertiesTable = (TabularData) compositeData.get(PROPERTIES);
+        Collection<CompositeData> propertyData = (Collection<CompositeData>) propertiesTable.values();
+        for (CompositeData propertyRow: propertyData) {
+            serviceData.properties.add(PropertyData.from(propertyRow));
+        }
         return serviceData;
     }
 
@@ -172,12 +178,11 @@ public class ServiceData {
         return serviceInterfaces;
     }
 
-    //public List<PropertyData<? extends Object>> getProperties() {
-    //    return properties;
-    //}
+    public List<PropertyData<? extends Object>> getProperties() {
+        return properties;
+    }
 
     public long[] getUsingBundles() {
         return usingBundles;
     }
-
 }
