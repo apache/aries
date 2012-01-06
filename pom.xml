@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.jndi.rmi</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI RMI Handler</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
       This bundle contains the JNDI RMI handler
     </description>
@@ -47,7 +47,7 @@
         <aries.osgi.private.pkg>
             ${project.artifactId}*
         </aries.osgi.private.pkg>
-        <aries.osgi.export.pkg/>
+        <aries.osgi.export.pkg />
         <!-- 
           We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
           stabilizing API. This should be removed once the dependency is available at a 
