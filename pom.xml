@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
     <name>Apache Aries JNDI Test Bundle for Aries jndi-url iTests</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     
      <scm>
