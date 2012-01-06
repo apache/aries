@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.url.itest</artifactId>
     <name>Apache Aries JNDI iTests for jndi-url</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
         Integration test for JNDI
     </description>
@@ -89,14 +89,14 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
             <scope>test</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
             <scope>test</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
         
         <dependency>
@@ -214,14 +214,14 @@
 			<groupId>org.apache.aries.jndi</groupId>
 			<artifactId>org.apache.aries.jndi</artifactId>
             <scope>test</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
 		</dependency>
 
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url</artifactId>
             <scope>test</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
         
         <dependency>
