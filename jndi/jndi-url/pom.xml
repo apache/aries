@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.jndi.url</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI URL Handler</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
       This bundle contains the JNDI URL handler for OSGi
     </description>
@@ -94,7 +94,7 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.core</artifactId>
             <scope>test</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>

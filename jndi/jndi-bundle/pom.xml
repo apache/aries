@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.jndi</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI Bundle</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
         This bundle contains the core JNDI along with the OSGi url handler.
         It's composed of the jndi-api, jndi-core and jndi-url modules.
@@ -62,13 +62,13 @@
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.core</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.rmi</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
