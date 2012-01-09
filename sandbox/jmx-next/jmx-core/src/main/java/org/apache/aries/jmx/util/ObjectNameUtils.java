@@ -24,7 +24,7 @@ public class ObjectNameUtils {
 
     public static String createFullObjectName(BundleContext context, String namePrefix) {
         return namePrefix +
-                ",uuid=" + context.getProperty(Constants.FRAMEWORK_UUID) +
-                ",framework=" + context.getBundle(0).getSymbolicName();
+                ",framework=" + context.getBundle(0).getSymbolicName() +
+                ",uuid=" + context.getProperty(Constants.FRAMEWORK_UUID);
     }
 }
