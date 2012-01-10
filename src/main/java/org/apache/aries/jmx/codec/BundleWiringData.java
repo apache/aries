@@ -91,10 +91,9 @@ public class BundleWiringData {
         return reqData;
     }
 
-    public static CompositeData getRevisionCapabilities(long bundleId, int revisionId, List<BundleCapability> bundleCapabilities) {
+    public static CompositeData getRevisionCapabilities(int revisionId, List<BundleCapability> bundleCapabilities) {
         try {
             Map<String, Object> items = new HashMap<String, Object>();
-            items.put(BundleWiringStateMBean.BUNDLE_ID, bundleId);
             items.put(BundleWiringStateMBean.BUNDLE_REVISION_ID, revisionId);
             items.put(BundleWiringStateMBean.CAPABILITIES, getCapabilities(bundleCapabilities));
             return new CompositeDataSupport(BundleWiringStateMBean.REVISION_CAPABILITIES_TYPE, items);
@@ -103,10 +102,9 @@ public class BundleWiringData {
         }
     }
 
-    public static CompositeData getRevisionRequirements(long bundleId, int revisionId, List<BundleRequirement> bundleRequirements) {
+    public static CompositeData getRevisionRequirements(int revisionId, List<BundleRequirement> bundleRequirements) {
         try {
             Map<String, Object> items = new HashMap<String, Object>();
-            items.put(BundleWiringStateMBean.BUNDLE_ID, bundleId);
             items.put(BundleWiringStateMBean.BUNDLE_REVISION_ID, revisionId);
             items.put(BundleWiringStateMBean.REQUIREMENTS, getRequirements(bundleRequirements));
             return new CompositeDataSupport(BundleWiringStateMBean.REVISION_REQUIREMENTS_TYPE, items);

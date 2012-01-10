@@ -143,7 +143,6 @@ public class BundleWiringState implements BundleWiringStateMBean {
         TabularData td = new TabularDataSupport(BundleWiringStateMBean.REVISIONS_REQUIREMENTS_TYPE);
         for (BundleRevision revision : revisions.getRevisions()) {
             td.put(BundleWiringData.getRevisionRequirements(
-                    revision.getBundle().getBundleId(),
                     System.identityHashCode(revision),
                     revision.getDeclaredRequirements(namespace)));
         }
@@ -160,7 +159,6 @@ public class BundleWiringState implements BundleWiringStateMBean {
         TabularData td = new TabularDataSupport(BundleWiringStateMBean.REVISIONS_CAPABILITIES_TYPE);
         for (BundleRevision revision : revisions.getRevisions()) {
             td.put(BundleWiringData.getRevisionCapabilities(
-                    revision.getBundle().getBundleId(),
                     System.identityHashCode(revision),
                     revision.getDeclaredCapabilities(namespace)));
         }
