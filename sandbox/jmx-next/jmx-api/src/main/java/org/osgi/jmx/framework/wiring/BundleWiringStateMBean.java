@@ -167,7 +167,6 @@ public interface BundleWiringStateMBean {
     CompositeType REVISION_REQUIREMENTS_TYPE =
         Item.compositeType("REVISION_REQUIREMENTS",
             "Describes the requirements for a bundle revision",
-            BUNDLE_ID_ITEM,
             BUNDLE_REVISION_ID_ITEM,
             REQUIREMENTS_ITEM);
 
@@ -175,7 +174,7 @@ public interface BundleWiringStateMBean {
         Item.tabularType("REVISIONS_REQUIREMENTS",
             "The bundle requirements for all bundle revisions",
             REVISION_REQUIREMENTS_TYPE,
-            BUNDLE_ID, BUNDLE_REVISION_ID);
+            BUNDLE_REVISION_ID);
 
     String CAPABILITIES = "Capabilities";
     Item CAPABILITIES_ITEM = new Item(CAPABILITIES,
@@ -185,7 +184,6 @@ public interface BundleWiringStateMBean {
     CompositeType REVISION_CAPABILITIES_TYPE =
         Item.compositeType("REVISION_CAPABILITIES",
             "Describes the capabilities for a bundle revision",
-            BUNDLE_ID_ITEM,
             BUNDLE_REVISION_ID_ITEM,
             CAPABILITIES_ITEM);
 
@@ -193,7 +191,7 @@ public interface BundleWiringStateMBean {
         Item.tabularType("REVISIONS_CAPABILITIES",
             "The bundle capabilities for all bundle revisions",
             REVISION_CAPABILITIES_TYPE,
-            BUNDLE_ID, BUNDLE_REVISION_ID);
+            BUNDLE_REVISION_ID);
 
     String PROVIDED_WIRES = "ProvidedWires";
     Item PROVIDED_WIRES_ITEM = new Item(PROVIDED_WIRES,
