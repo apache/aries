@@ -84,7 +84,7 @@ public class BundleWiringState implements BundleWiringStateMBean {
     public TabularData getCurrentWiringClosure(long rootBundleId, String namespace) throws IOException {
         Map<BundleRevision, Integer> revisionIDMap = getCurrentRevisionTransitiveRevisionsClosure(rootBundleId, namespace);
 
-        TabularData td = new TabularDataSupport(BundleWiringStateMBean.BUNDLE_WIRING_CLOSURE_TYPE);
+        TabularData td = new TabularDataSupport(BundleWiringStateMBean.BUNDLES_WIRING_TYPE);
         for (Map.Entry<BundleRevision, Integer> entry : revisionIDMap.entrySet()) {
             td.put(getRevisionWiring(entry.getKey(), entry.getValue(), namespace, revisionIDMap));
         }
@@ -172,7 +172,7 @@ public class BundleWiringState implements BundleWiringStateMBean {
         Bundle bundle = FrameworkUtils.resolveBundle(bundleContext, bundleId);
         BundleRevisions revisions = bundle.adapt(BundleRevisions.class);
 
-        TabularData td = new TabularDataSupport(BundleWiringStateMBean.REVISIONS_BUNDLE_WIRING_TYPE);
+        TabularData td = new TabularDataSupport(BundleWiringStateMBean.BUNDLES_WIRING_TYPE);
         for (BundleRevision revision : revisions.getRevisions()) {
             Map<BundleRevision, Integer> revisionIDMap = getRevisionTransitiveClosure(revision, namespace);
             td.put(getRevisionWiring(revision, System.identityHashCode(revision), namespace, revisionIDMap));
@@ -197,7 +197,7 @@ public class BundleWiringState implements BundleWiringStateMBean {
         BundleRevision revision = bundle.adapt(BundleRevision.class);
         revisionIDMap.put(revision, 0);
 
-        TabularData td = new TabularDataSupport(BundleWiringStateMBean.BUNDLE_WIRING_CLOSURE_TYPE);
+        TabularData td = new TabularDataSupport(BundleWiringStateMBean.BUNDLES_WIRING_TYPE);
         for (Map.Entry<BundleRevision, Integer> entry : revisionIDMap.entrySet()) {
             td.put(getRevisionWiring(entry.getKey(), entry.getValue(), namespace, revisionIDMap));
         }
