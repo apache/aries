@@ -212,14 +212,10 @@ public interface BundleWiringStateMBean {
                 CAPABILITIES_ITEM,
                 REQUIRED_WIRES_ITEM,
                 PROVIDED_WIRES_ITEM);
-    TabularType REVISIONS_BUNDLE_WIRING_TYPE =
-        Item.tabularType("REVISIONS_BUNDLE_WIRING",
-            "The bundle wiring for all bundle revisions",
-            BUNDLE_WIRING_TYPE,
-            BUNDLE_ID, BUNDLE_REVISION_ID);
 
-    TabularType BUNDLE_WIRING_CLOSURE_TYPE = Item.tabularType("BUNDLE_WIRING_CLOSURE",
-            "A table of bundle wirings describing a full wiring closure",
+    TabularType BUNDLES_WIRING_TYPE =
+        Item.tabularType("BUNDLES_WIRING",
+            "The bundle wiring for all bundle revisions",
             BUNDLE_WIRING_TYPE,
             BUNDLE_ID, BUNDLE_REVISION_ID);
 
@@ -273,7 +269,7 @@ public interface BundleWiringStateMBean {
      * wiring closure contains all the wirings from the root bundle revision to all bundle revisions
      * it is wired to and all their transitive wirings.
      *
-     * @see #BUNDLE_WIRING_CLOSURE_TYPE for the details of the TabularData.
+     * @see #BUNDLES_WIRING_TYPE for the details of the TabularData.
      *
      * @param rootBundleId the root bundle of the closure.
      * @param namespace The name space of the requirements and capabilities for which to return information.
@@ -325,7 +321,7 @@ public interface BundleWiringStateMBean {
     /**
      * Returns the bundle wirings for all revisions of the bundle.
      *
-     * @see #REVISIONS_BUNDLE_WIRING_TYPE for the details of TabularData.
+     * @see #BUNDLES_WIRING_TYPE for the details of TabularData.
      *
      * The bundle wirings are in no particular order, and may
      *  change in subsequent calls to this operations.
@@ -344,7 +340,7 @@ public interface BundleWiringStateMBean {
      * wiring closure contains all the wirings from the root bundle revision to all bundle revisions
      * it is wired to and all their transitive wirings.
      *
-     * @see #BUNDLE_WIRING_CLOSURE_TYPE for the details of TabularData.
+     * @see #BUNDLES_WIRING_TYPE for the details of TabularData.
      *
      * The bundle wirings are in no particular order, and may
      * change in subsequent calls to this operation. Furthermore,
