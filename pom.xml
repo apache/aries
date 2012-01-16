@@ -48,6 +48,7 @@
         </aries.osgi.export.pkg>
         <aries.osgi.import>
             org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            org.osgi.service.blueprint.container;resolution:=optional,
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
@@ -81,6 +82,11 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.rmi</artifactId>
             <version>0.3.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
