@@ -145,7 +145,6 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
       
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.web"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.biz"),
