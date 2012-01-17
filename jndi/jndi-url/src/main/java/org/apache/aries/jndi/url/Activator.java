@@ -24,24 +24,30 @@ import javax.naming.spi.ObjectFactory;
 
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.util.AriesFrameworkUtil;
+import org.apache.aries.util.log.Logger;
 import org.apache.aries.util.tracker.SingleServiceTracker;
 import org.apache.aries.util.tracker.SingleServiceTracker.SingleServiceListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jndi.JNDIConstants;
+import org.osgi.service.log.LogService;
 
-public class Activator implements BundleActivator, SingleServiceListener 
+public class Activator implements BundleActivator, SingleServiceListener
 {
     private BundleContext ctx;
+    private Logger logger;
     private volatile ServiceRegistration osgiUrlReg = null;
     private volatile ServiceRegistration blueprintUrlReg = null;
     private static SingleServiceTracker<ProxyManager> proxyManager;
 
     @Override
-    public void start(BundleContext context) 
+    public void start(BundleContext context)
     {
         ctx = context;
+        logger = new Logger(context);
+        logger.open();
+
         proxyManager = new SingleServiceTracker<ProxyManager>(context, ProxyManager.class, this);
         proxyManager.open();
         // Blueprint URL scheme requires access to the BlueprintContainer service.
@@ -56,7 +62,7 @@ public class Activator implements BundleActivator, SingleServiceListener
               new BlueprintURLContextServiceFactory(), blueprintURlSchemeProps);
         } catch (ClassNotFoundException cnfe) {
           // The blueprint packages aren't available, so do nothing. That's fine.
-          cnfe.printStackTrace();
+          logger.log(LogService.LOG_INFO, "Blueprint is not available, therefore the blueprint URL scheme is not registered.", cnfe);
         }
     }
 
@@ -65,11 +71,14 @@ public class Activator implements BundleActivator, SingleServiceListener
       proxyManager.close();
       AriesFrameworkUtil.safeUnregisterService(osgiUrlReg);
       AriesFrameworkUtil.safeUnregisterService(blueprintUrlReg);
+
+      if (logger != null)
+          logger.close();
     }
-  
+
 
   @Override
-  public void serviceFound() 
+  public void serviceFound()
   {
     Hashtable<Object, Object> osgiUrlprops = new Hashtable<Object, Object>();
     osgiUrlprops.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
@@ -78,18 +87,18 @@ public class Activator implements BundleActivator, SingleServiceListener
   }
 
   @Override
-  public void serviceLost() 
+  public void serviceLost()
   {
     AriesFrameworkUtil.safeUnregisterService(osgiUrlReg);
     osgiUrlReg = null;
   }
 
   @Override
-  public void serviceReplaced() 
+  public void serviceReplaced()
   {
-    
+
   }
-    
+
   public static ProxyManager getProxyManager()
   {
     return proxyManager == null ? null : proxyManager.getService();
