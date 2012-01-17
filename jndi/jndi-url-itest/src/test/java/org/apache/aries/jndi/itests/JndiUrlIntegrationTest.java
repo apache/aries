@@ -19,10 +19,13 @@
 
 package org.apache.aries.jndi.itests;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
+import static org.apache.aries.itest.ExtraOptions.transactionBootDelegation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,64 +44,64 @@ import org.osgi.framework.Bundle;
 public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
   private static final int CONNECTION_TIMEOUT = 10000;
-    
+
   /**
    * This test exercises the blueprint:comp/ jndi namespace by driving
    * a Servlet which then looks up some blueprint components from its own
-   * bundle, including a reference which it uses to call a service from a 
-   * second bundle.  
+   * bundle, including a reference which it uses to call a service from a
+   * second bundle.
    * @throws Exception
    */
   @Test
-  public void testBlueprintCompNamespaceWorks() throws Exception { 
+  public void testBlueprintCompNamespaceWorks() throws Exception {
 
     Bundle bBiz = context().getBundleByName("org.apache.aries.jndi.url.itest.biz");
     assertNotNull(bBiz);
-    
+
     Bundle bweb = context().getBundleByName("org.apache.aries.jndi.url.itest.web");
     assertNotNull(bweb);
-    
+
     printBundleStatus ("Before making web request");
-    try { 
+    try {
       Thread.sleep(5000);
     } catch (InterruptedException ix) {}
-    
+
     System.out.println("In test and trying to get connection....");
     String response = getTestServletResponse();
     System.out.println("Got response `" + response + "`");
     assertEquals("ITest servlet response wrong", "Mark.2.0.three", response);
   }
-  
-  private void printBundleStatus (String msg) { 
+
+  private void printBundleStatus (String msg) {
     System.out.println("-----\nprintBundleStatus: " + msg + "\n-----");
-    for (Bundle b : bundleContext.getBundles()) { 
+    for (Bundle b : bundleContext.getBundles()) {
       System.out.println (b.getSymbolicName() + " " + "state=" + formatState(b.getState()));
     }
     System.out.println();
   }
-  
+
   private String formatState (int state) {
     String result = Integer.toString(state);
-    switch (state) { 
-    case Bundle.ACTIVE: 
+    switch (state) {
+    case Bundle.ACTIVE:
       result = "Active";
       break;
-    case Bundle.INSTALLED: 
+    case Bundle.INSTALLED:
       result = "Installed";
       break;
-    case Bundle.RESOLVED: 
+    case Bundle.RESOLVED:
       result = "Resolved";
       break;
     }
     return result;
   }
-  
-  private String getTestServletResponse() throws IOException { 
+
+  private String getTestServletResponse() throws IOException {
     HttpURLConnection conn = makeConnection("http://localhost:8080/jndiUrlItest/ITestServlet");
     String response = getHTTPResponse(conn).trim();
     return response;
   }
-  
+
   private static HttpURLConnection makeConnection(String contextPath) throws IOException
   {
     URL url = new URL(contextPath);
@@ -109,7 +112,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
     return conn;
   }
-  
+
   private static String getHTTPResponse(HttpURLConnection conn) throws IOException
   {
     StringBuilder response = new StringBuilder();
@@ -124,14 +127,14 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
     return response.toString();
   }
-  
+
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration()
   {
     return testOptions(
         paxLogging("DEBUG"),
-        transactionBootDelegation(), 
-        
+        transactionBootDelegation(),
+
         // Bundles
         mavenBundle("org.eclipse.equinox", "cm"),
         mavenBundle("org.eclipse.osgi", "services"),
@@ -139,25 +142,20 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
         mavenBundle("org.ops4j.pax.web", "pax-web-extender-war"),
         mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle"),
-        
+
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi"),
-      
+
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.web"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.biz"),
         mavenBundle("asm", "asm-all"),
-        
+
         /* For debugging, uncomment the next two lines */
-        // vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-        // waitForFrameworkStartup(),
-        /*
-         * For debugging, add these imports: 
-         * import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; 
-         * import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
-         */
+        // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+        // org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup(),
         equinox().version("3.5.0"));
   }
 }

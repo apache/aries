@@ -37,23 +37,22 @@ import org.apache.aries.jndi.Utils;
 import org.apache.aries.jndi.spi.EnvironmentAugmentation;
 import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
+import org.apache.aries.util.log.Logger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIContextManager;
 import org.osgi.service.jndi.JNDIProviderAdmin;
+import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The activator for this bundle makes sure the static classes in it are
  * driven so they can do their magic stuff properly.
  */
 public class Activator implements BundleActivator {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class.getName());
+    private static Logger logger;
 
     private OSGiInitialContextFactoryBuilder icfBuilder;
     private OSGiObjectFactoryBuilder ofBuilder;
@@ -64,6 +63,8 @@ public class Activator implements BundleActivator {
     private static ServiceTracker environmentAugmentors;
 
     public void start(BundleContext context) {
+        logger = new Logger(context);
+        logger.open();
 
         initialContextFactories = initServiceTracker(context, InitialContextFactory.class, ServiceTrackerCustomizers.ICF_CACHE);
         objectFactories = initServiceTracker(context, ObjectFactory.class, ServiceTrackerCustomizers.URL_FACTORY_CACHE);
@@ -76,9 +77,9 @@ public class Activator implements BundleActivator {
             NamingManager.setInitialContextFactoryBuilder(builder);
             icfBuilder = builder;
         } catch (NamingException e) {
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB"), e);
+            logger.log(LogService.LOG_INFO, Utils.MESSAGES.getMessage("unable.to.set.static.ICFB"), e);
         } catch (IllegalStateException e) {
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
+            logger.log(LogService.LOG_INFO, Utils.MESSAGES.getMessage("unable.to.set.static.ICFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
         }
 
         try {
@@ -86,9 +87,9 @@ public class Activator implements BundleActivator {
             NamingManager.setObjectFactoryBuilder(builder);
             ofBuilder = builder;
         } catch (NamingException e) {
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB"), e);
+            logger.log(LogService.LOG_INFO, Utils.MESSAGES.getMessage("unable.to.set.static.OFB"), e);
         } catch (IllegalStateException e) {
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
+            logger.log(LogService.LOG_INFO, Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
         }
 
         context.registerService(JNDIProviderAdmin.class.getName(),
@@ -145,6 +146,9 @@ public class Activator implements BundleActivator {
         objectFactories.close();
         initialContextFactories.close();
         environmentAugmentors.close();
+
+        if (logger != null)
+            logger.close();
     }
 
     /*
@@ -160,8 +164,8 @@ public class Activator implements BundleActivator {
                 }
             }
         } catch (Throwable t) {
-            // Ignore
-            LOGGER.debug("Error setting field.", t);
+            if (logger != null)
+                logger.log(LogService.LOG_DEBUG, "Error setting field.", t);
         }
     }
 
