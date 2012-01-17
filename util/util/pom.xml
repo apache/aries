@@ -40,6 +40,7 @@
 
         <aries.osgi.export.pkg>
             org.apache.aries.util;
+            org.apache.aries.util.log;
             org.apache.aries.util.tracker;
             org.apache.aries.util.nls;
             org.apache.aries.util.io;
@@ -56,6 +57,7 @@
             org.eclipse.osgi.internal.loader;resolution:=optional,
             org.eclipse.osgi.framework.internal.core;resolution:=optional,
             org.eclipse.osgi.framework.adaptor;resolution:=optional,
+            org.osgi.service.log;resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
