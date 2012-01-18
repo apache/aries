@@ -35,4 +35,8 @@ public class InvalidAttributeException extends Exception
   public InvalidAttributeException (String s) { 
     super(s);
   }
+  
+  public InvalidAttributeException (String s, Throwable t) {
+	  super(s, t);
+  }
 }
