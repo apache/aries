@@ -119,8 +119,10 @@ public class ImportedServiceImpl implements ImportedService
         result = FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(_attribFilterString));
       } 
     } catch (InvalidSyntaxException isx) { 
-      
-      InvalidAttributeException iax = new InvalidAttributeException(isx);
+      InvalidAttributeException iax = new InvalidAttributeException(
+    		  "A syntax error occurred attempting to parse the blueprint filter string '" 
+    		  + _blueprintFilter + "' for element with id " + _id + ": " 
+    		  + isx.getLocalizedMessage(), isx);
       logger.debug(LOG_EXIT, "generateAttributeFilter", new Object[]{isx});
       throw iax;
     }
