@@ -15,19 +15,23 @@
  */
 package org.apache.aries.jpa.context.itest;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.ops4j.pax.exam.CoreOptions.felix;
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 
+@Ignore
 @RunWith(JUnit4TestRunner.class)
 public class EclipseLinkStartupTest extends AbstractIntegrationTest {
     
