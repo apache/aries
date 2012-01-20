@@ -175,7 +175,7 @@
             <version>0.3.1-SNAPSHOT</version>
             <!--<scope>test</scope>-->
         </dependency>
-        
+        <!--
         <dependency>
           <groupId>org.apache.aries.jpa</groupId>
           <artifactId>org.apache.aries.jpa.eclipselink.adapter</artifactId>
@@ -207,7 +207,7 @@
           <artifactId>org.eclipse.persistence.antlr</artifactId>
           <version>2.1.0</version>
           <scope>test</scope>
-        </dependency>
+        </dependency> -->
                 
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -249,12 +249,12 @@
             <version>0.3.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container.itest.bundle.eclipselink</artifactId>
             <version>0.3.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
+            <scope>test</scope> 
+        </dependency> -->
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container.advanced.itest.bundle</artifactId>
