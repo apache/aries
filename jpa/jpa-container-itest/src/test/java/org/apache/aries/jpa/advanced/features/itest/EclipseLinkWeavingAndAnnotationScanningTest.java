@@ -47,7 +47,7 @@ public class EclipseLinkWeavingAndAnnotationScanningTest extends JPAWeavingAndAn
         );
     }
     
-    
+    /* Aries-811: EclipseLink removed from build to debug other build breaks
     @Test
     public void testClassIsWoven() throws Exception {
       context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
@@ -55,5 +55,5 @@ public class EclipseLinkWeavingAndAnnotationScanningTest extends JPAWeavingAndAn
       assertTrue("Not PersistenceCapable", Arrays.asList(Car.class.getInterfaces())
           .contains(PersistenceWeaved.class));
     }
-
+	*/
 }
