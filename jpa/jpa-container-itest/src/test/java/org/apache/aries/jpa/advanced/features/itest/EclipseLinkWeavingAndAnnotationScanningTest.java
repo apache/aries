@@ -15,9 +15,9 @@
  */
 package org.apache.aries.jpa.advanced.features.itest;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.util.Arrays;
 
@@ -25,13 +25,14 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.advanced.itest.bundle.entities.Car;
-import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 
+@Ignore
 @RunWith(JUnit4TestRunner.class)
 public class EclipseLinkWeavingAndAnnotationScanningTest extends JPAWeavingAndAnnotationScanningTest {
     @Configuration
