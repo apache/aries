@@ -15,14 +15,16 @@
  */
 package org.apache.aries.jpa.context.itest;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.apache.aries.itest.ExtraOptions.*;
-
+@Ignore
 @RunWith(JUnit4TestRunner.class)
 public class EclipseLinkContextTest extends JPAContextTest {
     @Configuration
