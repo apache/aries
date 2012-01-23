@@ -118,7 +118,7 @@
         <ariesTransactionWrappersVersion>0.3.1-SNAPSHOT</ariesTransactionWrappersVersion>
 
         <!-- Aries Util Versions -->
-        <ariesUtilVersion>0.4</ariesUtilVersion>
+        <ariesUtilVersion>0.5-SNAPSHOT</ariesUtilVersion>
 
         <!-- Aries Web Versions -->
         <ariesWebVersion>0.3.1-SNAPSHOT</ariesWebVersion>
