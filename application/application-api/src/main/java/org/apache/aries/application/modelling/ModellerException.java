@@ -29,4 +29,8 @@ public class ModellerException extends Exception {
   public ModellerException (Exception e) { 
     super (e);
   }
+  
+  public ModellerException (String s, Throwable t) {
+    super (s, t);
+  }
 }
