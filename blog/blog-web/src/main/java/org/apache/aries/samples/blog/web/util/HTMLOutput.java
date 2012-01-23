@@ -100,7 +100,7 @@ public class HTMLOutput {
 		out.println("        <TR>");
 		out.println("         <TD align=\"left\" class=\"topbardiv\" nowrap=\"\">");
 		out
-				.println("          <A href=\"http://aries.apache.org/aries/\" title=\"Apache Aries \">");
+				.println("          <A href=\"http://aries.apache.org/\" title=\"Apache Aries \">");
 		out
 				.println("          <IMG border=\"0\" src=\"images/Arieslogo_Horizontal.gif\">");
 		out.println("          </A>");
