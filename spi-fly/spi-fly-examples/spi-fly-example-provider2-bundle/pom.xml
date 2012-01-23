@@ -59,7 +59,7 @@
                         <Private-Package>
                             org.apache.aries.spifly.mysvc.impl2
                         </Private-Package>
-                        <Provide-Capability>osgi.spi.provider; effective:=active;</Provide-Capability>
+                        <Provide-Capability>osgi.spi.provider; effective:=active</Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
