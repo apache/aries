@@ -25,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.String;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -57,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlOneLineBreak;
-import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlTwoLineBreaks;;
+import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlTwoLineBreaks;
 
 public class SemanticVersioningChecker {
 
@@ -96,8 +97,8 @@ public class SemanticVersioningChecker {
         FileWriter versionStatusFileWriter = null;
         try {
             versionStatusFileWriter = new FileWriter(versionStatusFile, false);
-            Map<String, BundleInfo> baseBundles = new HashMap<String, BundleInfo>();
-            Map<String, BundleInfo> currentBundles = new HashMap<String, BundleInfo>();
+            Map<String, BundleInfo> baseBundles;
+            Map<String, BundleInfo> currentBundles;
 
             //scan each individual bundle and find the corresponding bundle in the baseline and verify the version changes
             currentBundles = getBundles(currentDir);
@@ -113,7 +114,7 @@ public class SemanticVersioningChecker {
             writeRecordToWriter(versionStatusFileWriter, xmlHeader + "\r\n");
 
             // write the comparison base and current level into the file
-            writeRecordToWriter(versionStatusFileWriter, "<semanaticVersioning currentDir= \"" + currentDir + "\" baseDir = \"" + baseDir + "\">");
+            writeRecordToWriter(versionStatusFileWriter, "<semanticVersioning currentDir= \"" + currentDir + "\" baseDir = \"" + baseDir + "\">");
             for (Map.Entry<String, BundleInfo> entry : currentBundles.entrySet()) {
                 String bundleSymbolicName = entry.getKey();
 
@@ -125,12 +126,12 @@ public class SemanticVersioningChecker {
                 StringBuilder pkgElements = new StringBuilder();
                 String reason = null;
                 if (baseBundle == null) {
-                    _logger.debug("The bundle " + bundleSymbolicName + " has no counterpart in the base. The semanit version validation does not apply to this bundle.");
+                    _logger.debug("The bundle " + bundleSymbolicName + " has no counterpart in the base. The semantic version validation does not apply to this bundle.");
                 } else {
                     // open the manifest and scan the export package and find the package name and exported version
                     // The tool assume the one particular package just exports under one version
                     Map<String, PackageContent> currBundleExpPkgContents = getAllExportedPkgContents(currentBundle);
-                    Map<String, PackageContent> baseBundleExpPkgContents = new HashMap<String, PackageContent>();
+                    Map<String, PackageContent> baseBundleExpPkgContents;
                     boolean pkg_major_change = false;
                     boolean pkg_minor_change = false;
                     String fatal_package = null;
@@ -220,7 +221,7 @@ public class SemanticVersioningChecker {
                     writeRecordToWriter(versionStatusFileWriter, "</bundle>");
                 }
             }
-            writeRecordToWriter(versionStatusFileWriter, "</semanaticVersioning>");
+            writeRecordToWriter(versionStatusFileWriter, "</semanticVersioning>");
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -358,9 +359,11 @@ public class SemanticVersioningChecker {
                     BinaryCompatibilityStatus bcs = newcd.getBinaryCompatibleStatus(oldcv.getClassDeclaration());
 
                     if (!bcs.isCompatible()) {
-                        major_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following changes have been made since the last release of WAS.");
+                        major_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following changes have been made since the last release.");
                         // break binary compatibility
-                        major_reason.append(bcs.getReason());
+                        for (String reason: bcs) {
+                            major_reason.append(htmlOneLineBreak).append(reason);
+                        }
                         is_major_change = true;
                         fatal_class = changeClass;
                     } else {
