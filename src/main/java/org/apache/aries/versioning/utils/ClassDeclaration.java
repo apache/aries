@@ -25,15 +25,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Type;
-
-import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlOneLineBreak;
-import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlTwoLineBreaks;
 
 public class ClassDeclaration extends GenericDeclaration {
 
@@ -58,7 +56,6 @@ public class ClassDeclaration extends GenericDeclaration {
 
     private final URLClassLoader jarsLoader;
 
-    private final BinaryCompatibilityStatus binaryCompatible = new BinaryCompatibilityStatus(true, null);
     private final SerialVersionClassVisitor serialVisitor;
 
     public Map<String, FieldDeclaration> getFields() {
@@ -89,7 +86,7 @@ public class ClassDeclaration extends GenericDeclaration {
     /**
      * Get the methods in the current class plus the methods in the upper chain
      *
-     * @return
+     * @return map of method name to set of method declarations
      */
     public Map<String, Set<MethodDeclaration>> getAllMethods() {
 
@@ -145,15 +142,13 @@ public class ClassDeclaration extends GenericDeclaration {
                 SerialVersionClassVisitor cv = new SerialVersionClassVisitor(cw);
                 SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
                 ClassReader cr = new ClassReader(jarsLoader.getResourceAsStream(superClass + SemanticVersioningUtils.classExt));
-                if (cr != null) {
-                    cr.accept(svc, 0);
-                    ClassDeclaration cd = svc.getClassDeclaration();
-                    if (cd != null) {
-                        addFieldInUpperChain(cd.getFields());
-                        getFieldsRecursively(cd.getSuperName());
-                        for (String iface : cd.getInterfaces()) {
-                            getFieldsRecursively(iface);
-                        }
+                cr.accept(svc, 0);
+                ClassDeclaration cd = svc.getClassDeclaration();
+                if (cd != null) {
+                    addFieldInUpperChain(cd.getFields());
+                    getFieldsRecursively(cd.getSuperName());
+                    for (String iface : cd.getInterfaces()) {
+                        getFieldsRecursively(iface);
                     }
                 }
             } catch (IOException ioe) {
@@ -172,15 +167,13 @@ public class ClassDeclaration extends GenericDeclaration {
             // use URLClassLoader to load the class
             try {
                 ClassReader cr = new ClassReader(jarsLoader.getResourceAsStream(superClass + SemanticVersioningUtils.classExt));
-                if (cr != null) {
-                    cr.accept(svc, 0);
-                    ClassDeclaration cd = svc.getClassDeclaration();
-                    if (cd != null) {
-                        addMethodsInUpperChain(cd.getMethods());
-                        getMethodsRecursively(cd.getSuperName());
-                        for (String iface : cd.getInterfaces()) {
-                            getMethodsRecursively(iface);
-                        }
+                cr.accept(svc, 0);
+                ClassDeclaration cd = svc.getClassDeclaration();
+                if (cd != null) {
+                    addMethodsInUpperChain(cd.getMethods());
+                    getMethodsRecursively(cd.getSuperName());
+                    for (String iface : cd.getInterfaces()) {
+                        getMethodsRecursively(iface);
                     }
                 }
             } catch (IOException ioe) {
@@ -243,7 +236,6 @@ public class ClassDeclaration extends GenericDeclaration {
                 clazz.add(className);
                 if (svc.getClassDeclaration() != null) {
                     String superName = svc.getClassDeclaration().getSuperName();
-                    className = superName;
                     clazz.addAll(getUpperChainRecursively(superName));
                     if (svc.getClassDeclaration().getInterfaces() != null) {
                         for (String iface : svc.getClassDeclaration().getInterfaces()) {
@@ -297,30 +289,17 @@ public class ClassDeclaration extends GenericDeclaration {
 
     public BinaryCompatibilityStatus getBinaryCompatibleStatus(ClassDeclaration old) {
         // check class signature, fields, methods
+
+        BinaryCompatibilityStatus reasons = new BinaryCompatibilityStatus();
         if (old == null) {
-            return binaryCompatible;
+            return reasons;
         }
-        StringBuilder reason = new StringBuilder();
-        boolean isCompatible = true;
-
-        Set<BinaryCompatibilityStatus> bcsSet = new HashSet<BinaryCompatibilityStatus>();
-        bcsSet.add(getClassSignatureBinaryCompatibleStatus(old));
-        bcsSet.add(getAllMethodsBinaryCompatibleStatus(old));
-        bcsSet.add(getAllFieldsBinaryCompatibleStatus(old));
-        bcsSet.add(getAllSuperPresentStatus(old));
-        bcsSet.add(getSerializableBackCompatable(old));
-        for (BinaryCompatibilityStatus bcs : bcsSet) {
-            if (!bcs.isCompatible()) {
-                isCompatible = false;
-                reason.append(bcs.getReason());
-            }
-        }
-        if (!isCompatible) {
-            return new BinaryCompatibilityStatus(isCompatible, reason.toString());
-        } else {
-            return binaryCompatible;
-        }
-
+        getClassSignatureBinaryCompatibleStatus(old, reasons);
+        getAllMethodsBinaryCompatibleStatus(old, reasons);
+        getAllFieldsBinaryCompatibleStatus(old, reasons);
+        getAllSuperPresentStatus(old, reasons);
+        getSerializableBackCompatable(old, reasons);
+        return reasons;
     }
 
 
@@ -328,60 +307,42 @@ public class ClassDeclaration extends GenericDeclaration {
         return Modifier.isAbstract(getAccess());
     }
 
-    private BinaryCompatibilityStatus getClassSignatureBinaryCompatibleStatus(ClassDeclaration originalClass) {
+    private void getClassSignatureBinaryCompatibleStatus(ClassDeclaration originalClass, List<String> reasons) {
         // if a class was not abstract but changed to abstract
         // not final changed to final
         // public changed to non-public
         String prefix = " The class " + getName();
-        StringBuilder reason = new StringBuilder();
-        boolean compatible = true;
         if (!!!originalClass.isAbstract() && isAbstract()) {
-            reason.append(prefix + " was not abstract but is changed to be abstract.");
-            compatible = false;
+            reasons.add(prefix + " was not abstract but is changed to be abstract.");
         }
         if (!!!originalClass.isFinal() && isFinal()) {
-            reason.append(prefix + " was not final but is changed to be final.");
-            compatible = false;
+            reasons.add(prefix + " was not final but is changed to be final.");
         }
         if (originalClass.isPublic() && !!!isPublic()) {
-            reason.append(prefix + " was public but is changed to be non-public.");
-            compatible = false;
+            reasons.add(prefix + " was public but is changed to be non-public.");
         }
-        return new BinaryCompatibilityStatus(compatible, compatible ? null : reason.toString());
     }
 
-    public BinaryCompatibilityStatus getAllFieldsBinaryCompatibleStatus(ClassDeclaration originalClass) {
+    private void getAllFieldsBinaryCompatibleStatus(ClassDeclaration originalClass, List<String> reasons) {
         // for each field to see whether the same field has changed
         // not final -> final
         // static <-> nonstatic
         Map<String, FieldDeclaration> oldFields = originalClass.getAllFields();
         Map<String, FieldDeclaration> newFields = getAllFields();
-        return areFieldsBinaryCompatible(oldFields, newFields);
+        areFieldsBinaryCompatible(oldFields, newFields, reasons);
     }
 
-    private BinaryCompatibilityStatus areFieldsBinaryCompatible(Map<String, FieldDeclaration> oldFields, Map<String, FieldDeclaration> currentFields) {
-
-        boolean overallCompatible = true;
-        StringBuilder reason = new StringBuilder();
+    private void areFieldsBinaryCompatible(Map<String, FieldDeclaration> oldFields, Map<String, FieldDeclaration> currentFields, List<String> reasons) {
 
         for (Map.Entry<String, FieldDeclaration> entry : oldFields.entrySet()) {
             FieldDeclaration bef_fd = entry.getValue();
             FieldDeclaration cur_fd = currentFields.get(entry.getKey());
 
-            boolean compatible = isFieldBinaryCompatible(reason, bef_fd, cur_fd);
-            if (!compatible) {
-                overallCompatible = compatible;
-            }
-
-        }
-        if (!overallCompatible) {
-            return new BinaryCompatibilityStatus(overallCompatible, reason.toString());
-        } else {
-            return binaryCompatible;
+            isFieldBinaryCompatible(reasons, bef_fd, cur_fd);
         }
     }
 
-    private boolean isFieldBinaryCompatible(StringBuilder reason,
+    private boolean isFieldBinaryCompatible(List<String> reasons,
                                             FieldDeclaration bef_fd, FieldDeclaration cur_fd) {
         String fieldName = bef_fd.getName();
         //only interested in the public or protected fields
@@ -389,34 +350,34 @@ public class ClassDeclaration extends GenericDeclaration {
         boolean compatible = true;
 
         if (bef_fd.isPublic() || bef_fd.isProtected()) {
-            String prefix = htmlOneLineBreak + "The " + (bef_fd.isPublic() ? "public" : "protcted") + " field " + fieldName;
+            String prefix = "The " + (bef_fd.isPublic() ? "public" : "protected") + " field " + fieldName;
 
 
             if (cur_fd == null) {
-                reason.append(prefix + " has been deleted.");
+                reasons.add(prefix + " has been deleted.");
                 compatible = false;
             } else {
 
                 if ((!!!bef_fd.isFinal()) && (cur_fd.isFinal())) {
                     // make sure it has not been changed to final
-                    reason.append(prefix + " was not final but has been changed to be final.");
+                    reasons.add(prefix + " was not final but has been changed to be final.");
                     compatible = false;
 
                 }
                 if (bef_fd.isStatic() != cur_fd.isStatic()) {
                     // make sure it the static signature has not been changed
-                    reason.append(prefix + " was static but is changed to be non static or vice versa.");
+                    reasons.add(prefix + " was static but is changed to be non static or vice versa.");
                     compatible = false;
                 }
                 // check to see the field type is the same
                 if (!isFieldTypeSame(bef_fd, cur_fd)) {
-                    reason.append(prefix + " has changed its type.");
+                    reasons.add(prefix + " has changed its type.");
                     compatible = false;
 
                 }
                 if (SemanticVersioningUtils.isLessAccessible(bef_fd, cur_fd)) {
                     // check whether the new field is less accessible than the old one
-                    reason.append(prefix + " becomes less accessible.");
+                    reasons.add(prefix + " becomes less accessible.");
                     compatible = false;
                 }
 
@@ -428,13 +389,12 @@ public class ClassDeclaration extends GenericDeclaration {
     /**
      * Return whether the serializable class is binary compatible. The serial verison uid change breaks binary compatibility.
      *
-     * @param old
-     * @return
+     *
+     * @param old Old class declaration
+     * @param reasons list of binary compatibility problems
      */
-    private BinaryCompatibilityStatus getSerializableBackCompatable(ClassDeclaration old) {
-        // It does not matter one of them is not seralizable.
-        boolean serializableBackCompatible = true;
-        String reason = null;
+    private void getSerializableBackCompatable(ClassDeclaration old, List<String> reasons) {
+        // It does not matter one of them is not serializable.
         if ((getAllSupers().contains(SemanticVersioningUtils.SERIALIZABLE_CLASS_IDENTIFIER)) && (old.getAllSupers().contains(SemanticVersioningUtils.SERIALIZABLE_CLASS_IDENTIFIER))) {
             // check to see whether the serializable id is the same
             //ignore if it is enum
@@ -442,16 +402,11 @@ public class ClassDeclaration extends GenericDeclaration {
                 long oldValue = getSerialVersionUID(old);
                 long curValue = getSerialVersionUID(this);
                 if ((oldValue != curValue)) {
-                    serializableBackCompatible = false;
-                    reason = htmlOneLineBreak + "The serializable class is no longer back compatible as the value of SerialVersionUID has changed from " + oldValue + " to " + curValue + ".";
+                    reasons.add("The serializable class is no longer back compatible as the value of SerialVersionUID has changed from " + oldValue + " to " + curValue + ".");
                 }
             }
         }
 
-        if (!serializableBackCompatible) {
-            return new BinaryCompatibilityStatus(serializableBackCompatible, reason);
-        }
-        return binaryCompatible;
     }
 
     private long getSerialVersionUID(ClassDeclaration cd) {
@@ -459,7 +414,7 @@ public class ClassDeclaration extends GenericDeclaration {
         if (serialID != null) {
             if (serialID.isFinal() && serialID.isStatic() && Type.LONG_TYPE.equals(Type.getType(serialID.getDesc()))) {
                 if (serialID.getValue() != null) {
-                    return ((Long) (serialID.getValue())).longValue();
+                    return (Long) (serialID.getValue());
                 } else {
                     return 0;
                 }
@@ -485,20 +440,19 @@ public class ClassDeclaration extends GenericDeclaration {
 
     }
 
-    private BinaryCompatibilityStatus getAllMethodsBinaryCompatibleStatus(ClassDeclaration originalClass) {
+    private void getAllMethodsBinaryCompatibleStatus(ClassDeclaration originalClass, List<String> reasons) {
         //  for all methods
         // no methods should have deleted
         // method return type has not changed
         // method changed from not abstract -> abstract
         Map<String, Set<MethodDeclaration>> oldMethods = originalClass.getAllMethods();
         Map<String, Set<MethodDeclaration>> newMethods = getAllMethods();
-        return areMethodsBinaryCompatible(oldMethods, newMethods);
+        areMethodsBinaryCompatible(oldMethods, newMethods, reasons);
     }
 
-    public BinaryCompatibilityStatus areMethodsBinaryCompatible(
-            Map<String, Set<MethodDeclaration>> oldMethods, Map<String, Set<MethodDeclaration>> newMethods) {
+    private void areMethodsBinaryCompatible(
+            Map<String, Set<MethodDeclaration>> oldMethods, Map<String, Set<MethodDeclaration>> newMethods, List<String> reasons) {
 
-        StringBuilder reason = new StringBuilder();
         boolean compatible = true;
         Map<String, Collection<MethodDeclaration>> extraMethods = new HashMap<String, Collection<MethodDeclaration>>();
 
@@ -518,7 +472,7 @@ public class ClassDeclaration extends GenericDeclaration {
             for (MethodDeclaration md : oldMDSigs) {
                 String mdName = md.getName();
 
-                String prefix = htmlOneLineBreak + "The " + SemanticVersioningUtils.getReadableMethodSignature(mdName, md.getDesc());
+                String prefix = "The " + SemanticVersioningUtils.getReadableMethodSignature(mdName, md.getDesc());
                 if (md.isProtected() || md.isPublic()) {
                     boolean found = false;
                     if (newMDSigs != null) {
@@ -533,19 +487,19 @@ public class ClassDeclaration extends GenericDeclaration {
 
                                 if (!!!Modifier.isFinal(md.getAccess()) && !!!Modifier.isStatic(md.getAccess()) && Modifier.isFinal(new_md.getAccess())) {
                                     compatible = false;
-                                    reason.append(prefix + " was not final but has been changed to be final.");
+                                    reasons.add(prefix + " was not final but has been changed to be final.");
                                 }
                                 if (Modifier.isStatic(md.getAccess()) != Modifier.isStatic(new_md.getAccess())) {
                                     compatible = false;
-                                    reason.append(prefix + " has changed from static to non-static or vice versa.");
+                                    reasons.add(prefix + " has changed from static to non-static or vice versa.");
                                 }
-                                if ((Modifier.isAbstract(new_md.getAccess()) == true) && (Modifier.isAbstract(md.getAccess()) == false)) {
+                                if ((Modifier.isAbstract(new_md.getAccess())) && (!Modifier.isAbstract(md.getAccess()))) {
                                     compatible = false;
-                                    reason.append(prefix + " has changed from non abstract to abstract. ");
+                                    reasons.add(prefix + " has changed from non abstract to abstract.");
                                 }
                                 if (SemanticVersioningUtils.isLessAccessible(md, new_md)) {
                                     compatible = false;
-                                    reason.append(prefix + " is less accessible.");
+                                    reasons.add(prefix + " is less accessible.");
                                 }
 
                                 if (compatible) {
@@ -566,7 +520,7 @@ public class ClassDeclaration extends GenericDeclaration {
                         if (!isMethodInSuperClass(md)) {
 
                             compatible = false;
-                            reason.append(prefix + " has been deleted or its return type or parameter list has changed.");
+                            reasons.add(prefix + " has been deleted or its return type or parameter list has changed.");
                         } else {
                             if (newMDSigs != null) {
                                 for (MethodDeclaration new_md : newMDSigs) {
@@ -587,24 +541,17 @@ public class ClassDeclaration extends GenericDeclaration {
         // Check the newly added method has not caused binary incompatibility
         for (Map.Entry<String, Collection<MethodDeclaration>> extraMethodSet : extraMethods.entrySet()) {
             for (MethodDeclaration md : extraMethodSet.getValue()) {
-                String head = htmlOneLineBreak + "The " + SemanticVersioningUtils.getReadableMethodSignature(md.getName(), md.getDesc());
-                if (isNewMethodSpecialCase(md, head, reason)) {
-                    compatible = false;
-                }
+                String head = "The " + SemanticVersioningUtils.getReadableMethodSignature(md.getName(), md.getDesc());
+                isNewMethodSpecialCase(md, head, reasons);
             }
-        }
-        if (compatible) {
-            return binaryCompatible;
-        } else {
-            return new BinaryCompatibilityStatus(compatible, reason.toString());
         }
     }
 
     /**
      * Return the newly added fields
      *
-     * @param old
-     * @return
+     * @param old old class declaration
+     * @return FieldDeclarations for fields added to new class
      */
     public Collection<FieldDeclaration> getExtraFields(ClassDeclaration old) {
         Map<String, FieldDeclaration> oldFields = old.getAllFields();
@@ -619,8 +566,8 @@ public class ClassDeclaration extends GenericDeclaration {
     /**
      * Return the extra non-private methods
      *
-     * @param old
-     * @return
+     * @param old old class declaration
+     * @return method declarations for methods added to new class
      */
     public Collection<MethodDeclaration> getExtraMethods(ClassDeclaration old) {
         // Need to find whether there are new methods added.
@@ -668,10 +615,13 @@ public class ClassDeclaration extends GenericDeclaration {
     /**
      * The newly added method is less accessible than the old one in the super or is a static (respectively instance) method.
      *
-     * @param md
-     * @return
+     *
+     * @param md method declaration
+     * @param prefix beginning of incompatibility message
+     * @param reasons list of binary incompatibility reasons
+     * @return whether new method is less accessible or changed static-ness compared to old class
      */
-    public boolean isNewMethodSpecialCase(MethodDeclaration md, String prefix, StringBuilder reason) {
+    private boolean isNewMethodSpecialCase(MethodDeclaration md, String prefix, List<String> reasons) {
         // scan the super class and interfaces
         String methodName = md.getName();
         boolean special = false;
@@ -683,17 +633,17 @@ public class ClassDeclaration extends GenericDeclaration {
                     if (md.equals(value)) {
                         if (SemanticVersioningUtils.isLessAccessible(value, md)) {
                             special = true;
-                            reason.append(prefix + " is less accessible than the same method in its parent.");
+                            reasons.add(prefix + " is less accessible than the same method in its parent.");
                         }
                         if (value.isStatic()) {
                             if (!md.isStatic()) {
                                 special = true;
-                                reason.append(prefix + " is non-static but the same method in its parent is static.");
+                                reasons.add(prefix + " is non-static but the same method in its parent is static.");
                             }
                         } else {
                             if (md.isStatic()) {
                                 special = true;
-                                reason.append(prefix + " is static but the same method is its parent is not static.");
+                                reasons.add(prefix + " is static but the same method is its parent is not static.");
                             }
                         }
                     }
@@ -703,14 +653,13 @@ public class ClassDeclaration extends GenericDeclaration {
         return special;
     }
 
-    public BinaryCompatibilityStatus getAllSuperPresentStatus(ClassDeclaration old) {
+    private void getAllSuperPresentStatus(ClassDeclaration old, List<String> reasons) {
         Collection<String> oldSupers = old.getAllSupers();
         boolean containsAll = getAllSupers().containsAll(oldSupers);
         if (!!!containsAll) {
             oldSupers.removeAll(getAllSupers());
-            return new BinaryCompatibilityStatus(false, htmlTwoLineBreaks + "The superclasses or superinterfaces have stopped being super: " + oldSupers.toString() + ".");
+            reasons.add("The superclasses or superinterfaces have stopped being super: " + oldSupers.toString() + ".");
         }
-        return binaryCompatible;
     }
 
     public SerialVersionClassVisitor getSerialVisitor() {
