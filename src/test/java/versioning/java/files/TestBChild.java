@@ -17,7 +17,8 @@
  * under the License.
  */
 package versioning.java.files;
-public interface TestBChild extends TestB{
-  public String getBar();
-  
+
+public interface TestBChild extends TestB {
+    public String getBar();
+
 }

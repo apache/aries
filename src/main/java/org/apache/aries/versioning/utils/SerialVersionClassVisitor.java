@@ -17,28 +17,27 @@
  * under the License.
  */
 package org.apache.aries.versioning.utils;
+
 import java.io.IOException;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
-public class SerialVersionClassVisitor extends SerialVersionUIDAdder
-{
+public class SerialVersionClassVisitor extends SerialVersionUIDAdder {
 
-  public SerialVersionClassVisitor(ClassVisitor cv)
-  {
-    super(cv);
-    
-  }
+    public SerialVersionClassVisitor(ClassVisitor cv) {
+        super(cv);
 
-  public long getComputeSerialVersionUID()  {
-    if (computeSVUID) {
-      try {
-      return computeSVUID();
-      } catch (IOException ioe) {
-        // not a issue
-      }
     }
-    return 0;
-  }
+
+    public long getComputeSerialVersionUID() {
+        if (computeSVUID) {
+            try {
+                return computeSVUID();
+            } catch (IOException ioe) {
+                // not a issue
+            }
+        }
+        return 0;
+    }
 }
