@@ -369,7 +369,7 @@ public class BinaryCompatibilityTest
     assertFalse(
         "If a change to the direct superclass or the set of direct superinterfaces results in any class or interface no longer being a superclass or superinterface, respectively, it will break binary compatibility.",
         bcs.isCompatible());
-   assertEquals("&#13;&#10;&#13;&#10;The superclasses or superinterfaces have stopped being super: [versioning/java/files/TestC, versioning/java/files/TestA].&#13;&#10;The method int getFooLen(java.lang.String) has been deleted or its return type or parameter list has changed.&#13;&#10;The method int getBooLen(java.lang.String) has been deleted or its return type or parameter list has changed.&#13;&#10;The method java.lang.String getFoo() has changed from non abstract to abstract. &#13;&#10;The method int getBarLen(java.lang.String) has been deleted or its return type or parameter list has changed.&#13;&#10;The protcted field c has been deleted.&#13;&#10;The public field bar was not final but has been changed to be final.&#13;&#10;The public field bar was static but is changed to be non static or vice versa.&#13;&#10;The public field bar has changed its type.", bcs.getReason()); 
+   assertEquals("&#13;&#10;The method int getFooLen(java.lang.String) has been deleted or its return type or parameter list has changed.&#13;&#10;The method java.lang.String getFoo() has changed from non abstract to abstract. &#13;&#10;The method int getBarLen(java.lang.String) has been deleted or its return type or parameter list has changed.&#13;&#10;The method int getBooLen(java.lang.String) has been deleted or its return type or parameter list has changed.&#13;&#10;&#13;&#10;The superclasses or superinterfaces have stopped being super: [versioning/java/files/TestC, versioning/java/files/TestA].&#13;&#10;The protcted field c has been deleted.&#13;&#10;The public field bar was not final but has been changed to be final.&#13;&#10;The public field bar was static but is changed to be non static or vice versa.&#13;&#10;The public field bar has changed its type.", bcs.getReason());
   }
 
   /**
@@ -1466,7 +1466,7 @@ public class BinaryCompatibilityTest
     oldCR.accept(oldCV, 0);
 
     BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
-    assertEquals("&#13;&#10;The method java.lang.String getFoo() has been deleted or its return type or parameter list has changed.&#13;&#10;The public field bar has been deleted.&#13;&#10;&#13;&#10;The superclasses or superinterfaces have stopped being super: [versioning/java/files/TestB]."  , bcs.getReason());
+    assertEquals("&#13;&#10;The public field bar has been deleted.&#13;&#10;&#13;&#10;The superclasses or superinterfaces have stopped being super: [versioning/java/files/TestB].&#13;&#10;The method java.lang.String getFoo() has been deleted or its return type or parameter list has changed."  , bcs.getReason());
     assertFalse(
         "Changes to the interface hierarchy resulting an interface not being a super interface should break compatibility.",
         bcs.isCompatible());
