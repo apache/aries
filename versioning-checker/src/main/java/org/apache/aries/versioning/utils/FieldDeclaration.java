@@ -19,44 +19,41 @@
 package org.apache.aries.versioning.utils;
 
 
+public class FieldDeclaration extends GenericDeclaration {
+    private final String desc;
+    private final Object value;
 
-public class FieldDeclaration extends GenericDeclaration
-{
-  private final String desc;
-  private final Object value;
-  FieldDeclaration(int access, String name, String desc, String signature, Object value) {
-    super(access, name, signature);
-    this.desc = desc;
-    this.value = value;
-  }
+    FieldDeclaration(int access, String name, String desc, String signature, Object value) {
+        super(access, name, signature);
+        this.desc = desc;
+        this.value = value;
+    }
 
-  public String getDesc()
-  {
-    return desc;
-  }
-  public Object getValue() {
-    return value;
-  }
+    public String getDesc() {
+        return desc;
+    }
 
-  @Override
-  public int hashCode()
-  {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((getName()== null) ? 0 : getName().hashCode());
-    return result;
-  }
+    public Object getValue() {
+        return value;
+    }
 
-  @Override
-  public boolean equals(Object obj)
-  {
-    if (this == obj) return true;
-    if (getClass() != obj.getClass()) return false;
-    FieldDeclaration other = (FieldDeclaration) obj;
-    if (getName() == null) {
-      if (other.getName() != null) return false;
-    } else if (!getName().equals(other.getName())) return false;
-    return true;
-  }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (getClass() != obj.getClass()) return false;
+        FieldDeclaration other = (FieldDeclaration) obj;
+        if (getName() == null) {
+            if (other.getName() != null) return false;
+        } else if (!getName().equals(other.getName())) return false;
+        return true;
+    }
 
 }

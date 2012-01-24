@@ -18,15 +18,15 @@
  */
 package versioning.java.files;
 
-public class TestC 
-{
+public class TestC {
 
-  protected int c = 1;
-  protected int getFooLen(String foo) {
-    return foo.length();
-  }
-  
-  public int getBooLen(String boo) {
-    return boo.length();
-  }
+    protected int c = 1;
+
+    protected int getFooLen(String foo) {
+        return foo.length();
+    }
+
+    public int getBooLen(String boo) {
+        return boo.length();
+    }
 }

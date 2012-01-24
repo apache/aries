@@ -18,49 +18,44 @@
  */
 package org.apache.aries.versioning.utils;
 
-public class BinaryCompatibilityStatus
-{
-  private final boolean compatible;
-  private final String reason;
-  
-  public BinaryCompatibilityStatus(boolean compatible, String reason) {
-    this.compatible = compatible;
-    this.reason = reason;
-  }
+public class BinaryCompatibilityStatus {
+    private final boolean compatible;
+    private final String reason;
 
-  public boolean isCompatible()
-  {
-    return compatible;
-  }
+    public BinaryCompatibilityStatus(boolean compatible, String reason) {
+        this.compatible = compatible;
+        this.reason = reason;
+    }
 
-  public String getReason()
-  {
-    return reason;
-  }
+    public boolean isCompatible() {
+        return compatible;
+    }
 
-  @Override
-  public int hashCode()
-  {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (compatible ? 1231 : 1237);
-    result = prime * result + ((reason == null) ? 0 : reason.hashCode());
-    return result;
-  }
+    public String getReason() {
+        return reason;
+    }
 
-  @Override
-  public boolean equals(Object obj)
-  {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
-    BinaryCompatibilityStatus other = (BinaryCompatibilityStatus) obj;
-    if (compatible != other.compatible) return false;
-    if (reason == null) {
-      if (other.reason != null) return false;
-    } else if (!reason.equals(other.reason)) return false;
-    return true;
-  }
-  
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (compatible ? 1231 : 1237);
+        result = prime * result + ((reason == null) ? 0 : reason.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        BinaryCompatibilityStatus other = (BinaryCompatibilityStatus) obj;
+        if (compatible != other.compatible) return false;
+        if (reason == null) {
+            if (other.reason != null) return false;
+        } else if (!reason.equals(other.reason)) return false;
+        return true;
+    }
+
 
 }
