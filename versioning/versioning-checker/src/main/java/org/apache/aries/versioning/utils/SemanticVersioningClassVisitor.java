@@ -17,6 +17,7 @@
  * under the License.
  */
 package org.apache.aries.versioning.utils;
+
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 
@@ -26,123 +27,123 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-public class SemanticVersioningClassVisitor implements ClassVisitor
-{
+public class SemanticVersioningClassVisitor implements ClassVisitor {
 
-  private ClassDeclaration classDeclaration;
-  private boolean needVisit = false;
-  private URLClassLoader loader = null;
-  private SerialVersionClassVisitor cv = null;
-  public SemanticVersioningClassVisitor(URLClassLoader newJarLoader, SerialVersionClassVisitor cv) {
-    this.loader = newJarLoader;
-    this.cv = cv;
-  }
+    private ClassDeclaration classDeclaration;
+    private boolean needVisit = false;
+    private URLClassLoader loader = null;
+    private SerialVersionClassVisitor cv = null;
 
-  public SemanticVersioningClassVisitor(URLClassLoader newJarLoader) {
-    this.loader = newJarLoader;
-  }
-
-  public ClassDeclaration getClassDeclaration()
-  {
-    return classDeclaration;
-  }
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.objectweb.asm.ClassAdapter#visit(int, int,
-   * java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-   */
-  // visit the header of the class
-  @Override
-  public void  visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-    // only interested in public class
-    if (cv != null) {
-      cv.visit(version, access, name, signature, superName, interfaces);
+    public SemanticVersioningClassVisitor(URLClassLoader newJarLoader, SerialVersionClassVisitor cv) {
+        this.loader = newJarLoader;
+        this.cv = cv;
     }
-    if (Modifier.isPublic(access) || (Modifier.isProtected(access))) {
-      classDeclaration = new ClassDeclaration(access, name, signature, superName, interfaces, loader, cv);
-      needVisit = true;
 
-    } 
-  }
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.objectweb.asm.ClassAdapter#visitField(int, java.lang.String,
-   * java.lang.String, java.lang.String, java.lang.Object)
-   * 
-   * Grab all protected or public fields
-   */
-  @Override
-  public FieldVisitor visitField(int access, String name, String desc,
-      String signature, Object value) {
-    if (cv != null) {
-      cv.visitField(access, name, desc, signature, value);
+    public SemanticVersioningClassVisitor(URLClassLoader newJarLoader) {
+        this.loader = newJarLoader;
     }
-    if (needVisit) {
-      FieldDeclaration fd = new FieldDeclaration(access, name, desc, signature, value);
-      classDeclaration.addFields(fd);
+
+    public ClassDeclaration getClassDeclaration() {
+        return classDeclaration;
     }
-    return null;
-  }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.objectweb.asm.ClassAdapter#visitMethod(int, java.lang.String,
-   * java.lang.String, java.lang.String, java.lang.String[])
-   * Get all non-private methods
-   */
-  @Override
-  public MethodVisitor visitMethod(int access, String name, String desc,
-      String signature, String[] exceptions) {
+    /*
+    * (non-Javadoc)
+    *
+    * @see org.objectweb.asm.ClassAdapter#visit(int, int,
+    * java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+    */
+    // visit the header of the class
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        // only interested in public class
+        if (cv != null) {
+            cv.visit(version, access, name, signature, superName, interfaces);
+        }
+        if (Modifier.isPublic(access) || (Modifier.isProtected(access))) {
+            classDeclaration = new ClassDeclaration(access, name, signature, superName, interfaces, loader, cv);
+            needVisit = true;
 
-
-    if (cv != null) {
-      cv.visitMethod(access, name, desc, signature, exceptions);
+        }
     }
-    if (needVisit && (!SemanticVersioningUtils.CLINIT.equals(name))) {
-      MethodDeclaration md = new MethodDeclaration(access, name, desc, signature, exceptions);
-      classDeclaration.addMethods(md);
+
+    /*
+    * (non-Javadoc)
+    *
+    * @see org.objectweb.asm.ClassAdapter#visitField(int, java.lang.String,
+    * java.lang.String, java.lang.String, java.lang.Object)
+    *
+    * Grab all protected or public fields
+    */
+    @Override
+    public FieldVisitor visitField(int access, String name, String desc,
+                                   String signature, Object value) {
+        if (cv != null) {
+            cv.visitField(access, name, desc, signature, value);
+        }
+        if (needVisit) {
+            FieldDeclaration fd = new FieldDeclaration(access, name, desc, signature, value);
+            classDeclaration.addFields(fd);
+        }
+        return null;
     }
-    return null;
-  }
-  @Override
-  public AnnotationVisitor visitAnnotation(String arg0, boolean arg1)
-  {
-    return null;
-  }
-  @Override
-  public void visitAttribute(Attribute arg0)
-  {
-    // no-op    
-  }
 
-  @Override
-  public void visitEnd()
-  {
-    //no-op
+    /*
+    * (non-Javadoc)
+    *
+    * @see org.objectweb.asm.ClassAdapter#visitMethod(int, java.lang.String,
+    * java.lang.String, java.lang.String, java.lang.String[])
+    * Get all non-private methods
+    */
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String desc,
+                                     String signature, String[] exceptions) {
 
-  }
-  @Override
-  public void visitInnerClass(String name, String outerName, String innerName, int access)
-  {
-    //no-op
-    //The inner class will be scanned on its own. However, the method level class will be excluded, as they won't be public or protected.
 
-  }
-  @Override
-  public void visitOuterClass(String owner, String name, String desc)
-  {
-    //no op
+        if (cv != null) {
+            cv.visitMethod(access, name, desc, signature, exceptions);
+        }
+        if (needVisit && (!SemanticVersioningUtils.CLINIT.equals(name))) {
+            MethodDeclaration md = new MethodDeclaration(access, name, desc, signature, exceptions);
+            classDeclaration.addMethods(md);
+        }
+        return null;
+    }
 
-  }
-  @Override
-  public void visitSource(String arg0, String arg1)
-  {
-    //no-op
+    @Override
+    public AnnotationVisitor visitAnnotation(String arg0, boolean arg1) {
+        return null;
+    }
 
-  }
+    @Override
+    public void visitAttribute(Attribute arg0) {
+        // no-op
+    }
+
+    @Override
+    public void visitEnd() {
+        //no-op
+
+    }
+
+    @Override
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        //no-op
+        //The inner class will be scanned on its own. However, the method level class will be excluded, as they won't be public or protected.
+
+    }
+
+    @Override
+    public void visitOuterClass(String owner, String name, String desc) {
+        //no op
+
+    }
+
+    @Override
+    public void visitSource(String arg0, String arg1) {
+        //no-op
+
+    }
 
 
 }
