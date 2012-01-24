@@ -22,11 +22,12 @@
     <parent>
        <groupId>org.apache.aries</groupId>
        <artifactId>java5-parent</artifactId>
-       <version>0.4-SNAPSHOT</version>
+       <version>0.6-SNAPSHOT</version>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.versioning</groupId>
-    <artifactId>org.apache.aries.versioning.checker</artifactId>
+    <artifactId>org.apache.aries.versioning</artifactId>
     <packaging>pom</packaging>
     <name>Apache Aries Semantic Versioning Checker</name>
     <version>0.1.0-SNAPSHOT</version>
@@ -34,74 +35,10 @@
       OSGi Semantic Versioning Checker
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/versioning/checker</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/versioning/checker</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/versioning/checker</url>
-     </scm>
 
+    <modules>
+        <module>versioning-checker</module>
+    </modules>
 
-    <properties>
-        <aries.osgi.symbolic.name>
-            ${project.artifactId};blueprint.graceperiod:=false
-        </aries.osgi.symbolic.name>
-        <aries.osgi.import>
-            org.objectweb.asm*;version=3.2;resolution:=optional,
-            org.osgi.framework;version="[1.5,2)",
-            org.slf4j;version="[1.5,2)",
-            *
-        </aries.osgi.import>
-        <aries.osgi.export.pkg>
-            org.apache.aries.versioning.check;
-        </aries.osgi.export.pkg>
-        <aries.osgi.private.pkg>
-            org.apache.aries.versioning.utils;
-        </aries.osgi.private.pkg>
-	</properties>
-
-	<dependencies>
-    
-            <!-- Dependency on other Aries module bundles -->
-        <dependency>
-             <groupId>org.apache.aries</groupId>
-             <artifactId>org.apache.aries.util</artifactId>
-             <version>0.4-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <scope>test</scope>
-            <version>0.3</version>
-        </dependency>
-
-
-        <!--External dependencies. Versions may be specified in default parent -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <optional>true</optional>
-            <version>3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-  </dependencies>
 </project>
 
