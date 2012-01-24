@@ -68,6 +68,9 @@ public class BundleCompatibility {
     private BundleInfo baseBundle;
     private StringBuilder pkgElements;
 
+    private VersionChange bundleChange;
+    private final Map<String, VersionChange> packageChanges = new HashMap<String, VersionChange>();
+
     public BundleCompatibility(String bundleSymbolicName, String bundleElement, boolean bundleVersionCorrect, BundleInfo currentBundle, BundleInfo baseBundle, StringBuilder pkgElements, URLClassLoader oldJarsLoader, URLClassLoader newJarsLoader) {
         this.bundleSymbolicName = bundleSymbolicName;
         this.bundleElement = bundleElement;
@@ -79,6 +82,14 @@ public class BundleCompatibility {
         this.newJarsLoader = newJarsLoader;
     }
 
+    public VersionChange getBundleChange() {
+        return bundleChange;
+    }
+
+    public Map<String, VersionChange> getPackageChanges() {
+        return packageChanges;
+    }
+
     public String getBundleElement() {
         return bundleElement;
     }
@@ -86,96 +97,6 @@ public class BundleCompatibility {
     public boolean isBundleVersionCorrect() {
         return bundleVersionCorrect;
     }
-
-//        private BundleCompatibility BundleCompatibility(String bundleSymbolicName, String bundleElement, boolean bundleVersionCorrect, BundleInfo currentBundle, BundleInfo baseBundle, StringBuilder pkgElements) throws IOException {
-//            String reason = null;
-//            // open the manifest and scan the export package and find the package name and exported version
-//            // The tool assume the one particular package just exports under one version
-//            Map<String, PackageContent> currBundleExpPkgContents = getAllExportedPkgContents(currentBundle);
-//            Map<String, PackageContent> baseBundleExpPkgContents;
-//            boolean pkg_major_change = false;
-//            boolean pkg_minor_change = false;
-//            String fatal_package = null;
-//            if (!!!currBundleExpPkgContents.isEmpty()) {
-//                baseBundleExpPkgContents = getAllExportedPkgContents(baseBundle);
-//                // compare each class right now
-//                for (Map.Entry<String, PackageContent> pkg : baseBundleExpPkgContents.entrySet()) {
-//                    String pkgName = pkg.getKey();
-//                    Map<String, IFile> baseClazz = pkg.getValue().getClasses();
-//                    Map<String, IFile> baseXsds = pkg.getValue().getXsds();
-//                    PackageContent currPkgContents = currBundleExpPkgContents.get(pkgName);
-//                    if (currPkgContents == null) {
-//                        // The package is no longer exported any more. This should lead to bundle major version change.
-//                        pkg_major_change = true;
-//                        fatal_package = pkgName;
-//                        _logger.debug("The package " + pkgName + " in the bundle of " + bundleSymbolicName + " is no longer to be exported. Major change.");
-//                    } else {
-//                        Map<String, IFile> curClazz = currPkgContents.getClasses();
-//                        Map<String, IFile> curXsds = currPkgContents.getXsds();
-//                        //check whether there should be major change/minor change/micro change in this package.
-//                        //1. Use ASM to visit all classes in the package
-//                        VersionChange majorChange = new VersionChange();
-//                        VersionChange minorChange = new VersionChange();
-//                        // check all classes to see whether there are minor or major changes
-//                        visitPackage(pkgName, baseClazz, curClazz, majorChange, minorChange);
-//                        // If there is no binary compatibility changes, check whether xsd files have been added, changed or deleted
-//                        if (!!!majorChange.isChange()) {
-//                            checkXsdChangesInPkg(pkgName, baseXsds, curXsds, majorChange);
-//                            // If everything is ok with the existing classes. Need to find out whether there are more API (abstract classes) in the current bundle.
-//                            // loop through curClazz and visit it and find out whether one of them is abstract.
-//                            // check whether there are more xsd or abstract classes added
-//                            if (!!!(majorChange.isChange() || minorChange.isChange())) {
-//                                checkAdditionalClassOrXsds(pkgName, curClazz, curXsds, minorChange);
-//                            }
-//                        }
-//                        // We have scanned the whole packages, report the result
-//                        if (majorChange.isChange() || minorChange.isChange()) {
-//                            String oldVersion = pkg.getValue().getPackageVersion();
-//                            String newVersion = currPkgContents.getPackageVersion();
-//                            if (majorChange.isChange()) {
-//                                pkg_major_change = true;
-//                                fatal_package = pkgName;
-//                                if (!!!isVersionCorrect(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion)) {
-//                                    pkgElements.append(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion, majorChange.getReason(), majorChange.getChangeClass()));
-//                                }
-//                            } else if (minorChange.isChange()) {
-//                                pkg_minor_change = true;
-//                                if (fatal_package == null) fatal_package = pkgName;
-//                                if (!!!isVersionCorrect(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion)) {
-//                                    pkgElements.append(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MINOR_CHANGE, pkg.getValue().getPackageVersion(), currPkgContents.getPackageVersion(), minorChange.getReason(), minorChange.getChangeClass()));
-//                                }
-//                            }
-//                            pkgElements.append("\r\n");
-//                        }
-//                    }
-//                }
-//                // If there is a package version change, the bundle version needs to be updated.
-//                // If there is a major change in one of the packages, the bundle major version needs to be increased.
-//                // If there is a minor change in one of the packages, the bundle minor version needs to be increased.
-//                String oldVersion = baseBundle.getBundleManifest().getVersion().toString();
-//                String newVersion = currentBundle.getBundleManifest().getVersion().toString();
-//
-//
-//                if (pkg_major_change || pkg_minor_change) {
-//
-//                    if (pkg_major_change) {
-//                        // The bundle version's major value should be increased.
-//                        reason = "Some packages have major changes. For an instance, the package " + fatal_package + " has major version changes.";
-//                        bundleElement = getBundleStatusText(currentBundle.getBundle().getName(), bundleSymbolicName, VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion, reason);
-//                        bundleVersionCorrect = isVersionCorrect(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion);
-//                    } else if (pkg_minor_change) {
-//                        reason = "Some packages have minor changes. For an instance, the package " + fatal_package + " has minor version changes.";
-//                        bundleElement = getBundleStatusText(currentBundle.getBundle().getName(), bundleSymbolicName, VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion, reason);
-//                        bundleVersionCorrect = isVersionCorrect(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion);
-//                    }
-//                } else {
-//                    reason = "The bundle has no version changes.";
-//                    bundleElement = getBundleStatusText(currentBundle.getBundle().getName(), bundleSymbolicName, VERSION_CHANGE_TYPE.NO_CHANGE, oldVersion, newVersion, reason);
-//                    bundleVersionCorrect = isVersionCorrect(VERSION_CHANGE_TYPE.NO_CHANGE, oldVersion, newVersion);
-//                }
-//            }
-//            return this;
-//        }
 
     public BundleCompatibility invoke() throws IOException {
         String reason = null;
@@ -204,8 +125,8 @@ public class BundleCompatibility {
                     Map<String, IFile> curXsds = currPkgContents.getXsds();
                     //check whether there should be major change/minor change/micro change in this package.
                     //1. Use ASM to visit all classes in the package
-                    VersionChange majorChange = new VersionChange();
-                    VersionChange minorChange = new VersionChange();
+                    VersionChangeReason majorChange = new VersionChangeReason();
+                    VersionChangeReason minorChange = new VersionChangeReason();
                     // check all classes to see whether there are minor or major changes
                     visitPackage(pkgName, baseClazz, curClazz, majorChange, minorChange);
                     // If there is no binary compatibility changes, check whether xsd files have been added, changed or deleted
@@ -223,17 +144,21 @@ public class BundleCompatibility {
                         String oldVersion = pkg.getValue().getPackageVersion();
                         String newVersion = currPkgContents.getPackageVersion();
                         if (majorChange.isChange()) {
+                            packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion));
                             pkg_major_change = true;
                             fatal_package = pkgName;
                             if (!!!isVersionCorrect(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion)) {
                                 pkgElements.append(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion, majorChange.getReason(), majorChange.getChangeClass()));
                             }
                         } else if (minorChange.isChange()) {
+                            packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion));
                             pkg_minor_change = true;
                             if (fatal_package == null) fatal_package = pkgName;
                             if (!!!isVersionCorrect(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion)) {
                                 pkgElements.append(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MINOR_CHANGE, pkg.getValue().getPackageVersion(), currPkgContents.getPackageVersion(), minorChange.getReason(), minorChange.getChangeClass()));
                             }
+                        }  else {
+                            packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.NO_CHANGE, oldVersion, newVersion));
                         }
                         pkgElements.append("\r\n");
                     }
@@ -250,15 +175,18 @@ public class BundleCompatibility {
 
                 if (pkg_major_change) {
                     // The bundle version's major value should be increased.
+                    bundleChange = new VersionChange(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion);
                     reason = "Some packages have major changes. For an instance, the package " + fatal_package + " has major version changes.";
                     bundleElement = getBundleStatusText(currentBundle.getBundle().getName(), bundleSymbolicName, VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion, reason);
                     bundleVersionCorrect = isVersionCorrect(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion);
                 } else if (pkg_minor_change) {
+                    bundleChange = new VersionChange(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion);
                     reason = "Some packages have minor changes. For an instance, the package " + fatal_package + " has minor version changes.";
                     bundleElement = getBundleStatusText(currentBundle.getBundle().getName(), bundleSymbolicName, VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion, reason);
                     bundleVersionCorrect = isVersionCorrect(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion);
                 }
             } else {
+                bundleChange = new VersionChange(VERSION_CHANGE_TYPE.NO_CHANGE, oldVersion, newVersion);
                 reason = "The bundle has no version changes.";
                 bundleElement = getBundleStatusText(currentBundle.getBundle().getName(), bundleSymbolicName, VERSION_CHANGE_TYPE.NO_CHANGE, oldVersion, newVersion, reason);
                 bundleVersionCorrect = isVersionCorrect(VERSION_CHANGE_TYPE.NO_CHANGE, oldVersion, newVersion);
@@ -325,7 +253,7 @@ public class BundleCompatibility {
      * @param minorChange
      */
     private void visitPackage(String pkgName, Map<String, IFile> baseClazz,
-                              Map<String, IFile> curClazz, VersionChange majorChange, VersionChange minorChange) {
+                              Map<String, IFile> curClazz, VersionChangeReason majorChange, VersionChangeReason minorChange) {
         StringBuilder major_reason = new StringBuilder();
         StringBuilder minor_reason = new StringBuilder();
         boolean is_major_change = false;
@@ -458,7 +386,7 @@ public class BundleCompatibility {
      */
 
     private void checkXsdChangesInPkg(String pkgName, Map<String, IFile> baseXsds,
-                                      Map<String, IFile> curXsds, VersionChange majorChange) throws IOException {
+                                      Map<String, IFile> curXsds, VersionChangeReason majorChange) throws IOException {
         String reason;
         for (Map.Entry<String, IFile> file : baseXsds.entrySet()) {
             // scan the latest version of the class
@@ -494,7 +422,7 @@ public class BundleCompatibility {
      * @param minorChange
      */
     private void checkAdditionalClassOrXsds(String pkgName, Map<String, IFile> curClazz,
-                                            Map<String, IFile> curXsds, VersionChange minorChange) {
+                                            Map<String, IFile> curXsds, VersionChangeReason minorChange) {
         String reason;
         Collection<IFile> ifiles = curClazz.values();
         Iterator<IFile> iterator = ifiles.iterator();
@@ -557,19 +485,10 @@ public class BundleCompatibility {
 
     private String getStatusText(VERSION_CHANGE_TYPE status, String oldVersionStr, String newVersionStr) {
 
-        Version oldVersion = Version.parseVersion(oldVersionStr);
-        Version newVersion = Version.parseVersion(newVersionStr);
-        Version recommendedVersion = Version.parseVersion(oldVersionStr);
-        if (status == VERSION_CHANGE_TYPE.MAJOR_CHANGE) {
-            recommendedVersion = new Version(oldVersion.getMajor() + 1, 0, 0);
-        } else if (status == VERSION_CHANGE_TYPE.MINOR_CHANGE) {
-            recommendedVersion = new Version(oldVersion.getMajor(), oldVersion.getMinor() + 1, 0);
-        } else {
-            recommendedVersion = oldVersion;
-        }
-        return " oldVersion=\"" + oldVersion
-                + "\" currentVersion=\"" + newVersion +
-                "\" recommendedVersion=\"" + recommendedVersion + "\" correct=\"" + BundleCompatibility.isVersionCorrect(status, oldVersionStr, newVersionStr);
+        VersionChange versionChange = new VersionChange(status, oldVersionStr, newVersionStr);
+        return " oldVersion=\"" + versionChange.getOldVersion()
+                + "\" currentVersion=\"" + versionChange.getNewVersion() +
+                "\" recommendedVersion=\"" + versionChange.getRecommendedNewVersion() + "\" correct=\"" + versionChange.isCorrect();
     }
 
     private String transformForXml(String str) {
@@ -660,7 +579,7 @@ public class BundleCompatibility {
         }
     }
 
-    private static class VersionChange {
+    private static class VersionChangeReason {
         boolean change = false;
         String reason = null;
         String changeClass = null;
