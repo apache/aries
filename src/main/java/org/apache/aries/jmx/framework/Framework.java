@@ -257,7 +257,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundlesAndWait(long[])
      */
     public CompositeData refreshBundlesAndWait(long[] bundleIdentifiers) throws IOException {
-        Bundle [] bundles = new Bundle[bundleIdentifiers.length];
+        Bundle [] bundles = bundleIdentifiers != null ? new Bundle[bundleIdentifiers.length] : null;
         boolean result = refreshBundlesAndWait(bundleIdentifiers, bundles);
         return constructResolveResult(bundles, result);
     }
@@ -274,8 +274,10 @@ public class Framework implements FrameworkMBean {
         try {
             context.addFrameworkListener(listener);
             try {
-                for (int i=0; i < bundleIdentifiers.length; i++) {
-                    bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
+                if (bundles != null) {
+                    for (int i=0; i < bundleIdentifiers.length; i++) {
+                        bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
+                    }
                 }
                 packageAdmin.refreshPackages(bundles);
                 return latch.await(30, TimeUnit.SECONDS);
