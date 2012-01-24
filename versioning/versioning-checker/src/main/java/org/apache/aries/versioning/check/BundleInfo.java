@@ -31,7 +31,7 @@ public class BundleInfo {
     private final BundleManifest bundleManifest;
     private final File bundle;
 
-    BundleInfo(BundleManifest bm, File bundle) {
+    public BundleInfo(BundleManifest bm, File bundle) {
         this.bundleManifest = bm;
         this.bundle = bundle;
     }

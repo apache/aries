@@ -23,8 +23,8 @@ package org.apache.aries.versioning.check;
 import org.osgi.framework.Version;
 
 /**
-* @version $Rev:$ $Date:$
-*/
+ * @version $Rev:$ $Date:$
+ */
 class VersionChange {
     private BundleCompatibility.VERSION_CHANGE_TYPE changeType;
     private Version oldVersion;
@@ -71,5 +71,12 @@ class VersionChange {
 
     public boolean isCorrect() {
         return correct;
+    }
+
+    @Override
+    public String toString() {
+        return " oldVersion=\"" + getOldVersion()
+                + "\" currentVersion=\"" + getNewVersion() +
+                "\" recommendedVersion=\"" + getRecommendedNewVersion() + "\" correct=\"" + isCorrect();
     }
 }

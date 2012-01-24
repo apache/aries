@@ -66,18 +66,15 @@ public class BundleCompatibility {
     private boolean bundleVersionCorrect;
     private BundleInfo currentBundle;
     private BundleInfo baseBundle;
-    private StringBuilder pkgElements;
+    private StringBuilder pkgElements = new StringBuilder();
 
     private VersionChange bundleChange;
     private final Map<String, VersionChange> packageChanges = new HashMap<String, VersionChange>();
 
-    public BundleCompatibility(String bundleSymbolicName, String bundleElement, boolean bundleVersionCorrect, BundleInfo currentBundle, BundleInfo baseBundle, StringBuilder pkgElements, URLClassLoader oldJarsLoader, URLClassLoader newJarsLoader) {
+    public BundleCompatibility(String bundleSymbolicName, BundleInfo currentBundle, BundleInfo baseBundle, URLClassLoader oldJarsLoader, URLClassLoader newJarsLoader) {
         this.bundleSymbolicName = bundleSymbolicName;
-        this.bundleElement = bundleElement;
-        this.bundleVersionCorrect = bundleVersionCorrect;
         this.currentBundle = currentBundle;
         this.baseBundle = baseBundle;
-        this.pkgElements = pkgElements;
         this.oldJarsLoader = oldJarsLoader;
         this.newJarsLoader = newJarsLoader;
     }
@@ -92,6 +89,10 @@ public class BundleCompatibility {
 
     public String getBundleElement() {
         return bundleElement;
+    }
+
+    public StringBuilder getPkgElements() {
+        return pkgElements;
     }
 
     public boolean isBundleVersionCorrect() {
@@ -140,7 +141,7 @@ public class BundleCompatibility {
                         }
                     }
                     // We have scanned the whole packages, report the result
-                    if (majorChange.isChange() || minorChange.isChange()) {
+//                    if (majorChange.isChange() || minorChange.isChange()) {
                         String oldVersion = pkg.getValue().getPackageVersion();
                         String newVersion = currPkgContents.getPackageVersion();
                         if (majorChange.isChange()) {
@@ -159,9 +160,10 @@ public class BundleCompatibility {
                             }
                         }  else {
                             packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.NO_CHANGE, oldVersion, newVersion));
+                            pkgElements.append(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.NO_CHANGE, pkg.getValue().getPackageVersion(), currPkgContents.getPackageVersion(), "", ""));
                         }
                         pkgElements.append("\r\n");
-                    }
+//                    }
                 }
             }
             // If there is a package version change, the bundle version needs to be updated.
@@ -486,9 +488,7 @@ public class BundleCompatibility {
     private String getStatusText(VERSION_CHANGE_TYPE status, String oldVersionStr, String newVersionStr) {
 
         VersionChange versionChange = new VersionChange(status, oldVersionStr, newVersionStr);
-        return " oldVersion=\"" + versionChange.getOldVersion()
-                + "\" currentVersion=\"" + versionChange.getNewVersion() +
-                "\" recommendedVersion=\"" + versionChange.getRecommendedNewVersion() + "\" correct=\"" + versionChange.isCorrect();
+        return versionChange.toString();
     }
 
     private String transformForXml(String str) {
