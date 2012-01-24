@@ -110,9 +110,10 @@ public class SemanticVersioningChecker {
                 if (baseBundle == null) {
                     _logger.debug("The bundle " + bundleSymbolicName + " has no counterpart in the base. The semantic version validation does not apply to this bundle.");
                 } else {
-                    BundleCompatibility bundleCompatibility = new BundleCompatibility(bundleSymbolicName, bundleElement, bundleVersionCorrect, currentBundle, baseBundle, pkgElements, oldJarsLoader, newJarsLoader).invoke();
+                    BundleCompatibility bundleCompatibility = new BundleCompatibility(bundleSymbolicName, currentBundle, baseBundle, oldJarsLoader, newJarsLoader).invoke();
                     bundleVersionCorrect = bundleCompatibility.isBundleVersionCorrect();
                     bundleElement = bundleCompatibility.getBundleElement();
+                    pkgElements = bundleCompatibility.getPkgElements();
                 }
                 // Need to write bundle element and then package elements
                 if ((!!!bundleVersionCorrect) || ((pkgElements.length() > 0))) {
