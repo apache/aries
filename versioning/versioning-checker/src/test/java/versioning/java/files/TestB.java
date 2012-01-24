@@ -17,8 +17,10 @@
  * under the License.
  */
 package versioning.java.files;
-public interface TestB{
-  int bar = 2;
-  public String getFoo();
-  
+
+public interface TestB {
+    int bar = 2;
+
+    public String getFoo();
+
 }

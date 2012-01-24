@@ -17,49 +17,49 @@
  * under the License.
  */
 package org.apache.aries.versioning.utils;
+
 import java.lang.reflect.Modifier;
 
 
-public class MethodDeclaration extends GenericDeclaration
-{
-  private final String desc;
-  MethodDeclaration(int access, String name, String desc, String signature, String[] exceptions) {
-  super(access, name, signature);
-    this.desc = desc;
-  }
-  public String getDesc()
-  {
-    return desc;
-  }
+public class MethodDeclaration extends GenericDeclaration {
+    private final String desc;
 
-  public boolean isAbstract() {
-    return Modifier.isAbstract(getAccess());
-  }
-  @Override
-  public int hashCode()
-  {
-    final int prime = 31;
-    //int result = super.hashCode();
-    int result = prime  + ((desc == null) ? 0 : desc.hashCode());
-    result = prime * result + ((getName() == null) ? 0 : getName().hashCode());    
-    return result;
-  }
+    MethodDeclaration(int access, String name, String desc, String signature, String[] exceptions) {
+        super(access, name, signature);
+        this.desc = desc;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public boolean isAbstract() {
+        return Modifier.isAbstract(getAccess());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        //int result = super.hashCode();
+        int result = prime + ((desc == null) ? 0 : desc.hashCode());
+        result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+        return result;
+    }
 
 
-  @Override
-  public boolean equals(Object obj)
-  {
-    if (this == obj) return true;
-    //if (getClass() != obj.getClass()) return false;
-    MethodDeclaration other = (MethodDeclaration) obj;
-    if (desc == null) {
-      if (other.desc != null) return false;
-    } else if (!desc.equals(other.desc)) return false;
-    if (getName() == null) {
-      if (other.getName() != null) return false;
-    } else if (!getName().equals(other.getName())) return false;
-    
-    return true;
-  }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        //if (getClass() != obj.getClass()) return false;
+        MethodDeclaration other = (MethodDeclaration) obj;
+        if (desc == null) {
+            if (other.desc != null) return false;
+        } else if (!desc.equals(other.desc)) return false;
+        if (getName() == null) {
+            if (other.getName() != null) return false;
+        } else if (!getName().equals(other.getName())) return false;
+
+        return true;
+    }
 
 }

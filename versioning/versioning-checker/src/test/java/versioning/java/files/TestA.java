@@ -17,13 +17,16 @@
  * under the License.
  */
 package versioning.java.files;
+
 public class TestA extends TestC implements TestB {
-  public String bar = "bar";
-  protected static int c =2;
-  public String getFoo() {
-    return String.valueOf(bar);
-  }
-  public int getBarLen(String bar) {
-    return bar.length();
-  }
+    public String bar = "bar";
+    protected static int c = 2;
+
+    public String getFoo() {
+        return String.valueOf(bar);
+    }
+
+    public int getBarLen(String bar) {
+        return bar.length();
+    }
 }
