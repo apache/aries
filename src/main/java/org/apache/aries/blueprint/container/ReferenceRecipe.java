@@ -19,6 +19,8 @@
 package org.apache.aries.blueprint.container;
 
 import java.lang.ref.WeakReference;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -219,7 +221,11 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             } else {
             
               if (trackedService == null) {
-                  trackedService = getBundleContextForServiceLookup().getService(trackedServiceReference);
+            	  trackedService = AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            	    public Object run() {
+            		  return getBundleContextForServiceLookup().getService(trackedServiceReference);
+            		}
+            	  });
               }
               
               if (trackedService == null) {
