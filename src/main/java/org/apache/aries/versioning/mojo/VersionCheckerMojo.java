@@ -40,11 +40,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Goal which touches a timestamp file.
+ * Check semantic version changes between an explicitly named old artifact and the project output artifact.
+ * Optionally write packageinfo files for wrong package versions.
  *
  * @goal version-check
  * 
- * @phase install
+ * @phase verify
  */
 public class VersionCheckerMojo
     extends AbstractMojo
@@ -52,21 +53,21 @@ public class VersionCheckerMojo
 
     /**
      * name of old artifact in <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version> notation
-     * @parameter
-     * @required
+     * @parameter expression="${oldArtifact}"
      */
     private String oldArtifact;
 
+//    * @parameter expression="${project.artifact.file}"
     /**
      * Location of the file.
-     * @parameter expression="${project.artifact.file}"
+     * @parameter expression="${project.build.directory}/${project.build.finalName}.jar"
      * @required
      */
     private File newFile;
 
     /**
      * whether to write packageinfo files into source tree
-     * @parameter
+     * @parameter expression="${writePackageInfos}" default-value="true"
      */
     private boolean writePackageinfos = true;
 
@@ -116,23 +117,25 @@ public class VersionCheckerMojo
     public void execute()
         throws MojoExecutionException
     {
-        try {
-            BundleInfo oldBundle = getBundleInfo(resolve(oldArtifact));
-            BundleInfo newBundle = getBundleInfo(newFile);
-            String bundleSymbolicName = newBundle.getBundleManifest().getSymbolicName();
-            URLClassLoader oldClassLoader = new URLClassLoader(new URL[] {oldBundle.getBundle().toURI().toURL()});
-            URLClassLoader newClassLoader = new URLClassLoader(new URL[] {newBundle.getBundle().toURI().toURL()});
-            BundleCompatibility bundleCompatibility = new BundleCompatibility(bundleSymbolicName, newBundle, oldBundle, oldClassLoader, newClassLoader);
-            bundleCompatibility.invoke();
-            getLog().info(bundleCompatibility.getBundleElement());
-            getLog().info(bundleCompatibility.getPkgElements());
-            if (writePackageinfos) {
-                writePackageInfos(bundleCompatibility);
+        if (oldArtifact != null) {
+            try {
+                BundleInfo oldBundle = getBundleInfo(resolve(oldArtifact));
+                BundleInfo newBundle = getBundleInfo(newFile);
+                String bundleSymbolicName = newBundle.getBundleManifest().getSymbolicName();
+                URLClassLoader oldClassLoader = new URLClassLoader(new URL[] {oldBundle.getBundle().toURI().toURL()});
+                URLClassLoader newClassLoader = new URLClassLoader(new URL[] {newBundle.getBundle().toURI().toURL()});
+                BundleCompatibility bundleCompatibility = new BundleCompatibility(bundleSymbolicName, newBundle, oldBundle, oldClassLoader, newClassLoader);
+                bundleCompatibility.invoke();
+                getLog().info(bundleCompatibility.getBundleElement());
+                getLog().info(bundleCompatibility.getPkgElements());
+                if (writePackageinfos) {
+                    writePackageInfos(bundleCompatibility);
+                }
+            } catch (MalformedURLException e) {
+                throw new MojoExecutionException("Problem analyzing sources");
+            } catch (IOException e) {
+                throw new MojoExecutionException("Problem analyzing sources");
             }
-        } catch (MalformedURLException e) {
-
-        } catch (IOException e) {
-
         }
     }
 
