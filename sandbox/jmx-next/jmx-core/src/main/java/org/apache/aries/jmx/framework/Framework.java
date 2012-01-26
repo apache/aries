@@ -230,7 +230,8 @@ public class Framework implements FrameworkMBean {
      */
     public boolean refreshBundleAndWait(long bundleIdentifier) throws IOException {
         Bundle[] bundleArray = new Bundle[1];
-        return refreshBundlesAndWait(new long[] {bundleIdentifier}, bundleArray);
+        refreshBundlesAndWait(new long[] {bundleIdentifier}, bundleArray);
+        return isResolved(bundleArray[0].getState());
     }
 
     /**
@@ -258,11 +259,11 @@ public class Framework implements FrameworkMBean {
      */
     public CompositeData refreshBundlesAndWait(long[] bundleIdentifiers) throws IOException {
         Bundle [] bundles = bundleIdentifiers != null ? new Bundle[bundleIdentifiers.length] : null;
-        boolean result = refreshBundlesAndWait(bundleIdentifiers, bundles);
-        return constructResolveResult(bundles, result);
+        refreshBundlesAndWait(bundleIdentifiers, bundles);
+        return constructResolveResult(bundles);
     }
 
-    private boolean refreshBundlesAndWait(long[] bundleIdentifiers, Bundle[] bundles) throws IOException {
+    private void refreshBundlesAndWait(long[] bundleIdentifiers, Bundle[] bundles) throws IOException {
         final CountDownLatch latch = new CountDownLatch(1);
         FrameworkListener listener = new FrameworkListener() {
             public void frameworkEvent(FrameworkEvent event) {
@@ -280,7 +281,11 @@ public class Framework implements FrameworkMBean {
                     }
                 }
                 packageAdmin.refreshPackages(bundles);
-                return latch.await(30, TimeUnit.SECONDS);
+
+                if (latch.await(30, TimeUnit.SECONDS))
+                    return;
+                else
+                    throw new IOException("Refresh operation timed out");
             } catch (InterruptedException e) {
                 IOException ex = new IOException();
                 ex.initCause(e);
@@ -291,19 +296,25 @@ public class Framework implements FrameworkMBean {
         }
     }
 
-    private CompositeData constructResolveResult(Bundle[] bundles, boolean result) {
+    private CompositeData constructResolveResult(Bundle[] bundles) {
         if (bundles == null)
             bundles = context.getBundles();
 
+        boolean result = true;
         List<Long> successList = new ArrayList<Long>();
         for (Bundle bundle : bundles) {
             int state = bundle.getState();
-            if ((state & (Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE)) > 0) {
+            if (isResolved(state)) {
                 successList.add(bundle.getBundleId());
-            }
+            } else
+                result = false;
         }
 
         return new BatchResolveResult(result, successList.toArray(new Long[] {})).toCompositeData();
+    }
+
+    private boolean isResolved(int state) {
+        return (state & (Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE)) > 0;
     }
 
     /**
@@ -346,8 +357,8 @@ public class Framework implements FrameworkMBean {
         if (bundleIdentifiers != null)
             bundles = new Bundle[bundleIdentifiers.length];
 
-        boolean result = resolveBundles(bundleIdentifiers, bundles);
-        return constructResolveResult(bundles, result);
+        resolveBundles(bundleIdentifiers, bundles);
+        return constructResolveResult(bundles);
     }
 
     /**

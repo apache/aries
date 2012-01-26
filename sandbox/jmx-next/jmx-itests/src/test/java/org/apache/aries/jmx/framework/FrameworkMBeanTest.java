@@ -320,7 +320,6 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
 
         FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
         CompositeData result = framework.refreshBundlesAndWait(null);
-        assertTrue((Boolean) result.get(FrameworkMBean.SUCCESS));
         Set<Long> completed = new HashSet<Long>(Arrays.asList((Long []) result.get(FrameworkMBean.COMPLETED)));
         assertTrue(completed.contains(bundleA.getBundleId()));
         assertTrue(completed.contains(bundleB.getBundleId()));
