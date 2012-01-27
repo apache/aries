@@ -26,13 +26,17 @@ import java.util.List;
 
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
+import org.apache.aries.proxy.impl.common.OSGiFriendlyClassVisitor;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassWriter;
+import org.apache.aries.proxy.impl.gen.Constants;
+import org.apache.aries.proxy.impl.weaving.EmptyVisitor;
 import org.apache.aries.proxy.weaving.WovenProxy;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.EmptyVisitor;
+
 import org.objectweb.asm.commons.Method;
 
 /**
@@ -60,8 +64,10 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
    */
    InterfaceCombiningClassAdapter(String className,
       ClassLoader loader, Class<? extends WovenProxy> superclass, Collection<Class<?>> interfaces) {
-    writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader);
-    adapter = new InterfaceUsingWovenProxyAdapter(writer, className, loader);
+     super(Constants.ASM4);
+    writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader, className, (superclass!=null)? superclass.getName(): null);
+    ClassVisitor cv = new OSGiFriendlyClassVisitor(writer, ClassWriter.COMPUTE_FRAMES);
+    adapter = new InterfaceUsingWovenProxyAdapter(cv, className, loader);
     
     this.interfaces = interfaces;
     this.superclass = superclass;

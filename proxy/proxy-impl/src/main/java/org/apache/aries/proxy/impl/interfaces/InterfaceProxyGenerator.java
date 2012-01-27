@@ -23,7 +23,6 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -32,9 +31,10 @@ import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.gen.Constants;
+import org.apache.aries.proxy.impl.weaving.EmptyVisitor;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.commons.EmptyVisitor;
 import org.osgi.framework.Bundle;
 
 /**
@@ -44,6 +44,12 @@ import org.osgi.framework.Bundle;
  * To be safely used as a supertype the superclass should be a WovenProxy.
  */
 public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcodes {
+
+  public InterfaceProxyGenerator()
+  {
+    super(Constants.ASM4);
+    
+  }
 
   private static final Map<Bundle, WeakReference<ProxyClassLoader>> cache = 
             new WeakHashMap<Bundle, WeakReference<ProxyClassLoader>>(128);

@@ -18,9 +18,16 @@
  */
 package org.apache.aries.proxy.impl.weaving;
 
+import java.io.IOException;
+
+import org.apache.aries.proxy.impl.gen.Constants;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
+
+  private static Logger LOGGER = LoggerFactory.getLogger(SyntheticSerialVerUIDAdder.class);
 
   private WovenProxyAdapter wpa;
   
@@ -31,7 +38,26 @@ class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
 
   @Override
   public void visitEnd() {
-    wpa.setSVUIDGenerated(!!!hasSVUID);
+   
+    wpa.setSVUIDGenerated(!!!isHasSVUID());
     super.visitEnd();
+  }
+  
+  private boolean isHasSVUID() {
+    try {
+      if (computeSVUID() == 0 ) {
+        // This means the class has a serial id already
+        return true;      
+      } else {
+        return false;
+      }
+    } catch (IOException ioe) {
+   
+      LOGGER.debug(Constants.LOG_ENTRY, "cannot.compute.serial.id", new Object[] { ioe });
+
+    } finally {
+      return false;
+    }
+
   }
 }
