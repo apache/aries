@@ -179,7 +179,7 @@ bootDelegationPackages("javax.transaction", "javax.transaction.*"),
             mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint" ),
             mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers" ),
             mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.datasource" ),
-            mavenBundle("asm", "asm-all" ),
+            mavenBundle("org.ow2.asm", "asm-all" ),
             equinox().version("3.5.0")
         );
         options = updateOptions(options);
