@@ -84,10 +84,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>asm</groupId>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
             <optional>true</optional>
-            <version>3.2</version>
+            <version>4.0</version>
         </dependency>
     </dependencies>
 
