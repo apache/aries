@@ -243,7 +243,7 @@ bootDelegationPackages("javax.transaction", "javax.transaction.*"),
             mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.datasource" ),
 
             
-            mavenBundle("asm", "asm-all" ),
+            mavenBundle("org.ow2.asm", "asm-all" ),
             equinox().version("3.5.0")
 
         );

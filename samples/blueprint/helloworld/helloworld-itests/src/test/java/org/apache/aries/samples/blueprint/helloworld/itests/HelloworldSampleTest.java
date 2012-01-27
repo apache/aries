@@ -91,7 +91,7 @@ public class HelloworldSampleTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint" ),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util" ),
-                mavenBundle("asm", "asm-all" ),
+                mavenBundle("org.ow2.asm", "asm-all" ),
                 mavenBundle("org.apache.aries.samples.blueprint.helloworld", "org.apache.aries.samples.blueprint.helloworld.api"),
                 mavenBundle("org.apache.aries.samples.blueprint.helloworld", "org.apache.aries.samples.blueprint.helloworld.server"),
                 mavenBundle("org.apache.aries.samples.blueprint.helloworld", "org.apache.aries.samples.blueprint.helloworld.client"),

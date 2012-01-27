@@ -49,12 +49,12 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
 
                 // Bundles
                 mavenBundle("org.osgi", "org.osgi.compendium"),
-                mavenBundle("asm", "asm-all"),
+                mavenBundle("org.ow2.asm", "asm-all"),
                 mavenBundle("org.apache.derby", "derby"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-                mavenBundle("asm", "asm-all"),
+               // mavenBundle("asm", "asm-all"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers"),
