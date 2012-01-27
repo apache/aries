@@ -142,12 +142,12 @@ public class WabConverterITest {
         // Bundles
         mavenBundle("org.apache.aries.web","org.apache.aries.web.urlhandler"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("asm", "asm-all"),
+        mavenBundle("org.ow2.asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
-        mavenBundle("asm","asm-all"),
+       
 
         equinox().version("3.5.0"));
     options = updateOptions(options);
