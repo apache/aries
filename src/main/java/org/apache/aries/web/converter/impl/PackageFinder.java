@@ -28,13 +28,29 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
-public class PackageFinder implements AnnotationVisitor, SignatureVisitor, ClassVisitor,
-    FieldVisitor, MethodVisitor
+public class PackageFinder extends ClassVisitor//AnnotationVisitor, SignatureVisitor, ClassVisitor,
+    //FieldVisitor, MethodVisitor
 {
+  private static int asmVersion = Opcodes.ASM4;
+  private PackageFinderSignatureVisitor pfsv;
+  private PackageFinderAnnotationVisitor pfav;
+  private PackageFinderFieldVisitor pffv;
+  private PackageFinderMethodVisitor pfmv;
+  
+  public PackageFinder()
+  {
+    super(asmVersion);
+    this.pfsv = new PackageFinderSignatureVisitor();
+    this.pfav = new PackageFinderAnnotationVisitor();
+    this.pffv = new PackageFinderFieldVisitor();
+    this.pfmv = new PackageFinderMethodVisitor();
+  }
+
   private Set<String> packages = new HashSet<String>();
   private Set<String> exemptPackages = new HashSet<String>();
 
@@ -154,12 +170,12 @@ public class PackageFinder implements AnnotationVisitor, SignatureVisitor, Class
 
   private void addSignaturePackages(String signature)
   {
-    if (signature != null) new SignatureReader(signature).accept(this);
+    if (signature != null) new SignatureReader(signature).accept(pfsv);
   }
 
   private void addResolvedSignaturePackages(String signature)
   {
-    if (signature != null) new SignatureReader(signature).acceptType(this);
+    if (signature != null) new SignatureReader(signature).acceptType(pfsv);
   }
 
   //
@@ -182,7 +198,7 @@ public class PackageFinder implements AnnotationVisitor, SignatureVisitor, Class
   public AnnotationVisitor visitAnnotation(String descriptor, boolean visible)
   {
     addPackage(getDescriptorInfo(descriptor));
-    return this;
+    return pfav;
   }
 
   public void visitAttribute(Attribute arg0)
@@ -197,7 +213,7 @@ public class PackageFinder implements AnnotationVisitor, SignatureVisitor, Class
     else addResolvedSignaturePackages(signature);
 
     if (value instanceof Type) addPackage(getType((Type) value));
-    return this;
+    return pffv;
   }
 
   public void visitInnerClass(String arg0, String arg1, String arg2, int arg3)
@@ -212,7 +228,7 @@ public class PackageFinder implements AnnotationVisitor, SignatureVisitor, Class
     else addSignaturePackages(signature);
 
     addPackages(getResolvedPackageNames(exceptions));
-    return this;
+    return pfmv;
 
   }
 
@@ -231,224 +247,270 @@ public class PackageFinder implements AnnotationVisitor, SignatureVisitor, Class
     // no-op
   }
 
-  // 
-  // MethodVisitor methods
-  //
 
-  public AnnotationVisitor visitAnnotationDefault()
-  {
-    return this;
-  }
 
-  public void visitCode()
-  {
-    // no-op
-  }
 
-  public void visitFieldInsn(int opcode, String owner, String name, String descriptor)
-  {
-    addPackage(getResolvedPackageName(owner));
-    addPackage(getDescriptorInfo(descriptor));
-  }
 
-  public void visitFrame(int arg0, int arg1, Object[] arg2, int arg3, Object[] arg4)
-  {
-    // no-op
-  }
 
-  public void visitIincInsn(int arg0, int arg1)
-  {
-    // no-op
-  }
 
-  public void visitInsn(int arg0)
-  {
-    // no-op
-  }
+  public class PackageFinderSignatureVisitor extends SignatureVisitor {
 
-  public void visitIntInsn(int arg0, int arg1)
-  {
-    // no-op
-  }
+    public PackageFinderSignatureVisitor()
+    {
+      super(asmVersion);
+    }
+    
+    // 
+    // SignatureVisitor methods
+    //
 
-  public void visitJumpInsn(int arg0, Label arg1)
-  {
-    // no-op
-  }
+    public SignatureVisitor visitArrayType()
+    {
+      return pfsv;
+    }
 
-  public void visitLabel(Label arg0)
-  {
-    // no-op
-  }
+    public void visitBaseType(char arg0)
+    {
+      // no-op
+    }
 
-  public void visitLdcInsn(Object type)
-  {
-    if (type instanceof Type) addPackage(getType((Type) type));
-  }
+    public SignatureVisitor visitClassBound()
+    {
+      return pfsv;
+    }
 
-  public void visitLineNumber(int arg0, Label arg1)
-  {
-    // no-op
-  }
+    public void visitClassType(String name)
+    {
+      signatureOuterClass = name;
+      addPackage(getResolvedPackageName(name));
+    }
 
-  public void visitLocalVariable(String name, String descriptor, String signature, Label start,
-      Label end, int index)
-  {
-    addResolvedSignaturePackages(signature);
-  }
+    public void visitInnerClassType(String name)
+    {
+      addPackage(getResolvedPackageName(signatureOuterClass + "$" + name));
+    }
 
-  public void visitLookupSwitchInsn(Label arg0, int[] arg1, Label[] arg2)
-  {
-    // no-op
-  }
+    public SignatureVisitor visitExceptionType()
+    {
+      return pfsv;
+    }
 
-  public void visitMaxs(int arg0, int arg1)
-  {
-    // no-op
-  }
+    public void visitFormalTypeParameter(String arg0)
+    {
+      // no-op
+    }
 
-  public void visitMethodInsn(int opcode, String owner, String name, String descriptor)
-  {
-    addPackage(getResolvedPackageName(owner));
-    addPackages(getMethodDescriptorInfo(descriptor));
-  }
+    public SignatureVisitor visitInterface()
+    {
+      return pfsv;
+    }
 
-  public void visitMultiANewArrayInsn(String descriptor, int arg1)
-  {
-    addPackage(getDescriptorInfo(descriptor));
-  }
+    public SignatureVisitor visitParameterType()
+    {
+      return pfsv;
+    }
 
-  public AnnotationVisitor visitParameterAnnotation(int arg0, String descriptor, boolean arg2)
-  {
-    addPackage(getDescriptorInfo(descriptor));
-    return this;
-  }
+    public SignatureVisitor visitReturnType()
+    {
+      return pfsv;
+    }
 
-  public void visitTableSwitchInsn(int arg0, int arg1, Label arg2, Label[] arg3)
-  {
-    //no-op
-  }
+    public SignatureVisitor visitSuperclass()
+    {
+      return pfsv;
+    }
 
-  public void visitTryCatchBlock(Label arg0, Label arg1, Label arg2, String type)
-  {
-    addPackage(getResolvedPackageName(type));
-  }
+    public void visitTypeArgument()
+    {
+      // no-op
+    }
 
-  public void visitTypeInsn(int arg0, String type)
-  {
-    addPackage(getResolvedPackageName(type));
-  }
+    public SignatureVisitor visitTypeArgument(char arg0)
+    {
+      return pfsv;
+    }
 
-  public void visitVarInsn(int arg0, int arg1)
-  {
-    // no-op
-  }
+    public void visitTypeVariable(String arg0)
+    {
+      // no-op
+    }
 
-  //
-  // AnnotationVisitor Methods
-  //
-
-  public void visit(String arg0, Object value)
-  {
-    if (value instanceof Type) {
-      addPackage(getType((Type) value));
+    public SignatureVisitor visitInterfaceBound()
+    {
+      return pfsv;
     }
   }
+  
+  
+  
+  
+  public class PackageFinderAnnotationVisitor extends AnnotationVisitor {
 
-  public AnnotationVisitor visitAnnotation(String arg0, String descriptor)
-  {
-    addPackage(getDescriptorInfo(descriptor));
-    return this;
+    public PackageFinderAnnotationVisitor()
+    {
+      super(asmVersion);
+    }
+    
+    //
+    // AnnotationVisitor Methods
+    //
+
+    public void visit(String arg0, Object value)
+    {
+      if (value instanceof Type) {
+        addPackage(getType((Type) value));
+      }
+    }
+
+    public AnnotationVisitor visitAnnotation(String arg0, String descriptor)
+    {
+      addPackage(getDescriptorInfo(descriptor));
+      return pfav;
+    }
+
+    public AnnotationVisitor visitArray(String arg0)
+    {
+      return pfav;
+    }
+
+    public void visitEnum(String name, String desc, String value)
+    {
+      addPackage(getDescriptorInfo(desc));
+    }
   }
+  
+  
+  
+  
+  public class PackageFinderFieldVisitor extends FieldVisitor {
 
-  public AnnotationVisitor visitArray(String arg0)
-  {
-    return this;
+    public PackageFinderFieldVisitor()
+    {
+      super(asmVersion);
+    }
   }
+  
+  
+  
+  
+  public class PackageFinderMethodVisitor extends MethodVisitor {
 
-  public void visitEnum(String name, String desc, String value)
-  {
-    addPackage(getDescriptorInfo(desc));
+    public PackageFinderMethodVisitor()
+    {
+      super(asmVersion);
+    }
+    
+    // 
+    // MethodVisitor methods
+    //
+
+    public AnnotationVisitor visitAnnotationDefault()
+    {
+      return pfav;
+    }
+
+    public void visitCode()
+    {
+      // no-op
+    }
+
+    public void visitFrame(int arg0, int arg1, Object[] arg2, int arg3, Object[] arg4)
+    {
+      // no-op
+    }
+
+    public void visitIincInsn(int arg0, int arg1)
+    {
+      // no-op
+    }
+
+    public void visitInsn(int arg0)
+    {
+      // no-op
+    }
+
+    public void visitIntInsn(int arg0, int arg1)
+    {
+      // no-op
+    }
+
+    public void visitJumpInsn(int arg0, Label arg1)
+    {
+      // no-op
+    }
+
+    public void visitLabel(Label arg0)
+    {
+      // no-op
+    }
+
+    public void visitLdcInsn(Object type)
+    {
+      if (type instanceof Type) addPackage(getType((Type) type));
+    }
+
+    public void visitLineNumber(int arg0, Label arg1)
+    {
+      // no-op
+    }
+
+    public void visitLocalVariable(String name, String descriptor, String signature, Label start,
+        Label end, int index)
+    {
+      addResolvedSignaturePackages(signature);
+    }
+
+    public void visitLookupSwitchInsn(Label arg0, int[] arg1, Label[] arg2)
+    {
+      // no-op
+    }
+
+    public void visitMaxs(int arg0, int arg1)
+    {
+      // no-op
+    }
+
+    public void visitMethodInsn(int opcode, String owner, String name, String descriptor)
+    {
+      addPackage(getResolvedPackageName(owner));
+      addPackages(getMethodDescriptorInfo(descriptor));
+    }
+
+    public void visitMultiANewArrayInsn(String descriptor, int arg1)
+    {
+      addPackage(getDescriptorInfo(descriptor));
+    }
+
+    public AnnotationVisitor visitParameterAnnotation(int arg0, String descriptor, boolean arg2)
+    {
+      addPackage(getDescriptorInfo(descriptor));
+      return pfav;
+    }
+
+    public void visitTableSwitchInsn(int arg0, int arg1, Label arg2, Label[] arg3)
+    {
+      //no-op
+    }
+
+    public void visitTryCatchBlock(Label arg0, Label arg1, Label arg2, String type)
+    {
+      addPackage(getResolvedPackageName(type));
+    }
+
+    public void visitTypeInsn(int arg0, String type)
+    {
+      addPackage(getResolvedPackageName(type));
+    }
+
+    public void visitVarInsn(int arg0, int arg1)
+    {
+      // no-op
+    }
+    
+    public void visitFieldInsn(int opcode, String owner, String name, String descriptor)
+    {
+      addPackage(getResolvedPackageName(owner));
+      addPackage(getDescriptorInfo(descriptor));
+    }
   }
-
-  // 
-  // SignatureVisitor methods
-  //
-
-  public SignatureVisitor visitArrayType()
-  {
-    return this;
-  }
-
-  public void visitBaseType(char arg0)
-  {
-    // no-op
-  }
-
-  public SignatureVisitor visitClassBound()
-  {
-    return this;
-  }
-
-  public void visitClassType(String name)
-  {
-    signatureOuterClass = name;
-    addPackage(getResolvedPackageName(name));
-  }
-
-  public void visitInnerClassType(String name)
-  {
-    addPackage(getResolvedPackageName(signatureOuterClass + "$" + name));
-  }
-
-  public SignatureVisitor visitExceptionType()
-  {
-    return this;
-  }
-
-  public void visitFormalTypeParameter(String arg0)
-  {
-    // no-op
-  }
-
-  public SignatureVisitor visitInterface()
-  {
-    return this;
-  }
-
-  public SignatureVisitor visitParameterType()
-  {
-    return this;
-  }
-
-  public SignatureVisitor visitReturnType()
-  {
-    return this;
-  }
-
-  public SignatureVisitor visitSuperclass()
-  {
-    return this;
-  }
-
-  public void visitTypeArgument()
-  {
-    // no-op
-  }
-
-  public SignatureVisitor visitTypeArgument(char arg0)
-  {
-    return this;
-  }
-
-  public void visitTypeVariable(String arg0)
-  {
-    // no-op
-  }
-
-  public SignatureVisitor visitInterfaceBound()
-  {
-    return this;
-  }
-
 }
