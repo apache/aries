@@ -27,7 +27,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-public class SemanticVersioningClassVisitor implements ClassVisitor {
+public class SemanticVersioningClassVisitor extends ClassVisitor {
 
     private ClassDeclaration classDeclaration;
     private boolean needVisit = false;
@@ -35,12 +35,14 @@ public class SemanticVersioningClassVisitor implements ClassVisitor {
     private SerialVersionClassVisitor cv = null;
 
     public SemanticVersioningClassVisitor(URLClassLoader newJarLoader, SerialVersionClassVisitor cv) {
-        this.loader = newJarLoader;
-        this.cv = cv;
+      super(SemanticVersioningUtils.ASM4);
+      this.loader = newJarLoader;
+      this.cv = cv;
     }
 
     public SemanticVersioningClassVisitor(URLClassLoader newJarLoader) {
-        this.loader = newJarLoader;
+      super(SemanticVersioningUtils.ASM4);
+      this.loader = newJarLoader;
     }
 
     public ClassDeclaration getClassDeclaration() {
