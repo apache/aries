@@ -53,7 +53,7 @@ public class InterfaceProxyingTest {
     
     private Object list = new Callable<Object>() {
 
-      @Override
+
       public Object call() throws Exception {
         return null;
       }
@@ -127,7 +127,7 @@ public class InterfaceProxyingTest {
     
     tc.setReturn(new Callable<Object>() {
 
-      @Override
+ 
       public Object call() throws Exception {
         throw new RuntimeException();
       }
@@ -145,7 +145,7 @@ public class InterfaceProxyingTest {
     
     tc.setReturn(new Callable<Object>() {
 
-      @Override
+     
       public Object call() throws Exception {
         try {
           throw new RuntimeException();

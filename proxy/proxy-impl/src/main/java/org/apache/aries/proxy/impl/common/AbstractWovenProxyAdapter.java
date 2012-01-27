@@ -21,7 +21,6 @@ package org.apache.aries.proxy.impl.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,9 +28,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.InvocationListener;
@@ -39,7 +38,6 @@ import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.gen.Constants;
 import org.apache.aries.proxy.weaving.WovenProxy;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
@@ -63,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * used to weave classes being loaded by the framework, and InterfaceCombiningClassAdapter
  * which is used to dynamically create objects that implement multiple interfaces
  */
-public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements Opcodes {
+public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements Opcodes {
   private static final Logger LOGGER = LoggerFactory
       .getLogger(AbstractWovenProxyAdapter.class);
 
@@ -200,7 +198,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
    */
   public AbstractWovenProxyAdapter(ClassVisitor writer, String className,
       ClassLoader loader) {
-    super(writer);
+    super(Constants.ASM4, writer);
     typeBeingWoven = Type.getType("L" + className.replace('.', '/') + ";");
     this.loader = loader;
   }
@@ -345,7 +343,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassAdapter implements 
       //to write our init code to static_init_UUID instead
       staticInitMethod = new Method("static_init_" + UU_ID, Type.VOID_TYPE, NO_ARGS);
       staticInitMethodFlags = staticInitMethodFlags | ACC_FINAL;
-      methodVisitorToReturn = new AdviceAdapter(cv.visitMethod(access, name, desc, signature,
+      methodVisitorToReturn = new AdviceAdapter(Constants.ASM4, cv.visitMethod(access, name, desc, signature,
           exceptions), access, name, desc){
         @Override
         protected void onMethodEnter()

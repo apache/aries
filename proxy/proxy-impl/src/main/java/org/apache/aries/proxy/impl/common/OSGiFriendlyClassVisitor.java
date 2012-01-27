@@ -19,38 +19,39 @@
 package org.apache.aries.proxy.impl.common;
 
 import org.apache.aries.proxy.impl.gen.Constants;
-import org.apache.aries.proxy.impl.weaving.EmptyVisitor;
-
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
+/**
+ * We need to override ASM's default behaviour in {@link #getCommonSuperClass(String, String)}
+ * so that it doesn't load classes (which it was doing on the wrong {@link ClassLoader}
+ * anyway...)
+ */
+public final class OSGiFriendlyClassVisitor extends ClassVisitor {
 
-
-import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
-
-public class ConstructorFinder extends ClassVisitor
-{
-
-  private boolean hasNoArgsConstructor = false;
+ 
+  private final boolean inlineJSR;
   
-  public boolean hasNoArgsConstructor()
-  {
-    return hasNoArgsConstructor;
-  }
+  public OSGiFriendlyClassVisitor(ClassVisitor cv, int arg1) {
+   
+    super(Constants.ASM4, cv);
 
-  public ConstructorFinder()
-  {
-    super(Constants.ASM4, new EmptyVisitor(Constants.ASM4));
+    inlineJSR = arg1 == ClassWriter.COMPUTE_FRAMES;
   }
+  
+  
 
+  
   @Override
-  public MethodVisitor visitMethod(int access, String name, String desc, String signature,
-      String[] exceptions)
-  {
-    if("<init>".equals(name)) {
-      if(Type.getArgumentTypes(desc).length == 0 && (access & ACC_PRIVATE) == 0)
-        hasNoArgsConstructor = true;
-    }
-    return null;
+  public MethodVisitor visitMethod(int arg0, String arg1, String arg2,
+      String arg3, String[] arg4) {
+    MethodVisitor mv =  cv.visitMethod(arg0, arg1, arg2, arg3, arg4);
+    
+    if(inlineJSR)
+      mv = new JSRInlinerAdapter(mv, arg0, arg1, arg2, arg3, arg4);
+    
+    return mv;
   }
+
 }

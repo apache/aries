@@ -22,7 +22,9 @@ package org.apache.aries.proxy.synthesizer;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import org.apache.aries.proxy.impl.gen.Constants;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 
@@ -46,6 +48,7 @@ public class Synthesizer
     for (String arg : args) {
       FileInputStream classInStream = null;
       ClassWriter writer = null;
+     
       try {
         //read in the class
         classInStream = new FileInputStream(arg);
@@ -55,18 +58,11 @@ public class Synthesizer
         //we just need to override the visit method so we can add
         //the synthetic modifier, otherwise we use the methods in
         //a standard writer
-        writer = new ClassWriter(reader, 0) {
-          @Override
-          public void visit(int version, int access, String name, String signature,
-              String superName, String[] interfaces)
-          {
-            super.visit(version, access | Opcodes.ACC_SYNTHETIC, name, signature, superName,
-                interfaces);
-          }
-        };
+        writer =   new ClassWriter(reader, 0) ;
+        ClassVisitor cv = new CustomClassVisitor((ClassVisitor)writer);
         //call accept on the reader to start the visits
         //using the writer we created as the visitor
-        reader.accept(writer, 0);
+        reader.accept(cv, 0);
       } finally {
         //close the InputStream if it is hanging around
         if (classInStream != null) classInStream.close();
@@ -81,5 +77,23 @@ public class Synthesizer
         if (classOutStream != null) classOutStream.close();
       }
     }
+  }
+  
+  public static class CustomClassVisitor extends ClassVisitor
+  {
+
+    public CustomClassVisitor( ClassVisitor cv)
+    {
+      super(Constants.ASM4, cv);
+      
+    }
+    @Override
+    public void visit(int version, int access, String name, String signature,
+        String superName, String[] interfaces)
+    {
+      cv.visit(version, access | Opcodes.ACC_SYNTHETIC, name, signature, superName,
+          interfaces);
+    }
+
   }
 }
