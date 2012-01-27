@@ -192,7 +192,7 @@ public class JPAContainerDataSourceFactoryTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
-        mavenBundle("asm", "asm-all"),
+        mavenBundle("org.ow2.asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.api"),

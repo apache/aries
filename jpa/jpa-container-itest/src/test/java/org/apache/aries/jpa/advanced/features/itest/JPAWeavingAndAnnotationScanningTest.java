@@ -65,7 +65,7 @@ public abstract class JPAWeavingAndAnnotationScanningTest extends AbstractIntegr
         mavenBundle("commons-collections", "commons-collections"),
         mavenBundle("commons-pool", "commons-pool"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("asm", "asm-all"),
+        mavenBundle("org.ow2.asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
