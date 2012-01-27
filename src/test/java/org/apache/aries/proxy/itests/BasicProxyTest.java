@@ -36,6 +36,8 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 @RunWith(JUnit4TestRunner.class)
 public class BasicProxyTest extends AbstractProxyTest
@@ -93,12 +95,15 @@ public class BasicProxyTest extends AbstractProxyTest
           // Bundles
           mavenBundle("org.apache.aries", "org.apache.aries.util"),
           mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-          mavenBundle("asm", "asm-all"),
+          mavenBundle("org.ow2.asm", "asm-all"),
           // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
           // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
           mavenBundle("org.osgi", "org.osgi.compendium"),
-//          org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-
+         /* vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+          waitForFrameworkStartup(),*/
+          
+          
+          
           equinox().version("3.5.0")
       );
   }

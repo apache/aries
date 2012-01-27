@@ -66,7 +66,7 @@
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
             <scope>test</scope>
-            <version>0.4</version>
+            <version>0.4.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
@@ -140,10 +140,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>asm</groupId>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
+            <version>4.0</version>
             <scope>test</scope>
-            <version>3.2</version>
+            
         </dependency>
     </dependencies>
 
