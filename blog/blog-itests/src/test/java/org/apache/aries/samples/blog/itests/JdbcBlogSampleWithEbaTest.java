@@ -160,7 +160,7 @@ public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager" ),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint" ),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers" ),
-                mavenBundle("asm", "asm-all" ),
+                mavenBundle("org.ow2.asm", "asm-all" ),
                 /* For debugging, uncomment the next two lines  */
                 /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
                 waitForFrameworkStartup(),  
