@@ -62,7 +62,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
                 
                 mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
-                mavenBundle("asm", "asm-all"),
+                mavenBundle("org.ow2.asm", "asm-all"),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"), 
