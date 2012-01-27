@@ -24,7 +24,13 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-public class EmptyClassVisitor implements ClassVisitor {
+public class EmptyClassVisitor extends ClassVisitor {
+
+    public EmptyClassVisitor()
+  {
+    super(SemanticVersioningUtils.ASM4);
+    
+  }
 
     @Override
     public void visit(int arg0, int arg1, String arg2, String arg3, String arg4, String[] arg5) {
