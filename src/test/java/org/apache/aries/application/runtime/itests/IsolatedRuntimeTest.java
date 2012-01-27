@@ -314,7 +314,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         // do not provision against the local runtime
         // Bundles
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
-        mavenBundle("asm", "asm-all"),
+        mavenBundle("org.ow2.asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
         mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
