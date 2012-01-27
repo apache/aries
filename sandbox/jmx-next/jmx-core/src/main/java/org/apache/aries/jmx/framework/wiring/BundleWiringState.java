@@ -113,6 +113,9 @@ public class BundleWiringState implements BundleWiringStateMBean {
     private void populateTransitiveRevisions(String namespace, BundleRevision rootRevision, Map<BundleRevision, Integer> allRevisions) {
         allRevisions.put(rootRevision, System.identityHashCode(rootRevision));
         BundleWiring wiring = rootRevision.getWiring();
+        if (wiring == null)
+            return;
+
         List<BundleWire> wires = wiring.getRequiredWires(namespace);
         for (BundleWire wire : wires) {
             BundleRevision revision = wire.getCapability().getRevision();
