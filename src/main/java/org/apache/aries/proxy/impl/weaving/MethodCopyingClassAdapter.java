@@ -26,6 +26,7 @@ import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.TypeMethod;
+import org.apache.aries.proxy.impl.gen.Constants;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -33,7 +34,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.EmptyVisitor;
+
 import org.objectweb.asm.commons.Method;
 
 /**
@@ -65,6 +66,7 @@ final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
   public MethodCopyingClassAdapter(ClassVisitor cv, Class<?> superToCopy,
       Type overridingClassType, Set<Method> knownMethods, 
       Map<String, TypeMethod> transformedMethods) {
+    super(Constants.ASM4);
     this.cv = cv;
     this.superToCopy = superToCopy;
     this.overridingClassType = overridingClassType;
@@ -132,7 +134,7 @@ final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
    * the body with a call to the super-types implementation. The original annotations
    * attributes etc are all copied.
    */
-  private static final class CopyingMethodAdapter extends EmptyVisitor {
+  private static final class CopyingMethodAdapter extends MethodVisitor {
     /** The visitor to delegate to */
     private final MethodVisitor mv;
     /** The type that declares this method (not the one that will override it) */
@@ -142,11 +144,13 @@ final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
     
     public CopyingMethodAdapter(MethodVisitor mv, Type superType, 
         Method currentTransformMethod) {
+      super(Constants.ASM4);
       this.mv = mv;
       this.superType = superType;
       this.currentTransformMethod = currentTransformMethod;
     }
 
+    //TODO might not work for attributes
     @Override
     public final AnnotationVisitor visitAnnotation(String arg0, boolean arg1) {
       return mv.visitAnnotation(arg0, arg1);

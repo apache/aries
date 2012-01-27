@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationHandler;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
@@ -35,7 +34,7 @@ import org.objectweb.asm.commons.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
+public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
 {
 
   private static final Type STRING_TYPE = Type.getType(String.class);
@@ -62,7 +61,7 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
   public ProxySubclassAdapter(ClassVisitor writer, String newClassName, ClassLoader loader)
   {
     // call the superclass constructor
-    super(writer);
+    super(Constants.ASM4, writer);
     // the writer is now the cv in the superclass of ClassAdapter
 
     LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassAdapter", new Object[] { this, writer,

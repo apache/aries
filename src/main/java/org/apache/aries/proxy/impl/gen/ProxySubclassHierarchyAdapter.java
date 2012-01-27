@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  *
  */
-public class ProxySubclassHierarchyAdapter implements ClassVisitor, Opcodes
+public class ProxySubclassHierarchyAdapter extends ClassVisitor implements Opcodes
 {
 
   private ProxySubclassAdapter adapter = null;
@@ -47,6 +47,7 @@ public class ProxySubclassHierarchyAdapter implements ClassVisitor, Opcodes
 
   ProxySubclassHierarchyAdapter(ProxySubclassAdapter adapter, Collection<String> methodsToImplement)
   {
+    super(Constants.ASM4);
     LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassHeirarchyAdapter", new Object[] {
         this, adapter, methodsToImplement });
 
