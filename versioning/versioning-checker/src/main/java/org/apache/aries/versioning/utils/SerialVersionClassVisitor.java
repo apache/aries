@@ -31,13 +31,11 @@ public class SerialVersionClassVisitor extends SerialVersionUIDAdder {
     }
 
     public long getComputeSerialVersionUID() {
-        if (computeSVUID) {
             try {
                 return computeSVUID();
             } catch (IOException ioe) {
                 // not a issue
             }
-        }
         return 0;
     }
 }

@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.objectweb.asm.Opcodes;
+
 public class SemanticVersioningUtils {
 
     public static final String classExt = ".class";
@@ -51,6 +53,7 @@ public class SemanticVersioningUtils {
     public static final String SERIALIZABLE_CLASS_IDENTIFIER = "java/io/Serializable";
     public static final String SERIAL_VERSION_UTD = "serialVersionUID";
     public static final String ENUM_CLASS = "java/lang/Enum";
+    public static final int ASM4 = Opcodes.ASM4;
 
     public static boolean isLessAccessible(GenericDeclaration before, GenericDeclaration after) {
 
