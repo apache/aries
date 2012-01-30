@@ -18,15 +18,12 @@
  */
 package org.apache.aries.proxy.impl.common;
 
-import org.apache.aries.proxy.impl.gen.Constants;
-import org.apache.aries.proxy.impl.weaving.EmptyVisitor;
+import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-
-
-import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 
 public class ConstructorFinder extends ClassVisitor
 {
@@ -40,7 +37,7 @@ public class ConstructorFinder extends ClassVisitor
 
   public ConstructorFinder()
   {
-    super(Constants.ASM4, new EmptyVisitor(Constants.ASM4));
+    super(Opcodes.ASM4);
   }
 
   @Override
