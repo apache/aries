@@ -18,10 +18,10 @@
  */
 package org.apache.aries.proxy.impl.common;
 
-import org.apache.aries.proxy.impl.gen.Constants;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 /**
  * We need to override ASM's default behaviour in {@link #getCommonSuperClass(String, String)}
@@ -35,7 +35,7 @@ public final class OSGiFriendlyClassVisitor extends ClassVisitor {
   
   public OSGiFriendlyClassVisitor(ClassVisitor cv, int arg1) {
    
-    super(Constants.ASM4, cv);
+    super(Opcodes.ASM4, cv);
 
     inlineJSR = arg1 == ClassWriter.COMPUTE_FRAMES;
   }

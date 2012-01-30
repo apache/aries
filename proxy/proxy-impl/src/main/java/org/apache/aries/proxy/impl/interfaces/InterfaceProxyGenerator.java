@@ -31,9 +31,8 @@ import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
-import org.apache.aries.proxy.impl.gen.Constants;
-import org.apache.aries.proxy.impl.weaving.EmptyVisitor;
 import org.apache.aries.proxy.weaving.WovenProxy;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.osgi.framework.Bundle;
 
@@ -43,11 +42,11 @@ import org.osgi.framework.Bundle;
  * method overrides for any abstract methods in the hierarchy, but not override any non-abstract methods.
  * To be safely used as a supertype the superclass should be a WovenProxy.
  */
-public final class InterfaceProxyGenerator extends EmptyVisitor implements Opcodes {
+public final class InterfaceProxyGenerator extends ClassVisitor implements Opcodes {
 
   public InterfaceProxyGenerator()
   {
-    super(Constants.ASM4);
+    super(Opcodes.ASM4);
     
   }
 
