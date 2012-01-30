@@ -26,7 +26,6 @@ import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.TypeMethod;
-import org.apache.aries.proxy.impl.gen.Constants;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -34,7 +33,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-
 import org.objectweb.asm.commons.Method;
 
 /**
@@ -44,7 +42,7 @@ import org.objectweb.asm.commons.Method;
  * all the way up the Class hierarchy and need to override methods on the first
  * subclass we can weave.
  */
-final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
+final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
   /** The sub-class visitor to write to */
   private final ClassVisitor cv;
   /** The super-class to copy from */
@@ -66,7 +64,7 @@ final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
   public MethodCopyingClassAdapter(ClassVisitor cv, Class<?> superToCopy,
       Type overridingClassType, Set<Method> knownMethods, 
       Map<String, TypeMethod> transformedMethods) {
-    super(Constants.ASM4);
+    super(Opcodes.ASM4);
     this.cv = cv;
     this.superToCopy = superToCopy;
     this.overridingClassType = overridingClassType;
@@ -144,7 +142,7 @@ final class MethodCopyingClassAdapter extends EmptyVisitor implements Opcodes {
     
     public CopyingMethodAdapter(MethodVisitor mv, Type superType, 
         Method currentTransformMethod) {
-      super(Constants.ASM4);
+      super(Opcodes.ASM4);
       this.mv = mv;
       this.superType = superType;
       this.currentTransformMethod = currentTransformMethod;

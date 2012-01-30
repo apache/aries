@@ -28,22 +28,19 @@ import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassVisitor;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassWriter;
-import org.apache.aries.proxy.impl.gen.Constants;
-import org.apache.aries.proxy.impl.weaving.EmptyVisitor;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-
 import org.objectweb.asm.commons.Method;
 
 /**
  * This class is used to aggregate several interfaces into a real class which implements all of them
  */
-final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcodes {
-  
+final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcodes {
+
   /** The superclass we should use */
   private final Class<? extends WovenProxy> superclass;
   /** The interfaces we need to implement */
@@ -54,7 +51,7 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
   private final InterfaceUsingWovenProxyAdapter adapter;
   /** Whether we have already written the class bytes */
   private boolean done = false;
-  
+
   /**
    * Construct an {@link InterfaceCombiningClassAdapter} to combine the supplied
    * interfaces into a class with the supplied name using the supplied classloader
@@ -62,26 +59,26 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
    * @param loader
    * @param interfaces
    */
-   InterfaceCombiningClassAdapter(String className,
+  InterfaceCombiningClassAdapter(String className,
       ClassLoader loader, Class<? extends WovenProxy> superclass, Collection<Class<?>> interfaces) {
-     super(Constants.ASM4);
+    super(Opcodes.ASM4);
     writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader, className, (superclass!=null)? superclass.getName(): null);
     ClassVisitor cv = new OSGiFriendlyClassVisitor(writer, ClassWriter.COMPUTE_FRAMES);
     adapter = new InterfaceUsingWovenProxyAdapter(cv, className, loader);
-    
+
     this.interfaces = interfaces;
     this.superclass = superclass;
     String[] interfaceNames = new String[interfaces.size()];
-    
+
     int i = 0;
     for(Class<?> in : interfaces) {
       interfaceNames[i] = Type.getInternalName(in);
       i++;
     }
-    
+
     adapter.visit(V1_6, ACC_PUBLIC | ACC_SYNTHETIC, className, null,
         (superclass == null) ? AbstractWovenProxyAdapter.OBJECT_TYPE.getInternalName() :
-                               Type.getInternalName(superclass), interfaceNames);
+          Type.getInternalName(superclass), interfaceNames);
   }
 
 
@@ -98,7 +95,7 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
       return adapter.visitMethod(access & ~ACC_ABSTRACT, name, desc, null, arg4);
     }
   }
-  
+
   /**
    * Generate the byte[] for our class
    * @return
@@ -114,24 +111,24 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
           throw new UnableToProxyException(c, e);
         }
       }
-      
+
       Class<?> clazz = superclass;
-      
+
       while(clazz != null && (clazz.getModifiers() & Modifier.ABSTRACT) != 0) {
         adapter.setCurrentMethodDeclaringType(Type.getType(clazz), false);
         visitAbstractMethods(clazz);
         clazz = clazz.getSuperclass();
       }
-      
+
       adapter.setCurrentMethodDeclaringType(Type.getType(Object.class), false);
       visitObjectMethods();
-      
+
       adapter.visitEnd();
       done  = true;
     }
     return writer.toByteArray();
   }
-  
+
   private void visitAbstractMethods(Class<?> clazz) {
     for(java.lang.reflect.Method m : clazz.getDeclaredMethods()) {
       int modifiers = m.getModifiers();
@@ -153,13 +150,13 @@ final class InterfaceCombiningClassAdapter extends EmptyVisitor implements Opcod
    * even if they are not on any of the interfaces
    */
   private void visitObjectMethods() {
-      MethodVisitor visitor = visitMethod(ACC_PUBLIC, "toString", "()Ljava/lang/String;", null, null);
-      if (visitor != null) visitor.visitEnd();
-      
-      visitor = visitMethod(ACC_PUBLIC, "equals", "(Ljava/lang/Object;)Z", null, null);
-      if (visitor != null) visitor.visitEnd();
+    MethodVisitor visitor = visitMethod(ACC_PUBLIC, "toString", "()Ljava/lang/String;", null, null);
+    if (visitor != null) visitor.visitEnd();
 
-      visitor = visitMethod(ACC_PUBLIC, "hashCode", "()I", null, null);
-      if (visitor != null) visitor.visitEnd();      
+    visitor = visitMethod(ACC_PUBLIC, "equals", "(Ljava/lang/Object;)Z", null, null);
+    if (visitor != null) visitor.visitEnd();
+
+    visitor = visitMethod(ACC_PUBLIC, "hashCode", "()I", null, null);
+    if (visitor != null) visitor.visitEnd();      
   }
 }

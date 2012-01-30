@@ -18,12 +18,10 @@
  */
 package org.apache.aries.proxy.impl.gen;
 
-import org.objectweb.asm.Opcodes;
 
 public interface Constants 
 {
   final static String LOG_ENTRY = "Method entry: {}, args {}";
   final static String LOG_EXIT = "Method exit: {}, returning {}";
   final static String LOG_EXCEPTION = "Caught exception";
-  final static int ASM4 = Opcodes.ASM4;
 }

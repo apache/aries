@@ -198,7 +198,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    */
   public AbstractWovenProxyAdapter(ClassVisitor writer, String className,
       ClassLoader loader) {
-    super(Constants.ASM4, writer);
+    super(Opcodes.ASM4, writer);
     typeBeingWoven = Type.getType("L" + className.replace('.', '/') + ";");
     this.loader = loader;
   }
@@ -343,7 +343,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       //to write our init code to static_init_UUID instead
       staticInitMethod = new Method("static_init_" + UU_ID, Type.VOID_TYPE, NO_ARGS);
       staticInitMethodFlags = staticInitMethodFlags | ACC_FINAL;
-      methodVisitorToReturn = new AdviceAdapter(Constants.ASM4, cv.visitMethod(access, name, desc, signature,
+      methodVisitorToReturn = new AdviceAdapter(Opcodes.ASM4, cv.visitMethod(access, name, desc, signature,
           exceptions), access, name, desc){
         @Override
         protected void onMethodEnter()
