@@ -51,17 +51,16 @@ class WrappingTransformer implements ClassTransformer {
     
     Object packages = persistenceProvider.getProperty("org.apache.aries.jpa.container.weaving.packages");
     
-    Bundle provider = persistenceProvider.getBundle();
-    String suffix = ";" + Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE + "=" +
-    provider.getSymbolicName() + ";" + Constants.BUNDLE_VERSION_ATTRIBUTE 
-    + "=" + provider.getVersion();
-    
     if(packages instanceof String[]) {
       for(String s : (String[]) packages) {
-        if (s.contains(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE)) packageImportsToAdd.add(s);
-        else packageImportsToAdd.add(s + suffix);
+        packageImportsToAdd.add(s);
       }
     } else {
+      Bundle provider = persistenceProvider.getBundle();
+      String suffix = ";" + Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE + "=" +
+      provider.getSymbolicName() + ";" + Constants.BUNDLE_VERSION_ATTRIBUTE 
+      + "=" + provider.getVersion();
+
       BundleRevision br = provider.adapt(BundleWiring.class).getRevision();
       for(BundleCapability bc : br.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE)) {
         packageImportsToAdd.add(bc.getAttributes().get(BundleRevision.PACKAGE_NAMESPACE) + suffix);
