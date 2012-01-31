@@ -64,21 +64,22 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
    */
   @Override
   protected final String getCommonSuperClass(String arg0, String arg1) {
+    //---------------  see asm ow2 316320 which proposes putting the generic common cases in ClassWriter.internalGetCommonSuperClass
     //If the two are equal then return either
     if(arg0.equals(arg1))
       return arg0;
-    
+
     //If either is Object, then Object must be the answer
     if(arg0.equals(OBJECT_INTERNAL_NAME) || arg1.equals(OBJECT_INTERNAL_NAME))
       return OBJECT_INTERNAL_NAME;
-    
+
     // If either of these class names are the current class then we can short
     // circuit to the superclass (which we already know)
     if(arg0.equals(currentClassInternalName))
-      getCommonSuperClass(currentSuperClassInternalName, arg1);
+      return getCommonSuperClass(currentSuperClassInternalName, arg1);
     else if (arg1.equals(currentClassInternalName))
-      getCommonSuperClass(arg0, currentSuperClassInternalName);
-    
+      return getCommonSuperClass(arg0, currentSuperClassInternalName);
+    //---------------- end asm 316320 proposal
     Set<String> names = new HashSet<String>();
     names.add(arg0);
     names.add(arg1);
@@ -96,10 +97,14 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
           if(is != null) {
             ClassReader cr = new ClassReader(is);
             arg00 = cr.getSuperName();
-            if(arg00 == null)
-              aRunning = false;
-            else if(!!!names.add(arg00))
+            if(arg00 == null) {
+              if (names.size() == 2) {
+                return OBJECT_INTERNAL_NAME; //arg0 is an interface
+              }
+              aRunning = false; //old arg00 was java.lang.Object
+            } else if(!!!names.add(arg00)) {
               return arg00;
+            }
           } else {
             //The class file isn't visible on this ClassLoader
             unable = arg0;
@@ -111,10 +116,14 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
           if(is != null) {
             ClassReader cr = new ClassReader(is);
             arg11 = cr.getSuperName();
-            if(arg11 == null)
-              bRunning = false;
-            else if(!!!names.add(arg11))
+            if(arg11 == null) {
+              if (names.size() == 3) {
+                return OBJECT_INTERNAL_NAME;  //arg1 is an interface
+              }
+              bRunning = false; //old arg11 was java.lang.Object
+            } else if(!!!names.add(arg11)) {
               return arg11;
+            }
           } else {
             unable = arg1;
             bRunning = false;
@@ -132,9 +141,5 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
     }
   }
 
-  /**
-   * We need access to the super's name and our class name
-   */
-  
 
 }
