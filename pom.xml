@@ -171,17 +171,17 @@
             <version>4.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.equinox</groupId>
-            <artifactId>cm</artifactId>
+		<dependency>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>cm</artifactId>
             <scope>test</scope>
-        </dependency>
+		</dependency>
 
-        <dependency>
-            <groupId>org.eclipse.osgi</groupId>
-            <artifactId>services</artifactId>
+		<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>services</artifactId>
             <scope>test</scope>
-        </dependency>
+		</dependency>
 
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -190,32 +190,32 @@
             <version>1.2</version>
         </dependency>
             
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-extender-war</artifactId>
+		<dependency>
+			<groupId>org.ops4j.pax.web</groupId>
+			<artifactId>pax-web-extender-war</artifactId>
             <scope>test</scope>
             <version>0.8.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-jetty-bundle</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.ops4j.pax.web</groupId>
+			<artifactId>pax-web-jetty-bundle</artifactId>
             <scope>test</scope>
             <version>0.8.1</version>
-        </dependency>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.fileinstall</artifactId>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.fileinstall</artifactId>
             <scope>test</scope>
             <version>2.0.8</version>
-        </dependency>
+		</dependency>
         
-        <dependency>
-            <groupId>org.apache.aries.jndi</groupId>
-            <artifactId>org.apache.aries.jndi</artifactId>
+		<dependency>
+			<groupId>org.apache.aries.jndi</groupId>
+			<artifactId>org.apache.aries.jndi</artifactId>
             <scope>test</scope>
             <version>0.3.2-SNAPSHOT</version>
-        </dependency>
+		</dependency>
 
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
@@ -230,6 +230,7 @@
           <version>0.4</version>
           <scope>test</scope>
         </dependency>
+
     </dependencies>
 
      <build>
