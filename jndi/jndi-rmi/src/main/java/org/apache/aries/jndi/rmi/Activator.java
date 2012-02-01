@@ -23,21 +23,23 @@ import java.util.Hashtable;
 import javax.naming.spi.ObjectFactory;
 
 import org.apache.aries.util.AriesFrameworkUtil;
-import org.apache.aries.util.log.Logger;
 import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jndi.JNDIConstants;
-import org.osgi.service.log.LogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
-    private Logger logger;
+
     private ServiceRegistration reg;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class.getName());
+
     public void start(BundleContext context) {
-        logger = new Logger(context);
-        logger.open();
+
+        LOGGER.debug("Registering RMI url handler");
 
         try {
             Hashtable<Object, Object> props = new Hashtable<Object, Object>();
@@ -46,20 +48,16 @@ public class Activator implements BundleActivator {
                         ObjectFactory.class.getName(),
                         ClassLoader.getSystemClassLoader().loadClass("com.sun.jndi.url.rmi.rmiURLContextFactory").newInstance(),
                         props);
-
-            logger.log(LogService.LOG_DEBUG, "Registered RMI url handler");
         }
         catch (Exception e)
         {
             MessageUtil msg = MessageUtil.createMessageUtil(Activator.class, "org.apache.aries.jndi.nls.jndiRmiMessages");
-            logger.log(LogService.LOG_INFO, msg.getMessage("rmi.factory.creation.failed"), e);
+            LOGGER.info(msg.getMessage("rmi.factory.creation.failed"), e);
         }
     }
 
     public void stop(BundleContext context) {
         AriesFrameworkUtil.safeUnregisterService(reg);
-
-        if (logger != null)
-            logger.close();
     }
+
 }
