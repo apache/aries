@@ -20,6 +20,7 @@ package org.apache.aries.proxy.impl.interfaces;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -29,9 +30,9 @@ import java.util.TreeSet;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
-import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.osgi.framework.Bundle;
@@ -64,8 +65,11 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
    * @return
    * @throws UnableToProxyException
    */
-  public static final Object getProxyInstance(Bundle client, Class<? extends WovenProxy> superclass,
+  public static final Object getProxyInstance(Bundle client, Class<?> superclass,
       Collection<Class<?>> ifaces, Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException{
+    
+    if(superclass != null && (superclass.getModifiers() & Modifier.FINAL) != 0)
+      throw new FinalModifierException(superclass);
     
     ProxyClassLoader pcl = null;
     

@@ -18,10 +18,8 @@
  */
 package org.apache.aries.proxy.impl.weaving;
 
-import java.io.IOException;
-
-import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
+import org.apache.aries.proxy.impl.common.WovenProxyConcreteMethodAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -41,22 +39,24 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
   }
 
   /**
-   * Get the weaving visitor used to weave instance methods
+   * Get the weaving visitor used to weave instance methods, or just copy abstract ones
    */
   protected final MethodVisitor getWeavingMethodVisitor(int access, String name,
       String desc, String signature, String[] exceptions, Method currentMethod,
-      String methodStaticFieldName) {
+      String methodStaticFieldName, Type currentMethodDeclaringType,
+      boolean currentMethodDeclaringTypeIsInterface) {
     MethodVisitor methodVisitorToReturn;
-    methodVisitorToReturn = new WovenProxyMethodAdapter(cv.visitMethod(
-        access, name, desc, signature, exceptions), access, name, desc,
-        exceptions, methodStaticFieldName, currentMethod, typeBeingWoven);
+    if((access & ACC_ABSTRACT) == 0) {
+      methodVisitorToReturn = new WovenProxyConcreteMethodAdapter(cv.visitMethod(
+          access, name, desc, signature, exceptions), access, name, desc,
+          exceptions, methodStaticFieldName, currentMethod, typeBeingWoven,
+          currentMethodDeclaringType);
+    } else {
+      methodVisitorToReturn = cv.visitMethod(access, name, desc, signature, exceptions);
+    }
     return methodVisitorToReturn;
   }
-  
-  @Override
-  protected final Type getDeclaringTypeForCurrentMethod() {
-    return typeBeingWoven;
-  }
+
 
   @Override
   public FieldVisitor visitField(int access, String name, String arg2,
@@ -73,22 +73,6 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
       access |= ACC_SYNTHETIC;
     }
     return super.visitField(access, name, arg2, arg3, arg4);
-  }
-
-  @Override
-  public void visitEnd() {
-    //first we need to override all the methods that were on non-object parents
-    for(Class<?> c : nonObjectSupers) {
-      try {
-        readClass(c, new MethodCopyingClassAdapter(cv, 
-            c, typeBeingWoven, getKnownMethods(), transformedMethods));
-      } catch (IOException e) {
-        // This should never happen! <= famous last words (not)
-        throw new RuntimeException(NLS.MESSAGES.getMessage("unexpected.error.processing.class", c.getName(), typeBeingWoven.getClassName()), e);
-      }
-    }
-    //Now run the normal visitEnd
-    super.visitEnd();
   }
 
   public void setSVUIDGenerated(boolean b) {

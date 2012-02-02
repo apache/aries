@@ -42,8 +42,8 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 /**
  * This class weaves dispatch and listener code into a method, there are two known
- * subclasses {@link WovenProxyMethodAdapter} is used for weaving instance methods
- * {@link InterfaceUsingWovenProxyMethodAdapter} is used to provide a delegating
+ * subclasses {@link WovenProxyConcreteMethodAdapter} is used for weaving instance methods
+ * {@link WovenProxyAbstractMethodAdapter} is used to provide a delegating
  * implementation of an interface method.
  * 
  * Roughly (but not exactly because it's easier to write working bytecode
@@ -158,6 +158,10 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
   /** The return type of this method */
   private final Type returnType;
   
+  private final Type methodDeclaringType;
+  
+  private final boolean isMethodDeclaringTypeInterface;
+  
   /**
    * Construct a new method adapter
    * @param mv - the method visitor to write to
@@ -171,7 +175,8 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
    * @param proxyType - the type being woven that contains this method
    */
   public AbstractWovenProxyMethodAdapter(MethodVisitor mv, int access, String name, String desc,
-      String methodStaticFieldName, Method currentTransformMethod, Type typeBeingWoven)
+      String methodStaticFieldName, Method currentTransformMethod, Type typeBeingWoven,
+      Type methodDeclaringType, boolean isMethodDeclaringTypeInterface)
   {
     super(mv, access, name, desc);
     this.methodStaticFieldName = methodStaticFieldName;
@@ -179,6 +184,8 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     returnType = currentTransformMethod.getReturnType();
     isVoid = returnType.getSort() == Type.VOID;
     this.typeBeingWoven = typeBeingWoven;
+    this.methodDeclaringType = methodDeclaringType;
+    this.isMethodDeclaringTypeInterface = isMethodDeclaringTypeInterface;
   }
 
   @Override
@@ -214,12 +221,12 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     
     //Dispatch the method and store the result (null for void)
     loadLocal(dispatchTarget);
-    checkCast(getTypeToCastTo());
+    checkCast(methodDeclaringType);
     loadArgs();
-    if(isTypeToCastToInterface()) {
-      invokeInterface(getTypeToCastTo(), currentTransformMethod);
+    if(isMethodDeclaringTypeInterface) {
+      invokeInterface(methodDeclaringType, currentTransformMethod);
     } else {
-      invokeVirtual(getTypeToCastTo(), currentTransformMethod);
+      invokeVirtual(methodDeclaringType, currentTransformMethod);
     }
     if(isVoid) {
       visitInsn(ACONST_NULL);
@@ -241,14 +248,6 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     mark(endTry);
     writeMethodCatchHandler();
   }
-  
-  /**
-   * Get the type to which the class should be cast for delegation
-   * @return
-   */
-  protected abstract Type getTypeToCastTo();
-  
-  protected abstract boolean isTypeToCastToInterface();
   
   /**
    * Setup the normalResult, inNormalMethod, preInvokeReturnedToken and

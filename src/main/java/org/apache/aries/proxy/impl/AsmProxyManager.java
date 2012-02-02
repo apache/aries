@@ -96,7 +96,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
                 " and is final. This means that we cannot create a proxy for both the class and all of the requested interfaces.");
           }
           proxyObject = InterfaceProxyGenerator.getProxyInstance(clientBundle, 
-              (Class<? extends WovenProxy>)classToProxy, interfaces, dispatcher, listener);
+              classToProxy, interfaces, dispatcher, listener);
         }
       } 
       if(proxyObject == null){

@@ -16,11 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.interfaces;
+package org.apache.aries.proxy.impl.common;
 
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.OBJECT_TYPE;
 
-import org.apache.aries.proxy.impl.common.AbstractWovenProxyMethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
@@ -28,19 +27,13 @@ import org.objectweb.asm.commons.Method;
 /**
  * Used to create a delegating method implementation for methods with no body
  */
-final class InterfaceUsingWovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
-
-  private final Type typeToCastTo;
-  
-  private final boolean istypeToCastToInterface;
-  
-  public InterfaceUsingWovenProxyMethodAdapter(MethodVisitor mv, int access, String name,
+public final class WovenProxyAbstractMethodAdapter extends AbstractWovenProxyMethodAdapter {
+ 
+  public WovenProxyAbstractMethodAdapter(MethodVisitor mv, int access, String name,
       String desc, String methodStaticFieldName, Method currentTransformMethod,
       Type typeBeingWoven, Type methodDeclaringType, boolean isMethodDeclaringTypeInterface) {
     super(mv, access, name, desc, methodStaticFieldName, currentTransformMethod,
-        typeBeingWoven);
-    this.typeToCastTo = methodDeclaringType;
-    this.istypeToCastToInterface = isMethodDeclaringTypeInterface;
+        typeBeingWoven, methodDeclaringType, isMethodDeclaringTypeInterface);
   }
 
   /**
@@ -76,15 +69,5 @@ final class InterfaceUsingWovenProxyMethodAdapter extends AbstractWovenProxyMeth
     visitCode();
     visitMaxs(0, 0);
     mv.visitEnd();
-  }
-  
-  @Override
-  protected final Type getTypeToCastTo() {
-    return typeToCastTo;
-  }
-  
-  @Override
-  protected final boolean isTypeToCastToInterface() {
-    return istypeToCastToInterface;
   }
 }

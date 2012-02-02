@@ -20,33 +20,35 @@ package org.apache.aries.blueprint.proxy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
-import org.apache.aries.proxy.impl.AbstractProxyManager;
-import org.apache.aries.proxy.impl.AsmProxyManager;
-import org.apache.aries.proxy.impl.ProxyHandler;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
+import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
+import org.apache.aries.proxy.weaving.WovenProxy;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * This class uses the {@link ProxySubclassGenerator} to test
  */
-public class ProxySubclassGeneratorTest extends AbstractProxyTest
+public class WovenSubclassGeneratorTest extends AbstractProxyTest
 {
   private static final Class<?> FINAL_METHOD_CLASS = ProxyTestClassFinalMethod.class;
   private static final Class<?> FINAL_CLASS = ProxyTestClassFinal.class;
@@ -54,21 +56,7 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   private static final Class<?> COVARIANT_CLASS = ProxyTestClassCovariantOverride.class;
   private static ProxySubclassMethodHashSet<String> expectedMethods = new ProxySubclassMethodHashSet<String>(
       12);
-  private InvocationHandler ih = null;
-  Class<?> generatedProxySubclass = null;
-  Object o = null;
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @Before
-  public void setUp() throws Exception
-  {
-    ih = new FakeInvocationHandler();
-    ((FakeInvocationHandler)ih).setDelegate(getTestClass().newInstance());
-    generatedProxySubclass = getGeneratedSubclass();
-    o = getProxyInstance(generatedProxySubclass);
-  }
+  private Callable<Object> testCallable = null;
 
 
   /**
@@ -84,6 +72,10 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
       Method[] declaredMethods = superclass.getDeclaredMethods();
       List<Method> listOfDeclaredMethods = new ArrayList<Method>();
       for (Method m : declaredMethods) {
+    	
+        if(m.getName().equals("clone") || m.getName().equals("finalize"))
+        	continue;
+    	
         int i = m.getModifiers();
         if (Modifier.isPrivate(i) || Modifier.isFinal(i)) {
           // private or final don't get added
@@ -107,20 +99,22 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
       superclass = superclass.getSuperclass();
     } while (superclass != null);
 
-    // add the getter and setter for the invocation handler to the expected
-    // set
-    // and the unwrapObject method
-    Method[] ihMethods = new Method[] {
-        generatedProxySubclass.getMethod("setInvocationHandler",
-            new Class[] { InvocationHandler.class }),
-        generatedProxySubclass.getMethod("getInvocationHandler", new Class[] {}) };
-    expectedMethods.addMethodArray(ihMethods);
-
-    Method[] generatedProxySubclassMethods = generatedProxySubclass.getDeclaredMethods();
+    
+    
+    Method[] subclassMethods = getProxyClass(getTestClass()).getDeclaredMethods();
+    List<Method> listOfDeclaredMethods = new ArrayList<Method>();
+    for (Method m : subclassMethods) {
+      if(m.getName().startsWith(WovenProxy.class.getName().replace('.', '_')))
+        continue;
+      
+      listOfDeclaredMethods.add(m);
+    }
+    subclassMethods = listOfDeclaredMethods.toArray(new Method[] {});
+    
     ProxySubclassMethodHashSet<String> generatedMethods = new ProxySubclassMethodHashSet<String>(
-        generatedProxySubclassMethods.length);
-    generatedMethods.addMethodArray(generatedProxySubclassMethods);
-
+    		subclassMethods.length);
+        generatedMethods.addMethodArray(subclassMethods);
+        
     // check that all the methods we have generated were expected
     for (String gen : generatedMethods) {
       assertTrue("Unexpected method: " + gen, expectedMethods.contains(gen));
@@ -141,8 +135,13 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   public void testFinalMethod() throws Exception
   {
     try {
-      ProxySubclassGenerator.getProxySubclass(FINAL_METHOD_CLASS);
-    } catch (FinalModifierException e) {
+      InterfaceProxyGenerator.getProxyInstance(null, FINAL_METHOD_CLASS, Collections.EMPTY_SET, 
+          new Callable<Object>() {
+        public Object call() throws Exception {
+          return null;
+        }} , null).getClass();
+    } catch (RuntimeException re) {
+      FinalModifierException e = (FinalModifierException) re.getCause();
       assertFalse("Should have found final method not final class", e.isFinalClass());
     }
   }
@@ -154,63 +153,15 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   public void testFinalClass() throws Exception
   {
     try {
-      ProxySubclassGenerator.getProxySubclass(FINAL_CLASS);
+      InterfaceProxyGenerator.getProxyInstance(null, FINAL_CLASS, Collections.EMPTY_SET, 
+          new Callable<Object>() {
+        public Object call() throws Exception {
+          return null;
+        }} , null).getClass();
     } catch (FinalModifierException e) {
       assertTrue("Should have found final class", e.isFinalClass());
     }
   }
-
-  /**
-   * Test a private constructor
-   */
-  @Test
-  public void testPrivateConstructor() throws Exception
-  {
-    Object o = ProxySubclassGenerator.newProxySubclassInstance(
-        ProxyTestClassPrivateConstructor.class, ih);
-    assertNotNull("The new instance was null", o);
-
-  }
-  
-//  /**
-//   * Test object equality between real and proxy using a Collaborator
-//   */
-//  @Test
-//  public void testObjectEquality() throws Exception
-//  {
-//    Object delegate = getTestClass().newInstance();
-//    InvocationHandler collaborator = new Collaborator(null, null, AsmInterceptorWrapper.passThrough(delegate));
-//    Object o = ProxySubclassGenerator.newProxySubclassInstance(getTestClass(), collaborator);
-//    //Calling equals on the proxy with an arg of the unwrapped object should be true
-//    assertTrue("The proxy object should be equal to its delegate",o.equals(delegate));
-//    InvocationHandler collaborator2 = new Collaborator(null, null, AsmInterceptorWrapper.passThrough(delegate));
-//    Object o2 = ProxySubclassGenerator.newProxySubclassInstance(getTestClass(), collaborator2);
-//    //The proxy of a delegate should equal another proxy of the same delegate
-//    assertTrue("The proxy object should be equal to another proxy instance of the same delegate", o2.equals(o));
-//  }
-//  
-//  private static class ProxyTestOverridesFinalize {
-//      public boolean finalizeCalled = false;
-//      
-//      @Override
-//      protected void finalize() {
-//          finalizeCalled = true;
-//      }
-//  }
-//  
-//  @Test
-//  public void testFinalizeNotCalled() throws Exception {
-//      ProxyTestOverridesFinalize testObj = new ProxyTestOverridesFinalize();
-//      InvocationHandler ih = new Collaborator(null, null, AsmInterceptorWrapper.passThrough(testObj));
-//      Object o = ProxySubclassGenerator.newProxySubclassInstance(ProxyTestOverridesFinalize.class, ih);
-//      
-//      Method m = o.getClass().getDeclaredMethod("finalize");
-//      m.setAccessible(true);
-//      m.invoke(o);
-//      
-//      assertFalse(testObj.finalizeCalled);
-//  }
-  
 
   /**
    * Test a covariant override method
@@ -218,9 +169,9 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   @Test
   public void testCovariant() throws Exception
   {
-    ((FakeInvocationHandler)ih).setDelegate(COVARIANT_CLASS.newInstance());
-    o = ProxySubclassGenerator.newProxySubclassInstance(COVARIANT_CLASS, ih);
-    generatedProxySubclass = o.getClass();
+    testCallable = new SingleInstanceDispatcher(COVARIANT_CLASS.newInstance());
+    Object o = setDelegate(getProxyInstance(getProxyClass(COVARIANT_CLASS)), testCallable);
+    Class<?> generatedProxySubclass = o.getClass();
     Method m = generatedProxySubclass.getDeclaredMethod("getCovariant", new Class[] {});
     Object returned = m.invoke(o);
     assertTrue("Object was of wrong type: " + returned.getClass().getSimpleName(), COVARIANT_CLASS
@@ -233,85 +184,108 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   @Test
   public void testGenerics() throws Exception
   {
-    ((FakeInvocationHandler)ih).setDelegate(GENERIC_CLASS.newInstance());
+    testCallable = new SingleInstanceDispatcher(GENERIC_CLASS.newInstance());
     super.testGenerics();
   }
   
-  private Class<?> getGeneratedSubclass() throws Exception
-  {
-    return getProxyClass(getTestClass());
+  @Test
+  public void testInner() {
+	  //This implementation can never pass this test. It doesn't support classes with no no-args constructor.
   }
+   
+  
+  @Test
+  public void testAddingInterfacesToClass() throws Exception {
+	  
+    Object proxy = InterfaceProxyGenerator.getProxyInstance(null, getTestClass(), Arrays.asList(Map.class, Iterable.class), new Callable<Object>() {
 
-  private class FakeInvocationHandler implements InvocationHandler
-  {
-    private Object delegate = null;
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
-     * java.lang.reflect.Method, java.lang.Object[])
-     */
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
-      try {
-      Object result = (delegate instanceof Callable) ? 
-          method.invoke(((Callable<?>)delegate).call(), args) : 
-          method.invoke(delegate, args) ;
-      return result;
-      } catch (InvocationTargetException ite) {
-        throw ite.getTargetException();
-      }
-    }
+        int calls = 0;
+        private Map<String, String> map = new HashMap<String, String>();
+        
+        {
+          map.put("key", "value");
+        }
 
-    void setDelegate(Object delegate){
-      this.delegate = delegate;
-    }
+        public Object call() throws Exception {
+          switch(++calls) {
+            case 1 :
+              return getTestClass().newInstance();
+            case 2 :
+              return map;
+            default :
+              return map.values();
+          }
+		}
+    	
+    }, null);
     
-  }
-
-  @Override
-  protected Object getProxyInstance(Class<?> proxyClass) {
-    return getProxyInstance(proxyClass, ih);
+    
+    assertEquals(17, ((ProxyTestClassGeneralWithNoDefaultOrProtectedAccess)proxy).testReturnInt());
+    assertEquals("value", ((Map<String, String>)proxy).put("key", "value2"));
+    Iterator<?> it = ((Iterable<?>)proxy).iterator();
+    assertEquals("value2", it.next());
+    assertFalse(it.hasNext());
+	  
   }
   
-  private Object getProxyInstance(Class<?> proxyClass, InvocationHandler ih) {
+  @Override
+  protected Object getProxyInstance(Class<?> proxyClass) {
+	 
+    if(proxyClass == ProxyTestClassChildOfAbstract.class) {
+    	return new ProxyTestClassChildOfAbstract();
+    }
+	  
     try {
-      if(proxyClass.equals(ProxyTestClassChildOfAbstract.class))
-        return proxyClass.newInstance();
-      
-      return proxyClass.getConstructor(InvocationHandler.class).newInstance(ih);
+      Constructor<?> con = proxyClass.getDeclaredConstructor(Callable.class, InvocationListener.class);
+      con.setAccessible(true);
+      return con.newInstance((testCallable == null) ? new SingleInstanceDispatcher(getTestClass().newInstance()) : testCallable, null);
     } catch (Exception e) {
       return null;
     }
   }
+  
 
   @Override
+  protected Class<?> getTestClass() {
+	return ProxyTestClassGeneralWithNoDefaultOrProtectedAccess.class;
+  }
+
+
+@Override
   protected Class<?> getProxyClass(Class<?> clazz) {
     try {
-      return ProxySubclassGenerator.getProxySubclass(clazz);
+      return InterfaceProxyGenerator.getProxyInstance(null, clazz, Collections.EMPTY_SET, 
+          new Callable<Object>() {
+        public Object call() throws Exception {
+          return null;
+        }} , null).getClass();
     } catch (UnableToProxyException e) {
       return null;
+    } catch (RuntimeException re) {
+      if(re.getCause() instanceof UnableToProxyException)
+        return null;
+      else
+        throw re;
     }
   }
 
 
   @Override
   protected Object setDelegate(Object proxy, Callable<Object> dispatcher) {
-    AbstractProxyManager apm = new AsmProxyManager();
-    return getProxyInstance(proxy.getClass(), new ProxyHandler(apm, dispatcher, null));  
+    return ((WovenProxy)proxy).org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance(
+        dispatcher, null);
   }
-
 
   @Override
   protected Object getProxyInstance(Class<?> proxyClass,
       InvocationListener listener) {
-    AbstractProxyManager apm = new AsmProxyManager();
-    return getProxyInstance(proxyClass, new ProxyHandler(apm, new SingleInstanceDispatcher(getProxyInstance(proxyClass)), listener));  
+    WovenProxy proxy = (WovenProxy) getProxyInstance(proxyClass);
+    proxy = proxy.org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance(
+        new SingleInstanceDispatcher(proxy), listener);
+    return proxy;
   }
-
-
-  @Override
-  protected Object getP3() {
-    return new ProxyTestClassGeneral();
+  
+  protected Object getP3() throws Exception {
+    return getTestClass().newInstance();
   }
 }
