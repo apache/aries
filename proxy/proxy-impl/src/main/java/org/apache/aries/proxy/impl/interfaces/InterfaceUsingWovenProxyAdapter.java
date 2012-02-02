@@ -19,6 +19,9 @@
 package org.apache.aries.proxy.impl.interfaces;
 
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
+import org.apache.aries.proxy.impl.common.AbstractWovenProxyMethodAdapter;
+import org.apache.aries.proxy.impl.common.WovenProxyAbstractMethodAdapter;
+import org.apache.aries.proxy.impl.common.WovenProxyConcreteMethodAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -29,33 +32,32 @@ import org.objectweb.asm.commons.Method;
  */
 final class InterfaceUsingWovenProxyAdapter extends AbstractWovenProxyAdapter {
 
-  private Type currentMethodDeclaringType;
-  private boolean currentMethodDeclaringTypeIsInterface;
-  
   public InterfaceUsingWovenProxyAdapter(ClassVisitor writer, String className,
       ClassLoader loader) {
     super(writer, className, loader);
   }
 
-  public final void setCurrentMethodDeclaringType(Type type, boolean isInterface) {
-    currentMethodDeclaringType = type;
-    currentMethodDeclaringTypeIsInterface = isInterface;
-  }
-  
   /**
-   * Return a {@link MethodVisitor} that copes with interfaces
+   * Return a {@link MethodVisitor} that provides basic implementations for all
+   * methods - the easiest thing to do for methods that aren't abstract is to
+   * pretend that they are, but drive the adapter ourselves
    */ 
-  protected final MethodVisitor getWeavingMethodVisitor(int access, String name,
+  protected final AbstractWovenProxyMethodAdapter getWeavingMethodVisitor(int access, String name,
       String desc, String signature, String[] exceptions, Method currentMethod,
-      String methodStaticFieldName) {
-    return new InterfaceUsingWovenProxyMethodAdapter(cv.visitMethod(
-        access, name, desc, signature, exceptions), access, name, desc,
-        methodStaticFieldName, currentMethod, typeBeingWoven, 
-        currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
-  }
-
-  @Override
-  protected final Type getDeclaringTypeForCurrentMethod() {
-    return currentMethodDeclaringType;
+      String methodStaticFieldName, Type currentMethodDeclaringType,
+      boolean currentMethodDeclaringTypeIsInterface) {
+    
+    if ((access & ACC_ABSTRACT) != 0) {
+      access &= ~ACC_ABSTRACT;
+      return new WovenProxyAbstractMethodAdapter(cv.visitMethod(
+          access, name, desc, signature, exceptions), access, name, desc,
+          methodStaticFieldName, currentMethod, typeBeingWoven, 
+          currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
+    } else {
+      return new WovenProxyConcreteMethodAdapter(cv.visitMethod(
+          access, name, desc, signature, exceptions), access, name, desc, exceptions, 
+          methodStaticFieldName, currentMethod, typeBeingWoven, 
+          currentMethodDeclaringType);
+    }
   }
 }

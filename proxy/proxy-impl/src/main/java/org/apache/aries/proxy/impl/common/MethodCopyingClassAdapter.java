@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.weaving;
+package org.apache.aries.proxy.impl.common;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,8 +24,6 @@ import java.util.Set;
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
-import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
-import org.apache.aries.proxy.impl.common.TypeMethod;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -33,18 +31,17 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 /**
- * This class is used to copy methods from a super-class into a sub-class, but
- * then delegate up to the super-class implementation. We expect to be called
+ * This class is used to copy concrete methods from a super-class into a sub-class, 
+ * but then delegate up to the super-class implementation. We expect to be called
  * with {@link ClassReader#SKIP_CODE}. This class is used when we can't weave
  * all the way up the Class hierarchy and need to override methods on the first
  * subclass we can weave.
  */
 final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
-  /** The sub-class visitor to write to */
-  private final ClassVisitor cv;
   /** The super-class to copy from */
   private final Class<?> superToCopy;
   /** Is the sub-class in the same package as the super */
@@ -61,23 +58,36 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
    */
   private final Map<String, TypeMethod> transformedMethods;
   
-  public MethodCopyingClassAdapter(ClassVisitor cv, Class<?> superToCopy,
-      Type overridingClassType, Set<Method> knownMethods, 
+  private final AbstractWovenProxyAdapter wovenProxyAdapter;
+  
+  public MethodCopyingClassAdapter(AbstractWovenProxyAdapter awpa, ClassLoader definingLoader,
+      Class<?> superToCopy, Type overridingClassType, Set<Method> knownMethods, 
       Map<String, TypeMethod> transformedMethods) {
     super(Opcodes.ASM4);
-    this.cv = cv;
+    this.wovenProxyAdapter = awpa;
     this.superToCopy = superToCopy;
     this.overridingClassType = overridingClassType;
     this.knownMethods = knownMethods;
     this.transformedMethods = transformedMethods;
     
-    String overridingClassName = overridingClassType.getClassName();
-    int lastIndex1 = superToCopy.getName().lastIndexOf('.');
-    int lastIndex2 = overridingClassName.lastIndexOf('.');
+    //To be in the same package they must be loaded by the same classloader and be in the same package!
+    if(definingLoader != superToCopy.getClassLoader()) {
+    	samePackage = false;
+    } else {
     
-    samePackage = (lastIndex1 == lastIndex2) &&
-       superToCopy.getName().substring(0, (lastIndex1 == -1)? 1 : lastIndex1)
-       .equals(overridingClassName.substring(0, (lastIndex2 == -1)? 1 : lastIndex2));
+      String overridingClassName = overridingClassType.getClassName();
+      int lastIndex1 = superToCopy.getName().lastIndexOf('.');
+      int lastIndex2 = overridingClassName.lastIndexOf('.');
+      
+      if(lastIndex1 != lastIndex2) {
+        samePackage = false;
+      } else if (lastIndex1 == -1) {
+        samePackage = true;
+      } else {
+        samePackage = superToCopy.getName().substring(0, lastIndex1)
+         .equals(overridingClassName.substring(0, lastIndex2));
+      }
+    }
   }
   
   @Override
@@ -85,7 +95,8 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
       String sig, String[] exceptions) {
     
     MethodVisitor mv = null;
-    //As in WovenProxyAdapter, we only care about "real" methods.
+    //As in WovenProxyAdapter, we only care about "real" methods, but also not
+    //abstract ones!.
     if (!!!name.equals("<init>") && !!!name.equals("<clinit>")
         && (access & (ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC | ACC_ABSTRACT
             | ACC_NATIVE | ACC_BRIDGE)) == 0) {
@@ -101,7 +112,7 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
       if((access & ACC_FINAL) != 0)
         throw new RuntimeException(new FinalModifierException(
             superToCopy, name));
-      // We can't call up to a package protected method if we aren't in the same
+      // We can't call up to a default access method if we aren't in the same
       // package
       if((access & (ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE)) == 0) {
         if(!!!samePackage)
@@ -118,10 +129,27 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
       
       //Remember we need to copy the fake method *and* weave it, use a 
       //WovenProxyMethodAdapter as well as a CopyingMethodAdapter
-      mv = new CopyingMethodAdapter(new WovenProxyMethodAdapter(cv.visitMethod(
-          access, name, desc, sig, exceptions), access, name, desc, exceptions,
-          methodStaticFieldName, currentTransformMethod, overridingClassType),
-          superType, currentTransformMethod);
+      
+      MethodVisitor weaver = wovenProxyAdapter.getWeavingMethodVisitor(
+              access, name, desc, sig, exceptions, currentTransformMethod, 
+              methodStaticFieldName, superType, false);
+      
+      if(weaver instanceof AbstractWovenProxyMethodAdapter) {
+        //If we are weaving this method then we might have a problem. If it's a protected method and we
+        //aren't in the same package then we can't dispatch the call to another object. This may sound
+        //odd, but if class Super has a protected method foo(), then class Sub, that extends Super, cannot
+        //call ((Super)o).foo() in code (it can call super.foo()). If we are in the same package then this
+    	//gets around the problem, but if not the class will fail verification.
+        if(!samePackage && (access & ACC_PROTECTED) != 0)
+          throw new RuntimeException(NLS.MESSAGES.getMessage("method.from.superclass.is.hidden", name, superToCopy.getName(), overridingClassType.getClassName()),
+                new UnableToProxyException(superToCopy));
+        mv = new CopyingMethodAdapter((GeneratorAdapter) weaver, superType, currentTransformMethod);
+      }
+      else {
+        //For whatever reason we aren't weaving this method. The call to super.xxx() will always work
+        mv = new CopyingMethodAdapter(new GeneratorAdapter(access, currentTransformMethod, mv), 
+             superType, currentTransformMethod);
+      }
     }
     
     return mv;
@@ -134,13 +162,13 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
    */
   private static final class CopyingMethodAdapter extends MethodVisitor {
     /** The visitor to delegate to */
-    private final MethodVisitor mv;
+    private final GeneratorAdapter mv;
     /** The type that declares this method (not the one that will override it) */
     private final Type superType;
     /** The method we are weaving */
     private final Method currentTransformMethod;
     
-    public CopyingMethodAdapter(MethodVisitor mv, Type superType, 
+    public CopyingMethodAdapter(GeneratorAdapter mv, Type superType, 
         Method currentTransformMethod) {
       super(Opcodes.ASM4);
       this.mv = mv;
@@ -177,69 +205,16 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
     @Override
     public final void visitEnd() {
       mv.visitCode();
-      writeBody();
-      mv.visitMaxs(currentTransformMethod.getArgumentTypes().length + 1, 0);
+      
+      //Equivalent to return super.method(args);
+      mv.loadThis();
+	  mv.loadArgs();
+	  mv.visitMethodInsn(INVOKESPECIAL, superType.getInternalName(),
+	      currentTransformMethod.getName(), currentTransformMethod.getDescriptor());
+	  mv.returnValue();
+
+	  mv.visitMaxs(currentTransformMethod.getArgumentTypes().length + 1, 0);
       mv.visitEnd();
-    }
-    
-    /**
-     * This method loads this, any args, then invokes the super version of this
-     */
-    private final void writeBody() {
-      mv.visitVarInsn(ALOAD, 0);
-      
-      int nargs = currentTransformMethod.getArgumentTypes().length;
-      
-      for(int i = 1 ; i <= nargs ; i++) {
-        switch(currentTransformMethod.
-               getArgumentTypes()[i - 1].getSort()) {
-          case (Type.BOOLEAN) :
-          case (Type.BYTE) :
-          case (Type.CHAR) :
-          case (Type.SHORT) :
-          case (Type.INT) :
-            mv.visitVarInsn(ILOAD, i);
-            break;
-          case (Type.FLOAT) :
-            mv.visitVarInsn(FLOAD, i);
-            break;
-          case (Type.DOUBLE) :
-            mv.visitVarInsn(DLOAD, i);
-            break;
-          case (Type.LONG) :
-            mv.visitVarInsn(LLOAD, i);
-            break;
-          default :
-            mv.visitVarInsn(ALOAD, i);
-        }
-      }
-      
-      mv.visitMethodInsn(INVOKESPECIAL, superType.getInternalName(),
-          currentTransformMethod.getName(), currentTransformMethod.getDescriptor());
-      
-      switch(currentTransformMethod.getReturnType().getSort()) {
-        case (Type.BOOLEAN) :
-        case (Type.BYTE) :
-        case (Type.CHAR) :
-        case (Type.SHORT) :
-        case (Type.INT) :
-          mv.visitInsn(IRETURN);
-          break;
-        case (Type.VOID) :
-          mv.visitInsn(RETURN);
-          break;
-        case (Type.FLOAT) :
-          mv.visitInsn(FRETURN);
-          break;
-        case (Type.DOUBLE) :
-          mv.visitInsn(DRETURN);
-          break;
-        case (Type.LONG) :
-          mv.visitInsn(LRETURN);
-          break;
-        default :
-          mv.visitInsn(ARETURN);
-      }
     }
   }
 }

@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -83,16 +82,23 @@ public abstract class AbstractProxyTest {
     }
   }
 
-  protected static final Class<?> TEST_CLASS = ProxyTestClassGeneral.class;
-  
   protected abstract Object getProxyInstance(Class<?> proxyClass);
   protected abstract Object getProxyInstance(Class<?> proxyClass, InvocationListener listener);
   protected abstract Class<?> getProxyClass(Class<?> clazz);
   protected abstract Object setDelegate(Object proxy, Callable<Object> dispatcher);
   
-  /**
+  protected Class<?> getTestClass() {
+	  return ProxyTestClassGeneral.class;
+  }
+  
+  protected Method getDeclaredMethod(Class<?> testClass, String name,
+		Class<?>... classes) throws Exception {
+	return getProxyClass(testClass).getDeclaredMethod(name, classes);
+  }
+  
+/**
    * This test uses the ProxySubclassGenerator to generate and load a subclass
-   * of the specified TEST_CLASS.
+   * of the specified getTestClass().
    * 
    * Once the subclass is generated we check that it wasn't null. We check
    * that the InvocationHandler constructor doesn't return a null object
@@ -105,18 +111,18 @@ public abstract class AbstractProxyTest {
   @Test
   public void testGenerateAndLoadProxy() throws Exception
   {
-    assertNotNull("Generated proxy subclass was null", getProxyClass(TEST_CLASS));
-    assertNotNull("Generated proxy subclass instance was null", getProxyInstance(getProxyClass(TEST_CLASS)));
+    assertNotNull("Generated proxy subclass was null", getProxyClass(getTestClass()));
+    assertNotNull("Generated proxy subclass instance was null", getProxyInstance(getProxyClass(getTestClass())));
   }
   /**
    * Test a basic method invocation on the proxy subclass
    */
   @Test
   public void testMethodInvocation() throws Exception {
-    Method m = getProxyClass(TEST_CLASS).getDeclaredMethod("testMethod", new Class[] { String.class,
-        int.class, Object.class });
+    Method m = getDeclaredMethod(getTestClass(), "testMethod", String.class,
+        int.class, Object.class);
     String x = "x";
-    String returned = (String) m.invoke(getProxyInstance(getProxyClass(TEST_CLASS)), x, 1, new Object());
+    String returned = (String) m.invoke(getProxyInstance(getProxyClass(getTestClass())), x, 1, new Object());
     assertEquals("Object returned from invocation was not correct.", x, returned);
   }
   
@@ -126,11 +132,11 @@ public abstract class AbstractProxyTest {
   @Test
   public void testMethodArgs() throws Exception
   {
-    Method m = getProxyClass(TEST_CLASS).getDeclaredMethod("testArgs", new Class[] { double.class,
-        short.class, long.class, char.class, byte.class, boolean.class });
+    Method m = getDeclaredMethod(getTestClass(), "testArgs", double.class,
+        short.class, long.class, char.class, byte.class, boolean.class);
     Character xc = Character.valueOf('x');
     String x = xc.toString();
-    String returned = (String) m.invoke(getProxyInstance(getProxyClass(TEST_CLASS)), Double.MAX_VALUE, Short.MIN_VALUE, Long.MAX_VALUE, xc
+    String returned = (String) m.invoke(getProxyInstance(getProxyClass(getTestClass())), Double.MAX_VALUE, Short.MIN_VALUE, Long.MAX_VALUE, xc
         .charValue(), Byte.MIN_VALUE, false);
     assertEquals("Object returned from invocation was not correct.", x, returned);
   }
@@ -141,11 +147,11 @@ public abstract class AbstractProxyTest {
   @Test
   public void testReturnVoid() throws Exception
   {
-    Method m = getProxyClass(TEST_CLASS).getDeclaredMethod("testReturnVoid", new Class[] {});
+    Method m = getDeclaredMethod(getTestClass(), "testReturnVoid");
     //for these weaving tests we are loading the woven test classes on a different classloader
     //to this class so we need to set the method accessible
     m.setAccessible(true);
-    m.invoke(getProxyInstance(getProxyClass(TEST_CLASS)));
+    m.invoke(getProxyInstance(getProxyClass(getTestClass())));
   }
 
   /**
@@ -154,11 +160,11 @@ public abstract class AbstractProxyTest {
   @Test
   public void testReturnInt() throws Exception
   {
-    Method m = getProxyClass(TEST_CLASS).getDeclaredMethod("testReturnInt", new Class[] {});
+    Method m = getDeclaredMethod(getTestClass(), "testReturnInt");
     //for these weaving tests we are loading the woven test classes on a different classloader
     //to this class so we need to set the method accessible
     m.setAccessible(true);
-    Integer returned = (Integer) m.invoke(getProxyInstance(getProxyClass(TEST_CLASS)));
+    Integer returned = (Integer) m.invoke(getProxyInstance(getProxyClass(getTestClass())));
     assertEquals("Expected object was not returned from invocation", Integer.valueOf(17), returned);
   }
 
@@ -168,8 +174,8 @@ public abstract class AbstractProxyTest {
   @Test
   public void testReturnInteger() throws Exception
   {
-    Method m = getProxyClass(TEST_CLASS).getDeclaredMethod("testReturnInteger", new Class[] {});
-    Integer returned = (Integer) m.invoke(getProxyInstance(getProxyClass(TEST_CLASS)));
+    Method m = getDeclaredMethod(getTestClass(), "testReturnInteger");
+    Integer returned = (Integer) m.invoke(getProxyInstance(getProxyClass(getTestClass())));
     assertEquals("Expected object was not returned from invocation", Integer.valueOf(1), returned);
   }
 
@@ -181,11 +187,11 @@ public abstract class AbstractProxyTest {
   {
     Method m = null;
     try {
-      m = getProxyClass(TEST_CLASS).getDeclaredMethod("bMethod", new Class[] {});
+      m = getDeclaredMethod(getTestClass(), "bMethod");
     } catch (NoSuchMethodException nsme) {
-      m = getProxyClass(TEST_CLASS).getSuperclass().getDeclaredMethod("bMethod", new Class[] {});
+      m = getProxyClass(getTestClass()).getSuperclass().getDeclaredMethod("bMethod");
     }
-    m.invoke(getProxyInstance(getProxyClass(TEST_CLASS)));
+    m.invoke(getProxyInstance(getProxyClass(getTestClass())));
   }
 
   /**
@@ -196,14 +202,14 @@ public abstract class AbstractProxyTest {
   {
     Method m = null;
     try {
-      m = getProxyClass(TEST_CLASS).getDeclaredMethod("bProMethod", new Class[] {});
+      m = getDeclaredMethod(getTestClass(), "bProMethod");
     } catch (NoSuchMethodException nsme) {
-      m = getProxyClass(TEST_CLASS).getSuperclass().getDeclaredMethod("bProMethod", new Class[] {});
+      m = getProxyClass(getTestClass()).getSuperclass().getDeclaredMethod("bProMethod");
     }
     //for these weaving tests we are loading the woven test classes on a different classloader
     //to this class so we need to set the method accessible
     m.setAccessible(true);
-    m.invoke(getProxyInstance(getProxyClass(TEST_CLASS)));
+    m.invoke(getProxyInstance(getProxyClass(getTestClass())));
   }
   
   /**
@@ -214,14 +220,14 @@ public abstract class AbstractProxyTest {
   {
     Method m = null;
     try {
-      m = getProxyClass(TEST_CLASS).getDeclaredMethod("bDefMethod", new Class[] {});
+      m = getDeclaredMethod(getTestClass(), "bDefMethod");
     } catch (NoSuchMethodException nsme) {
-      m = getProxyClass(TEST_CLASS).getSuperclass().getDeclaredMethod("bDefMethod", new Class[] {});
+      m = getProxyClass(getTestClass()).getSuperclass().getDeclaredMethod("bDefMethod", new Class[] {});
     }
     //for these weaving tests we are loading the woven test classes on a different classloader
     //to this class so we need to set the method accessible
     m.setAccessible(true);
-    m.invoke(getProxyInstance(getProxyClass(TEST_CLASS)));
+    m.invoke(getProxyInstance(getProxyClass(getTestClass())));
   }
 
   /**
@@ -232,7 +238,7 @@ public abstract class AbstractProxyTest {
   {
     Class<?> proxy = getProxyClass(ProxyTestClassCovariantOverride.class);
     
-    Method m = proxy.getDeclaredMethod("getCovariant", new Class[] {});
+    Method m = getDeclaredMethod(ProxyTestClassCovariantOverride.class, "getCovariant");
     Object returned = m.invoke(getProxyInstance(proxy));
     assertTrue("Object was of wrong type: " + returned.getClass().getSimpleName(),
         proxy.isInstance(returned));
@@ -247,15 +253,14 @@ public abstract class AbstractProxyTest {
     Class<?> proxy = getProxyClass(ProxyTestClassGeneric.class);
     
     Object o = getProxyInstance(proxy);
-    Method m = proxy.getDeclaredMethod("setSomething",
-        new Class[] { String.class });
+    Method m = getDeclaredMethod(ProxyTestClassGeneric.class, "setSomething", String.class);
     m.invoke(o, "aString");
     
-    try {
-      m = proxy.getDeclaredMethod("getSomething", new Class[] {});
-    } catch (NoSuchMethodException nsme) {
-      m = proxy.getSuperclass().getDeclaredMethod("getSomething", new Class[] {});
-    }
+    if(getClass() == WovenProxyGeneratorTest.class)
+    	m = getDeclaredMethod(ProxyTestClassGeneric.class.getSuperclass(), "getSomething");
+    else 
+        m = getDeclaredMethod(ProxyTestClassGeneric.class, "getSomething");
+
     Object returned = m.invoke(o);
     assertTrue("Object was of wrong type", String.class.isInstance(returned));
     assertEquals("String had wrong value", "aString", returned);
@@ -267,16 +272,16 @@ public abstract class AbstractProxyTest {
   @Test
   public void testRetrieveClass() throws Exception
   {
-    Class<?> retrieved = getProxyClass(TEST_CLASS);
+    Class<?> retrieved = getProxyClass(getTestClass());
     assertNotNull("The new class was null", retrieved);
-    assertEquals("The same class was not returned", retrieved, getProxyClass(TEST_CLASS));
+    assertEquals("The same class was not returned", retrieved, getProxyClass(getTestClass()));
 
   }
   
   @Test
-  public void testEquals() throws IllegalAccessException, InstantiationException {
-    Object p1 = getProxyInstance(getProxyClass(TEST_CLASS));
-    Object p2 = getProxyInstance(getProxyClass(TEST_CLASS));
+  public void testEquals() throws Exception {
+    Object p1 = getProxyInstance(getProxyClass(getTestClass()));
+    Object p2 = getProxyInstance(getProxyClass(getTestClass()));
     
     assertFalse("Should not be equal", p1.equals(p2));
     
@@ -287,8 +292,8 @@ public abstract class AbstractProxyTest {
     
     assertTrue("Should be equal", p1.equals(p2));
     
-    Object p4 = getProxyInstance(getProxyClass(TEST_CLASS));
-    Object p5 = getProxyInstance(getProxyClass(TEST_CLASS));
+    Object p4 = getProxyInstance(getProxyClass(getTestClass()));
+    Object p5 = getProxyInstance(getProxyClass(getTestClass()));
     
     p4 = setDelegate(p4, new SingleInstanceDispatcher(p1));
     p5 = setDelegate(p5, new SingleInstanceDispatcher(p2));
@@ -296,17 +301,17 @@ public abstract class AbstractProxyTest {
     assertTrue("Should be equal", p4.equals(p5));
   }
   
-  protected abstract Object getP3();
+  protected abstract Object getP3() throws Exception;
   
   @Test
   public void testInterception() throws Throwable {
     
     TestListener tl = new TestListener();
-    Object obj = getProxyInstance(getProxyClass(TEST_CLASS), tl);
+    Object obj = getProxyInstance(getProxyClass(getTestClass()), tl);
     
     assertCalled(tl, false, false, false);
     
-    Method m = getProxyClass(TEST_CLASS).getDeclaredMethod("testReturnInteger", new Class[] {});
+    Method m = getDeclaredMethod(getTestClass(), "testReturnInteger", new Class[] {});
     m.invoke(obj);
     
     assertCalled(tl, true, true, false);
@@ -314,7 +319,7 @@ public abstract class AbstractProxyTest {
     tl.clear();
     assertCalled(tl, false, false, false);
     
-    m = getProxyClass(TEST_CLASS).getDeclaredMethod("testException", new Class[] {});
+    m = getDeclaredMethod(getTestClass(), "testException", new Class[] {});
     try {
       m.invoke(obj);
       fail("Should throw an exception");
@@ -327,7 +332,7 @@ public abstract class AbstractProxyTest {
     tl.clear();
     assertCalled(tl, false, false, false);
     
-    m = getProxyClass(TEST_CLASS).getDeclaredMethod("testInternallyCaughtException", new Class[] {});
+    m = getDeclaredMethod(getTestClass(), "testInternallyCaughtException", new Class[] {});
     try {
       m.invoke(obj);
     } finally {

@@ -182,6 +182,10 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    * where the method is actually written.
    */
   private int staticInitMethodFlags = ACC_SYNTHETIC | ACC_PRIVATE | ACC_STATIC;
+
+  protected Type currentMethodDeclaringType;
+
+  protected boolean currentMethodDeclaringTypeIsInterface;
   
   public static final int JAVA_CLASS_VERSION = new BigDecimal(System.getProperty("java.class.version")).intValue();
   public static final boolean IS_AT_LEAST_JAVA_6 = JAVA_CLASS_VERSION >= Opcodes.V1_6;
@@ -200,6 +204,9 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       ClassLoader loader) {
     super(Opcodes.ASM4, writer);
     typeBeingWoven = Type.getType("L" + className.replace('.', '/') + ";");
+    //By default we expect to see methods from a concrete class
+    currentMethodDeclaringType = typeBeingWoven;
+    currentMethodDeclaringTypeIsInterface = false;
     this.loader = loader;
   }
 
@@ -324,7 +331,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
 
     // Only weave "real" instance methods. Not constructors, initializers or
     // compiler generated ones.
-    if ((access & (ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC | ACC_ABSTRACT
+    if ((access & (ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC 
         | ACC_NATIVE | ACC_BRIDGE)) == 0 && !!!name.equals("<init>") && 
         !!!name.equals("<clinit>")) {
 
@@ -333,11 +340,12 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       //Create a field name and store it for later
       String methodStaticFieldName = "methodField" + getSanitizedUUIDString();
       transformedMethods.put(methodStaticFieldName, new TypeMethod(
-           getDeclaringTypeForCurrentMethod(), currentMethod));
+           currentMethodDeclaringType, currentMethod));
 
       // Surround the MethodVisitor with our weaver so we can manipulate the code
       methodVisitorToReturn = getWeavingMethodVisitor(access, name, desc,
-          signature, exceptions, currentMethod, methodStaticFieldName);
+          signature, exceptions, currentMethod, methodStaticFieldName,
+          currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
     } else if (name.equals("<clinit>")){
       //there is an existing clinit method, change the fields we use
       //to write our init code to static_init_UUID instead
@@ -372,6 +380,16 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
   public void visitEnd() {
     LOGGER.debug(Constants.LOG_ENTRY, "visitEnd");
 
+    for(Class<?> c : nonObjectSupers) {
+      setCurrentMethodDeclaringType(Type.getType(c), false);
+      try {
+        readClass(c, new MethodCopyingClassAdapter(this, loader, c, typeBeingWoven, 
+            getKnownMethods(), transformedMethods));
+      } catch (IOException e) {
+        // This should never happen! <= famous last words (not)
+        throw new RuntimeException(NLS.MESSAGES.getMessage("unexpected.error.processing.class", c.getName(), typeBeingWoven.getClassName()), e);
+      }
+    }
     // If we need to implement woven proxy in this class then write the methods
     if (implementWovenProxy) {
       writeFinalWovenProxyMethods();
@@ -408,15 +426,9 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    */
   protected abstract MethodVisitor getWeavingMethodVisitor(int access, String name,
   String desc, String signature, String[] exceptions, Method currentMethod,
-  String methodStaticFieldName);
+  String methodStaticFieldName, Type currentMethodDeclaringType,
+  boolean currentMethodDeclaringTypeIsInterface);
   
-  /**
-   * Get the Type which declares the method being currently processed. For class
-   * weaving this will be the {@link #typeBeingWoven}, for dynamic interface
-   * implementation this will be the interface type.
-   * @return
-   */
-  protected abstract Type getDeclaringTypeForCurrentMethod();
 
   /**
    * Write the methods we need for wovenProxies on the highest supertype
@@ -693,5 +705,10 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       ga.visitAnnotation(s, true).visitEnd();
     ga.visitCode();
     return ga;
+  }
+
+  public final void setCurrentMethodDeclaringType(Type type, boolean isInterface) {
+    currentMethodDeclaringType = type;
+    currentMethodDeclaringTypeIsInterface = isInterface;
   }
 }
