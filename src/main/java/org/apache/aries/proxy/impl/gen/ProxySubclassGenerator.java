@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -311,7 +312,8 @@ public class ProxySubclassGenerator
     // java.lang.Object first)
     while (!clazz.getName().startsWith("java.") && !clazz.getName().startsWith("javax.")) {
       for (Method m : clazz.getDeclaredMethods()) {
-        if (isFinal(m.getModifiers())) {
+        //Static finals are ok, because we won't be overriding them :)
+        if (isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers())) {
           finalMethods.add(m.toGenericString());
         }
       }
