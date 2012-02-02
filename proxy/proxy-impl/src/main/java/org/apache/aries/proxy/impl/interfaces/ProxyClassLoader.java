@@ -116,7 +116,7 @@ final class ProxyClassLoader extends ClassLoader {
       return false;
   }
 
-  public Class<?> createProxyClass(Class<? extends WovenProxy> superclass, SortedSet<Class<?>> interfaces) throws UnableToProxyException {
+  public Class<?> createProxyClass(Class<?> superclass, SortedSet<Class<?>> interfaces) throws UnableToProxyException {
     
     LinkedHashSet<Class<?>> createSet = new LinkedHashSet<Class<?>>(interfaces);
     //Even a null superclass helps with key uniqueness

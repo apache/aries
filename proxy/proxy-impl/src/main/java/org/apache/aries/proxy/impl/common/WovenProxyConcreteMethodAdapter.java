@@ -16,29 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.proxy.impl.weaving;
+package org.apache.aries.proxy.impl.common;
 
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_FIELD;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_TYPE;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.OBJECT_TYPE;
 
-import org.apache.aries.proxy.impl.common.AbstractWovenProxyMethodAdapter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
 
-final class WovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
+public final class WovenProxyConcreteMethodAdapter extends AbstractWovenProxyMethodAdapter {
 
   /** Jump here to start executing the original method body **/
   private final Label executeDispatch = new Label();
   
-  public WovenProxyMethodAdapter(MethodVisitor mv, int access, String name,
+  public WovenProxyConcreteMethodAdapter(MethodVisitor mv, int access, String name,
       String desc, String[] exceptions, String methodStaticFieldName, Method currentTransformMethod,
-      Type typeBeingWoven) {
+      Type typeBeingWoven, Type methodDeclaringType) {
     //If we're running on Java 6+ We need to inline any JSR instructions because we're computing stack frames.
     //otherwise we can save the overhead
-    super(mv, access, name, desc, methodStaticFieldName, currentTransformMethod, typeBeingWoven);
+    super(mv, access, name, desc, methodStaticFieldName, currentTransformMethod, typeBeingWoven,
+        methodDeclaringType, false);
   }
 
   /**
@@ -74,15 +74,5 @@ final class WovenProxyMethodAdapter extends AbstractWovenProxyMethodAdapter {
     //Write the dispatcher code in here
     writeDispatcher();
     mv.visitMaxs(stack, locals);
-  }
-  
-  @Override
-  protected final Type getTypeToCastTo() {
-    return typeBeingWoven;
-  }
-
-  @Override
-  protected final boolean isTypeToCastToInterface() {
-    return false;
   }
 }

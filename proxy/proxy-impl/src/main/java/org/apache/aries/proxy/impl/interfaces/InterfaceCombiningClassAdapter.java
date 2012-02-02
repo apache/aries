@@ -28,7 +28,6 @@ import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassVisitor;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassWriter;
-import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -42,13 +41,13 @@ import org.objectweb.asm.commons.Method;
 final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcodes {
 
   /** The superclass we should use */
-  private final Class<? extends WovenProxy> superclass;
+  private final Class<?> superclass;
   /** The interfaces we need to implement */
   private final Collection<Class<?>> interfaces;
   /** The {@link ClassWriter} we use to write our class */
   private final ClassWriter writer;
   /** The adapter we use to weave in our method implementations */
-  private final InterfaceUsingWovenProxyAdapter adapter;
+  private final AbstractWovenProxyAdapter adapter;
   /** Whether we have already written the class bytes */
   private boolean done = false;
 
@@ -60,7 +59,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
    * @param interfaces
    */
   InterfaceCombiningClassAdapter(String className,
-      ClassLoader loader, Class<? extends WovenProxy> superclass, Collection<Class<?>> interfaces) {
+      ClassLoader loader, Class<?> superclass, Collection<Class<?>> interfaces) {
     super(Opcodes.ASM4);
     writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader, className, (superclass!=null)? superclass.getName(): null);
     ClassVisitor cv = new OSGiFriendlyClassVisitor(writer, ClassWriter.COMPUTE_FRAMES);
@@ -92,7 +91,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
         "<clinit>".equals(name))
       return null;
     else {//We're going to implement this method, so make it non abstract!
-      return adapter.visitMethod(access & ~ACC_ABSTRACT, name, desc, null, arg4);
+      return adapter.visitMethod(access, name, desc, null, arg4);
     }
   }
 
@@ -119,13 +118,14 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
         visitAbstractMethods(clazz);
         clazz = clazz.getSuperclass();
       }
-
-      adapter.setCurrentMethodDeclaringType(Type.getType(Object.class), false);
+      
+      adapter.setCurrentMethodDeclaringType(AbstractWovenProxyAdapter.OBJECT_TYPE, false);
       visitObjectMethods();
 
       adapter.visitEnd();
       done  = true;
     }
+    
     return writer.toByteArray();
   }
 
@@ -150,13 +150,13 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
    * even if they are not on any of the interfaces
    */
   private void visitObjectMethods() {
-    MethodVisitor visitor = visitMethod(ACC_PUBLIC, "toString", "()Ljava/lang/String;", null, null);
-    if (visitor != null) visitor.visitEnd();
+      MethodVisitor visitor = visitMethod(ACC_PUBLIC | ACC_ABSTRACT, "toString", "()Ljava/lang/String;", null, null);
+      if (visitor != null) visitor.visitEnd();
+      
+      visitor = visitMethod(ACC_PUBLIC | ACC_ABSTRACT, "equals", "(Ljava/lang/Object;)Z", null, null);
+      if (visitor != null) visitor.visitEnd();
 
-    visitor = visitMethod(ACC_PUBLIC, "equals", "(Ljava/lang/Object;)Z", null, null);
-    if (visitor != null) visitor.visitEnd();
-
-    visitor = visitMethod(ACC_PUBLIC, "hashCode", "()I", null, null);
-    if (visitor != null) visitor.visitEnd();      
+      visitor = visitMethod(ACC_PUBLIC | ACC_ABSTRACT, "hashCode", "()I", null, null);
+      if (visitor != null) visitor.visitEnd();     
   }
 }

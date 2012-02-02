@@ -77,7 +77,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   }
   
   /** An array of classes that will be woven - note no UnweavableParents should be in here! */
-  private static final List<Class<?>> CLASSES = Arrays.asList(new Class<?>[]{TEST_CLASS, ProxyTestClassSuper.class,
+  private static final List<Class<?>> CLASSES = Arrays.asList(new Class<?>[]{ProxyTestClassGeneral.class, ProxyTestClassSuper.class,
     ProxyTestClassFinalMethod.class, ProxyTestClassFinal.class, ProxyTestClassGeneric.class,
     ProxyTestClassGenericSuper.class, ProxyTestClassCovariant.class, ProxyTestClassCovariantOverride.class,
     ProxyTestClassUnweavableChild.class, ProxyTestClassUnweavableSibling.class, ProxyTestClassInner.class, 
@@ -89,11 +89,12 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     ProxyTestClassStaticInitOfChild.class, ProxyTestClassAbstract.class});
   
   /** An array of classes that are loaded by the WeavingLoader, but not actually woven **/
-  private static final List<Class<?>> OTHER_CLASSES = Arrays.asList(new Class<?>[] {ProxyTestClassStaticInitOfChildParent.class, ProxyTestClassChildOfAbstract.class});
+  private static final List<Class<?>> OTHER_CLASSES = Arrays.asList(new Class<?>[] {ProxyTestClassUnweavableSuper.class,
+		  ProxyTestClassStaticInitOfChildParent.class, ProxyTestClassChildOfAbstract.class});
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
-  private static final ClassLoader weavingLoader = new ClassLoader() {
+  protected static final ClassLoader weavingLoader = new ClassLoader() {
     public Class<?> loadClass(String className)  throws ClassNotFoundException
     {
       return loadClass(className, false);
@@ -158,7 +159,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   }
 
   /**
-   * This test uses the WovenProxyGenerator to generate and load the specified TEST_CLASS.
+   * This test uses the WovenProxyGenerator to generate and load the specified getTestClass().
    * 
    * Once the subclass is generated we check that it wasn't null. 
    * 
@@ -169,7 +170,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   public void testGenerateAndLoadProxy() throws Exception
   {
     super.testGenerateAndLoadProxy();
-    assertTrue("Should be a WovenProxy", WovenProxy.class.isAssignableFrom(getProxyClass(TEST_CLASS)));
+    assertTrue("Should be a WovenProxy", WovenProxy.class.isAssignableFrom(getProxyClass(getTestClass())));
   }
 
   /**
@@ -179,10 +180,10 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testExpectedMethods() throws Exception
   {
-    ProxySubclassMethodHashSet<String> originalMethods = getMethods(TEST_CLASS);
+    ProxySubclassMethodHashSet<String> originalMethods = getMethods(getTestClass());
 
     ProxySubclassMethodHashSet<String> generatedMethods = getMethods(weavingLoader.
-        loadClass(TEST_CLASS.getName()));
+        loadClass(getTestClass().getName()));
 
     // check that all the methods we have generated were expected
     for (String gen : generatedMethods) {
@@ -261,21 +262,31 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     assertNotNull(getProxyInstance(woven));
     
     TestListener tl = new TestListener();
-    ProxyTestClassUnweavableSuper ptcuc = (ProxyTestClassUnweavableSuper) getProxyInstance(woven, tl);
+    Object ptcuc = getProxyInstance(woven, tl);
     assertCalled(tl, false, false, false);
     
-    assertEquals("Hi!", ptcuc.doStuff());
+    Method m = ptcuc.getClass().getMethod("doStuff");
+    
+    assertEquals("Hi!", m.invoke(ptcuc));
     
     assertCalled(tl, true, true, false);
     
     assertEquals(ProxyTestClassUnweavableGrandParent.class.getMethod("doStuff"), 
         tl.getLastMethod());
     
+    tl.clear();
 
     //Because default access works on the package, and we are defined on a different classloader
-    //we can only check that the method exists, not that it is callable *sigh*
+    //we have to call setAccessible...
     
-    assertNotNull(ProxyTestClassUnweavableSuper.class.getDeclaredMethod("doStuff2"));
+    m = getDeclaredMethod(ProxyTestClassUnweavableChild.class, "doStuff2");
+    m.setAccessible(true);
+    assertEquals("Hello!", m.invoke(ptcuc));
+    
+    assertCalled(tl, true, true, false);
+    
+    assertEquals(weavingLoader.loadClass(ProxyTestClassUnweavableSuper.class.getName()).getDeclaredMethod("doStuff2"),
+    		tl.getLastMethod());
   }
   
   @Test
@@ -341,7 +352,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   
   @Test(expected=NoSuchFieldException.class)
   public void testNonSerializableClassHasNoGeneratedSerialVersionUID() throws Exception {
-    Class<?> woven = getProxyClass(TEST_CLASS);
+    Class<?> woven = getProxyClass(getTestClass());
     woven.getDeclaredField("serialVersionUID");
   }
   
@@ -464,7 +475,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   }
   
   protected Object getP3() {
-    return getProxyInstance(getProxyClass(TEST_CLASS));
+    return getProxyInstance(getProxyClass(getTestClass()));
   }
   
   /**
