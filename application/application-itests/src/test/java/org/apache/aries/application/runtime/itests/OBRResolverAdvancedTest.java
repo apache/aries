@@ -19,9 +19,11 @@
 package org.apache.aries.application.runtime.itests;
 
 import static junit.framework.Assert.assertEquals;
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -266,10 +268,18 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
   @Test(expected=ModellerException.class)
   public void testModellerException() throws Exception
   {
-    //aa.jar does not exist
-    generateOBRRepoXML(false, "aa.jar");
+    
+    ZipFixture bundle = ArchiveFixture.newJar().manifest()
+    .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
+    .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+    .attribute(Constants.IMPORT_PACKAGE, "a.b.c, p.q.r, x.y.z, javax.naming")
+    .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+    FileOutputStream fout = new FileOutputStream("delete.jar");
+    bundle.writeOut(fout);
+    fout.close();
+    generateOBRRepoXML(false, "delete.jar");
   }
-  
+
   @Test
   public void testDemoApp() throws Exception 
   {
@@ -498,6 +508,9 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
       String uri = "";
       if (!!!nullURI) {
         uri = bundleFile.toURI().toString();
+      }
+      if ("delete.jar".equals(fileName)) {
+        jarDir = null;
       }
       mrs.add(modelledResourceManager.getModelledResource(uri, jarDir));
     }
