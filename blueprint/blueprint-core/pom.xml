@@ -95,10 +95,10 @@
         <blueprint.annotation.api.version>0.3</blueprint.annotation.api.version>
         <blueprint.api.version>0.3</blueprint.api.version>
         <blueprint.parser.version>0.4.1-SNAPSHOT</blueprint.parser.version>
-        <proxy.api.version>0.4</proxy.api.version>
-        <proxy.impl.version>0.4</proxy.impl.version>
+        <proxy.api.version>0.4.1-SNAPSHOT</proxy.api.version>
+        <proxy.impl.version>0.4.1-SNAPSHOT</proxy.impl.version>
         <quiesce.api.version>0.3</quiesce.api.version>
-        <util.version>0.4</util.version>
+        <util.version>0.5-SNAPSHOT</util.version>
     </properties>
 
     <profiles>
