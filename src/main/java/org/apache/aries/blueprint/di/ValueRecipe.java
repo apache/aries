@@ -50,17 +50,22 @@ public class ValueRecipe extends AbstractRecipe {
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
         try {
-            Type type = Object.class;
-            if (this.type instanceof Type) {
-                type = (Type) this.type;
-            } else if (this.type instanceof String) {
-                type = loadClass((String) this.type);
-            }
+            Type type = getValueType();
             return convert(value.getStringValue(), type);
         } catch (Exception e) {            
             throw new ComponentDefinitionException(e);
         }
     }
+
+	protected Type getValueType() {
+		Type type = Object.class;
+		if (this.type instanceof Type) {
+		    type = (Type) this.type;
+		} else if (this.type instanceof String) {
+		    type = loadClass((String) this.type);
+		}
+		return type;
+	}
 
     @Override
     public String toString() {

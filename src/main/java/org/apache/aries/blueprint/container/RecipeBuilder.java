@@ -45,6 +45,7 @@ import org.apache.aries.blueprint.ext.ComponentFactoryMetadata;
 import org.apache.aries.blueprint.ext.DependentComponentFactoryMetadata;
 import org.apache.aries.blueprint.mutable.MutableMapMetadata;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -144,7 +145,7 @@ public class RecipeBuilder {
     private Recipe createReferenceListRecipe(ReferenceListMetadata metadata) {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
-            listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
+            listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class, Object.class.getName());
             for (ReferenceListener listener : metadata.getReferenceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
@@ -160,7 +161,7 @@ public class RecipeBuilder {
     private ReferenceRecipe createReferenceRecipe(ReferenceMetadata metadata) {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
-            listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
+            listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class, Object.class.getName());
             for (ReferenceListener listener : metadata.getReferenceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
@@ -174,7 +175,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createServiceRecipe(ServiceMetadata serviceExport) {
-        CollectionRecipe listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
+        CollectionRecipe listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class, Object.class.getName());
         if (serviceExport.getRegistrationListeners() != null) {
             for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
                 listenersRecipe.add(createRecipe(listener));
@@ -301,8 +302,8 @@ public class RecipeBuilder {
             return rr;
         } else if (v instanceof CollectionMetadata) {
             CollectionMetadata collectionMetadata = (CollectionMetadata) v;
-            Class cl = collectionMetadata.getCollectionClass();
-            Object type = collectionMetadata.getValueType();
+            Class<?> cl = collectionMetadata.getCollectionClass();
+            String type = collectionMetadata.getValueType();
             if (cl == Object[].class) {
                 ArrayRecipe ar = new ArrayRecipe(getName(null), type);
                 for (Metadata lv : collectionMetadata.getValues()) {
@@ -310,7 +311,7 @@ public class RecipeBuilder {
                 }
                 return ar;
             } else {
-                CollectionRecipe cr = new CollectionRecipe(getName(null), cl != null ? cl : ArrayList.class);
+                CollectionRecipe cr = new CollectionRecipe(getName(null), cl != null ? cl : ArrayList.class, type);
                 for (Metadata lv : collectionMetadata.getValues()) {
                     cr.add(getValue(lv, type));
                 }
@@ -320,7 +321,7 @@ public class RecipeBuilder {
             return createMapRecipe((MapMetadata) v);
         } else if (v instanceof PropsMetadata) {
             PropsMetadata mapValue = (PropsMetadata) v;
-            MapRecipe mr = new MapRecipe(getName(null), Properties.class);
+            MapRecipe mr = new MapRecipe(getName(null), Properties.class, String.class, String.class);
             for (MapEntry entry : mapValue.getEntries()) {
                 Recipe key = getValue(entry.getKey(), String.class);
                 Recipe val = getValue(entry.getValue(), String.class);
@@ -340,7 +341,7 @@ public class RecipeBuilder {
     private MapRecipe createMapRecipe(MapMetadata mapValue) {
         String keyType = mapValue.getKeyType();
         String valueType = mapValue.getValueType();
-        MapRecipe mr = new MapRecipe(getName(null), HashMap.class);
+        MapRecipe mr = new MapRecipe(getName(null), HashMap.class, keyType, valueType);
         for (MapEntry entry : mapValue.getEntries()) {
             Recipe key = getValue(entry.getKey(), keyType);
             Recipe val = getValue(entry.getValue(), valueType);

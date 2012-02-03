@@ -33,8 +33,11 @@ import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.ServiceProcessor;
+import org.apache.aries.blueprint.container.AggregateConverter.Convertible;
+import org.apache.aries.blueprint.container.BeanRecipe.UnwrapperedBeanHolder;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
+import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
@@ -53,6 +56,7 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
@@ -268,7 +272,31 @@ public class ServiceRecipe extends AbstractRecipe {
     private void createService() {
         try {
             LOGGER.debug("Creating service instance");
-            service = createRecipe(serviceRecipe);
+            //We can't use the BlueprintRepository because we don't know what interfaces
+            //to use yet! We have to be a bit smarter.
+            ExecutionContext old = ExecutionContext.Holder.setContext(blueprintContainer.getRepository());
+           
+            try {
+            	Object o = serviceRecipe.create();
+            
+            	if (o instanceof Convertible) {
+            		o = blueprintContainer.getRepository().convert(o, new ReifiedType(Object.class));
+                    validateClasses(o);
+            	} else if (o instanceof UnwrapperedBeanHolder) {
+                    UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) o;
+                    validateClasses(holder.unwrapperedBean);
+                    o = BeanRecipe.wrap(holder, getClassesForProxying(holder.unwrapperedBean));
+                } else {
+                    validateClasses(o);
+                }
+            	service = o;
+			} catch (Exception e) {
+				LOGGER.error("Error retrieving service from " + this, e);
+				throw new ComponentDefinitionException(e);
+			} finally {
+				ExecutionContext.Holder.setContext(old);
+			}
+            
             LOGGER.debug("Service created: {}", service);
             // When the service is first requested, we need to create listeners and call them
             if (listeners == null) {
@@ -303,6 +331,7 @@ public class ServiceRecipe extends AbstractRecipe {
             Set<String> allClasses = new HashSet<String>();
             ReflectionUtils.getSuperClasses(allClasses, service.getClass());
             ReflectionUtils.getImplementedInterfaces(allClasses, service.getClass());
+            //This call is safe because we know that we don't need to call internalGet to get the answer
             Set<String> classes = getClasses();
             classes.removeAll(allClasses);
             if (!classes.isEmpty()) {
@@ -326,6 +355,11 @@ public class ServiceRecipe extends AbstractRecipe {
         }
     }
 
+    /**
+     * Be careful to avoid calling this method from internalGetService or createService before the service
+     * field has been set. If you get this wrong you will get a StackOverflowError!
+     * @return
+     */
     private Set<String> getClasses() {
         Set<String> classes;
         switch (metadata.getAutoExport()) {
@@ -352,18 +386,21 @@ public class ServiceRecipe extends AbstractRecipe {
      * or everything, then just proxying the real bean class will give us everything we
      * need, if none of the above then we need the class forms of the interfaces in
      * the metadata
+     * 
+     * Note that we use a template object here because we have already instantiated the bean
+     * that we're going to proxy. We can't call internalGetService because it would Stack Overflow.
      * @return
      * @throws ClassNotFoundException
      */
-    private Collection<Class<?>> getClassesForProxying() throws ClassNotFoundException {
+    private Collection<Class<?>> getClassesForProxying(Object template) throws ClassNotFoundException {
       Collection<Class<?>> classes;
       switch (metadata.getAutoExport()) {
           case ServiceMetadata.AUTO_EXPORT_INTERFACES:
-              classes = ReflectionUtils.getImplementedInterfacesAsClasses(new HashSet<Class<?>>(), internalGetService().getClass());
+              classes = ReflectionUtils.getImplementedInterfacesAsClasses(new HashSet<Class<?>>(), template.getClass());
               break;
           case ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY:
           case ServiceMetadata.AUTO_EXPORT_ALL_CLASSES:
-            classes = ProxyUtils.asList(internalGetService().getClass());
+            classes = ProxyUtils.asList(template.getClass());
               break;
           default:
               classes = new HashSet<Class<?>>(convertStringsToClasses(metadata.getInterfaces()));
@@ -397,7 +434,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         return repo.create(name);
     }
-   
+    
     private String getComponentName() {
         if (metadata.getServiceComponent() instanceof RefMetadata) {
             RefMetadata ref = (RefMetadata) metadata.getServiceComponent();
@@ -491,7 +528,7 @@ public class ServiceRecipe extends AbstractRecipe {
                 InvocationListener collaborator = new Collaborator(cm, interceptors);
 
                 intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
-                        getClassesForProxying(), original, collaborator);
+                        getClassesForProxying(original), original, collaborator);
             } catch (Exception u) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
                 LOGGER.info("Unable to create a proxy object for the service " + getName() + " defined in bundle " + b.getSymbolicName() + " at version " + b.getVersion() + " with id " + b.getBundleId() + ". Returning the original object instead.", u);

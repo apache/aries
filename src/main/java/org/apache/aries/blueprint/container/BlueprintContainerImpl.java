@@ -60,6 +60,7 @@ import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
+import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
@@ -464,7 +465,7 @@ public class BlueprintContainerImpl
             }
         }
 
-        Map<String, Object> objects = repository.createAll(typeConverters);
+        Map<String, Object> objects = repository.createAll(typeConverters, ProxyUtils.asList(Converter.class));
         for (String name : typeConverters) {
             Object obj = objects.get(name);
             if (obj instanceof Converter) {
@@ -494,10 +495,10 @@ public class BlueprintContainerImpl
             }
 
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
-                Object obj = repository.create(bean.getId());
+                Object obj = repository.create(bean.getId(), ProxyUtils.asList(ComponentDefinitionRegistryProcessor.class));
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
             } else if (Processor.class.isAssignableFrom(clazz)) {
-                Object obj = repository.create(bean.getId());
+                Object obj = repository.create(bean.getId(), ProxyUtils.asList(Processor.class));
                 this.processors.add((Processor) obj);
             } else {
                 continue;

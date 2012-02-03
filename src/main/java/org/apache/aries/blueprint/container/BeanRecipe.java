@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -55,14 +57,22 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
-
 /**
  * A <code>Recipe</code> to create POJOs.
  *
  * @version $Rev$, $Date$
  */
 public class BeanRecipe extends AbstractRecipe {
+	
+	static class UnwrapperedBeanHolder {
+		final Object unwrapperedBean;
+		final BeanRecipe recipe;
+		
+		public UnwrapperedBeanHolder(Object unwrapperedBean, BeanRecipe recipe) {
+			this.unwrapperedBean = unwrapperedBean;
+			this.recipe = recipe;
+		}
+	}
 
     public class VoidableCallable implements Callable<Object>, Voidable {
 
@@ -272,6 +282,8 @@ public class BeanRecipe extends AbstractRecipe {
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
+            } else if (factoryObj instanceof UnwrapperedBeanHolder) {
+            	factoryObj = wrap((UnwrapperedBeanHolder) factoryObj, Object.class);
             }
             
             // Map of matching methods
@@ -362,12 +374,18 @@ public class BeanRecipe extends AbstractRecipe {
                         found = false;
                         break;
                     }
-                    if (!AggregateConverter.isAssignable(args.get(i), argType)) {
+                    //If the arg is an Unwrappered bean then we need to do the assignment check against the
+                    //unwrappered bean itself.
+                    Object arg = args.get(i);
+                    Object argToTest = arg;
+                    if(arg instanceof UnwrapperedBeanHolder)
+                    	argToTest = ((UnwrapperedBeanHolder)arg).unwrapperedBean;
+                    if (!AggregateConverter.isAssignable(argToTest, argType)) {
                         found = false;
                         break;
                     }
                     try {
-                        match.add(convert(args.get(i), mth.getGenericParameterTypes()[i]));
+                        match.add(convert(arg, mth.getGenericParameterTypes()[i]));
                     } catch (Throwable t) {
                         found = false;
                         break;
@@ -503,12 +521,18 @@ public class BeanRecipe extends AbstractRecipe {
                         found = false;
                         break;
                     }
-                    if (!AggregateConverter.isAssignable(args.get(i), argType)) {
+                    //If the arg is an Unwrappered bean then we need to do the assignment check against the
+                    //unwrappered bean itself.
+                    Object arg = args.get(i);
+                    Object argToTest = arg;
+                    if(arg instanceof UnwrapperedBeanHolder)
+                    	argToTest = ((UnwrapperedBeanHolder)arg).unwrapperedBean;
+                    if (!AggregateConverter.isAssignable(argToTest, argType)) {
                         found = false;
                         break;
                     }
                     try {
-                        match.add(convert(args.get(i), cns.getGenericParameterTypes()[i]));
+                        match.add(convert(arg, cns.getGenericParameterTypes()[i]));
                     } catch (Throwable t) {
                         found = false;
                         break;
@@ -719,26 +743,28 @@ public class BeanRecipe extends AbstractRecipe {
         return obj;
     }    
     
-    private Object addInterceptors(final Object original)
+    private Object addInterceptors(final Object original, Collection<Class<?>> requiredInterfaces)
             throws ComponentDefinitionException {
 
         Object intercepted = null;
+        if(requiredInterfaces.isEmpty())
+        	requiredInterfaces.add(original.getClass());
+        
         ComponentDefinitionRegistry reg = blueprintContainer
                 .getComponentDefinitionRegistry();
         List<Interceptor> interceptors = reg.getInterceptors(interceptorLookupKey);
         if (interceptors != null && interceptors.size() > 0) {
             try {
-              Bundle b = FrameworkUtil.getBundle(original.getClass());
-              if (b == null) {
-                // we have a class from the framework parent, so use our bundle for proxying.
-                b = blueprintContainer.getBundleContext().getBundle();
-              }
-              intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
-                  ProxyUtils.asList(original.getClass()), original, 
-                  new Collaborator(interceptorLookupKey, interceptors));
+                Bundle b = FrameworkUtil.getBundle(original.getClass());
+                if (b == null) {
+                    // we have a class from the framework parent, so use our bundle for proxying.
+                    b = blueprintContainer.getBundleContext().getBundle();
+                }
+                intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
+                requiredInterfaces, original, new Collaborator(interceptorLookupKey, interceptors));
             } catch (org.apache.aries.proxy.UnableToProxyException e) {
-                  Bundle b = blueprintContainer.getBundleContext().getBundle();
-                  throw new ComponentDefinitionException("Unable to create proxy for bean " + name + " in bundle " + b.getSymbolicName() + " version " + b.getVersion(), e);
+                Bundle b = blueprintContainer.getBundleContext().getBundle();
+                throw new ComponentDefinitionException("Unable to create proxy for bean " + name + " in bundle " + b.getSymbolicName() + " version " + b.getVersion(), e);
             }
         } else {
             intercepted = original;
@@ -754,8 +780,7 @@ public class BeanRecipe extends AbstractRecipe {
                 return createProxyBean(rr);
             }
         } 
-        
-        return internalCreate2();
+        return new UnwrapperedBeanHolder(internalCreate2(), this);
     }
     
     private Object createProxyBean(ReferenceRecipe rr) {
@@ -770,7 +795,7 @@ public class BeanRecipe extends AbstractRecipe {
         }
     }
     
-    protected Object internalCreate2() throws ComponentDefinitionException {
+    private Object internalCreate2() throws ComponentDefinitionException {
         
         instantiateExplicitDependencies();
 
@@ -796,13 +821,31 @@ public class BeanRecipe extends AbstractRecipe {
         
         obj = runBeanProcPostInit(obj);
         
-        obj = addInterceptors(obj);
+        //Replaced by calling wrap on the UnwrapperedBeanHolder
+//        obj = addInterceptors(obj);
         
         return obj;
     }
     
+    static Object wrap(UnwrapperedBeanHolder holder, Collection<Class<?>> requiredViews) {
+        return holder.recipe.addInterceptors(holder.unwrapperedBean, requiredViews);
+    }
+    
+    static Object wrap(UnwrapperedBeanHolder holder, Class<?> requiredView) {
+        if(requiredView == Object.class) {
+          //We don't know what we need so we have to do everything
+            return holder.recipe.addInterceptors(holder.unwrapperedBean, new ArrayList<Class<?>>(1));
+        } else {
+        	return holder.recipe.addInterceptors(holder.unwrapperedBean, ProxyUtils.asList(requiredView));
+        }
+    }
+    
+    
     @Override
     public void destroy(Object obj) {
+        //This object should *always* be an UnwrapperedBeanHolder, so cast it and get the bean out.
+    	obj = ((UnwrapperedBeanHolder)obj).unwrapperedBean;
+    	
         for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.beforeDestroy(obj, getName());
         }
@@ -968,15 +1011,26 @@ public class BeanRecipe extends AbstractRecipe {
                     }
                 } else if (arg != null) {
                     if (convert) {
-                        try {
-                            // TODO: call canConvert instead of convert()
-                            val = convert(arg, entry.type);
-                        } catch (Throwable t) {
+                        
+                        if(canConvert(arg, entry.type)) {
+                            try {
+								val = convert(arg, entry.type);
+							} catch (Exception e) {
+								throw new ComponentDefinitionException(e);
+							}
+                        } else { 
                             continue;
                         }
                     } else {
+                    	UnwrapperedBeanHolder holder = null;
+                        if(arg instanceof UnwrapperedBeanHolder) {
+                        	holder = (UnwrapperedBeanHolder)arg;
+                        	arg = holder.unwrapperedBean;
+                        }
                         if (!AggregateConverter.isAssignable(arg, entry.type)) {
                             continue;
+                        } else if (holder != null) {
+                            val = wrap(holder, entry.type.getRawClass());
                         }
                     }
                 }
