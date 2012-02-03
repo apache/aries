@@ -36,7 +36,7 @@ public class AggregateConverterTest extends TestCase {
 
     private AggregateConverter service;
 
-    protected void setUp() {
+    protected void setUp() throws Exception {
         service = new AggregateConverter(new TestBlueprintContainer(null));
     }
 

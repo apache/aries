@@ -57,6 +57,8 @@ public class RefRecipe extends AbstractRecipe {
         Object instance = context.getObject(idRef);
         if (instance instanceof Recipe) {
             Recipe recipe = (Recipe) instance;
+            //We do not convert this, it might be an unwrappered bean, but we don't know what type
+            //it needs to be yet. The property setter or factory-ref in the Bean recipe will do this will do this
             instance = recipe.create();
         }
         return instance;

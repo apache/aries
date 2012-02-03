@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.container.BeanRecipe.UnwrapperedBeanHolder;
 import org.apache.aries.blueprint.di.CircularDependencyException;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.IdRefRecipe;
@@ -148,15 +149,39 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         }
     }
     
-    public Map<String, Object> createAll(Collection<String> names) throws ComponentDefinitionException {
+    public Object create(String name, Collection<Class<?>> proxyInterfaces) throws ComponentDefinitionException {
+        ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
+        try {
+            Object instance = createInstance(name); 
+            if(instance instanceof UnwrapperedBeanHolder)
+                instance = BeanRecipe.wrap((UnwrapperedBeanHolder) instance, proxyInterfaces);
+            return convert(name, instance);
+		} finally {
+            ExecutionContext.Holder.setContext(oldContext);
+        }
+    }
+    
+    public Map<String, Object> createAll(Collection<String> names, Collection<Class<?>> proxyInterfaces) throws ComponentDefinitionException {
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
             Map<String, Object> instances = createInstances(names);
             for (String name : instances.keySet()) {
                 Object obj = instances.get(name);
+                if(obj instanceof UnwrapperedBeanHolder)
+                	obj = BeanRecipe.wrap((UnwrapperedBeanHolder) obj, proxyInterfaces);
                 instances.put(name, convert(name, obj));
             }
             return instances;
+        } finally {
+            ExecutionContext.Holder.setContext(oldContext);
+        }
+    }
+    
+    public void createAll(Collection<String> names) throws ComponentDefinitionException {
+        ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
+        try {
+            createInstances(names);
+            return;
         } finally {
             ExecutionContext.Holder.setContext(oldContext);
         }

@@ -25,12 +25,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 /**
  * @version $Rev$ $Date$
@@ -38,13 +38,18 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 public class MapRecipe extends AbstractRecipe {
 
     private final List<Recipe[]> entries;
-    private final Class typeClass;
-
-    public MapRecipe(String name, Class type) {
+    private final Class<?> typeClass;
+    private final Object keyType;
+    private final Object valueType;
+    
+    
+    public MapRecipe(String name, Class<?> type, Object keyType, Object valueType) {
         super(name);
         if (type == null) throw new NullPointerException("type is null");
         this.typeClass = type;
         this.entries = new ArrayList<Recipe[]>();
+        this.keyType = keyType;
+        this.valueType = valueType;
     }
 
     public List<Recipe> getDependencies() {
@@ -57,9 +62,21 @@ public class MapRecipe extends AbstractRecipe {
         }
         return nestedRecipes;
     }
+    
+    private ReifiedType getType(Object o) {
+    	ReifiedType type;
+        if (o instanceof Class) {
+            type = new ReifiedType((Class) o);
+        } else if (o instanceof String) {
+            type = loadType((String) o);
+        } else {
+            type = new ReifiedType(Object.class);
+        }
+        return type;
+    }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Class mapType = getMap(typeClass);
+        Class<?> mapType = getMap(typeClass);
 
         if (!ReflectionUtils.hasDefaultConstructor(mapType)) {
             throw new ComponentDefinitionException("Type does not have a default constructor " + mapType.getName());
@@ -81,11 +98,17 @@ public class MapRecipe extends AbstractRecipe {
             throw new ComponentDefinitionException("Specified map type does not implement the Map interface: " + mapType.getName());
         }
 
+        ReifiedType convertKeyType = getType(keyType);
+        ReifiedType convertValueType = getType(valueType);
         // add map entries
-        for (Recipe[] entry : entries) {
-            Object key = entry[0].create();
-            Object value = entry[1] != null ? entry[1].create() : null;
-            instance.put(key, value);
+        try {
+            for (Recipe[] entry : entries) {
+                Object key = convert(entry[0].create(), convertKeyType);
+                Object value = entry[1] != null ? convert(entry[1].create(), convertValueType) : null;
+                instance.put(key, value);
+            }
+        } catch (Exception e) {
+        	throw new ComponentDefinitionException(e);
         }
         return instance;
     }
@@ -104,7 +127,7 @@ public class MapRecipe extends AbstractRecipe {
         }
     }
 
-    public static Class getMap(Class type) {
+    public static Class<?> getMap(Class<?> type) {
         if (ReflectionUtils.hasDefaultConstructor(type)) {
             return type;
         } else if (SortedMap.class.isAssignableFrom(type)) {

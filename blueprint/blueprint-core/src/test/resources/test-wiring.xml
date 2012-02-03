@@ -20,9 +20,7 @@
            default-availability="mandatory" >
 
     <type-converters>
-            <bean id="converter1" class="org.apache.aries.blueprint.pojos.ConverterA">
-                <property name="bundle" ref="blueprintBundleContext" />
-            </bean>
+            <bean id="converter1" class="org.apache.aries.blueprint.pojos.ConverterA"/>
     </type-converters>
 
     <service id="service1" ref="pojoB" interface="org.apache.aries.blueprint.pojos.PojoB">

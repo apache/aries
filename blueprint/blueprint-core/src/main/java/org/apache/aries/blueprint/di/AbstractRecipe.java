@@ -119,6 +119,10 @@ public abstract class AbstractRecipe implements Recipe {
         }
     }
     
+    protected boolean canConvert(Object obj, ReifiedType type) {
+    	return ExecutionContext.Holder.getContext().canConvert(obj, type);
+    }
+    
     protected Object convert(Object obj, ReifiedType type) throws Exception {
         return ExecutionContext.Holder.getContext().convert(obj, type);
     }
