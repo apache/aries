@@ -23,6 +23,8 @@ import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -43,6 +45,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
     
     protected BundleContext defaultContext;
     protected BundleContext callerContext;
+    private static final Logger logger = Logger.getLogger(ObjectFactoryHelper.class.getName());
 
     public ObjectFactoryHelper(BundleContext defaultContext, BundleContext callerContext) {
         this.defaultContext = defaultContext;
@@ -58,6 +61,8 @@ public class ObjectFactoryHelper implements ObjectFactory {
         if (obj instanceof Referenceable) {
             obj = ((Referenceable) obj).getReference();
         }
+        
+        logger.log(Level.FINE, "obj = " + obj);
 
         Object result = obj;
 
@@ -74,21 +79,74 @@ public class ObjectFactoryHelper implements ObjectFactory {
                 result = getObjectInstanceUsingRefAddress(ref.getAll(), obj, name, nameCtx, environment);
             }
         }
+        
+		logger.log(Level.FINE, "Step 4: result = " + result);
 
         // Step 5 - if we still don't have a resolved object goto the object factory builds in the SR.
         if (result == null || result == obj) {
             result = getObjectInstanceUsingObjectFactoryBuilders(obj, name, nameCtx, environment);
         }
 
-        // Step 6 - finally as a last ditch effort attempt to use all the registered ObjectFactories in the SR.
+		logger.log(Level.FINE, "Step 5: result = " + result);
+
+        // Step 6 - Attempt to use all the registered ObjectFactories in the SR.
         if (result == null || result == obj) {                
             if ((obj instanceof Reference && ((Reference) obj).getFactoryClassName() == null) ||
                 !(obj instanceof Reference)) {
                 result = getObjectInstanceUsingObjectFactories(obj, name, nameCtx, environment);
             }
         }
+ 
+		logger.log(Level.FINE, "Step 6: result = " + result);
+
+		// Extra, non-standard, bonus step 7. If javax.naming.OBJECT_FACTORIES is set as 
+		// a property in the environment, use its value to construct additional object factories. 
+		// Added under Aries-822, with reference 
+		// to https://www.osgi.org/bugzilla/show_bug.cgi?id=138 
+		if (result == null || result == obj) {
+			result = getObjectInstanceViaContextDotObjectFactories(obj, name, nameCtx, environment);
+		} 
+		
+		logger.log(Level.FINE, "Step 7: result = " + result);
 
         return (result == null) ? obj : result;
+    }
+    
+    /*
+     * Attempt to obtain an Object instance via the java.naming.factory.object property
+     */
+    protected Object getObjectInstanceViaContextDotObjectFactories(Object obj,
+            Name name,
+            Context nameCtx,
+            Hashtable<?, ?> environment) throws Exception
+    {
+    	Object result = null;
+    	String factories = (String) environment.get(Context.OBJECT_FACTORIES);
+		if (factories != null && factories.length() > 0) {
+			String[] candidates = factories.split(":");
+			ClassLoader cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+				public ClassLoader run() {
+					return Thread.currentThread().getContextClassLoader();
+				}
+			});
+			for (String cand : candidates) {
+				ObjectFactory factory = null;
+				try {
+					@SuppressWarnings("unchecked")
+					Class<ObjectFactory> clz = (Class<ObjectFactory>) cl.loadClass(cand);
+					factory = clz.newInstance();
+				} catch (Exception e) {
+					logger.log(Level.FINE, "Exception instantiating factory: " + e);
+					continue;
+				}
+				logger.log(Level.FINE, "cand=" + cand + " factory=" + factory);
+				if (factory != null) {
+					result = factory.getObjectInstance(obj, name, nameCtx, environment);
+				}
+				if (result != null && result != obj) break;
+			}
+		}
+		return (result == null) ? obj : result;
     }
 
     protected Object getObjectInstanceUsingObjectFactories(Object obj,
