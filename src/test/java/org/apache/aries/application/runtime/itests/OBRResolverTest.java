@@ -18,10 +18,17 @@
  */
 package org.apache.aries.application.runtime.itests;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
+import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
+import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
+import static org.osgi.framework.Constants.EXPORT_PACKAGE;
+import static org.osgi.framework.Constants.IMPORT_PACKAGE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,11 +67,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
-import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
-import static org.osgi.framework.Constants.IMPORT_PACKAGE;
-import static org.osgi.framework.Constants.EXPORT_PACKAGE;
-import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
 @RunWith(JUnit4TestRunner.class)
 public class OBRResolverTest extends AbstractIntegrationTest 
@@ -272,7 +274,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
     
-    assertEquals(provision.toString(), 4, provision.size());
+    assertEquals(provision.toString(), 3, provision.size());
     
     List<String> bundleSymbolicNames = new ArrayList<String>();
     
