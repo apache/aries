@@ -42,6 +42,7 @@ import java.math.BigInteger;
 import java.math.BigDecimal;
 
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.container.BeanRecipe.UnwrapperedBeanHolder;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
@@ -99,22 +100,25 @@ public class AggregateConverter implements Converter {
         converters.remove(converter);
     }
 
-    public boolean canConvert(final Object fromValue, final ReifiedType toType) {
+    public boolean canConvert(Object fromValue, final ReifiedType toType) {
         if (fromValue == null) {
             return true;
+        } else if (fromValue instanceof UnwrapperedBeanHolder) {
+        	fromValue = ((UnwrapperedBeanHolder) fromValue).unwrapperedBean;
         }
         if (isAssignable(fromValue, toType)) {
             return true;
         }
         
+        final Object toTest = fromValue;
         boolean canConvert = false;
         AccessControlContext acc = blueprintContainer.getAccessControlContext();
         if (acc == null) {
-            canConvert = canConvertWithConverters(fromValue, toType);
+            canConvert = canConvertWithConverters(toTest, toType);
         } else {
             canConvert = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
                 public Boolean run() {
-                    return canConvertWithConverters(fromValue, toType);
+                    return canConvertWithConverters(toTest, toType);
                 }            
             }, acc);
         }
@@ -124,14 +128,14 @@ public class AggregateConverter implements Converter {
         
         // TODO implement better logic ?!
         try {
-            convert(fromValue, toType);
+            convert(toTest, toType);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public Object convert(final Object fromValue, final ReifiedType type) throws Exception {
+    public Object convert(Object fromValue, final ReifiedType type) throws Exception {
         // Discard null values
         if (fromValue == null) {
             return null;
@@ -139,11 +143,19 @@ public class AggregateConverter implements Converter {
         // First convert service proxies
         if (fromValue instanceof Convertible) {
             return ((Convertible) fromValue).convert(type);
-        }
-        // If the object is an instance of the type, just return it
-        if (isAssignable(fromValue, type)) {
+        } else if (fromValue instanceof UnwrapperedBeanHolder) {
+        	UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) fromValue;
+        	if (isAssignable(holder.unwrapperedBean, type)) {
+                return BeanRecipe.wrap(holder, type.getRawClass());
+            } else {
+            	fromValue = BeanRecipe.wrap(holder, Object.class);
+            }
+        } else if (isAssignable(fromValue, type)) {
+        	 // If the object is an instance of the type, just return it
             return fromValue;
         }
+        
+        final Object finalFromValue = fromValue;
         ConversionResult result = null;
         AccessControlContext acc = blueprintContainer.getAccessControlContext();
         if (acc == null) {
@@ -151,7 +163,7 @@ public class AggregateConverter implements Converter {
         } else {
             result = AccessController.doPrivileged(new PrivilegedExceptionAction<ConversionResult>() {
                 public ConversionResult run() throws Exception {
-                    return convertWithConverters(fromValue, type);
+                    return convertWithConverters(finalFromValue, type);
                 }            
             }, acc);
         }

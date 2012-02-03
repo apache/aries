@@ -59,8 +59,12 @@ public interface Repository {
     void removeRecipe(String name);
 
     Object create(String name) throws ComponentDefinitionException;
+    
+    Object create(String name, Collection<Class<?>> proxyInterfaces) throws ComponentDefinitionException;
 
-    Map<String, Object> createAll(Collection<String> names) throws ComponentDefinitionException;
+    void createAll(Collection<String> names) throws ComponentDefinitionException;
+    
+    Map<String, Object> createAll(Collection<String> names, Collection<Class<?>> proxyInterfaces) throws ComponentDefinitionException;
 
     <T> List<T> getAllRecipes(Class<T> clazz, String... names);
 

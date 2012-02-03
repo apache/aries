@@ -46,6 +46,8 @@ import org.apache.aries.blueprint.pojos.PojoGenerics;
 import org.apache.aries.blueprint.pojos.PojoListener;
 import org.apache.aries.blueprint.pojos.PojoRecursive;
 import org.apache.aries.blueprint.pojos.Primavera;
+import org.apache.aries.blueprint.proxy.ProxyUtils;
+import org.apache.aries.proxy.impl.JdkProxyManager;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
@@ -90,7 +92,7 @@ public class WiringTest extends AbstractBlueprintTest {
         
         assertNotNull(pojoa.getSet());
         assertTrue(pojoa.getSet().contains("set value"));
-        assertTrue(pojoa.getSet().contains(pojob));
+        assertTrue(pojoa.getSet().contains(pojob.getUri()));
         assertTrue(pojoa.getSet().contains(URI.create("http://geronimo.apache.org")));
         
         assertNotNull(pojoa.getMap());
@@ -217,7 +219,7 @@ public class WiringTest extends AbstractBlueprintTest {
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
-        Map instances = repository.createAll(Arrays.asList("c", "d", "e"));
+        Map instances = repository.createAll(Arrays.asList("c", "d", "e"), ProxyUtils.asList(Object.class));
         
         List<Callback> callback = CallbackTracker.getCallbacks();
         assertEquals(3, callback.size());

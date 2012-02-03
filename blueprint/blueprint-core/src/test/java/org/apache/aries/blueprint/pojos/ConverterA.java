@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.pojos;
 
 import java.io.File;
+import java.net.URI;
 
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.Converter;
@@ -26,12 +27,15 @@ import org.osgi.service.blueprint.container.Converter;
 public class ConverterA implements Converter {
 
     public boolean canConvert(Object fromValue, ReifiedType toType) {
-        return fromValue instanceof String && toType.getRawClass() == File.class;
+        return (fromValue instanceof String && toType.getRawClass() == File.class)
+        		|| fromValue instanceof PojoB && toType.getRawClass() == URI.class;
     }
 
     public Object convert(Object source, ReifiedType toType) throws Exception {
         if (source instanceof String) {
             return new File((String) source);
+        } else if (source instanceof PojoB) {
+        	return ((PojoB)source).getUri();
         }
         throw new Exception("Unable to convert from " + (source != null ? source.getClass().getName() : "<null>") + " to " + File.class.getName());
     }

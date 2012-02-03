@@ -16,6 +16,7 @@
  */
 package org.apache.aries.blueprint.di;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -28,6 +29,7 @@ import java.util.TreeSet;
 
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 /**
  * @version $Rev$ $Date$
@@ -35,12 +37,14 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 public class CollectionRecipe extends AbstractRecipe {
 
     private final List<Recipe> list;
-    private final Class typeClass;
+    private final Class<?> collectionTypeClass;
+    private final String defaultValueType;
 
-    public CollectionRecipe(String name, Class type) {
+    public CollectionRecipe(String name, Class<?> collectionType, String valueType) {
         super(name);
-        if (type == null) throw new NullPointerException("type is null");
-        this.typeClass = type;
+        if (collectionType == null) throw new NullPointerException("type is null");
+        this.collectionTypeClass = collectionType;
+        this.defaultValueType = (valueType != null) ? valueType : Object.class.getName();
         this.list = new ArrayList<Recipe>();
     }
 
@@ -55,7 +59,7 @@ public class CollectionRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Class type = getCollection(typeClass);
+        Class type = getCollection(collectionTypeClass);
 
         if (!ReflectionUtils.hasDefaultConstructor(type)) {
             throw new ComponentDefinitionException("Type does not have a default constructor " + type.getName());
@@ -73,13 +77,19 @@ public class CollectionRecipe extends AbstractRecipe {
         }
         Collection instance = (Collection) o;
 
+        ReifiedType defaultConversionType = loadType(defaultValueType);
+        Type conversionType = null;
         for (Recipe recipe : list) {
             Object value;
             if (recipe != null) {
                 try {
-                    value = recipe.create();
+                	conversionType = defaultConversionType.getRawClass();
+                    if (recipe instanceof ValueRecipe) {
+                    	conversionType = ((ValueRecipe)recipe).getValueType();
+                    } 
+                    value = convert(recipe.create(), conversionType);
                 } catch (Exception e) {
-                    throw new ComponentDefinitionException("Unable to convert value " + recipe + " to type " + type, e);
+                    throw new ComponentDefinitionException("Unable to convert value " + recipe + " to type " + conversionType, e);
                 }
             } else {
                 value = null;
