@@ -77,6 +77,14 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
             }
         }
 
+		// Extra, non-standard, bonus step. If javax.naming.OBJECT_FACTORIES is set as 
+		// a property in the environment, use its value to construct additional object factories. 
+		// Added under Aries-822, with reference 
+		// to https://www.osgi.org/bugzilla/show_bug.cgi?id=138 
+		if (result == null || result == obj) {
+			result = getObjectInstanceViaContextDotObjectFactories(obj, name, nameCtx, environment);
+		} 
+		
         return (result == null) ? obj : result;
     }
 

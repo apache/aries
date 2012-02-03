@@ -20,16 +20,21 @@ package org.apache.aries.jndi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.Name;
+import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.naming.spi.NamingManager;
 import javax.naming.spi.ObjectFactory;
+
+import junit.framework.Assert;
 
 import org.apache.aries.jndi.startup.Activator;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
@@ -179,4 +184,24 @@ public class ObjectFactoryTest
 
     assertSame("The naming manager should have returned the reference object", ref, obj);
   }
+  
+  public static class DummyObjectFactory implements ObjectFactory {
+
+		public Object getObjectInstance(Object obj, Name name, Context nameCtx,
+				Hashtable<?, ?> environment) throws Exception {
+			// TODO Auto-generated method stub
+			return new String ("pass");
+		}
+  }
+	  
+  @Test
+  public void testContextDotObjectFactories() throws Exception { 
+	  env.put(Context.OBJECT_FACTORIES, "org.apache.aries.jndi.ObjectFactoryTest$DummyObjectFactory");
+	  Reference ref = new Reference("anything");
+	  Object obj = NamingManager.getObjectInstance(ref, null, null, env);
+	  assertTrue (obj instanceof String);
+	  assertEquals ((String)obj, "pass");
+	  env.remove(Context.OBJECT_FACTORIES);
+  }
+
 }
