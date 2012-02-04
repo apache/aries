@@ -32,7 +32,7 @@ public final class AriesFrameworkUtil
   
   static {
     Bundle b = FrameworkUtil.getBundle(AriesFrameworkUtil.class);
-    String bundleClassName = b.getClass().getName();
+    String bundleClassName = b == null ? "": b.getClass().getName();
     if (isEquinox(bundleClassName)) {
       worker = new EquinoxWorker();
     } else if (bundleClassName.startsWith("org.apache.felix")) {
