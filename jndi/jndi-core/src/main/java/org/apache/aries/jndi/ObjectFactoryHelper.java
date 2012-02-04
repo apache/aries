@@ -161,6 +161,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
             Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
             
             for (ServiceReference ref : refs) {
+              if (canCallObjectFactory(obj, ref)) {
                 ObjectFactory factory = (ObjectFactory) Utils.getServicePrivileged(callerContext, ref);
 
                 try {
@@ -177,10 +178,24 @@ public class ObjectFactoryHelper implements ObjectFactory {
                 if (result != null && result != obj) {
                     break;
                 }
+              }
             }
         }
 
         return (result == null) ? obj : result;
+    }
+
+    private boolean canCallObjectFactory(Object obj, ServiceReference ref)
+    {
+      if (obj instanceof Reference) return true;
+      
+      Object prop = ref.getProperty("aries.object.factory.requires.reference");
+      
+      if (prop == null) return true;
+      
+      if (prop instanceof Boolean) return !!!(Boolean) prop; // if set to true we don't call.
+      
+      return true;
     }
 
     protected static String getUrlScheme(String name) {
