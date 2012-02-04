@@ -26,15 +26,11 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.Name;
-import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.naming.spi.NamingManager;
 import javax.naming.spi.ObjectFactory;
-
-import junit.framework.Assert;
 
 import org.apache.aries.jndi.startup.Activator;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
@@ -185,23 +181,39 @@ public class ObjectFactoryTest
     assertSame("The naming manager should have returned the reference object", ref, obj);
   }
   
+  @Test
+  public void testFactoriesThatDoUnsafeCastsAreIgnored() throws Exception {
+    Hashtable<String, Object> props = new Hashtable<String, Object>();
+    props.put("aries.object.factory.requires.reference", Boolean.TRUE);
+    bc.registerService(ObjectFactory.class.getName(), new ObjectFactory() {
+      
+      public Object getObjectInstance(Object arg0, Name arg1, Context arg2, Hashtable<?, ?> arg3)
+          throws Exception
+      {
+        return (Reference)arg0;
+      }
+    }, props);
+
+    NamingManager.getObjectInstance("Some dummy data", null, null, env);
+  }
+  
   public static class DummyObjectFactory implements ObjectFactory {
 
-		public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-				Hashtable<?, ?> environment) throws Exception {
-			// TODO Auto-generated method stub
-			return new String ("pass");
-		}
+        public Object getObjectInstance(Object obj, Name name, Context nameCtx,
+                Hashtable<?, ?> environment) throws Exception {
+            // TODO Auto-generated method stub
+            return new String ("pass");
+        }
   }
-	  
+      
   @Test
   public void testContextDotObjectFactories() throws Exception { 
-	  env.put(Context.OBJECT_FACTORIES, "org.apache.aries.jndi.ObjectFactoryTest$DummyObjectFactory");
-	  Reference ref = new Reference("anything");
-	  Object obj = NamingManager.getObjectInstance(ref, null, null, env);
-	  assertTrue (obj instanceof String);
-	  assertEquals ((String)obj, "pass");
-	  env.remove(Context.OBJECT_FACTORIES);
+      env.put(Context.OBJECT_FACTORIES, "org.apache.aries.jndi.ObjectFactoryTest$DummyObjectFactory");
+      Reference ref = new Reference("anything");
+      Object obj = NamingManager.getObjectInstance(ref, null, null, env);
+      assertTrue (obj instanceof String);
+      assertEquals ((String)obj, "pass");
+      env.remove(Context.OBJECT_FACTORIES);
   }
 
 }
