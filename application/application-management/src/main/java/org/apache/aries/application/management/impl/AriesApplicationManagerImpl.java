@@ -336,6 +336,9 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         try {
           URL url = new URL(location);
           JarURLConnection urlc = (JarURLConnection) url.openConnection();
+          
+          // Make sure that we pick up the cached version rather than creating a new one
+          urlc.setUseCaches(true);
           urlc.getJarFile().close();
         } catch (IOException e) {
           // TODO Auto-generated catch block
