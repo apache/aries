@@ -82,14 +82,24 @@ public class BundleFrameworkConfigurationFactoryImpl implements BundleFrameworkC
     /**
      * Set up CompositeServiceFilter-Import header for framework manifest
      */
-    StringBuffer serviceImportFilter = new StringBuffer("(" + Constants.OBJECTCLASS + "="
-        + EquinoxFrameworkConstants.TRANSACTION_REGISTRY_BUNDLE + ")");
+    StringBuilder serviceImportFilter = new StringBuilder();
+    String txRegsitryImport = "(" + Constants.OBJECTCLASS + "=" + EquinoxFrameworkConstants.TRANSACTION_REGISTRY_BUNDLE + ")";
 
+    Collection<Filter> deployedServiceImports = metadata.getDeployedServiceImport();
+    //if there are more services than the txRegistry import a OR group is required for the Filter
+    if (deployedServiceImports.size() > 0){
+      serviceImportFilter.append("(|");
+    }
+    
     for (Filter importFilter : metadata.getDeployedServiceImport()) {
-      if (serviceImportFilter.length() > 0) {
-        serviceImportFilter.append(",");
-      }
       serviceImportFilter.append(importFilter.toString());
+    }
+    
+    serviceImportFilter.append(txRegsitryImport);
+    
+    //close the OR group if needed
+    if (deployedServiceImports.size() > 0){
+      serviceImportFilter.append(")");
     }
 
     frameworkBundleManifest.put(EquinoxFrameworkConstants.COMPOSITE_SERVICE_FILTER_IMPORT,
