@@ -35,6 +35,7 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.transaction.BundleWideTxData;
 import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
@@ -63,11 +64,11 @@ public class TxElementHandler implements NamespaceHandler {
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("parser asked to parse .. " + elt);
 
+        ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
         if ("transaction".equals(elt.getLocalName())) {
             if (LOGGER.isDebugEnabled())
                 LOGGER.debug("parser adding interceptor for " + elt);
 
-            ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
             ComponentMetadata meta = cdr.getComponentDefinition("blueprintBundle");
             Bundle blueprintBundle = null;
             if (meta instanceof PassThroughMetadata) {
@@ -96,6 +97,15 @@ public class TxElementHandler implements NamespaceHandler {
                           .getAttribute(Constants.METHOD));
               }
             }
+        } else if ("enable-annotations".equals(elt.getLocalName())) {
+            Node n = elt.getChildNodes().item(0);
+            if(n == null || Boolean.parseBoolean(n.getNodeValue())) {
+                //We need to register a bean processor to add annotation-based config
+                if(!!!cdr.containsComponentDefinition(Constants.ANNOTATION_PARSER_BEAN_NAME)) {
+                    cdr.registerComponentDefinition(new PassThroughMetadataImpl(Constants.ANNOTATION_PARSER_BEAN_NAME,
+                	        new AnnotationParser(cdr, interceptor, metaDataHelper)));
+                }
+            }
         }
         
         if (LOGGER.isDebugEnabled())
@@ -119,11 +129,14 @@ public class TxElementHandler implements NamespaceHandler {
 
     public URL getSchemaLocation(String arg0)
     {
-    	if (arg0.equals(Constants.TRANSACTION10URI)) {
+    	if (Constants.TRANSACTION10URI.equals(arg0)) {
     	    return this.getClass().getResource(Constants.TX10_SCHEMA);
-    	} else {
+    	} else if (Constants.TRANSACTION11URI.equals(arg0)) {
     	    return this.getClass().getResource(Constants.TX11_SCHEMA);
+    	} else if (Constants.TRANSACTION12URI.equals(arg0)) {
+    		return this.getClass().getResource(Constants.TX12_SCHEMA);
     	}
+    	return null;
     }
 
     public final void setTxMetaDataHelper(TxComponentMetaDataHelper transactionEnhancer)

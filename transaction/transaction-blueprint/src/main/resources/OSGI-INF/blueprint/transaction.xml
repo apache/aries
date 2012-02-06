@@ -28,6 +28,7 @@
             	<list>
 				    <value>http://aries.apache.org/xmlns/transactions/v1.0.0</value>
 				    <value>http://aries.apache.org/xmlns/transactions/v1.1.0</value>
+				    <value>http://aries.apache.org/xmlns/transactions/v1.2.0</value>
 			    </list>
 			</entry>
         </service-properties>

@@ -27,10 +27,10 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 
 public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     
-    @Test
-    public void testMultipleElements() throws Exception
+    
+    private void testMultipleElements(String xml) throws Exception
     {
-      ComponentDefinitionRegistry cdr = parseCDR("bundlewide-aries.xml");
+      ComponentDefinitionRegistry cdr = parseCDR(xml);
             
       BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top1");
       BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down1");
@@ -47,9 +47,18 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     }
     
     @Test
-    public void testMultipleElements2() throws Exception
+    public void testMultipleElements_110() throws Exception {
+      testMultipleElements("bundlewide-aries.xml");
+    }
+    
+    @Test
+    public void testMultipleElements_120() throws Exception {
+      testMultipleElements("bundlewide-aries4.xml");
+    }
+    
+    private void testMultipleElements2(String xml) throws Exception
     {
-      ComponentDefinitionRegistry cdr = parseCDR("bundlewide-aries2.xml");
+      ComponentDefinitionRegistry cdr = parseCDR(xml);
       
       BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top2");
       BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down2");
@@ -75,9 +84,18 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     }
     
     @Test
-    public void testMultipleElements3() throws Exception
+    public void testMultipleElements2_110() throws Exception {
+      testMultipleElements2("bundlewide-aries2.xml");
+    }
+    
+    @Test
+    public void testMultipleElements2_120() throws Exception {
+      testMultipleElements2("bundlewide-aries5.xml");
+    }
+    
+    private void testMultipleElements3(String xml) throws Exception
     {
-      ComponentDefinitionRegistry cdr = parseCDR("bundlewide-aries3.xml");
+      ComponentDefinitionRegistry cdr = parseCDR(xml);
       
       BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top3");
       BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down3");
@@ -100,5 +118,15 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compMiddle, "doSomething"));
         
+    }
+    
+    @Test
+    public void testMultipleElements3_110() throws Exception {
+      testMultipleElements3("bundlewide-aries3.xml");
+    }
+    
+    @Test
+    public void testMultipleElements3_120() throws Exception {
+      testMultipleElements3("bundlewide-aries6.xml");
     }
 }
