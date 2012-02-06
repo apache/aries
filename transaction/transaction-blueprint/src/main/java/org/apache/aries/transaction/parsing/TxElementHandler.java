@@ -35,7 +35,7 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
-import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
+import org.apache.aries.blueprint.mutable.MutablePassThroughMetadata;
 import org.apache.aries.transaction.BundleWideTxData;
 import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
@@ -102,8 +102,11 @@ public class TxElementHandler implements NamespaceHandler {
             if(n == null || Boolean.parseBoolean(n.getNodeValue())) {
                 //We need to register a bean processor to add annotation-based config
                 if(!!!cdr.containsComponentDefinition(Constants.ANNOTATION_PARSER_BEAN_NAME)) {
-                    cdr.registerComponentDefinition(new PassThroughMetadataImpl(Constants.ANNOTATION_PARSER_BEAN_NAME,
-                	        new AnnotationParser(cdr, interceptor, metaDataHelper)));
+                	
+                	MutablePassThroughMetadata mptmd = pc.createMetadata(MutablePassThroughMetadata.class);
+                	mptmd.setId(Constants.ANNOTATION_PARSER_BEAN_NAME);
+                	mptmd.setObject(new AnnotationParser(cdr, interceptor, metaDataHelper));
+                    cdr.registerComponentDefinition(mptmd);
                 }
             }
         }
