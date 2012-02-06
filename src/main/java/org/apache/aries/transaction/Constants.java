@@ -18,6 +18,7 @@
  */
 package org.apache.aries.transaction;
 
+import java.lang.reflect.Modifier;
 import java.util.regex.Pattern;
 
 import org.apache.aries.util.nls.MessageUtil;
@@ -27,10 +28,15 @@ public class Constants {
     public static final String BEAN = "bean";
     public static final String VALUE = "value";
     public static final String METHOD = "method";
+    public static final String TX12_SCHEMA = "transactionv12.xsd";
     public static final String TX11_SCHEMA = "transactionv11.xsd";
     public static final String TX10_SCHEMA = "transactionv10.xsd";
     
+    public static final String ANNOTATION_PARSER_BEAN_NAME = ".org_apache_aries_transaction_annotations";
+    public static final int BANNED_MODIFIERS = Modifier.PRIVATE | Modifier.STATIC;
+    
     public final static String TRANSACTION10URI = "http://aries.apache.org/xmlns/transactions/v1.0.0";
     public final static String TRANSACTION11URI = "http://aries.apache.org/xmlns/transactions/v1.1.0";
+    public final static String TRANSACTION12URI = "http://aries.apache.org/xmlns/transactions/v1.2.0";
     public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(Constants.class, "org.apache.aries.transaction.nls.blueprintTx");
 }
