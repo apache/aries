@@ -75,7 +75,7 @@ public class BaseNameSpaceHandlerSetup {
         namespaceHandler.setTxMetaDataHelper(txenhancer);
             
         Properties props = new Properties();
-        props.put("osgi.service.blueprint.namespace", new String[]{"http://aries.apache.org/xmlns/transactions/v1.0.0", "http://aries.apache.org/xmlns/transactions/v1.1.0"});
+        props.put("osgi.service.blueprint.namespace", new String[]{"http://aries.apache.org/xmlns/transactions/v1.0.0", "http://aries.apache.org/xmlns/transactions/v1.1.0", "http://aries.apache.org/xmlns/transactions/v1.2.0"});
         ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
     }
       
