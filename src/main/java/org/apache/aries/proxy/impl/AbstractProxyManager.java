@@ -117,7 +117,7 @@ public abstract class AbstractProxyManager implements ProxyManager
 
   protected synchronized ClassLoader getClassLoader(final Bundle clientBundle, Collection<Class<?>> classes) 
   {
-    if (clientBundle.getState() == Bundle.UNINSTALLED) {
+    if (clientBundle != null && clientBundle.getState() == Bundle.UNINSTALLED) {
       throw new IllegalStateException(NLS.MESSAGES.getMessage("bundle.uninstalled", clientBundle.getSymbolicName(), clientBundle.getVersion(), clientBundle.getBundleId()));
     }
     
