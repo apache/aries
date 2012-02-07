@@ -62,7 +62,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
     Object o = null;
 
     if (b instanceof CompositeBundle) {
-      customizedProcessBundle(this, b, event);
+      customizedProcessBundle(this, b, event, false);
       o = b;
     } else {
       // Delegate to our customizer for normal bundles
@@ -82,7 +82,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
   public void modifiedBundle(Bundle b, BundleEvent event, Object object)
   {
     if (b instanceof CompositeBundle) {
-      customizedProcessBundle(this, b, event);
+      customizedProcessBundle(this, b, event, false);
     } else {
       // Delegate to our customizer for normal bundles
       if (customizer != null) {
@@ -99,7 +99,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
   public void removedBundle(Bundle b, BundleEvent event, Object object)
   {
     if (b instanceof CompositeBundle) {
-      customizedProcessBundle(this, b, event);
+      customizedProcessBundle(this, b, event, true);
     } else {
       if (customizer != null) {
         customizer.removedBundle(b, event, object);
@@ -107,7 +107,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
     }
   }
 
-  protected void customizedProcessBundle(BundleTrackerCustomizer btc, Bundle b, BundleEvent event)
+  protected void customizedProcessBundle(BundleTrackerCustomizer btc, Bundle b, BundleEvent event, boolean removing)
   {
     if (b instanceof CompositeBundle) {
       CompositeBundle cb = (CompositeBundle) b;
@@ -117,13 +117,15 @@ public class InternalRecursiveBundleTracker extends BundleTracker
       List<BundleTracker> btList = BundleTrackerFactory.getBundleTrackerList(bundleScope);
 
       // bundle is already active and there is no event associated
-      // this can happen when bundle is first time added to the tracker
-      if (event == null) {
+      // this can happen when bundle is first time added to the tracker 
+      // or when the tracker is being closed.
+      if (event == null && !!!removing) {
         if (cb.getState() == Bundle.INSTALLED || cb.getState() == Bundle.RESOLVED || cb.getState() == Bundle.STARTING || cb.getState() == Bundle.ACTIVE) {
           openTracker(btc, cb, bundleScope, mask);
         }
       } else {
-        if (event.getType() == BundleEvent.STOPPED || event.getType() == BundleEvent.UNRESOLVED || event.getType() == BundleEvent.UNINSTALLED) {
+        // if we are removing, or the event is of the right type then we need to shutdown.
+        if (removing || event.getType() == BundleEvent.STOPPED || event.getType() == BundleEvent.UNRESOLVED || event.getType() == BundleEvent.UNINSTALLED) {
           // if CompositeBundle is being stopped, let's remove the bundle
           // tracker(s) associated with the composite bundle
           String bundleId = b.getSymbolicName()+"/"+b.getVersion();
