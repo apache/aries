@@ -32,7 +32,11 @@ import junit.framework.Assert;
 
 import org.apache.aries.blueprint.CallbackTracker.Callback;
 import org.apache.aries.blueprint.container.BlueprintRepository;
+import org.apache.aries.blueprint.container.ServiceRecipe;
 import org.apache.aries.blueprint.di.CircularDependencyException;
+import org.apache.aries.blueprint.di.ExecutionContext;
+import org.apache.aries.blueprint.di.MapRecipe;
+import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.pojos.AmbiguousPojo;
@@ -47,7 +51,6 @@ import org.apache.aries.blueprint.pojos.PojoListener;
 import org.apache.aries.blueprint.pojos.PojoRecursive;
 import org.apache.aries.blueprint.pojos.Primavera;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
-import org.apache.aries.proxy.impl.JdkProxyManager;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
@@ -128,6 +131,17 @@ public class WiringTest extends AbstractBlueprintTest {
         Object obj3 = repository.create("service1");
         assertNotNull(obj3);
         assertTrue(obj3 instanceof ServiceRegistration);    
+
+        ExecutionContext.Holder.setContext((ExecutionContext) repository);
+        for(Recipe r : ((ServiceRecipe)repository.getRecipe("service1")).getDependencies()) {
+        	if(r instanceof MapRecipe) {
+        		Map m = (Map) r.create();
+        		assertEquals("value1", m.get("key1"));
+        		assertEquals("value2", m.get("key2"));
+        		assertTrue(m.get("key3") instanceof List);
+        	}
+        }
+        ExecutionContext.Holder.setContext(null);
         
         // tests 'prototype' scope
         Object obj4 = repository.create("pojoC");

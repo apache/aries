@@ -28,6 +28,7 @@ import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.proxy.ProxyManager;
+import org.apache.aries.proxy.impl.JdkProxyManager;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -39,7 +40,7 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
     private ComponentDefinitionRegistryImpl registry;
     
     public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry) throws Exception {
-        this(registry, null);
+        this(registry, new JdkProxyManager());
     }
 
     public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry, ProxyManager proxyManager) throws Exception {
