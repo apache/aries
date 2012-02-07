@@ -36,24 +36,18 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
 
   private static final String OBJECT_INTERNAL_NAME = "java/lang/Object";
   private final ClassLoader loader;
-  private String currentClassInternalName;
-  private String currentSuperClassInternalName;
- 
+
   
-  public OSGiFriendlyClassWriter(ClassReader arg0, int arg1, ClassLoader loader, String currentClassInternalName, String currentSuperClassInternalName) {
+  public OSGiFriendlyClassWriter(ClassReader arg0, int arg1, ClassLoader loader) {
     super(arg0, arg1);
     
     this.loader = loader;
-    this.currentClassInternalName = currentClassInternalName;
-    this.currentSuperClassInternalName = currentSuperClassInternalName;
   }
   
-  public OSGiFriendlyClassWriter(int arg0, ClassLoader loader, String currentClassInternalName, String currentSuperClassInternalName) {
+  public OSGiFriendlyClassWriter(int arg0, ClassLoader loader) {
     super(arg0);
     
     this.loader = loader;
-    this.currentClassInternalName = currentClassInternalName;
-    this.currentSuperClassInternalName = currentSuperClassInternalName;
   }
 
   /**
@@ -61,25 +55,15 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
    * not be sufficient because it expects to find the common parent using a single
    * classloader, though in fact the common parent may only be loadable by another
    * bundle from which an intermediate class is loaded
+   *
+   * precondition: arg0 and arg1 are not equal. (checked before this method is called)
    */
   @Override
   protected final String getCommonSuperClass(String arg0, String arg1) {
-    //---------------  see asm ow2 316320 which proposes putting the generic common cases in ClassWriter.internalGetCommonSuperClass
-    //If the two are equal then return either
-    if(arg0.equals(arg1))
-      return arg0;
-
     //If either is Object, then Object must be the answer
-    if(arg0.equals(OBJECT_INTERNAL_NAME) || arg1.equals(OBJECT_INTERNAL_NAME))
+    if(arg0.equals(OBJECT_INTERNAL_NAME) || arg1.equals(OBJECT_INTERNAL_NAME)) {
       return OBJECT_INTERNAL_NAME;
-
-    // If either of these class names are the current class then we can short
-    // circuit to the superclass (which we already know)
-    if(arg0.equals(currentClassInternalName))
-      return getCommonSuperClass(currentSuperClassInternalName, arg1);
-    else if (arg1.equals(currentClassInternalName))
-      return getCommonSuperClass(arg0, currentSuperClassInternalName);
-    //---------------- end asm 316320 proposal
+    }
     Set<String> names = new HashSet<String>();
     names.add(arg0);
     names.add(arg1);

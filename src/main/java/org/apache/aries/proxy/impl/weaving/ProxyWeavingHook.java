@@ -77,7 +77,7 @@ public final class ProxyWeavingHook implements WeavingHook {
     
     try {
       bytes = WovenProxyGenerator.getWovenProxy(wovenClass.getBytes(),
-          wovenClass.getClassName(), wovenClass.getBundleWiring().getClassLoader());
+              wovenClass.getBundleWiring().getClassLoader());
       
     } catch (Exception e) {
       if(e instanceof RuntimeException && 
