@@ -34,7 +34,7 @@ import org.objectweb.asm.ClassWriter;
  */
 public final class WovenProxyGenerator
 {
-  public static final byte[] getWovenProxy(byte[] original, String className, ClassLoader loader){
+  public static final byte[] getWovenProxy(byte[] original, ClassLoader loader){
     ClassReader cReader = new ClassReader(original);
     //Don't weave interfaces, enums or annotations
     if((cReader.getAccess() & (ACC_INTERFACE | ACC_ANNOTATION | ACC_ENUM)) != 0)
@@ -44,11 +44,11 @@ public final class WovenProxyGenerator
     //maxs are fine (and faster)
     int computeVal = AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6 ? 
         ClassWriter.COMPUTE_FRAMES : ClassWriter.COMPUTE_MAXS;
-    ClassWriter cWriter = new OSGiFriendlyClassWriter(cReader, computeVal, loader, cReader.getClassName(), cReader.getSuperName());
+    ClassWriter cWriter = new OSGiFriendlyClassWriter(cReader, computeVal, loader);
     ClassVisitor cv = new OSGiFriendlyClassVisitor(cWriter, computeVal );
     //Wrap our outer layer to add the original SerialVersionUID if it was previously being defaulted
     ClassVisitor weavingAdapter = new SyntheticSerialVerUIDAdder(
-                               new WovenProxyAdapter(cv, className, loader));
+                               new WovenProxyAdapter(cv, cReader.getClassName(), loader));
     
     // If we are Java 1.6 + then we need to skip frames as they will be recomputed
     cReader.accept(weavingAdapter, AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6 ? ClassReader.SKIP_FRAMES : 0);

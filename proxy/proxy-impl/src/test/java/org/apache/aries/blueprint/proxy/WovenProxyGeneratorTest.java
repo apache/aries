@@ -122,7 +122,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
         }
       }
       if(weave)
-        bytes = WovenProxyGenerator.getWovenProxy(bytes, className, this);
+        bytes = WovenProxyGenerator.getWovenProxy(bytes, this);
       
       return defineClass(className, bytes, 0, bytes.length);
     }
