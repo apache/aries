@@ -57,6 +57,8 @@ public class Activator implements BundleActivator {
 	private final List<ServiceRegistration<?>> registrations = new ArrayList<ServiceRegistration<?>>();
 	
 	private BundleContext bundleContext;
+	private SubsystemServiceRegistrar registrar;
+	private AriesSubsystem root;
 	private ServiceProviderImpl serviceProvider;
 	
 	public synchronized BundleContext getBundleContext() {
@@ -70,6 +72,13 @@ public class Activator implements BundleActivator {
 		logger.debug(LOG_ENTRY, "getServiceProvider");
 		ServiceProvider result = serviceProvider;
 		logger.debug(LOG_EXIT, "getServiceProvider", result);
+		return result;
+	}
+	
+	public synchronized SubsystemServiceRegistrar getSubsystemServiceRegistrar() {
+		logger.debug(LOG_ENTRY, "getSubsystemServiceRegistrar");
+		SubsystemServiceRegistrar result = registrar;
+		logger.debug(LOG_EXIT, "getSubsystemServiceRegistrar", result);
 		return result;
 	}
 
@@ -86,15 +95,18 @@ public class Activator implements BundleActivator {
 		// TODO The registration of the Resolver service should be temporary, unless Felix 
 		// does not have an official release at the time.
 		registrations.add(bundleContext.registerService(Resolver.class, new ResolverImpl(null), null));
-		AriesSubsystem root = new AriesSubsystem();
-		registrations.add(bundleContext.registerService(Subsystem.class.getName(), root, null));
+		registrar = new SubsystemServiceRegistrar(bundleContext);
+		root = new AriesSubsystem();
 		root.install();
+		root.start();
 		logger.debug(LOG_EXIT, "start");
 	}
 
 	@Override
 	public synchronized void stop(BundleContext context) /*throws Exception*/ {
 		logger.debug(LOG_ENTRY, "stop", context);
+		root.stop();
+		registrar.unregisterAll();
 		for (int i = registrations.size() - 1; i >= 0; i--) {
 			try {
 				registrations.get(i).unregister();
