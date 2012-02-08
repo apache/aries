@@ -22,7 +22,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GenericClause implements Clause {
-	private static final String REGEX = '(' + Grammar.PATH + "(?:;" + Grammar.PATH + ")*)(?:;(" + Grammar.PARAMETER + "))*";
+	// TODO The introduction of the whitespace (\\s*) before a parameter was added to get around a grammatically
+	// incorrect clause in Equinox: org.eclipse.osgi; singleton:=true;deployed-version=3.7.0.v20110221;type=osgi.bundle.
+	// Note the space before the singleton directive.
+	private static final String REGEX = '(' + Grammar.PATH + "(?:;" + Grammar.PATH + ")*)(?:;\\s*(" + Grammar.PARAMETER + "))*";
 	
 	private static final Pattern PATTERN = Pattern.compile(REGEX);
 	private static final Pattern PATTERN_PARAMETER = Pattern.compile(Grammar.PARAMETER);

@@ -13,6 +13,9 @@
  */
 package org.apache.aries.subsystem.core.obr.felix;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +27,9 @@ import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.service.repository.RepositoryContent;
 
-public class FelixResourceAdapter implements Resource {
+public class FelixResourceAdapter implements Resource, RepositoryContent {
 	private static String toFelixNamespace(String namespace) {
 		if (BundleRevision.BUNDLE_NAMESPACE.equals(namespace))
 			return org.apache.felix.bundlerepository.Capability.BUNDLE;
@@ -90,6 +94,11 @@ public class FelixResourceAdapter implements Resource {
 		}
 		result.trimToSize();
 		return result;
+	}
+	
+	@Override
+	public InputStream getContent() throws IOException {
+		return new URL(resource.getURI()).openStream();
 	}
 
 	public List<Requirement> getRequirements(String namespace) {

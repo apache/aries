@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.resource.Capability;
@@ -37,7 +38,7 @@ public class ExportPackageHeader extends AbstractHeader {
 		for (final Clause clause : clauses) {
 			String[] exportedPackages = clause.getPath().split(";");
 			for (final String exportedPackage : exportedPackages) {
-				capabilities.add(new Capability() {
+				capabilities.add(new AbstractCapability() {
 					@Override
 					public String getNamespace() {
 						return ResourceConstants.WIRING_PACKAGE_NAMESPACE;

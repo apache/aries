@@ -18,19 +18,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.archive.VersionRangeAttribute;
+import org.apache.aries.subsystem.core.resource.AbstractRequirement;
 import org.apache.aries.util.VersionRange;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
-public class OsgiIdentityRequirement implements Requirement {
+public class OsgiIdentityRequirement extends AbstractRequirement {
 	private static Filter createFilter(String symbolicName, Version version, String type) {
 		return createFilter(
 				symbolicName,
@@ -83,7 +82,6 @@ public class OsgiIdentityRequirement implements Requirement {
 	}
 	
 	private final Map<String, String> directives = new HashMap<String, String>();
-	private final Filter filter;
 	private final Resource resource;
 	private final boolean transitive;
 	
@@ -100,12 +98,13 @@ public class OsgiIdentityRequirement implements Requirement {
 	}
 	
 	private OsgiIdentityRequirement(Filter filter, Resource resource, boolean transitive) {
-		this.filter = filter;
 		this.resource = resource;
 		this.transitive = transitive;
 		directives.put(Constants.FILTER_DIRECTIVE, filter.toString());
-		directives.put(ResourceConstants.IDENTITY_SINGLETON_DIRECTIVE, Boolean.FALSE.toString());
-		directives.put(Constants.EFFECTIVE_DIRECTIVE, Constants.EFFECTIVE_RESOLVE);
+		// TODO Let's not add these directives until we know what we're doing and that
+		// we really need them.
+//		directives.put(ResourceConstants.IDENTITY_SINGLETON_DIRECTIVE, Boolean.FALSE.toString());
+//		directives.put(Constants.EFFECTIVE_DIRECTIVE, Constants.EFFECTIVE_RESOLVE);
 	}
 
 	@Override
@@ -130,14 +129,5 @@ public class OsgiIdentityRequirement implements Requirement {
 	
 	public boolean isTransitiveDependency() {
 		return transitive;
-	}
-
-	@Override
-	public boolean matches(Capability capability) {
-		if (capability == null) return false;
-		if (!capability.getNamespace().equals(getNamespace())) return false;
-		if (!filter.matches(capability.getAttributes())) return false;
-		// TODO Check directives.
-		return true;
 	}
 }

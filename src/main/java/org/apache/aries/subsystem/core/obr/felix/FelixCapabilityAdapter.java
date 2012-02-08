@@ -16,19 +16,17 @@ package org.apache.aries.subsystem.core.obr.felix;
 import java.util.Collections;
 import java.util.Map;
 
-import org.osgi.framework.resource.Capability;
+import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.wiring.BundleRevision;
 
-public class FelixCapabilityAdapter implements Capability {
+public class FelixCapabilityAdapter extends AbstractCapability {
 	private final org.apache.felix.bundlerepository.Capability capability;
 	private final Resource resource;
 	
 	public FelixCapabilityAdapter(org.apache.felix.bundlerepository.Capability capability, Resource resource) {
 		if (capability == null)
 			throw new NullPointerException("Missing required parameter: capability");
-		if (resource == null)
-			throw new NullPointerException("Missing required parameter: resource");
 		this.capability = capability;
 		this.resource = resource;
 	}

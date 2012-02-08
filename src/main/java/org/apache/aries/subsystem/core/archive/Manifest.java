@@ -27,7 +27,7 @@ import java.util.jar.Attributes;
 import org.apache.aries.util.manifest.ManifestProcessor;
 
 public abstract class Manifest {
-	protected final Map<String, Header> headers = new HashMap<String, Header>();
+	protected final Map<String, Header> headers = Collections.synchronizedMap(new HashMap<String, Header>());
 	protected final java.util.jar.Manifest manifest;
 	
 	public Manifest(InputStream in) throws IOException {
@@ -62,6 +62,19 @@ public abstract class Manifest {
 
 	public Header getManifestVersion() {
 		return getHeader(Attributes.Name.MANIFEST_VERSION.toString());
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('[').append(getClass().getName()).append(": ");
+		if (!headers.values().isEmpty()) {
+			for (Header header : headers.values())
+				sb.append(header.getName()).append('=').append(header.getValue()).append(", ");
+			sb.delete(sb.length() - 2, sb.length());
+		}
+		sb.append(']');
+		return sb.toString();
 	}
 	
 	public void write(OutputStream out) throws IOException {
