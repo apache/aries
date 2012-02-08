@@ -116,7 +116,7 @@ public abstract class IntegrationTest {
     }
 
     protected Bundle installBundle(String groupId, String artifactId) throws Exception {
-        MavenArtifactProvisionOption mvnUrl = mavenBundle(groupId, artifactId);
+        MavenArtifactProvisionOption mvnUrl = mavenBundleInTest(groupId, artifactId);
         return bundleContext.installBundle(mvnUrl.getURL());
     }
 
@@ -204,13 +204,7 @@ public abstract class IntegrationTest {
     }
     
     protected Bundle findBundleBySymbolicName(String symbolicName) {
-    	Bundle result = null;
-    	for (Bundle bundle : bundleContext.getBundles()) {
-			if (bundle.getSymbolicName().equals(symbolicName)) {
-				result = bundle;
-				break;
-			}
-		}
+    	Bundle result = getInstalledBundle(symbolicName);
 		assertNotNull("Unable to find bundle with symbolic name: " + symbolicName, result);
 		return result;
     }
