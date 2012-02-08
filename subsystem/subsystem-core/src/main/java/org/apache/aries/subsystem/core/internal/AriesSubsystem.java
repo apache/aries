@@ -212,20 +212,27 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 	private final ArrayList<AriesSubsystem> parents = new ArrayList<AriesSubsystem>();
 	private final Region region;
 	
-	private Subsystem.State state;
+	private Subsystem.State state = State.INSTALLING;
 	 
 	public AriesSubsystem() throws Exception {
 		// Create the root subsystem.
 		LOGGER.debug(LOG_ENTRY, "init");
-		id = 0;
-		location = ROOT_LOCATION;
-		region = createRegion(null);
-		setState(State.ACTIVE);
-		environment = new SubsystemEnvironment(this);
 		// TODO The directory field is kept separate from the archive so that it can be referenced
 		// by any embedded child subsystems during archive initialization. See the constructors.
 		directory = Activator.getInstance().getBundleContext().getDataFile("");
 		archive = new SubsystemArchive(directory);
+		DataFile data = archive.getDataFile();
+		if (data == null) {
+			id = 0;
+			location = ROOT_LOCATION;
+			region = createRegion(null);
+		}
+		else {
+			id = data.getSubsystemId();
+			location = data.getLocation();
+			region = createRegion(data.getRegionName());
+			state = data.getState();
+		}
 		// TODO The creation of the subsystem manifest is in two places. See other constructor.
 		SubsystemManifest manifest = archive.getSubsystemManifest();
 		if (manifest == null) {
@@ -239,6 +246,7 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 			// Need to generate a new subsystem manifest in order to generated a new deployment manifest based
 			// on any persisted resources.
 			manifest = SubsystemManifest.newInstance(getSymbolicName(), getVersion(), archive.getResources());
+		environment = new SubsystemEnvironment(this);
 		archive.setDeploymentManifest(DeploymentManifest.newInstance(manifest, environment));
 		StaticDataFile sdf = archive.getStaticDataFile();
 		LOGGER.debug("Data file: {}", sdf);
@@ -476,14 +484,6 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 
 	@Override
 	public Version getVersion() {
-		if (archive == null) {
-			// If the archive is null, this is either the root subsystem or an installing subsystem not yet initialized.
-			if (State.INSTALLING.equals(getState()))
-				// The root subsystem's state will never be INSTALLING, so this is an uninitialized subsystem.
-				throw new IllegalStateException();
-			// This is the root subsystem.
-			return ROOT_VERSION;
-		}
 		return ((VersionHeader)archive.getSubsystemManifest().getSubsystemVersion()).getVersion();
 	}
 
@@ -554,7 +554,6 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 	 */
 	@Override
 	public synchronized void start() throws SubsystemException {
-		checkRoot();
 		State state = getState();
 		if (state == State.UNINSTALLING || state == State.UNINSTALLED) {
 			throw new SubsystemException("Cannot stop from state " + state);
@@ -615,7 +614,6 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 	 */
 	@Override
 	public synchronized void stop() throws SubsystemException {
-		checkRoot();
 		if (getState() == State.UNINSTALLING || getState() == State.UNINSTALLED) {
 			throw new SubsystemException("Cannot stop from state " + getState());
 		}
@@ -689,6 +687,7 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 		locationToSubsystem.remove(location);
 		deleteFile(directory);
 		setState(State.UNINSTALLED);
+		Activator.getInstance().getSubsystemServiceRegistrar().unregister(this);
 	}
 	
 	void bundleChanged(BundleEvent event) {
@@ -719,6 +718,7 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 	}
 	
 	void install() throws Exception {
+		Activator.getInstance().getSubsystemServiceRegistrar().register(this);
 		List<Resource> contentResources = new ArrayList<Resource>();
 		List<Resource> transitiveDependencies = new ArrayList<Resource>();
 		DeploymentManifest manifest = getDeploymentManifest();
@@ -767,6 +767,8 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 				coordination.end();
 			}
 		}
+		if (getState().equals(State.INSTALLING))
+			setState(State.INSTALLED);
 	}
 	
 	protected boolean contains(Resource resource) {
@@ -784,8 +786,6 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 	}
 	
 	protected synchronized void setState(Subsystem.State state) {
-		// TODO Need to update service registration properties so that a
-		// ServiceEvent goes out with the updated state.
 		this.state = state;
 		// The archive will be null if this is the root subsystem.
 		if (archive != null) {
@@ -800,6 +800,7 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 				}
 			}
 		}
+		Activator.getInstance().getSubsystemServiceRegistrar().update(this);
 		notifyAll();
 	}
 	
@@ -928,7 +929,6 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 			subsystem = new AriesSubsystem(archive, this);
 			locationToSubsystem.put(subsystem.getLocation(), subsystem);
 		}
-		subsystem.setState(State.INSTALLING);
 		Set<AriesSubsystem> subsystems = new HashSet<AriesSubsystem>();
 		subsystems.add(this);
 		resourceToSubsystems.put(subsystem, subsystems);
@@ -937,7 +937,7 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 		subsystem.install();
 		coordination.addParticipant(new Participant() {
 			public void ended(Coordination coordination) throws Exception {
-				subsystem.setState(State.INSTALLED);
+				// noop
 			}
 	
 			public void failed(Coordination coordination) throws Exception {

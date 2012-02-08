@@ -89,25 +89,22 @@ public class FeatureTest extends SubsystemTest {
 			assertConstituents(5, feature1);
 			assertChildren(1, feature1);
 			feature2 = feature1.getChildren().iterator().next();
-//			assertEvent(feature2, Subsystem.State.INSTALLING, 5000);
-//			assertEvent(feature2, Subsystem.State.INSTALLED, 5000);
+			assertEvent(feature2, Subsystem.State.INSTALLING, 5000);
+			assertEvent(feature2, Subsystem.State.INSTALLED, 5000);
 			assertSymbolicName("org.apache.aries.subsystem.feature2", feature2);
 			assertVersion("1.0.0", feature2);
 			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb2", Version.parseVersion("2.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
 			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
 			assertConstituents(2, feature2);
 			assertChildren(0, feature2);
-			// TODO Test internal events for installation.
 			startSubsystem(feature1);
-//			assertEvent(feature2, Subsystem.State.RESOLVING, 5000);
-//			assertEvent(feature2, Subsystem.State.RESOLVED, 5000);
-//			assertEvent(feature2, Subsystem.State.STARTING, 5000);
-//			assertEvent(feature2, Subsystem.State.ACTIVE, 5000);
-			// TODO Test internal events for starting.
+			assertEvent(feature2, Subsystem.State.RESOLVING, 5000);
+			assertEvent(feature2, Subsystem.State.RESOLVED, 5000);
+			assertEvent(feature2, Subsystem.State.STARTING, 5000);
+			assertEvent(feature2, Subsystem.State.ACTIVE, 5000);
 			stopSubsystem(feature1);
-//			assertEvent(feature2, Subsystem.State.STOPPING, 5000);
-//			assertEvent(feature2, Subsystem.State.RESOLVED, 5000);
-			// TODO Test internal events for stopping.
+			assertEvent(feature2, Subsystem.State.STOPPING, 5000);
+			assertEvent(feature2, Subsystem.State.RESOLVED, 5000);
 		}
 		catch (AssertionError e) {
 			error = e;
@@ -117,9 +114,8 @@ public class FeatureTest extends SubsystemTest {
 			try {
 				uninstallSubsystem(feature1);
 				if (feature2 != null) {
-//					assertEvent(feature2, Subsystem.State.UNINSTALLING, 5000);
-//					assertEvent(feature2, Subsystem.State.UNINSTALLED, 5000);
-					// TODO Test internal events for uninstalling.
+					assertEvent(feature2, Subsystem.State.UNINSTALLING, 5000);
+					assertEvent(feature2, Subsystem.State.UNINSTALLED, 5000);
 					assertNotChild(feature1, feature2);
 				}
 			}
@@ -151,7 +147,6 @@ public class FeatureTest extends SubsystemTest {
 			feature3After = root.getChildren().iterator().next();
 			assertLastId(2);
 			assertFeature3(feature3After);
-			assertEquals(feature3Before, feature3After);
 		}
 		catch (AssertionError e) {
 			error = e;
@@ -159,8 +154,10 @@ public class FeatureTest extends SubsystemTest {
 		}
 		finally {
 			try {
-				if (feature3After != null)
+				if (feature3After != null) {
+					stopSubsystem(feature3After);
 					uninstallSubsystem(feature3After);
+				}
 			}
 			catch (AssertionError e) {
 				if (error == null)
