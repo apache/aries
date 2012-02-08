@@ -13,17 +13,39 @@
  */
 package org.apache.aries.subsystem.core;
 
+import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
+import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
+
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.aries.subsystem.core.archive.TypeAttribute;
+import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceHelper {
+	private static final Logger logger = LoggerFactory.getLogger(ResourceHelper.class);
+	
+	public static boolean areEqual(Resource resource1, Resource resource2) {
+		if (getTypeAttribute(resource1).equals(getTypeAttribute(resource2))) {
+			if (getSymbolicNameAttribute(resource1).equals(getSymbolicNameAttribute(resource2))) {
+				if (getVersionAttribute(resource1).equals(getVersionAttribute(resource2))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public static String getContentAttribute(Resource resource) {
 		// TODO Add to constants.
 		return (String)getContentAttribute(resource, "osgi.content");
@@ -52,10 +74,46 @@ public class ResourceHelper {
 	}
 	
 	public static String getTypeAttribute(Resource resource) {
-		return (String)getIdentityAttribute(resource, ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
+		String result = (String)getIdentityAttribute(resource, ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
+		if (result == null)
+			result = TypeAttribute.DEFAULT_VALUE;
+		return result;
 	}
 	
 	public static Version getVersionAttribute(Resource resource) {
-		return (Version)getIdentityAttribute(resource, ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
+		Version result = (Version)getIdentityAttribute(resource, ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
+		if (result == null)
+			result = Version.emptyVersion;
+		return result;
+	}
+	
+	public static boolean matches(Requirement requirement, Capability capability) {
+		if (logger.isDebugEnabled())
+			logger.debug(LOG_ENTRY, "matches", new Object[]{requirement, capability});
+		boolean result = false;
+		if (requirement == null && capability == null)
+			result = true;
+		else if (requirement == null || capability == null) 
+			result = false;
+		else if (!capability.getNamespace().equals(requirement.getNamespace())) 
+			result = false;
+		else {
+			String filterStr = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
+			if (filterStr == null)
+				result = true;
+			else {
+				try {
+					if (FrameworkUtil.createFilter(filterStr).matches(capability.getAttributes()))
+						result = true;
+				}
+				catch (InvalidSyntaxException e) {
+					logger.debug("Requirement had invalid filter string: " + requirement, e);
+					result = false;
+				}
+			}
+		}
+		// TODO Check directives.
+		logger.debug(LOG_EXIT, "matches", result);
+		return result;
 	}
 }

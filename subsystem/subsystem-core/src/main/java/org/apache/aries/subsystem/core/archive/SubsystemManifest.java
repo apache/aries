@@ -13,21 +13,34 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
+import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.osgi.framework.Version;
 import org.osgi.framework.resource.Capability;
+import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
-import org.osgi.service.subsystem.SubsystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class SubsystemManifest extends Manifest {
+public class SubsystemManifest extends Manifest implements Resource {
+	public static final String IDENTITY_TYPE = "org.apache.aries.subsystem.manifest";
+	
+	private static final Logger logger = LoggerFactory.getLogger(SubsystemManifest.class);
+	
 	public static SubsystemManifest newInstance(String symbolicName, Version version, Collection<Resource> resources) {
-		if (resources.isEmpty())
-			throw new SubsystemException("A subsystem must have content");
+		if (logger.isDebugEnabled())
+			logger.debug(LOG_ENTRY, "newInstance", new Object[]{symbolicName, version, resources});
 		SubsystemManifest manifest = new SubsystemManifest();
 		manifest.headers.put(SubsystemTypeHeader.NAME, new SubsystemTypeHeader());
 		manifest.headers.put(ManifestVersionHeader.NAME, new ManifestVersionHeader());
@@ -49,9 +62,12 @@ public class SubsystemManifest extends Manifest {
 				// TODO Add to constants.
 				.append("type").append('=').append(type).append(',');
 		}
-		// Remove the trailing comma.
-		content.deleteCharAt(content.length() - 1);
-		manifest.headers.put(SubsystemContentHeader.NAME, new SubsystemContentHeader(content.toString()));
+		if (content.length() != 0) {
+			// Remove the trailing comma.
+			content.deleteCharAt(content.length() - 1);
+			manifest.headers.put(SubsystemContentHeader.NAME, new SubsystemContentHeader(content.toString()));
+		}
+		logger.debug(LOG_EXIT, "newInstance", manifest);
 		return manifest;
 	}
 
@@ -64,6 +80,31 @@ public class SubsystemManifest extends Manifest {
 	}
 
 	private SubsystemManifest() {}
+	
+	@Override
+	public List<Capability> getCapabilities(String namespace) {
+		List<Capability> result = new ArrayList<Capability>(1);
+		if (namespace == null || namespace.equals(ResourceConstants.IDENTITY_NAMESPACE)) {
+			OsgiIdentityCapability capability = new OsgiIdentityCapability(
+					this,
+					// TODO Reusing IDENTITY_TYPE for the symbolic name here.
+					// Since there's only one subsystem manifest per subsystem,
+					// this shouldn't cause any technical issues. However, it
+					// might be best to use the subsystem's symbolic name here.
+					// But there are issues with that as well since type is not
+					// part of the unique identity.
+					IDENTITY_TYPE,
+					Version.emptyVersion,
+					IDENTITY_TYPE);
+			result.add(capability);
+		}
+		return result;
+	}
+	
+	@Override
+	public List<Requirement> getRequirements(String namespace) {
+		return Collections.emptyList();
+	}
 	
 	public SubsystemContentHeader getSubsystemContent() {
 		return (SubsystemContentHeader)getHeader(SubsystemContentHeader.NAME);

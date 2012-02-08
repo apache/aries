@@ -30,6 +30,11 @@ public class OsgiCapabilityAdapter implements Capability {
 			throw new NullPointerException("Missing required parameter: capability");
 		this.capability = capability;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return capability.equals(o);
+	}
 
 	public String getName() {
 		String namespace = capability.getNamespace();
@@ -60,5 +65,10 @@ public class OsgiCapabilityAdapter implements Capability {
 		Map<String, Object> result = new HashMap<String, Object>(capability.getAttributes());
 		result.put(getName(), result.get(capability.getNamespace()));
 		return result;
+	}
+	
+	@Override
+	public int hashCode() {
+		return capability.hashCode();
 	}
 }

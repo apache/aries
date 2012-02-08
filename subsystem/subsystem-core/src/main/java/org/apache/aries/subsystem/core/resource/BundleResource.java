@@ -28,8 +28,9 @@ import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
+import org.osgi.service.repository.RepositoryContent;
 
-public class BundleResource implements Resource {
+public class BundleResource implements Resource, RepositoryContent {
 	public static BundleResource newInstance(URL content) throws IOException {
 		BundleResource result = new BundleResource(content);
 		result.capabilities.add(new OsgiIdentityCapability(result, result.manifest));
@@ -37,11 +38,13 @@ public class BundleResource implements Resource {
 	}
 	
 	private final List<Capability> capabilities = new ArrayList<Capability>();
+	private final URL content;
 	private final BundleManifest manifest;
 	private final List<Requirement> requirements = new ArrayList<Requirement>();
 	
-	private BundleResource(InputStream content) throws IOException {
-		JarInputStream jis = new JarInputStream(content);
+	private BundleResource(URL content) throws IOException {
+		this.content = content;
+		JarInputStream jis = new JarInputStream(content.openStream());
 		try {
 			Manifest manifest = jis.getManifest();
 			if (manifest == null)
@@ -62,10 +65,6 @@ public class BundleResource implements Resource {
 		if (iph != null) {
 			requirements.addAll(iph.getRequirements(this));
 		}
-	}
-	
-	private BundleResource(URL content) throws IOException {
-		this(content.openStream());
 	}
 	
 	private BundleResource(String content) throws IOException {
@@ -92,6 +91,11 @@ public class BundleResource implements Resource {
 				result.add(capability);
 		}
 		return result;
+	}
+	
+	@Override
+	public InputStream getContent() throws IOException {
+		return content.openStream();
 	}
 
 	public List<Requirement> getRequirements(String namespace) {

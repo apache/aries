@@ -13,21 +13,11 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
-import java.util.regex.Pattern;
-
-public class SubsystemSymbolicNameHeader extends AbstractHeader {
+public class SubsystemSymbolicNameHeader extends SymbolicNameHeader {
 	// TODO Add to constants.
 	public static final String NAME = "Subsystem-SymbolicName";
 	
 	public SubsystemSymbolicNameHeader(String value) {
 		super(NAME, value);
-		if (getClauses().size() != 1)
-			throw new IllegalArgumentException(/* TODO Message */);
-		if (!Pattern.matches(Grammar.SYMBOLICNAME, getClauses().get(0).getPath()))
-			throw new IllegalArgumentException(/* TODO Message */);
-	}
-	
-	public String getSymbolicName() {
-		return getClauses().get(0).getPath();
 	}
 }

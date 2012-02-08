@@ -13,55 +13,142 @@
  */
 package org.apache.aries.subsystem.core.obr.felix;
 
-import java.net.URI;
-import java.net.URL;
+import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
+import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.core.ResourceHelper;
+import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
+import org.osgi.framework.Constants;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.Repository;
-import org.osgi.service.subsystem.SubsystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FelixRepositoryAdapter implements Repository {
+	private static class IdentityRequirementFilter {
+		private static final String REGEX = "\\(osgi.identity=([^\\)]*)\\)";
+		private static final Pattern PATTERN = Pattern.compile(REGEX);
+		
+		private final String symbolicName;
+		
+		public IdentityRequirementFilter(String filter) {
+			Matcher matcher = PATTERN.matcher(filter);
+			if (!matcher.find())
+				throw new IllegalArgumentException("Could not find pattern '" + REGEX + "' in filter string '" + filter + "'");
+			symbolicName = matcher.group(1);
+		}
+		
+		public String getSymbolicName() {
+			return symbolicName;
+		}
+	}
+	
+	private static final Logger logger = LoggerFactory.getLogger(FelixRepositoryAdapter.class);
+	
+	private final Map<String, Collection<Capability>> identityIndex = Collections.synchronizedMap(new HashMap<String, Collection<Capability>>());
 	private final org.apache.felix.bundlerepository.Repository repository;
 	
+	private long lastUpdated = 0;
+	
 	public FelixRepositoryAdapter(org.apache.felix.bundlerepository.Repository repository) {
+		if (repository == null)
+			throw new NullPointerException("Missing required parameter: repository");
 		this.repository = repository;
 	}
 	
 	@Override
-	public Collection<Capability> findProviders(Requirement requirement) throws NullPointerException {
-		org.apache.felix.bundlerepository.Resource[] resources = repository.getResources();
-		ArrayList<Capability> result = new ArrayList<Capability>(resources.length);
-		for (final org.apache.felix.bundlerepository.Resource resource : resources) {
-			Resource r = new FelixResourceAdapter(resource);
-			for (Capability capability : r.getCapabilities(requirement.getNamespace()))
-				if (requirement.matches(capability))
-					result.add(capability);
+	public Collection<Capability> findProviders(Requirement requirement) {
+		logger.debug(LOG_ENTRY, "findProviders", requirement);
+		update();
+		List<Capability> result = Collections.emptyList();
+		if (ResourceConstants.IDENTITY_NAMESPACE.equals(requirement.getNamespace())) {
+			String symbolicName = new IdentityRequirementFilter(requirement.getDirectives().get(Constants.FILTER_DIRECTIVE)).getSymbolicName();
+			logger.debug("Looking for symbolic name {}", symbolicName);
+			Collection<Capability> capabilities = identityIndex.get(symbolicName);
+			if (capabilities != null) {
+				result = new ArrayList<Capability>(capabilities.size());
+				for (Capability capability : capabilities) {
+					if (ResourceHelper.matches(requirement, capability)) {
+						result.add(capability);
+					}
+				}
+				((ArrayList<Capability>)result).trimToSize();
+			}
 		}
-		result.trimToSize();
+		else {
+			org.apache.felix.bundlerepository.Resource[] resources = repository.getResources();
+			if (resources != null && resources.length != 0) {
+				result = new ArrayList<Capability>(resources.length);
+				for (final org.apache.felix.bundlerepository.Resource resource : resources) {
+					Resource r = new FelixResourceAdapter(resource);
+					for (Capability capability : r.getCapabilities(requirement.getNamespace()))
+						if (ResourceHelper.matches(requirement, capability))
+							result.add(capability);
+				}
+				((ArrayList<Capability>)result).trimToSize();
+			}
+		}
+		logger.debug(LOG_EXIT, "findProviders", result);
 		return result;
 	}
-
+	
 	@Override
-	public URL getContent(Resource resource) {
-		for (final org.apache.felix.bundlerepository.Resource r : repository.getResources()) {
-			final Resource sr = new FelixResourceAdapter(r);
-			if (ResourceHelper.getTypeAttribute(resource).equals(ResourceHelper.getTypeAttribute(sr)))
-				if (ResourceHelper.getSymbolicNameAttribute(resource).equals(ResourceHelper.getSymbolicNameAttribute(sr)))
-					if (ResourceHelper.getVersionAttribute(resource).equals(ResourceHelper.getVersionAttribute(sr))) {
-						try {
-							return new URI(r.getURI()).toURL();
+	public Map<Requirement, Collection<Capability>> findProviders(Collection<? extends Requirement> requirements) {
+		logger.debug(LOG_ENTRY, "findProviders", requirements);
+		Map<Requirement, Collection<Capability>> result = new HashMap<Requirement, Collection<Capability>>(requirements.size());
+		for (Requirement requirement : requirements)
+			result.put(requirement, findProviders(requirement));
+				logger.debug(LOG_EXIT, "findProviders", result);
+		return result;
+	}
+	
+	private synchronized void update() {
+		logger.debug(LOG_ENTRY, "update");
+		long lastModified = repository.getLastModified();
+		logger.debug("The repository adaptor was last updated at {}. The repository was last modified at {}", lastUpdated, lastModified);
+		if (lastModified > lastUpdated) {
+			logger.debug("Updating the adapter with the modified repository contents...");
+			lastUpdated = lastModified;
+			synchronized (identityIndex) {
+				identityIndex.clear();
+				org.apache.felix.bundlerepository.Resource[] resources = repository.getResources();
+				logger.debug("There are {} resources to evaluate", resources == null ? 0 : resources.length);
+				if (resources != null && resources.length != 0) {
+					for (org.apache.felix.bundlerepository.Resource resource : resources) {
+						logger.debug("Evaluating resource {}", resource);
+						String symbolicName = resource.getSymbolicName();
+						Collection<Capability> capabilities = identityIndex.get(symbolicName);
+						if (capabilities == null) {
+							capabilities = new HashSet<Capability>();
+							identityIndex.put(symbolicName, capabilities);
 						}
-						catch (Exception e) {
-							// TODO Is this really what we want to do?
-							throw new SubsystemException(e);
-						}
+						OsgiIdentityCapability capability = 
+								new OsgiIdentityCapability(
+									new FelixResourceAdapter(resource),
+									symbolicName,
+									resource.getVersion(),
+									// TODO Assuming all resources are bundles. Need to support 
+									// type fragment as well, but how do we know?
+									ResourceConstants.IDENTITY_TYPE_BUNDLE);
+						logger.debug("Indexing capability {}", capability);
+						capabilities.add(capability);
 					}
+				}
+			}
 		}
-		return null;
+		logger.debug(LOG_EXIT, "update");
 	}
 }

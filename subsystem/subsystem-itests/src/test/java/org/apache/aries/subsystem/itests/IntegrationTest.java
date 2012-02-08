@@ -27,8 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
@@ -50,16 +50,16 @@ public abstract class IntegrationTest {
 	
 	protected static boolean createdApplications = false;
 
-    private List<ServiceTracker> srs;
+    private Map<String, ServiceTracker> srs;
 
     @Before
     public void setUp() {
-        srs = new ArrayList<ServiceTracker>();
+        srs = new HashMap<String, ServiceTracker>();
     }
     
     @After
     public void tearDown() {
-        for (ServiceTracker st : srs) {
+        for (ServiceTracker st : srs.values()) {
             if (st != null) {
                 st.close();
             }  
@@ -78,31 +78,34 @@ public abstract class IntegrationTest {
     }
     
     protected <T> T getOsgiService(BundleContext bc, Class<T> type, String filter, long timeout) {
-        ServiceTracker tracker = null;
-        try {
-            String flt;
-            if (filter != null) {
-                if (filter.startsWith("(")) {
-                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")" + filter + ")";
-                } else {
-                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")(" + filter + "))";
-                }
+        if (filter != null) {
+            if (filter.startsWith("(")) {
+                filter = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")" + filter + ")";
             } else {
-                flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
+                filter = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")(" + filter + "))";
             }
-            Filter osgiFilter = FrameworkUtil.createFilter(flt);
-            tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter, null);
-            tracker.open();
-            
-            // add tracker to the list of trackers we close at tear down
-            srs.add(tracker);
-            Object svc = type.cast(tracker.waitForService(timeout));
+        } else {
+            filter = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
+        }
+        ServiceTracker tracker = srs.get(filter);
+        if (tracker == null) {
+        	try {
+        		Filter osgiFilter = FrameworkUtil.createFilter(filter);
+                tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter, null);
+                tracker.open();
+                // add tracker to the list of trackers we close at tear down
+                srs.put(filter, tracker);
+        	} 
+        	catch (InvalidSyntaxException e) {
+                throw new IllegalArgumentException("Invalid filter", e);
+            }
+        }
+        try {
+            Object svc = tracker.waitForService(timeout);
             if (svc == null) {
-                throw new RuntimeException("Gave up waiting for service " + flt);
+                throw new RuntimeException("Gave up waiting for service " + filter);
             }
             return type.cast(svc);
-        } catch (InvalidSyntaxException e) {
-            throw new IllegalArgumentException("Invalid filter", e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

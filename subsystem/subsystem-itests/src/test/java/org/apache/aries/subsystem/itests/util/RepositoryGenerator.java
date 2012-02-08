@@ -44,7 +44,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.resource.Resource;
-import org.osgi.service.subsystem.SubsystemConstants;
+import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.subsystem.SubsystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,7 +192,7 @@ public class RepositoryGenerator {
         Map props = res.getProperties();
         
 
-        Object type = props.get(SubsystemConstants.IDENTITY_TYPE_ATTRIBUTE);
+        Object type = props.get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
 
         return new FelixResourceAdapter(res);
     }
@@ -232,7 +232,7 @@ public class RepositoryGenerator {
         Map props = resource.getProperties();
         
 
-        Object type = props.get(SubsystemConstants.IDENTITY_TYPE_ATTRIBUTE);
+        Object type = props.get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
 
         return new FelixResourceAdapter(resource);
     }

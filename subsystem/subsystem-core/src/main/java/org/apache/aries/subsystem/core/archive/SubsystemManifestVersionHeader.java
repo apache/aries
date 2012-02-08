@@ -13,10 +13,11 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import org.osgi.service.subsystem.SubsystemConstants;
+
 public class SubsystemManifestVersionHeader extends VersionHeader {
 	public static final String DEFAULT_VALUE = "1.0";
-	// TODO Add to constants.
-	public static final String NAME = "Subsystem-ManifestVersion";
+	public static final String NAME = SubsystemConstants.SUBSYSTEM_MANIFESTVERSION;
 	
 	public SubsystemManifestVersionHeader() {
 		this(DEFAULT_VALUE);

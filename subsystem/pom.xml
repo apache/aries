@@ -135,7 +135,6 @@
             <modules>
                 <module>subsystem-api</module>
                 <module>subsystem-core</module>
-                <module>subsystem-executor</module>
                 <module>subsystem-itests</module>
             </modules>
 
@@ -170,24 +169,38 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse</groupId>
-                                    <artifactId>osgi</artifactId>
+                                    <artifactId>org.eclipse.osgi</artifactId>
                                     <version>3.8.0-SNAPSHOT</version>
                                     <packaging>jar</packaging>
-                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/I20111018-0850/org.eclipse.osgi_3.8.0.v20111017-1643.jar&amp;url=http://download.eclipse.org/equinox/drops/I20111018-0850/org.eclipse.osgi_3.8.0.v20111017-1643.jar&amp;mirror_id=1</downloadUrl>
+                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M5-201201251800/org.eclipse.osgi_3.8.0.v20120123-1419.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M5-201201251800/org.eclipse.osgi_3.8.0.v20120123-1419.jar&amp;mirror_id=1</downloadUrl>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.eclipse.equinox</groupId>
-                                    <artifactId>coordinator</artifactId>
-                                    <version>1.0.0.v20110314</version>
+                                    <artifactId>org.eclipse.equinox.coordinator</artifactId>
+                                    <version>3.8.0-SNAPSHOT</version>
                                     <packaging>jar</packaging>
-                                    <downloadUrl>http://ftp.osuosl.org/pub/eclipse/equinox/drops/R-3.7.1-201109091335/org.eclipse.equinox.coordinator_1.0.0.v20110502.jar</downloadUrl>
+                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M5-201201251800/org.eclipse.equinox.coordinator_1.1.0.v20111117-1150.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M5-201201251800/org.eclipse.equinox.coordinator_1.1.0.v20111117-1150.jar&amp;mirror_id=1</downloadUrl>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.eclipse.equinox</groupId>
-                                    <artifactId>region</artifactId>
-                                    <version>1.0.0.v20110506</version>
+                                    <artifactId>org.eclipse.equinox.region</artifactId>
+                                    <version>3.8.0-SNAPSHOT</version>
                                     <packaging>jar</packaging>
-                                    <downloadUrl>http://ftp.osuosl.org/pub/eclipse/equinox/drops/R-3.7.1-201109091335/org.eclipse.equinox.region_1.0.0.v20110524.jar</downloadUrl>
+                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M5-201201251800/org.eclipse.equinox.region_1.0.0.v20111107-1631.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M5-201201251800/org.eclipse.equinox.region_1.0.0.v20111107-1631.jar&amp;mirror_id=1</downloadUrl>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.osgi</groupId>
+                                    <artifactId>org.eclipse.osgi.services</artifactId>
+                                    <version>3.8.0-SNAPSHOT</version>
+                                    <packaging>jar</packaging>
+                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M5-201201251800/org.eclipse.osgi.services_3.3.0.v20111117-1210.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M5-201201251800/org.eclipse.osgi.services_3.3.0.v20111117-1210.jar&amp;mirror_id=1</downloadUrl>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.equinox</groupId>
+                                    <artifactId>org.eclipse.equinox.event</artifactId>
+                                    <version>3.8.0-SNAPSHOT</version>
+                                    <packaging>jar</packaging>
+                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M5-201201251800/org.eclipse.equinox.event_1.2.100.v20111010-1614.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M5-201201251800/org.eclipse.equinox.event_1.2.100.v20111010-1614.jar&amp;mirror_id=1</downloadUrl>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

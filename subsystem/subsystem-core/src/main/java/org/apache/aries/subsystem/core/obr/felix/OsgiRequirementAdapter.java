@@ -13,12 +13,20 @@
  */
 package org.apache.aries.subsystem.core.obr.felix;
 
+import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
+import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
+
+import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Requirement;
 import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleRevision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OsgiRequirementAdapter implements Requirement {
+	private static final Logger logger = LoggerFactory.getLogger(OsgiRequirementAdapter.class);
+	
 	private final org.osgi.framework.resource.Requirement requirement;
 	
 	public OsgiRequirementAdapter(org.osgi.framework.resource.Requirement requirement) {
@@ -60,7 +68,10 @@ public class OsgiRequirementAdapter implements Requirement {
 	}
 
 	public boolean isSatisfied(Capability capability) {
-		return requirement.matches(new FelixCapabilityAdapter(capability, requirement.getResource()));
+		logger.debug(LOG_ENTRY, "isSatisfied", capability);
+		boolean result = ResourceHelper.matches(requirement, new FelixCapabilityAdapter(capability, null));
+		logger.debug(LOG_EXIT, "isSatisfied", result);
+		return result;
 	}
 
 }
