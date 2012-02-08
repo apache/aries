@@ -44,12 +44,17 @@
             org.apache.aries.subsystem.core.internal.Activator
         </aries.osgi.activator>
         <aries.osgi.private.pkg>
+        	org.apache.aries.subsystem.core,
+        	org.apache.aries.subsystem.core.archive,
             org.apache.aries.subsystem.core.internal,
             org.apache.aries.subsystem.core.obr,
-            org.apache.felix.utils.manifest
+            org.apache.aries.subsystem.core.obr.felix,
+            org.apache.aries.subsystem.core.resource,
+            org.apache.felix.resolver,
+            org.apache.felix.resolver.impl
         </aries.osgi.private.pkg>
          <aries.osgi.import>
-             *
+         	*
          </aries.osgi.import>
     </properties>
 
@@ -68,7 +73,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.5-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
@@ -87,32 +92,32 @@
             	</exclusion>
             </exclusions>
         </dependency>
-    	<dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>3.8.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-    	<dependency>
-    		<groupId>org.eclipse.equinox</groupId>
-    		<artifactId>coordinator</artifactId>
-    		<version>1.0.0.v20110314</version>
-    	</dependency>
-    	<dependency>
-            <groupId>org.eclipse.equinox</groupId>
-            <artifactId>region</artifactId>
-            <version>1.0.0.v20110506</version>
-        </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.utils</artifactId>
-            <version>1.1.0</version>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+            <version>0.3.1-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
             		<artifactId>org.osgi.core</artifactId>
             	</exclusion>
             </exclusions>
+        </dependency>
+    	<dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>3.8.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    	<dependency>
+    		<groupId>org.eclipse.equinox</groupId>
+    		<artifactId>org.eclipse.equinox.coordinator</artifactId>
+    		<version>3.8.0-SNAPSHOT</version>
+    	</dependency>
+    	<dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.region</artifactId>
+            <version>3.8.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -128,7 +133,7 @@
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.5-SNAPSHOT</version>
             <scope>test</scope>
             <exclusions>
             	<exclusion>

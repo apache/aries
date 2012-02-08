@@ -1,0 +1,3 @@
+Subsystem-SymbolicName: org.apache.aries.subsystem.feature3
+Subsystem-Type: osgi.feature
+Subsystem-Content: org.apache.aries.subsystem.itests.tb3

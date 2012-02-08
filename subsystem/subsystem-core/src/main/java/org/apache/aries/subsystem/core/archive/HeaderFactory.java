@@ -90,6 +90,10 @@ public class HeaderFactory {
 			return new ExportPackageHeader(value);
 		if (ImportPackageHeader.NAME.equals(name))
 			return new ImportPackageHeader(value);
+		if (DeployedContentHeader.NAME.equals(name))
+			return new DeployedContentHeader(value);
+		if (ProvisionResourceHeader.NAME.equals(name))
+			return new ProvisionResourceHeader(value);
 		return new GenericHeader(name, value);
 			
 	}
