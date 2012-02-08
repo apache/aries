@@ -17,45 +17,49 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.aries.subsystem.core.archive.Grammar;
+import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemVersionHeader;
 import org.osgi.framework.Version;
 
 public class SubsystemUri {
+	private static final String REGEXP = "([^=]*)=([^&]*)&?";
+	private static final Pattern PATTERN = Pattern.compile(REGEXP);
+	
 	private final String symbolicName;
-	private final String type;
 	private final URL url;
 	private final Version version;
 	
 	public SubsystemUri(String location) throws URISyntaxException, MalformedURLException {
+		if (!location.startsWith("subsystem://"))
+			throw new IllegalArgumentException(location);
 		URI uri = new URI(location);
-		String scheme = uri.getScheme();
-		// TODO Add to constants.
-		if (!scheme.matches("subsystem(?:.(?:eba|cba|fba))?"))
-			throw new IllegalArgumentException(location);
-		int i = scheme.indexOf('.');
-		if (i != -1)
-			type = scheme.substring(i);
+		if (uri.getAuthority() != null)
+			url = new URL(uri.getAuthority());
 		else
-			// TODO Add to constants.
-			type = "eba";
-		symbolicName = uri.getQuery();
-		if (!symbolicName.matches(Grammar.SYMBOLICNAME))
-			throw new IllegalArgumentException(location);
-		url = new URL(uri.getAuthority());
-		String fragment = uri.getFragment();
-		if (fragment != null)
-			version = Version.parseVersion(uri.getFragment());
-		else
-			version = null;
+			url = null;
+		Matcher matcher = PATTERN.matcher(uri.getQuery());
+		String symbolicName = null;
+		Version version = Version.emptyVersion;
+		while (matcher.find()) {
+			String name = matcher.group(1);
+			if (SubsystemSymbolicNameHeader.NAME.equals(name))
+				symbolicName = new SubsystemSymbolicNameHeader(matcher.group(2)).getValue();
+			else if (SubsystemVersionHeader.NAME.equals(name))
+				version = Version.parseVersion(matcher.group(2));
+			else
+				throw new IllegalArgumentException("Unsupported subsystem URI parameter: " + name);
+		}
+		if (symbolicName == null)
+			throw new IllegalArgumentException("Missing required subsystem URI parameter: " + SubsystemSymbolicNameHeader.NAME);
+		this.symbolicName = symbolicName;
+		this.version = version;
 	}
 	
 	public String getSymbolicName() {
 		return symbolicName;
-	}
-	
-	public String getType() {
-		return type;
 	}
 	
 	public URL getURL() {

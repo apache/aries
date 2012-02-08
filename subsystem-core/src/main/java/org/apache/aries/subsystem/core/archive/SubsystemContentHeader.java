@@ -19,9 +19,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.util.VersionRange;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.resource.Resource;
 
 public class SubsystemContentHeader extends AbstractHeader {
 	public static class Content {
@@ -117,6 +119,19 @@ public class SubsystemContentHeader extends AbstractHeader {
 				return ((Integer)content1.getStartOrder()).compareTo(content2.getStartOrder());
 			}
 		});
+	}
+	
+	public boolean contains(Resource resource) {
+		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
+		Version version = ResourceHelper.getVersionAttribute(resource);
+		String type = ResourceHelper.getTypeAttribute(resource);
+		for (Content content : contents) {
+			if (symbolicName.equals(content.getName())
+					&& content.getVersionRange().matches(version)
+					&& type.equals(content.getType()))
+				return true;
+		}
+		return false;
 	}
 
 	public Collection<Content> getContents() {

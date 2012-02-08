@@ -18,10 +18,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.osgi.framework.resource.Capability;
+import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.resource.Resource;
 
-public class OsgiContentCapability implements Capability {
+public class OsgiContentCapability extends AbstractCapability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
 	private final Resource resource;
 	

@@ -19,13 +19,13 @@ import java.util.Map;
 
 import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
+import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
-import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
 
-public class OsgiIdentityCapability implements Capability {
+public class OsgiIdentityCapability extends AbstractCapability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
 	private final Resource resource;
 	

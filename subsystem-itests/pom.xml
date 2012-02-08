@@ -30,24 +30,21 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <scope>test</scope>
             <version>3.8.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.osgi</groupId>
-            <artifactId>services</artifactId>
-            <version>3.3.0-v20110523</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.equinox</groupId>
-            <artifactId>org.eclipse.equinox.resolver</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+            <scope>test</scope>
+            <version>3.8.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>org.eclipse.equinox.event</artifactId>
-            <version>1.2.100</version>
+            <scope>test</scope>
+            <version>3.8.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
@@ -86,27 +83,10 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.apache.aries.subsystem.executor</artifactId>
-            <version>0.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-                <!-- 
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
-                </exclusion>
-                -->
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
-            <version>0.3</version>
+            <version>0.5-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -142,7 +122,7 @@
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.5-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -157,6 +137,16 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-service</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
             <scope>test</scope>
@@ -169,6 +159,11 @@
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-default</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-mvn</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -199,28 +194,11 @@
             		<groupId>org.apache.felix</groupId>
             		<artifactId>org.osgi.core</artifactId>
             	</exclusion>
-            	<!-- 
                 <exclusion>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.compendium</artifactId>
                 </exclusion>
-                -->
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.url</groupId>
-            <artifactId>pax-url-mvn</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -236,12 +214,10 @@
             		<groupId>org.apache.felix</groupId>
             		<artifactId>org.osgi.core</artifactId>
             	</exclusion>
-            	<!-- 
                 <exclusion>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.compendium</artifactId>
                 </exclusion>
-                -->
             </exclusions>
         </dependency>
         <dependency>
@@ -276,24 +252,6 @@
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
-            <version>0.1-SNAPSHOT</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-                <!-- 
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
-                </exclusion>
-                -->
             </exclusions>
         </dependency>
     </dependencies>
@@ -391,6 +349,24 @@
 								<include>org/apache/aries/subsystem/itests/tb3/**</include>
 							</includes>
 							<outputDirectory>src/test/resources/feature2</outputDirectory>
+							<finalName>tb3</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					<execution>
+						<id>tb3-feature3</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/itests/tb3/**</include>
+							</includes>
+							<outputDirectory>src/test/resources/feature3</outputDirectory>
 							<finalName>tb3</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>

@@ -16,21 +16,20 @@ package org.apache.aries.subsystem.itests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -44,21 +43,21 @@ import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.resource.Resource;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventConstants;
-import org.osgi.service.event.EventHandler;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
-import org.osgi.service.subsystem.SubsystemConstants.EVENT_TYPE;
 
 public abstract class SubsystemTest extends IntegrationTest {
-	protected static class SubsystemEventHandler implements EventHandler {
-		private final Map<Long, List<Event>> subsystemIdToEvents = new HashMap<Long, List<Event>>();
+	protected static class SubsystemEventHandler implements ServiceListener {
+		private final Map<Long, List<ServiceEvent>> subsystemIdToEvents = new HashMap<Long, List<ServiceEvent>>();
 		
 		public void clear() {
 			synchronized (subsystemIdToEvents) {
@@ -66,31 +65,16 @@ public abstract class SubsystemTest extends IntegrationTest {
 			}
 		}
 		
-		public void handleEvent(Event event) {
-			Long subsystemId = (Long)event.getProperty(SubsystemConstants.EVENT_SUBSYSTEM_ID);
-			synchronized (subsystemIdToEvents) {
-				List <Event> events = subsystemIdToEvents.get(subsystemId);
-				if (events == null) {
-					events = new ArrayList<Event>();
-					subsystemIdToEvents.put(subsystemId, events);
-				}
-				synchronized (events) {
-					events.add(event);
-					events.notify();
-				}
-			}
-		}
-		
-		public Event poll(long subsystemId) throws InterruptedException {
+		public ServiceEvent poll(long subsystemId) throws InterruptedException {
 			return poll(subsystemId, 0);
 		}
 		
-		public Event poll(long subsystemId, long timeout) throws InterruptedException {
-			List<Event> events;
+		public ServiceEvent poll(long subsystemId, long timeout) throws InterruptedException {
+			List<ServiceEvent> events;
 			synchronized (subsystemIdToEvents) {
 				events = subsystemIdToEvents.get(subsystemId);
 				if (events == null) {
-					events = new ArrayList<Event>();
+					events = new ArrayList<ServiceEvent>();
 					subsystemIdToEvents.put(subsystemId, events);
 				}
 			}
@@ -105,6 +89,21 @@ public abstract class SubsystemTest extends IntegrationTest {
 			}
 		}
 		
+		public void serviceChanged(ServiceEvent event) {
+			Long subsystemId = (Long)event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_ID_PROPERTY);
+			synchronized (subsystemIdToEvents) {
+				List<ServiceEvent> events = subsystemIdToEvents.get(subsystemId);
+				if (events == null) {
+					events = new ArrayList<ServiceEvent>();
+					subsystemIdToEvents.put(subsystemId, events);
+				}
+				synchronized (events) {
+					events.add(event);
+					events.notify();
+				}
+			}
+		}
+		
 		public int size() {
 			synchronized (subsystemIdToEvents) {
 				return subsystemIdToEvents.size();
@@ -115,31 +114,29 @@ public abstract class SubsystemTest extends IntegrationTest {
 	@org.ops4j.pax.exam.junit.Configuration
 	public static Option[] configuration() {
 		Option[] options = options(
+				// this is how you set the default log level when using pax
+				// logging (logProfile)
+				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				systemProperty("org.osgi.framework.bsnversion").value("multiple"),
 				// Log
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
 				// Felix Config Admin
-				mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
+//				mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
 				// Felix mvn url handler
 				mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-				// this is how you set the default log level when using pax
-				// logging (logProfile)
-				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-				systemProperty("org.osgi.framework.bsnversion").value("multiple"),
 				// Bundles
-				mavenBundle("org.eclipse.osgi", "services").version("3.3.0-v20110523"),
-				mavenBundle("org.eclipse.equinox", "region").version("1.0.0.v20110518"),
-				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.resolver").version("1.0.0-SNAPSHOT"),
+				mavenBundle("org.eclipse.osgi", "org.eclipse.osgi.services").version("3.8.0-SNAPSHOT"),
+				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.region").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-				mavenBundle("org.apache.aries", "org.apache.aries.util"),
+				mavenBundle("org.apache.aries", "org.apache.aries.util").version("0.5-SNAPSHOT"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
 				mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
-				mavenBundle("org.eclipse.equinox", "coordinator"),
-				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event"),
+				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.coordinator").version("3.8.0-SNAPSHOT"),
+				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
-				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.executor"),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 				equinox().version("3.8.0-SNAPSHOT"));
@@ -148,31 +145,27 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected final SubsystemEventHandler subsystemEvents = new SubsystemEventHandler();
-	protected final SubsystemEventHandler subsystemInternalEvents = new SubsystemEventHandler();
 	
-	protected Subsystem rootSubsystem;
-	
-	private ServiceRegistration<Repository> repositoryReg;
-	private ServiceRegistration<EventHandler> subsystemEventsReg;
-	private ServiceRegistration<EventHandler> subsystemInternalEventsReg;
+	private Collection<ServiceRegistration<?>> serviceRegistrations = new ArrayList<ServiceRegistration<?>>();
 	
 	public void setUp() {
 		super.setUp();
 		new RepositoryGenerator(bundleContext).generateOBR();
-		repositoryReg = bundleContext.registerService(Repository.class, new RepositoryAdminRepository(getOsgiService(RepositoryAdmin.class)), null);
-		Dictionary<String, Object> d = new Hashtable<String, Object>();
-		d.put(EventConstants.EVENT_TOPIC, new String[]{"org/osgi/service/Subsystem/*"});
-		subsystemEventsReg = bundleContext.registerService(EventHandler.class, subsystemEvents, d);
-		d.put(EventConstants.EVENT_TOPIC, new String[]{"org/osgi/service/SubsystemInternals/*"});
-		subsystemInternalEventsReg = bundleContext.registerService(EventHandler.class, subsystemInternalEvents, d);
-		rootSubsystem = getOsgiService(Subsystem.class);
-		assertSubsystemNotNull(rootSubsystem);
+		serviceRegistrations.add(bundleContext.registerService(Repository.class, new RepositoryAdminRepository(getOsgiService(RepositoryAdmin.class)), null));
+		try {
+			bundleContext.addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class + ')');
+		}
+		catch (InvalidSyntaxException e) {
+			fail("Invalid filter: " + e.getMessage());
+		}
+		assertSubsystemNotNull(getRootSubsystem());
 	}
 	
 	public void tearDown() {
-		Utils.unregisterQuietly(subsystemInternalEventsReg);
-		Utils.unregisterQuietly(subsystemEventsReg);
-		Utils.unregisterQuietly(repositoryReg);
+		bundleContext.removeServiceListener(subsystemEvents);
+		for (ServiceRegistration<?> registration : serviceRegistrations)
+			Utils.unregisterQuietly(registration);
+		serviceRegistrations.clear();
 		super.tearDown();
 	}
 	
@@ -221,40 +214,22 @@ public abstract class SubsystemTest extends IntegrationTest {
  		assertFalse("Subsystem data file exists", file.exists());
  	}
  	
- 	protected void assertEvent(Subsystem subsystem, Subsystem.State state, SubsystemConstants.EVENT_TYPE type) throws InterruptedException {
- 		assertEvent(subsystem, state, type, 0);
- 	}
- 	
- 	protected void assertEvent(Subsystem subsystem, Subsystem.State state, SubsystemConstants.EVENT_TYPE type, long timeout) throws InterruptedException {
- 		assertEvent(subsystem, state, type, subsystemEvents.poll(subsystem.getSubsystemId(), timeout));
- 	}
- 	
- 	protected void assertEvent(Subsystem subsystem, Subsystem.State state, SubsystemConstants.EVENT_TYPE type, Event event) {
-		assertEvent(subsystem, state, type, event, null);
-	}
-	
-	protected void assertEvent(Subsystem subsystem, Subsystem.State state, SubsystemConstants.EVENT_TYPE type, Event event, Throwable throwable) {
-		assertNotNull("The event was null", event);
-		assertTrue("Wrong topic: " + event.getTopic(), event.getTopic().endsWith(type.name()));
-		assertEquals("Wrong ID", subsystem.getSubsystemId(), event.getProperty(SubsystemConstants.EVENT_SUBSYSTEM_ID));
-		assertEquals("Wrong location", subsystem.getLocation(), event.getProperty(SubsystemConstants.EVENT_SUBSYSTEM_LOCATION));
-		if (!EVENT_TYPE.INSTALLING.equals(type)) {
-			assertEquals("Wrong symbolic name", subsystem.getSymbolicName(), event.getProperty(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME));
-			assertEquals("Wrong version", String.valueOf(subsystem.getVersion()), event.getProperty(SubsystemConstants.SUBSYSTEM_VERSION));
-		}
-		assertEquals("Wrong state", String.valueOf(state), event.getProperty("subsystem.state"));
-		assertNotNull("Missing timestamp", event.getProperty(EventConstants.TIMESTAMP));
-		if (throwable == null) {
-			assertNull("Exception not expected", event.getProperty(EventConstants.EXCEPTION));
-			assertNull("Exception class not expected", event.getProperty(EventConstants.EXCEPTION_CLASS));
-			assertNull("Exception message not expected", event.getProperty(EventConstants.EXCEPTION_MESSAGE));
-		}
-		else {
-			assertTrue("Wrong exception", event.getProperty(EventConstants.EXCEPTION) instanceof Throwable);
-			assertEquals("Wrong exception class", throwable.getClass().getName(), event.getProperty(EventConstants.EXCEPTION_CLASS));
-			assertTrue("Wrong message", ((String)event.getProperty(EventConstants.EXCEPTION_MESSAGE)).indexOf(throwable.getMessage()) != -1);
-		}
-	}
+// 	protected void assertEvent(Subsystem subsystem, Subsystem.State state) throws InterruptedException {
+// 		assertEvent(subsystem, state, 0);
+// 	}
+// 	
+// 	protected void assertEvent(Subsystem subsystem, Subsystem.State state, long timeout) throws InterruptedException {
+// 		assertEvent(subsystem, state, subsystemEvents.poll(subsystem.getSubsystemId(), timeout));
+// 	}
+//	
+//	protected void assertEvent(Subsystem subsystem, Subsystem.State state, ServiceEvent event) {
+//		// TODO Could accept a ServiceRegistration as an argument and verify it against the one in the event.
+//		assertEquals("Wrong ID", subsystem.getSubsystemId(), event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_ID_PROPERTY));
+//		assertEquals("Wrong symbolic name", subsystem.getSymbolicName(), event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME_PROPERTY));
+//		assertEquals("Wrong version", String.valueOf(subsystem.getVersion()), event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_VERSION_PROPERTY));
+//		assertEquals("Wrong type", subsystem.getType(), event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_TYPE_PROPERTY));
+//		assertEquals("Wrong state", String.valueOf(state), event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_STATE_PROPERTY));
+//	}
 	
 	protected void assertId(Subsystem subsystem) {
 		assertId(subsystem.getSubsystemId());
@@ -262,6 +237,13 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertId(Long id) {
 		assertTrue("Subsystem ID was not a positive integer: " + id, id > 0);
+	}
+	
+	protected void assertLastId(long id) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		Subsystem root = getRootSubsystem();
+		Field lastId = root.getClass().getDeclaredField("lastId");
+		lastId.setAccessible(true);
+		assertEquals("Incorrect value for lastId", id, lastId.getLong(root));
 	}
 	
 	protected void assertLocation(String expected, String actual) {
@@ -277,7 +259,12 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void assertParent(Subsystem expected, Subsystem subsystem) {
-		assertEquals("Wrong parent", expected, subsystem.getParent());
+		for (Subsystem parent : subsystem.getParents()) {
+			if (parent.equals(expected))
+				return;
+			
+		}
+		fail("Parent did not exist: " + expected.getSymbolicName());
 	}
 	
 	protected void assertState(State expected, State actual) {
@@ -302,24 +289,24 @@ public abstract class SubsystemTest extends IntegrationTest {
         Subsystem subsystem = rootSubsystem.install(file.toURI().toURL().toExternalForm());
         assertNotNull("The subsystem was null", subsystem);
         assertState(EnumSet.of(State.INSTALLING, State.INSTALLED), subsystem.getState());
-		assertEvent(subsystem, Subsystem.State.INSTALLING, SubsystemConstants.EVENT_TYPE.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.INSTALLED, SubsystemConstants.EVENT_TYPE.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertChild(rootSubsystem, subsystem);
         subsystem.start();
         assertState(EnumSet.of(State.RESOLVING, State.RESOLVED, State.STARTING, State.ACTIVE), subsystem.getState());
-		assertEvent(subsystem, Subsystem.State.RESOLVING, SubsystemConstants.EVENT_TYPE.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.RESOLVED, SubsystemConstants.EVENT_TYPE.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.STARTING, SubsystemConstants.EVENT_TYPE.STARTING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.ACTIVE, SubsystemConstants.EVENT_TYPE.STARTED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.STARTING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.ACTIVE, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		subsystem.stop();
 		assertState(EnumSet.of(State.STOPPING, State.RESOLVED), subsystem.getState());
-		assertEvent(subsystem, Subsystem.State.STOPPING, SubsystemConstants.EVENT_TYPE.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.RESOLVED, SubsystemConstants.EVENT_TYPE.STOPPED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		// TODO Add update.
 		subsystem.uninstall();
 		assertState(EnumSet.of(State.UNINSTALLING, State.UNINSTALLED), subsystem.getState());
-		assertEvent(subsystem, Subsystem.State.UNINSTALLING, SubsystemConstants.EVENT_TYPE.UNINSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.UNINSTALLED, SubsystemConstants.EVENT_TYPE.UNINSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.UNINSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.UNINSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertNotChild(rootSubsystem, subsystem);
 		return subsystem;
 	}
@@ -344,6 +331,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEquals("Wrong version", expected, actual);
 	}
 	
+	protected Subsystem getRootSubsystem() {
+		return getOsgiService(Subsystem.class);
+	}
+	
 	protected Bundle getSubsystemCoreBundle() {
 		return findBundleBySymbolicName("org.apache.aries.subsystem.core");
 	}
@@ -361,15 +352,15 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected Subsystem installSubsystemFromFile(File file) throws Exception {
-		return installSubsystem(rootSubsystem, file.toURI().toURL().toExternalForm());
+		return installSubsystem(getRootSubsystem(), file.toURI().toURL().toExternalForm());
 	}
 	
 	protected Subsystem installSubsystem(String location) throws Exception {
-		return installSubsystem(rootSubsystem, location);
+		return installSubsystem(getRootSubsystem(), location);
 	}
 	
 	protected Subsystem installSubsystem(String location, InputStream content) throws Exception {
-		return installSubsystem(rootSubsystem, location, content);
+		return installSubsystem(getRootSubsystem(), location, content);
 	}
 	
 	protected Subsystem installSubsystem(Subsystem parent, String location) throws Exception {
@@ -378,10 +369,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected Subsystem installSubsystem(Subsystem parent, String location, InputStream content) throws Exception {
 		subsystemEvents.clear();
-		Subsystem subsystem = rootSubsystem.install(location, content);
+		Subsystem subsystem = getRootSubsystem().install(location, content);
 		assertSubsystemNotNull(subsystem);
-		assertEvent(subsystem, Subsystem.State.INSTALLING, SubsystemConstants.EVENT_TYPE.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.INSTALLED, SubsystemConstants.EVENT_TYPE.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertChild(parent, subsystem);
 		assertLocation(location, subsystem);
 		assertParent(parent, subsystem);
@@ -398,10 +389,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		subsystemEvents.clear();
 		subsystem.start();
 		assertState(EnumSet.of(State.RESOLVING, State.RESOLVED, State.STARTING, State.ACTIVE), subsystem);
-		assertEvent(subsystem, Subsystem.State.RESOLVING, SubsystemConstants.EVENT_TYPE.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.RESOLVED, SubsystemConstants.EVENT_TYPE.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.STARTING, SubsystemConstants.EVENT_TYPE.STARTING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.ACTIVE, SubsystemConstants.EVENT_TYPE.STARTED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.STARTING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.ACTIVE, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertState(State.ACTIVE, subsystem);
 	}
 	
@@ -410,22 +401,23 @@ public abstract class SubsystemTest extends IntegrationTest {
 		subsystemEvents.clear();
 		subsystem.stop();
 		assertState(EnumSet.of(State.STOPPING, State.RESOLVED), subsystem);
-		assertEvent(subsystem, Subsystem.State.STOPPING, SubsystemConstants.EVENT_TYPE.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.RESOLVED, SubsystemConstants.EVENT_TYPE.STOPPED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertState(State.RESOLVED, subsystem);
 	}
 	
 	protected void uninstallSubsystem(Subsystem subsystem) throws Exception {
 		assertState(EnumSet.of(State.INSTALLED, State.RESOLVED), subsystem);
 		subsystemEvents.clear();
-		Subsystem parent = subsystem.getParent();
+		Collection<Subsystem> parents = subsystem.getParents();
 		subsystem.uninstall();
 		assertState(EnumSet.of(State.UNINSTALLED, State.UNINSTALLING), subsystem);
-		assertEvent(subsystem, Subsystem.State.UNINSTALLING, SubsystemConstants.EVENT_TYPE.UNINSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.UNINSTALLED, SubsystemConstants.EVENT_TYPE.UNINSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.UNINSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//		assertEvent(subsystem, Subsystem.State.UNINSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertState(State.UNINSTALLED, subsystem);
 		assertConstituents(0, subsystem);
-		assertNotChild(parent, subsystem);
+		for (Subsystem parent : parents)
+			assertNotChild(parent, subsystem);
 		assertNotDirectory(subsystem);
 	}
 }

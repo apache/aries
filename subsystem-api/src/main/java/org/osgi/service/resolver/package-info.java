@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2010). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2010, 2011). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
  * <p>
  * {@code  Import-Package: org.osgi.service.resolver; version="[1.0,1.1)"}
  * 
- * @version $Id: ffe26e5b960ebceb84699fd1cb8f211d9a386bf4 $
+ * @version $Id: d59eb041c07b894a395e45b82a24f058aadbec32 $
  */
 
 package org.osgi.service.resolver;
