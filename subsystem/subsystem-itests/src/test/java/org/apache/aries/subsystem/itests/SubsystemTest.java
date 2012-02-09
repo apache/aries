@@ -43,6 +43,7 @@ import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -50,6 +51,7 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.resource.Resource;
+import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
@@ -314,6 +316,17 @@ public abstract class SubsystemTest extends IntegrationTest {
 			
 		}
 		fail("Parent did not exist: " + expected.getSymbolicName());
+	}
+	
+	protected void assertRegionContextBundle(Subsystem s) {
+		BundleContext bc = s.getBundleContext();
+		assertNotNull("No region context bundle", bc);
+		Bundle b = bc.getBundle();
+		assertEquals("Not active", Bundle.ACTIVE, b.getState());
+		assertEquals("Wrong location", s.getLocation() + '/' + s.getSubsystemId(), b.getLocation());
+		assertEquals("Wrong symbolic name", "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), b.getSymbolicName());
+		assertEquals("Wrong version", Version.parseVersion("1.0.0"), b.getVersion());
+		assertConstituent(s, "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
 	}
 	
 	protected void assertState(State expected, State actual) {

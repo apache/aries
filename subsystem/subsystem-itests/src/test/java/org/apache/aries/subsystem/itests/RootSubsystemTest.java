@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
@@ -22,6 +23,14 @@ public class RootSubsystemTest extends SubsystemTest {
 	@Test
 	public void testLocation() {
 		assertEquals("Wrong root location", getRootSubsystem().getLocation(), "subsystem://?Subsystem-SymbolicName=org.osgi.service.subsystem.root&Subsystem-Version=1.0.0");
+	}
+	
+	@Test
+	public void testRegionContextBundle() throws BundleException {
+		assertRegionContextBundle(getRootSubsystem());
+		getSubsystemCoreBundle().stop();
+		getSubsystemCoreBundle().start();
+		assertRegionContextBundle(getRootSubsystem());
 	}
 	
 	@Test
