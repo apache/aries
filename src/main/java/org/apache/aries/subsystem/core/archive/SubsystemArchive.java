@@ -335,7 +335,8 @@ public class SubsystemArchive implements Repository, RepositoryContent, Resource
 		OutputStream out = new FileOutputStream(file);
 		try {
 			dataFile.write(out);
-			resources.remove(old);
+			if (old != null)
+				resources.remove(old);
 			resources.put(dataFile, file.toURI().toURL());
 		} finally {
 			out.close();
@@ -354,7 +355,8 @@ public class SubsystemArchive implements Repository, RepositoryContent, Resource
 		OutputStream out = new FileOutputStream(file);
 		try {
 			manifest.write(out);
-			resources.remove(old);
+			if (old != null)
+				resources.remove(old);
 			resources.put(manifest, file.toURI().toURL());
 		} finally {
 			out.close();
@@ -373,7 +375,8 @@ public class SubsystemArchive implements Repository, RepositoryContent, Resource
 		OutputStream out = new FileOutputStream(file);
 		try {
 			manifest.write(out);
-			resources.remove(old);
+			if (old != null)
+				resources.remove(old);
 			resources.put(manifest, file.toURI().toURL());
 		}
 		finally {
@@ -387,17 +390,17 @@ public class SubsystemArchive implements Repository, RepositoryContent, Resource
 			return new SubsystemArchive(file);
 		if (file.getName().endsWith(".jar"))
 			return BundleResource.newInstance(file.toURI().toURL());
-		else if (!file.getName().startsWith("subsystem") && file.getName().endsWith(".ssa"))
+		if (!file.getName().startsWith("subsystem") && file.getName().endsWith(".ssa"))
 			return new SubsystemFileResource(file);
-		else if (file.getName().endsWith("SUBSYSTEM.MF"))
+		if (file.getName().endsWith("SUBSYSTEM.MF"))
 			return new SubsystemManifest(file);
-		else if (file.getName().endsWith("DEPLOYMENT.MF"))
+		if (file.getName().endsWith("DEPLOYMENT.MF"))
 			return new DeploymentManifest(file);
-		else if (file.getName().endsWith(DataFile.IDENTITY_TYPE))
+		if (file.getName().endsWith(DataFile.IDENTITY_TYPE))
 			return new DataFile(file);
-		else if (file.getName().endsWith(StaticDataFile.IDENTITY_TYPE))
+		if (file.getName().endsWith(StaticDataFile.IDENTITY_TYPE))
 			return new StaticDataFile(file);
-		logger.warn("Ignoring unsupported resource type: " + file.getCanonicalPath());
+		logger.warn("Ignoring unsupported resource type: " + file.getAbsolutePath());
 		return null;
 	}
 	

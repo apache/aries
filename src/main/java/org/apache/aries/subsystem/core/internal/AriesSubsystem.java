@@ -78,7 +78,7 @@ import org.osgi.service.subsystem.SubsystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
+public class AriesSubsystem implements Subsystem, Resource {
 	public static final String ROOT_SYMBOLIC_NAME = "org.osgi.service.subsystem.root";
 	public static final Version ROOT_VERSION = Version.parseVersion("1.0.0");
 	public static final String ROOT_LOCATION = "subsystem://?"
@@ -331,54 +331,10 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 		this.parents.add(parent);
 		id = data.getSubsystemId();
 		String directoryName = "subsystem" + id;
-//		String fileName = directoryName + ".ssa";
 		directory = new File(parent.directory, directoryName);
-//		if (!directory.mkdir())
-//			throw new IOException("Unable to make directory for "
-//					+ directory.getCanonicalPath());
-//		File zipFile = new File(directory, fileName);
-//		try {
-//			copyContent(content, zipFile);
-//			unzipContent(zipFile);
-//			archive = new SubsystemArchive(directory);
-//		} catch (Exception e) {
-//			deleteFile(directory);
-//			deleteFile(zipFile);
-//			throw new SubsystemException(e);
-//		}
 		environment = new SubsystemEnvironment(this);
-//		if (archive.getSubsystemManifest() == null) {
-//			// TODO Since it's optional to use the subsystem URI, it might be
-//			// better to create the URI in a try/catch block and throw an
-//			// exception with a message indicating we received a subsystem
-//			// with no manifest and no subsystem URI.
-//			archive.setSubsystemManifest(SubsystemManifest.newInstance(
-//					uri.getSymbolicName(), uri.getVersion(),
-//					archive.getResources()));
-//			// TODO If the subsystem manifest is not null, need to provide
-//			// default headers if subsystem URI was used.
-//		}
 		region = createRegion(data.getRegionName());
 	}
-	
-//	public AriesSubsystem(File content, AriesSubsystem parent) throws Exception {
-//		// Create a non-root, persisted subsystem.
-//		if (!content.isDirectory())
-//			throw new IllegalArgumentException(content.getCanonicalPath());
-//		this.parents.add(parent);
-//		directory = content;
-//		// TODO The following call leads to a potentially dangerous escaping 'this' reference to this subsystem
-//		// (as the parent) if there is an embedded subsystem archive within this subsystem's archive.
-//		// Need to investigate.
-//		archive = new SubsystemArchive(directory);
-//		environment = new SubsystemEnvironment(this);
-//		DataFile data = archive.getDataFile();
-//		id = data.getSubsystemId();
-//		location = data.getLocation();
-//		ServiceProvider sp = Activator.getInstance().getServiceProvider();
-//		RegionDigraph digraph = sp.getService(RegionDigraph.class);
-//		region = digraph.getRegion(data.getRegionName());
-//	}
 	
 	public SubsystemArchive getArchive() {
 		return archive;
@@ -386,8 +342,7 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 	
 	@Override
 	public BundleContext getBundleContext() {
-		// TODO Auto-generated method stub
-		return null;
+		return region.getBundle(RegionContextBundleHelper.SYMBOLICNAME_PREFIX + id, RegionContextBundleHelper.VERSION).getBundleContext();
 	}
 	
 	@Override
@@ -403,35 +358,16 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 	}
 
 	@Override
-	public Collection<Resource> getConstituents() {
-		/* 
-		 * TODO The definition of constituents needs to be worked out from both a design and implementation perspective.
-		 * (1) In general, any Resource type except for osgi.subsystem.
-		 * (2) A transitive dependency if this is the root subsystem or provision-policy:=acceptTransitive.
-		 * (3) A content Resource of this subsystem if the Resource is not also a subsystem (also, doesn't apply to 
-		 *     the root subsystem since it has no content resources).
-		 * (4) A bundle Resource installed into a region by means other than the subsystem API (primarily for the 
-		 *     root subsystem which shares the kernel region but could apply to any subsystem).
-		 * (5) Caution with 4: this does not include feature content resources installed into a non-feature subsystem region. 
-		 *     These are constituents of the feature itself.
-		 */
-		if (isRoot()) {
-			// TODO This does not take into account the possibility that resource types other than bundle became part of the root subsystem.
+	public synchronized Collection<Resource> getConstituents() {
+		Collection<Resource> resources = new ArrayList<Resource>();
+		if (isRoot() || isApplication() || isComposite()) {
 			Set<Long> bundleIds = region.getBundleIds();
-			Collection<Resource> resources = new ArrayList<Resource>(bundleIds.size());
 			BundleContext context = Activator.getInstance().getBundleContext();
 			for (Long bundleId : bundleIds)
 				resources.add(context.getBundle(bundleId).adapt(BundleRevision.class));
-			return resources;
 		}
-		return Collections.unmodifiableCollection(constituents);
-	}
-	
-	@Override
-	public InputStream getContent() throws IOException {
-		// TODO Assumes original archive location remains valid. Might want to
-		// copy zipped archive to subsystem directory as well as extracted contents.
-		return new URL(location).openStream();
+		resources.addAll(constituents);
+		return Collections.unmodifiableCollection(resources);
 	}
 
 	@Override
@@ -717,7 +653,8 @@ public class AriesSubsystem implements Subsystem, Resource, RepositoryContent {
 		return region;
 	}
 	
-	void install() throws Exception {
+	synchronized void install() throws Exception {
+		RegionContextBundleHelper.installRegionContextBundle(this);
 		Activator.getInstance().getSubsystemServiceRegistrar().register(this);
 		List<Resource> contentResources = new ArrayList<Resource>();
 		List<Resource> transitiveDependencies = new ArrayList<Resource>();

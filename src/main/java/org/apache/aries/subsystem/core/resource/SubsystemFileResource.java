@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipInputStream;
 
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
