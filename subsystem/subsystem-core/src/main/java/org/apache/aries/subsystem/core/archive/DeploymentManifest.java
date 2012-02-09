@@ -64,7 +64,7 @@ public class DeploymentManifest extends Manifest implements Resource {
 				resources.add(resource);
 			}
 			// TODO This does not validate that all content bundles were found.
-			Map<Resource, List<Wire>> resolution = Activator.getInstance().getServiceProvider().getService(Resolver.class).resolve(environment, resources, Collections.EMPTY_LIST);
+			Map<Resource, List<Wire>> resolution = Activator.getInstance().getServiceProvider().getService(Resolver.class).resolve(environment, new ArrayList<Resource>(resources), Collections.EMPTY_LIST);
 			// TODO Once we have a resolver that actually returns lists of wires, we can use them to compute other manifest headers such as Import-Package.
 			Collection<Resource> deployedContent = new HashSet<Resource>();
 			Collection<Resource> provisionResource = new HashSet<Resource>();
