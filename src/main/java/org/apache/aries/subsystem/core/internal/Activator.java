@@ -105,8 +105,7 @@ public class Activator implements BundleActivator {
 	@Override
 	public synchronized void stop(BundleContext context) /*throws Exception*/ {
 		logger.debug(LOG_ENTRY, "stop", context);
-		root.stop();
-		registrar.unregisterAll();
+		root.stop0();
 		for (int i = registrations.size() - 1; i >= 0; i--) {
 			try {
 				registrations.get(i).unregister();

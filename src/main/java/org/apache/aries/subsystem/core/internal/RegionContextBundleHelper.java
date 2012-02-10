@@ -34,7 +34,21 @@ public class RegionContextBundleHelper {
 			}
 			catch (BundleException e) {}
 		}
-		b.start(Bundle.START_TRANSIENT);
+		// The region context bundle must be started persistently.
+		b.start();
+	}
+	
+	public static void uninstallRegionContextBundle(AriesSubsystem subsystem) {
+		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
+		Bundle bundle = subsystem.getRegion().getBundle(symbolicName, VERSION);
+		if (bundle == null)
+			return;
+		try {
+			bundle.uninstall();
+		}
+		catch (BundleException e) {
+			// TODO Should we really eat this? At least log it?
+		}
 	}
 	
 	private static InputStream createRegionContextBundle(String symbolicName) throws IOException {
