@@ -319,9 +319,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void assertRegionContextBundle(Subsystem s) {
-		BundleContext bc = s.getBundleContext();
-		assertNotNull("No region context bundle", bc);
-		Bundle b = bc.getBundle();
+		Bundle b = getRegionContextBundle(s);
 		assertEquals("Not active", Bundle.ACTIVE, b.getState());
 		assertEquals("Wrong location", s.getLocation() + '/' + s.getSubsystemId(), b.getLocation());
 		assertEquals("Wrong symbolic name", "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), b.getSymbolicName());
@@ -380,6 +378,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEquals("Wrong symbolic name: " + subsystem.getSymbolicName(), expected, subsystem.getSymbolicName());
 	}
 	
+	protected void assertType(String expected, Subsystem subsystem) {
+		assertEquals("Wrong type", expected, subsystem.getType());
+	}
+	
 	protected void assertVersion(String expected, Subsystem subsystem) {
 		assertVersion(Version.parseVersion(expected), subsystem);
 	}
@@ -390,6 +392,12 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertVersion(Version expected, Version actual) {
 		assertEquals("Wrong version", expected, actual);
+	}
+	
+	protected Bundle getRegionContextBundle(Subsystem subsystem) {
+		BundleContext bc = subsystem.getBundleContext();
+		assertNotNull("No region context bundle", bc);
+		return bc.getBundle();
 	}
 	
 	protected Subsystem getRootSubsystem() {
@@ -432,16 +440,15 @@ public abstract class SubsystemTest extends IntegrationTest {
 		subsystemEvents.clear();
 		Subsystem subsystem = getRootSubsystem().install(location, content);
 		assertSubsystemNotNull(subsystem);
-		assertEvent(subsystem, Subsystem.State.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertEvent(subsystem, State.INSTALLING, 5000);
+		assertEvent(subsystem, State.INSTALLED, 5000);
 		assertChild(parent, subsystem);
 		assertLocation(location, subsystem);
 		assertParent(parent, subsystem);
-		assertState(EnumSet.of(State.INSTALLED, State.INSTALLING), subsystem);
+		assertState(State.INSTALLED, subsystem);
 		assertLocation(location, subsystem);
 		assertId(subsystem);
 		assertDirectory(subsystem);
-		assertState(State.INSTALLED, subsystem);
 		return subsystem;
 	}
 	
@@ -449,11 +456,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertState(State.INSTALLED, subsystem);
 		subsystemEvents.clear();
 		subsystem.start();
-		assertState(EnumSet.of(State.RESOLVING, State.RESOLVED, State.STARTING, State.ACTIVE), subsystem);
-		assertEvent(subsystem, Subsystem.State.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.STARTING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.ACTIVE, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertEvent(subsystem, State.RESOLVING, 5000);
+		assertEvent(subsystem, State.RESOLVED, 5000);
+		assertEvent(subsystem, State.STARTING, 5000);
+		assertEvent(subsystem, State.ACTIVE, 5000);
 		assertState(State.ACTIVE, subsystem);
 	}
 	
@@ -461,9 +467,8 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertState(State.ACTIVE, subsystem);
 		subsystemEvents.clear();
 		subsystem.stop();
-		assertState(EnumSet.of(State.STOPPING, State.RESOLVED), subsystem);
-		assertEvent(subsystem, Subsystem.State.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertEvent(subsystem, State.STOPPING, 5000);
+		assertEvent(subsystem, State.RESOLVED, 5000);
 		assertState(State.RESOLVED, subsystem);
 	}
 	
@@ -471,12 +476,12 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertState(EnumSet.of(State.INSTALLED, State.RESOLVED), subsystem);
 		subsystemEvents.clear();
 		Collection<Subsystem> parents = subsystem.getParents();
+		Bundle b = getRegionContextBundle(subsystem);
 		subsystem.uninstall();
-		assertState(EnumSet.of(State.UNINSTALLED, State.UNINSTALLING), subsystem);
-		assertEvent(subsystem, Subsystem.State.UNINSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.UNINSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertEvent(subsystem, State.UNINSTALLING, 5000);
+		assertEvent(subsystem, State.UNINSTALLED, 5000);
 		assertState(State.UNINSTALLED, subsystem);
-		assertConstituents(0, subsystem);
+		assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
 		for (Subsystem parent : parents)
 			assertNotChild(parent, subsystem);
 		assertNotDirectory(subsystem);
