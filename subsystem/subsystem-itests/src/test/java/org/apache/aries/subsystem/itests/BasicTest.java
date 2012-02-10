@@ -21,15 +21,60 @@ package org.apache.aries.subsystem.itests;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+import org.apache.aries.subsystem.itests.util.Utils;
+import org.apache.aries.unittest.fixture.ArchiveFixture;
+import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 @RunWith(JUnit4TestRunner.class)
 public class BasicTest extends SubsystemTest {
+	private static void createApplication(String name, String[] content) throws Exception {
+		ZipFixture feature = ArchiveFixture
+				.newZip()
+				.binary("OSGI-INF/SUBSYSTEM.MF",
+						FeatureTest.class.getClassLoader().getResourceAsStream(
+								name + "/OSGI-INF/SUBSYSTEM.MF"));
+		for (String s : content) {
+			try {
+				feature.binary(s,
+						FeatureTest.class.getClassLoader().getResourceAsStream(
+								name + '/' + s));
+			}
+			catch (Exception e) {
+				feature.binary(s, new FileInputStream(new File(s)));
+			}
+		}
+		feature.end();
+		FileOutputStream fos = new FileOutputStream(name + ".ssa");
+		try {
+			feature.writeOut(fos);
+		} finally {
+			Utils.closeQuietly(fos);
+		}
+	}
+	
+	@Before
+	public static void createApplications() throws Exception {
+		if (createdApplications) {
+			return;
+		}
+		createApplication("emptyFeature", new String[]{});
+		createApplication("emptySubsystem", new String[]{});
+		createdApplications = true;
+	}
+	
 	/*
 	 * When the subsystems implementation bundle is installed, there should be
 	 * a Subsystem service available.
@@ -49,5 +94,71 @@ public class BasicTest extends SubsystemTest {
     	assertNotNull("Reference to subsystem service not found", serviceReference);
     	Subsystem subsystem = bundleContext.getService(serviceReference);
     	assertNotNull("Subsystem service not found", subsystem);
+    }
+    
+    @Test
+    public void testEmptyFeature() throws Exception {
+    	Subsystem emptyFeature = installSubsystemFromFile("emptyFeature.ssa");
+		AssertionError error = null;
+		try {
+			assertSymbolicName("org.apache.aries.subsystem.itests.feature.empty", emptyFeature);
+			assertVersion("1.1.2", emptyFeature);
+			assertType(SubsystemConstants.SUBSYSTEM_TYPE_FEATURE, emptyFeature);
+			assertConstituents(0, emptyFeature);
+			assertChildren(0, emptyFeature);
+			startSubsystem(emptyFeature);
+			stopSubsystem(emptyFeature);
+		}
+		catch (AssertionError e) {
+			error = e;
+			throw e;
+		}
+		finally {
+			try {
+				uninstallSubsystem(emptyFeature);
+			}
+			catch (AssertionError e) {
+				if (error == null)
+					throw e;
+				e.printStackTrace();
+			}
+		}
+    }
+    
+    /*
+     * This tests a subsystem containing only a subsystem manifest which, in
+     * turn, contains only a Subsystem-SymbolicName header.
+     */
+    @Test
+    public void testEmptySubsystem() throws Exception {
+    	Subsystem emptySubsystem = installSubsystemFromFile("emptySubsystem.ssa");
+		AssertionError error = null;
+		try {
+			assertSymbolicName("org.apache.aries.subsystem.itests.subsystem.empty", emptySubsystem);
+			// The version should be the default version.
+			assertVersion(Version.emptyVersion, emptySubsystem);
+			// The type should be the default type.
+			assertType(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION, emptySubsystem);
+			// Since the default type is application, which is a scoped subsystem, there will
+			// be one constituent representing the region context bundle.
+			assertConstituents(1, emptySubsystem);
+			assertChildren(0, emptySubsystem);
+			startSubsystem(emptySubsystem);
+			stopSubsystem(emptySubsystem);
+		}
+		catch (AssertionError e) {
+			error = e;
+			throw e;
+		}
+		finally {
+			try {
+				uninstallSubsystem(emptySubsystem);
+			}
+			catch (AssertionError e) {
+				if (error == null)
+					throw e;
+				e.printStackTrace();
+			}
+		}
     }
 }

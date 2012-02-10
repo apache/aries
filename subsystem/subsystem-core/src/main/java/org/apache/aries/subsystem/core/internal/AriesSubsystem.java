@@ -50,7 +50,6 @@ import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.Provision
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
-import org.apache.aries.subsystem.core.archive.VersionHeader;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
 import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
 import org.eclipse.equinox.region.Region;
@@ -342,6 +341,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public BundleContext getBundleContext() {
+		if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(getState()))
+			return null;
 		return region.getBundle(RegionContextBundleHelper.SYMBOLICNAME_PREFIX + id, RegionContextBundleHelper.VERSION).getBundleContext();
 	}
 	
@@ -362,7 +363,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		Collection<Resource> resources = new ArrayList<Resource>();
 		if (isRoot() || isApplication() || isComposite()) {
 			Set<Long> bundleIds = region.getBundleIds();
-			BundleContext context = Activator.getInstance().getBundleContext();
+			BundleContext context = getBundleContext();
 			for (Long bundleId : bundleIds)
 				resources.add(context.getBundle(bundleId).adapt(BundleRevision.class));
 		}
@@ -415,12 +416,18 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public String getType() {
-		return getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_TYPE);
+		String result = getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_TYPE);
+		if (result == null)
+			result = SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
+		return result;
 	}
 
 	@Override
 	public Version getVersion() {
-		return ((VersionHeader)archive.getSubsystemManifest().getSubsystemVersion()).getVersion();
+		String version = getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_VERSION);
+		if (version == null)
+			return Version.emptyVersion;
+		return Version.parseVersion(version);
 	}
 
 	@Override
@@ -550,34 +557,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 	 */
 	@Override
 	public synchronized void stop() throws SubsystemException {
-		if (getState() == State.UNINSTALLING || getState() == State.UNINSTALLED) {
-			throw new SubsystemException("Cannot stop from state " + getState());
-		}
-		else if (getState() == State.STARTING) {
-			waitForStateChange();
-			stop();
-		}
-		else if (getState() != State.ACTIVE) {
-			return;
-		}
-		setState(State.STOPPING);
-		for (Resource resource : constituents) {
-			try {
-				stopResource(resource);
-			} catch (Exception e) {
-				LOGGER.error("An error occurred while stopping resource "
-						+ resource + " of subsystem " + this, e);
-				// TODO Should FAILED go out for each failure?
-			}
-		}
-		// TODO Can we automatically assume it actually is resolved?
-		setState(State.RESOLVED);
-//		try {
-//			persist(State.RESOLVED);
-//		}
-//		catch (IOException e) {
-//			throw new SubsystemException(e);
-//		}
+		// The root subsystem may not be stopped.
+		checkRoot();
+		stop0();
 	}
 	
 	/* INSTALLING	Wait, Uninstall
@@ -593,6 +575,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	 */
 	@Override
 	public synchronized void uninstall() throws SubsystemException {
+		// The root subsystem may not be uninstalled.
 		checkRoot();
 		State state = getState();
 		if (state == State.UNINSTALLING || state == State.UNINSTALLED) {
@@ -624,6 +607,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		deleteFile(directory);
 		setState(State.UNINSTALLED);
 		Activator.getInstance().getSubsystemServiceRegistrar().unregister(this);
+		RegionContextBundleHelper.uninstallRegionContextBundle(this);
 	}
 	
 	void bundleChanged(BundleEvent event) {
@@ -706,6 +690,31 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		if (getState().equals(State.INSTALLING))
 			setState(State.INSTALLED);
+	}
+	
+	void stop0() {
+		if (getState() == State.UNINSTALLING || getState() == State.UNINSTALLED) {
+			throw new SubsystemException("Cannot stop from state " + getState());
+		}
+		else if (getState() == State.STARTING) {
+			waitForStateChange();
+			stop();
+		}
+		else if (getState() != State.ACTIVE) {
+			return;
+		}
+		setState(State.STOPPING);
+		for (Resource resource : constituents) {
+			try {
+				stopResource(resource);
+			} catch (Exception e) {
+				LOGGER.error("An error occurred while stopping resource "
+						+ resource + " of subsystem " + this, e);
+				// TODO Should FAILED go out for each failure?
+			}
+		}
+		// TODO Can we automatically assume it actually is resolved?
+		setState(State.RESOLVED);
 	}
 	
 	protected boolean contains(Resource resource) {
