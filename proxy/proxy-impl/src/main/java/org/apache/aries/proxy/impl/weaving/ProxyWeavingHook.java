@@ -24,15 +24,20 @@ import java.util.regex.Pattern;
 
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
+import org.apache.aries.proxy.weaving.WovenProxy;
+import org.apache.aries.proxy.weavinghook.ProxyWeavingController;
+import org.apache.aries.proxy.weavinghook.WeavingHelper;
+import org.objectweb.asm.ClassReader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ProxyWeavingHook implements WeavingHook {
+public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
 
   public static final String WEAVING_ENABLED_CLASSES = "org.apache.aries.proxy.weaving.enabled";
   public static final String WEAVING_DISABLED_CLASSES = "org.apache.aries.proxy.weaving.disabled";
@@ -52,10 +57,13 @@ public final class ProxyWeavingHook implements WeavingHook {
 
   private final List<Pattern> enabled;
   private final List<Pattern> disabled;
+  private final ServiceTracker controllers;
 
   public ProxyWeavingHook(BundleContext context) {
     enabled = parseMatchers(context != null ? context.getProperty(WEAVING_ENABLED_CLASSES) : null, WEAVING_ENABLED_CLASSES_DEFAULT);
     disabled = parseMatchers(context != null ? context.getProperty(WEAVING_DISABLED_CLASSES) : null, WEAVING_DISABLED_CLASSES_DEFAULT);
+    controllers = new ServiceTracker(context, ProxyWeavingController.class.getName(), null);
+    controllers.open();
   }
 
   public final void weave(WovenClass wovenClass) {
@@ -68,36 +76,37 @@ public final class ProxyWeavingHook implements WeavingHook {
       return;
     }
 
-
     if (!isEnabled(wovenClass.getClassName()) || isDisabled(wovenClass.getClassName())) {
         return;
     }
 
-    byte[] bytes = null;
-    
-    try {
-      bytes = WovenProxyGenerator.getWovenProxy(wovenClass.getBytes(),
-              wovenClass.getBundleWiring().getClassLoader());
+    if (shouldWeave(wovenClass)) {
+      byte[] bytes = null;
       
-    } catch (Exception e) {
-      if(e instanceof RuntimeException && 
-          e.getCause() instanceof UnableToProxyException){
-        //This is a weaving failure that should be logged, but the class
-        //can still be loaded
-        LOGGER.trace(NLS.MESSAGES.getMessage("cannot.weave", wovenClass.getClassName()), e);
-      } else {
-        String failureMessage = NLS.MESSAGES.getMessage("fatal.weaving.failure", wovenClass.getClassName());
-        //This is a failure that should stop the class loading!
-        LOGGER.error(failureMessage, e);
-        throw new WeavingException(failureMessage, e);
+      try {
+        bytes = WovenProxyGenerator.getWovenProxy(wovenClass.getBytes(),
+                wovenClass.getBundleWiring().getClassLoader());
+        
+      } catch (Exception e) {
+        if(e instanceof RuntimeException && 
+            e.getCause() instanceof UnableToProxyException){
+          //This is a weaving failure that should be logged, but the class
+          //can still be loaded
+          LOGGER.trace(NLS.MESSAGES.getMessage("cannot.weave", wovenClass.getClassName()), e);
+        } else {
+          String failureMessage = NLS.MESSAGES.getMessage("fatal.weaving.failure", wovenClass.getClassName());
+          //This is a failure that should stop the class loading!
+          LOGGER.error(failureMessage, e);
+          throw new WeavingException(failureMessage, e);
+        }
       }
-    }
-    
-    if(bytes != null && bytes.length != 0) {
-      wovenClass.setBytes(bytes);
-      List<String> imports = wovenClass.getDynamicImports();
-      imports.add(IMPORT_A);
-      imports.add(IMPORT_B);
+      
+      if(bytes != null && bytes.length != 0) {
+        wovenClass.setBytes(bytes);
+        List<String> imports = wovenClass.getDynamicImports();
+        imports.add(IMPORT_A);
+        imports.add(IMPORT_B);
+      }
     }
   }
 
@@ -132,5 +141,47 @@ public final class ProxyWeavingHook implements WeavingHook {
         }
         return false;
     }
+    
+    public boolean isWoven(Class<?> clazz)
+    {
+      return WovenProxy.class.isAssignableFrom(clazz);
+    }
+
+    public boolean isSuperClassWoven(WovenClass wovenClass)
+    {
+      ClassReader cReader = new ClassReader(wovenClass.getBytes());
+      try {
+          Class<?> superClass = Class.forName(cReader.getSuperName().replace('/', '.'), false,
+                  wovenClass.getBundleWiring().getClassLoader());
+          return WovenProxy.class.isAssignableFrom(superClass);
+      } catch (ClassNotFoundException e) {
+          String failureMessage = NLS.MESSAGES.getMessage("fatal.weaving.failure", wovenClass.getClassName());
+          //This is a failure that should stop the class loading!
+          LOGGER.error(failureMessage, e);
+          throw new WeavingException(failureMessage, e);
+      }
+    }
+    
+  private boolean shouldWeave(WovenClass wovenClass)
+  {
+    // assume we weave
+    boolean result = true;
+    Object[] cs = controllers.getServices();
+    
+    // if we have at least 1 weaving controller
+    if (cs != null && cs.length > 0) {
+      // first of all set to false.
+      result = false;
+      for (Object obj : cs) {
+        ProxyWeavingController c = (ProxyWeavingController) obj;
+        if (c.shouldWeave(wovenClass, this)) {
+          // exit as soon as we get told to weave, otherwise keep going.
+          return true;
+        }
+      }
+    } 
+    
+    return result;
+  }
 
 }

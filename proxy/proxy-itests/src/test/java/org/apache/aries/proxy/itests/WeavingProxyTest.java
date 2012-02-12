@@ -27,8 +27,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.weaving.WovenProxy;
+import org.apache.aries.proxy.weavinghook.ProxyWeavingController;
+import org.apache.aries.proxy.weavinghook.WeavingHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -36,6 +39,7 @@ import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.hooks.weaving.WovenClass;
 
 @RunWith(JUnit4TestRunner.class)
 public class WeavingProxyTest extends AbstractProxyTest
@@ -85,6 +89,31 @@ public class WeavingProxyTest extends AbstractProxyTest
     Object o = mgr.createDelegatingProxy(b, classes, c, r);
     if(!!!(o instanceof WovenProxy))
       fail("Proxy should be woven!");
+  }
+  
+  @Test(expected = FinalModifierException.class)
+  public void checkProxyController() throws Exception
+  {
+    context().registerService(ProxyWeavingController.class.getName(), new ProxyWeavingController() {
+      
+      public boolean shouldWeave(WovenClass arg0, WeavingHelper arg1)
+      {
+        return false;
+      }
+    }, null);
+    
+    ProxyManager mgr = context().getService(ProxyManager.class);
+    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Callable<Object> c = new TestCallable();
+    Collection<Class<?>> classes = new ArrayList<Class<?>>();
+    Runnable r = new Runnable() {
+      public final void run() {
+      }
+    };
+    classes.add(r.getClass());
+    Object o = mgr.createDelegatingProxy(b, classes, c, r);
+    if(o instanceof WovenProxy)
+      fail("Proxy should not have been woven!");
   }
    
   @org.ops4j.pax.exam.junit.Configuration
