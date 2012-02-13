@@ -19,8 +19,12 @@ public abstract class VersionHeader extends AbstractHeader {
 	private final Version version;
 	
 	public VersionHeader(String name, String value) {
-		super(name, value);
-		version = Version.parseVersion(getClauses().get(0).getPath());
+		this(name, Version.parseVersion(value));
+	}
+	
+	public VersionHeader(String name, Version value) {
+		super(name, value.toString());
+		version = value;
 	}
 	
 	public Version getVersion() {

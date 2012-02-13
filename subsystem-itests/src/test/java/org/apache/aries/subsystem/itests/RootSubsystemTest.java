@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 
@@ -34,40 +33,23 @@ public class RootSubsystemTest extends SubsystemTest {
 	}
 	
 	@Test
-	public void testServiceEventsFresh() throws Exception {
+	public void testServiceEvents() throws Exception {
 		Subsystem root = getRootSubsystem();
 		Bundle core = getSubsystemCoreBundle();
 		core.stop();
-		assertEvent(root, Subsystem.State.STOPPING, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		assertEvent(root, Subsystem.State.RESOLVED, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		// Don't forget about the unregistering event, which will have the same state as before.
-		assertEvent(root, Subsystem.State.RESOLVED, subsystemEvents.poll(root.getSubsystemId(), 5000), ServiceEvent.UNREGISTERING);
+		assertServiceEventsStop(root);
 		core.uninstall();
 		core = installBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core");
 		core.start();
-		// When starting for the very first time, the root subsystem should transition through all states.
-		assertEvent(root, Subsystem.State.INSTALLING, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		assertEvent(root, Subsystem.State.INSTALLED, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		assertEvent(root, Subsystem.State.RESOLVING, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		assertEvent(root, Subsystem.State.RESOLVED, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		assertEvent(root, Subsystem.State.STARTING, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		assertEvent(root, Subsystem.State.ACTIVE, subsystemEvents.poll(root.getSubsystemId(), 5000));
-	}
-	
-	@Test
-	public void testServiceEventsPersisted() throws Exception {
-		Subsystem root = getRootSubsystem();
-		Bundle core = getSubsystemCoreBundle();
+		assertServiceEventsInstall(root);
+		assertServiceEventsResolve(root);
+		assertServiceEventsStart(root);
 		core.stop();
-		assertEvent(root, Subsystem.State.STOPPING, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		assertEvent(root, Subsystem.State.RESOLVED, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		// Don't forget about the unregistering event, which will have the same state as before.
-		assertEvent(root, Subsystem.State.RESOLVED, subsystemEvents.poll(root.getSubsystemId(), 5000), ServiceEvent.UNREGISTERING);
+		assertServiceEventsStop(root);
 		core.start();
-		// On subsequent, post-installation starts, the root subsystem should start in the resolved state.
-		assertEvent(root, Subsystem.State.RESOLVED, subsystemEvents.poll(root.getSubsystemId(), 5000), ServiceEvent.REGISTERED);
-		assertEvent(root, Subsystem.State.STARTING, subsystemEvents.poll(root.getSubsystemId(), 5000));
-		assertEvent(root, Subsystem.State.ACTIVE, subsystemEvents.poll(root.getSubsystemId(), 5000));
+		assertServiceEventsInstall(root);
+		assertServiceEventsResolve(root);
+		assertServiceEventsStart(root);
 	}
 	
 	@Test
