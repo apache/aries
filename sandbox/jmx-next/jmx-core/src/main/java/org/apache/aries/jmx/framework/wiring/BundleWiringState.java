@@ -116,9 +116,17 @@ public class BundleWiringState implements BundleWiringStateMBean {
         if (wiring == null)
             return;
 
-        List<BundleWire> wires = wiring.getRequiredWires(namespace);
-        for (BundleWire wire : wires) {
+        List<BundleWire> requiredWires = wiring.getRequiredWires(namespace);
+        for (BundleWire wire : requiredWires) {
             BundleRevision revision = wire.getCapability().getRevision();
+            if (!allRevisions.containsKey(revision)) {
+                populateTransitiveRevisions(namespace, revision, allRevisions);
+            }
+        }
+
+        List<BundleWire> providedWires = wiring.getProvidedWires(namespace);
+        for (BundleWire wire : providedWires) {
+            BundleRevision revision = wire.getRequirement().getRevision();
             if (!allRevisions.containsKey(revision)) {
                 populateTransitiveRevisions(namespace, revision, allRevisions);
             }
