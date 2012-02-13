@@ -29,4 +29,8 @@ public class SubsystemVersionHeader extends VersionHeader {
 	public SubsystemVersionHeader(String value) {
 		super(NAME, value);
 	}
+	
+	public SubsystemVersionHeader(Version value) {
+		super(NAME, value);
+	}
 }

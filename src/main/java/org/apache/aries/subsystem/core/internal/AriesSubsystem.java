@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -49,8 +50,8 @@ import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.ProvisionedResource;
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
-import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
+import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
 import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
@@ -211,6 +212,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	private final ArrayList<AriesSubsystem> parents = new ArrayList<AriesSubsystem>();
 	private final Region region;
 	
+	private boolean autostart;
 	private Subsystem.State state = State.INSTALLING;
 	 
 	public AriesSubsystem() throws Exception {
@@ -220,39 +222,42 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// by any embedded child subsystems during archive initialization. See the constructors.
 		directory = Activator.getInstance().getBundleContext().getDataFile("");
 		archive = new SubsystemArchive(directory);
-		DataFile data = archive.getDataFile();
-		if (data == null) {
-			id = 0;
-			location = ROOT_LOCATION;
-			region = createRegion(null);
+		DeploymentManifest deploymentManifest = archive.getDeploymentManifest();
+		if (deploymentManifest != null) {
+			autostart = Boolean.parseBoolean(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_AUTOSTART).getValue());
+			id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
+			lastId = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LASTID).getValue());
+			location = deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue();
 		}
 		else {
-			id = data.getSubsystemId();
-			location = data.getLocation();
-			region = createRegion(data.getRegionName());
-			state = data.getState();
+			autostart = true;
+			id = 0;
+			location = ROOT_LOCATION;
 		}
+		region = createRegion(null);
 		// TODO The creation of the subsystem manifest is in two places. See other constructor.
-		SubsystemManifest manifest = archive.getSubsystemManifest();
-		if (manifest == null) {
+		SubsystemManifest subsystemManifest = archive.getSubsystemManifest();
+		if (subsystemManifest == null) {
 			// This is the first time the root subsystem has been initialized in this framework or
 			// a framework clean start was requested.
 			SubsystemUri uri = new SubsystemUri(ROOT_LOCATION);
-			manifest = SubsystemManifest.newInstance(uri.getSymbolicName(), uri.getVersion(), archive.getResources());
-			archive.setSubsystemManifest(manifest);
+			subsystemManifest = new SubsystemManifest(uri.getSymbolicName(), uri.getVersion(), archive.getResources());
+			archive.setSubsystemManifest(subsystemManifest);
 		}
 		else
 			// Need to generate a new subsystem manifest in order to generated a new deployment manifest based
 			// on any persisted resources.
-			manifest = SubsystemManifest.newInstance(getSymbolicName(), getVersion(), archive.getResources());
+			subsystemManifest = new SubsystemManifest(getSymbolicName(), getVersion(), archive.getResources());
 		environment = new SubsystemEnvironment(this);
-		archive.setDeploymentManifest(DeploymentManifest.newInstance(manifest, environment));
-		StaticDataFile sdf = archive.getStaticDataFile();
-		LOGGER.debug("Data file: {}", sdf);
-		if (sdf != null) {
-			lastId = sdf.getLastSubsystemId();
-		}
-		LOGGER.debug("Last ID will start at {}", lastId);
+		archive.setDeploymentManifest(new DeploymentManifest(
+				deploymentManifest, 
+				subsystemManifest, 
+				environment,
+				autostart,
+				id,
+				lastId,
+				location,
+				true));
 		// TODO Begin proof of concept.
 		// This is a proof of concept for initializing the relationships between the root subsystem and bundles
 		// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
@@ -312,27 +317,28 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// better to create the URI in a try/catch block and throw an
 			// exception with a message indicating we received a subsystem
 			// with no manifest and no subsystem URI.
-			archive.setSubsystemManifest(SubsystemManifest.newInstance(
+			archive.setSubsystemManifest(new SubsystemManifest(
 					uri.getSymbolicName(), 
 					uri.getVersion(), 
 					archive.getResources()));
-			// TODO If the subsystem manifest is not null, need to provide default headers if subsystem URI was used.
 		}
-		region = createRegion(getSymbolicName() + ';' + getVersion());
+		region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
 	}
 	
 	public AriesSubsystem(SubsystemArchive archive, AriesSubsystem parent) throws Exception {
 		this.archive = archive;
-		DataFile data = archive.getDataFile();
-		if (data == null)
-			throw new IllegalArgumentException("Missing data file");
-		this.location = data.getLocation();
-		this.parents.add(parent);
-		id = data.getSubsystemId();
+		
+		DeploymentManifest manifest = archive.getDeploymentManifest();
+		if (manifest == null)
+			throw new IllegalStateException("Missing deployment manifest");
+		autostart = Boolean.parseBoolean(manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_AUTOSTART).getValue());
+		id = Long.parseLong(manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
+		location = manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue();
 		String directoryName = "subsystem" + id;
 		directory = new File(parent.directory, directoryName);
 		environment = new SubsystemEnvironment(this);
-		region = createRegion(data.getRegionName());
+		parents.add(parent);
+		region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
 	}
 	
 	public SubsystemArchive getArchive() {
@@ -360,7 +366,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	@Override
 	public synchronized Collection<Resource> getConstituents() {
-		Collection<Resource> resources = new ArrayList<Resource>();
+		Collection<Resource> resources = new HashSet<Resource>();
 		if (isRoot() || isApplication() || isComposite()) {
 			Set<Long> bundleIds = region.getBundleIds();
 			BundleContext context = getBundleContext();
@@ -393,11 +399,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public Map<String, String> getSubsystemHeaders(Locale locale) {
-		Collection<Header> headers = archive.getSubsystemManifest().getHeaders();
+		Map<String, Header<?>> headers = archive.getSubsystemManifest().getHeaders();
 		Map<String, String> result = new HashMap<String, String>(headers.size());
-		for (Header header : headers) {
-			String value = header.getValue();
-			result.put(header.getName(), value);
+		for (Entry<String, Header<?>> entry: headers.entrySet()) {
+			Header<?> value = entry.getValue();
+			result.put(entry.getKey(), value.getValue());
 		}
 		return result;
 	}
@@ -409,9 +415,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	@Override
 	public String getSymbolicName() {
-		if (isRoot())
-			return ROOT_SYMBOLIC_NAME;
-		return ((SubsystemSymbolicNameHeader)archive.getSubsystemManifest().getSubsystemSymbolicName()).getSymbolicName();
+		return archive.getSubsystemManifest().getHeaders().get(SubsystemManifest.SUBSYSTEM_SYMBOLICNAME).getValue();
 	}
 	
 	@Override
@@ -470,18 +474,24 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	public boolean isApplication() {
-		// TODO Add to constants.
-		return !isRoot() && "osgi.application".equals(archive.getSubsystemManifest().getSubsystemType().getValue());
+		return !isRoot()
+				&& SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(archive
+						.getSubsystemManifest().getHeaders()
+						.get(SubsystemManifest.SUBSYSTEM_TYPE).getValue());
 	}
 	
 	public boolean isComposite() {
-		// TODO Add to constants.
-		return !isRoot() && "osgi.composite".equals(archive.getSubsystemManifest().getSubsystemType().getValue());
+		return !isRoot() 
+				&& SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(archive
+						.getSubsystemManifest().getHeaders()
+						.get(SubsystemManifest.SUBSYSTEM_TYPE).getValue());
 	}
 	
 	public boolean isFeature() {
-		// TODO Add to constants.
-		return !isRoot() && "osgi.feature".equals(archive.getSubsystemManifest().getSubsystemType().getValue());
+		return !isRoot() 
+				&& SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(archive
+						.getSubsystemManifest().getHeaders()
+						.get(SubsystemManifest.SUBSYSTEM_TYPE).getValue());
 	}
 	
 	/* INSTALLING	Wait, Start
@@ -515,6 +525,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			resolve();
 		}
 		setState(State.STARTING);
+		autostart = true;
 		// TODO Need to hold a lock here to guarantee that another start
 		// operation can't occur when the state goes to RESOLVED.
 		// Start the subsystem.
@@ -559,6 +570,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	public synchronized void stop() throws SubsystemException {
 		// The root subsystem may not be stopped.
 		checkRoot();
+		autostart = false;
 		stop0();
 	}
 	
@@ -643,7 +655,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		List<Resource> contentResources = new ArrayList<Resource>();
 		List<Resource> transitiveDependencies = new ArrayList<Resource>();
 		DeploymentManifest manifest = getDeploymentManifest();
-		DeployedContentHeader contentHeader = manifest.getDeployedContent();
+		DeployedContentHeader contentHeader = manifest.getDeployedContentHeader();
 		if (contentHeader != null) {
 			for (DeployedContent content : contentHeader.getDeployedContents()) {
 				Collection<Capability> capabilities = environment.findProviders(
@@ -654,7 +666,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				contentResources.add(resource);
 			}
 		}
-		ProvisionResourceHeader resourceHeader = manifest.getProvisionResource();
+		ProvisionResourceHeader resourceHeader = manifest.getProvisionResourceHeader();
 		if (resourceHeader != null) {
 			for (ProvisionedResource content : resourceHeader.getProvisionedResources()) {
 				Collection<Capability> capabilities = environment.findProviders(
@@ -688,8 +700,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 				coordination.end();
 			}
 		}
-		if (getState().equals(State.INSTALLING))
-			setState(State.INSTALLED);
+		setState(State.INSTALLED);
+		if (autostart)
+			start();
 	}
 	
 	void stop0() {
@@ -715,6 +728,21 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		// TODO Can we automatically assume it actually is resolved?
 		setState(State.RESOLVED);
+		DeploymentManifest manifest = new DeploymentManifest(
+				archive.getDeploymentManifest(),
+				null,
+				null,
+				autostart,
+				id,
+				lastId,
+				location,
+				false);
+		try {
+			archive.setDeploymentManifest(manifest);
+		}
+		catch (IOException e) {
+			throw new SubsystemException(e);
+		}
 	}
 	
 	protected boolean contains(Resource resource) {
@@ -733,19 +761,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	protected synchronized void setState(Subsystem.State state) {
 		this.state = state;
-		// The archive will be null if this is the root subsystem.
-		if (archive != null) {
-			// If necessary, update this subsystem's data file to honor start and stop requests.
-			if (EnumSet.of(State.INSTALLED, State.RESOLVED, State.ACTIVE).contains(state)) {
-				DataFile data = new DataFile(location, region.getName(), state, id);
-				try {
-					archive.setDataFile(data);
-				}
-				catch (IOException e) {
-					throw new SubsystemException(e);
-				}
-			}
-		}
 		Activator.getInstance().getSubsystemServiceRegistrar().update(this);
 		notifyAll();
 	}
@@ -766,11 +781,13 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private Region createRegion(String name) throws BundleException {
+		Activator activator = Activator.getInstance();
+		RegionDigraph digraph = activator.getServiceProvider().getService(RegionDigraph.class);
 		if (name == null)
-			return Activator.getInstance().getServiceProvider().getService(RegionDigraph.class).getRegion(Activator.getInstance().getBundleContext().getBundle());
-		Region region = Activator.getInstance().getServiceProvider().getService(RegionDigraph.class).getRegion(name);
+			return digraph.getRegion(activator.getBundleContext().getBundle());
+		Region region = digraph.getRegion(name);
 		if (region == null)
-			return Activator.getInstance().getServiceProvider().getService(RegionDigraph.class).createRegion(name);
+			return digraph.createRegion(name);
 		return region;
 	}
 	
@@ -784,7 +801,15 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	private DeploymentManifest getDeploymentManifest() throws IOException {
 		if (archive.getDeploymentManifest() == null) {
-			archive.setDeploymentManifest(DeploymentManifest.newInstance(archive.getSubsystemManifest(), environment));
+			archive.setDeploymentManifest(new DeploymentManifest(
+					null,
+					archive.getSubsystemManifest(), 
+					environment,
+					autostart,
+					id,
+					lastId,
+					location,
+					true));
 		}
 		return archive.getDeploymentManifest();
 	}
@@ -871,8 +896,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 			return;
 		}
 		else {
-			SubsystemArchive archive = (SubsystemArchive)resource;
-			subsystem = new AriesSubsystem(archive, this);
+			SubsystemDirectoryResource sdr = (SubsystemDirectoryResource)resource;
+			subsystem = new AriesSubsystem(sdr.getArchive(), this);
 			locationToSubsystem.put(subsystem.getLocation(), subsystem);
 		}
 		Set<AriesSubsystem> subsystems = new HashSet<AriesSubsystem>();
