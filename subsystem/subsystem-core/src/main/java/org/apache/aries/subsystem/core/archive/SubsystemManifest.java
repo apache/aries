@@ -1,130 +1,139 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.aries.subsystem.core.archive;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
-import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
+import org.apache.aries.util.manifest.ManifestProcessor;
+import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.subsystem.SubsystemConstants;
 
-public class SubsystemManifest extends Manifest implements Resource {
-	public static final String IDENTITY_TYPE = "org.apache.aries.subsystem.manifest";
+public class SubsystemManifest {
+	public static final String EXPORT_PACKAGE = Constants.EXPORT_PACKAGE;
+	public static final String IMPORT_PACKAGE = Constants.IMPORT_PACKAGE;
+	public static final String PREFERRED_PROVIDER = SubsystemConstants.PREFERRED_PROVIDER;
+	public static final String PROVIDE_CAPABILITY = Constants.PROVIDE_CAPABILITY;
+	public static final String REQUIRE_BUNDLE = Constants.REQUIRE_BUNDLE;
+	public static final String REQUIRE_CAPABILITY = Constants.REQUIRE_CAPABILITY;
+	public static final String SUBSYSTEM_CONTENT = SubsystemConstants.SUBSYSTEM_CONTENT;
+	public static final String SUBSYSTEM_DESCRIPTION = SubsystemConstants.SUBSYSTEM_DESCRIPTION;
+	public static final String SUBSYSTEM_EXPORTSERVICE = SubsystemConstants.SUBSYSTEM_EXPORTSERVICE;
+	public static final String SUBSYSTEM_IMPORTSERVICE = SubsystemConstants.SUBSYSTEM_IMPORTSERVICE;
+	public static final String SUBSYSTEM_MANIFESTVERSION = SubsystemConstants.SUBSYSTEM_MANIFESTVERSION;
+	public static final String SUBSYSTEM_NAME = SubsystemConstants.SUBSYSTEM_NAME;
+	public static final String SUBSYSTEM_SYMBOLICNAME = SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
+	public static final String SUBSYSTEM_TYPE = SubsystemConstants.SUBSYSTEM_TYPE;
+	public static final String SUBSYSTEM_VERSION = SubsystemConstants.SUBSYSTEM_VERSION;
 	
-	private static final Logger logger = LoggerFactory.getLogger(SubsystemManifest.class);
+	private final Map<String, Header<?>> headers;
 	
-	public static SubsystemManifest newInstance(String symbolicName, Version version, Collection<Resource> resources) {
-		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "newInstance", new Object[]{symbolicName, version, resources});
-		SubsystemManifest manifest = new SubsystemManifest();
-		manifest.headers.put(SubsystemTypeHeader.NAME, new SubsystemTypeHeader());
-		manifest.headers.put(ManifestVersionHeader.NAME, new ManifestVersionHeader());
-		manifest.headers.put(SubsystemManifestVersionHeader.NAME, new SubsystemManifestVersionHeader());
-		manifest.headers.put(ManifestVersionHeader.NAME, new ManifestVersionHeader());
-		manifest.headers.put(SubsystemSymbolicNameHeader.NAME, new SubsystemSymbolicNameHeader(symbolicName));
-		manifest.headers.put(SubsystemVersionHeader.NAME, new SubsystemVersionHeader(version.toString()));
-		// TODO Leaving out Subsystem-Name and Subsystem-Description.
-		// TODO Better way than using StringBuilder? Would require a more robust SubsystemContentHeader in order to fulfill the Header contract.
-		StringBuilder content = new StringBuilder();
-		for (Resource resource : resources) {
-			Capability osgiIdentity = resource.getCapabilities(ResourceConstants.IDENTITY_NAMESPACE).get(0);
-			String resourceSymbolicName = (String)osgiIdentity.getAttributes().get(ResourceConstants.IDENTITY_NAMESPACE);
-			Version resourceVersion = (Version)osgiIdentity.getAttributes().get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
-			String type = (String)osgiIdentity.getAttributes().get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
-			content.append(resourceSymbolicName).append(';')
-				// TODO Add to constants.
-				.append("version").append('=').append(resourceVersion).append(';')
-				// TODO Add to constants.
-				.append("type").append('=').append(type).append(',');
+	public SubsystemManifest(File file) throws FileNotFoundException, IOException {
+		Manifest manifest = ManifestProcessor.parseManifest(new FileInputStream(file));
+		Attributes attributes = manifest.getMainAttributes();
+		Map<String, Header<?>> headers = new HashMap<String, Header<?>>(attributes.size() + 4); // Plus the # of potentially derived headers.
+		for (Entry<Object, Object> entry : attributes.entrySet()) {
+			String key = String.valueOf(entry.getKey());
+			headers.put(key, HeaderFactory.createHeader(key, String.valueOf(entry.getValue())));
 		}
-		if (content.length() != 0) {
-			// Remove the trailing comma.
-			content.deleteCharAt(content.length() - 1);
-			manifest.headers.put(SubsystemContentHeader.NAME, new SubsystemContentHeader(content.toString()));
+		Header<?> header = headers.get(SUBSYSTEM_VERSION);
+		if (header == null) {
+			headers.put(SUBSYSTEM_VERSION, SubsystemVersionHeader.DEFAULT);
 		}
-		logger.debug(LOG_EXIT, "newInstance", manifest);
-		return manifest;
+		header = headers.get(SUBSYSTEM_TYPE);
+		if (header == null)
+			headers.put(SUBSYSTEM_TYPE, SubsystemTypeHeader.DEFAULT);
+		this.headers = Collections.unmodifiableMap(headers);
 	}
-
-	public SubsystemManifest(InputStream in) throws IOException {
-		super(in);
-	}
-
-	public SubsystemManifest(File file) throws IOException {
-		super(file);
-	}
-
-	private SubsystemManifest() {}
 	
-	@Override
-	public List<Capability> getCapabilities(String namespace) {
-		List<Capability> result = new ArrayList<Capability>(1);
-		if (namespace == null || namespace.equals(ResourceConstants.IDENTITY_NAMESPACE)) {
-			OsgiIdentityCapability capability = new OsgiIdentityCapability(
-					this,
-					// TODO Reusing IDENTITY_TYPE for the symbolic name here.
-					// Since there's only one subsystem manifest per subsystem,
-					// this shouldn't cause any technical issues. However, it
-					// might be best to use the subsystem's symbolic name here.
-					// But there are issues with that as well since type is not
-					// part of the unique identity.
-					IDENTITY_TYPE,
-					Version.emptyVersion,
-					IDENTITY_TYPE);
-			result.add(capability);
+	public SubsystemManifest(String symbolicName, Version version, Collection<Resource> content) {
+		this(null, symbolicName, version, content);
+	}
+	
+	public SubsystemManifest(SubsystemManifest manifest, String symbolicName, Version version, Collection<Resource> content) {
+		Map<String, Header<?>> headers;
+		if (manifest == null) {
+			headers = new HashMap<String, Header<?>>(4);
 		}
-		return result;
+		else {
+			headers = new HashMap<String, Header<?>>(manifest.headers);
+		}
+		Header<?> header = headers.get(SUBSYSTEM_SYMBOLICNAME);
+		if (header == null)
+			headers.put(SUBSYSTEM_SYMBOLICNAME, new SubsystemSymbolicNameHeader(symbolicName));
+		header = headers.get(SUBSYSTEM_VERSION);
+		if (header == null) {
+			if (version == null)
+				headers.put(SUBSYSTEM_VERSION, SubsystemVersionHeader.DEFAULT);
+			else
+				headers.put(SUBSYSTEM_VERSION, new SubsystemVersionHeader(version));
+		}
+		header = headers.get(SUBSYSTEM_CONTENT);
+		if (header == null && content != null && !content.isEmpty()) {
+			// TODO Better way than using StringBuilder? Would require a more robust SubsystemContentHeader in order to fulfill the Header contract.
+			StringBuilder sb = new StringBuilder();
+			for (Resource resource : content) {
+				Capability c = resource.getCapabilities(ResourceConstants.IDENTITY_NAMESPACE).get(0);
+				Map<String, Object> a = c.getAttributes();
+				String s = (String)a.get(ResourceConstants.IDENTITY_NAMESPACE);
+				Version v = (Version)a.get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
+				String t = (String)a.get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
+				sb.append(s).append(';')
+					.append(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE).append('=').append(v).append(';')
+					.append(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE).append('=').append(t).append(',');
+			}
+			if (sb.length() != 0) {
+				// Remove the trailing comma.
+				sb.deleteCharAt(sb.length() - 1);
+				headers.put(SubsystemContentHeader.NAME, new SubsystemContentHeader(sb.toString()));
+			}
+		}
+		header = headers.get(SUBSYSTEM_TYPE);
+		if (header == null)
+			headers.put(SUBSYSTEM_TYPE, SubsystemTypeHeader.DEFAULT);
+		this.headers = Collections.unmodifiableMap(headers);
 	}
 	
-	@Override
-	public List<Requirement> getRequirements(String namespace) {
-		return Collections.emptyList();
+	public Map<String, Header<?>> getHeaders() {
+		return headers;
 	}
 	
-	public SubsystemContentHeader getSubsystemContent() {
-		return (SubsystemContentHeader)getHeader(SubsystemContentHeader.NAME);
+	public SubsystemContentHeader getSubsystemContentHeader() {
+		return (SubsystemContentHeader)getHeaders().get(SUBSYSTEM_CONTENT);
 	}
 	
-	public SubsystemSymbolicNameHeader getSubsystemSymbolicName() {
-		return (SubsystemSymbolicNameHeader)getHeader(SubsystemSymbolicNameHeader.NAME);
+	public SubsystemSymbolicNameHeader getSubsystemSymbolicNameHeader() {
+		return (SubsystemSymbolicNameHeader)getHeaders().get(SUBSYSTEM_SYMBOLICNAME);
 	}
 	
-	public SubsystemTypeHeader getSubsystemType() {
-		SubsystemTypeHeader result = (SubsystemTypeHeader)getHeader(SubsystemTypeHeader.NAME);
-		if (result == null)
-			return SubsystemTypeHeader.DEFAULT;
-		return result;
+	public SubsystemTypeHeader getSubsystemTypeHeader() {
+		return (SubsystemTypeHeader)getHeaders().get(SUBSYSTEM_TYPE);
 	}
 	
-	public SubsystemVersionHeader getSubsystemVersion() {
-		SubsystemVersionHeader result = (SubsystemVersionHeader)getHeader(SubsystemVersionHeader.NAME);
-		if (result == null)
-			return SubsystemVersionHeader.DEFAULT;
-		return result;
+	public SubsystemVersionHeader getSubsystemVersionHeader() {
+		return (SubsystemVersionHeader)getHeaders().get(SUBSYSTEM_VERSION);
+	}
+	
+	public void write(OutputStream out) throws IOException {
+		Manifest manifest = new Manifest();
+		Attributes attributes = manifest.getMainAttributes();
+		// The manifest won't write anything unless the following header is present.
+		attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+		for (Entry<String, Header<?>> entry : headers.entrySet()) {
+			attributes.putValue(entry.getKey(), entry.getValue().getValue());
+		}
+		manifest.write(out);
 	}
 }

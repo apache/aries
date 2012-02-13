@@ -327,6 +327,28 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertConstituent(s, "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
 	}
 	
+	protected void assertServiceEventsInstall(Subsystem subsystem) throws InterruptedException {
+		assertEvent(subsystem, Subsystem.State.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertEvent(subsystem, Subsystem.State.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+	}
+	
+	protected void assertServiceEventsResolve(Subsystem subsystem) throws InterruptedException {
+		assertEvent(subsystem, Subsystem.State.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+	}
+	
+	protected void assertServiceEventsStart(Subsystem subsystem) throws InterruptedException {
+		assertEvent(subsystem, Subsystem.State.STARTING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertEvent(subsystem, Subsystem.State.ACTIVE, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+	}
+	
+	protected void assertServiceEventsStop(Subsystem subsystem) throws InterruptedException {
+		assertEvent(subsystem, Subsystem.State.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		// Don't forget about the unregistering event, which will have the same state as before.
+		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000), ServiceEvent.UNREGISTERING);
+	}
+	
 	protected void assertState(State expected, State actual) {
 		assertState(EnumSet.of(expected), actual);
 	}
