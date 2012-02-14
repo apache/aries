@@ -494,18 +494,26 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertState(State.RESOLVED, subsystem);
 	}
 	
+	protected void uninstallScopedSubsystem(Subsystem subsystem) throws Exception {
+		Bundle b = getRegionContextBundle(subsystem);
+		uninstallSubsystem(subsystem);
+		assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
+	}
+	
 	protected void uninstallSubsystem(Subsystem subsystem) throws Exception {
 		assertState(EnumSet.of(State.INSTALLED, State.RESOLVED), subsystem);
 		subsystemEvents.clear();
 		Collection<Subsystem> parents = subsystem.getParents();
-		Bundle b = getRegionContextBundle(subsystem);
 		subsystem.uninstall();
 		assertEvent(subsystem, State.UNINSTALLING, 5000);
 		assertEvent(subsystem, State.UNINSTALLED, 5000);
 		assertState(State.UNINSTALLED, subsystem);
-		assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
 		for (Subsystem parent : parents)
 			assertNotChild(parent, subsystem);
 		assertNotDirectory(subsystem);
+	}
+	
+	protected void uninstallUnscopedSubsystem(Subsystem subsystem) throws Exception {
+		uninstallSubsystem(subsystem);
 	}
 }

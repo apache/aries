@@ -112,7 +112,7 @@ public class FeatureTest extends SubsystemTest {
 		}
 		finally {
 			try {
-				uninstallSubsystem(feature1);
+				uninstallUnscopedSubsystem(feature1);
 				if (feature2 != null) {
 					assertEvent(feature2, Subsystem.State.UNINSTALLING, 5000);
 					assertEvent(feature2, Subsystem.State.UNINSTALLED, 5000);
@@ -135,7 +135,7 @@ public class FeatureTest extends SubsystemTest {
 		try {
 			assertFeature3(feature3Before);
 			// Uninstall then reinstall the subsystem for a more robust test of the subsystem ID persistence.
-			uninstallSubsystem(feature3Before);
+			uninstallUnscopedSubsystem(feature3Before);
 			feature3Before = installSubsystemFromFile("feature3.ssa");
 			assertLastId(2);
 			assertFeature3(feature3Before);
@@ -156,7 +156,7 @@ public class FeatureTest extends SubsystemTest {
 			try {
 				if (feature3After != null) {
 					stopSubsystem(feature3After);
-					uninstallSubsystem(feature3After);
+					uninstallUnscopedSubsystem(feature3After);
 				}
 			}
 			catch (AssertionError e) {
@@ -178,7 +178,7 @@ public class FeatureTest extends SubsystemTest {
 			while (!feature2.getState().equals(Subsystem.State.INSTALLED))
 				Thread.sleep(100);
 			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
-			uninstallSubsystem(feature2);
+			uninstallUnscopedSubsystem(feature2);
 			assertNotChild(feature1, feature2);
 			assertConstituent(feature1, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
 		}
@@ -188,7 +188,7 @@ public class FeatureTest extends SubsystemTest {
 		}
 		finally {
 			try {
-				uninstallSubsystem(feature1);
+				uninstallUnscopedSubsystem(feature1);
 			}
 			catch (AssertionError e) {
 				if (error == null)
