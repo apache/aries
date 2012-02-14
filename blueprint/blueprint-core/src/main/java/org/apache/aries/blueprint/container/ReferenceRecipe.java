@@ -164,7 +164,11 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             voidProxiedChildren();
             bind(trackedServiceReference, proxy);
             if (oldReference != null) {
+              try {
                 getBundleContextForServiceLookup().ungetService(oldReference);
+              } catch (IllegalStateException ise) {
+                // In case the service no longer exists lets just cope and ignore.
+              }
             }
             monitor.notifyAll();
         }
@@ -179,7 +183,11 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 trackedServiceReference = null;
                 trackedService = null;
                 voidProxiedChildren();
-                getBundleContextForServiceLookup().ungetService(oldReference);
+                try {
+                  getBundleContextForServiceLookup().ungetService(oldReference);
+                } catch (IllegalStateException ise) {
+                  // In case the service no longer exists lets just cope and ignore.
+                }
                 monitor.notifyAll();
             }
         }
