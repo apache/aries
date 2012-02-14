@@ -12,17 +12,18 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleRevision;
 
 public class RegionContextBundleHelper {
 	public static final String SYMBOLICNAME_PREFIX = "org.osgi.service.subsystem.region.context.";
 	public static final Version VERSION = Version.parseVersion("1.0.0");
 	
-	public static void installRegionContextBundle(AriesSubsystem subsystem) throws BundleException, IOException {
+	public static BundleRevision installRegionContextBundle(AriesSubsystem subsystem) throws BundleException, IOException {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		String location = subsystem.getLocation() + '/' + subsystem.getSubsystemId();
 		Bundle b = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (b != null)
-			return;
+			return b.adapt(BundleRevision.class);
 		Bundle t = subsystem.getRegion().installBundle(location + "/temp", createTempBundle(symbolicName));
 		try {
 			t.start();
@@ -36,19 +37,21 @@ public class RegionContextBundleHelper {
 		}
 		// The region context bundle must be started persistently.
 		b.start();
+		return b.adapt(BundleRevision.class);
 	}
 	
-	public static void uninstallRegionContextBundle(AriesSubsystem subsystem) {
+	public static BundleRevision uninstallRegionContextBundle(AriesSubsystem subsystem) {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		Bundle bundle = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (bundle == null)
-			return;
+			throw new IllegalStateException("Missing region context bundle: " + symbolicName);
 		try {
 			bundle.uninstall();
 		}
 		catch (BundleException e) {
 			// TODO Should we really eat this? At least log it?
 		}
+		return bundle.adapt(BundleRevision.class);
 	}
 	
 	private static InputStream createRegionContextBundle(String symbolicName) throws IOException {
