@@ -77,7 +77,7 @@ public class InstallTest extends SubsystemTest {
 			assertSame(subsystem1, subsystem2);
 		}
 		finally {
-			uninstallSubsystem(subsystem1);
+			uninstallUnscopedSubsystem(subsystem1);
 		}
 	}
 }

@@ -70,4 +70,13 @@ public abstract class AbstractHeader implements Header {
 	public String getValue() {
 		return value;
 	}
+	
+	public String toString() {
+		return new StringBuilder(getClass().getName())
+		.append(": name=")
+		.append(name)
+		.append(", value=")
+		.append(value)
+		.toString();
+	}
 }
