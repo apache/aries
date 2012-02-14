@@ -192,9 +192,13 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                 proxy = null;
                 Bundle bundle = ref.getBundle();
                 if (bundle != null) {
-                    BundleContext ctx = bundle.getBundleContext();
+                    BundleContext ctx = getBundleContextForServiceLookup();
                     if (ctx != null) {
-                        ctx.ungetService(ref);
+                      try {
+                          ctx.ungetService(ref);
+                      } catch (IllegalStateException ise) {
+                        // we don't care it doesn't exist so, shrug.
+                      }
                     }
                 }
             }
