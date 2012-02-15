@@ -74,7 +74,7 @@ public class SubsystemEnvironment implements Environment {
 						boolean br2 = capability2.getResource() instanceof BundleRevision;
 						if (br1 && !br2)
 							result = -1;
-						if (!br1 && br2)
+						else if (!br1 && br2)
 							result = 1;
 						logger.debug(LOG_EXIT, "compare", result);
 						return result;

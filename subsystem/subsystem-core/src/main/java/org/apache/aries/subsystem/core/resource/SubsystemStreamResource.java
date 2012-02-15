@@ -1,5 +1,7 @@
 package org.apache.aries.subsystem.core.resource;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.apache.aries.subsystem.core.internal.SubsystemUri;
 import org.apache.aries.util.filesystem.FileSystem;
@@ -25,6 +28,7 @@ import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemStreamResource implements Resource, RepositoryContent {
+	private final byte[] content;
 	private final List<Capability> capabilities;
 	private final ICloseableDirectory directory;
 	
@@ -39,18 +43,24 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 				else
 					content = new URL(location).openStream();
 			}
-			directory = FileSystem.getFSRoot(content);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			byte[] bytes = new byte[2048];
+			int read;
+			while ((read = content.read(bytes)) != -1) {
+				baos.write(bytes, 0, read);
+			}
+			this.content = baos.toByteArray();
+			directory = FileSystem.getFSRoot(new ByteArrayInputStream(baos.toByteArray()));
 			if (directory == null)
 				throw new IOException("Unable to parse content of " + location);
 		}
 		finally {
 			IOUtils.close(content);
 		}
-		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/DEPLOYMENT.MF");
-		if (manifest == null)
-			manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/SUBSYSTEM.MF");
+		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/SUBSYSTEM.MF");
 		String symbolicName = null;
 		Version version = Version.emptyVersion;
+		String type = SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
 		if (manifest != null) {
 			String value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME);
 			if (value != null)
@@ -58,6 +68,9 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 			value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_VERSION);
 			if (value != null)
 				version = Version.parseVersion(value);
+			value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_TYPE);
+			if (value != null)
+				type = new SubsystemTypeHeader(value).getValue();
 		}
 		if (symbolicName == null) {
 			if (uri == null)
@@ -67,7 +80,7 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 		if (version == Version.emptyVersion && uri != null)
 			version = uri.getVersion();
 		List<Capability> capabilities = new ArrayList<Capability>(1);
-		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM));
+		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM, type));
 		this.capabilities = Collections.unmodifiableList(capabilities);
 	}
 	
@@ -84,11 +97,27 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 
 	@Override
 	public InputStream getContent() throws IOException {
-		return directory.open();
+		return new ByteArrayInputStream(content);
 	}
 
 	@Override
 	public List<Requirement> getRequirements(String namespace) {
 		return Collections.emptyList();
+	}
+	
+	public String getSubsystemSymbolicName() {
+		Capability identity = capabilities.get(0);
+		return (String)identity.getAttributes().get(ResourceConstants.IDENTITY_NAMESPACE);
+	}
+	
+	public String getSubsystemType() {
+		Capability identity = capabilities.get(0);
+		// TODO Add to constants.
+		return (String)identity.getAttributes().get("subsystem-type");
+	}
+	
+	public Version getSubsystemVersion() {
+		Capability identity = capabilities.get(0);
+		return (Version)identity.getAttributes().get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
 	}
 }

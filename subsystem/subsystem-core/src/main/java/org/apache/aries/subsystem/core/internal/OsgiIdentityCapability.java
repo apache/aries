@@ -24,6 +24,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 public class OsgiIdentityCapability extends AbstractCapability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
@@ -38,6 +39,10 @@ public class OsgiIdentityCapability extends AbstractCapability {
 	}
 	
 	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version, String type) {
+		this(resource, symbolicName, version, type, null);
+	}
+	
+	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version, String identityType, String subsystemType) {
 		this.resource = resource;
 		attributes.put(
 				ResourceConstants.IDENTITY_NAMESPACE, 
@@ -47,7 +52,10 @@ public class OsgiIdentityCapability extends AbstractCapability {
 				version);
 		attributes.put(
 				ResourceConstants.IDENTITY_TYPE_ATTRIBUTE, 
-				type);
+				identityType);
+		if (subsystemType != null)
+			// TODO Add to constants.
+			attributes.put("subsystem-type", subsystemType);
 		// TODO Add directives, particularly "effective" and "singleton".
 	}
 	
@@ -56,8 +64,8 @@ public class OsgiIdentityCapability extends AbstractCapability {
 				resource,
 				manifest.getSubsystemSymbolicNameHeader().getSymbolicName(),
 				manifest.getSubsystemVersionHeader().getVersion(),
-				// TODO Add to constants.
-				"osgi.subsystem");
+				SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM,
+				manifest.getSubsystemTypeHeader().getValue());
 	}
 	
 	public OsgiIdentityCapability(Resource resource, BundleManifest manifest) {

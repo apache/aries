@@ -13,17 +13,26 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import org.osgi.framework.Version;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemManifestVersionHeader extends VersionHeader {
-	public static final String DEFAULT_VALUE = "1.0";
+	public static final Version DEFAULT_VALUE = Version.parseVersion("1.0");
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_MANIFESTVERSION;
+	
+	public static final SubsystemManifestVersionHeader DEFAULT = new SubsystemManifestVersionHeader();
 	
 	public SubsystemManifestVersionHeader() {
 		this(DEFAULT_VALUE);
 	}
 
 	public SubsystemManifestVersionHeader(String value) {
-		super(NAME, value);
+		this(Version.parseVersion(value));
+	}
+	
+	public SubsystemManifestVersionHeader(Version version) {
+		super(NAME, version);
+		if (!version.equals(DEFAULT_VALUE))
+			throw new IllegalArgumentException(NAME + " must be " + DEFAULT_VALUE);
 	}
 }
