@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.ResourceHelper;
-import org.apache.aries.subsystem.core.internal.DataFile;
-import org.apache.aries.subsystem.core.internal.StaticDataFile;
 import org.apache.aries.subsystem.core.resource.BundleResource;
 import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
 import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
@@ -140,9 +138,5 @@ public class SubsystemArchive implements Repository {
 		}
 		else if (name.endsWith(".ssa") && !name.startsWith("subsystem"))
 			resources.put(new SubsystemFileResource(file), file.toURI().toURL());
-		else if (name.endsWith(DataFile.IDENTITY_TYPE))
-			resources.put(new DataFile(file), file.toURI().toURL());
-		else if (name.endsWith(StaticDataFile.IDENTITY_TYPE))
-			resources.put(new StaticDataFile(file), file.toURI().toURL());
 	}
 }

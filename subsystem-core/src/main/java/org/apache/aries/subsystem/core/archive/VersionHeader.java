@@ -16,7 +16,7 @@ package org.apache.aries.subsystem.core.archive;
 import org.osgi.framework.Version;
 
 public abstract class VersionHeader extends AbstractHeader {
-	private final Version version;
+	protected final Version version;
 	
 	public VersionHeader(String name, String value) {
 		this(name, Version.parseVersion(value));

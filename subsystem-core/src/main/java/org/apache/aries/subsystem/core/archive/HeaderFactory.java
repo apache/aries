@@ -94,6 +94,8 @@ public class HeaderFactory {
 			return new DeployedContentHeader(value);
 		if (ProvisionResourceHeader.NAME.equals(name))
 			return new ProvisionResourceHeader(value);
+		if (SubsystemManifestVersionHeader.NAME.equals(name))
+			return new SubsystemManifestVersionHeader(value);
 		return new GenericHeader(name, value);
 			
 	}
