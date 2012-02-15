@@ -29,15 +29,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -53,6 +54,8 @@ import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
 import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
 import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
+import org.apache.aries.subsystem.core.resource.SubsystemStreamResource;
+import org.apache.aries.util.io.IOUtils;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.eclipse.equinox.region.RegionFilter;
@@ -209,7 +212,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	private final SubsystemEnvironment environment;
 	private final long id;
 	private final String location;
-	private final ArrayList<AriesSubsystem> parents = new ArrayList<AriesSubsystem>();
+	private final Set<AriesSubsystem> parents = Collections.synchronizedSet(new HashSet<AriesSubsystem>());
 	private final Region region;
 	
 	private boolean autostart;
@@ -304,29 +307,28 @@ public class AriesSubsystem implements Subsystem, Resource {
 			copyContent(content, zipFile);
 			unzipContent(zipFile, directory);
 			archive = new SubsystemArchive(directory);
+			environment = new SubsystemEnvironment(this);
+			// Make sure the relevant headers are derived, if absent.
+			archive.setSubsystemManifest(new SubsystemManifest(
+					archive.getSubsystemManifest(),
+					uri == null ? null : uri.getSymbolicName(), 
+					uri == null ? null : uri.getVersion(), 
+					archive.getResources()));
+			// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
+			if (isFeature())
+				region = parent.region;
+			else
+				region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
 		}
 		catch (Exception e) {
 			deleteFile(directory);
 			deleteFile(zipFile);
 			throw new SubsystemException(e);
 		}
-		environment = new SubsystemEnvironment(this);
-		// Make sure the relevant headers are derived, if absent.
-		archive.setSubsystemManifest(new SubsystemManifest(
-				archive.getSubsystemManifest(),
-				uri == null ? null : uri.getSymbolicName(), 
-				uri == null ? null : uri.getVersion(), 
-				archive.getResources()));
-		// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
-		if (isFeature())
-			region = parents.get(0).region;
-		else
-			region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
 	}
 	
 	public AriesSubsystem(SubsystemArchive archive, AriesSubsystem parent) throws Exception {
 		this.archive = archive;
-		
 		DeploymentManifest manifest = archive.getDeploymentManifest();
 		if (manifest == null)
 			throw new IllegalStateException("Missing deployment manifest");
@@ -339,7 +341,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		parents.add(parent);
 		// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
 		if (isFeature())
-			region = parents.get(0).region;
+			region = parent.region;
 		else
 			region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
 	}
@@ -352,28 +354,38 @@ public class AriesSubsystem implements Subsystem, Resource {
 	public BundleContext getBundleContext() {
 		if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(getState()))
 			return null;
+		Region region = this.region;
+		Subsystem subsystem = this;
 		// Features, and unscoped subsystems in general, do not have their own region context
 		// bundle but rather share with the scoped subsystem in the same region.
-		if (isFeature())
-			return parents.get(0).getBundleContext();
-		return region.getBundle(RegionContextBundleHelper.SYMBOLICNAME_PREFIX + id, RegionContextBundleHelper.VERSION).getBundleContext();
+		if (isFeature()) {
+			for (Subsystem parent : getParents()) {
+				if (!((AriesSubsystem)parent).isFeature()) {
+					region = ((AriesSubsystem)parent).getRegion();
+					subsystem = parent;
+				}
+			}
+		}
+		return region.getBundle(RegionContextBundleHelper.SYMBOLICNAME_PREFIX + subsystem.getSubsystemId(), RegionContextBundleHelper.VERSION).getBundleContext();
 	}
 	
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		// TODO Need to filter by namespace.
-		Capability capability = new OsgiIdentityCapability(this, getSymbolicName(), getVersion(), "osgi.subsystem");
-		return Arrays.asList(new Capability[]{capability});
+		if (namespace == null || namespace.equals(ResourceConstants.IDENTITY_NAMESPACE)) {
+			Capability capability = new OsgiIdentityCapability(this, getSymbolicName(), getVersion(), SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM, getType());
+			return Arrays.asList(new Capability[]{capability});
+		}
+		return Collections.emptyList();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Collection<Subsystem> getChildren() {
-		return (Collection<Subsystem>)(Collection)Collections.unmodifiableSet(children);
+		return (Collection<Subsystem>)(Collection)Collections.unmodifiableCollection(new ArrayList<Subsystem>(children));
 	}
 
 	@Override
 	public synchronized Collection<Resource> getConstituents() {
-		return Collections.unmodifiableCollection(constituents);
+		return Collections.unmodifiableCollection(new ArrayList<Resource>(constituents));
 	}
 
 	@Override
@@ -414,23 +426,17 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	@Override
 	public String getSymbolicName() {
-		return archive.getSubsystemManifest().getHeaders().get(SubsystemManifest.SUBSYSTEM_SYMBOLICNAME).getValue();
+		return archive.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName();
 	}
 	
 	@Override
 	public String getType() {
-		String result = getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_TYPE);
-		if (result == null)
-			result = SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
-		return result;
+		return archive.getSubsystemManifest().getSubsystemTypeHeader().getValue();
 	}
 
 	@Override
 	public Version getVersion() {
-		String version = getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_VERSION);
-		if (version == null)
-			return Version.emptyVersion;
-		return Version.parseVersion(version);
+		return archive.getSubsystemManifest().getSubsystemVersionHeader().getVersion();
 	}
 
 	@Override
@@ -440,11 +446,31 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public Subsystem install(String location, InputStream content) throws SubsystemException {
+		SubsystemStreamResource ssr = null;
 		try {
+			TargetRegion region = new TargetRegion(this);
+			ssr = new SubsystemStreamResource(location, content);
 			AriesSubsystem subsystem = locationToSubsystem.get(location);
-			if (subsystem != null)
+			if (subsystem != null) {
+				if (!region.contains(subsystem))
+					throw new SubsystemException("Location already exists but existing subsystem is not part of target region: " + location);
+				if (!(subsystem.getSymbolicName().equals(ssr.getSubsystemSymbolicName())
+						&& subsystem.getVersion().equals(ssr.getSubsystemVersion())
+						&& subsystem.getType().equals(ssr.getSubsystemType())))
+					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
+				children.add(subsystem);
+				constituents.add(subsystem);
 				return subsystem;
-			subsystem = new AriesSubsystem(location, content, this);
+			}
+			subsystem = (AriesSubsystem)region.find(ssr.getSubsystemSymbolicName(), ssr.getSubsystemVersion());
+			if (subsystem != null) {
+				if (!subsystem.getType().equals(ssr.getSubsystemType()))
+					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
+				children.add(subsystem);
+				constituents.add(subsystem);
+				return subsystem;
+			}
+			subsystem = new AriesSubsystem(location, ssr.getContent(), this);
 			Coordination coordination = Activator.getInstance().getServiceProvider().getService(Coordinator.class).create(getSymbolicName() + '-' + getSubsystemId(), 0);
 			try {
 				installSubsystemResource(subsystem, coordination, false);
@@ -463,12 +489,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 			throw new SubsystemException(e);
 		}
 		finally {
-			if (content != null) {
-				try {
-					content.close();
-				}
-				catch (IOException e) {}
-			}
+			if (ssr != null)
+				ssr.close();
+			IOUtils.close(content);
 		}
 	}
 	
@@ -601,8 +624,21 @@ public class AriesSubsystem implements Subsystem, Resource {
 			uninstall();
 		}
 		setState(State.UNINSTALLING);
-		for (Iterator<Resource> iterator = constituents.iterator(); iterator.hasNext();) {
-			Resource resource = iterator.next();
+		// Uninstall child subsystems first.
+		for (Subsystem subsystem : getChildren()) {
+			try {
+				uninstallSubsystemResource((AriesSubsystem)subsystem);
+			}
+			catch (Exception e) {
+				LOGGER.error("An error occurred while uninstalling resource " + subsystem + " of subsystem " + this, e);
+				// TODO Should FAILED go out for each failure?
+			}
+		}
+		// Uninstall any remaining constituents.
+		for (Resource resource : getConstituents()) {
+			// Don't uninstall the region context bundle here.
+			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+				continue;
 			try {
 				uninstallResource(resource);
 			}
@@ -610,10 +646,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 				LOGGER.error("An error occurred while uninstalling resource " + resource + " of subsystem " + this, e);
 				// TODO Should FAILED go out for each failure?
 			}
-			iterator.remove();
 		}
-		for (AriesSubsystem parent : parents)
-			parent.children.remove(AriesSubsystem.this);
+		for (AriesSubsystem parent : parents) {
+			parent.children.remove(this);
+			parent.constituents.remove(this);
+		}
 		locationToSubsystem.remove(location);
 		deleteFile(directory);
 		setState(State.UNINSTALLED);
@@ -653,7 +690,29 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (!isFeature())
 			constituents.add(RegionContextBundleHelper.installRegionContextBundle(this));
 		Activator.getInstance().getSubsystemServiceRegistrar().register(this);
-		List<Resource> contentResources = new ArrayList<Resource>();
+		Set<Resource> contentResources = new TreeSet<Resource>(
+				new Comparator<Resource>() {
+					@Override
+					public int compare(Resource o1, Resource o2) {
+						if (o1.equals(o2))
+							// Consistent with equals.
+							return 0;
+						String t1 = ResourceHelper.getTypeAttribute(o1);
+						String t2 = ResourceHelper.getTypeAttribute(o2);
+						boolean b1 = ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(t1)
+								|| ResourceConstants.IDENTITY_TYPE_FRAGMENT.equals(t1);
+						boolean b2 = ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(t2)
+								|| ResourceConstants.IDENTITY_TYPE_FRAGMENT.equals(t2);
+						if (b1 && !b2)
+							// o1 is a bundle or fragment but o2 is not.
+							return -1;
+						if (!b1 && b2)
+							// o1 is not a bundle or fragment but o2 is.
+							return 1;
+						// Either both or neither are bundles or fragments. In this case we don't care about the order.
+						return -1;
+					}
+				});
 		List<Resource> transitiveDependencies = new ArrayList<Resource>();
 		DeploymentManifest manifest = getDeploymentManifest();
 		DeployedContentHeader contentHeader = manifest.getDeployedContentHeader();
@@ -721,7 +780,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// Stop child subsystems first.
 		for (AriesSubsystem subsystem : children) {
 			try {
-				stopResource(subsystem);
+				stopSubsystemResource(subsystem);
 			}
 			catch (Exception e) {
 				LOGGER.error("An error occurred while stopping resource "
@@ -731,10 +790,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// For non-root subsystems, stop any remaining constituents.
 		if (!isRoot()){
 			for (Resource resource : constituents) {
+				// Don't stop the region context bundle.
+				if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+					continue;
 				try {
-					// Don't stop the region context bundle.
-					if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
-						continue;
 					stopResource(resource);
 				} catch (Exception e) {
 					LOGGER.error("An error occurred while stopping resource "
@@ -838,7 +897,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// Transitive dependencies should be provisioned into the highest possible level.
 			// TODO Assumes root is always the appropriate level.
 			while (!provisionTo.parents.isEmpty())
-				provisionTo = provisionTo.parents.get(0);
+				provisionTo = provisionTo.parents.iterator().next();
 		}
 		return provisionTo;
 	}
@@ -912,10 +971,18 @@ public class AriesSubsystem implements Subsystem, Resource {
 			subsystem = (AriesSubsystem)install(sfr.getLocation(), sfr.getContent());
 			return;
 		}
-		else {
+		else if (resource instanceof SubsystemDirectoryResource) {
 			SubsystemDirectoryResource sdr = (SubsystemDirectoryResource)resource;
 			subsystem = new AriesSubsystem(sdr.getArchive(), this);
 			locationToSubsystem.put(subsystem.getLocation(), subsystem);
+		}
+		else if (resource instanceof RepositoryContent) {
+			String location = getSubsystemId() + "@" + getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
+			subsystem = (AriesSubsystem)install(location, ((RepositoryContent)resource).getContent());
+			return;
+		}
+		else {
+			throw new IllegalArgumentException("Unrecognized subsystem resource: " + resource);
 		}
 		Set<AriesSubsystem> subsystems = new HashSet<AriesSubsystem>();
 		subsystems.add(this);
@@ -992,7 +1059,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// Applications have an implicit import policy equating to "import everything that I require", which is not the same as features.
 			// This must be computed from the application requirements and will be done using the Wires returned by the Resolver, when one is available.
 			region.connectRegion(
-					parents.get(0).region, 
+					parents.iterator().next().region, 
 					region.getRegionDigraph().createRegionFilterBuilder().allowAll(RegionFilter.VISIBLE_ALL_NAMESPACE).build());
 		}
 		else if (isComposite()) {
@@ -1099,8 +1166,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			});
 		}
 		String type = ResourceHelper.getTypeAttribute(resource);
-		// TODO Add to constants.
-		if ("osgi.subsystem".equals(type))
+		if (SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM.equals(type))
 			uninstallSubsystemResource(resource);
 		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
 			uninstallBundleResource(resource);

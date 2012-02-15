@@ -25,12 +25,13 @@ import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemFileResource implements Resource, RepositoryContent {
-	private static final String REGEX = "([^@])(?:@(.*))?.ssa";
+	private static final String REGEX = "([^@]+)(?:@(.+))?.ssa";
 	private static final Pattern PATTERN = Pattern.compile(REGEX);
 	
 	private final List<Capability> capabilities;
 	private final IDirectory directory;
 	private final File file;
+	private final String location;
 	
 	public SubsystemFileResource(File content) throws IOException {
 		file = content;
@@ -40,6 +41,7 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 			manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/SUBSYSTEM.MF");
 		String symbolicName = null;
 		Version version = Version.emptyVersion;
+		String type = SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
 		if (manifest != null) {
 			String value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME);
 			if (value != null)
@@ -47,8 +49,11 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 			value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_VERSION);
 			if (value != null)
 				version = Version.parseVersion(value);
+			value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_TYPE);
+			if (value != null)
+				type = value;
 		}
-		Matcher matcher = PATTERN.matcher(content.getName());;
+		Matcher matcher = PATTERN.matcher(content.getName());
 		if (symbolicName == null) {
 			if (!matcher.matches())
 				throw new IllegalArgumentException("No symbolic name");
@@ -60,8 +65,9 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 				version = Version.parseVersion(group);
 		}
 		List<Capability> capabilities = new ArrayList<Capability>(1);
-		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM));
+		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM, type));
 		this.capabilities = Collections.unmodifiableList(capabilities);
+		location = "subsystem://?" + SubsystemConstants.SUBSYSTEM_SYMBOLICNAME + '=' + symbolicName + '&' + SubsystemConstants.SUBSYSTEM_VERSION + '=' + version;
 	}
 	
 	@Override
@@ -77,7 +83,7 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 	}
 	
 	public String getLocation() {
-		return file.getAbsolutePath();
+		return location;
 	}
 
 	@Override
