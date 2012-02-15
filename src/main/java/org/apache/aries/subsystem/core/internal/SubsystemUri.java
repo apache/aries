@@ -52,8 +52,6 @@ public class SubsystemUri {
 			else
 				throw new IllegalArgumentException("Unsupported subsystem URI parameter: " + name);
 		}
-		if (symbolicName == null)
-			throw new IllegalArgumentException("Missing required subsystem URI parameter: " + SubsystemSymbolicNameHeader.NAME);
 		this.symbolicName = symbolicName;
 		this.version = version;
 	}

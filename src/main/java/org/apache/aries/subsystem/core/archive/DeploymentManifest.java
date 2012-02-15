@@ -90,9 +90,11 @@ public class DeploymentManifest {
 					OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
 					Resource resource = environment.findResource(requirement);
 					// If the resource is null, can't continue.
-					// TODO Actually, can continue if resource is optional.
-					if (resource == null)
-						throw new SubsystemException("Resource does not exist: " + requirement);
+					if (resource == null) {
+						if (content.isMandatory())
+							throw new SubsystemException("Resource does not exist: " + requirement);
+						continue;
+					}
 					resources.add(resource);
 				}
 				// TODO This does not validate that all content bundles were found.
