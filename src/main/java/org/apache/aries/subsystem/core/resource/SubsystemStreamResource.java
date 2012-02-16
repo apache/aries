@@ -80,7 +80,7 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 		if (version == Version.emptyVersion && uri != null)
 			version = uri.getVersion();
 		List<Capability> capabilities = new ArrayList<Capability>(1);
-		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM, type));
+		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, type));
 		this.capabilities = Collections.unmodifiableList(capabilities);
 	}
 	
@@ -112,8 +112,7 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 	
 	public String getSubsystemType() {
 		Capability identity = capabilities.get(0);
-		// TODO Add to constants.
-		return (String)identity.getAttributes().get("subsystem-type");
+		return (String)identity.getAttributes().get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
 	}
 	
 	public Version getSubsystemVersion() {
