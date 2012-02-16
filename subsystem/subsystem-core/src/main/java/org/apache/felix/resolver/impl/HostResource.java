@@ -21,6 +21,7 @@ package org.apache.felix.resolver.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;

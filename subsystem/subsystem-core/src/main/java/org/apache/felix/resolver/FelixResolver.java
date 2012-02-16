@@ -22,11 +22,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+
+import org.apache.aries.subsystem.core.Resolver;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.Wire;
-import org.osgi.service.resolver.Resolver;
 
 public interface FelixResolver extends Resolver
 {

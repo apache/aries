@@ -19,14 +19,13 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.aries.subsystem.core.Resolver;
 import org.apache.felix.resolver.impl.ResolverImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
-import org.osgi.service.resolver.Resolver;
-import org.osgi.service.subsystem.Subsystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +65,10 @@ public class Activator implements BundleActivator {
 		BundleContext result = bundleContext;
 		logger.debug(LOG_EXIT, "getBundleContext", result);
 		return result;
+	}
+	
+	public Resolver getResolver() {
+		return new ResolverImpl(null);
 	}
 	
 	public synchronized ServiceProvider getServiceProvider() {

@@ -30,6 +30,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.apache.aries.subsystem.core.Environment;
+import org.apache.aries.subsystem.core.ResolutionException;
 import org.apache.felix.resolver.FelixEnvironment;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -38,8 +41,6 @@ import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.framework.resource.Wire;
-import org.osgi.service.resolver.Environment;
-import org.osgi.service.resolver.ResolutionException;
 import org.osgi.framework.resource.Wiring;
 
 class Candidates

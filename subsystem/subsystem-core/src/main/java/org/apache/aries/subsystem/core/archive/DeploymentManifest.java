@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.aries.subsystem.core.Resolver;
 import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
@@ -23,7 +24,6 @@ import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.Wire;
-import org.osgi.service.resolver.Resolver;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
@@ -85,7 +85,7 @@ public class DeploymentManifest {
 					resources.add(resource);
 				}
 				// TODO This does not validate that all content bundles were found.
-				Map<Resource, List<Wire>> resolution = Activator.getInstance().getServiceProvider().getService(Resolver.class).resolve(environment, new ArrayList<Resource>(resources), Collections.EMPTY_LIST);
+				Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(environment, new ArrayList<Resource>(resources), Collections.EMPTY_LIST);
 				// TODO Once we have a resolver that actually returns lists of wires, we can use them to compute other manifest headers such as Import-Package.
 				Collection<Resource> deployedContent = new HashSet<Resource>();
 				Collection<Resource> provisionResource = new HashSet<Resource>();
