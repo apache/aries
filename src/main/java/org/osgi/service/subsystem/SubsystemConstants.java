@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2011). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2011, 2012). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,6 @@ public class SubsystemConstants {
 	 * Manifest header attribute identifying the deployed version.
 	 */
 	public static final String DEPLOYED_VERSION_ATTRIBUTE = "deployed-version";
-
-	/**
-	 * An identity {@link ResourceConstants#IDENTITY_TYPE_ATTRIBUTE type} 
-	 * attribute value identifying a subsystem resource type.
-	 * It is defined to be &quot;osgi.subsystem.&quot;.
-	 */
-	public static final String IDENTITY_TYPE_SUBSYSTEM = "osgi.subsystem";
 	
 	/**
 	 * Manifest header used to express a preference for particular resources to
@@ -76,12 +69,12 @@ public class SubsystemConstants {
 	public static final String START_LEVEL_DIRECTIVE = "start-level";
 	
 	/**
-	 * The list of subsystem contents identified by a symbolic name and version.
+	 * Manifest header identifying the list of subsystem contents identified by a symbolic name and version.
 	 */
 	public static final String SUBSYSTEM_CONTENT = "Subsystem-Content";
 	
 	/**
-	 * Human readable description.
+	 * Manifest header identifying the human readable description.
 	 */
 	public static final String SUBSYSTEM_DESCRIPTION = "Subsystem-Description";
 	
@@ -103,13 +96,12 @@ public class SubsystemConstants {
 	public static final String SUBSYSTEM_IMPORTSERVICE = "Subsystem-ImportService";
 	
 	/**
-	 * The subsystem manifest version header must be present and equals to 1.0 
-	 * for this version of applications. 
+	 * Manifest header identifying the subsystem manifest version.  If not present, the default value is 1.
 	 */
 	public static final String SUBSYSTEM_MANIFESTVERSION = "Subsystem-ManifestVersion";
 	
 	/**
-	 * Human readable subsystem name.
+	 * Manifest header identifying the human readable subsystem name.
 	 */
 	public static final String SUBSYSTEM_NAME = "Subsystem-Name";
 	
@@ -121,7 +113,7 @@ public class SubsystemConstants {
 	public static final String SUBSYSTEM_STATE_PROPERTY = "subsystem.state";
 	
 	/**
-	 * Symbolic name for the application. Must be present.
+	 * Manifest header value identifying the symbolic name for the subsystem. Must be present.
 	 */
 	public static final String SUBSYSTEM_SYMBOLICNAME = "Subsystem-SymbolicName";
 	
@@ -145,25 +137,31 @@ public class SubsystemConstants {
 	public static final String SUBSYSTEM_TYPE_PROPERTY = "subsystem.type";
 	
 	/**
-	 * Manifest header value identifying an application subsystem.
-	 * It is defined to be &quot;osgi.application&quot;.
+	 * An identity {@link ResourceConstants#IDENTITY_TYPE_ATTRIBUTE type}
+	 * attribute and subsystem {@link #SUBSYSTEM_TYPE type} manifest header
+	 * value identifying an application subsystem. It is defined to be
+	 * &quot;osgi.subsystem.application&quot;.
 	 */
-	public static final String SUBSYSTEM_TYPE_APPLICATION = "osgi.application";
+	public static final String SUBSYSTEM_TYPE_APPLICATION = "osgi.subsystem.application";
 	
 	/**
-	 * Manifest header value identifying a composite subsystem.
-	 * It is defined to be &quot;osgi.composite&quot;.
+	 * An identity {@link ResourceConstants#IDENTITY_TYPE_ATTRIBUTE type}
+	 * attribute and subsystem {@link #SUBSYSTEM_TYPE type} manifest header
+	 * value identifying a composite subsystem. It is defined to be
+	 * &quot;osgi.subsystem.composite&quot;.
 	 */
-	public static final String SUBSYSTEM_TYPE_COMPOSITE = "osgi.composite";
+	public static final String SUBSYSTEM_TYPE_COMPOSITE = "osgi.subsystem.composite";
 	
 	/**
-	 * Manifest header value identifying a feature subsystem.
-	 * It is defined to be &quot;osgi.feature&quot;.
+	 * An identity {@link ResourceConstants#IDENTITY_TYPE_ATTRIBUTE type}
+	 * attribute and subsystem {@link #SUBSYSTEM_TYPE type} manifest header
+	 * value identifying a feature subsystem. It is defined to be
+	 * &quot;osgi.subsystem.feature&quot;.
 	 */
-	public static final String SUBSYSTEM_TYPE_FEATURE = "osgi.feature";
+	public static final String SUBSYSTEM_TYPE_FEATURE = "osgi.subsystem.feature";
 	
 	/**
-	 * Version of the application. If not present, the default value is 0.0.0.
+	 * Manifest header value identifying the version of the subsystem. If not present, the default value is 0.0.0.
 	 */
 	public static final String SUBSYSTEM_VERSION = "Subsystem-Version";
 	
