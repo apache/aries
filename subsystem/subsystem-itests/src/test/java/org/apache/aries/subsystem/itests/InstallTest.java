@@ -52,7 +52,7 @@ public class InstallTest extends SubsystemTest {
 			}
 		}
 		feature.end();
-		FileOutputStream fos = new FileOutputStream(name + ".ssa");
+		FileOutputStream fos = new FileOutputStream(name + ".esa");
 		try {
 			feature.writeOut(fos);
 		} finally {
@@ -71,7 +71,7 @@ public class InstallTest extends SubsystemTest {
 
 	@Test
 	public void testReturnExistingSubsystemWithSameLocation() throws Exception {
-		Subsystem subsystem1 = installSubsystemFromFile("feature3.ssa");
+		Subsystem subsystem1 = installSubsystemFromFile("feature3.esa");
 		try {
 			Subsystem subsystem2 = subsystem1.install(subsystem1.getLocation());
 			assertSame(subsystem1, subsystem2);

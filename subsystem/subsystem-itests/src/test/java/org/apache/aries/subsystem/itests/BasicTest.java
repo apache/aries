@@ -57,7 +57,7 @@ public class BasicTest extends SubsystemTest {
 			}
 		}
 		feature.end();
-		FileOutputStream fos = new FileOutputStream(name + ".ssa");
+		FileOutputStream fos = new FileOutputStream(name + ".esa");
 		try {
 			feature.writeOut(fos);
 		} finally {
@@ -98,7 +98,7 @@ public class BasicTest extends SubsystemTest {
     
     @Test
     public void testEmptyFeature() throws Exception {
-    	Subsystem emptyFeature = installSubsystemFromFile("emptyFeature.ssa");
+    	Subsystem emptyFeature = installSubsystemFromFile("emptyFeature.esa");
 		AssertionError error = null;
 		try {
 			assertSymbolicName("org.apache.aries.subsystem.itests.feature.empty", emptyFeature);
@@ -131,7 +131,7 @@ public class BasicTest extends SubsystemTest {
      */
     @Test
     public void testEmptySubsystem() throws Exception {
-    	Subsystem emptySubsystem = installSubsystemFromFile("emptySubsystem.ssa");
+    	Subsystem emptySubsystem = installSubsystemFromFile("emptySubsystem.esa");
 		AssertionError error = null;
 		try {
 			assertSymbolicName("org.apache.aries.subsystem.itests.subsystem.empty", emptySubsystem);
