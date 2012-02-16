@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.ProxyUtils;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassVisitor;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassWriter;
@@ -75,7 +76,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
       i++;
     }
 
-    adapter.visit(V1_6, ACC_PUBLIC | ACC_SYNTHETIC, className, null,
+    adapter.visit(ProxyUtils.getWeavingJavaVersion(), ACC_PUBLIC | ACC_SYNTHETIC, className, null,
         (superclass == null) ? AbstractWovenProxyAdapter.OBJECT_TYPE.getInternalName() :
           Type.getInternalName(superclass), interfaceNames);
   }
