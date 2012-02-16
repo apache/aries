@@ -18,6 +18,7 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -241,13 +242,17 @@ public class SubsystemEnvironment implements Environment {
 		Collection<Repository> repositories = Activator.getInstance().getServiceProvider().getServices(Repository.class);
 		for (Repository repository : repositories) {
 			logger.debug("Evaluating repository: {}", repository);
-			for (Capability capability : repository.findProviders(requirement)) {
-				logger.debug("Adding capability: {}", capability);
-				capabilities.add(capability);
-				if (content) {
-					Resource resource = capability.getResource();
-					logger.debug("Adding content resource: {}", resource);
-					resources.add(resource);
+			Map<Requirement, Collection<Capability>> map = repository.findProviders(Arrays.asList(requirement));
+			Collection<Capability> caps = map.get(requirement);
+			if (caps != null) {
+				for (Capability capability : caps) {
+					logger.debug("Adding capability: {}", capability);
+					capabilities.add(capability);
+					if (content) {
+						Resource resource = capability.getResource();
+						logger.debug("Adding content resource: {}", resource);
+						resources.add(resource);
+					}
 				}
 			}
 		}
