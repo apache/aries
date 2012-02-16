@@ -135,7 +135,8 @@ public class SubsystemArchive implements Repository {
 			URL url = file.toURI().toURL();
 			resources.put(BundleResource.newInstance(url), url);
 		}
-		else if (name.endsWith(".ssa") && !name.startsWith("subsystem"))
+		// TODO Add to constants.
+		else if (name.endsWith(".esa") && !name.startsWith("subsystem"))
 			resources.put(new SubsystemFileResource(file), file.toURI().toURL());
 	}
 }

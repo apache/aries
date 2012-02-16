@@ -25,7 +25,7 @@ import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemFileResource implements Resource, RepositoryContent {
-	private static final String REGEX = "([^@]+)(?:@(.+))?.ssa";
+	private static final String REGEX = "([^@]+)(?:@(.+))?.esa"; // TODO Add .esa to constants.
 	private static final Pattern PATTERN = Pattern.compile(REGEX);
 	
 	private final List<Capability> capabilities;
