@@ -69,7 +69,6 @@ public class FelixRepositoryAdapter implements Repository {
 		this.repository = repository;
 	}
 	
-	@Override
 	public Collection<Capability> findProviders(Requirement requirement) {
 		logger.debug(LOG_ENTRY, "findProviders", requirement);
 		update();
