@@ -59,7 +59,7 @@ public class FeatureTest extends SubsystemTest {
 			}
 		}
 		feature.end();
-		FileOutputStream fos = new FileOutputStream(name + ".ssa");
+		FileOutputStream fos = new FileOutputStream(name + ".esa");
 		try {
 			feature.writeOut(fos);
 		} finally {
@@ -73,14 +73,14 @@ public class FeatureTest extends SubsystemTest {
 			return;
 		}
 		createApplication("feature2", new String[]{"tb2.jar", "tb3.jar"});
-		createApplication("feature1", new String[]{"tb1.jar", "feature2.ssa", "tb3.jar"});
+		createApplication("feature1", new String[]{"tb1.jar", "feature2.esa", "tb3.jar"});
 		createApplication("feature3", new String[]{"tb3.jar"});
 		createdApplications = true;
 	}
 
 	@Test
 	public void testFeature1() throws Exception {
-		Subsystem feature1 = installSubsystemFromFile("feature1.ssa");
+		Subsystem feature1 = installSubsystemFromFile("feature1.esa");
 		Subsystem feature2 = null;
 		AssertionError error = null;
 		try {
@@ -129,14 +129,14 @@ public class FeatureTest extends SubsystemTest {
 	
 	@Test
 	public void testPersistence() throws Exception {
-		Subsystem feature3Before = installSubsystemFromFile("feature3.ssa");
+		Subsystem feature3Before = installSubsystemFromFile("feature3.esa");
 		Subsystem feature3After = null;
 		AssertionError error = null;
 		try {
 			assertFeature3(feature3Before);
 			// Uninstall then reinstall the subsystem for a more robust test of the subsystem ID persistence.
 			uninstallUnscopedSubsystem(feature3Before);
-			feature3Before = installSubsystemFromFile("feature3.ssa");
+			feature3Before = installSubsystemFromFile("feature3.esa");
 			assertLastId(2);
 			assertFeature3(feature3Before);
 			Bundle bundle = getSubsystemCoreBundle();
@@ -169,7 +169,7 @@ public class FeatureTest extends SubsystemTest {
 	
 	@Test
 	public void testSharedContent() throws Exception {
-		Subsystem feature1 = installSubsystemFromFile("feature1.ssa");
+		Subsystem feature1 = installSubsystemFromFile("feature1.esa");
 		AssertionError error = null;
 		try {
 			assertConstituent(feature1, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);

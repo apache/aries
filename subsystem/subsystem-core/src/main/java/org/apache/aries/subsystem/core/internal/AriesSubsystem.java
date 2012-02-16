@@ -298,7 +298,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 		this.parents.add(parent);
 		id = getNextId();
 		String directoryName = "subsystem" + id;
-		String fileName = directoryName + ".ssa";
+		// TODO Add to constants.
+		String fileName = directoryName + ".esa";
 		File zipFile = new File(parent.directory, fileName);
 		directory = new File(parent.directory, directoryName);
 		if (!directory.mkdir())
