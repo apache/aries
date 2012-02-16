@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2006, 2011). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2006, 2012). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.osgi.framework.resource.Wire;
  * specified {@link Resource resources} based on a supplied {@link Environment}.
  *
  * @ThreadSafe
- * @version $Id: 5491eb77894ab6827ad9e922a25fc475e79265ec $
+ * @version $Id: 2207d63318bcc17df98cab5e649e4e74245b01e4 $
  */
 public interface Resolver {
 	/**
@@ -95,6 +95,8 @@ public interface Resolver {
 	 *        impossible or null if no resources are optional.
 	 *
 	 * @return the new resources and wires required to satisfy the requirements
+	 * 
+	 * TODO I assume the list is mutable?
 	 *
 	 * @throws ResolutionException if the resolution cannot be satisfied for any
 	 *         reason

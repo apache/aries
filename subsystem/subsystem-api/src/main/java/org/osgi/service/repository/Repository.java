@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2006, 2011). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2006, 2012). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.osgi.service.resolver.Environment;
  * properties.
  * 
  * @ThreadSafe
- * @version $Id: 95cb10e57c1262d6aae8e3bb5e9d3fa4f8d1cd64 $
+ * @version $Id: eb3d63491b6a021133bbec533295ad07ca88a348 $
  */
 public interface Repository {
   /**
@@ -57,20 +57,6 @@ public interface Repository {
    * Service attribute to provide a human readable name for this repository
    */
   final String DISPLAY_NAME = "repository.displayName";
-
-  /**
-   * Find any capabilities that match the supplied requirement.
-   * 
-   * <p>
-   * See {@link Environment#findProviders} for a discussion on matching.
-   * 
-   * @param requirement The requirement that should be matched
-   * 
-   * @return A collection of capabilities that match the supplied requirement
-   *  
-   * @throws NullPointerException if the requirement is null
-   */
-  Collection<Capability> findProviders(Requirement requirement);
 
   /**
    * Find any capabilities that match the supplied requirements.

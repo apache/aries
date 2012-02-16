@@ -16,8 +16,10 @@ package org.apache.aries.subsystem.core;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.aries.subsystem.core.archive.TypeAttribute;
 import org.osgi.framework.Constants;
@@ -65,7 +67,8 @@ public class ResourceHelper {
 	}
 	
 	public static Resource getResource(Requirement requirement, Repository repository) {
-		Collection<Capability> capabilities = repository.findProviders(requirement);
+		Map<Requirement, Collection<Capability>> map = repository.findProviders(Arrays.asList(requirement));
+		Collection<Capability> capabilities = map.get(requirement);
 		return capabilities == null ? null : capabilities.size() == 0 ? null : capabilities.iterator().next().getResource();
 	}
 	

@@ -17,6 +17,7 @@ import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,14 +47,16 @@ public class RepositoryAdminRepository implements Repository {
 		this.repositoryAdmin = repositoryAdmin;
 	}
 	
-	@Override
 	public Collection<Capability> findProviders(Requirement requirement) {
 		logger.debug(LOG_ENTRY, "findProviders", requirement);
 		Collection<Capability> result = Collections.emptyList();
 		if (ResourceConstants.IDENTITY_NAMESPACE.equals(requirement.getNamespace())) {
 			result = new ArrayList<Capability>();
 			for (Repository repository : repositories) {
-				result.addAll(repository.findProviders(requirement));
+				Map<Requirement, Collection<Capability>> map = repository.findProviders(Arrays.asList(requirement));
+				Collection<Capability> capabilities = map.get(requirement);
+				if (capabilities != null)
+					result.addAll(capabilities);
 			}
 			return result;
 		}
