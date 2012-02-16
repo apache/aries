@@ -7,6 +7,6 @@ Subsystem-Description: %feature1.description
 Subsystem-Content: org.apache.aries.subsystem.itests.tb1,
  derby;version=10.5.0,
  org.apache.felix.fileinstall;version="[2.0,3.0)",
- org.apache.aries.subsystem.feature2;version=1.0.0;type=osgi.subsystem;start-order:=2,
+ org.apache.aries.subsystem.feature2;version=1.0.0;type=osgi.subsystem.feature;start-order:=2,
  org.apache.aries.subsystem.itests.tb3
-Subsystem-Type: osgi.feature
+Subsystem-Type: osgi.subsystem.feature

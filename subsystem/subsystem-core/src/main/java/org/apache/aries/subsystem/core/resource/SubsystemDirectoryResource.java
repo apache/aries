@@ -12,7 +12,6 @@ import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
-import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemDirectoryResource implements Resource {
 	private final SubsystemArchive archive;
@@ -26,7 +25,6 @@ public class SubsystemDirectoryResource implements Resource {
 				this, 
 				manifest.getSubsystemSymbolicNameHeader().getSymbolicName(), 
 				manifest.getSubsystemVersionHeader().getVersion(), 
-				SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM,
 				manifest.getSubsystemTypeHeader().getValue()));
 		this.capabilities = Collections.unmodifiableList(capabilities);
 	}

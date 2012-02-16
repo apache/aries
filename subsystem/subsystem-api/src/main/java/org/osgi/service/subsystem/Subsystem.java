@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2011). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2012). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ import org.osgi.service.resolver.Resolver;
  * 		</tr>
  * 		<tr align="center">
  * 			<td>{@link #install(String, InputStream) Install}</td>
- * 			<td>&nbsp;</td>
+ * 			<td> </td>
  * 			<td>{@link State#INSTALLING INSTALLING}, {@link State#INSTALL_FAILED
  *              INSTALL_FAILED}, {@link State#INSTALLED INSTALLED}
  *      	</td>
@@ -130,12 +130,12 @@ import org.osgi.service.resolver.Resolver;
  * 		</tr>
  * </table>
  * <p/>
- * A subsystem archive is a ZIP file having an SSA extension and containing
+ * A subsystem archive is a ZIP file having an ESA extension and containing
  * metadata describing the subsystem. The form of the metadata may be a
  * subsystem or deployment manifest, as well as any content resource files. The
  * manifests are optional and will be computed if not present. The subsystem
  * manifest headers may be {@link #getSubsystemHeaders(Locale) retrieved} in raw
- * or localized formats. There are three standard {@link
+ * or localized formats. There are five standard {@link
  * ResourceConstants#IDENTITY_TYPE_ATTRIBUTE types} of resources that may be
  * included in a subsystem.
  * <ul>
@@ -145,8 +145,14 @@ import org.osgi.service.resolver.Resolver;
  * 		<li>{@link ResourceConstants#IDENTITY_TYPE_FRAGMENT Fragment} - A
  *          fragment bundle.
  * 		</li>
- * 		<li>{@link SubsystemConstants#IDENTITY_TYPE_SUBSYSTEM Subsystem} - A
- *          subsystem defined by this specification.
+ * 		<li>{@link SubsystemConstants#SUBSYSTEM_TYPE_APPLICATION Application 
+ *          Subsystem} - An application subsystem defined by this specification.
+ * 		</li>
+ * 		<li>{@link SubsystemConstants#SUBSYSTEM_TYPE_COMPOSITE Composite  
+ *          Subsystem} - A composite subsystem defined by this specification.
+ * 		</li>
+ * 		<li>{@link SubsystemConstants#SUBSYSTEM_TYPE_FEATURE Feature 
+ *          Subsystem} - A feature subsystem defined by this specification.
  * 		</li>
  * </ul>
  * Resources contained by a subsystem are called {@link #getConstituents()
@@ -204,7 +210,7 @@ import org.osgi.service.resolver.Resolver;
  * 		<li>All existing bundles, including the system and subsystems
  *          implementation bundles, become constituents.
  *      </li>
- *      <li>The type is {@code osgi.composite} with no imports or exports.
+ *      <li>The type is {@code osgi.application} with no imports.
  *      </li>
  * 		<li>The provision policy is {@code acceptTransitive}.
  * 		</li>
@@ -359,7 +365,7 @@ public interface Subsystem {
 	 * map value is the corresponding header value. Because header names are
 	 * case-insensitive, the methods of the map must treat them in a
 	 * case-insensitive manner. If the header name is not found, null is
-	 * returned. Both original and synthesized headers will be included.
+	 * returned. Both original and derived headers will be included.
 	 * <p/>
 	 * The header values are translated according to the specified locale. If
 	 * the specified locale is null or not supported, the raw values are
@@ -484,11 +490,9 @@ public interface Subsystem {
 	 * Returns the {@link SubsystemConstants#SUBSYSTEM_TYPE type} of this
 	 * subsystem.
 	 * <p/>
-	 * The type of the root subsystem is {@link
-	 * SubsystemConstants#SUBSYSTEM_TYPE_COMPOSITE composite}. This method must
-	 * continue to return this subsystem's type while this subsystem is in the
-	 * {@link State#INSTALL_FAILED INSTALL_FAILED} or {@link State#UNINSTALLED
-	 * UNINSTALLED} states.
+	 * This method must continue to return this subsystem's type while this
+	 * subsystem is in the {@link State#INSTALL_FAILED INSTALL_FAILED} or
+	 * {@link State#UNINSTALLED UNINSTALLED} states.
 	 * 
 	 * @return The type of this subsystem.
 	 */
@@ -789,10 +793,10 @@ public interface Subsystem {
 	 * determine how to proceed. An action of Return means this method returns
 	 * immediately without taking any other action.
 	 * <p/>
-	 * <table border="1"">
+	 * <table border="1">
 	 * 		<tr>
-	 * 			<th>State</td>
-	 * 			<th>Action</td>
+	 * 			<th>State</th>
+	 * 			<th>Action</th>
 	 * 		</tr>
 	 * 		<tr align="center">
 	 * 			<td>INSTALLING</td>
