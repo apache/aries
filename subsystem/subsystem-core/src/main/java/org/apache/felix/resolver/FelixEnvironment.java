@@ -18,9 +18,9 @@
  */
 package org.apache.felix.resolver;
 
+import org.apache.aries.subsystem.core.Environment;
+import org.apache.aries.subsystem.core.ResolutionException;
 import org.osgi.framework.resource.Resource;
-import org.osgi.service.resolver.Environment;
-import org.osgi.service.resolver.ResolutionException;
 
 public interface FelixEnvironment extends Environment
 {
