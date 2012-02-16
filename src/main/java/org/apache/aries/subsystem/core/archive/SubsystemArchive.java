@@ -55,7 +55,6 @@ public class SubsystemArchive implements Repository {
 		logger.debug(LOG_EXIT, "init");
 	}
 	
-	@Override
 	public synchronized Collection<Capability> findProviders(Requirement requirement) {
 		logger.debug(LOG_ENTRY, "findProviders", requirement);
 		Collection<Capability> capabilities = new ArrayList<Capability>(1);
