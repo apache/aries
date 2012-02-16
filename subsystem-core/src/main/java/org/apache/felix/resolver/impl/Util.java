@@ -21,6 +21,7 @@ package org.apache.felix.resolver.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.aries.subsystem.core.Environment;
 import org.apache.aries.subsystem.core.ResourceHelper;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -28,7 +29,6 @@ import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.ResourceConstants;
-import org.osgi.service.resolver.Environment;
 import org.osgi.framework.resource.Wiring;
 
 public class Util

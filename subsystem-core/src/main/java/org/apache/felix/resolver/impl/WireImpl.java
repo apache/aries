@@ -18,12 +18,10 @@
  */
 package org.apache.felix.resolver.impl;
 
-import java.util.List;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.Wire;
-import org.osgi.framework.resource.Wiring;
 
 class WireImpl implements Wire
 {
