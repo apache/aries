@@ -4,13 +4,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.SortedSet;
 
+import org.apache.aries.subsystem.core.Environment;
+import org.apache.aries.subsystem.core.ResolutionException;
 import org.apache.felix.resolver.FelixEnvironment;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.Wiring;
-import org.osgi.service.resolver.Environment;
-import org.osgi.service.resolver.ResolutionException;
 
 public class EnvironmentAdaptor implements FelixEnvironment {
 	private final Environment environment;

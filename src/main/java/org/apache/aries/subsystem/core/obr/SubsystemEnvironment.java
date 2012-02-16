@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.aries.subsystem.core.Environment;
 import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.AriesSubsystem;
@@ -39,7 +40,6 @@ import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.Wiring;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.repository.Repository;
-import org.osgi.service.resolver.Environment;
 import org.osgi.service.subsystem.Subsystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
