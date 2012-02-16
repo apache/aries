@@ -57,19 +57,6 @@ public class DeploymentManifest {
 		this.headers = Collections.unmodifiableMap(headers);
 	}
 	
-//	public DeploymentManifest(DeploymentManifest manifest, boolean autostart, long id, long lastId, String location) {
-//		Map<String, Header<?>> headers = new HashMap<String, Header<?>>(manifest.getHeaders());
-//		headers.put(ARIESSUBSYSTEM_AUTOSTART, new GenericHeader(ARIESSUBSYSTEM_AUTOSTART, Boolean.toString(autostart)));
-//		headers.put(ARIESSUBSYSTEM_ID, new GenericHeader(ARIESSUBSYSTEM_ID, Long.toString(id)));
-//		headers.put(ARIESSUBSYSTEM_LOCATION, new GenericHeader(ARIESSUBSYSTEM_LOCATION, location));
-//		headers.put(ARIESSUBSYSTEM_LASTID, new GenericHeader(ARIESSUBSYSTEM_LASTID, Long.toString(lastId)));
-//		this.headers = Collections.unmodifiableMap(headers);
-//	}
-//	
-//	public DeploymentManifest(SubsystemManifest manifest, SubsystemEnvironment environment) {
-//		this(null, manifest, environment);
-//	}
-	
 	public DeploymentManifest(
 			DeploymentManifest deploymentManifest, 
 			SubsystemManifest subsystemManifest, 
@@ -117,12 +104,11 @@ public class DeploymentManifest {
 			headers.put(SUBSYSTEM_SYMBOLICNAME, subsystemManifest.getSubsystemSymbolicNameHeader());
 			headers.put(SUBSYSTEM_VERSION, subsystemManifest.getSubsystemVersionHeader());
 			SubsystemTypeHeader typeHeader = subsystemManifest.getSubsystemTypeHeader();
-			// TODO Add to constants.
-			if ("osgi.application".equals(typeHeader.getValue())) {
+			if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(typeHeader.getValue())) {
 				// TODO Compute additional headers for an application.
 			}
 			// TODO Add to constants.
-			else if ("osgi.composite".equals(typeHeader.getValue())) {
+			else if (SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(typeHeader.getValue())) {
 				// TODO Compute additional headers for a composite. 
 			}
 			// Features require no additional headers.
@@ -137,57 +123,6 @@ public class DeploymentManifest {
 		headers.put(ARIESSUBSYSTEM_LASTID, new GenericHeader(ARIESSUBSYSTEM_LASTID, Long.toString(lastId)));
 		this.headers = Collections.unmodifiableMap(headers);
 	}
-	
-//	public DeploymentManifest(DeploymentManifest deploymentManifest, SubsystemManifest subsystemManifest, SubsystemEnvironment environment) {
-//		Map<String, Header<?>> headers;
-//		if (deploymentManifest == null)
-//			headers = new HashMap<String, Header<?>>();
-//		else
-//			headers = new HashMap<String, Header<?>>(deploymentManifest.getHeaders());
-//		// TODO DEPLOYMENT_MANIFESTVERSION
-//		Collection<Resource> resources = new HashSet<Resource>();
-//		SubsystemContentHeader contentHeader = subsystemManifest.getSubsystemContentHeader();
-//		if (contentHeader != null) {
-//			for (SubsystemContentHeader.Content content : contentHeader.getContents()) {
-//				OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
-//				Resource resource = environment.findResource(requirement);
-//				// If the resource is null, can't continue.
-//				// TODO Actually, can continue if resource is optional.
-//				if (resource == null)
-//					throw new SubsystemException("Resource does not exist: " + requirement);
-//				resources.add(resource);
-//			}
-//			// TODO This does not validate that all content bundles were found.
-//			Map<Resource, List<Wire>> resolution = Activator.getInstance().getServiceProvider().getService(Resolver.class).resolve(environment, new ArrayList<Resource>(resources), Collections.EMPTY_LIST);
-//			// TODO Once we have a resolver that actually returns lists of wires, we can use them to compute other manifest headers such as Import-Package.
-//			Collection<Resource> deployedContent = new HashSet<Resource>();
-//			Collection<Resource> provisionResource = new HashSet<Resource>();
-//			for (Resource resource : resolution.keySet()) {
-//				if (contentHeader.contains(resource))
-//					deployedContent.add(resource);
-//				else
-//					provisionResource.add(resource);
-//			}
-//			// Make sure any already resolved content resources are added back in.
-//			deployedContent.addAll(resources);
-//			headers.put(DEPLOYED_CONTENT, DeployedContentHeader.newInstance(deployedContent));
-//			if (!provisionResource.isEmpty())
-//				headers.put(PROVISION_RESOURCE, ProvisionResourceHeader.newInstance(provisionResource));
-//		}
-//		headers.put(SUBSYSTEM_SYMBOLICNAME, subsystemManifest.getSubsystemSymbolicNameHeader());
-//		headers.put(SUBSYSTEM_VERSION, subsystemManifest.getSubsystemVersionHeader());
-//		SubsystemTypeHeader typeHeader = subsystemManifest.getSubsystemTypeHeader();
-//		// TODO Add to constants.
-//		if ("osgi.application".equals(typeHeader.getValue())) {
-//			// TODO Compute additional headers for an application.
-//		}
-//		// TODO Add to constants.
-//		else if ("osgi.composite".equals(typeHeader.getValue())) {
-//			// TODO Compute additional headers for a composite. 
-//		}
-//		// Features require no additional headers.
-//		this.headers = Collections.unmodifiableMap(headers);
-//	}
 	
 	public DeployedContentHeader getDeployedContentHeader() {
 		return (DeployedContentHeader)getHeaders().get(DEPLOYED_CONTENT);

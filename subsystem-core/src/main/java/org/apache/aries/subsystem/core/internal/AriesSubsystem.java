@@ -314,6 +314,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 					uri == null ? null : uri.getSymbolicName(), 
 					uri == null ? null : uri.getVersion(), 
 					archive.getResources()));
+			SubsystemManifestValidator.validate(this, archive.getSubsystemManifest());
 			// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
 			if (isFeature())
 				region = parent.region;
@@ -372,7 +373,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
 		if (namespace == null || namespace.equals(ResourceConstants.IDENTITY_NAMESPACE)) {
-			Capability capability = new OsgiIdentityCapability(this, getSymbolicName(), getVersion(), SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM, getType());
+			Capability capability = new OsgiIdentityCapability(this, getSymbolicName(), getVersion(), getType());
 			return Arrays.asList(new Capability[]{capability});
 		}
 		return Collections.emptyList();
@@ -950,7 +951,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	private void installResource(Resource resource, Coordination coordination, boolean transitive) throws Exception {
 		String type = ResourceHelper.getTypeAttribute(resource);
-		if (SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM.equals(type))
+		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
 			installSubsystemResource(resource, coordination, transitive);
 		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
 			installBundleResource(resource, coordination, transitive);
@@ -1088,8 +1091,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	private void startResource(Resource resource, Coordination coordination) throws BundleException, IOException {
 		String type = ResourceHelper.getTypeAttribute(resource);
-		// TODO Add to constants.
-		if (SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM.equals(type))
+		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
 			startSubsystemResource(resource, coordination);
 		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
 			startBundleResource(resource, coordination);
@@ -1122,8 +1126,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	private void stopResource(Resource resource) throws BundleException, IOException {
 		String type = ResourceHelper.getTypeAttribute(resource);
-		// TODO Add to constants.
-		if (SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM.equals(type))
+		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
 			stopSubsystemResource(resource);
 		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
 			stopBundleResource(resource);
@@ -1166,7 +1171,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 			});
 		}
 		String type = ResourceHelper.getTypeAttribute(resource);
-		if (SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM.equals(type))
+		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
 			uninstallSubsystemResource(resource);
 		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
 			uninstallBundleResource(resource);
