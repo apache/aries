@@ -2,4 +2,4 @@ Manifest-Version: 2.0
 Subsystem-ManifestVersion: 1.0
 Subsystem-SymbolicName: org.apache.aries.subsystem.itests.feature.empty
 Subsystem-Version: 1.1.2
-Subsystem-Type: osgi.feature
+Subsystem-Type: osgi.subsystem.feature

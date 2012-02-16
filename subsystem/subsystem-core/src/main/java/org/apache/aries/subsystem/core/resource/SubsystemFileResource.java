@@ -65,7 +65,7 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 				version = Version.parseVersion(group);
 		}
 		List<Capability> capabilities = new ArrayList<Capability>(1);
-		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, SubsystemConstants.IDENTITY_TYPE_SUBSYSTEM, type));
+		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, type));
 		this.capabilities = Collections.unmodifiableList(capabilities);
 		location = "subsystem://?" + SubsystemConstants.SUBSYSTEM_SYMBOLICNAME + '=' + symbolicName + '&' + SubsystemConstants.SUBSYSTEM_VERSION + '=' + version;
 	}

@@ -13,12 +13,12 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import org.osgi.service.subsystem.SubsystemConstants;
+
 public class SubsystemTypeHeader extends AbstractHeader {
 	public static final SubsystemTypeHeader DEFAULT = new SubsystemTypeHeader();
-	// TODO Add to constants.
-	public static final String DEFAULT_VALUE = "osgi.application";
-	// TODO Add to constants.
-	public static final String NAME = "Subsystem-Type";
+	public static final String DEFAULT_VALUE = SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
+	public static final String NAME = SubsystemConstants.SUBSYSTEM_TYPE;
 	
 	public SubsystemTypeHeader() {
 		this(DEFAULT_VALUE);
