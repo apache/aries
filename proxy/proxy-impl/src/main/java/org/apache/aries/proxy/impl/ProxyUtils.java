@@ -27,12 +27,13 @@ import org.slf4j.LoggerFactory;
 public class ProxyUtils
 {
   private static Logger LOGGER = LoggerFactory.getLogger(ProxyUtils.class);
+  public static int javaClassVersion = new BigDecimal(System.getProperty("java.class.version")).intValue();
   /**
    * Get the java version to be woven at.
    * @return
    */
   public static int getWeavingJavaVersion() {
-    int javaClassVersion = new BigDecimal(System.getProperty("java.class.version")).intValue();
+    
     if (javaClassVersion >= Opcodes.V1_7) {
       LOGGER.debug("Weaving to Java 7");
       return Opcodes.V1_7;
