@@ -206,14 +206,13 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private final SubsystemArchive archive;
-	private final Set<AriesSubsystem> children = Collections.synchronizedSet(new HashSet<AriesSubsystem>());
 	private final Set<Resource> constituents = Collections.synchronizedSet(new HashSet<Resource>());
 	private final File directory;
 	private final SubsystemEnvironment environment;
 	private final long id;
 	private final String location;
-	private final Set<AriesSubsystem> parents = Collections.synchronizedSet(new HashSet<AriesSubsystem>());
 	private final Region region;
+	private final SubsystemGraph subsystemGraph;
 	
 	private boolean autostart;
 	private Subsystem.State state = State.INSTALLING;
@@ -252,6 +251,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// on any persisted resources.
 			subsystemManifest = new SubsystemManifest(getSymbolicName(), getVersion(), archive.getResources());
 		environment = new SubsystemEnvironment(this);
+		// The root subsystem establishes the subsystem graph;
+		subsystemGraph = new SubsystemGraph(this);
 		archive.setDeploymentManifest(new DeploymentManifest(
 				deploymentManifest, 
 				subsystemManifest, 
@@ -295,7 +296,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 			
 		}
 		this.location = location;
-		this.parents.add(parent);
 		id = getNextId();
 		String directoryName = "subsystem" + id;
 		// TODO Add to constants.
@@ -327,6 +327,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			deleteFile(zipFile);
 			throw new SubsystemException(e);
 		}
+		subsystemGraph = parent.subsystemGraph;
 	}
 	
 	public AriesSubsystem(SubsystemArchive archive, AriesSubsystem parent) throws Exception {
@@ -340,12 +341,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 		String directoryName = "subsystem" + id;
 		directory = new File(parent.directory, directoryName);
 		environment = new SubsystemEnvironment(this);
-		parents.add(parent);
 		// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
 		if (isFeature())
 			region = parent.region;
 		else
 			region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
+		subsystemGraph = parent.subsystemGraph;
 	}
 	
 	public SubsystemArchive getArchive() {
@@ -380,9 +381,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return Collections.emptyList();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
 	public Collection<Subsystem> getChildren() {
-		return (Collection<Subsystem>)(Collection)Collections.unmodifiableCollection(new ArrayList<Subsystem>(children));
+		return subsystemGraph.getChildren(this);
 	}
 
 	@Override
@@ -397,7 +398,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	@Override
 	public Collection<Subsystem> getParents() {
-		return Collections.unmodifiableCollection(new ArrayList<Subsystem>(parents));
+		return subsystemGraph.getParents(this);
 	}
 
 	@Override
@@ -460,7 +461,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 						&& subsystem.getVersion().equals(ssr.getSubsystemVersion())
 						&& subsystem.getType().equals(ssr.getSubsystemType())))
 					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
-				children.add(subsystem);
+				subsystemGraph.add(this, subsystem);
 				constituents.add(subsystem);
 				return subsystem;
 			}
@@ -468,7 +469,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			if (subsystem != null) {
 				if (!subsystem.getType().equals(ssr.getSubsystemType()))
 					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
-				children.add(subsystem);
+				subsystemGraph.add(this, subsystem);
 				constituents.add(subsystem);
 				return subsystem;
 			}
@@ -562,7 +563,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 				startResource(resource, coordination);
 			}
 			setState(State.ACTIVE);
-//			persist(State.ACTIVE);
 		} catch (Exception e) {
 			coordination.fail(e);
 			// TODO Need to reinstate complete isolation by disconnecting the
@@ -614,7 +614,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// The root subsystem may not be uninstalled.
 		checkRoot();
 		State state = getState();
-		if (state == State.UNINSTALLING || state == State.UNINSTALLED) {
+		if (state == State.UNINSTALLING || state == State.UNINSTALLED || state == State.INSTALL_FAILED) {
 			return;
 		}
 		else if (state == State.INSTALLING || state == State.RESOLVING || state == State.STARTING || state == State.STOPPING) {
@@ -649,10 +649,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 				// TODO Should FAILED go out for each failure?
 			}
 		}
-		for (AriesSubsystem parent : parents) {
-			parent.children.remove(this);
-			parent.constituents.remove(this);
+		for (Subsystem parent : getParents()) {
+			((AriesSubsystem)parent).constituents.remove(this);
 		}
+		subsystemGraph.remove(this);
 		locationToSubsystem.remove(location);
 		deleteFile(directory);
 		setState(State.UNINSTALLED);
@@ -780,9 +780,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		setState(State.STOPPING);
 		// Stop child subsystems first.
-		for (AriesSubsystem subsystem : children) {
+		for (Subsystem subsystem : subsystemGraph.getChildren(this)) {
 			try {
-				stopSubsystemResource(subsystem);
+				stopSubsystemResource((AriesSubsystem)subsystem);
 			}
 			catch (Exception e) {
 				LOGGER.error("An error occurred while stopping resource "
@@ -898,8 +898,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (transitive) {
 			// Transitive dependencies should be provisioned into the highest possible level.
 			// TODO Assumes root is always the appropriate level.
-			while (!provisionTo.parents.isEmpty())
-				provisionTo = provisionTo.parents.iterator().next();
+			while (!provisionTo.getParents().isEmpty())
+				provisionTo = (AriesSubsystem)provisionTo.getParents().iterator().next();
 		}
 		return provisionTo;
 	}
@@ -991,7 +991,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		Set<AriesSubsystem> subsystems = new HashSet<AriesSubsystem>();
 		subsystems.add(this);
 		resourceToSubsystems.put(subsystem, subsystems);
-		children.add(subsystem);
+		subsystemGraph.add(this, subsystem);
 		constituents.add(subsystem);
 		subsystem.install();
 		coordination.addParticipant(new Participant() {
@@ -1002,7 +1002,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 			public void failed(Coordination coordination) throws Exception {
 				subsystem.uninstall();
 				constituents.remove(subsystem);
-				children.remove(subsystem);
 				Set<AriesSubsystem> subsystems = resourceToSubsystems.get(subsystem);
 				subsystems.remove(AriesSubsystem.this);
 				if (subsystems.isEmpty())
@@ -1063,7 +1062,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// Applications have an implicit import policy equating to "import everything that I require", which is not the same as features.
 			// This must be computed from the application requirements and will be done using the Wires returned by the Resolver, when one is available.
 			region.connectRegion(
-					parents.iterator().next().region, 
+					((AriesSubsystem)getParents().iterator().next()).region, 
 					region.getRegionDigraph().createRegionFilterBuilder().allowAll(RegionFilter.VISIBLE_ALL_NAMESPACE).build());
 		}
 		else if (isComposite()) {
