@@ -74,7 +74,7 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testBasicServiceLoaderUsage() throws Exception {
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
-        consumerHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active");
+        consumerHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT);
 
         // Register the bundle that provides the SPI implementation.
         Bundle providerBundle = mockProviderBundle("impl1", 1);
@@ -116,7 +116,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertSame("Precondition", cl, Thread.currentThread().getContextClassLoader());
 
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
-        consumerHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active");
+        consumerHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT);
 
         // Register the bundle that provides the SPI implementation.
         Bundle providerBundle = mockProviderBundle("impl1", 1);
@@ -162,7 +162,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Bundle spiFlyBundle = mockSpiFlyBundle();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT);
         Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
 
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
@@ -194,7 +194,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Bundle spiFlyBundle = mockSpiFlyBundle();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT);
 
         Bundle consumerBundle = mockConsumerBundle(headers, spiFlyBundle);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
@@ -224,7 +224,8 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testClientSpecifyingProvider() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active; filter:=\"(bundle-symbolic-name=impl2)\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
+                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(bundle-symbolic-name=impl2)\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -253,7 +254,8 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testClientSpecifyingProviderVersion() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active; filter:=\"(&(bundle-symbolic-name=impl2)(bundle-version=1.2.3))\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
+                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(&(bundle-symbolic-name=impl2)(bundle-version=1.2.3))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -283,8 +285,8 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testClientMultipleTargetBundles() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
-                "osgi.spi.provider; effective:=active; filter:=\"(|(bundle-symbolic-name=impl1)(bundle-symbolic-name=impl4))\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
+                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(|(bundle-symbolic-name=impl1)(bundle-symbolic-name=impl4))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -316,9 +318,9 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testServiceFiltering() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
-                "osgi.spi.provider; effective:=active; filter:=\"(|(service=org.apache.aries.mytest.MySPI)" +
-                "(&(service=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
+                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(|(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.MySPI)" +
+                "(&(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -362,9 +364,9 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testServiceFilteringAlternative() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
-                "osgi.spi.provider; effective:=active; filter:=\"(|(!(service=org.apache.aries.mytest.AltSPI))" +
-                "(&(service=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
+                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(|(!(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.AltSPI))" +
+                "(&(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -408,9 +410,8 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testServiceFilteringNarrow() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY,
-                "osgi.spi.provider; effective:=active; filter:=\"" +
-                "(&(service=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4))\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
+                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(&(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
@@ -454,7 +455,8 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testFilteringCustomAttribute() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.spi.provider; effective:=active; filter:=\"(approval=global)\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
+                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(approval=global)\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);

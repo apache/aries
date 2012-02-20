@@ -230,13 +230,13 @@ public abstract class BaseActivator implements BundleActivator {
                 } else if (desc.getFilter() != null) {
                     Hashtable<String, Object> d = new Hashtable<String, Object>();
                     d.put(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, b.getSymbolicName());
-                    d.put(SpiFlyConstants.BUNDLE_VERSION_ATTRIBUTE, b.getVersion());
+                    d.put(Constants.BUNDLE_VERSION_ATTRIBUTE, b.getVersion());
 
                     if (ServiceLoader.class.getName().equals(className) &&
                         "load".equals(methodName)) {
                         String type = args.get(new Pair<Integer, String>(0, Class.class.getName()));
                         if (type != null) {
-                            d.put(SpiFlyConstants.SERVICE_ATTRIBUTE, type);
+                            d.put(SpiFlyConstants.CONSUMED_SPI_CONDITION, type);
                             d.putAll(getCustomBundleAttributes(type, b));
                         }
                     }
