@@ -20,22 +20,26 @@ package org.apache.aries.spifly.api;
 
 public interface SpiFlyConstants {
     // Not taken from OSGi Constants because this code needs to compile with the 4.2 OSGi classes.
-    String PROVIDE_CAPABILITY = "Provide-Capability";
     String REQUIRE_CAPABILITY = "Require-Capability";
 
     String SPI_CONSUMER_HEADER = "SPI-Consumer";
     String SPI_PROVIDER_HEADER = "SPI-Provider";
 
-    String SPI_CAPABILITY_NAMESPACE = "osgi.spi.provider";
-    String EXTENDER_CAPABILITY_NAMESPACE = "osgi.jse.serviceloader";
+    String EXTENDER_CAPABILITY_NAMESPACE = "osgi.extender";
 
-    String BUNDLE_VERSION_ATTRIBUTE = "bundle-version";
-    String SERVICE_ATTRIBUTE = "service";
+    String CLIENT_EXTENDER_NAME = "spi.consumer.mediator";
+    String PROVIDER_EXTENDER_NAME = "spi.provider.mediator";
 
-    String EFFECTIVE_DIRECTIVE = "effective";
+    String CLIENT_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + EXTENDER_CAPABILITY_NAMESPACE + "=" + CLIENT_EXTENDER_NAME;
+    String PROVIDER_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + EXTENDER_CAPABILITY_NAMESPACE + "=" + PROVIDER_EXTENDER_NAME;
+
+    String CONSUMED_SPI_CONDITION = "spi";
+
+    String PROVIDED_SPI_DIRECTIVE = "provided-spi";
+    String PROVIDER_FILTER_DIRECTIVE = "provider-filter";
     String SERVICE_REGISTRY_DIRECTIVE = "service-registry";
 
     String PROCESSED_SPI_CONSUMER_HEADER = "X-SpiFly-Processed-SPI-Consumer";
 
-    String SPI_PROVIDER_URL = "spi.provider.url";
+    String SPI_PROVIDER_URL_PROPERTY = "spi.provider.url";
 }

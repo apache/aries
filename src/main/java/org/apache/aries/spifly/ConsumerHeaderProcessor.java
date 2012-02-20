@@ -170,27 +170,25 @@ public class ConsumerHeaderProcessor {
 
         List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(consumerHeader);
         for (GenericMetadata req : requirements) {
-            if (SpiFlyConstants.SPI_CAPABILITY_NAMESPACE.equals(req.getNamespace())) {
-                if (!"active".equals(req.getDirectives().get("effective"))) {
-                    continue;
-                }
+            if (SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE.equals(req.getNamespace())) {
+                if (SpiFlyConstants.CLIENT_EXTENDER_NAME.equals(req.getAttributes().get(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE))) {
+                    ArgRestrictions ar = new ArgRestrictions();
+                    ar.addRestriction(0, Class.class.getName());
+                    MethodRestriction mr = new MethodRestriction("load", ar);
 
-                ArgRestrictions ar = new ArgRestrictions();
-                ar.addRestriction(0, Class.class.getName());
-                MethodRestriction mr = new MethodRestriction("load", ar);
-
-                List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
-                String filterString = req.getDirectives().get("filter");
-                if (filterString != null) {
-                    try {
-                        Filter filter = FrameworkUtil.createFilter(filterString);
-                        allowedBundles.add(new BundleDescriptor(filter));
-                    } catch (InvalidSyntaxException e) {
-                        throw new IllegalArgumentException("Syntax error in filter " + filterString + " which appears in " + consumerHeader);
+                    List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
+                    String filterString = req.getDirectives().get(SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE);
+                    if (filterString != null) {
+                        try {
+                            Filter filter = FrameworkUtil.createFilter(filterString);
+                            allowedBundles.add(new BundleDescriptor(filter));
+                        } catch (InvalidSyntaxException e) {
+                            throw new IllegalArgumentException("Syntax error in filter " + filterString + " which appears in " + consumerHeader);
+                        }
                     }
-                }
 
-                weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+                    weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+                }
             }
         }
 
