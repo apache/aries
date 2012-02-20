@@ -38,10 +38,13 @@ public class ProxyUtils
       if (javaClassVersion >= Opcodes.V1_7) {
         LOGGER.debug("Weaving to Java 7");
         weavingJavaVersion = Opcodes.V1_7;
-      } else {
+      } else if (javaClassVersion == Opcodes.V1_6){
         LOGGER.debug("Weaving to Java 6");
         weavingJavaVersion = Opcodes.V1_6;
-      }
+      } else if (javaClassVersion == Opcodes.V1_5) {
+        LOGGER.debug("Weaving to Java 5");
+        weavingJavaVersion = Opcodes.V1_5;
+      } // no need to list all Opcodes as Aries should only work with java5 or above.
     } 
     return weavingJavaVersion;
   } 
