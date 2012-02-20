@@ -102,7 +102,8 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         EasyMock.replay(sreg);
 
         BundleContext implBC = mockSPIBundleContext(sreg);
-        Bundle implBundle = mockSPIBundle(implBC, "osgi.spi.provider; effective:=active; service-registry:=true; approval=global");
+        Bundle implBundle = mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT +
+                "; service-registry:=true; approval=global");
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(1, registrations.size());
@@ -129,12 +130,12 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         BundleContext implBC = mockSPIBundleContext4();
         Bundle implBundle =
-            mockSPIBundle4(implBC, "osgi.spi.provider; effective:=active; service=org.apache.aries.mytest.MySPI; approval=global");
+            mockSPIBundle4(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT + "; " + SpiFlyConstants.PROVIDED_SPI_DIRECTIVE + ":=org.apache.aries.mytest.MySPI; approval=global");
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(1, registrations.size());
         assertEquals("org.apache.aries.mytest.MySPI", registrations.iterator().next().getReference().getProperty(Constants.OBJECTCLASS));
-        assertNotNull(registrations.iterator().next().getReference().getProperty(SpiFlyConstants.SPI_PROVIDER_URL));
+        assertNotNull(registrations.iterator().next().getReference().getProperty(SpiFlyConstants.SPI_PROVIDER_URL_PROPERTY));
         assertEquals("global", registrations.iterator().next().getReference().getProperty("approval"));
     }
 
@@ -152,7 +153,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         BundleContext implBC = mockSPIBundleContext4();
         Bundle implBundle =
-            mockSPIBundle4(implBC, "osgi.spi.provider; effective:=active");
+            mockSPIBundle4(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT);
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(3, registrations.size());
@@ -194,7 +195,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         EasyMock.replay(sreg);
 
         BundleContext implBC = mockSPIBundleContext(sreg);
-        Bundle implBundle = mockSPIBundle(implBC, "osgi.spi.provider; effective:=active; service-registry:=false");
+        Bundle implBundle = mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT + "; service-registry:=false");
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(0, registrations.size());
@@ -275,7 +276,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put("Provide-Capability", "osgi.spi.provider; effective:=active;");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
         headers.put(Constants.BUNDLE_CLASSPATH, ".,non-jar.jar,embedded.jar,embedded2.jar");
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
 
@@ -303,7 +304,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         assertEquals("Precondition", 0, activator.findProviderBundles("org.apache.aries.mytest.MySPI").size());
         // Call addingBundle();
-        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        customizer.addingBundle(implBundle, null);
         Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
         assertEquals(1, bundles.size());
         assertSame(implBundle, bundles.iterator().next());
@@ -324,7 +325,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     private Bundle mockSPIBundle(BundleContext implBC) throws ClassNotFoundException {
-        return mockSPIBundle(implBC, "osgi.spi.provider; effective:=active;");
+        return mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT);
     }
 
     private Bundle mockSPIBundle(BundleContext implBC, String spiProviderHeader) throws ClassNotFoundException {
@@ -333,7 +334,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         if (spiProviderHeader != null)
-            headers.put("Provide-Capability", spiProviderHeader);
+            headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, spiProviderHeader);
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
 
         // List the resources found at META-INF/services in the test bundle
@@ -350,6 +351,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         return implBundle;
     }
 
+    @SuppressWarnings("unchecked")
     private BundleContext mockSPIBundleContext4() {
         BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
 
@@ -357,7 +359,6 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
             registerService((String) EasyMock.anyObject(), EasyMock.anyObject(), (Dictionary<String,?>)EasyMock.anyObject())).
             andAnswer(new IAnswer<ServiceRegistration>() {
                 @Override
-                @SuppressWarnings("unchecked")
                 public ServiceRegistration answer() throws Throwable {
                     final String className = (String) EasyMock.getCurrentArguments()[0];
                     final Object serviceObject = EasyMock.getCurrentArguments()[1];
@@ -398,7 +399,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         if (spiProviderHeader != null)
-            headers.put("Provide-Capability", spiProviderHeader);
+            headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, spiProviderHeader);
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
 
         // List the resources found at META-INF/services in the test bundle

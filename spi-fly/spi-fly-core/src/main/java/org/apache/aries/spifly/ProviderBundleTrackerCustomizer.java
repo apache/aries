@@ -69,13 +69,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         List<String> providedServices = null;
         Map<String, Object> customAttributes = new HashMap<String, Object>();
         Map<String, String> directives = new HashMap<String, String>();
-        if (bundle.getHeaders().get("Provide-Capability") != null) {
-            providedServices = readProvideCapability(bundle.getHeaders(), directives, customAttributes);
-
-            if (!"active".equals(directives.get(SpiFlyConstants.EFFECTIVE_DIRECTIVE))) {
-                log(LogService.LOG_INFO, "Effective is not equal to 'active'. Not processing bundle " + bundle.getSymbolicName());
-                return null;
-            }
+        if (bundle.getHeaders().get(SpiFlyConstants.REQUIRE_CAPABILITY) != null) {
+            providedServices = readRequireCapability(bundle.getHeaders(), directives, customAttributes);
         }
 
         if (providedServices == null && bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER) != null) {
@@ -156,7 +151,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
 
                         Hashtable<String, Object> props = new Hashtable<String, Object>();
-                        props.put(SpiFlyConstants.SPI_PROVIDER_URL, serviceFile);
+                        props.put(SpiFlyConstants.SPI_PROVIDER_URL_PROPERTY, serviceFile);
                         props.putAll(customAttributes);
 
                         if (!"false".equalsIgnoreCase(directives.get(SpiFlyConstants.SERVICE_REGISTRY_DIRECTIVE))) {
@@ -184,33 +179,41 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     // An empty list returned means 'all SPIs'
     // A return value of null means no SPIs
     // A populated list means: only these SPIs
-    @SuppressWarnings("unchecked")
-    private List<String> readProvideCapability(Dictionary<?,?> headers, Map<String, String> directives, Map<String, Object> customAttributes) {
-        Object capabilityHeader = headers.get(SpiFlyConstants.PROVIDE_CAPABILITY);
+    private List<String> readRequireCapability(Dictionary<?,?> headers, Map<String, String> directives, Map<String, Object> customAttributes) {
+        Object capabilityHeader = headers.get(SpiFlyConstants.REQUIRE_CAPABILITY);
         if (capabilityHeader == null)
             return null;
 
         List<GenericMetadata> capabilities = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader.toString());
         for (GenericMetadata cap : capabilities) {
-            if (!SpiFlyConstants.SPI_CAPABILITY_NAMESPACE.equals(cap.getNamespace()))
+            if (!SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE.equals(cap.getNamespace()))
                 continue;
 
-            List<String> serviceNames = new ArrayList<String>();
             for (Map.Entry<String, Object> entry : cap.getAttributes().entrySet()) {
-                if (SpiFlyConstants.SERVICE_ATTRIBUTE.equals(entry.getKey())) {
-                    if (entry.getValue() instanceof String) {
-                        serviceNames.add((String) entry.getValue());
-                    } else if (entry.getValue() instanceof String []) {
-                        serviceNames.addAll(Arrays.asList((String []) entry.getValue()));
-                    } else if (entry.getValue() instanceof List) {
-                        serviceNames.addAll((List<String>) entry.getValue());
+                if (SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE.equals(entry.getKey()))
+                    continue;
+
+                customAttributes.put(entry.getKey(), entry.getValue());
+            }
+
+            List<String> serviceNames = new ArrayList<String>();
+            for (Map.Entry<String, String> entry : cap.getDirectives().entrySet()) {
+                if ("filter".equals(entry.getKey()))
+                    continue;
+                if ("resolution".equals(entry.getKey()))
+                    continue;
+
+                if (SpiFlyConstants.PROVIDED_SPI_DIRECTIVE.equals(entry.getKey())) {
+                    if (entry.getValue() != null) {
+                        serviceNames.add(entry.getValue());
+                        // TODO split string
                     }
                 } else {
-                    customAttributes.put(entry.getKey(), entry.getValue());
+                    directives.put(entry.getKey(), entry.getValue());
                 }
             }
 
-            directives.putAll(cap.getDirectives());
+            // directives.putAll(cap.getDirectives());
             return serviceNames;
         }
         return null;
