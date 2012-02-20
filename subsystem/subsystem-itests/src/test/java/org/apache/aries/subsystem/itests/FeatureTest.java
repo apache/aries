@@ -36,8 +36,8 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.subsystem.Subsystem;
 
 @RunWith(JUnit4TestRunner.class)
@@ -93,8 +93,8 @@ public class FeatureTest extends SubsystemTest {
 			assertEvent(feature2, Subsystem.State.INSTALLED, 5000);
 			assertSymbolicName("org.apache.aries.subsystem.feature2", feature2);
 			assertVersion("1.0.0", feature2);
-			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb2", Version.parseVersion("2.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
-			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
+			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb2", Version.parseVersion("2.0.0"), IdentityNamespace.TYPE_BUNDLE);
+			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 			assertConstituents(2, feature2);
 			assertChildren(0, feature2);
 			startSubsystem(feature1);
@@ -172,15 +172,15 @@ public class FeatureTest extends SubsystemTest {
 		Subsystem feature1 = installSubsystemFromFile("feature1.esa");
 		AssertionError error = null;
 		try {
-			assertConstituent(feature1, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
+			assertConstituent(feature1, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 			Subsystem feature2 = feature1.getChildren().iterator().next();
 			// TODO This needs to be better implemented and put into a utility method on the superclass.
 			while (!feature2.getState().equals(Subsystem.State.INSTALLED))
 				Thread.sleep(100);
-			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
+			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 			uninstallUnscopedSubsystem(feature2);
 			assertNotChild(feature1, feature2);
-			assertConstituent(feature1, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
+			assertConstituent(feature1, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 		}
 		catch (AssertionError e) {
 			error = e;
@@ -279,7 +279,7 @@ public class FeatureTest extends SubsystemTest {
 	private void assertFeature3(Subsystem subsystem) {
 		assertChildren(0, subsystem);
 		assertConstituents(1, subsystem);
-		assertConstituent(subsystem, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
+		assertConstituent(subsystem, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 //		subsystem.getHeaders();
 //		subsystem.getHeaders("");
 //		subsystem.getState();

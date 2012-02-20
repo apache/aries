@@ -22,10 +22,10 @@ import java.util.List;
 import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.OsgiContentCapability;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.repository.RepositoryContent;
 
@@ -73,7 +73,7 @@ public class FelixResourceAdapter implements Resource, RepositoryContent {
 		namespace = toFelixNamespace(namespace);
 		org.apache.felix.bundlerepository.Capability[] capabilities = resource.getCapabilities();
 		ArrayList<Capability> result = new ArrayList<Capability>(capabilities.length);
-		if (namespace == null || namespace.equals(ResourceConstants.IDENTITY_NAMESPACE)) {
+		if (namespace == null || namespace.equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
 			result.add(
 					// TODO Assuming these are all of type osgi.bundle.
 					new OsgiIdentityCapability(

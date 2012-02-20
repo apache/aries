@@ -29,10 +29,10 @@ import java.util.regex.Pattern;
 import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.osgi.framework.Constants;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class FelixRepositoryAdapter implements Repository {
 		logger.debug(LOG_ENTRY, "findProviders", requirement);
 		update();
 		List<Capability> result = Collections.emptyList();
-		if (ResourceConstants.IDENTITY_NAMESPACE.equals(requirement.getNamespace())) {
+		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(requirement.getNamespace())) {
 			String symbolicName = new IdentityRequirementFilter(requirement.getDirectives().get(Constants.FILTER_DIRECTIVE)).getSymbolicName();
 			logger.debug("Looking for symbolic name {}", symbolicName);
 			Collection<Capability> capabilities = identityIndex.get(symbolicName);
@@ -141,7 +141,7 @@ public class FelixRepositoryAdapter implements Repository {
 									resource.getVersion(),
 									// TODO Assuming all resources are bundles. Need to support 
 									// type fragment as well, but how do we know?
-									ResourceConstants.IDENTITY_TYPE_BUNDLE);
+									IdentityNamespace.TYPE_BUNDLE);
 						logger.debug("Indexing capability {}", capability);
 						capabilities.add(capability);
 					}

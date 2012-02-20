@@ -36,10 +36,11 @@ import org.apache.aries.subsystem.core.ResolutionException;
 import org.apache.felix.resolver.FelixEnvironment;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.HostNamespace;
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.framework.resource.Wire;
 import org.osgi.framework.resource.Wiring;
 
@@ -320,14 +321,14 @@ class Candidates
         throws ResolutionException
     {
         // Create a modifiable list of the revision's requirements.
-        List<Requirement> remainingReqs = new ArrayList(resource.getRequirements(null));
+        List<Requirement> remainingReqs = new ArrayList<Requirement>(resource.getRequirements(null));
         // Find the host requirement.
         Requirement hostReq = null;
         for (Iterator<Requirement> it = remainingReqs.iterator();
             it.hasNext(); )
         {
             Requirement r = it.next();
-            if (r.getNamespace().equals(ResourceConstants.WIRING_HOST_NAMESPACE))
+            if (r.getNamespace().equals(HostNamespace.HOST_NAMESPACE))
             {
                 hostReq = r;
                 it.remove();
@@ -492,7 +493,7 @@ class Candidates
                         // If the capability is a package, then make sure the
                         // host actually provides it in its resolved capabilities,
                         // since it may be a substitutable export.
-                        if (!fragCand.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE)
+                        if (!fragCand.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE)
                             || env.getWirings().get(wire.getProvider())
                                 .getResourceCapabilities(null).contains(fragCand))
                         {
@@ -535,7 +536,7 @@ class Candidates
     **/
     private void add(Requirement req, SortedSet<Capability> candidates)
     {
-        if (req.getNamespace().equals(ResourceConstants.WIRING_HOST_NAMESPACE))
+        if (req.getNamespace().equals(HostNamespace.HOST_NAMESPACE))
         {
             m_fragmentsPresent = true;
         }
@@ -695,7 +696,7 @@ class Candidates
             {
                 // Don't replace the host capability, since the fragment will
                 // really be attached to the original host, not the wrapper.
-                if (!c.getNamespace().equals(ResourceConstants.WIRING_HOST_NAMESPACE))
+                if (!c.getNamespace().equals(HostNamespace.HOST_NAMESPACE))
                 {
                     Capability origCap =
                         ((HostedCapability) c).getOriginalCapability();
@@ -775,7 +776,7 @@ class Candidates
                 dependents.add(req);
 
                 // Keep track of hosts and associated fragments.
-                if (req.getNamespace().equals(ResourceConstants.WIRING_HOST_NAMESPACE))
+                if (req.getNamespace().equals(HostNamespace.HOST_NAMESPACE))
                 {
                     String resSymName = Util.getSymbolicName(req.getResource());
                     Version resVersion = Util.getVersion(req.getResource());
@@ -863,7 +864,7 @@ class Candidates
     **/
     private void remove(Requirement req)
     {
-        boolean isFragment = req.getNamespace().equals(ResourceConstants.WIRING_HOST_NAMESPACE);
+        boolean isFragment = req.getNamespace().equals(HostNamespace.HOST_NAMESPACE);
 
         SortedSet<Capability> candidates = m_candidateMap.remove(req);
         if (candidates != null)
