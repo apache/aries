@@ -205,15 +205,15 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                 if (SpiFlyConstants.PROVIDED_SPI_DIRECTIVE.equals(entry.getKey())) {
                     if (entry.getValue() != null) {
-                        serviceNames.add(entry.getValue());
-                        // TODO split string
+                        for (String s : entry.getValue().split(",")) {
+                            serviceNames.add(s.trim());
+                        }
                     }
                 } else {
                     directives.put(entry.getKey(), entry.getValue());
                 }
             }
 
-            // directives.putAll(cap.getDirectives());
             return serviceNames;
         }
         return null;
