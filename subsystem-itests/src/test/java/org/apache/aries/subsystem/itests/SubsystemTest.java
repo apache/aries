@@ -50,8 +50,8 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
@@ -324,7 +324,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEquals("Wrong location", s.getLocation() + '/' + s.getSubsystemId(), b.getLocation());
 		assertEquals("Wrong symbolic name", "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), b.getSymbolicName());
 		assertEquals("Wrong version", Version.parseVersion("1.0.0"), b.getVersion());
-		assertConstituent(s, "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), Version.parseVersion("1.0.0"), ResourceConstants.IDENTITY_TYPE_BUNDLE);
+		assertConstituent(s, "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 	}
 	
 	protected void assertServiceEventsInstall(Subsystem subsystem) throws InterruptedException {

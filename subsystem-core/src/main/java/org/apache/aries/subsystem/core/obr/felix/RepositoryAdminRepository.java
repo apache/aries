@@ -25,9 +25,9 @@ import java.util.Map;
 
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.apache.felix.bundlerepository.Resource;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class RepositoryAdminRepository implements Repository {
 	public Collection<Capability> findProviders(Requirement requirement) {
 		logger.debug(LOG_ENTRY, "findProviders", requirement);
 		Collection<Capability> result = Collections.emptyList();
-		if (ResourceConstants.IDENTITY_NAMESPACE.equals(requirement.getNamespace())) {
+		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(requirement.getNamespace())) {
 			result = new ArrayList<Capability>();
 			for (Repository repository : repositories) {
 				Map<Requirement, Collection<Capability>> map = repository.findProviders(Arrays.asList(requirement));

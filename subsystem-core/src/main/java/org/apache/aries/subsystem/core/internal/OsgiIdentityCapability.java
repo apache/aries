@@ -22,8 +22,8 @@ import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 
 public class OsgiIdentityCapability extends AbstractCapability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
@@ -34,19 +34,19 @@ public class OsgiIdentityCapability extends AbstractCapability {
 	}
 	
 	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version) {
-		this(resource, symbolicName, version, ResourceConstants.IDENTITY_TYPE_BUNDLE);
+		this(resource, symbolicName, version, IdentityNamespace.TYPE_BUNDLE);
 	}
 	
 	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version, String identityType) {
 		this.resource = resource;
 		attributes.put(
-				ResourceConstants.IDENTITY_NAMESPACE, 
+				IdentityNamespace.IDENTITY_NAMESPACE, 
 				symbolicName);
 		attributes.put(
-				ResourceConstants.IDENTITY_VERSION_ATTRIBUTE, 
+				IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE, 
 				version);
 		attributes.put(
-				ResourceConstants.IDENTITY_TYPE_ATTRIBUTE, 
+				IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE, 
 				identityType);
 		// TODO Add directives, particularly "effective" and "singleton".
 	}
@@ -64,7 +64,7 @@ public class OsgiIdentityCapability extends AbstractCapability {
 				resource,
 				manifest.getHeader(Constants.BUNDLE_SYMBOLICNAME).getValue(),
 				Version.parseVersion(manifest.getHeader(Constants.BUNDLE_VERSION).getValue()),
-				ResourceConstants.IDENTITY_TYPE_BUNDLE);
+				IdentityNamespace.TYPE_BUNDLE);
 	}
 
 	public Map<String, Object> getAttributes() {
@@ -76,7 +76,7 @@ public class OsgiIdentityCapability extends AbstractCapability {
 	}
 
 	public String getNamespace() {
-		return ResourceConstants.IDENTITY_NAMESPACE;
+		return IdentityNamespace.IDENTITY_NAMESPACE;
 	}
 
 	public Resource getResource() {

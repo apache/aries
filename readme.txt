@@ -1,3 +1,12 @@
+***** NOTE ON CURRENT STATUS *****
+Recent changes require updated jars of org.eclipse.osgi and 
+org.eclipse.equinox.coordinator in your local m2 repository in order to build
+successfully. These jars are not yet available from a public repository but will
+be soon. In the meantime, if you require a successful subsystems build (note 
+that subsystems is not included as part of the normal Aries build), please 
+contact me for copies of these jars (jwross@us.ibm.com).
+***** END NOTE ON CURRENT STATUS *****
+
 The Subsystems subproject uses some unreleased and difficult to find equinox 
 artifacts.
 

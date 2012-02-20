@@ -38,10 +38,13 @@ import org.apache.felix.resolver.FelixEnvironment;
 import org.apache.felix.resolver.FelixResolver;
 import org.apache.felix.resolver.Logger;
 import org.osgi.framework.Constants;
+import org.osgi.framework.namespace.AbstractNamespace;
+import org.osgi.framework.namespace.BundleNamespace;
+import org.osgi.framework.namespace.HostNamespace;
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.framework.resource.Wire;
 import org.osgi.framework.resource.Wiring;
 
@@ -170,7 +173,7 @@ public class ResolverImpl implements FelixResolver
                     {
                         hostReqs.put(
                             br,
-                            br.getRequirements(ResourceConstants.WIRING_HOST_NAMESPACE));
+                            br.getRequirements(HostNamespace.HOST_NAMESPACE));
                     }
                 }
 
@@ -448,10 +451,10 @@ public class ResolverImpl implements FelixResolver
                 Requirement r = wire.getRequirement();
                 if (!r.getResource().equals(wire.getRequirer())
                     || ((r.getDirectives()
-                            .get(ResourceConstants.REQUIREMENT_RESOLUTION_DIRECTIVE) != null)
+                            .get(AbstractNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE) != null)
 // TODO: RFC-112 - Need dynamic constant.
                         && r.getDirectives()
-                            .get(ResourceConstants.REQUIREMENT_RESOLUTION_DIRECTIVE).equals("dynamic")))
+                            .get(AbstractNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE).equals("dynamic")))
                 {
                     r = new HostedRequirement(wire.getRequirer(), r);
                 }
@@ -494,7 +497,7 @@ public class ResolverImpl implements FelixResolver
             for (Requirement req : resource.getRequirements(null))
             {
                 String resolution = req.getDirectives()
-                    .get(ResourceConstants.REQUIREMENT_RESOLUTION_DIRECTIVE);
+                    .get(AbstractNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
 // TODO: RFC-112 - Need dynamic constant.
                 if ((resolution == null) || !resolution.equals("dynamic"))
                 {
@@ -554,8 +557,8 @@ public class ResolverImpl implements FelixResolver
                 Capability cap = caps.get(i);
                 // Ignore bundle/package requirements, since they are
                 // considered below.
-                if (!req.getNamespace().equals(ResourceConstants.WIRING_BUNDLE_NAMESPACE)
-                    && !req.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+                if (!req.getNamespace().equals(BundleNamespace.BUNDLE_NAMESPACE)
+                    && !req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                 {
                     List<Requirement> blameReqs = new ArrayList();
                     blameReqs.add(req);
@@ -633,12 +636,12 @@ public class ResolverImpl implements FelixResolver
         }
         cycleCaps.add(candCap);
 
-        if (candCap.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+        if (candCap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
         {
             mergeCandidatePackage(
                 current, false, currentReq, candCap, revisionPkgMap);
         }
-        else if (candCap.getNamespace().equals(ResourceConstants.WIRING_BUNDLE_NAMESPACE))
+        else if (candCap.getNamespace().equals(BundleNamespace.BUNDLE_NAMESPACE))
         {
 // TODO: FELIX3 - THIS NEXT LINE IS A HACK. IMPROVE HOW/WHEN WE CALCULATE EXPORTS.
             calculateExportedPackages(
@@ -668,7 +671,7 @@ public class ResolverImpl implements FelixResolver
                 for (Wire bw : candWiring.getRequiredResourceWires(null))
                 {
                     if (bw.getRequirement().getNamespace()
-                        .equals(ResourceConstants.WIRING_BUNDLE_NAMESPACE))
+                        .equals(BundleNamespace.BUNDLE_NAMESPACE))
                     {
                         String value = bw.getRequirement()
                             .getDirectives().get(Constants.VISIBILITY_DIRECTIVE);
@@ -692,7 +695,7 @@ public class ResolverImpl implements FelixResolver
                 for (Requirement req
                     : candCap.getResource().getRequirements(null))
                 {
-                    if (req.getNamespace().equals(ResourceConstants.WIRING_BUNDLE_NAMESPACE))
+                    if (req.getNamespace().equals(BundleNamespace.BUNDLE_NAMESPACE))
                     {
                         String value =
                             req.getDirectives().get(Constants.VISIBILITY_DIRECTIVE);
@@ -722,13 +725,13 @@ public class ResolverImpl implements FelixResolver
         Requirement currentReq, Capability candCap,
         Map<Resource, Packages> revisionPkgMap)
     {
-        if (candCap.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+        if (candCap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
         {
             // Merge the candidate capability into the revision's package space
             // for imported or required packages, appropriately.
 
             String pkgName = (String)
-                candCap.getAttributes().get(ResourceConstants.WIRING_PACKAGE_NAMESPACE);
+                candCap.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE);
 
             List blameReqs = new ArrayList();
             blameReqs.add(currentReq);
@@ -787,7 +790,7 @@ public class ResolverImpl implements FelixResolver
             {
                 uses = Collections.EMPTY_LIST;
                 String s = candSourceCap.getDirectives()
-                    .get(ResourceConstants.CAPABILITY_USES_DIRECTIVE);
+                    .get(AbstractNamespace.CAPABILITY_USES_DIRECTIVE);
                 if (s != null)
                 {
                     // Parse these uses directive.
@@ -1223,14 +1226,14 @@ public class ResolverImpl implements FelixResolver
             new HashMap<String, Capability>(caps.size());
         for (Capability cap : caps)
         {
-            if (cap.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+            if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
             {
                 if (!cap.getResource().equals(revision))
                 {
                     cap = new HostedCapability(revision, cap);
                 }
                 exports.put(
-                    (String) cap.getAttributes().get(ResourceConstants.WIRING_PACKAGE_NAMESPACE),
+                    (String) cap.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE),
                     cap);
             }
         }
@@ -1245,13 +1248,13 @@ public class ResolverImpl implements FelixResolver
             {
                 for (Requirement req : revision.getRequirements(null))
                 {
-                    if (req.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+                    if (req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                     {
                         Set<Capability> cands = allCandidates.getCandidates(req);
                         if ((cands != null) && !cands.isEmpty())
                         {
                             String pkgName = (String) cands.iterator().next()
-                                .getAttributes().get(ResourceConstants.WIRING_PACKAGE_NAMESPACE);
+                                .getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE);
                             exports.remove(pkgName);
                         }
                     }
@@ -1304,7 +1307,7 @@ public class ResolverImpl implements FelixResolver
         Environment env, Capability cap, Map<Resource, Packages> revisionPkgMap)
     {
         // If it is a package, then calculate sources for it.
-        if (cap.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+        if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
         {
             List<Capability> sources = m_packageSourcesCache.get(cap);
             if (sources == null)
@@ -1319,7 +1322,7 @@ public class ResolverImpl implements FelixResolver
         // Otherwise, need to return generic capabilies that have
         // uses constraints so they are included for consistency
         // checking.
-        String uses = cap.getDirectives().get(ResourceConstants.CAPABILITY_USES_DIRECTIVE);
+        String uses = cap.getDirectives().get(AbstractNamespace.CAPABILITY_USES_DIRECTIVE);
         if ((uses != null) && (uses.length() > 0))
         {
             return Collections.singletonList(cap);
@@ -1332,7 +1335,7 @@ public class ResolverImpl implements FelixResolver
         Environment env, Capability cap, Map<Resource, Packages> revisionPkgMap,
         List<Capability> sources, Set<Capability> cycleMap)
     {
-        if (cap.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+        if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
         {
             if (cycleMap.contains(cap))
             {
@@ -1342,7 +1345,7 @@ public class ResolverImpl implements FelixResolver
 
             // Get the package name associated with the capability.
             String pkgName = cap.getAttributes()
-                .get(ResourceConstants.WIRING_PACKAGE_NAMESPACE).toString();
+                .get(PackageNamespace.PACKAGE_NAMESPACE).toString();
 
             // Since a revision can export the same package more than once, get
             // all package capabilities for the specified package name.
@@ -1353,9 +1356,9 @@ public class ResolverImpl implements FelixResolver
             for (int capIdx = 0; capIdx < caps.size(); capIdx++)
             {
                 if (caps.get(capIdx).getNamespace()
-                        .equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE)
+                        .equals(PackageNamespace.PACKAGE_NAMESPACE)
                     && caps.get(capIdx).getAttributes()
-                        .get(ResourceConstants.WIRING_PACKAGE_NAMESPACE).equals(pkgName))
+                        .get(PackageNamespace.PACKAGE_NAMESPACE).equals(pkgName))
                 {
                     sources.add(caps.get(capIdx));
                 }
@@ -1440,11 +1443,11 @@ public class ResolverImpl implements FelixResolver
                             getActualRequirement(req),
                             getActualResource(cand.getResource()),
                             getActualCapability(cand));
-                        if (req.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+                        if (req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                         {
                             packageWires.add(wire);
                         }
-                        else if (req.getNamespace().equals(ResourceConstants.WIRING_BUNDLE_NAMESPACE))
+                        else if (req.getNamespace().equals(BundleNamespace.BUNDLE_NAMESPACE))
                         {
                             bundleWires.add(wire);
                         }
@@ -1477,10 +1480,10 @@ public class ResolverImpl implements FelixResolver
                         new WireImpl(
                             getActualResource(fragment),
                             fragment.getRequirements(
-                                ResourceConstants.WIRING_HOST_NAMESPACE).get(0),
+                                HostNamespace.HOST_NAMESPACE).get(0),
                             unwrappedResource,
                             unwrappedResource.getCapabilities(
-                                ResourceConstants.WIRING_HOST_NAMESPACE).get(0)));
+                                HostNamespace.HOST_NAMESPACE).get(0)));
                 }
             }
         }
@@ -1531,14 +1534,14 @@ public class ResolverImpl implements FelixResolver
         for (Wire wire : wiring.getRequiredResourceWires(null))
         {
             if (wire.getCapability().getNamespace()
-                .equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+                .equals(PackageNamespace.PACKAGE_NAMESPACE))
             {
                 pkgSpace.add(
                     (String) wire.getCapability().getAttributes()
-                        .get(ResourceConstants.WIRING_PACKAGE_NAMESPACE));
+                        .get(PackageNamespace.PACKAGE_NAMESPACE));
             }
             else if (wire.getCapability().getNamespace()
-                .equals(ResourceConstants.WIRING_BUNDLE_NAMESPACE))
+                .equals(BundleNamespace.BUNDLE_NAMESPACE))
             {
                 Set<String> pkgs = calculateExportedAndReexportedPackages(
                     env,
@@ -1564,10 +1567,10 @@ public class ResolverImpl implements FelixResolver
             // Add all exported packages.
             for (Capability cap : res.getCapabilities(null))
             {
-                if (cap.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+                if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                 {
                     pkgs.add((String)
-                        cap.getAttributes().get(ResourceConstants.WIRING_PACKAGE_NAMESPACE));
+                        cap.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE));
                 }
             }
 
@@ -1576,7 +1579,7 @@ public class ResolverImpl implements FelixResolver
             for (Wire wire : env.getWirings().get(res).getRequiredResourceWires(null))
             {
                 if (wire.getCapability().getNamespace().equals(
-                    ResourceConstants.WIRING_BUNDLE_NAMESPACE))
+                    BundleNamespace.BUNDLE_NAMESPACE))
                 {
                     String dir = wire.getRequirement()
                         .getDirectives().get(Constants.VISIBILITY_DIRECTIVE);
@@ -1646,7 +1649,7 @@ public class ResolverImpl implements FelixResolver
                 sb.append(" [");
                 sb.append(req.getResource().toString());
                 sb.append("]\n");
-                if (req.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+                if (req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                 {
                     sb.append("    import: ");
                 }
@@ -1654,9 +1657,9 @@ public class ResolverImpl implements FelixResolver
                 {
                     sb.append("    require: ");
                 }
-                sb.append(req.getDirectives().get(ResourceConstants.REQUIREMENT_FILTER_DIRECTIVE));
+                sb.append(req.getDirectives().get(AbstractNamespace.REQUIREMENT_FILTER_DIRECTIVE));
                 sb.append("\n     |");
-                if (req.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+                if (req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                 {
                     sb.append("\n    export: ");
                 }
@@ -1670,12 +1673,12 @@ public class ResolverImpl implements FelixResolver
                         env,
                         blame.m_reqs.get(i + 1).getResource(),
                         blame.m_reqs.get(i));
-                    if (cap.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+                    if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                     {
-                        sb.append(ResourceConstants.WIRING_PACKAGE_NAMESPACE);
+                        sb.append(PackageNamespace.PACKAGE_NAMESPACE);
                         sb.append("=");
                         sb.append(cap.getAttributes()
-                            .get(ResourceConstants.WIRING_PACKAGE_NAMESPACE).toString());
+                            .get(PackageNamespace.PACKAGE_NAMESPACE).toString());
                         Capability usedCap;
                         if ((i + 2) < blame.m_reqs.size())
                         {
@@ -1693,7 +1696,7 @@ public class ResolverImpl implements FelixResolver
                         }
                         sb.append("; uses:=");
                         sb.append(usedCap.getAttributes()
-                            .get(ResourceConstants.WIRING_PACKAGE_NAMESPACE));
+                            .get(PackageNamespace.PACKAGE_NAMESPACE));
                     }
                     else
                     {
@@ -1710,19 +1713,19 @@ public class ResolverImpl implements FelixResolver
                     sb.append(export.getNamespace());
                     sb.append("=");
                     sb.append(export.getAttributes().get(export.getNamespace()).toString());
-                    if (export.getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE)
-                        && !export.getAttributes().get(ResourceConstants.WIRING_PACKAGE_NAMESPACE)
+                    if (export.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE)
+                        && !export.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE)
                             .equals(blame.m_cap.getAttributes().get(
-                                ResourceConstants.WIRING_PACKAGE_NAMESPACE)))
+                            		PackageNamespace.PACKAGE_NAMESPACE)))
                     {
                         sb.append("; uses:=");
                         sb.append(blame.m_cap.getAttributes()
-                            .get(ResourceConstants.WIRING_PACKAGE_NAMESPACE));
+                            .get(PackageNamespace.PACKAGE_NAMESPACE));
                         sb.append("\n    export: ");
-                        sb.append(ResourceConstants.WIRING_PACKAGE_NAMESPACE);
+                        sb.append(PackageNamespace.PACKAGE_NAMESPACE);
                         sb.append("=");
                         sb.append(blame.m_cap.getAttributes()
-                            .get(ResourceConstants.WIRING_PACKAGE_NAMESPACE).toString());
+                            .get(PackageNamespace.PACKAGE_NAMESPACE).toString());
                     }
                     sb.append("\n  ");
                     sb.append(Util.getSymbolicName(blame.m_cap.getResource()));
@@ -1768,7 +1771,7 @@ public class ResolverImpl implements FelixResolver
         public String toString()
         {
             return m_cap.getResource()
-                + "." + m_cap.getAttributes().get(ResourceConstants.WIRING_PACKAGE_NAMESPACE)
+                + "." + m_cap.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE)
                 + (((m_reqs == null) || m_reqs.isEmpty())
                     ? " NO BLAME"
                     : " BLAMED ON " + m_reqs);

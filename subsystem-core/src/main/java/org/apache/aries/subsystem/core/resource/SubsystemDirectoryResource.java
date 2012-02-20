@@ -8,10 +8,10 @@ import java.util.List;
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 
 public class SubsystemDirectoryResource implements Resource {
 	private final SubsystemArchive archive;
@@ -35,7 +35,7 @@ public class SubsystemDirectoryResource implements Resource {
 	
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		if (namespace == null || ResourceConstants.IDENTITY_NAMESPACE.equals(namespace))
+		if (namespace == null || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
 			return capabilities;
 		return Collections.emptyList();
 	}

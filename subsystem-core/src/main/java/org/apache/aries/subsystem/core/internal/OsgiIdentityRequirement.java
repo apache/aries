@@ -25,8 +25,8 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class OsgiIdentityRequirement extends AbstractRequirement {
@@ -35,7 +35,7 @@ public class OsgiIdentityRequirement extends AbstractRequirement {
 				symbolicName,
 				new StringBuilder()
 					.append('(')
-					.append(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE)
+					.append(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE)
 					.append('=')
 					.append(version)
 					.append(')')
@@ -51,10 +51,10 @@ public class OsgiIdentityRequirement extends AbstractRequirement {
 	}
 	
 	private static Filter createFilter(Resource resource) {
-		Map<String, Object> attributes = resource.getCapabilities(ResourceConstants.IDENTITY_NAMESPACE).get(0).getAttributes();
-		String symbolicName = String.valueOf(attributes.get(ResourceConstants.IDENTITY_NAMESPACE));
-		Version version = Version.parseVersion(String.valueOf(attributes.get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE)));
-		String type = String.valueOf(attributes.get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE));
+		Map<String, Object> attributes = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0).getAttributes();
+		String symbolicName = String.valueOf(attributes.get(IdentityNamespace.IDENTITY_NAMESPACE));
+		Version version = Version.parseVersion(String.valueOf(attributes.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE)));
+		String type = String.valueOf(attributes.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE));
 		return createFilter(symbolicName, version, type);
 	}
 	
@@ -69,13 +69,13 @@ public class OsgiIdentityRequirement extends AbstractRequirement {
 	
 	private static String createFilterString(String symbolicName, String versionFilter, String type) {
 		return new StringBuilder("(&(")
-			.append(ResourceConstants.IDENTITY_NAMESPACE)
+			.append(IdentityNamespace.IDENTITY_NAMESPACE)
 			.append('=')
 			.append(symbolicName)
 			.append(')')
 			.append(versionFilter)
 			.append('(')
-			.append(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE)
+			.append(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE)
 			.append('=')
 			.append(type)
 			.append("))").toString();
@@ -119,7 +119,7 @@ public class OsgiIdentityRequirement extends AbstractRequirement {
 
 	@Override
 	public String getNamespace() {
-		return ResourceConstants.IDENTITY_NAMESPACE;
+		return IdentityNamespace.IDENTITY_NAMESPACE;
 	}
 
 	@Override

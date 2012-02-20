@@ -26,10 +26,10 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public class ResourceHelper {
 	}
 	
 	public static Object getIdentityAttribute(Resource resource, String name) {
-		List<Capability> capabilities = resource.getCapabilities(ResourceConstants.IDENTITY_NAMESPACE);
+		List<Capability> capabilities = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE);
 		Capability capability = capabilities.get(0);
 		return capability.getAttributes().get(name);
 	}
@@ -73,18 +73,18 @@ public class ResourceHelper {
 	}
 	
 	public static String getSymbolicNameAttribute(Resource resource) {
-		return (String)getIdentityAttribute(resource, ResourceConstants.IDENTITY_NAMESPACE);
+		return (String)getIdentityAttribute(resource, IdentityNamespace.IDENTITY_NAMESPACE);
 	}
 	
 	public static String getTypeAttribute(Resource resource) {
-		String result = (String)getIdentityAttribute(resource, ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
+		String result = (String)getIdentityAttribute(resource, IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
 		if (result == null)
 			result = TypeAttribute.DEFAULT_VALUE;
 		return result;
 	}
 	
 	public static Version getVersionAttribute(Resource resource) {
-		Version result = (Version)getIdentityAttribute(resource, ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
+		Version result = (Version)getIdentityAttribute(resource, IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
 		if (result == null)
 			result = Version.emptyVersion;
 		return result;

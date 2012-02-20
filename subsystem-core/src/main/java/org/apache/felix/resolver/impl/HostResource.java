@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 
 class HostResource implements Resource
 {
@@ -99,7 +99,7 @@ class HostResource implements Resource
                 {
                     for (Requirement req : fragment.getRequirements(null))
                     {
-                        if (!req.getNamespace().equals(ResourceConstants.WIRING_HOST_NAMESPACE))
+                        if (!req.getNamespace().equals(HostNamespace.HOST_NAMESPACE))
                         {
                             reqs.add(new HostedRequirement(this, req));
                         }
