@@ -20,10 +20,10 @@ import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemConstants;
 
@@ -90,7 +90,7 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 	
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		if (namespace == null || ResourceConstants.IDENTITY_NAMESPACE.equals(namespace))
+		if (namespace == null || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
 			return capabilities;
 		return Collections.emptyList();
 	}
@@ -107,16 +107,16 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 	
 	public String getSubsystemSymbolicName() {
 		Capability identity = capabilities.get(0);
-		return (String)identity.getAttributes().get(ResourceConstants.IDENTITY_NAMESPACE);
+		return (String)identity.getAttributes().get(IdentityNamespace.IDENTITY_NAMESPACE);
 	}
 	
 	public String getSubsystemType() {
 		Capability identity = capabilities.get(0);
-		return (String)identity.getAttributes().get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
+		return (String)identity.getAttributes().get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
 	}
 	
 	public Version getSubsystemVersion() {
 		Capability identity = capabilities.get(0);
-		return (Version)identity.getAttributes().get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
+		return (Version)identity.getAttributes().get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
 	}
 }

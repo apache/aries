@@ -17,10 +17,10 @@ import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemConstants;
 
@@ -72,7 +72,7 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 	
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		if (namespace == null || ResourceConstants.IDENTITY_NAMESPACE.equals(namespace))
+		if (namespace == null || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
 			return capabilities;
 		return Collections.emptyList();
 	}

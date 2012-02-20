@@ -22,9 +22,9 @@ import java.util.Map;
 import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 
 public class ExportPackageHeader extends AbstractHeader {
 	public static final String NAME = Constants.EXPORT_PACKAGE;
@@ -41,7 +41,7 @@ public class ExportPackageHeader extends AbstractHeader {
 				capabilities.add(new AbstractCapability() {
 					@Override
 					public String getNamespace() {
-						return ResourceConstants.WIRING_PACKAGE_NAMESPACE;
+						return PackageNamespace.PACKAGE_NAMESPACE;
 					}
 
 					@Override
@@ -60,7 +60,7 @@ public class ExportPackageHeader extends AbstractHeader {
 						for (Attribute attribute : attributes)
 							result.put(attribute.getName(), attribute.getValue());
 						// Add the namespace attribute.
-						result.put(ResourceConstants.WIRING_PACKAGE_NAMESPACE, exportedPackage);
+						result.put(PackageNamespace.PACKAGE_NAMESPACE, exportedPackage);
 						// Add the default version, if necessary.
 						if (result.get(Constants.VERSION_ATTRIBUTE) == null)
 							result.put(Constants.VERSION_ATTRIBUTE, Version.emptyVersion);

@@ -25,10 +25,10 @@ import org.apache.aries.subsystem.core.Environment;
 import org.apache.aries.subsystem.core.ResourceHelper;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.framework.resource.Wiring;
 
 public class Util
@@ -38,9 +38,9 @@ public class Util
         List<Capability> caps = resource.getCapabilities(null);
         for (Capability cap : caps)
         {
-            if (cap.getNamespace().equals(ResourceConstants.IDENTITY_NAMESPACE))
+            if (cap.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE))
             {
-                return cap.getAttributes().get(ResourceConstants.IDENTITY_NAMESPACE).toString();
+                return cap.getAttributes().get(IdentityNamespace.IDENTITY_NAMESPACE).toString();
             }
         }
         return null;
@@ -51,10 +51,10 @@ public class Util
         List<Capability> caps = resource.getCapabilities(null);
         for (Capability cap : caps)
         {
-            if (cap.getNamespace().equals(ResourceConstants.IDENTITY_NAMESPACE))
+            if (cap.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE))
             {
                 return (Version)
-                    cap.getAttributes().get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
+                    cap.getAttributes().get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
             }
         }
         return null;
@@ -65,11 +65,11 @@ public class Util
         List<Capability> caps = resource.getCapabilities(null);
         for (Capability cap : caps)
         {
-            if (cap.getNamespace().equals(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE))
+            if (cap.getNamespace().equals(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE))
             {
                 String type = (String)
-                    cap.getAttributes().get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
-                return (type != null) && type.equals(ResourceConstants.IDENTITY_TYPE_FRAGMENT);
+                    cap.getAttributes().get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
+                return (type != null) && type.equals(IdentityNamespace.TYPE_FRAGMENT);
             }
         }
         return false;
