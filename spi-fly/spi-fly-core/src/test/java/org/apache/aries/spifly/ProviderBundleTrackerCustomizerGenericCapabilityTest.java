@@ -30,9 +30,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.spifly.impl1.MySPIImpl1;
@@ -103,7 +105,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         BundleContext implBC = mockSPIBundleContext(sreg);
         Bundle implBundle = mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT +
-                "; service-registry:=true; approval=global");
+                "; " + SpiFlyConstants.SERVICE_REGISTRY_DIRECTIVE + ":=true; approval=global");
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(1, registrations.size());
@@ -137,6 +139,34 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         assertEquals("org.apache.aries.mytest.MySPI", registrations.iterator().next().getReference().getProperty(Constants.OBJECTCLASS));
         assertNotNull(registrations.iterator().next().getReference().getProperty(SpiFlyConstants.SPI_PROVIDER_URL_PROPERTY));
         assertEquals("global", registrations.iterator().next().getReference().getProperty("approval"));
+    }
+
+    @Test
+    public void testProvidedSPIDirective() throws Exception {
+        Bundle spiBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.replay(spiBundle);
+
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
+
+        BundleContext implBC = mockSPIBundleContext4();
+        Bundle implBundle =
+            mockSPIBundle4(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT + "; " + SpiFlyConstants.PROVIDED_SPI_DIRECTIVE + ":=\"org.apache.aries.mytest.MySPI,org.apache.aries.mytest.MySPI2\"; approval=global");
+
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        assertEquals("Expected 3 registrations, one for MySPI and 2 for MySPI2", 3, registrations.size());
+        Set<String> expectedObjectClasses = new HashSet<String>(Arrays.asList("org.apache.aries.mytest.MySPI", "org.apache.aries.mytest.MySPI2"));
+        Set<String> actualObjectClasses = new HashSet<String>();
+        for (ServiceRegistration sr : registrations) {
+            actualObjectClasses.add((String) sr.getReference().getProperty(Constants.OBJECTCLASS));
+            assertNotNull(sr.getReference().getProperty(SpiFlyConstants.SPI_PROVIDER_URL_PROPERTY));
+            assertEquals("global", sr.getReference().getProperty("approval"));
+        }
+        assertEquals(expectedObjectClasses, actualObjectClasses);
     }
 
     @Test
@@ -195,7 +225,8 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         EasyMock.replay(sreg);
 
         BundleContext implBC = mockSPIBundleContext(sreg);
-        Bundle implBundle = mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT + "; service-registry:=false");
+        Bundle implBundle = mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT +
+                "; " + SpiFlyConstants.SERVICE_REGISTRY_DIRECTIVE + ":=false");
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(0, registrations.size());
