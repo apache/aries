@@ -16,9 +16,9 @@ import java.util.jar.Manifest;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemManifest {
@@ -85,14 +85,14 @@ public class SubsystemManifest {
 			// TODO Better way than using StringBuilder? Would require a more robust SubsystemContentHeader in order to fulfill the Header contract.
 			StringBuilder sb = new StringBuilder();
 			for (Resource resource : content) {
-				Capability c = resource.getCapabilities(ResourceConstants.IDENTITY_NAMESPACE).get(0);
+				Capability c = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0);
 				Map<String, Object> a = c.getAttributes();
-				String s = (String)a.get(ResourceConstants.IDENTITY_NAMESPACE);
-				Version v = (Version)a.get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
-				String t = (String)a.get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
+				String s = (String)a.get(IdentityNamespace.IDENTITY_NAMESPACE);
+				Version v = (Version)a.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
+				String t = (String)a.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
 				sb.append(s).append(';')
-					.append(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE).append('=').append(v).append(';')
-					.append(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE).append('=').append(t).append(',');
+					.append(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE).append('=').append(v).append(';')
+					.append(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE).append('=').append(t).append(',');
 			}
 			if (sb.length() != 0) {
 				// Remove the trailing comma.

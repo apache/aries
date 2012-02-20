@@ -20,9 +20,9 @@ package org.apache.felix.resolver.impl;
 
 import java.util.Map;
 
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 
 public class HostedCapability implements Capability
 {
@@ -105,12 +105,12 @@ public class HostedCapability implements Capability
         {
             return getAttributes().toString();
         }
-        if (getNamespace().equals(ResourceConstants.WIRING_PACKAGE_NAMESPACE))
+        if (getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
         {
             return "[" + m_host + "] "
                 + getNamespace()
                 + "; "
-                + getAttributes().get(ResourceConstants.WIRING_PACKAGE_NAMESPACE);
+                + getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE);
         }
         return "[" + m_host + "] " + getNamespace() + "; " + getAttributes();
     }

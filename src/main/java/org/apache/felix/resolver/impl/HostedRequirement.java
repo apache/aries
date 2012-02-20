@@ -20,10 +20,10 @@ package org.apache.felix.resolver.impl;
 
 import java.util.Map;
 
+import org.osgi.framework.namespace.AbstractNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 
 public class HostedRequirement implements Requirement
 {
@@ -113,6 +113,6 @@ public class HostedRequirement implements Requirement
     public String toString()
     {
         return "[" + m_host + "] " + getNamespace() + "; "
-            + getDirectives().get(ResourceConstants.REQUIREMENT_FILTER_DIRECTIVE);
+            + getDirectives().get(AbstractNamespace.REQUIREMENT_FILTER_DIRECTIVE);
     }
 }

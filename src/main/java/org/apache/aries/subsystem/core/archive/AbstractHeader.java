@@ -21,8 +21,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 
 public abstract class AbstractHeader implements Header {
 	protected static final String REGEX = Grammar.CLAUSE + "(?=,|\\z)";
@@ -30,10 +30,10 @@ public abstract class AbstractHeader implements Header {
 	
 	// TODO This is specific to deployment manifests and shouldn't be at this level.
 	protected static void appendResource(Resource resource, StringBuilder builder) {
-		Map<String, Object> attributes = resource.getCapabilities(ResourceConstants.IDENTITY_NAMESPACE).get(0).getAttributes();
-		String symbolicName = (String)attributes.get(ResourceConstants.IDENTITY_NAMESPACE);
-		Version version = (Version)attributes.get(ResourceConstants.IDENTITY_VERSION_ATTRIBUTE);
-		String namespace = (String)attributes.get(ResourceConstants.IDENTITY_TYPE_ATTRIBUTE);
+		Map<String, Object> attributes = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0).getAttributes();
+		String symbolicName = (String)attributes.get(IdentityNamespace.IDENTITY_NAMESPACE);
+		Version version = (Version)attributes.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
+		String namespace = (String)attributes.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
 		builder.append(symbolicName)
 			.append(';')
 			.append(DeployedVersionAttribute.NAME)

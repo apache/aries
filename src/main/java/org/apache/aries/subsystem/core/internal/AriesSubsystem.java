@@ -64,10 +64,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.ResourceConstants;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.service.coordinator.Coordination;
@@ -374,7 +374,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		if (namespace == null || namespace.equals(ResourceConstants.IDENTITY_NAMESPACE)) {
+		if (namespace == null || namespace.equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
 			Capability capability = new OsgiIdentityCapability(this, getSymbolicName(), getVersion(), getType());
 			return Arrays.asList(new Capability[]{capability});
 		}
@@ -449,53 +449,23 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public Subsystem install(String location, InputStream content) throws SubsystemException {
-		SubsystemStreamResource ssr = null;
+		Coordination coordination = Activator.getInstance().getServiceProvider().getService(Coordinator.class).create(getSymbolicName() + '-' + getSubsystemId(), 0);
+		Subsystem result = null;
 		try {
-			TargetRegion region = new TargetRegion(this);
-			ssr = new SubsystemStreamResource(location, content);
-			AriesSubsystem subsystem = locationToSubsystem.get(location);
-			if (subsystem != null) {
-				if (!region.contains(subsystem))
-					throw new SubsystemException("Location already exists but existing subsystem is not part of target region: " + location);
-				if (!(subsystem.getSymbolicName().equals(ssr.getSubsystemSymbolicName())
-						&& subsystem.getVersion().equals(ssr.getSubsystemVersion())
-						&& subsystem.getType().equals(ssr.getSubsystemType())))
-					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
-				subsystemGraph.add(this, subsystem);
-				constituents.add(subsystem);
-				return subsystem;
-			}
-			subsystem = (AriesSubsystem)region.find(ssr.getSubsystemSymbolicName(), ssr.getSubsystemVersion());
-			if (subsystem != null) {
-				if (!subsystem.getType().equals(ssr.getSubsystemType()))
-					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
-				subsystemGraph.add(this, subsystem);
-				constituents.add(subsystem);
-				return subsystem;
-			}
-			subsystem = new AriesSubsystem(location, ssr.getContent(), this);
-			Coordination coordination = Activator.getInstance().getServiceProvider().getService(Coordinator.class).create(getSymbolicName() + '-' + getSubsystemId(), 0);
-			try {
-				installSubsystemResource(subsystem, coordination, false);
-				return subsystem;
-			}
-			catch (Exception e) {
-				coordination.fail(e);
-				throw e;
-			}
-			finally {
-				coordination.end();
-			}
+			result = install(location, content, coordination);
 		}
 		catch (Exception e) {
-			LOGGER.error("Subsystem failed to install: " + location, e);
-			throw new SubsystemException(e);
+			coordination.fail(e);
 		}
 		finally {
-			if (ssr != null)
-				ssr.close();
-			IOUtils.close(content);
+			try {
+				coordination.end();
+			}
+			catch (CoordinationException e) {
+				throw new SubsystemException(e);
+			}
 		}
+		return result;
 	}
 	
 	public boolean isApplication() {
@@ -625,40 +595,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			stop();
 			uninstall();
 		}
-		setState(State.UNINSTALLING);
-		// Uninstall child subsystems first.
-		for (Subsystem subsystem : getChildren()) {
-			try {
-				uninstallSubsystemResource((AriesSubsystem)subsystem);
-			}
-			catch (Exception e) {
-				LOGGER.error("An error occurred while uninstalling resource " + subsystem + " of subsystem " + this, e);
-				// TODO Should FAILED go out for each failure?
-			}
-		}
-		// Uninstall any remaining constituents.
-		for (Resource resource : getConstituents()) {
-			// Don't uninstall the region context bundle here.
-			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
-				continue;
-			try {
-				uninstallResource(resource);
-			}
-			catch (Exception e) {
-				LOGGER.error("An error occurred while uninstalling resource " + resource + " of subsystem " + this, e);
-				// TODO Should FAILED go out for each failure?
-			}
-		}
-		for (Subsystem parent : getParents()) {
-			((AriesSubsystem)parent).constituents.remove(this);
-		}
-		subsystemGraph.remove(this);
-		locationToSubsystem.remove(location);
-		deleteFile(directory);
-		setState(State.UNINSTALLED);
-		Activator.getInstance().getSubsystemServiceRegistrar().unregister(this);
-		if (!isFeature())
-			constituents.remove(RegionContextBundleHelper.uninstallRegionContextBundle(this));
+		uninstall(true);
 	}
 	
 	void bundleChanged(BundleEvent event) {
@@ -688,83 +625,17 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return region;
 	}
 	
-	synchronized void install() throws Exception {
-		if (!isFeature())
-			constituents.add(RegionContextBundleHelper.installRegionContextBundle(this));
-		Activator.getInstance().getSubsystemServiceRegistrar().register(this);
-		Set<Resource> contentResources = new TreeSet<Resource>(
-				new Comparator<Resource>() {
-					@Override
-					public int compare(Resource o1, Resource o2) {
-						if (o1.equals(o2))
-							// Consistent with equals.
-							return 0;
-						String t1 = ResourceHelper.getTypeAttribute(o1);
-						String t2 = ResourceHelper.getTypeAttribute(o2);
-						boolean b1 = ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(t1)
-								|| ResourceConstants.IDENTITY_TYPE_FRAGMENT.equals(t1);
-						boolean b2 = ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(t2)
-								|| ResourceConstants.IDENTITY_TYPE_FRAGMENT.equals(t2);
-						if (b1 && !b2)
-							// o1 is a bundle or fragment but o2 is not.
-							return -1;
-						if (!b1 && b2)
-							// o1 is not a bundle or fragment but o2 is.
-							return 1;
-						// Either both or neither are bundles or fragments. In this case we don't care about the order.
-						return -1;
-					}
-				});
-		List<Resource> transitiveDependencies = new ArrayList<Resource>();
-		DeploymentManifest manifest = getDeploymentManifest();
-		DeployedContentHeader contentHeader = manifest.getDeployedContentHeader();
-		if (contentHeader != null) {
-			for (DeployedContent content : contentHeader.getDeployedContents()) {
-				Collection<Capability> capabilities = environment.findProviders(
-						new OsgiIdentityRequirement(content.getName(), content.getDeployedVersion(), content.getNamespace(), false));
-				if (capabilities.isEmpty())
-					throw new SubsystemException("Subsystem content resource does not exist: " + content.getName() + ";version=" + content.getDeployedVersion());
-				Resource resource = capabilities.iterator().next().getResource();
-				contentResources.add(resource);
-			}
+	void install() {
+		Coordination coordination = Activator.getInstance()
+				.getServiceProvider().getService(Coordinator.class)
+				.create(getSymbolicName() + "-" + getSubsystemId(), 0);
+		try {
+			install(coordination);
+		} catch (Exception e) {
+			coordination.fail(e);
+		} finally {
+			coordination.end();
 		}
-		ProvisionResourceHeader resourceHeader = manifest.getProvisionResourceHeader();
-		if (resourceHeader != null) {
-			for (ProvisionedResource content : resourceHeader.getProvisionedResources()) {
-				Collection<Capability> capabilities = environment.findProviders(
-						new OsgiIdentityRequirement(content.getName(), content.getDeployedVersion(), content.getNamespace(), true));
-				if (capabilities.isEmpty())
-					throw new SubsystemException("Subsystem provisioned resource does not exist: " + content.getName() + ";version=" + content.getDeployedVersion());
-				Resource resource = capabilities.iterator().next().getResource();
-				transitiveDependencies.add(resource);
-			}
-		}
-		// Install content resources and transitive dependencies.
-		if (!contentResources.isEmpty()) {
-			Coordination coordination = Activator.getInstance().getServiceProvider().getService(Coordinator.class).create(getSymbolicName() + '-' + getSubsystemId(), 0);
-			try {
-				// Install the content resources.
-				for (Resource resource : contentResources) {
-					installResource(resource, coordination, false);
-				}
-				// Discover and install transitive dependencies.
-				for (Resource resource : transitiveDependencies) {
-					installResource(resource, coordination, true);
-				}
-			}
-			catch (Exception e) {
-				// TODO Log this exception? If not, who's responsible for logging it?
-				LOGGER.error("Failed to install subsystem", e);
-				coordination.fail(e);
-				throw e;
-			}
-			finally {
-				coordination.end();
-			}
-		}
-		setState(State.INSTALLED);
-		if (autostart)
-			start();
 	}
 	
 	void stop0() {
@@ -903,6 +774,109 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		return provisionTo;
 	}
+	
+	private synchronized void install(Coordination coordination) throws Exception {
+		if (!isFeature())
+			constituents.add(RegionContextBundleHelper.installRegionContextBundle(this));
+		Activator.getInstance().getSubsystemServiceRegistrar().register(this);
+		Set<Resource> contentResources = new TreeSet<Resource>(
+				new Comparator<Resource>() {
+					@Override
+					public int compare(Resource o1, Resource o2) {
+						if (o1.equals(o2))
+							// Consistent with equals.
+							return 0;
+						String t1 = ResourceHelper.getTypeAttribute(o1);
+						String t2 = ResourceHelper.getTypeAttribute(o2);
+						boolean b1 = IdentityNamespace.TYPE_BUNDLE.equals(t1)
+								|| IdentityNamespace.TYPE_FRAGMENT.equals(t1);
+						boolean b2 = IdentityNamespace.TYPE_BUNDLE.equals(t2)
+								|| IdentityNamespace.TYPE_FRAGMENT.equals(t2);
+						if (b1 && !b2)
+							// o1 is a bundle or fragment but o2 is not.
+							return -1;
+						if (!b1 && b2)
+							// o1 is not a bundle or fragment but o2 is.
+							return 1;
+						// Either both or neither are bundles or fragments. In this case we don't care about the order.
+						return -1;
+					}
+				});
+		List<Resource> transitiveDependencies = new ArrayList<Resource>();
+		DeploymentManifest manifest = getDeploymentManifest();
+		DeployedContentHeader contentHeader = manifest.getDeployedContentHeader();
+		if (contentHeader != null) {
+			for (DeployedContent content : contentHeader.getDeployedContents()) {
+				Collection<Capability> capabilities = environment.findProviders(
+						new OsgiIdentityRequirement(content.getName(), content.getDeployedVersion(), content.getNamespace(), false));
+				if (capabilities.isEmpty())
+					throw new SubsystemException("Subsystem content resource does not exist: " + content.getName() + ";version=" + content.getDeployedVersion());
+				Resource resource = capabilities.iterator().next().getResource();
+				contentResources.add(resource);
+			}
+		}
+		ProvisionResourceHeader resourceHeader = manifest.getProvisionResourceHeader();
+		if (resourceHeader != null) {
+			for (ProvisionedResource content : resourceHeader.getProvisionedResources()) {
+				Collection<Capability> capabilities = environment.findProviders(
+						new OsgiIdentityRequirement(content.getName(), content.getDeployedVersion(), content.getNamespace(), true));
+				if (capabilities.isEmpty())
+					throw new SubsystemException("Subsystem provisioned resource does not exist: " + content.getName() + ";version=" + content.getDeployedVersion());
+				Resource resource = capabilities.iterator().next().getResource();
+				transitiveDependencies.add(resource);
+			}
+		}
+		// Install the content resources.
+		for (Resource resource : contentResources) {
+			installResource(resource, coordination, false);
+		}
+		// Discover and install transitive dependencies.
+		for (Resource resource : transitiveDependencies) {
+			installResource(resource, coordination, true);
+		}
+		setState(State.INSTALLED);
+		if (autostart)
+			start();
+	}
+	
+	private synchronized Subsystem install(String location, InputStream content, Coordination coordination) throws SubsystemException {
+		SubsystemStreamResource ssr = null;
+		try {
+			TargetRegion region = new TargetRegion(this);
+			ssr = new SubsystemStreamResource(location, content);
+			AriesSubsystem subsystem = locationToSubsystem.get(location);
+			if (subsystem != null) {
+				if (!region.contains(subsystem))
+					throw new SubsystemException("Location already exists but existing subsystem is not part of target region: " + location);
+				if (!(subsystem.getSymbolicName().equals(ssr.getSubsystemSymbolicName())
+						&& subsystem.getVersion().equals(ssr.getSubsystemVersion())
+						&& subsystem.getType().equals(ssr.getSubsystemType())))
+					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
+				subsystemGraph.add(this, subsystem);
+				constituents.add(subsystem);
+				return subsystem;
+			}
+			subsystem = (AriesSubsystem)region.find(ssr.getSubsystemSymbolicName(), ssr.getSubsystemVersion());
+			if (subsystem != null) {
+				if (!subsystem.getType().equals(ssr.getSubsystemType()))
+					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
+				subsystemGraph.add(this, subsystem);
+				constituents.add(subsystem);
+				return subsystem;
+			}
+			subsystem = new AriesSubsystem(location, ssr.getContent(), this);
+			installSubsystemResource(subsystem, coordination, false);
+			return subsystem;
+		}
+		catch (Exception e) {
+			throw new SubsystemException(e);
+		}
+		finally {
+			if (ssr != null)
+				ssr.close();
+			IOUtils.close(content);
+		}
+	}
 
 	private void installBundleResource(Resource resource, Coordination coordination, boolean transitive) throws BundleException, IOException {
 		AriesSubsystem provisionTo = null;
@@ -956,9 +930,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
 			installSubsystemResource(resource, coordination, transitive);
-		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
+		else if (IdentityNamespace.TYPE_BUNDLE.equals(type))
 			installBundleResource(resource, coordination, transitive);
-		else if (ResourceConstants.IDENTITY_TYPE_FRAGMENT.equals(type))
+		else if (IdentityNamespace.TYPE_FRAGMENT.equals(type))
 			installBundleResource(resource, coordination, transitive);
 		else
 			throw new SubsystemException("Unsupported resource type: " + type);
@@ -972,7 +946,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		else if (resource instanceof SubsystemFileResource) {
 			SubsystemFileResource sfr = (SubsystemFileResource)resource;
-			subsystem = (AriesSubsystem)install(sfr.getLocation(), sfr.getContent());
+			subsystem = (AriesSubsystem)install(sfr.getLocation(), sfr.getContent(), coordination);
 			return;
 		}
 		else if (resource instanceof SubsystemDirectoryResource) {
@@ -982,34 +956,39 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		else if (resource instanceof RepositoryContent) {
 			String location = getSubsystemId() + "@" + getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
-			subsystem = (AriesSubsystem)install(location, ((RepositoryContent)resource).getContent());
+			subsystem = (AriesSubsystem)install(location, ((RepositoryContent)resource).getContent(), coordination);
 			return;
 		}
 		else {
 			throw new IllegalArgumentException("Unrecognized subsystem resource: " + resource);
 		}
-		Set<AriesSubsystem> subsystems = new HashSet<AriesSubsystem>();
-		subsystems.add(this);
-		resourceToSubsystems.put(subsystem, subsystems);
+		// Detect a cycle before becoming a participant; otherwise, install failure cleanup goes awry
+		// because the parent in the cycle (i.e. the subsystem attempting to install here) is cleaned up 
+		// before the child. This results in the child (i.e. this subsystem) being uninstalled as part
+		// of that process, but its state has not moved from INSTALLING to INSTALL_FAILED, which results
+		// in an eternal wait for a state change.
 		subsystemGraph.add(this, subsystem);
-		constituents.add(subsystem);
-		subsystem.install();
 		coordination.addParticipant(new Participant() {
 			public void ended(Coordination coordination) throws Exception {
 				// noop
 			}
 	
 			public void failed(Coordination coordination) throws Exception {
-				subsystem.uninstall();
+				subsystem.setState(State.INSTALL_FAILED);
+				subsystem.uninstall(false);
 				constituents.remove(subsystem);
 				Set<AriesSubsystem> subsystems = resourceToSubsystems.get(subsystem);
 				subsystems.remove(AriesSubsystem.this);
 				if (subsystems.isEmpty())
 					resourceToSubsystems.remove(subsystem);
 				locationToSubsystem.remove(location);
-				subsystem.setState(State.INSTALL_FAILED);
 			}
 		});
+		Set<AriesSubsystem> subsystems = new HashSet<AriesSubsystem>();
+		subsystems.add(this);
+		resourceToSubsystems.put(subsystem, subsystems);
+		constituents.add(subsystem);
+		subsystem.install(coordination);
 	}
 
 	private boolean isRoot() {
@@ -1095,9 +1074,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
 			startSubsystemResource(resource, coordination);
-		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
+		else if (IdentityNamespace.TYPE_BUNDLE.equals(type))
 			startBundleResource(resource, coordination);
-		else if (ResourceConstants.IDENTITY_TYPE_FRAGMENT.equals(type)) {
+		else if (IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
 			// Fragments are not started.
 		}
 		else
@@ -1130,7 +1109,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
 			stopSubsystemResource(resource);
-		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
+		else if (IdentityNamespace.TYPE_BUNDLE.equals(type))
 			stopBundleResource(resource);
 		else
 			throw new SubsystemException("Unsupported resource type: " + type);
@@ -1138,6 +1117,45 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	private void stopSubsystemResource(Resource resource) throws IOException {
 		((AriesSubsystem)resource).stop();
+	}
+	
+	private void uninstall(boolean changeState) {
+		if (changeState)
+			setState(State.UNINSTALLING);
+		// Uninstall child subsystems first.
+		for (Subsystem subsystem : getChildren()) {
+			try {
+				uninstallSubsystemResource((AriesSubsystem)subsystem);
+			}
+			catch (Exception e) {
+				LOGGER.error("An error occurred while uninstalling resource " + subsystem + " of subsystem " + this, e);
+				// TODO Should FAILED go out for each failure?
+			}
+		}
+		// Uninstall any remaining constituents.
+		for (Resource resource : getConstituents()) {
+			// Don't uninstall the region context bundle here.
+			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+				continue;
+			try {
+				uninstallResource(resource);
+			}
+			catch (Exception e) {
+				LOGGER.error("An error occurred while uninstalling resource " + resource + " of subsystem " + this, e);
+				// TODO Should FAILED go out for each failure?
+			}
+		}
+		for (Subsystem parent : getParents()) {
+			((AriesSubsystem)parent).constituents.remove(this);
+		}
+		subsystemGraph.remove(this);
+		locationToSubsystem.remove(location);
+		deleteFile(directory);
+		if (changeState)
+			setState(State.UNINSTALLED);
+		Activator.getInstance().getSubsystemServiceRegistrar().unregister(this);
+		if (!isFeature())
+			constituents.remove(RegionContextBundleHelper.uninstallRegionContextBundle(this));
 	}
 
 	private void uninstallBundleResource(Resource resource) throws BundleException {
@@ -1175,7 +1193,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
 			uninstallSubsystemResource(resource);
-		else if (ResourceConstants.IDENTITY_TYPE_BUNDLE.equals(type))
+		else if (IdentityNamespace.TYPE_BUNDLE.equals(type))
 			uninstallBundleResource(resource);
 		else
 			throw new SubsystemException("Unsupported resource type: " + type);
