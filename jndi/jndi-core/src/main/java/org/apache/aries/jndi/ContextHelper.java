@@ -118,10 +118,17 @@ public final class ContextHelper {
     public static Context getInitialContext(BundleContext context, Hashtable<?, ?> environment)
         throws NamingException {
       
-      Bundle jndiBundle = FrameworkUtil.getBundle(ContextHelper.class);
+      final Bundle jndiBundle = FrameworkUtil.getBundle(ContextHelper.class);
       // if we are outside OSGi (like in our unittests) then we would get Null back here, so just make sure we don't.
       if (jndiBundle != null) {
-        BundleContext jndiBundleContext = jndiBundle.getBundleContext();
+        
+        BundleContext jndiBundleContext = AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
+          public BundleContext run()
+          {
+            return jndiBundle.getBundleContext();
+          }
+        });
+        
         if (!!!jndiBundleContext.getClass().equals(context.getClass())){
           //the context passed in must have come from a child framework
           //use the parent context instead
