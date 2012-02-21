@@ -27,8 +27,8 @@ public interface SpiFlyConstants {
 
     String EXTENDER_CAPABILITY_NAMESPACE = "osgi.extender";
 
-    String CLIENT_EXTENDER_NAME = "spi.consumer.mediator";
-    String PROVIDER_EXTENDER_NAME = "spi.provider.mediator";
+    String CLIENT_EXTENDER_NAME = "serviceloader.processor";
+    String PROVIDER_EXTENDER_NAME = "serviceloader.registrar";
 
     String CLIENT_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + EXTENDER_CAPABILITY_NAMESPACE + "=" + CLIENT_EXTENDER_NAME;
     String PROVIDER_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + EXTENDER_CAPABILITY_NAMESPACE + "=" + PROVIDER_EXTENDER_NAME;
