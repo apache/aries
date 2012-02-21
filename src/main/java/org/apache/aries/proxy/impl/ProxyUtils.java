@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class ProxyUtils
 {
   private static Logger LOGGER = LoggerFactory.getLogger(ProxyUtils.class);
-  public static int javaClassVersion = new BigDecimal(System.getProperty("java.class.version")).intValue();
+  public static final int JAVA_CLASS_VERSION = new BigDecimal(System.getProperty("java.class.version")).intValue();
   private static int weavingJavaVersion = -1; // initialise an invalid number
   /**
    * Get the java version to be woven at.
@@ -35,13 +35,13 @@ public class ProxyUtils
    */
   public static int getWeavingJavaVersion() {
     if (weavingJavaVersion == -1 ) {
-      if (javaClassVersion >= Opcodes.V1_7) {
+      if (JAVA_CLASS_VERSION >= Opcodes.V1_7) {
         LOGGER.debug("Weaving to Java 7");
         weavingJavaVersion = Opcodes.V1_7;
-      } else if (javaClassVersion == Opcodes.V1_6){
+      } else if (JAVA_CLASS_VERSION == Opcodes.V1_6){
         LOGGER.debug("Weaving to Java 6");
         weavingJavaVersion = Opcodes.V1_6;
-      } else if (javaClassVersion == Opcodes.V1_5) {
+      } else if (JAVA_CLASS_VERSION == Opcodes.V1_5) {
         LOGGER.debug("Weaving to Java 5");
         weavingJavaVersion = Opcodes.V1_5;
       } // no need to list all Opcodes as Aries should only work with java5 or above.
