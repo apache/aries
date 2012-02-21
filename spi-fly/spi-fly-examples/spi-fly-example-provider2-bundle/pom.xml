@@ -59,7 +59,7 @@
                         <Private-Package>
                             org.apache.aries.spifly.mysvc.impl2
                         </Private-Package>
-                        <Require-Capability>osgi.extender; osgi.extender=spi.provider.mediator</Require-Capability>
+                        <Require-Capability>osgi.extender; osgi.extender=serviceloader.registrar</Require-Capability>
                     </instructions>
                 </configuration>
             </plugin>
