@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -153,8 +154,45 @@ public class ClientWeavingHookGenericCapabilityTest {
 
 
     @Test
-    public void testTCCLResettingOnException() {
-        // TODO
+    public void testTCCLResettingOnException() throws Exception {
+        ClassLoader cl = new URLClassLoader(new URL [] {});
+        Thread.currentThread().setContextClassLoader(cl);
+        Assert.assertSame("Precondition", cl, Thread.currentThread().getContextClassLoader());
+
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
+                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(bundle-symbolic-name=impl5)\"");
+
+        Bundle providerBundle5 = mockProviderBundle("impl5", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle5, new HashMap<String, Object>());
+
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle5);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle,providerBundle5);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+
+        // Invoke the woven class, check that it properly set the TCCL so that the implementation of impl5 is called.
+        // That implementation throws an exception, after which we are making sure that the TCCL is set back appropriately.
+        try {
+            method.invoke(cls.newInstance(), "hello");
+            Assert.fail("Invocation should have thrown an exception");
+        } catch (InvocationTargetException ite) {
+            RuntimeException re = (RuntimeException) ite.getCause();
+            String msg = re.getMessage();
+            Assert.assertEquals("Uh-oh: hello", msg);
+
+            // The TCCL should have been reset correctly
+            Assert.assertSame(cl, Thread.currentThread().getContextClassLoader());
+        }
     }
 
     @Test
@@ -622,17 +660,6 @@ public class ClientWeavingHookGenericCapabilityTest {
 
         return consumerBundle;
     }
-
-    /*
-    private Bundle mockSystemBundle() {
-        Bundle systemBundle = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(systemBundle.getBundleId()).andReturn(0L).anyTimes();
-        EasyMock.expect(systemBundle.getSymbolicName()).andReturn("system.bundle").anyTimes();
-        EasyMock.replay(systemBundle);
-
-        return systemBundle;
-    }
-    */
 
     // A classloader that loads anything starting with org.apache.aries.spifly.dynamic.impl1 from it
     // and the rest from the parent. This is to mimic a bundle that holds a specific SPI implementation.
