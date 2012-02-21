@@ -18,10 +18,11 @@
  */
 package org.apache.aries.proxy.impl.common;
 
+import static org.apache.aries.proxy.impl.ProxyUtils.JAVA_CLASS_VERSION;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -187,7 +188,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
 
   protected boolean currentMethodDeclaringTypeIsInterface;
   
-  public static final int JAVA_CLASS_VERSION = new BigDecimal(System.getProperty("java.class.version")).intValue();
+ 
   public static final boolean IS_AT_LEAST_JAVA_6 = JAVA_CLASS_VERSION >= Opcodes.V1_6;
   
   /**
@@ -216,7 +217,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
         name, signature, superName, interfaces });
 
     // always update to the most recent version of the JVM
-    version = AbstractWovenProxyAdapter.JAVA_CLASS_VERSION;
+    version = JAVA_CLASS_VERSION;
 
     superType = Type.getType("L" + superName + ";");
 
