@@ -16,14 +16,17 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.aries.subsystem.core.Resolver;
 import org.apache.aries.subsystem.core.internal.Activator;
+import org.apache.aries.subsystem.core.internal.AriesSubsystem;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
+import org.osgi.framework.namespace.PackageNamespace;
+import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.resource.Wire;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
@@ -65,13 +68,16 @@ public class DeploymentManifest {
 			long id, 
 			long lastId, 
 			String location,
-			boolean overwrite) {
+			boolean overwrite,
+			boolean acceptDependencies) {
 		Map<String, Header<?>> headers;
 		if (deploymentManifest == null // We're generating a new deployment manifest.
 				|| (deploymentManifest != null && overwrite)) { // A deployment manifest already exists but overwriting it with subsystem manifest content is desired.
 			headers = new HashMap<String, Header<?>>();
 			Collection<Resource> resources = new HashSet<Resource>();
 			SubsystemContentHeader contentHeader = subsystemManifest.getSubsystemContentHeader();
+			Map<Resource, List<Wire>> resolution = null;
+			Collection<Resource> deployedContent = new HashSet<Resource>();
 			if (contentHeader != null) {
 				for (SubsystemContentHeader.Content content : contentHeader.getContents()) {
 					OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
@@ -85,9 +91,8 @@ public class DeploymentManifest {
 					resources.add(resource);
 				}
 				// TODO This does not validate that all content bundles were found.
-				Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(environment, new ArrayList<Resource>(resources), Collections.EMPTY_LIST);
+				resolution = Activator.getInstance().getResolver().resolve(environment, new ArrayList<Resource>(resources), Collections.EMPTY_LIST);
 				// TODO Once we have a resolver that actually returns lists of wires, we can use them to compute other manifest headers such as Import-Package.
-				Collection<Resource> deployedContent = new HashSet<Resource>();
 				Collection<Resource> provisionResource = new HashSet<Resource>();
 				for (Resource resource : resolution.keySet()) {
 					if (contentHeader.contains(resource))
@@ -105,6 +110,8 @@ public class DeploymentManifest {
 			headers.put(SUBSYSTEM_VERSION, subsystemManifest.getSubsystemVersionHeader());
 			SubsystemTypeHeader typeHeader = subsystemManifest.getSubsystemTypeHeader();
 			if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(typeHeader.getValue())) {
+				if (resolution != null)
+					headers.put(IMPORT_PACKAGE, computeImportPackageHeader(resolution, deployedContent, acceptDependencies));
 				// TODO Compute additional headers for an application.
 			}
 			// TODO Add to constants.
@@ -132,6 +139,10 @@ public class DeploymentManifest {
 		return headers;
 	}
 	
+	public ImportPackageHeader getImportPackageHeader() {
+		return (ImportPackageHeader)getHeaders().get(IMPORT_PACKAGE);
+	}
+	
 	public ProvisionResourceHeader getProvisionResourceHeader() {
 		return (ProvisionResourceHeader)getHeaders().get(PROVISION_RESOURCE);
 	}
@@ -145,5 +156,31 @@ public class DeploymentManifest {
 			attributes.putValue(entry.getKey(), entry.getValue().getValue());
 		}
 		manifest.write(out);
+	}
+	
+	private static ImportPackageHeader computeImportPackageHeader(
+			Map<Resource, List<Wire>> resolution, 
+			Collection<Resource> content,
+			boolean acceptDependencies) {
+		Collection<ImportPackageHeader.Clause> clauses = new ArrayList<ImportPackageHeader.Clause>();
+		for (Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
+			for (Wire wire : entry.getValue()) {
+				Resource provider = wire.getProvider();
+				if (content.contains(provider))
+					// If the provider is a content resource, we don't need an import.
+					continue;
+				// The provider is a dependency that is already provisioned or needs provisioning.
+				if (acceptDependencies && !((provider instanceof BundleRevision) || (provider instanceof AriesSubsystem)))
+					// If the application accepts dependencies and the provider is a dependency that needs provisioning,
+					// we don't need an import.
+					continue;
+				// For all other cases, we need an import.
+				Requirement requirement = wire.getRequirement();
+				if (PackageNamespace.PACKAGE_NAMESPACE.equals(requirement.getNamespace())) {
+					clauses.add(new ImportPackageRequirement(requirement).toClause());
+				}
+			}
+		}
+		return new ImportPackageHeader(clauses);
 	}
 }
