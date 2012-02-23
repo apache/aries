@@ -20,56 +20,55 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.resource.Capability;
+import org.osgi.framework.Version;
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
-		private static final String REGEX = '(' + Grammar.PACKAGENAMES + ")(?:\\;(" + Grammar.PARAMETER + "))*";
-		private static final Pattern PATTERN = Pattern.compile(REGEX);
+		private static final String REGEX1 = '(' + Grammar.PACKAGENAMES + ")(?=;|\\z)";
+		private static final String REGEX2 = '(' + Grammar.PARAMETER + ")(?=;|\\z)";
+		private static final Pattern PATTERN1 = Pattern.compile(REGEX1);
+		private static final Pattern PATTERN2 = Pattern.compile(REGEX2);
 		
 		private final Map<String, Parameter> myParameters = new HashMap<String, Parameter>();
 		private final String myPath;
 		
 		public Clause(String clause) {
-			Matcher matcher = PATTERN.matcher(clause);
-			if (!matcher.matches()) {
+			Matcher matcher = PATTERN1.matcher(clause);
+			if (matcher.find())
+				myPath = matcher.group();
+			else
 				throw new IllegalArgumentException("Invalid " + Constants.IMPORT_PACKAGE + " header clause: " + clause);
+			matcher.usePattern(PATTERN2);
+			while (matcher.find()) {
+				Parameter parameter = ParameterFactory.create(matcher.group());
+				myParameters.put(parameter.getName(), parameter);
 			}
-			myPath = matcher.group(1);
-			for (int i = 2; i <= matcher.groupCount(); i++) {
-				String group = matcher.group(i);
-				if (group != null) {
-					Parameter parameter = ParameterFactory.create(group);
-					myParameters.put(parameter.getName(), parameter);
-				}
-			}
-			Attribute attribute = new GenericAttribute(BundleRevision.PACKAGE_NAMESPACE, getPath());
-			myParameters.put(attribute.getName(), attribute);
-			attribute = getAttribute(Constants.VERSION_ATTRIBUTE);
-			if (attribute == null) {
-				attribute = new VersionRangeAttribute();
-				myParameters.put(attribute.getName(), attribute);
-			}
-			Directive directive = getDirective(Constants.FILTER_DIRECTIVE);
-			if (directive == null) {
-				StringBuilder builder = new StringBuilder("(&");
-				for (Attribute a : getAttributes()) {
-					a.appendToFilter(builder);
-				}
-				directive = new GenericDirective(Constants.FILTER_DIRECTIVE, builder.append(')').toString());
-				myParameters.put(directive.getName(), directive);
-			}
+//			Attribute attribute = new GenericAttribute(BundleRevision.PACKAGE_NAMESPACE, getPath());
+//			myParameters.put(attribute.getName(), attribute);
+//			attribute = getAttribute(Constants.VERSION_ATTRIBUTE);
+//			if (attribute == null) {
+//				attribute = new VersionRangeAttribute();
+//				myParameters.put(attribute.getName(), attribute);
+//			}
+//			Directive directive = getDirective(Constants.FILTER_DIRECTIVE);
+//			if (directive == null) {
+//				StringBuilder builder = new StringBuilder("(&");
+//				for (Attribute a : getAttributes()) {
+//					a.appendToFilter(builder);
+//				}
+//				directive = new GenericDirective(Constants.FILTER_DIRECTIVE, builder.append(')').toString());
+//				myParameters.put(directive.getName(), directive);
+//			}
 		}
 		
 		public Attribute getAttribute(String name) {
@@ -128,46 +127,42 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 		
 		public Requirement getRequirement(final Resource resource) {
 			return new Requirement() {
+				@Override
 				public String getNamespace() {
 					return BundleRevision.PACKAGE_NAMESPACE;
 				}
-
+				@Override
 				public Map<String, String> getDirectives() {
 					Collection<Directive> directives = Clause.this.getDirectives();
 					Map<String, String> result = new HashMap<String, String>(directives.size() + 1);
 					for (Directive directive : directives) {
 						result.put(directive.getName(), directive.getValue());
 					}
+					if (result.get(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE) == null) {
+						StringBuilder builder = new StringBuilder("(&");
+						for (Entry<String, Object> entry : getAttributes().entrySet())
+							builder.append('(').append(entry.getKey()).append('=').append(entry.getValue()).append(')');
+						result.put(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE, builder.append(')').toString());
+					}
 					return result;
 				}
-
+				@Override
 				public Map<String, Object> getAttributes() {
 					Collection<Attribute> attributes = Clause.this.getAttributes();
 					Map<String, Object> result = new HashMap<String, Object>(attributes.size() + 1);
 					for (Attribute attribute : attributes) {
 						result.put(attribute.getName(), attribute.getValue());
 					}
+					if (result.get(PackageNamespace.PACKAGE_NAMESPACE) == null) {
+						result.put(PackageNamespace.PACKAGE_NAMESPACE, getPath());
+					}
+					if (result.get(PackageNamespace.CAPABILITY_VERSION_ATTRIBUTE) == null)
+						result.put(PackageNamespace.CAPABILITY_VERSION_ATTRIBUTE, Version.emptyVersion.toString());
 					return result;
 				}
-
+				@Override
 				public Resource getResource() {
 					return resource;
-				}
-
-				public boolean matches(Capability capability) {
-					if (!getNamespace().equals(capability.getNamespace()))
-						return false;
-					Filter filter;
-					try {
-						filter = FrameworkUtil.createFilter(getDirectives().get(Constants.FILTER_DIRECTIVE));
-					}
-					catch (InvalidSyntaxException e) {
-						return false;
-					}
-					if (!filter.matches(capability.getAttributes()))
-							return false;
-					
-					return true;
 				}
 			};
 		}
@@ -186,27 +181,43 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 		}
 	}
 	
+	public static final String ATTRIBUTE_BUNDLE_SYMBOLICNAME = PackageNamespace.CAPABILITY_BUNDLE_SYMBOLICNAME_ATTRIBUTE;
+	public static final String ATTRIBUTE_BUNDLE_VERSION = PackageNamespace.CAPABILITY_BUNDLE_VERSION_ATTRIBUTE;
+	public static final String ATTRIBUTE_VERSION = PackageNamespace.CAPABILITY_VERSION_ATTRIBUTE;
 	public static final String NAME = Constants.IMPORT_PACKAGE;
+	public static final String DIRECTIVE_RESOLUTION = PackageNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE;
+	public static final String RESOLUTION_MANDATORY = PackageNamespace.RESOLUTION_MANDATORY;
+	public static final String RESOLUTION_OPTIONAL = PackageNamespace.RESOLUTION_OPTIONAL;
 	
-	private static final String REGEX = '(' + Grammar.IMPORT + ")(?:\\,(" + Grammar.IMPORT + "))*";
+	private static final String REGEX = Grammar.IMPORT + "(?=,|\\z)";
 	private static final Pattern PATTERN = Pattern.compile(REGEX);
 	
-	private final Set<Clause> clauses = new HashSet<Clause>();
-	private final String value;
+//	private static String valueOf(Collection<Clause> clauses) {
+//		StringBuilder sb = new StringBuilder();
+//		for (Clause clause : clauses) {
+//			sb.append(clause).append(',');
+//		}
+//		if (sb.length() != 0)
+//			sb.deleteCharAt(sb.length() - 1);
+//		return sb.toString();
+//	}
+	
+	private final Set<Clause> clauses;
+//	private final String value;
+	
+	public ImportPackageHeader(Collection<Clause> clauses) {
+		this.clauses = new HashSet<Clause>(clauses);
+	}
 	
 	public ImportPackageHeader(String header) {
 		Matcher matcher = PATTERN.matcher(header);
-		if (!matcher.matches()) {
-			throw new IllegalArgumentException("Invalid " + Constants.IMPORT_PACKAGE + " header: " + header);
-		}
-		for (int i = 1; i <= matcher.groupCount(); i++) {
-			String group = matcher.group(i);
-			if (group != null) {
-				Clause clause = new Clause(group);
-				clauses.add(clause);
-			}
-		}
-		value = header;
+		Set<Clause> clauses = new HashSet<Clause>();
+		while (matcher.find())
+			clauses.add(new Clause(matcher.group()));
+		if (clauses.isEmpty())
+			throw new IllegalArgumentException("Invalid header syntax -> " + NAME + ": " + header);
+//		value = header;
+		this.clauses = clauses;
 	}
 	
 	public Collection<ImportPackageHeader.Clause> getClauses() {
@@ -226,14 +237,13 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 		return result;
 	}
 	
+	@Override
 	public String getValue() {
-		return value;
+		return toString();
 	}
 	
 	public String toString() {
-		StringBuilder builder = new StringBuilder()
-				.append(getName())
-				.append(": ");
+		StringBuilder builder = new StringBuilder();
 		for (Clause clause : getClauses()) {
 			builder.append(clause);
 		}

@@ -14,7 +14,6 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Iterator;
 
 import org.osgi.framework.hooks.resolver.ResolverHook;
@@ -46,8 +45,8 @@ public class SubsystemResolverHook implements ResolverHook {
 						continue;
 					}
 					// Otherwise, the candidate is part of an application or composite subsystem requiring isolation.
-					// But only when in the INSTALLING or INSTALLED state.
-					if (EnumSet.of(Subsystem.State.INSTALLING, Subsystem.State.INSTALLED).contains(subsystem.getState())) {
+					// But only when in the INSTALLING state.
+					if (Subsystem.State.INSTALLING.equals(subsystem.getState())) {
 						iterator.remove();
 					}
 				}

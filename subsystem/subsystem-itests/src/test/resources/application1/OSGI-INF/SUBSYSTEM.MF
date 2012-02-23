@@ -1,6 +1,2 @@
-Manifest-Version: 1.0
-Subsystem-ManifestVersion: 1.0
 Subsystem-SymbolicName: org.apache.aries.subsystem.application1
-Subsystem-Version: 1.0.0
-Subsystem-Content: org.apache.felix.fileinstall;version=2.0.8,org.apache.aries.subsystem.itests.tb1;version=1.0.0
-Subsystem-Type: osgi.application
+Subsystem-Content: org.apache.aries.subsystem.itests.tb1;version=1.0.0

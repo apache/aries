@@ -65,7 +65,7 @@ public class Util
         List<Capability> caps = resource.getCapabilities(null);
         for (Capability cap : caps)
         {
-            if (cap.getNamespace().equals(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE))
+            if (cap.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE))
             {
                 String type = (String)
                     cap.getAttributes().get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
@@ -78,8 +78,7 @@ public class Util
     public static boolean isOptional(Requirement req)
     {
         String resolution = req.getDirectives().get(Constants.RESOLUTION_DIRECTIVE);
-        return ((resolution == null)
-            || resolution.equalsIgnoreCase(Constants.RESOLUTION_OPTIONAL));
+        return Constants.RESOLUTION_OPTIONAL.equals(resolution);
     }
 
     public static List<Requirement> getDynamicRequirements(List<Requirement> reqs)
