@@ -18,10 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.osgi.framework.Constants;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 
 public class FelixRequirementAdapter implements Requirement {
 	private final org.apache.felix.bundlerepository.Requirement requirement;

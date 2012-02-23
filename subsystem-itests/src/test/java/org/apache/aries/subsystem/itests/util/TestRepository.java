@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.ResourceHelper;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 
 public class TestRepository implements Repository {

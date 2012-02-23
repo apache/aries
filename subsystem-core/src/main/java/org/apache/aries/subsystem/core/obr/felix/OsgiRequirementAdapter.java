@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 public class OsgiRequirementAdapter implements Requirement {
 	private static final Logger logger = LoggerFactory.getLogger(OsgiRequirementAdapter.class);
 	
-	private final org.osgi.framework.resource.Requirement requirement;
+	private final org.osgi.resource.Requirement requirement;
 	
-	public OsgiRequirementAdapter(org.osgi.framework.resource.Requirement requirement) {
+	public OsgiRequirementAdapter(org.osgi.resource.Requirement requirement) {
 		if (requirement == null)
 			throw new NullPointerException("Missing required parameter: requirement");
 		this.requirement = requirement;

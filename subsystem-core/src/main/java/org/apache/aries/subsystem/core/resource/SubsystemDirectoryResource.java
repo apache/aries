@@ -9,9 +9,9 @@ import org.apache.aries.subsystem.core.archive.SubsystemArchive;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 
 public class SubsystemDirectoryResource implements Resource {
 	private final SubsystemArchive archive;

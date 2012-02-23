@@ -38,15 +38,15 @@ import org.apache.felix.resolver.FelixEnvironment;
 import org.apache.felix.resolver.FelixResolver;
 import org.apache.felix.resolver.Logger;
 import org.osgi.framework.Constants;
-import org.osgi.framework.namespace.AbstractNamespace;
 import org.osgi.framework.namespace.BundleNamespace;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.Wire;
-import org.osgi.framework.resource.Wiring;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Namespace;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
+import org.osgi.resource.Wire;
+import org.osgi.resource.Wiring;
 
 public class ResolverImpl implements FelixResolver
 {
@@ -451,10 +451,10 @@ public class ResolverImpl implements FelixResolver
                 Requirement r = wire.getRequirement();
                 if (!r.getResource().equals(wire.getRequirer())
                     || ((r.getDirectives()
-                            .get(AbstractNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE) != null)
+                            .get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE) != null)
 // TODO: RFC-112 - Need dynamic constant.
                         && r.getDirectives()
-                            .get(AbstractNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE).equals("dynamic")))
+                            .get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE).equals("dynamic")))
                 {
                     r = new HostedRequirement(wire.getRequirer(), r);
                 }
@@ -497,7 +497,7 @@ public class ResolverImpl implements FelixResolver
             for (Requirement req : resource.getRequirements(null))
             {
                 String resolution = req.getDirectives()
-                    .get(AbstractNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
+                    .get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
 // TODO: RFC-112 - Need dynamic constant.
                 if ((resolution == null) || !resolution.equals("dynamic"))
                 {
@@ -790,7 +790,7 @@ public class ResolverImpl implements FelixResolver
             {
                 uses = Collections.EMPTY_LIST;
                 String s = candSourceCap.getDirectives()
-                    .get(AbstractNamespace.CAPABILITY_USES_DIRECTIVE);
+                    .get(Namespace.CAPABILITY_USES_DIRECTIVE);
                 if (s != null)
                 {
                     // Parse these uses directive.
@@ -1322,7 +1322,7 @@ public class ResolverImpl implements FelixResolver
         // Otherwise, need to return generic capabilies that have
         // uses constraints so they are included for consistency
         // checking.
-        String uses = cap.getDirectives().get(AbstractNamespace.CAPABILITY_USES_DIRECTIVE);
+        String uses = cap.getDirectives().get(Namespace.CAPABILITY_USES_DIRECTIVE);
         if ((uses != null) && (uses.length() > 0))
         {
             return Collections.singletonList(cap);
@@ -1657,7 +1657,7 @@ public class ResolverImpl implements FelixResolver
                 {
                     sb.append("    require: ");
                 }
-                sb.append(req.getDirectives().get(AbstractNamespace.REQUIREMENT_FILTER_DIRECTIVE));
+                sb.append(req.getDirectives().get(Namespace.REQUIREMENT_FILTER_DIRECTIVE));
                 sb.append("\n     |");
                 if (req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                 {

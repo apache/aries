@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Resource;
 
 public class TestCapability implements Capability {
 	public static class Builder {

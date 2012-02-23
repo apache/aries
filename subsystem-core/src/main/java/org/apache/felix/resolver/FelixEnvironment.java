@@ -20,7 +20,7 @@ package org.apache.felix.resolver;
 
 import org.apache.aries.subsystem.core.Environment;
 import org.apache.aries.subsystem.core.ResolutionException;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 
 public interface FelixEnvironment extends Environment
 {

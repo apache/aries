@@ -23,8 +23,8 @@ import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Resource;
 
 public class ExportPackageHeader extends AbstractHeader {
 	public static final String NAME = Constants.EXPORT_PACKAGE;

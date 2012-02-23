@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.resource.Requirement;
+import org.osgi.resource.Requirement;
 
 public class ImportPackageRequirement {
 	private static final String BUNDLE_SYMBOLICNAME = PackageNamespace.CAPABILITY_BUNDLE_SYMBOLICNAME_ATTRIBUTE;

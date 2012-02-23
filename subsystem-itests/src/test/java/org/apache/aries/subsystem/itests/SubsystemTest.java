@@ -51,7 +51,7 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;

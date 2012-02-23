@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.osgi.framework.Version;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 
 public class ProvisionResourceHeader extends AbstractHeader {
 	public static class ProvisionedResource {
