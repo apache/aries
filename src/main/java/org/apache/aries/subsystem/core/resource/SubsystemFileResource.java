@@ -18,9 +18,9 @@ import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemConstants;
 

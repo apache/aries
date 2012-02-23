@@ -23,10 +23,10 @@ import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.OsgiContentCapability;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 import org.osgi.service.repository.RepositoryContent;
 
 public class FelixResourceAdapter implements Resource, RepositoryContent {

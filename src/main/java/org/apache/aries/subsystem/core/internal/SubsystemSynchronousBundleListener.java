@@ -13,13 +13,8 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
-import java.util.Collection;
-
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
-import org.osgi.framework.resource.Resource;
-import org.osgi.framework.wiring.BundleRevision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

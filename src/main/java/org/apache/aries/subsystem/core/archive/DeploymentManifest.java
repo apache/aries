@@ -23,10 +23,10 @@ import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.Wire;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
+import org.osgi.resource.Wire;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 

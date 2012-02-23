@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 
 public abstract class AbstractHeader implements Header {
 	protected static final String REGEX = Grammar.CLAUSE + "(?=,|\\z)";

@@ -20,10 +20,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.Wiring;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
+import org.osgi.resource.Wiring;
 
 /**
  * An environment provides options and constraints to the potential solution of

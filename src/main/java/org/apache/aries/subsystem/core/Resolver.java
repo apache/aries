@@ -24,9 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.felix.resolver.FelixEnvironment;
-import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.Wire;
+import org.osgi.resource.Resource;
+import org.osgi.resource.Wire;
 
 /**
  * A resolver is a service interface that can be used to find resolutions for

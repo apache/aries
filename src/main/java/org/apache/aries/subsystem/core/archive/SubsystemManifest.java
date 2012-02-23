@@ -17,8 +17,8 @@ import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemManifest {

@@ -28,9 +28,9 @@ import java.util.regex.Pattern;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 
 public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {

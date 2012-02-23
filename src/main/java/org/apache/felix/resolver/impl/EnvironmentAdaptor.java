@@ -7,10 +7,10 @@ import java.util.SortedSet;
 import org.apache.aries.subsystem.core.Environment;
 import org.apache.aries.subsystem.core.ResolutionException;
 import org.apache.felix.resolver.FelixEnvironment;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.Wiring;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
+import org.osgi.resource.Wiring;
 
 public class EnvironmentAdaptor implements FelixEnvironment {
 	private final Environment environment;

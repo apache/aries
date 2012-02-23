@@ -1,7 +1,6 @@
 package org.apache.aries.subsystem.core.resource;
 
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
+import org.osgi.resource.Requirement;
 
 public abstract class AbstractRequirement implements Requirement {
 	@Override

@@ -21,8 +21,8 @@ package org.apache.felix.resolver.impl;
 import java.util.Map;
 
 import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Resource;
 
 public class HostedCapability implements Capability
 {
