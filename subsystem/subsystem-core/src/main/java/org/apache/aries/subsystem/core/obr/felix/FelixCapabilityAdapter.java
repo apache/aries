@@ -17,8 +17,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.resource.AbstractCapability;
-import org.osgi.framework.resource.Resource;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Resource;
 
 public class FelixCapabilityAdapter extends AbstractCapability {
 	private final org.apache.felix.bundlerepository.Capability capability;

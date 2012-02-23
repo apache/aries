@@ -1,6 +1,6 @@
 package org.apache.aries.subsystem.core.resource;
 
-import org.osgi.framework.resource.Capability;
+import org.osgi.resource.Capability;
 
 public abstract class AbstractCapability implements Capability {
 	@Override

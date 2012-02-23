@@ -26,7 +26,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class OsgiIdentityRequirement extends AbstractRequirement {

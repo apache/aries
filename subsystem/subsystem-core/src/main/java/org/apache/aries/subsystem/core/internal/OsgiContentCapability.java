@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.resource.AbstractCapability;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 
 public class OsgiContentCapability extends AbstractCapability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();

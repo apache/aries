@@ -25,9 +25,9 @@ import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 import org.osgi.service.repository.RepositoryContent;
 
 public class BundleResource implements Resource, RepositoryContent {

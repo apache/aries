@@ -32,7 +32,7 @@ import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.felix.bundlerepository.Resource;
 import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.resource.Requirement;
+import org.osgi.resource.Requirement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -75,12 +75,12 @@ public final class RepositoryDescriptorGenerator
     return doc;
   }
   
-  public static Document generateRepositoryDescriptor(String name, Collection<org.osgi.framework.resource.Resource> resources) throws ParserConfigurationException {
+  public static Document generateRepositoryDescriptor(String name, Collection<org.osgi.resource.Resource> resources) throws ParserConfigurationException {
 	  Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 	  Element rootElement = document.createElement("repository");
 	  rootElement.setAttribute("name", name);
 	  document.appendChild(rootElement);
-	  for (org.osgi.framework.resource.Resource resource : resources) {
+	  for (org.osgi.resource.Resource resource : resources) {
 		  Element element = document.createElement("resource");
 		  String version = String.valueOf(ResourceHelper.getVersionAttribute(resource));
 	      element.setAttribute(Resource.VERSION, version);
@@ -95,7 +95,7 @@ public final class RepositoryDescriptorGenerator
 	  return document;
   }
   
-  private static void addRequirements(Document document, Element rootElement, org.osgi.framework.resource.Resource resource) {
+  private static void addRequirements(Document document, Element rootElement, org.osgi.resource.Resource resource) {
 	  for (Requirement requirement : resource.getRequirements(null))
 		  addRequirement(document, rootElement, requirement);
   }

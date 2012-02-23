@@ -44,7 +44,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -295,7 +295,7 @@ public class RepositoryGenerator {
     	return new org.apache.felix.bundlerepository.Resource() {
 			public Capability[] getCapabilities() {
 				Collection<Capability> result = new ArrayList<Capability>(resource.getCapabilities(null).size());
-				for (org.osgi.framework.resource.Capability capability : resource.getCapabilities(null)) {
+				for (org.osgi.resource.Capability capability : resource.getCapabilities(null)) {
 					result.add(new Capability() {
 						public String getName() {
 							// TODO Auto-generated method stub

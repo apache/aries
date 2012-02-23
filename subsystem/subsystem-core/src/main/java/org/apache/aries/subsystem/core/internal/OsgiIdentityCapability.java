@@ -23,7 +23,7 @@ import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 
 public class OsgiIdentityCapability extends AbstractCapability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
