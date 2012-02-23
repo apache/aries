@@ -190,7 +190,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected final SubsystemEventHandler subsystemEvents = new SubsystemEventHandler();
 	
-	private Collection<ServiceRegistration<?>> serviceRegistrations = new ArrayList<ServiceRegistration<?>>();
+	protected Collection<ServiceRegistration<?>> serviceRegistrations = new ArrayList<ServiceRegistration<?>>();
 	
 	public void setUp() {
 		super.setUp();
@@ -212,6 +212,18 @@ public abstract class SubsystemTest extends IntegrationTest {
 		serviceRegistrations.clear();
 		super.tearDown();
 	}
+	
+	protected void assertBundleState(int state, String symbolicName, Subsystem subsystem) {
+    	boolean found = false;
+    	for (Bundle bundle : subsystem.getBundleContext().getBundles()) {
+			if (symbolicName.equals(bundle.getSymbolicName())) {
+				assertTrue("Wrong state: " + symbolicName, (bundle.getState() & state) != 0);
+				found = true;
+				break;
+			}
+		}
+    	assertTrue("Bundle '" + symbolicName + "' not found in region context bundle of '" + subsystem + "'", found);
+    }
 	
 	protected void assertChild(Subsystem parent, Subsystem child) {
 		Collection<Subsystem> children = new ArrayList<Subsystem>(1);

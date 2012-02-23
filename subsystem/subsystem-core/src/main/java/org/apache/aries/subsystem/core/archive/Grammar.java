@@ -115,7 +115,7 @@ public interface Grammar {
 	public static final String SYMBOLICNAME = TOKEN + "(?:\\." + TOKEN + ")*";
 	public static final String PACKAGENAME = UNIQUENAME;
 	public static final String PACKAGENAMES = PACKAGENAME + "(?:\\;" + PACKAGENAME + ")*";
-	public static final String IMPORT = PACKAGENAMES + "(?:\\;" + Grammar.PARAMETER + ")*";
+	public static final String IMPORT = PACKAGENAMES + "(?:;(?:" + PARAMETER + "))*";
 	public static final String IMPORTPACKAGE = IMPORT + "(?:\\," + IMPORT + ")*";
 	
 	/*
