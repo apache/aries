@@ -47,6 +47,7 @@ import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader.DeployedContent;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.Header;
+import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.ProvisionedResource;
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
@@ -63,8 +64,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.resource.Capability;
 import org.osgi.framework.resource.Requirement;
 import org.osgi.framework.resource.Resource;
@@ -261,6 +264,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				id,
 				lastId,
 				location,
+				true,
 				true));
 		// TODO Begin proof of concept.
 		// This is a proof of concept for initializing the relationships between the root subsystem and bundles
@@ -529,6 +533,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				.create(getSymbolicName() + '-' + getSubsystemId(), 0);
 		try {
 			// TODO Need to make sure the constituents are ordered by start level.
+			// TODO This doesn't start dependencies that are constituents in a parent subsystem.
 			for (Resource resource : constituents) {
 				startResource(resource, coordination);
 			}
@@ -685,6 +690,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				id,
 				lastId,
 				location,
+				false,
 				false);
 		try {
 			archive.setDeploymentManifest(manifest);
@@ -758,7 +764,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 					id,
 					lastId,
 					location,
-					true));
+					true,
+					false));
 		}
 		return archive.getDeploymentManifest();
 	}
@@ -835,6 +842,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			installResource(resource, coordination, true);
 		}
 		setState(State.INSTALLED);
+		setImportIsolationPolicy();
 		if (autostart)
 			start();
 	}
@@ -995,17 +1003,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return ROOT_LOCATION.equals(getLocation());
 	}
 	
-	private void setExportIsolationPolicy() {
-		// Archive is null for root subsystem.
-		if (archive == null)
-			return;
-		// TODO Implement export isolation policy for composites.
-	}
-	
 	private void resolve() {
 		setState(State.RESOLVING);
 		try {
-			setImportIsolationPolicy();
 			// TODO I think this is insufficient. Do we need both
 			// pre-install and post-install environments for the Resolver?
 			Collection<Bundle> bundles = getBundles();
@@ -1028,21 +1028,42 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	private void setImportIsolationPolicy() throws BundleException {
+	private void setExportIsolationPolicy() {
 		// Archive is null for root subsystem.
 		if (archive == null)
 			return;
-		// Feature contents are stored in the parent (or higher) region and take on the associated isolation.
+		// TODO Implement export isolation policy for composites.
+	}
+
+	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException {
+		// Nothing to do if this is the root subsystem.
+		if (isRoot())
+			return;
+		// Features share the same isolation as that of their scoped parent.
 		if (isFeature()) {
 			return;
 		}
 		if (isApplication()) {
 			// TODO Implement import isolation policy for applications.
-			// Applications have an implicit import policy equating to "import everything that I require", which is not the same as features.
-			// This must be computed from the application requirements and will be done using the Wires returned by the Resolver, when one is available.
-			region.connectRegion(
-					((AriesSubsystem)getParents().iterator().next()).region, 
-					region.getRegionDigraph().createRegionFilterBuilder().allowAll(RegionFilter.VISIBLE_ALL_NAMESPACE).build());
+			// TODO Support for generic requirements such as osgi.ee.
+			ImportPackageHeader importPackage = getDeploymentManifest().getImportPackageHeader();
+			if (importPackage != null) {
+				for (ImportPackageHeader.Clause clause : importPackage.getClauses()) {
+					Region from = region;
+					Region to = ((AriesSubsystem)getParents().iterator().next()).region;
+					String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
+					String filter = clause.getRequirement(this).getDirectives().get(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE);
+					if (LOGGER.isDebugEnabled())
+						LOGGER.debug("Establishing region connection: from="
+								+ from + ", to=" + to + ", policy=" + policy
+								+ ", filter=" + filter);
+					from.connectRegion(
+							to, 
+							from.getRegionDigraph().createRegionFilterBuilder().allow(
+									RegionFilter.VISIBLE_PACKAGE_NAMESPACE, 
+									filter).build());
+				}
+			}
 		}
 		else if (isComposite()) {
 			// TODO Implement import isolation policy for composites.

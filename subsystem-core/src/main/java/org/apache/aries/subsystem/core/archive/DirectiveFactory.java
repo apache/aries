@@ -19,6 +19,8 @@ public class DirectiveFactory {
 			return ResolutionDirective.getInstance(value);
 		if (StartOrderDirective.NAME.equals(name))
 			return new StartOrderDirective(value);
+		if (FilterDirective.NAME.equals(name))
+			return new FilterDirective(value);
 		return new GenericDirective(name, value);
 	}
 }
