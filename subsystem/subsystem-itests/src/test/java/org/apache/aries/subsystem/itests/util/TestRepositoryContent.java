@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osgi.framework.resource.Requirement;
+import org.osgi.resource.Requirement;
 import org.osgi.service.repository.RepositoryContent;
 
 public class TestRepositoryContent extends TestResource implements RepositoryContent {

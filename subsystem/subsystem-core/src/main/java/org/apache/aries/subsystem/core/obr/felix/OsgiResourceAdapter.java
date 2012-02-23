@@ -26,18 +26,18 @@ import org.osgi.framework.Version;
 
 // TODO Need to distinguish between resources that have already been deployed (local) and those that have not.
 public class OsgiResourceAdapter implements Resource {
-	private final org.osgi.framework.resource.Resource resource;
+	private final org.osgi.resource.Resource resource;
 	
-	public OsgiResourceAdapter(org.osgi.framework.resource.Resource resource) {
+	public OsgiResourceAdapter(org.osgi.resource.Resource resource) {
 		if (resource == null)
 			throw new NullPointerException("Missing required parameter: resource");
 		this.resource = resource;
 	}
 
 	public Capability[] getCapabilities() {
-		Collection<org.osgi.framework.resource.Capability> capabilities = resource.getCapabilities(null);
+		Collection<org.osgi.resource.Capability> capabilities = resource.getCapabilities(null);
 		Collection<Capability> result = new ArrayList<Capability>(capabilities.size());
-		for (org.osgi.framework.resource.Capability capability : capabilities)
+		for (org.osgi.resource.Capability capability : capabilities)
 			result.add(new OsgiCapabilityAdapter(capability));
 		return result.toArray(new Capability[result.size()]);
 	}
@@ -61,9 +61,9 @@ public class OsgiResourceAdapter implements Resource {
 	}
 
 	public Requirement[] getRequirements() {
-		Collection<org.osgi.framework.resource.Requirement> requirements = resource.getRequirements(null);
+		Collection<org.osgi.resource.Requirement> requirements = resource.getRequirements(null);
 		Collection<Requirement> result = new ArrayList<Requirement>(requirements.size());
-		for (org.osgi.framework.resource.Requirement requirement : requirements)
+		for (org.osgi.resource.Requirement requirement : requirements)
 			result.add(new OsgiRequirementAdapter(requirement));
 		return result.toArray(new Requirement[result.size()]);
 	}

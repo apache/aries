@@ -23,7 +23,7 @@ import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.util.VersionRange;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 
 public class SubsystemContentHeader extends AbstractHeader {
 	public static class Content {

@@ -8,7 +8,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.resource.Resource;
+import org.osgi.resource.Resource;
 
 public class BasicRequirement extends AbstractRequirement {
 	private final Map<String, Object> attributes;

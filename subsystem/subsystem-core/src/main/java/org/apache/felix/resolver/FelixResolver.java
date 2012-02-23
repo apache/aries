@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import org.apache.aries.subsystem.core.Resolver;
-import org.osgi.framework.resource.Capability;
-import org.osgi.framework.resource.Requirement;
-import org.osgi.framework.resource.Resource;
-import org.osgi.framework.resource.Wire;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
+import org.osgi.resource.Wire;
 
 public interface FelixResolver extends Resolver
 {
