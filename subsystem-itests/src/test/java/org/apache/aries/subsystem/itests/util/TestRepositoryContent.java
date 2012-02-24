@@ -47,7 +47,7 @@ public class TestRepositoryContent extends TestResource implements RepositoryCon
 	}
 
 	@Override
-	public InputStream getContent() throws IOException {
+	public InputStream getContent(String osgiContent) throws IOException {
 		return new ByteArrayInputStream(content);
 	}
 
