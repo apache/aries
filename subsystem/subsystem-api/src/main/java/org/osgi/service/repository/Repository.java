@@ -39,23 +39,13 @@ import org.osgi.resource.Resource;
  * properties.
  * 
  * @ThreadSafe
- * @version $Id: c8ac56d5b6e0376018c8a3bb872010596fc8087a $
+ * @version $Id: ed526d7ce615bed833c679eb154f1b2ee57ff8fa $
  */
 public interface Repository {
 	/**
-	 * Service attribute to uniquely identify this repository
+	 * Service property to provide an optional URL related to this repository
 	 */
-	String	ID				= "repository.id";
-
-	/**
-	 * Service attribute to define the name of this repository
-	 */
-	String	NAME			= "repository.name";
-
-	/**
-	 * Service attribute to provide a human readable name for this repository
-	 */
-	String	DISPLAY_NAME	= "repository.displayName";
+	String	URL	= "repository.url";
 
 	/**
 	 * Find any capabilities that match the supplied requirements.
@@ -67,6 +57,9 @@ public interface Repository {
 	 * 
 	 * @return A map of requirements to capabilities that match the supplied
 	 *         requirements
+	 * 
+	 * 
+	 * ### is it guaranteed that each Requirement given is in the returned map?
 	 * 
 	 * @throws NullPointerException if requirements is null
 	 */
