@@ -16,10 +16,9 @@
 
 package org.osgi.service.repository;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
-import org.osgi.resource.Resource;
+import org.osgi.resource.*;
 
 /**
  * An accessor for the content of a resource.
@@ -30,17 +29,18 @@ import org.osgi.resource.Resource;
  * {@code InputStream} to the content of the resource.
  * 
  * @ThreadSafe
- * @version $Id: 6a91b25ad4eff5054b1436ba9f5c9c4a58e89cf7 $
+ * @version $Id: 45eb6e8f54d08d5491a342bfafbcc9b6465f06e0 $
  */
 public interface RepositoryContent {
 
 	/**
 	 * Returns a new input stream to the underlying artifact for the associated
-	 * resource.
+	 * resource. The given osgiContent must map to the SHA-256 that is stored
+	 * in the {@code osgi.content} Capability under {@code osgi.content}.
+	 * 
+	 * @param osgiContent The SHA-256 of the content
 	 * 
 	 * @return A new input stream for associated resource.
-	 * @throws IOException If an I/O error occurs while creating the input
-	 *         stream.
 	 */
-	InputStream getContent() throws IOException;
+	InputStream getContent(String osgiContent) throws IOException;
 }
