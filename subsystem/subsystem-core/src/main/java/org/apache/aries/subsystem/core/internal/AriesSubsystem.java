@@ -872,7 +872,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				constituents.add(subsystem);
 				return subsystem;
 			}
-			subsystem = new AriesSubsystem(location, ssr.getContent(), this);
+			subsystem = new AriesSubsystem(location, ssr.getContent(null), this);
 			installSubsystemResource(subsystem, coordination, false);
 			return subsystem;
 		}
@@ -896,7 +896,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				revision = (BundleRevision)resource;
 			}
 			else {
-				InputStream content = ((RepositoryContent)resource).getContent();
+				InputStream content = ((RepositoryContent)resource).getContent(null);
 				String location = provisionTo.getSubsystemId() + "@" + provisionTo.getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
 				Bundle bundle = provisionTo.region.installBundle(location, content);
 				revision = bundle.adapt(BundleRevision.class);
@@ -954,7 +954,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		else if (resource instanceof SubsystemFileResource) {
 			SubsystemFileResource sfr = (SubsystemFileResource)resource;
-			subsystem = (AriesSubsystem)install(sfr.getLocation(), sfr.getContent(), coordination);
+			subsystem = (AriesSubsystem)install(sfr.getLocation(), sfr.getContent(null), coordination);
 			return;
 		}
 		else if (resource instanceof SubsystemDirectoryResource) {
@@ -964,7 +964,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		else if (resource instanceof RepositoryContent) {
 			String location = getSubsystemId() + "@" + getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
-			subsystem = (AriesSubsystem)install(location, ((RepositoryContent)resource).getContent(), coordination);
+			subsystem = (AriesSubsystem)install(location, ((RepositoryContent)resource).getContent(null), coordination);
 			return;
 		}
 		else {
