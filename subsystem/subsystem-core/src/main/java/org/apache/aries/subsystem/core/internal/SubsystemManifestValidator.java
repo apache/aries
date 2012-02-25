@@ -2,6 +2,7 @@ package org.apache.aries.subsystem.core.internal;
 
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
+import org.osgi.framework.VersionRange;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class SubsystemManifestValidator {
@@ -11,9 +12,18 @@ public class SubsystemManifestValidator {
 			if (header == null)
 				return;
 			for (SubsystemContentHeader.Content content : header.getContents()) {
-				if (!content.getVersionRange().isExactVersion())
+				if (!isExactVersion(content.getVersionRange()))
 					throw new SubsystemException("Composite subsystem using version range for content: " + content);
 			}
 		}
+	}
+	
+	private static boolean isExactVersion(VersionRange range) {
+		if (range.getLeftType() == VersionRange.LEFT_CLOSED
+		          && range.getLeft().equals(range.getRight())
+		          && range.getRightType() == VersionRange.RIGHT_CLOSED) {
+		     return true;
+		}
+		return false;
 	}
 }

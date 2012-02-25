@@ -24,17 +24,7 @@ public class RegionContextBundleHelper {
 		Bundle b = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (b != null)
 			return b.adapt(BundleRevision.class);
-		Bundle t = subsystem.getRegion().installBundle(location + "/temp", createTempBundle(symbolicName));
-		try {
-			t.start();
-			b = t.getBundleContext().installBundle(location, createRegionContextBundle(symbolicName));
-		}
-		finally {
-			try {
-				t.uninstall();
-			}
-			catch (BundleException e) {}
-		}
+		b = subsystem.getRegion().installBundleAtLocation(location, createRegionContextBundle(symbolicName));
 		// The region context bundle must be started persistently.
 		b.start();
 		return b.adapt(BundleRevision.class);
@@ -54,14 +44,6 @@ public class RegionContextBundleHelper {
 		return bundle.adapt(BundleRevision.class);
 	}
 	
-	private static InputStream createRegionContextBundle(String symbolicName) throws IOException {
-		Manifest manifest = createManifest(symbolicName);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		JarOutputStream jos = new JarOutputStream(baos, manifest);
-		jos.close();
-		return new ByteArrayInputStream(baos.toByteArray());
-	}
-	
 	private static Manifest createManifest(String symbolicName) {
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
@@ -70,10 +52,8 @@ public class RegionContextBundleHelper {
 		return manifest;
 	}
 	
-	private static InputStream createTempBundle(String symbolicName) throws IOException {
-		Manifest manifest = new Manifest();
-		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		manifest.getMainAttributes().putValue(Constants.BUNDLE_SYMBOLICNAME, symbolicName + ".temp");
+	private static InputStream createRegionContextBundle(String symbolicName) throws IOException {
+		Manifest manifest = createManifest(symbolicName);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		JarOutputStream jos = new JarOutputStream(baos, manifest);
 		jos.close();
