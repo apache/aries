@@ -34,13 +34,43 @@ import org.osgi.resource.Resource;
 
 public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+		private static final String REGEX = "\\((" + PackageNamespace.PACKAGE_NAMESPACE + ")(=)([^\\)]+)\\)";
 		private static final String REGEX1 = '(' + Grammar.PACKAGENAMES + ")(?=;|\\z)";
 		private static final String REGEX2 = '(' + Grammar.PARAMETER + ")(?=;|\\z)";
+		private static final Pattern PATTERN = Pattern.compile(REGEX);
 		private static final Pattern PATTERN1 = Pattern.compile(REGEX1);
 		private static final Pattern PATTERN2 = Pattern.compile(REGEX2);
+
+		private static void fillInDefaults(Map<String, Parameter> parameters) {
+			Parameter parameter = parameters.get(Constants.VERSION_ATTRIBUTE);
+			if (parameter == null)
+				parameters.put(Constants.VERSION_ATTRIBUTE, new VersionRangeAttribute());
+		}
 		
 		private final Map<String, Parameter> myParameters = new HashMap<String, Parameter>();
 		private final String myPath;
+		
+		public Clause(Requirement requirement) {
+			if (!PackageNamespace.PACKAGE_NAMESPACE.equals(requirement.getNamespace()))
+				throw new IllegalArgumentException("Requirement must be in the '" + PackageNamespace.PACKAGE_NAMESPACE + "' namespace");
+			String filter = requirement.getDirectives().get(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE);
+			String packageName = null;
+			Matcher matcher = PATTERN.matcher(filter);
+			while (matcher.find()) {
+				String name = matcher.group(1);
+				String operator = matcher.group(2);
+				String value = matcher.group(3);
+				if (PackageNamespace.PACKAGE_NAMESPACE.equals(name)) {
+					packageName = value;
+				}
+				else if (PackageNamespace.CAPABILITY_VERSION_ATTRIBUTE.equals(name)) {
+					// TODO Parse the version range from the filter.
+				}
+			}
+			if (packageName == null)
+				throw new IllegalArgumentException("Missing filter key: " + PackageNamespace.PACKAGE_NAMESPACE);
+			myPath = packageName;
+		}
 		
 		public Clause(String clause) {
 			Matcher matcher = PATTERN1.matcher(clause);
@@ -53,22 +83,7 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 				Parameter parameter = ParameterFactory.create(matcher.group());
 				myParameters.put(parameter.getName(), parameter);
 			}
-//			Attribute attribute = new GenericAttribute(BundleRevision.PACKAGE_NAMESPACE, getPath());
-//			myParameters.put(attribute.getName(), attribute);
-//			attribute = getAttribute(Constants.VERSION_ATTRIBUTE);
-//			if (attribute == null) {
-//				attribute = new VersionRangeAttribute();
-//				myParameters.put(attribute.getName(), attribute);
-//			}
-//			Directive directive = getDirective(Constants.FILTER_DIRECTIVE);
-//			if (directive == null) {
-//				StringBuilder builder = new StringBuilder("(&");
-//				for (Attribute a : getAttributes()) {
-//					a.appendToFilter(builder);
-//				}
-//				directive = new GenericDirective(Constants.FILTER_DIRECTIVE, builder.append(')').toString());
-//				myParameters.put(directive.getName(), directive);
-//			}
+			fillInDefaults(myParameters);
 		}
 		
 		public Attribute getAttribute(String name) {
@@ -192,32 +207,24 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 	private static final String REGEX = Grammar.IMPORT + "(?=,|\\z)";
 	private static final Pattern PATTERN = Pattern.compile(REGEX);
 	
-//	private static String valueOf(Collection<Clause> clauses) {
-//		StringBuilder sb = new StringBuilder();
-//		for (Clause clause : clauses) {
-//			sb.append(clause).append(',');
-//		}
-//		if (sb.length() != 0)
-//			sb.deleteCharAt(sb.length() - 1);
-//		return sb.toString();
-//	}
-	
-	private final Set<Clause> clauses;
-//	private final String value;
-	
-	public ImportPackageHeader(Collection<Clause> clauses) {
-		this.clauses = new HashSet<Clause>(clauses);
-	}
-	
-	public ImportPackageHeader(String header) {
+	private static Collection<Clause> processHeader(String header) {
 		Matcher matcher = PATTERN.matcher(header);
 		Set<Clause> clauses = new HashSet<Clause>();
 		while (matcher.find())
 			clauses.add(new Clause(matcher.group()));
+		return clauses;
+	}
+	
+	private final Set<Clause> clauses;
+	
+	public ImportPackageHeader(Collection<Clause> clauses) {
 		if (clauses.isEmpty())
-			throw new IllegalArgumentException("Invalid header syntax -> " + NAME + ": " + header);
-//		value = header;
-		this.clauses = clauses;
+			throw new IllegalArgumentException("An Import-Package header must have at least one clause");
+		this.clauses = new HashSet<Clause>(clauses);
+	}
+	
+	public ImportPackageHeader(String header) {
+		this(processHeader(header));
 	}
 	
 	public Collection<ImportPackageHeader.Clause> getClauses() {
@@ -242,11 +249,14 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 		return toString();
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		for (Clause clause : getClauses()) {
-			builder.append(clause);
+			builder.append(clause).append(',');
 		}
+		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
+		builder.deleteCharAt(builder.length() - 1);
 		return builder.toString();
 	}
 }

@@ -110,12 +110,17 @@ public class DeploymentManifest {
 			headers.put(SUBSYSTEM_VERSION, subsystemManifest.getSubsystemVersionHeader());
 			SubsystemTypeHeader typeHeader = subsystemManifest.getSubsystemTypeHeader();
 			if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(typeHeader.getValue())) {
-				if (resolution != null)
-					headers.put(IMPORT_PACKAGE, computeImportPackageHeader(resolution, deployedContent, acceptDependencies));
+				if (resolution != null) {
+					ImportPackageHeader header = computeImportPackageHeader(resolution, deployedContent, acceptDependencies);
+					if (header != null)
+						headers.put(IMPORT_PACKAGE, header);
+				}
 				// TODO Compute additional headers for an application.
 			}
-			// TODO Add to constants.
 			else if (SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(typeHeader.getValue())) {
+				ImportPackageHeader importPackage = subsystemManifest.getImportPackageHeader();
+				if (importPackage != null)
+					headers.put(IMPORT_PACKAGE, importPackage);
 				// TODO Compute additional headers for a composite. 
 			}
 			// Features require no additional headers.
@@ -177,10 +182,12 @@ public class DeploymentManifest {
 				// For all other cases, we need an import.
 				Requirement requirement = wire.getRequirement();
 				if (PackageNamespace.PACKAGE_NAMESPACE.equals(requirement.getNamespace())) {
-					clauses.add(new ImportPackageRequirement(requirement).toClause());
+					clauses.add(new ImportPackageHeader.Clause(requirement));
 				}
 			}
 		}
+		if (clauses.isEmpty())
+			return null;
 		return new ImportPackageHeader(clauses);
 	}
 }
