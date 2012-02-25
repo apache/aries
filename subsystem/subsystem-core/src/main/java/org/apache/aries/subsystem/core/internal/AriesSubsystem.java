@@ -48,6 +48,7 @@ import org.apache.aries.subsystem.core.archive.DeployedContentHeader.DeployedCon
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.Header;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
+import org.apache.aries.subsystem.core.archive.ImportPackageRequirement;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.ProvisionedResource;
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
@@ -60,6 +61,7 @@ import org.apache.aries.util.io.IOUtils;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.eclipse.equinox.region.RegionFilter;
+import org.eclipse.equinox.region.RegionFilterBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -1036,34 +1038,39 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 
 	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException {
-		// Nothing to do if this is the root subsystem.
 		if (isRoot())
+			// Nothing to do if this is the root subsystem.
 			return;
-		// Features share the same isolation as that of their scoped parent.
-		if (isFeature()) {
+		if (isFeature())
+			// Features share the same isolation as that of their scoped parent.
 			return;
+		if (isApplication() || isComposite()) {
+			// Both applications and composites have Import-Package headers that require processing.
+			// In the case of applications, the header is generated.
+			ImportPackageHeader importPackage = getDeploymentManifest().getImportPackageHeader();
+			if (importPackage != null) {
+				Region from = region;
+				Region to = ((AriesSubsystem)getParents().iterator().next()).region;
+				String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
+				RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
+				for (ImportPackageHeader.Clause clause : importPackage.getClauses()) {
+					ImportPackageRequirement requirement = new ImportPackageRequirement(clause);
+					String filter = requirement.getDirectives().get(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE);
+					if (LOGGER.isDebugEnabled())
+						LOGGER.debug("Allowing " + policy + " of " + filter);
+					builder.allow(policy, filter);
+				}
+				RegionFilter regionFilter = builder.build();
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("Establishing region connection: from="
+							+ from + ", to=" + to + ", policy=" + policy
+							+ ", filter=" + regionFilter);
+				from.connectRegion(to, regionFilter);
+			}
 		}
 		if (isApplication()) {
 			// TODO Implement import isolation policy for applications.
 			// TODO Support for generic requirements such as osgi.ee.
-			ImportPackageHeader importPackage = getDeploymentManifest().getImportPackageHeader();
-			if (importPackage != null) {
-				for (ImportPackageHeader.Clause clause : importPackage.getClauses()) {
-					Region from = region;
-					Region to = ((AriesSubsystem)getParents().iterator().next()).region;
-					String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
-					String filter = clause.getRequirement(this).getDirectives().get(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE);
-					if (LOGGER.isDebugEnabled())
-						LOGGER.debug("Establishing region connection: from="
-								+ from + ", to=" + to + ", policy=" + policy
-								+ ", filter=" + filter);
-					from.connectRegion(
-							to, 
-							from.getRegionDigraph().createRegionFilterBuilder().allow(
-									RegionFilter.VISIBLE_PACKAGE_NAMESPACE, 
-									filter).build());
-				}
-			}
 		}
 		else if (isComposite()) {
 			// TODO Implement import isolation policy for composites.

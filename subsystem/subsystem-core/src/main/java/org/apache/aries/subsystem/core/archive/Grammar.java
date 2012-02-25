@@ -89,9 +89,6 @@ public interface Grammar {
 	public static final String PATH_UNQUOTED = PATH_SEP + '|' + PATH_SEP + '?' + PATH_ELEMENT + "(?:" + PATH_SEP + PATH_ELEMENT + ")*";
 	public static final String PATH_UNQUOTED_NT = PATH_SEP + '|' + PATH_SEP + '?' + PATH_ELEMENT_NT + "(?:" + PATH_SEP + PATH_ELEMENT_NT + ")*";
 	public static final String PATH = "(?:" + PATH_UNQUOTED_NT + ")|\"(?:" + PATH_UNQUOTED + ")\"";
-	// TODO The introduction of the whitespace (\\s*) before a parameter was added to get around a grammatically
-	// incorrect clause in Equinox: org.eclipse.osgi; singleton:=true;deployed-version=3.7.0.v20110221;type=osgi.bundle.
-	// Note the space before the singleton directive.
 	public static final String CLAUSE = "(?:" + PATH + ")(?:;" + PATH + ")*(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String HEADERCHAR = ALPHANUM + "|_|-";
 	public static final String NAME = ALPHANUM + "(?:" + HEADERCHAR + ")*";
@@ -114,9 +111,9 @@ public interface Grammar {
 	public static final String UNIQUENAME = IDENTIFIER + "(?:\\." + IDENTIFIER + ")*";
 	public static final String SYMBOLICNAME = TOKEN + "(?:\\." + TOKEN + ")*";
 	public static final String PACKAGENAME = UNIQUENAME;
-	public static final String PACKAGENAMES = PACKAGENAME + "(?:\\;" + PACKAGENAME + ")*";
-	public static final String IMPORT = PACKAGENAMES + "(?:;(?:" + PARAMETER + "))*";
-	public static final String IMPORTPACKAGE = IMPORT + "(?:\\," + IMPORT + ")*";
+	public static final String PACKAGENAMES = PACKAGENAME + "(?:\\;\\s*" + PACKAGENAME + ")*";
+	public static final String IMPORT = PACKAGENAMES + "(?:;\\s*(?:" + PARAMETER + "))*";
+	public static final String IMPORTPACKAGE = IMPORT + "(?:\\,\\s*" + IMPORT + ")*";
 	
 	/*
 	 * number ::= digit+

@@ -30,11 +30,10 @@ public abstract class AbstractRequirement implements Requirement {
 	
 	@Override
 	public String toString() {
-		return new StringBuffer().append("[Requirement: ")
+		return new StringBuffer().append(getClass().getName()).append(": ")
 				.append("namespace=").append(getNamespace())
 				.append(", attributes=").append(getAttributes())
 				.append(", directives=").append(getDirectives())
-				.append(", resource=").append(getResource()).append(']')
-				.toString();
+				.append(", resource=").append(getResource()).toString();
 	}
 }

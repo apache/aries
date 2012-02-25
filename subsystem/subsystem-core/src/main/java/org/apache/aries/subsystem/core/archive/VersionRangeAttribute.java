@@ -13,46 +13,49 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
-import org.apache.aries.util.VersionRange;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.VersionRange;
 
 public class VersionRangeAttribute extends AbstractAttribute {
-	public static String toFilterString(VersionRange range) {
-		String version = Constants.VERSION_ATTRIBUTE;
-		Version min = range.getMinimumVersion();
-		Version max = range.getMaximumVersion();
-		StringBuilder sb = new StringBuilder();
-		if (max != null)
-			sb.append("(&");
-		if (range.isMinimumExclusive())
-			sb.append("(!(").append(version).append("<=").append(min).append("))");
-		else
-			sb.append('(').append(version).append(">=").append(min).append(')');
-		if (max != null) {
-			if (range.isMaximumExclusive())
-				sb.append("(!(").append(version).append(">=").append(range.getMaximumVersion()).append("))");
-			else
-				sb.append('(').append(version).append("<=").append(max).append(')');
-			sb.append(')');
-		}
-		return sb.toString();
-	}
+//	public static String toFilterString(VersionRange range) {
+//		String version = Constants.VERSION_ATTRIBUTE;
+//		Version min = range.getMinimumVersion();
+//		Version max = range.getMaximumVersion();
+//		StringBuilder sb = new StringBuilder();
+//		if (max != null)
+//			sb.append("(&");
+//		if (range.isMinimumExclusive())
+//			sb.append("(!(").append(version).append("<=").append(min).append("))");
+//		else
+//			sb.append('(').append(version).append(">=").append(min).append(')');
+//		if (max != null) {
+//			if (range.isMaximumExclusive())
+//				sb.append("(!(").append(version).append(">=").append(range.getMaximumVersion()).append("))");
+//			else
+//				sb.append('(').append(version).append("<=").append(max).append(')');
+//			sb.append(')');
+//		}
+//		return sb.toString();
+//	}
 	
 	private final VersionRange range;
 	
 	public VersionRangeAttribute() {
-		super(Constants.VERSION_ATTRIBUTE, Version.emptyVersion.toString());
-		range = new VersionRange(getValue());
+		this(Version.emptyVersion.toString());
 	}
 			
 	public VersionRangeAttribute(String value) {
-		super(Constants.VERSION_ATTRIBUTE, value);
-		range = new VersionRange(getValue());
+		this(new VersionRange(value));
+	}
+	
+	public VersionRangeAttribute(VersionRange range) {
+		super(Constants.VERSION_ATTRIBUTE, range.toString());
+		this.range = range;
 	}
 	
 	public StringBuilder appendToFilter(StringBuilder builder) {
-		return builder.append(toFilterString(range));
+		return builder.append(range.toFilterString(Constants.VERSION_ATTRIBUTE));
 	}
 
 	public VersionRange getVersionRange() {
