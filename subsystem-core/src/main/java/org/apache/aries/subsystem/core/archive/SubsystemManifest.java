@@ -110,6 +110,10 @@ public class SubsystemManifest {
 		return headers;
 	}
 	
+	public ImportPackageHeader getImportPackageHeader() {
+		return (ImportPackageHeader)getHeaders().get(IMPORT_PACKAGE);
+	}
+	
 	public SubsystemContentHeader getSubsystemContentHeader() {
 		return (SubsystemContentHeader)getHeaders().get(SUBSYSTEM_CONTENT);
 	}

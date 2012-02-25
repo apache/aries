@@ -23,6 +23,10 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -39,11 +43,13 @@ import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.obr.felix.RepositoryAdminRepository;
 import org.apache.aries.subsystem.itests.util.RepositoryGenerator;
 import org.apache.aries.subsystem.itests.util.Utils;
+import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -216,13 +222,13 @@ public abstract class SubsystemTest extends IntegrationTest {
 	protected void assertBundleState(int state, String symbolicName, Subsystem subsystem) {
     	boolean found = false;
     	for (Bundle bundle : subsystem.getBundleContext().getBundles()) {
-			if (symbolicName.equals(bundle.getSymbolicName())) {
-				assertTrue("Wrong state: " + symbolicName, (bundle.getState() & state) != 0);
+			if (symbolicName.equals(bundle.getSymbolicName())) { 
+				assertTrue("Wrong state: " + symbolicName + " [expected " + state + " but was " + bundle.getState() + "]", (bundle.getState() & state) != 0);
 				found = true;
 				break;
 			}
 		}
-    	assertTrue("Bundle '" + symbolicName + "' not found in region context bundle of '" + subsystem + "'", found);
+    	assertTrue("Bundle '" + symbolicName + "' not found in region of '" + subsystem + "'", found);
     }
 	
 	protected void assertChild(Subsystem parent, Subsystem child) {
@@ -442,6 +448,28 @@ public abstract class SubsystemTest extends IntegrationTest {
 		return findBundleBySymbolicName("org.apache.aries.subsystem.core");
 	}
 	
+	protected Bundle installBundleFromFile(String fileName) throws FileNotFoundException, BundleException {
+		return installBundleFromFile(new File(fileName));
+	}
+	
+	protected Bundle installBundleFromFile(File file) throws FileNotFoundException, BundleException {
+		return installBundleFromFile(file, getRootSubsystem());
+	}
+	
+	protected Bundle installBundleFromFile(String file, Subsystem subsystem) throws FileNotFoundException, BundleException {
+		return installBundleFromFile(new File(file), subsystem);
+	}
+	
+	protected Bundle installBundleFromFile(File file, Subsystem subsystem) throws FileNotFoundException, BundleException {
+		Bundle bundle = installBundleFromFile(file, subsystem.getBundleContext());
+		assertBundleState(Bundle.INSTALLED|Bundle.RESOLVED, bundle.getSymbolicName(), subsystem);
+		return bundle;
+	}
+	
+	protected Bundle installBundleFromFile(File file, BundleContext bundleContext) throws FileNotFoundException, BundleException {
+		return bundleContext.installBundle(file.toURI().toString(), new FileInputStream(file));
+	}
+	
 	protected Subsystem installSubsystemFromFile(Subsystem parent, String fileName) throws Exception {
 		return installSubsystemFromFile(parent, new File(fileName));
 	}
@@ -486,6 +514,15 @@ public abstract class SubsystemTest extends IntegrationTest {
 		return subsystem;
 	}
 	
+	protected void startBundle(Bundle bundle) throws BundleException {
+		startBundle(bundle, getRootSubsystem());
+	}
+	
+	protected void startBundle(Bundle bundle, Subsystem subsystem) throws BundleException {
+		bundle.start();
+		assertBundleState(Bundle.ACTIVE, bundle.getSymbolicName(), subsystem);
+	}
+	
 	protected void startSubsystem(Subsystem subsystem) throws Exception {
 		assertState(State.INSTALLED, subsystem);
 		subsystemEvents.clear();
@@ -527,5 +564,19 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void uninstallUnscopedSubsystem(Subsystem subsystem) throws Exception {
 		uninstallSubsystem(subsystem);
+	}
+	
+	protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException {
+		write(new File(file), fixture);
+	}
+	
+	protected static void write(File file, ArchiveFixture.AbstractFixture fixture) throws IOException {
+		FileOutputStream fos = new FileOutputStream(file);
+    	try {
+    		fixture.writeOut(fos);
+    	}
+    	finally {
+    		fos.close();
+    	}
 	}
 }
