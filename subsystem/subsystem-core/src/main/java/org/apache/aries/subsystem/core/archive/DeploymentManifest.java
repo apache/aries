@@ -39,6 +39,7 @@ public class DeploymentManifest {
 	public static final String IMPORT_PACKAGE = Constants.IMPORT_PACKAGE;
 	public static final String PROVISION_RESOURCE = SubsystemConstants.PROVISION_RESOURCE;
 	public static final String REQUIRE_BUNDLE = Constants.REQUIRE_BUNDLE;
+	public static final String REQUIRE_CAPABILITY = Constants.REQUIRE_CAPABILITY;
 	public static final String SUBSYSTEM_SYMBOLICNAME = SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
 	public static final String SUBSYSTEM_VERSION = SubsystemConstants.SUBSYSTEM_VERSION;
 	
@@ -111,16 +112,19 @@ public class DeploymentManifest {
 			SubsystemTypeHeader typeHeader = subsystemManifest.getSubsystemTypeHeader();
 			if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(typeHeader.getValue())) {
 				if (resolution != null) {
-					ImportPackageHeader header = computeImportPackageHeader(resolution, deployedContent, acceptDependencies);
+					Header<?> header = computeImportPackageHeader(resolution, deployedContent, acceptDependencies);
 					if (header != null)
 						headers.put(IMPORT_PACKAGE, header);
 				}
 				// TODO Compute additional headers for an application.
 			}
 			else if (SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(typeHeader.getValue())) {
-				ImportPackageHeader importPackage = subsystemManifest.getImportPackageHeader();
-				if (importPackage != null)
-					headers.put(IMPORT_PACKAGE, importPackage);
+				Header<?> header = subsystemManifest.getImportPackageHeader();
+				if (header != null)
+					headers.put(IMPORT_PACKAGE, header);
+				header = subsystemManifest.getRequireCapabilityHeader();
+				if (header != null)
+					headers.put(REQUIRE_CAPABILITY, header);
 				// TODO Compute additional headers for a composite. 
 			}
 			// Features require no additional headers.
@@ -150,6 +154,10 @@ public class DeploymentManifest {
 	
 	public ProvisionResourceHeader getProvisionResourceHeader() {
 		return (ProvisionResourceHeader)getHeaders().get(PROVISION_RESOURCE);
+	}
+	
+	public RequireCapabilityHeader getRequireCapabilityHeader() {
+		return (RequireCapabilityHeader)getHeaders().get(REQUIRE_CAPABILITY);
 	}
 	
 	public void write(OutputStream out) throws IOException {

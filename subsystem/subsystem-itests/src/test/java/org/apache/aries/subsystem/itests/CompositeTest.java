@@ -22,8 +22,11 @@ public class CompositeTest extends SubsystemTest {
 		if (createdTestFiles)
 			return;
 		createBundleA();
-		createCompositeC();
+		createBundleB();
 		createBundleC();
+		createBundleE();
+		createCompositeC();
+		createCompositeD();
 		createdTestFiles = true;
 	}
 	
@@ -39,6 +42,19 @@ public class CompositeTest extends SubsystemTest {
 						.end());
 	}
 	
+	private static void createBundleB() throws IOException {
+		write("bundle.b.jar",
+				ArchiveFixture
+						.newJar()
+						.manifest()
+						.symbolicName(
+								"org.apache.aries.subsystem.itests.bundle.b")
+						.version("1.0.0")
+						.attribute(Constants.PROVIDE_CAPABILITY,
+								"y; y=test; version:Version=1.0")
+						.end());
+	}
+	
 	private static void createBundleC() throws IOException {
 		write("bundle.c.jar",
 				ArchiveFixture
@@ -51,11 +67,31 @@ public class CompositeTest extends SubsystemTest {
 						.end());
 	}
 	
+	private static void createBundleE() throws IOException {
+		write("bundle.e.jar",
+				ArchiveFixture
+						.newJar()
+						.manifest()
+						.symbolicName(
+								"org.apache.aries.subsystem.itests.bundle.e")
+						.version("1.0.0")
+						.attribute(Constants.REQUIRE_CAPABILITY,
+								"y; filter:=(y=test)")
+						.end());
+	}
+	
 	private static void createCompositeC() throws IOException {
 		createCompositeCManifest();
 		write("composite.c.esa",
 				ArchiveFixture.newZip().binary("OSGI-INF/SUBSYSTEM.MF",
 						new FileInputStream("COMPOSITE.C.MF")));
+	}
+	
+	private static void createCompositeD() throws IOException {
+		createCompositeDManifest();
+		write("composite.d.esa",
+				ArchiveFixture.newZip().binary("OSGI-INF/SUBSYSTEM.MF",
+						new FileInputStream("COMPOSITE.D.MF")));
 	}
 	
 	private static void createCompositeCManifest() throws IOException {
@@ -69,6 +105,19 @@ public class CompositeTest extends SubsystemTest {
 								SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)
 						.attribute(Constants.IMPORT_PACKAGE,
 								"org.apache.aries.subsystem.itests.bundle.a.x, does.not.exist; a=b"));
+	}
+	
+	private static void createCompositeDManifest() throws IOException {
+		write("COMPOSITE.D.MF",
+				ArchiveFixture
+						.newJar()
+						.manifest()
+						.attribute(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME,
+								"org.apache.aries.subsystem.itests.subsystem.composite.d")
+						.attribute(SubsystemConstants.SUBSYSTEM_TYPE,
+								SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)
+						.attribute(Constants.REQUIRE_CAPABILITY,
+								"y; filter:=\"(y=test)\", does.not.exist; filter:=\"(a=b)\""));
 	}
 	
 	@Test
@@ -91,6 +140,29 @@ public class CompositeTest extends SubsystemTest {
 		}
 		finally {
 			bundleA.uninstall();
+		}
+	}
+	
+	@Test
+	public void testRequireCapability() throws Exception {
+		Bundle bundleB = installBundleFromFile("bundle.b.jar");
+		try {
+			Subsystem compositeD = installSubsystemFromFile("composite.d.esa");
+			try {
+				Bundle bundleE = installBundleFromFile("bundle.e.jar", compositeD);
+				try {
+					startBundle(bundleE, compositeD);
+				}
+				finally {
+					bundleE.uninstall();
+				}
+			}
+			finally {
+				uninstallScopedSubsystem(compositeD);
+			}
+		}
+		finally {
+			bundleB.uninstall();
 		}
 	}
 }
