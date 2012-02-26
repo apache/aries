@@ -114,6 +114,10 @@ public class SubsystemManifest {
 		return (ImportPackageHeader)getHeaders().get(IMPORT_PACKAGE);
 	}
 	
+	public RequireCapabilityHeader getRequireCapabilityHeader() {
+		return (RequireCapabilityHeader)getHeaders().get(REQUIRE_CAPABILITY);
+	}
+	
 	public SubsystemContentHeader getSubsystemContentHeader() {
 		return (SubsystemContentHeader)getHeaders().get(SUBSYSTEM_CONTENT);
 	}

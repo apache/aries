@@ -21,6 +21,8 @@ public class DirectiveFactory {
 			return new StartOrderDirective(value);
 		if (FilterDirective.NAME.equals(name))
 			return new FilterDirective(value);
+		if (EffectiveDirective.NAME.equals(name))
+			return EffectiveDirective.getInstance(value);
 		return new GenericDirective(name, value);
 	}
 }
