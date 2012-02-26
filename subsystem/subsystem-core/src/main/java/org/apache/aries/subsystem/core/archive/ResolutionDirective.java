@@ -17,35 +17,34 @@ import org.osgi.framework.Constants;
 
 public class ResolutionDirective extends AbstractDirective {
 	public static final String NAME = Constants.RESOLUTION_DIRECTIVE;
+	public static final String VALUE_MANDATORY = Constants.RESOLUTION_MANDATORY;
+	public static final String VALUE_OPTIONAL = Constants.RESOLUTION_OPTIONAL;
 	
-	public static final ResolutionDirective MANDATORY = new ResolutionDirective(true);
-	public static final ResolutionDirective OPTIONAL = new ResolutionDirective(false);
+	public static final ResolutionDirective MANDATORY = new ResolutionDirective(VALUE_MANDATORY);
+	public static final ResolutionDirective OPTIONAL = new ResolutionDirective(VALUE_OPTIONAL);
 	
-	public static ResolutionDirective getInstance(String value) {
-		if (Constants.RESOLUTION_MANDATORY.equals(value)) {
-			return MANDATORY;
-		}
-		else if (Constants.RESOLUTION_OPTIONAL.equals(value)) {
-			return OPTIONAL;
-		}
-		else {
-			throw new IllegalArgumentException("Illegal " + Constants.RESOLUTION_DIRECTIVE + " value: " + value);
-		}
-		
+	public ResolutionDirective() {
+		this(VALUE_MANDATORY);
 	}
 	
-	private final boolean mandatory;
+	public static ResolutionDirective getInstance(String value) {
+		if (VALUE_MANDATORY.equals(value))
+			return MANDATORY;
+		if (VALUE_OPTIONAL.equals(value))
+			return OPTIONAL;
+		else
+			throw new IllegalArgumentException("Invalid " + Constants.RESOLUTION_DIRECTIVE + " directive: " + value);
+	}
 	
-	private ResolutionDirective(boolean mandatory) {
-		super(NAME, mandatory ? Constants.RESOLUTION_MANDATORY : Constants.RESOLUTION_OPTIONAL);
-		this.mandatory = mandatory;
+	private ResolutionDirective(String value) {
+		super(NAME, value);
 	}
 
 	public boolean isMandatory() {
-		return mandatory;
+		return MANDATORY == this || VALUE_MANDATORY.equals(getValue());
 	}
 	
 	public boolean isOptional() {
-		return !mandatory;
+		return OPTIONAL == this || VALUE_OPTIONAL.equals(getValue());
 	}
 }
