@@ -96,6 +96,8 @@ public class HeaderFactory {
 			return new ProvisionResourceHeader(value);
 		if (SubsystemManifestVersionHeader.NAME.equals(name))
 			return new SubsystemManifestVersionHeader(value);
+		if (RequireCapabilityHeader.NAME.equals(name))
+			return new RequireCapabilityHeader(value);
 		return new GenericHeader(name, value);
 			
 	}

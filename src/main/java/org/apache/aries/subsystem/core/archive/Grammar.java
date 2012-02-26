@@ -115,6 +115,10 @@ public interface Grammar {
 	public static final String IMPORT = PACKAGENAMES + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String IMPORTPACKAGE = IMPORT + "(?:\\,\\s*" + IMPORT + ")*";
 	
+	public static final String NAMESPACE = SYMBOLICNAME;
+	public static final String REQUIREMENT = NAMESPACE + "(?:;\\s*(?:" + PARAMETER + "))*";
+	public static final String REQUIRE_CAPABILITY = REQUIREMENT + "(?:,\\s*(?:" + REQUIREMENT + "))*";
+	
 	/*
 	 * number ::= digit+
 	 * version ::= major( '.' minor ( '.' micro ( '.' qualifier )? )? )?

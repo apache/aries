@@ -51,6 +51,8 @@ import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageRequirement;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.ProvisionedResource;
+import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
+import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
@@ -69,7 +71,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Capability;
@@ -1045,28 +1046,22 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// Features share the same isolation as that of their scoped parent.
 			return;
 		if (isApplication() || isComposite()) {
+			Region from = region;
+			Region to = ((AriesSubsystem)getParents().iterator().next()).region;
+			RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
 			// Both applications and composites have Import-Package headers that require processing.
 			// In the case of applications, the header is generated.
-			ImportPackageHeader importPackage = getDeploymentManifest().getImportPackageHeader();
-			if (importPackage != null) {
-				Region from = region;
-				Region to = ((AriesSubsystem)getParents().iterator().next()).region;
-				String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
-				RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
-				for (ImportPackageHeader.Clause clause : importPackage.getClauses()) {
-					ImportPackageRequirement requirement = new ImportPackageRequirement(clause);
-					String filter = requirement.getDirectives().get(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE);
-					if (LOGGER.isDebugEnabled())
-						LOGGER.debug("Allowing " + policy + " of " + filter);
-					builder.allow(policy, filter);
-				}
-				RegionFilter regionFilter = builder.build();
-				if (LOGGER.isDebugEnabled())
-					LOGGER.debug("Establishing region connection: from="
-							+ from + ", to=" + to + ", policy=" + policy
-							+ ", filter=" + regionFilter);
-				from.connectRegion(to, regionFilter);
-			}
+			Header<?> header = getDeploymentManifest().getImportPackageHeader();
+			setImportIsolationPolicy(builder, (ImportPackageHeader)header);
+			// Both applications and composites have Require-Capability headers that require processing.
+			// In the case of applications, the header is generated.
+			header = getDeploymentManifest().getRequireCapabilityHeader();
+			setImportIsolationPolicy(builder, (RequireCapabilityHeader)header);
+			RegionFilter regionFilter = builder.build();
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Establishing region connection: from=" + from
+						+ ", to=" + to + ", filter=" + regionFilter);
+			from.connectRegion(to, regionFilter);
 		}
 		if (isApplication()) {
 			// TODO Implement import isolation policy for applications.
@@ -1075,6 +1070,32 @@ public class AriesSubsystem implements Subsystem, Resource {
 		else if (isComposite()) {
 			// TODO Implement import isolation policy for composites.
 			// Composites specify an explicit import policy in their subsystem and deployment manifests.
+		}
+	}
+	
+	private static void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
+		for (ImportPackageHeader.Clause clause : header.getClauses()) {
+			ImportPackageRequirement requirement = new ImportPackageRequirement(clause);
+			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Allowing " + policy + " of " + filter);
+			builder.allow(policy, filter);
+		}
+	}
+	
+	private static void setImportIsolationPolicy(RegionFilterBuilder builder, RequireCapabilityHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		for (RequireCapabilityHeader.Clause clause : header.getClauses()) {
+			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause);
+			String policy = requirement.getNamespace();
+			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Allowing " + policy + " of " + filter);
+			builder.allow(policy, filter);
 		}
 	}
 
