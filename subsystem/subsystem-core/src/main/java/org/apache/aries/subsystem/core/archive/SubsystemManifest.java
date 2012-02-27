@@ -122,6 +122,10 @@ public class SubsystemManifest {
 		return (SubsystemContentHeader)getHeaders().get(SUBSYSTEM_CONTENT);
 	}
 	
+	public SubsystemImportServiceHeader getSubsystemImportServiceHeader() {
+		return (SubsystemImportServiceHeader)getHeaders().get(SUBSYSTEM_IMPORTSERVICE);
+	}
+	
 	public SubsystemSymbolicNameHeader getSubsystemSymbolicNameHeader() {
 		return (SubsystemSymbolicNameHeader)getHeaders().get(SUBSYSTEM_SYMBOLICNAME);
 	}
