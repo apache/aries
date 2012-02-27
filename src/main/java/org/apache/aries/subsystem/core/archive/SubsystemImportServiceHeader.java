@@ -11,8 +11,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
+import org.osgi.service.subsystem.SubsystemConstants;
 
-public class RequireCapabilityHeader implements Header<RequireCapabilityHeader.Clause> {
+public class SubsystemImportServiceHeader implements Header<SubsystemImportServiceHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
@@ -24,20 +25,20 @@ public class RequireCapabilityHeader implements Header<RequireCapabilityHeader.C
 		private static void fillInDefaults(Map<String, Parameter> parameters) {
 			Parameter parameter = parameters.get(DIRECTIVE_EFFECTIVE);
 			if (parameter == null)
-				parameters.put(DIRECTIVE_EFFECTIVE, EffectiveDirective.RESOLVE);
+				parameters.put(DIRECTIVE_EFFECTIVE, EffectiveDirective.ACTIVE);
 			parameter = parameters.get(DIRECTIVE_RESOLUTION);
 			if (parameter == null)
 				parameters.put(DIRECTIVE_RESOLUTION, ResolutionDirective.MANDATORY);
 		}
 		
-		private final String namespace;
+		private final String path;
 		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		
 		public Clause(String clause) {
 			Matcher matcher = PATTERN_NAMESPACE.matcher(clause);
 			if (!matcher.find())
 				throw new IllegalArgumentException("Missing namespace path: " + clause);
-			namespace = matcher.group();
+			path = matcher.group();
 			matcher.usePattern(PATTERN_PARAMETER);
 			while (matcher.find()) {
 				Parameter parameter = ParameterFactory.create(matcher.group());
@@ -87,10 +88,6 @@ public class RequireCapabilityHeader implements Header<RequireCapabilityHeader.C
 			directives.trimToSize();
 			return directives;
 		}
-		
-		public String getNamespace() {
-			return namespace;
-		}
 
 		@Override
 		public Parameter getParameter(String name) {
@@ -104,7 +101,11 @@ public class RequireCapabilityHeader implements Header<RequireCapabilityHeader.C
 
 		@Override
 		public String getPath() {
-			return getNamespace();
+			return path;
+		}
+		
+		public String getServiceName() {
+			return path;
 		}
 		
 		@Override
@@ -118,22 +119,23 @@ public class RequireCapabilityHeader implements Header<RequireCapabilityHeader.C
 		}
 	}
 	
-	public static final String NAME = Constants.REQUIRE_CAPABILITY;
+	public static final String NAME = SubsystemConstants.SUBSYSTEM_IMPORTSERVICE;
 	
+	// TODO Subsystem-ImportService currently does not have its own grammar, but it's similar to Require-Capability.
 	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.REQUIREMENT + ")(?=,|\\z)");
 	
 	private final Set<Clause> clauses = new HashSet<Clause>();
 	
-	public RequireCapabilityHeader(String value) {
+	public SubsystemImportServiceHeader(String value) {
 		Matcher matcher = PATTERN.matcher(value);
 		while (matcher.find())
 			clauses.add(new Clause(matcher.group()));
 		if (clauses.isEmpty())
 			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
 	}
-
+	
 	@Override
-	public Collection<RequireCapabilityHeader.Clause> getClauses() {
+	public Collection<SubsystemImportServiceHeader.Clause> getClauses() {
 		return Collections.unmodifiableSet(clauses);
 	}
 

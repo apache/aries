@@ -32,14 +32,13 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public class DeploymentManifest {
 	public static final String DEPLOYED_CONTENT = SubsystemConstants.DEPLOYED_CONTENT;
-	public static final String DEPLOYED_EXPORTSERVICE = "Deployed-ExportService"; // TODO Needs constant on SubsystemConstants.
-	public static final String DEPLOYED_IMPORTSERVICE = "Deployed-ImportService"; // TODO Needs constant on SubsystemConstants.
 	public static final String DEPLOYMENT_MANIFESTVERSION = "Deployment-ManifestVersion"; // TODO Needs constant on SubsystemConstants.
 	public static final String EXPORT_PACKAGE = Constants.EXPORT_PACKAGE;
 	public static final String IMPORT_PACKAGE = Constants.IMPORT_PACKAGE;
 	public static final String PROVISION_RESOURCE = SubsystemConstants.PROVISION_RESOURCE;
 	public static final String REQUIRE_BUNDLE = Constants.REQUIRE_BUNDLE;
 	public static final String REQUIRE_CAPABILITY = Constants.REQUIRE_CAPABILITY;
+	public static final String SUBSYSTEM_IMPORTSERVICE = SubsystemConstants.SUBSYSTEM_IMPORTSERVICE;
 	public static final String SUBSYSTEM_SYMBOLICNAME = SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
 	public static final String SUBSYSTEM_VERSION = SubsystemConstants.SUBSYSTEM_VERSION;
 	
@@ -125,6 +124,9 @@ public class DeploymentManifest {
 				header = subsystemManifest.getRequireCapabilityHeader();
 				if (header != null)
 					headers.put(REQUIRE_CAPABILITY, header);
+				header = subsystemManifest.getSubsystemImportServiceHeader();
+				if (header != null)
+					headers.put(SUBSYSTEM_IMPORTSERVICE, header);
 				// TODO Compute additional headers for a composite. 
 			}
 			// Features require no additional headers.
@@ -158,6 +160,10 @@ public class DeploymentManifest {
 	
 	public RequireCapabilityHeader getRequireCapabilityHeader() {
 		return (RequireCapabilityHeader)getHeaders().get(REQUIRE_CAPABILITY);
+	}
+	
+	public SubsystemImportServiceHeader getSubsystemImportServiceHeader() {
+		return (SubsystemImportServiceHeader)getHeaders().get(SUBSYSTEM_IMPORTSERVICE);
 	}
 	
 	public void write(OutputStream out) throws IOException {
