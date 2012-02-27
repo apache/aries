@@ -127,6 +127,9 @@ public class DeploymentManifest {
 				header = subsystemManifest.getSubsystemImportServiceHeader();
 				if (header != null)
 					headers.put(SUBSYSTEM_IMPORTSERVICE, header);
+				header = subsystemManifest.getRequireBundleHeader();
+				if (header != null)
+					headers.put(REQUIRE_BUNDLE, header);
 				// TODO Compute additional headers for a composite. 
 			}
 			// Features require no additional headers.
@@ -156,6 +159,10 @@ public class DeploymentManifest {
 	
 	public ProvisionResourceHeader getProvisionResourceHeader() {
 		return (ProvisionResourceHeader)getHeaders().get(PROVISION_RESOURCE);
+	}
+	
+	public RequireBundleHeader getRequireBundleHeader() {
+		return (RequireBundleHeader)getHeaders().get(REQUIRE_BUNDLE);
 	}
 	
 	public RequireCapabilityHeader getRequireCapabilityHeader() {

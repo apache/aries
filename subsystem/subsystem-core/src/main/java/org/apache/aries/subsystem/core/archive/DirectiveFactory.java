@@ -23,6 +23,8 @@ public class DirectiveFactory {
 			return new FilterDirective(value);
 		if (EffectiveDirective.NAME.equals(name))
 			return EffectiveDirective.getInstance(value);
+		if (VisibilityDirective.NAME.equals(name))
+			return VisibilityDirective.getInstance(value);
 		return new GenericDirective(name, value);
 	}
 }

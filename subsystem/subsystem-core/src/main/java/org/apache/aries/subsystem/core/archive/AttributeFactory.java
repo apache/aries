@@ -27,6 +27,8 @@ public class AttributeFactory {
 			return new TypeAttribute(value);
 		if (DeployedVersionAttribute.NAME.equals(name))
 			return new DeployedVersionAttribute(value);
+		if (BundleVersionAttribute.NAME.equals(name))
+			return new BundleVersionAttribute(value);
 		return new GenericAttribute(name, value);
 	}
 }
