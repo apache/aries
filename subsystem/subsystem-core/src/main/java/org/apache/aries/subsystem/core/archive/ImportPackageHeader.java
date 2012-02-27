@@ -86,6 +86,7 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			fillInDefaults(myParameters);
 		}
 		
+		@Override
 		public Attribute getAttribute(String name) {
 			Parameter result = myParameters.get(name);
 			if (result instanceof Attribute) {
@@ -94,6 +95,7 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			return null;
 		}
 		
+		@Override
 		public Collection<Attribute> getAttributes() {
 			ArrayList<Attribute> attributes = new ArrayList<Attribute>(myParameters.size());
 			for (Parameter parameter : myParameters.values()) {
@@ -105,6 +107,7 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			return attributes;
 		}
 		
+		@Override
 		public Directive getDirective(String name) {
 			Parameter result = myParameters.get(name);
 			if (result instanceof Directive) {
@@ -113,6 +116,7 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			return null;
 		}
 		
+		@Override
 		public Collection<Directive> getDirectives() {
 			ArrayList<Directive> directives = new ArrayList<Directive>(myParameters.size());
 			for (Parameter parameter : myParameters.values()) {
@@ -128,14 +132,17 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			return Arrays.asList(myPath.split(";"));
 		}
 		
+		@Override
 		public Parameter getParameter(String name) {
 			return myParameters.get(name);
 		}
 		
+		@Override
 		public Collection<Parameter> getParameters() {
 			return Collections.unmodifiableCollection(myParameters.values());
 		}
 		
+		@Override
 		public String getPath() {
 			return myPath;
 		}
@@ -186,6 +193,7 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			return (VersionRangeAttribute)myParameters.get(Constants.VERSION_ATTRIBUTE);
 		}
 		
+		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
 					.append(getPath());

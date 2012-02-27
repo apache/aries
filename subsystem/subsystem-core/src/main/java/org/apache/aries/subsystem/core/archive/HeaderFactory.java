@@ -13,7 +13,6 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
-
 public class HeaderFactory {
 //	public static final String APPLICATIONCONTENT_HEADER = ApplicationContentHeader.NAME;
 //	public static final String APPLICATIONSYMBOLICNAME_HEADER = ApplicationSymbolicNameHeader.NAME;
@@ -55,7 +54,7 @@ public class HeaderFactory {
 //	private static final String REGEX = '(' + Grammar.CLAUSE + ")(?:,(" + Grammar.CLAUSE + "))*";
 //	private static final Pattern PATTERN = Pattern.compile(REGEX);
 	
-	public static Header createHeader(String name, String value) {
+	public static Header<?> createHeader(String name, String value) {
 //		Matcher matcher = PATTERN.matcher(value);
 //		if (!matcher.matches())
 //			throw new IllegalArgumentException("Invalid header: " + name + ": " + value);
@@ -98,6 +97,8 @@ public class HeaderFactory {
 			return new SubsystemManifestVersionHeader(value);
 		if (RequireCapabilityHeader.NAME.equals(name))
 			return new RequireCapabilityHeader(value);
+		if (SubsystemImportServiceHeader.NAME.equals(name))
+			return new SubsystemImportServiceHeader(value);
 		return new GenericHeader(name, value);
 			
 	}
