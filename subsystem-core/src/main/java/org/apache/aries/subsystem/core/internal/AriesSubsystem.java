@@ -54,6 +54,8 @@ import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.Provision
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
+import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
 import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
@@ -1057,6 +1059,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// In the case of applications, the header is generated.
 			header = getDeploymentManifest().getRequireCapabilityHeader();
 			setImportIsolationPolicy(builder, (RequireCapabilityHeader)header);
+			// Both applications and composites have Subsystem-ImportService headers that require processing.
+			// In the case of applications, the header is generated.
+			header = getDeploymentManifest().getSubsystemImportServiceHeader();
+			setImportIsolationPolicy(builder, (SubsystemImportServiceHeader)header);
 			RegionFilter regionFilter = builder.build();
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Establishing region connection: from=" + from
@@ -1092,6 +1098,19 @@ public class AriesSubsystem implements Subsystem, Resource {
 		for (RequireCapabilityHeader.Clause clause : header.getClauses()) {
 			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause);
 			String policy = requirement.getNamespace();
+			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Allowing " + policy + " of " + filter);
+			builder.allow(policy, filter);
+		}
+	}
+	
+	private static void setImportIsolationPolicy(RegionFilterBuilder builder, SubsystemImportServiceHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		for (SubsystemImportServiceHeader.Clause clause : header.getClauses()) {
+			SubsystemImportServiceRequirement requirement = new SubsystemImportServiceRequirement(clause);
+			String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
 			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Allowing " + policy + " of " + filter);
