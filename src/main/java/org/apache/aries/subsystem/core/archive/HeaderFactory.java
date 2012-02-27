@@ -99,6 +99,8 @@ public class HeaderFactory {
 			return new RequireCapabilityHeader(value);
 		if (SubsystemImportServiceHeader.NAME.equals(name))
 			return new SubsystemImportServiceHeader(value);
+		if (RequireBundleHeader.NAME.equals(name))
+			return new RequireBundleHeader(value);
 		return new GenericHeader(name, value);
 			
 	}

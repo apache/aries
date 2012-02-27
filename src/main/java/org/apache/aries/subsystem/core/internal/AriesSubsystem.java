@@ -51,6 +51,8 @@ import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageRequirement;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.ProvisionedResource;
+import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
+import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
@@ -1047,10 +1049,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (isFeature())
 			// Features share the same isolation as that of their scoped parent.
 			return;
+		Region from = region;
+		Region to = ((AriesSubsystem)getParents().iterator().next()).region;
+		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
 		if (isApplication() || isComposite()) {
-			Region from = region;
-			Region to = ((AriesSubsystem)getParents().iterator().next()).region;
-			RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
 			// Both applications and composites have Import-Package headers that require processing.
 			// In the case of applications, the header is generated.
 			Header<?> header = getDeploymentManifest().getImportPackageHeader();
@@ -1063,11 +1065,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// In the case of applications, the header is generated.
 			header = getDeploymentManifest().getSubsystemImportServiceHeader();
 			setImportIsolationPolicy(builder, (SubsystemImportServiceHeader)header);
-			RegionFilter regionFilter = builder.build();
-			if (LOGGER.isDebugEnabled())
-				LOGGER.debug("Establishing region connection: from=" + from
-						+ ", to=" + to + ", filter=" + regionFilter);
-			from.connectRegion(to, regionFilter);
 		}
 		if (isApplication()) {
 			// TODO Implement import isolation policy for applications.
@@ -1076,7 +1073,14 @@ public class AriesSubsystem implements Subsystem, Resource {
 		else if (isComposite()) {
 			// TODO Implement import isolation policy for composites.
 			// Composites specify an explicit import policy in their subsystem and deployment manifests.
+			Header<?> header = getDeploymentManifest().getRequireBundleHeader();
+			setImportIsolationPolicy(builder, (RequireBundleHeader)header);
 		}
+		RegionFilter regionFilter = builder.build();
+		if (LOGGER.isDebugEnabled())
+			LOGGER.debug("Establishing region connection: from=" + from
+					+ ", to=" + to + ", filter=" + regionFilter);
+		from.connectRegion(to, regionFilter);
 	}
 	
 	private static void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header) throws InvalidSyntaxException {
@@ -1086,6 +1090,19 @@ public class AriesSubsystem implements Subsystem, Resource {
 		for (ImportPackageHeader.Clause clause : header.getClauses()) {
 			ImportPackageRequirement requirement = new ImportPackageRequirement(clause);
 			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Allowing " + policy + " of " + filter);
+			builder.allow(policy, filter);
+		}
+	}
+	
+	private static void setImportIsolationPolicy(RegionFilterBuilder builder, RequireBundleHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		for (RequireBundleHeader.Clause clause : header.getClauses()) {
+			RequireBundleRequirement requirement = new RequireBundleRequirement(clause);
+			String policy = RegionFilter.VISIBLE_REQUIRE_NAMESPACE;
+			String filter = requirement.getDirectives().get(RequireBundleRequirement.DIRECTIVE_FILTER);
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Allowing " + policy + " of " + filter);
 			builder.allow(policy, filter);
@@ -1111,7 +1128,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		for (SubsystemImportServiceHeader.Clause clause : header.getClauses()) {
 			SubsystemImportServiceRequirement requirement = new SubsystemImportServiceRequirement(clause);
 			String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
-			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
+			String filter = requirement.getDirectives().get(SubsystemImportServiceRequirement.DIRECTIVE_FILTER);
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Allowing " + policy + " of " + filter);
 			builder.allow(policy, filter);

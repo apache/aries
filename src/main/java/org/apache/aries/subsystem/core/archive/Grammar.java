@@ -119,6 +119,9 @@ public interface Grammar {
 	public static final String REQUIREMENT = NAMESPACE + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String REQUIRE_CAPABILITY = REQUIREMENT + "(?:,\\s*(?:" + REQUIREMENT + "))*";
 	
+	public static final String BUNDLE_DESCRIPTION = SYMBOLICNAME + "(?:;\\s*(?:" + PARAMETER + "))*";
+	public static final String REQUIRE_BUNDLE = BUNDLE_DESCRIPTION + "(?:,\\s*(?:" + BUNDLE_DESCRIPTION + "))*";
+	
 	/*
 	 * number ::= digit+
 	 * version ::= major( '.' minor ( '.' micro ( '.' qualifier )? )? )?
