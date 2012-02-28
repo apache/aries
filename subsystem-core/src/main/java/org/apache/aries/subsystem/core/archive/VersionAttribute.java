@@ -19,11 +19,12 @@ import org.osgi.framework.Version;
 public class VersionAttribute extends AbstractAttribute {
 	public static final String NAME = Constants.VERSION_ATTRIBUTE;
 	
+	public static final VersionAttribute DEFAULT = new VersionAttribute();
+	
 	private final Version version;
 	
 	public VersionAttribute() {
-		super(NAME, Version.emptyVersion.toString());
-		version = Version.emptyVersion;
+		this(Version.emptyVersion.toString());
 	}
 	
 	public VersionAttribute(String value) {
