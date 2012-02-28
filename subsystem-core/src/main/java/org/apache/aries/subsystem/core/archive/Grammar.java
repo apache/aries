@@ -125,6 +125,13 @@ public interface Grammar {
 	public static final String EXPORT = PACKAGENAMES + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String EXPORT_PACKAGE = EXPORT + "(?:,\\s*(?:" + EXPORT + "))*";
 	
+	public static final String SCALAR = "String|Version|Long|Double";
+	public static final String LIST = "List<(?:" + SCALAR + ")>";
+	public static final String TYPE = "(?:" + SCALAR + ")|" + LIST;
+	public static final String TYPED_ATTR = EXTENDED + "(?:\\:" + TYPE + ")?=(?:" + ARGUMENT + ')';
+	public static final String CAPABILITY = NAMESPACE + "(?:;\\s*(?:(?:" + DIRECTIVE + ")|(?:" + TYPED_ATTR + ")))*";
+	public static final String PROVIDE_CAPABILITY = CAPABILITY + "(?:,\\s*(?:" + CAPABILITY + "))*";
+	
 	/*
 	 * number ::= digit+
 	 * version ::= major( '.' minor ( '.' micro ( '.' qualifier )? )? )?

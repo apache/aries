@@ -16,5 +16,5 @@ package org.apache.aries.subsystem.core.archive;
 public interface Parameter {
 	String getName();
 	
-	String getValue();
+	Object getValue();
 }

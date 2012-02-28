@@ -118,6 +118,10 @@ public class SubsystemManifest {
 		return (ImportPackageHeader)getHeaders().get(IMPORT_PACKAGE);
 	}
 	
+	public ProvideCapabilityHeader getProvideCapabilityHeader() {
+		return (ProvideCapabilityHeader)getHeaders().get(PROVIDE_CAPABILITY);
+	}
+	
 	public RequireBundleHeader getRequireBundleHeader() {
 		return (RequireBundleHeader)getHeaders().get(REQUIRE_BUNDLE);
 	}

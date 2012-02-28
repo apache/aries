@@ -35,6 +35,6 @@ public class TypeAttribute extends AbstractAttribute {
 	}
 
 	public String getType() {
-		return getValue();
+		return (String)getValue();
 	}
 }
