@@ -105,7 +105,7 @@ public class SubsystemContentHeader extends AbstractHeader {
 			VersionRange versionRange = new VersionRange(Version.emptyVersion.toString());
 			attribute = clause.getAttribute(Constants.VERSION_ATTRIBUTE);
 			if (attribute != null) {
-				versionRange = new VersionRange(attribute.getValue());
+				versionRange = new VersionRange(String.valueOf(attribute.getValue()));
 			}
 			int startOrder = StartOrderDirective.DEFAULT_VALUE;
 			directive = clause.getDirective(StartOrderDirective.NAME);

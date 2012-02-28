@@ -1,24 +1,21 @@
 package org.apache.aries.subsystem.core.archive;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.resource.AbstractCapability;
-import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.resource.Resource;
 
-public class ExportPackageCapability extends AbstractCapability {
-	public static final String NAMESPACE = PackageNamespace.PACKAGE_NAMESPACE;
-	
+public class ProvideCapabilityCapability extends AbstractCapability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
 	private final Map<String, String> directives = new HashMap<String, String>();
+	private final String namespace;
 	private final Resource resource;
 	
-	public ExportPackageCapability(String packageName, Collection<Parameter> parameters, Resource resource) {
-		attributes.put(NAMESPACE, packageName);
-		for (Parameter parameter : parameters) {
+	public ProvideCapabilityCapability(ProvideCapabilityHeader.Clause clause, Resource resource) {
+		namespace = clause.getNamespace();
+		for (Parameter parameter : clause.getParameters()) {
 			if (parameter instanceof Attribute)
 				attributes.put(parameter.getName(), parameter.getValue());
 			else
@@ -39,7 +36,7 @@ public class ExportPackageCapability extends AbstractCapability {
 
 	@Override
 	public String getNamespace() {
-		return NAMESPACE;
+		return namespace;
 	}
 
 	@Override
