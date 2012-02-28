@@ -59,7 +59,7 @@ public class BundleResource implements Resource, RepositoryContent {
 		}
 		ExportPackageHeader eph = (ExportPackageHeader)manifest.getHeader(ExportPackageHeader.NAME);
 		if (eph != null) {
-			capabilities.addAll(eph.getCapabilities(this));
+			capabilities.addAll(eph.toCapabilities(this));
 		}
 		ImportPackageHeader iph = (ImportPackageHeader)manifest.getHeader(ImportPackageHeader.NAME);
 		if (iph != null) {

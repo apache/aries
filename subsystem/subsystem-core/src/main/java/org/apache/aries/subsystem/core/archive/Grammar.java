@@ -122,6 +122,9 @@ public interface Grammar {
 	public static final String BUNDLE_DESCRIPTION = SYMBOLICNAME + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String REQUIRE_BUNDLE = BUNDLE_DESCRIPTION + "(?:,\\s*(?:" + BUNDLE_DESCRIPTION + "))*";
 	
+	public static final String EXPORT = PACKAGENAMES + "(?:;\\s*(?:" + PARAMETER + "))*";
+	public static final String EXPORT_PACKAGE = EXPORT + "(?:,\\s*(?:" + EXPORT + "))*";
+	
 	/*
 	 * number ::= digit+
 	 * version ::= major( '.' minor ( '.' micro ( '.' qualifier )? )? )?

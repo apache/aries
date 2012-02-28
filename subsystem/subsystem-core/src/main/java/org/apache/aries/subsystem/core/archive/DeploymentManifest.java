@@ -130,6 +130,9 @@ public class DeploymentManifest {
 				header = subsystemManifest.getRequireBundleHeader();
 				if (header != null)
 					headers.put(REQUIRE_BUNDLE, header);
+				header = subsystemManifest.getExportPackageHeader();
+				if (header != null)
+					headers.put(EXPORT_PACKAGE, header);
 				// TODO Compute additional headers for a composite. 
 			}
 			// Features require no additional headers.
@@ -147,6 +150,10 @@ public class DeploymentManifest {
 	
 	public DeployedContentHeader getDeployedContentHeader() {
 		return (DeployedContentHeader)getHeaders().get(DEPLOYED_CONTENT);
+	}
+	
+	public ExportPackageHeader getExportPackageHeader() {
+		return (ExportPackageHeader)getHeaders().get(EXPORT_PACKAGE);
 	}
 	
 	public Map<String, Header<?>> getHeaders() {
