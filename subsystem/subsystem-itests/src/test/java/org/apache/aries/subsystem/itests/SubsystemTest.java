@@ -372,7 +372,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void assertState(EnumSet<State> expected, State actual) {
-		assertTrue("Wrong state: " + actual, expected.contains(actual));
+		assertTrue("Wrong state: expected=" + expected + ", actual=" + actual, expected.contains(actual));
 	}
 	
 	protected void assertState(State expected, Subsystem subsystem) {
