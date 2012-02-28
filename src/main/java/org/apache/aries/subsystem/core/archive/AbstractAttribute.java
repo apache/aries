@@ -14,7 +14,7 @@
 package org.apache.aries.subsystem.core.archive;
 
 public abstract class AbstractAttribute extends AbstractParameter implements Attribute {
-	public AbstractAttribute(String name, String value) {
+	public AbstractAttribute(String name, Object value) {
 		super(name, value);
 	}
 	

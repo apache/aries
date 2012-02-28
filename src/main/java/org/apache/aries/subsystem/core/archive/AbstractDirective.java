@@ -17,6 +17,10 @@ public abstract class AbstractDirective extends AbstractParameter implements Dir
 	public AbstractDirective(String name, String value) {
 		super(name, value);
 	}
+	
+	public String getValue() {
+		return (String)super.getValue();
+	}
 
 	public String toString() {
 		return new StringBuilder()

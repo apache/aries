@@ -29,7 +29,7 @@ public class VersionAttribute extends AbstractAttribute {
 	
 	public VersionAttribute(String value) {
 		super(NAME, value);
-		version = Version.parseVersion(getValue());
+		version = Version.parseVersion(value);
 	}
 
 	public Version getVersion() {

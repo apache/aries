@@ -14,4 +14,5 @@
 package org.apache.aries.subsystem.core.archive;
 
 public interface Directive extends Parameter {
+	String getValue();
 }
