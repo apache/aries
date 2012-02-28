@@ -18,11 +18,14 @@
  */
 package org.apache.aries.proxy.itests;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -44,7 +47,7 @@ import org.osgi.framework.hooks.weaving.WovenClass;
 @RunWith(JUnit4TestRunner.class)
 public class WeavingProxyTest extends AbstractProxyTest
 {
-  
+
   /**
    * This test does two things. First of all it checks that we can proxy a final 
    * class. It also validates that the class implements WovenProxy, and that the
@@ -63,14 +66,14 @@ public class WeavingProxyTest extends AbstractProxyTest
         dispatcher, template);
     if(!!!(o instanceof WovenProxy))
       fail("Proxy should be woven!");
-    
+
     Object inner = new Integer(3);
     dispatcher.setReturn(new TestCallable());
     ((TestCallable)dispatcher.call()).setReturn(inner);
-    
+
     assertSame("Should return the same object", inner, o.call());
   }
-  
+
   /**
    * This method checks that we correctly proxy a class with final methods.
    */
@@ -90,48 +93,70 @@ public class WeavingProxyTest extends AbstractProxyTest
     if(!!!(o instanceof WovenProxy))
       fail("Proxy should be woven!");
   }
-  
+
   @Test(expected = FinalModifierException.class)
   public void checkProxyController() throws Exception
   {
+
     context().registerService(ProxyWeavingController.class.getName(), new ProxyWeavingController() {
-      
+
       public boolean shouldWeave(WovenClass arg0, WeavingHelper arg1)
       {
         return false;
       }
     }, null);
-    
+
     ProxyManager mgr = context().getService(ProxyManager.class);
     Bundle b = FrameworkUtil.getBundle(this.getClass());
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
-    Runnable r = new Runnable() {
-      public final void run() {
-      }
-    };
-    classes.add(r.getClass());
-    Object o = mgr.createDelegatingProxy(b, classes, c, r);
+    // Don't use anonymous inner class in this test as IBM and Sun load it at a different time
+    // For IBM JDK, the anonymous inner class will be loaded prior to the controller is registered.
+    Callable<?> callable = new TestFinalDelegate();
+    classes.add(callable.getClass());
+    Object o = mgr.createDelegatingProxy(b, classes, c, callable);
     if(o instanceof WovenProxy)
       fail("Proxy should not have been woven!");
   }
-   
+
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-      return testOptions(
-          paxLogging("DEBUG"),
+    return testOptions(
+        paxLogging("DEBUG"),
 
-          // Bundles
-          mavenBundle("org.apache.aries", "org.apache.aries.util"),
-          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-          mavenBundle("org.ow2.asm", "asm-all"),
-          // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
-          // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-          mavenBundle("org.osgi", "org.osgi.compendium"),
-//          org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-          PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+        // Bundles
+        mavenBundle("org.apache.aries", "org.apache.aries.util"),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+        mavenBundle("org.ow2.asm", "asm-all"),
+        // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
+        // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
+        mavenBundle("org.osgi", "org.osgi.compendium"),
+        // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+        equinox().version("3.7.0.v20110613")
+    );
+  }
 
-          equinox().version("3.7.0.v20110613")
-      );
+  private static class TestFinalDelegate extends AbstractList<String> implements Callable<String> {
+
+    @Override
+    public String get(int location)
+    {
+
+      return null;
+    }
+
+    @Override
+    public int size()
+    {
+
+      return 0;
+    }
+
+    public final String call() throws Exception
+    {
+
+      return null;
+    }
   }
 }
