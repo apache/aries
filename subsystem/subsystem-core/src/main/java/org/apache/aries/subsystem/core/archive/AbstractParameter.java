@@ -15,9 +15,9 @@ package org.apache.aries.subsystem.core.archive;
 
 public abstract class AbstractParameter implements Parameter {
 	private final String myName;
-	private final String myValue;
+	private final Object myValue;
 	
-	public AbstractParameter(String name, String value) {
+	public AbstractParameter(String name, Object value) {
 		myName = name;
 		myValue = value;
 	}
@@ -26,7 +26,7 @@ public abstract class AbstractParameter implements Parameter {
 		return myName;
 	}
 	
-	public String getValue() {
+	public Object getValue() {
 		return myValue;
 	}
 }

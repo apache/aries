@@ -32,9 +32,10 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public class DeploymentManifest {
 	public static final String DEPLOYED_CONTENT = SubsystemConstants.DEPLOYED_CONTENT;
-	public static final String DEPLOYMENT_MANIFESTVERSION = "Deployment-ManifestVersion"; // TODO Needs constant on SubsystemConstants.
+	public static final String DEPLOYMENT_MANIFESTVERSION = SubsystemConstants.DEPLOYMENT_MANIFESTVERSION;
 	public static final String EXPORT_PACKAGE = Constants.EXPORT_PACKAGE;
 	public static final String IMPORT_PACKAGE = Constants.IMPORT_PACKAGE;
+	public static final String PROVIDE_CAPABILITY = Constants.PROVIDE_CAPABILITY;
 	public static final String PROVISION_RESOURCE = SubsystemConstants.PROVISION_RESOURCE;
 	public static final String REQUIRE_BUNDLE = Constants.REQUIRE_BUNDLE;
 	public static final String REQUIRE_CAPABILITY = Constants.REQUIRE_CAPABILITY;
@@ -133,6 +134,9 @@ public class DeploymentManifest {
 				header = subsystemManifest.getExportPackageHeader();
 				if (header != null)
 					headers.put(EXPORT_PACKAGE, header);
+				header = subsystemManifest.getProvideCapabilityHeader();
+				if (header != null)
+					headers.put(PROVIDE_CAPABILITY, header);
 				// TODO Compute additional headers for a composite. 
 			}
 			// Features require no additional headers.
@@ -162,6 +166,10 @@ public class DeploymentManifest {
 	
 	public ImportPackageHeader getImportPackageHeader() {
 		return (ImportPackageHeader)getHeaders().get(IMPORT_PACKAGE);
+	}
+	
+	public ProvideCapabilityHeader getProvideCapabilityHeader() {
+		return (ProvideCapabilityHeader)getHeaders().get(PROVIDE_CAPABILITY);
 	}
 	
 	public ProvisionResourceHeader getProvisionResourceHeader() {

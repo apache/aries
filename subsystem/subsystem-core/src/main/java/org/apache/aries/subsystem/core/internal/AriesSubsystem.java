@@ -51,6 +51,8 @@ import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
 import org.apache.aries.subsystem.core.archive.Header;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageRequirement;
+import org.apache.aries.subsystem.core.archive.ProvideCapabilityCapability;
+import org.apache.aries.subsystem.core.archive.ProvideCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.ProvisionedResource;
 import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
@@ -1049,6 +1051,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
 		if (isComposite()) {
 			setExportIsolationPolicy(builder, getDeploymentManifest().getExportPackageHeader());
+			setExportIsolationPolicy(builder, getDeploymentManifest().getProvideCapabilityHeader());
 			// TODO Implement export isolation policy for composites.
 		}
 		RegionFilter regionFilter = builder.build();
@@ -1063,6 +1066,22 @@ public class AriesSubsystem implements Subsystem, Resource {
 			return;
 		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
 		for (ExportPackageCapability capability : header.toCapabilities(this)) {
+			StringBuilder filter = new StringBuilder("(&");
+			for (Entry<String, Object> attribute : capability.getAttributes().entrySet())
+				filter.append('(').append(attribute.getKey()).append('=').append(attribute.getValue()).append(')');
+			filter.append(')');
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Allowing " + policy + " of " + filter);
+			builder.allow(policy, filter.toString());
+		}
+	}
+	
+	private void setExportIsolationPolicy(RegionFilterBuilder builder, ProvideCapabilityHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		for (ProvideCapabilityHeader.Clause clause : header.getClauses()) {
+			ProvideCapabilityCapability capability = new ProvideCapabilityCapability(clause, this);
+			String policy = capability.getNamespace();
 			StringBuilder filter = new StringBuilder("(&");
 			for (Entry<String, Object> attribute : capability.getAttributes().entrySet())
 				filter.append('(').append(attribute.getKey()).append('=').append(attribute.getValue()).append(')');
