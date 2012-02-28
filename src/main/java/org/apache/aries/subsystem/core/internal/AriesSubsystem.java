@@ -46,6 +46,8 @@ import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader.DeployedContent;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
+import org.apache.aries.subsystem.core.archive.ExportPackageCapability;
+import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
 import org.apache.aries.subsystem.core.archive.Header;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageRequirement;
@@ -1035,11 +1037,40 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	private void setExportIsolationPolicy() {
-		// Archive is null for root subsystem.
-		if (archive == null)
+	private void setExportIsolationPolicy() throws InvalidSyntaxException, IOException, BundleException {
+		if (isRoot())
+			// Nothing to do if this is the root subsystem.
 			return;
-		// TODO Implement export isolation policy for composites.
+		if (isFeature())
+			// Features share the same isolation as that of their scoped parent.
+			return;
+		Region from = ((AriesSubsystem)getParents().iterator().next()).region;
+		Region to = region;
+		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
+		if (isComposite()) {
+			setExportIsolationPolicy(builder, getDeploymentManifest().getExportPackageHeader());
+			// TODO Implement export isolation policy for composites.
+		}
+		RegionFilter regionFilter = builder.build();
+		if (LOGGER.isDebugEnabled())
+			LOGGER.debug("Establishing region connection: from=" + from
+					+ ", to=" + to + ", filter=" + regionFilter);
+		from.connectRegion(to, regionFilter);
+	}
+	
+	private void setExportIsolationPolicy(RegionFilterBuilder builder, ExportPackageHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
+		for (ExportPackageCapability capability : header.toCapabilities(this)) {
+			StringBuilder filter = new StringBuilder("(&");
+			for (Entry<String, Object> attribute : capability.getAttributes().entrySet())
+				filter.append('(').append(attribute.getKey()).append('=').append(attribute.getValue()).append(')');
+			filter.append(')');
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Allowing " + policy + " of " + filter);
+			builder.allow(policy, filter.toString());
+		}
 	}
 
 	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException {
