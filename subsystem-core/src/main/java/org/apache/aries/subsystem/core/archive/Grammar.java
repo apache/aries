@@ -132,6 +132,11 @@ public interface Grammar {
 	public static final String CAPABILITY = NAMESPACE + "(?:;\\s*(?:(?:" + DIRECTIVE + ")|(?:" + TYPED_ATTR + ")))*";
 	public static final String PROVIDE_CAPABILITY = CAPABILITY + "(?:,\\s*(?:" + CAPABILITY + "))*";
 	
+	public static final String OBJECTCLASS = PACKAGENAME;
+	public static final String SERVICE = OBJECTCLASS + "(?:;\\s*(?:" + PARAMETER + "))*";
+	public static final String SUBSYSTEM_EXPORTSERVICE = SERVICE + "(?:,\\s*(?:" + SERVICE + "))*";
+	public static final String SUBSYSTEM_IMPORTSERVICE = SERVICE + "(?:,\\s*(?:" + SERVICE + "))*";
+	
 	/*
 	 * number ::= digit+
 	 * version ::= major( '.' minor ( '.' micro ( '.' qualifier )? )? )?

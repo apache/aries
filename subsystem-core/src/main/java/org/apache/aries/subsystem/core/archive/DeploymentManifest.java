@@ -39,6 +39,7 @@ public class DeploymentManifest {
 	public static final String PROVISION_RESOURCE = SubsystemConstants.PROVISION_RESOURCE;
 	public static final String REQUIRE_BUNDLE = Constants.REQUIRE_BUNDLE;
 	public static final String REQUIRE_CAPABILITY = Constants.REQUIRE_CAPABILITY;
+	public static final String SUBSYSTEM_EXPORTSERVICE = SubsystemConstants.SUBSYSTEM_EXPORTSERVICE;
 	public static final String SUBSYSTEM_IMPORTSERVICE = SubsystemConstants.SUBSYSTEM_IMPORTSERVICE;
 	public static final String SUBSYSTEM_SYMBOLICNAME = SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
 	public static final String SUBSYSTEM_VERSION = SubsystemConstants.SUBSYSTEM_VERSION;
@@ -137,6 +138,9 @@ public class DeploymentManifest {
 				header = subsystemManifest.getProvideCapabilityHeader();
 				if (header != null)
 					headers.put(PROVIDE_CAPABILITY, header);
+				header = subsystemManifest.getSubsystemExportServiceHeader();
+				if (header != null)
+					headers.put(SUBSYSTEM_EXPORTSERVICE, header);
 				// TODO Compute additional headers for a composite. 
 			}
 			// Features require no additional headers.
@@ -182,6 +186,10 @@ public class DeploymentManifest {
 	
 	public RequireCapabilityHeader getRequireCapabilityHeader() {
 		return (RequireCapabilityHeader)getHeaders().get(REQUIRE_CAPABILITY);
+	}
+	
+	public SubsystemExportServiceHeader getSubsystemExportServiceHeader() {
+		return (SubsystemExportServiceHeader)getHeaders().get(SUBSYSTEM_EXPORTSERVICE);
 	}
 	
 	public SubsystemImportServiceHeader getSubsystemImportServiceHeader() {
