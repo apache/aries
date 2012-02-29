@@ -88,6 +88,10 @@ public class SubsystemImportServiceHeader implements Header<SubsystemImportServi
 			directives.trimToSize();
 			return directives;
 		}
+		
+		public String getObjectClass() {
+			return path;
+		}
 
 		@Override
 		public Parameter getParameter(String name) {
@@ -101,10 +105,6 @@ public class SubsystemImportServiceHeader implements Header<SubsystemImportServi
 
 		@Override
 		public String getPath() {
-			return path;
-		}
-		
-		public String getServiceName() {
 			return path;
 		}
 		

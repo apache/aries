@@ -24,39 +24,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
-import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemExportServiceHeader implements Header<SubsystemExportServiceHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
-		public static final String ATTRIBUTE_VERSION = Constants.VERSION_ATTRIBUTE;
-		public static final String DIRECTIVE_EXCLUDE = Constants.EXCLUDE_DIRECTIVE;
-		public static final String DIRECTIVE_INCLUDE = Constants.INCLUDE_DIRECTIVE;
-		public static final String DIRECTIVE_MANDATORY = Constants.MANDATORY_DIRECTIVE;
-		public static final String DIRECTIVE_USES = Constants.USES_DIRECTIVE;
+		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
 		
-		private static final Pattern PATTERN_PACKAGENAME = Pattern.compile('(' + Grammar.PACKAGENAME + ")(?=;|\\z)");
-		private static final Pattern PATTERN_PACKAGENAMES = Pattern.compile('(' + Grammar.PACKAGENAMES + ")(?=;|\\z)");
+		private static final Pattern PATTERN_OBJECTCLASS = Pattern.compile('(' + Grammar.OBJECTCLASS + ")(?=;|\\z)");
 		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
 		
 		private static void fillInDefaults(Map<String, Parameter> parameters) {
-			Parameter parameter = parameters.get(ATTRIBUTE_VERSION);
-			if (parameter == null)
-				parameters.put(ATTRIBUTE_VERSION, VersionAttribute.DEFAULT);
+			// No defaults.
 		}
 		
-		private final Collection<String> packageNames = new HashSet<String>();
 		private final String path;
 		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		
 		public Clause(String clause) {
-			Matcher main = PATTERN_PACKAGENAMES.matcher(clause);
+			Matcher main = PATTERN_OBJECTCLASS.matcher(clause);
 			if (!main.find())
-				throw new IllegalArgumentException("Missing package names path: " + clause);
+				throw new IllegalArgumentException("Missing objectClass path: " + clause);
 			path = main.group();
-			Matcher path = PATTERN_PACKAGENAME.matcher(this.path);
-			while (path.find())
-				packageNames.add(main.group());
 			main.usePattern(PATTERN_PARAMETER);
 			while (main.find()) {
 				Parameter parameter = ParameterFactory.create(main.group());
@@ -107,8 +95,8 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 			return directives;
 		}
 		
-		public Collection<String> getPackageNames() {
-			return Collections.unmodifiableCollection(packageNames);
+		public String getObjectClass() {
+			return path;
 		}
 
 		@Override
@@ -126,13 +114,6 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 			return path;
 		}
 		
-		public Collection<ExportPackageCapability> toCapabilities(Resource resource) {
-			Collection<ExportPackageCapability> result = new ArrayList<ExportPackageCapability>(packageNames.size());
-			for (String packageName : packageNames)
-				result.add(new ExportPackageCapability(packageName, parameters.values(), resource));
-			return result;
-		}
-		
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -146,8 +127,7 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 	
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_EXPORTSERVICE;
 	
-	// TODO Subsystem-ExportService currently does not have its own grammar, but it's similar to Provide-Capability.
-	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.CAPABILITY + ")(?=,|\\z)");
+	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.SERVICE + ")(?=,|\\z)");
 	
 	private final Set<Clause> clauses = new HashSet<Clause>();
 	
@@ -172,13 +152,6 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 	@Override
 	public String getValue() {
 		return toString();
-	}
-	
-	public Collection<ExportPackageCapability> toCapabilities(Resource resource) {
-		Collection<ExportPackageCapability> result = new ArrayList<ExportPackageCapability>();
-		for (Clause clause : clauses)
-			result.addAll(clause.toCapabilities(resource));
-		return result;
 	}
 	
 	@Override

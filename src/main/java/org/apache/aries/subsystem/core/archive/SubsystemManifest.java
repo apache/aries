@@ -134,6 +134,10 @@ public class SubsystemManifest {
 		return (SubsystemContentHeader)getHeaders().get(SUBSYSTEM_CONTENT);
 	}
 	
+	public SubsystemExportServiceHeader getSubsystemExportServiceHeader() {
+		return (SubsystemExportServiceHeader)getHeaders().get(SUBSYSTEM_EXPORTSERVICE);
+	}
+	
 	public SubsystemImportServiceHeader getSubsystemImportServiceHeader() {
 		return (SubsystemImportServiceHeader)getHeaders().get(SUBSYSTEM_IMPORTSERVICE);
 	}
