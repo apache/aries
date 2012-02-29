@@ -60,6 +60,8 @@ import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemArchive;
+import org.apache.aries.subsystem.core.archive.SubsystemExportServiceCapability;
+import org.apache.aries.subsystem.core.archive.SubsystemExportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
@@ -1052,6 +1054,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (isComposite()) {
 			setExportIsolationPolicy(builder, getDeploymentManifest().getExportPackageHeader());
 			setExportIsolationPolicy(builder, getDeploymentManifest().getProvideCapabilityHeader());
+			setExportIsolationPolicy(builder, getDeploymentManifest().getSubsystemExportServiceHeader());
 			// TODO Implement export isolation policy for composites.
 		}
 		RegionFilter regionFilter = builder.build();
@@ -1086,6 +1089,19 @@ public class AriesSubsystem implements Subsystem, Resource {
 			for (Entry<String, Object> attribute : capability.getAttributes().entrySet())
 				filter.append('(').append(attribute.getKey()).append('=').append(attribute.getValue()).append(')');
 			filter.append(')');
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Allowing " + policy + " of " + filter);
+			builder.allow(policy, filter.toString());
+		}
+	}
+	
+	private void setExportIsolationPolicy(RegionFilterBuilder builder, SubsystemExportServiceHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
+		for (SubsystemExportServiceHeader.Clause clause : header.getClauses()) {
+			SubsystemExportServiceCapability capability = new SubsystemExportServiceCapability(clause, this);
+			String filter = capability.getDirectives().get(SubsystemExportServiceCapability.DIRECTIVE_FILTER);
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Allowing " + policy + " of " + filter);
 			builder.allow(policy, filter.toString());

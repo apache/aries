@@ -4,25 +4,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.resource.AbstractRequirement;
+import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Resource;
 
-public class SubsystemImportServiceRequirement extends AbstractRequirement {
+public class SubsystemExportServiceCapability extends AbstractCapability {
 	public static final String DIRECTIVE_FILTER = Namespace.REQUIREMENT_FILTER_DIRECTIVE;
 	// TODO Replace value with ServiceNamspace.SERVICE_NAMESPACE constant when available.
 	public static final String NAMESPACE = "osgi.service";
 	
-	private final Map<String, String> directives = new HashMap<String, String>(1);
+	private final Map<String, Object> attributes = new HashMap<String, Object>();
+	private final Map<String, String> directives = new HashMap<String, String>();
 	private final Resource resource;
 	
-	public SubsystemImportServiceRequirement(SubsystemImportServiceHeader.Clause clause) {
-		this(clause, null);
-	}
-	
-	public SubsystemImportServiceRequirement(
-			SubsystemImportServiceHeader.Clause clause, Resource resource) {
+	public SubsystemExportServiceCapability(SubsystemExportServiceHeader.Clause clause, Resource resource) {
 		StringBuilder builder = new StringBuilder("(&(")
 				.append(Constants.OBJECTCLASS).append('=')
 				.append(clause.getObjectClass()).append(')');
@@ -36,7 +32,7 @@ public class SubsystemImportServiceRequirement extends AbstractRequirement {
 
 	@Override
 	public Map<String, Object> getAttributes() {
-		return Collections.emptyMap();
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	@Override
