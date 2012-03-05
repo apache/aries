@@ -78,6 +78,8 @@ public class Activator implements BundleActivator {
         } catch (NamingException e) {
             LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB"), e);
         } catch (IllegalStateException e) {
+            // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
+            // don't want to see stack traces at info level when everything it working as expected.
             LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB.already.exists", getClassName(InitialContextFactoryBuilder.class)));
             LOGGER.debug(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
         }
@@ -89,6 +91,8 @@ public class Activator implements BundleActivator {
         } catch (NamingException e) {
             LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB"), e);
         } catch (IllegalStateException e) {
+            // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
+            // don't want to see stack traces at info level when everything it working as expected.
             LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(InitialContextFactoryBuilder.class)));
             LOGGER.debug(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
         }
