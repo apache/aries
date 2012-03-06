@@ -13,8 +13,12 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.util.Collection;
+
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +26,18 @@ public class SubsystemSynchronousBundleListener implements SynchronousBundleList
 	private static final Logger logger = LoggerFactory.getLogger(SubsystemSynchronousBundleListener.class);
 	
 	public void bundleChanged(BundleEvent event) {
-		String type;
+		String type = null;
 		switch (event.getType()) {
 			case BundleEvent.INSTALLED:
 				type = "INSTALLED";
+			case BundleEvent.UNINSTALLED:
+				if (type == null)
+					type = "UNINSTALLED";
+				Resource resource = event.getOrigin().adapt(BundleRevision.class);
+				Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(resource);
+				for (AriesSubsystem subsystem : subsystems) {
+					subsystem.bundleChanged(event);
+				}
 				break;
 			case BundleEvent.LAZY_ACTIVATION:
 				type = "LAZY_ACTIVATION";
@@ -44,9 +56,6 @@ public class SubsystemSynchronousBundleListener implements SynchronousBundleList
 				break;
 			case BundleEvent.STOPPING:
 				type = "STOPPING";
-				break;
-			case BundleEvent.UNINSTALLED:
-				type = "UNINSTALLED";
 				break;
 			case BundleEvent.UNRESOLVED:
 				type = "UNRESOLVED";

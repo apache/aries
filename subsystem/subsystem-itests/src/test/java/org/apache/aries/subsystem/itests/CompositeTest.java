@@ -1,14 +1,9 @@
 package org.apache.aries.subsystem.itests;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.aries.unittest.fixture.ArchiveFixture;
-import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
-import org.apache.aries.unittest.fixture.ArchiveFixture.ManifestFixture;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,33 +42,6 @@ public class CompositeTest extends SubsystemTest {
 		createCompositeC();
 		createCompositeD();
 		createdTestFiles = true;
-	}
-	
-	private static void createBundle(String symbolicName) throws IOException {
-		createBundle(symbolicName, null);
-	}
-	
-	private static void createBundle(String symbolicName, Map<String, String> headers) throws IOException {
-		createBundle(symbolicName, null, headers);
-	}
-	
-	private static void createBundle(String symbolicName, String version, Map<String, String> headers) throws IOException {
-		if (headers == null)
-			headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_SYMBOLICNAME, symbolicName);
-		if (version != null)
-			headers.put(Constants.BUNDLE_VERSION, version);
-		createBundle(headers);
-	}
-	
-	private static void createBundle(Map<String, String> headers) throws IOException {
-		String symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
-		JarFixture bundle = ArchiveFixture.newJar();
-		ManifestFixture manifest = bundle.manifest();
-		for (Entry<String, String> header : headers.entrySet()) {
-			manifest.attribute(header.getKey(), header.getValue());
-		}
-		write(symbolicName, bundle);
 	}
 	
 	private static void createBundleA() throws IOException {
@@ -156,18 +124,6 @@ public class CompositeTest extends SubsystemTest {
 		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
 		attributes.put(Constants.REQUIRE_CAPABILITY, "y; filter:=\"(y=test)\", does.not.exist; filter:=\"(a=b)\"");
 		createManifest(COMPOSITE_D + ".mf", attributes);
-	}
-	
-	private static void createManifest(String name, Map<String, String> headers) throws IOException {
-		ManifestFixture manifest = ArchiveFixture.newJar().manifest();
-		for (Entry<String, String> header : headers.entrySet()) {
-			manifest.attribute(header.getKey(), header.getValue());
-		}
-		write(name, manifest);
-	}
-	
-	private static void createSubsystem(String name) throws IOException {
-		write(name, ArchiveFixture.newZip().binary("OSGI-INF/SUBSYSTEM.MF", new FileInputStream(name + ".mf")));
 	}
 	
 	@Test

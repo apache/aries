@@ -120,6 +120,24 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return result;
 	}
 	
+	private static synchronized void addResourceToSubsystem(Resource resource, AriesSubsystem subsystem) {
+		Set<AriesSubsystem> subsystems = resourceToSubsystems.get(resource);
+		if (subsystems == null) {
+			subsystems = new HashSet<AriesSubsystem>();
+			resourceToSubsystems.put(resource, subsystems);
+		}
+		subsystems.add(subsystem);
+	}
+	
+	private static synchronized void removeResourceToSubsystem(Resource resource, AriesSubsystem subsystem) {
+		Set<AriesSubsystem> subsystems = resourceToSubsystems.get(resource);
+		if (subsystems == null)
+			return;
+		subsystems.remove(subsystem);
+		if (subsystems.isEmpty())
+			resourceToSubsystems.remove(resource);
+	}
+	
 	private static void copyContent(InputStream content, File destination) throws IOException {
 		copyContent(
 				new BufferedInputStream(content),
@@ -617,24 +635,15 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	void bundleChanged(BundleEvent event) {
+		Resource resource = event.getBundle().adapt(BundleRevision.class);
 		switch (event.getType()) {
-			case BundleEvent.STARTING:
-				if (State.STARTING.equals(getState())) {
-					return;
-				}
-				start();
-				break;
-			case BundleEvent.STOPPING:
-				if (State.STOPPING.equals(getState())) {
-					return;
-				}
-				stop();
+			case BundleEvent.INSTALLED:
+				addResourceToSubsystem(resource, this);
+				constituents.add(resource);
 				break;
 			case BundleEvent.UNINSTALLED:
-				if (EnumSet.of(State.UNINSTALLING, State.UNINSTALLED).contains(getState())) {
-					return;
-				}
-				uninstall();
+				constituents.remove(resource);
+				removeResourceToSubsystem(resource, this);
 				break;
 		}
 	}
