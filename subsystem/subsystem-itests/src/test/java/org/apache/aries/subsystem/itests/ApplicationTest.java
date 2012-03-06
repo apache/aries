@@ -53,9 +53,14 @@ import org.osgi.service.subsystem.SubsystemConstants;
 public class ApplicationTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
+	 * Subsystem-Content: bundle.a.jar
 	 */
 	private static final String APPLICATION_A = "application.a.esa";
-	
+	/*
+	 * Subsystem-SymbolicName: application.b.esa
+	 * Subsystem-Content: bundle.c.jar
+	 */
+	private static final String APPLICATION_B = "application.b.esa";
 	/*
 	 * Bundle-SymbolicName: bundle.a.jar
 	 * Require-Capability: foo; filter:="(foo=bar)"
@@ -66,6 +71,11 @@ public class ApplicationTest extends SubsystemTest {
 	 * Provide-Capability: foo; foo=bar
 	 */
 	private static final String BUNDLE_B = "bundle.b.jar";
+	/*
+	 * Bundle-SymbolicName: bundle.c.jar
+	 * Require-Bundle: bundle.b.jar
+	 */
+	private static final String BUNDLE_C = "bundle.c.jar";
 	
 	private static boolean createdTestFiles;
 	
@@ -75,7 +85,9 @@ public class ApplicationTest extends SubsystemTest {
 			return;
 		createBundleA();
 		createBundleB();
+		createBundleC();
 		createApplicationA();
+		createApplicationB();
 		createdTestFiles = true;
 	}
 	
@@ -91,9 +103,20 @@ public class ApplicationTest extends SubsystemTest {
 		createBundle(BUNDLE_B, "1.0.0", headers);
 	}
 	
+	private static void createBundleC() throws IOException {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(Constants.REQUIRE_BUNDLE, BUNDLE_B);
+		createBundle(BUNDLE_C, "1.0.0", headers);
+	}
+	
 	private static void createApplicationA() throws IOException {
 		createApplicationAManifest();
 		createSubsystem(APPLICATION_A, BUNDLE_A);
+	}
+	
+	private static void createApplicationB() throws IOException {
+		createApplicationBManifest();
+		createSubsystem(APPLICATION_B, BUNDLE_C);
 	}
 	
 	private static void createApplicationAManifest() throws IOException {
@@ -101,6 +124,13 @@ public class ApplicationTest extends SubsystemTest {
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_A);
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_A);
 		createManifest(APPLICATION_A + ".mf", attributes);
+	}
+	
+	private static void createApplicationBManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_B);
+		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_C);
+		createManifest(APPLICATION_B + ".mf", attributes);
 	}
 	
 	private static void createApplication(String name, String[] content) throws Exception {
@@ -169,8 +199,27 @@ public class ApplicationTest extends SubsystemTest {
 			assertBundleState(Bundle.RESOLVED|Bundle.ACTIVE, "org.apache.aries.subsystem.itests.tb3", getRootSubsystem());
     	}
     	finally {
-    		stopSubsystem(application1);
-    		uninstallScopedSubsystem(application1);
+    		stopSubsystemSilently(application1);
+    		uninstallSubsystemSilently(application1);
+    	}
+    }
+    
+    @Test
+    public void testRequireBundle() throws Exception {
+    	File file = new File(BUNDLE_B);
+    	Bundle b = getRootSubsystem().getBundleContext().installBundle(file.toURI().toString(), new FileInputStream(file));
+    	try {
+	    	Subsystem application = installSubsystemFromFile(APPLICATION_B);
+	    	try {
+	    		startSubsystem(application);
+	    	}
+	    	finally {
+	    		stopSubsystemSilently(application);
+	    		uninstallSubsystemSilently(application);
+	    	}
+    	}
+    	finally {
+    		b.uninstall();
     	}
     }
     
@@ -184,8 +233,8 @@ public class ApplicationTest extends SubsystemTest {
 	    		startSubsystem(application);
 	    	}
 	    	finally {
-	    		stopSubsystem(application);
-	    		uninstallScopedSubsystem(application);
+	    		stopSubsystemSilently(application);
+	    		uninstallSubsystemSilently(application);
 	    	}
     	}
     	finally {

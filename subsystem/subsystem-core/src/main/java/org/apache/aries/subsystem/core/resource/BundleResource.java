@@ -24,6 +24,8 @@ import java.util.jar.Manifest;
 import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
+import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
+import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
@@ -69,6 +71,10 @@ public class BundleResource implements Resource, RepositoryContent {
 		if (rch != null)
 			for (RequireCapabilityHeader.Clause clause : rch.getClauses())
 				requirements.add(new RequireCapabilityRequirement(clause));
+		RequireBundleHeader rbh = (RequireBundleHeader)manifest.getHeader(RequireBundleHeader.NAME);
+		if (rbh != null)
+			for (RequireBundleHeader.Clause clause : rbh.getClauses())
+				requirements.add(new RequireBundleRequirement(clause));
 	}
 	
 	private BundleResource(String content) throws IOException {
