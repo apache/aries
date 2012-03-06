@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.JarURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -74,6 +73,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +88,8 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   private BundleContext _bundleContext;
 
   private DeploymentManifestManager deploymentManifestManager;
+  
+  private Map<AriesApplication, ServiceRegistration> serviceRegistrations = new HashMap<AriesApplication, ServiceRegistration>();
   
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
 
@@ -316,9 +318,10 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     if (ref == null || ref.length == 0) {
         Dictionary dict = new Hashtable();
         dict.put(BundleRepository.REPOSITORY_SCOPE, appScope);
-        _bundleContext.registerService(BundleRepository.class.getName(), 
+        ServiceRegistration serviceReg = _bundleContext.registerService(BundleRepository.class.getName(), 
             new ApplicationRepository(app), 
             dict);
+        serviceRegistrations.put(app, serviceReg);
     }
   
     AriesApplicationContext result = _applicationContextManager.getApplicationContext(app);
@@ -350,9 +353,21 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     return result;
   }
   
-  public void uninstall(AriesApplicationContext app) throws BundleException 
+  public void uninstall(AriesApplicationContext appContext) throws BundleException 
   {
-    _applicationContextManager.remove(app);
+    _applicationContextManager.remove(appContext);
+    
+    // Also unregister the service if we added one for it
+    AriesApplication app = appContext.getApplication();
+    if (app != null) {
+      ServiceRegistration reg = serviceRegistrations.remove(app);
+      if (reg != null) 
+        try {
+          reg.unregister();
+        } catch (IllegalStateException e) {
+          // Must be already unregistered - ignore
+        }
+    }
   }
 
   public void addApplicationListener(AriesApplicationListener l) {
