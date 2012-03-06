@@ -10,12 +10,11 @@ import java.util.jar.Manifest;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class RegionContextBundleHelper {
-	public static final String SYMBOLICNAME_PREFIX = "org.osgi.service.subsystem.region.context.";
+	public static final String SYMBOLICNAME_PREFIX = Constants.RegionContextBundleSymbolicNamePrefix;
 	public static final Version VERSION = Version.parseVersion("1.0.0");
 	
 	public static BundleRevision installRegionContextBundle(AriesSubsystem subsystem) throws BundleException, IOException {
@@ -47,8 +46,8 @@ public class RegionContextBundleHelper {
 	private static Manifest createManifest(String symbolicName) {
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		manifest.getMainAttributes().putValue(Constants.BUNDLE_SYMBOLICNAME, symbolicName);
-		manifest.getMainAttributes().putValue(Constants.BUNDLE_VERSION, VERSION.toString());
+		manifest.getMainAttributes().putValue(Constants.BundleSymbolicName, symbolicName);
+		manifest.getMainAttributes().putValue(Constants.BundleVersion, VERSION.toString());
 		return manifest;
 	}
 	

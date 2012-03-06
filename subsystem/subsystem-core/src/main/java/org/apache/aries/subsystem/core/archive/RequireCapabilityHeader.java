@@ -6,11 +6,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
+import org.osgi.resource.Requirement;
 
 public class RequireCapabilityHeader implements Header<RequireCapabilityHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
@@ -44,6 +46,12 @@ public class RequireCapabilityHeader implements Header<RequireCapabilityHeader.C
 				parameters.put(parameter.getName(), parameter);
 			}
 			fillInDefaults(parameters);
+		}
+		
+		public Clause(Requirement requirement) {
+			namespace = requirement.getNamespace();
+			for (Entry<String, String> directive : requirement.getDirectives().entrySet())
+				parameters.put(directive.getKey(), DirectiveFactory.createDirective(directive.getKey(), directive.getValue()));
 		}
 		
 		@Override
@@ -122,14 +130,24 @@ public class RequireCapabilityHeader implements Header<RequireCapabilityHeader.C
 	
 	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.REQUIREMENT + ")(?=,|\\z)");
 	
-	private final Set<Clause> clauses = new HashSet<Clause>();
-	
-	public RequireCapabilityHeader(String value) {
-		Matcher matcher = PATTERN.matcher(value);
+	private static Collection<Clause> processHeader(String header) {
+		Matcher matcher = PATTERN.matcher(header);
+		Set<Clause> clauses = new HashSet<Clause>();
 		while (matcher.find())
 			clauses.add(new Clause(matcher.group()));
+		return clauses;
+	}
+	
+	private final Set<Clause> clauses;
+	
+	public RequireCapabilityHeader(String value) {
+		this(processHeader(value));
+	}
+	
+	public RequireCapabilityHeader(Collection<Clause> clauses) {
 		if (clauses.isEmpty())
 			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
+		this.clauses = new HashSet<Clause>(clauses);
 	}
 
 	@Override

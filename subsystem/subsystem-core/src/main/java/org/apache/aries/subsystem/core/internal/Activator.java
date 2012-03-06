@@ -97,7 +97,7 @@ public class Activator implements BundleActivator {
 		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(), null));
 		// TODO The registration of the Resolver service should be temporary, unless Felix 
 		// does not have an official release at the time.
-		registrations.add(bundleContext.registerService(Resolver.class, new ResolverImpl(null), null));
+//		registrations.add(bundleContext.registerService(Resolver.class, new ResolverImpl(null), null));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
 		root = new AriesSubsystem();
 		root.install();

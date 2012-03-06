@@ -36,6 +36,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import junit.framework.Assert;
 
@@ -44,6 +45,9 @@ import org.apache.aries.subsystem.core.obr.felix.RepositoryAdminRepository;
 import org.apache.aries.subsystem.itests.util.RepositoryGenerator;
 import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
+import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
+import org.apache.aries.unittest.fixture.ArchiveFixture.ManifestFixture;
+import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
@@ -300,6 +304,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEquals("Wrong event type", type, event.getEventType());
 	}
 	
+	protected void assertHeaderExists(Subsystem subsystem, String name) {
+		assertNotNull("Missing header: " + name, subsystem.getSubsystemHeaders(null).get(name));
+	}
+	
 	protected void assertId(Subsystem subsystem) {
 		assertId(subsystem.getSubsystemId());
 	}
@@ -432,6 +440,55 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertVersion(Version expected, Version actual) {
 		assertEquals("Wrong version", expected, actual);
+	}
+	
+	protected static void createBundle(String symbolicName) throws IOException {
+		createBundle(symbolicName, null);
+	}
+	
+	protected static void createBundle(String symbolicName, Map<String, String> headers) throws IOException {
+		createBundle(symbolicName, null, headers);
+	}
+	
+	protected static void createBundle(String symbolicName, String version, Map<String, String> headers) throws IOException {
+		if (headers == null)
+			headers = new HashMap<String, String>();
+		headers.put(Constants.BUNDLE_SYMBOLICNAME, symbolicName);
+		if (version != null)
+			headers.put(Constants.BUNDLE_VERSION, version);
+		createBundle(headers);
+	}
+	
+	protected static void createBundle(Map<String, String> headers) throws IOException {
+		String symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
+		JarFixture bundle = ArchiveFixture.newJar();
+		ManifestFixture manifest = bundle.manifest();
+		for (Entry<String, String> header : headers.entrySet()) {
+			manifest.attribute(header.getKey(), header.getValue());
+		}
+		write(symbolicName, bundle);
+	}
+	
+	protected static void createManifest(String name, Map<String, String> headers) throws IOException {
+		ManifestFixture manifest = ArchiveFixture.newJar().manifest();
+		for (Entry<String, String> header : headers.entrySet()) {
+			manifest.attribute(header.getKey(), header.getValue());
+		}
+		write(name, manifest);
+	}
+	
+	protected static void createSubsystem(String name) throws IOException {
+		createSubsystem(name, new String[0]);
+	}
+	
+	protected static void createSubsystem(String name, String...contents) throws IOException {
+		ZipFixture fixture = ArchiveFixture.newZip().binary("OSGI-INF/SUBSYSTEM.MF", new FileInputStream(name + ".mf"));
+		if (contents != null) {
+			for (String content : contents) {
+				fixture.binary(content, new FileInputStream(content));
+			}
+		}
+		write(name, fixture);
 	}
 	
 	protected Bundle getRegionContextBundle(Subsystem subsystem) {

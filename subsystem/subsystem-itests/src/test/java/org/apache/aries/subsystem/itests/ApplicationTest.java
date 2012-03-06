@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -49,6 +51,58 @@ import org.osgi.service.subsystem.SubsystemConstants;
 
 @RunWith(JUnit4TestRunner.class)
 public class ApplicationTest extends SubsystemTest {
+	/*
+	 * Subsystem-SymbolicName: application.a.esa
+	 */
+	private static final String APPLICATION_A = "application.a.esa";
+	
+	/*
+	 * Bundle-SymbolicName: bundle.a.jar
+	 * Require-Capability: foo; filter:="(foo=bar)"
+	 */
+	private static final String BUNDLE_A = "bundle.a.jar";
+	/*
+	 * Bundle-SymbolicName: bundle.b.jar
+	 * Provide-Capability: foo; foo=bar
+	 */
+	private static final String BUNDLE_B = "bundle.b.jar";
+	
+	private static boolean createdTestFiles;
+	
+	@Before
+	public static void createTestFiles() throws Exception {
+		if (createdTestFiles)
+			return;
+		createBundleA();
+		createBundleB();
+		createApplicationA();
+		createdTestFiles = true;
+	}
+	
+	private static void createBundleA() throws IOException {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(Constants.REQUIRE_CAPABILITY, "foo; filter:=\"(foo=bar)\"");
+		createBundle(BUNDLE_A, "1.0.0", headers);
+	}
+	
+	private static void createBundleB() throws IOException {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(Constants.PROVIDE_CAPABILITY, "foo; foo=bar");
+		createBundle(BUNDLE_B, "1.0.0", headers);
+	}
+	
+	private static void createApplicationA() throws IOException {
+		createApplicationAManifest();
+		createSubsystem(APPLICATION_A, BUNDLE_A);
+	}
+	
+	private static void createApplicationAManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_A);
+		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_A);
+		createManifest(APPLICATION_A + ".mf", attributes);
+	}
+	
 	private static void createApplication(String name, String[] content) throws Exception {
 		ZipFixture feature = ArchiveFixture
 				.newZip()
@@ -117,6 +171,25 @@ public class ApplicationTest extends SubsystemTest {
     	finally {
     		stopSubsystem(application1);
     		uninstallScopedSubsystem(application1);
+    	}
+    }
+    
+    @Test
+    public void testRequireCapability() throws Exception {
+    	File file = new File(BUNDLE_B);
+    	Bundle b = getRootSubsystem().getBundleContext().installBundle(file.toURI().toString(), new FileInputStream(file));
+    	try {
+	    	Subsystem application = installSubsystemFromFile(APPLICATION_A);
+	    	try {
+	    		startSubsystem(application);
+	    	}
+	    	finally {
+	    		stopSubsystem(application);
+	    		uninstallScopedSubsystem(application);
+	    	}
+    	}
+    	finally {
+    		b.uninstall();
     	}
     }
     
