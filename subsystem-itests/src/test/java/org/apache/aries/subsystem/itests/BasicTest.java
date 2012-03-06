@@ -115,7 +115,7 @@ public class BasicTest extends SubsystemTest {
 		}
 		finally {
 			try {
-				uninstallUnscopedSubsystem(emptyFeature);
+				uninstallSubsystemSilently(emptyFeature);
 			}
 			catch (AssertionError e) {
 				if (error == null)
@@ -152,7 +152,7 @@ public class BasicTest extends SubsystemTest {
 		}
 		finally {
 			try {
-				uninstallScopedSubsystem(emptySubsystem);
+				uninstallSubsystemSilently(emptySubsystem);
 			}
 			catch (AssertionError e) {
 				if (error == null)

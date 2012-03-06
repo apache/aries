@@ -146,8 +146,8 @@ public class CompositeTest extends SubsystemTest {
 			}
 		}
 		finally {
-			stopSubsystem(composite);
-			uninstallScopedSubsystem(composite);
+			stopSubsystemSilently(composite);
+			uninstallSubsystemSilently(composite);
 		}
 	}
 	
@@ -166,7 +166,7 @@ public class CompositeTest extends SubsystemTest {
 				}
 			}
 			finally {
-				uninstallScopedSubsystem(compositeC);
+				uninstallSubsystemSilently(compositeC);
 			}
 		}
 		finally {
@@ -189,7 +189,7 @@ public class CompositeTest extends SubsystemTest {
 				}
 			}
 			finally {
-				uninstallScopedSubsystem(compositeB);
+				uninstallSubsystemSilently(compositeB);
 			}
 		}
 		finally {
@@ -212,7 +212,7 @@ public class CompositeTest extends SubsystemTest {
 				}
 			}
 			finally {
-				uninstallScopedSubsystem(compositeD);
+				uninstallSubsystemSilently(compositeD);
 			}
 		}
 		finally {
