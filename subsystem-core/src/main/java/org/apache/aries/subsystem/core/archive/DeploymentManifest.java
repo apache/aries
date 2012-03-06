@@ -116,6 +116,9 @@ public class DeploymentManifest {
 					Header<?> header = computeImportPackageHeader(resolution, deployedContent, acceptDependencies);
 					if (header != null)
 						headers.put(IMPORT_PACKAGE, header);
+					header = computeRequireCapabilityHeader(resolution, deployedContent, acceptDependencies);
+					if (header != null)
+						headers.put(REQUIRE_CAPABILITY, header);
 				}
 				// TODO Compute additional headers for an application.
 			}
@@ -233,5 +236,34 @@ public class DeploymentManifest {
 		if (clauses.isEmpty())
 			return null;
 		return new ImportPackageHeader(clauses);
+	}
+	
+	private static RequireCapabilityHeader computeRequireCapabilityHeader(
+			Map<Resource, List<Wire>> resolution, 
+			Collection<Resource> content,
+			boolean acceptDependencies) {
+		Collection<RequireCapabilityHeader.Clause> clauses = new ArrayList<RequireCapabilityHeader.Clause>();
+		for (Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
+			for (Wire wire : entry.getValue()) {
+				Resource provider = wire.getProvider();
+				if (content.contains(provider))
+					// If the provider is a content resource, we don't need an imported capability.
+					continue;
+				// The provider is a dependency that is already provisioned or needs provisioning.
+				if (acceptDependencies && !((provider instanceof BundleRevision) || (provider instanceof AriesSubsystem)))
+					// If the application accepts dependencies and the provider is a dependency that needs provisioning,
+					// we don't need an import.
+					continue;
+				// For all other cases, we need an import.
+				Requirement requirement = wire.getRequirement();
+				// TODO Not sure if the startsWith check will be sufficient.
+				if (!requirement.getNamespace().startsWith("osgi.")) {
+					clauses.add(new RequireCapabilityHeader.Clause(requirement));
+				}
+			}
+		}
+		if (clauses.isEmpty())
+			return null;
+		return new RequireCapabilityHeader(clauses);
 	}
 }
