@@ -600,16 +600,23 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertState(State.RESOLVED, subsystem);
 	}
 	
-	protected void uninstallScopedSubsystem(Subsystem subsystem) throws Exception {
-		Bundle b = getRegionContextBundle(subsystem);
-		uninstallSubsystem(subsystem);
-		assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
+	protected void stopSubsystemSilently(Subsystem subsystem) {
+		try {
+			stopSubsystem(subsystem);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
 	}
 	
 	protected void uninstallSubsystem(Subsystem subsystem) throws Exception {
 		assertState(EnumSet.of(State.INSTALLED, State.RESOLVED), subsystem);
 		subsystemEvents.clear();
 		Collection<Subsystem> parents = subsystem.getParents();
+		Bundle b = null;
+		if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
+				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE))
+			b = getRegionContextBundle(subsystem);
 		subsystem.uninstall();
 		assertEvent(subsystem, State.UNINSTALLING, 5000);
 		assertEvent(subsystem, State.UNINSTALLED, 5000);
@@ -617,10 +624,17 @@ public abstract class SubsystemTest extends IntegrationTest {
 		for (Subsystem parent : parents)
 			assertNotChild(parent, subsystem);
 		assertNotDirectory(subsystem);
+		if (b != null)
+			assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
 	}
 	
-	protected void uninstallUnscopedSubsystem(Subsystem subsystem) throws Exception {
-		uninstallSubsystem(subsystem);
+	protected void uninstallSubsystemSilently(Subsystem subsystem) {
+		try {
+			uninstallSubsystem(subsystem);
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
 	}
 	
 	protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException {

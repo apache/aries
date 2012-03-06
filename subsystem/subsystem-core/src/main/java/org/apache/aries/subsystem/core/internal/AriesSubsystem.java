@@ -1140,6 +1140,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// In the case of applications, the header is generated.
 			header = getDeploymentManifest().getSubsystemImportServiceHeader();
 			setImportIsolationPolicy(builder, (SubsystemImportServiceHeader)header);
+			header = getDeploymentManifest().getRequireBundleHeader();
+			setImportIsolationPolicy(builder, (RequireBundleHeader)header);
 		}
 		if (isApplication()) {
 			// TODO Implement import isolation policy for applications.
@@ -1148,8 +1150,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 		else if (isComposite()) {
 			// TODO Implement import isolation policy for composites.
 			// Composites specify an explicit import policy in their subsystem and deployment manifests.
-			Header<?> header = getDeploymentManifest().getRequireBundleHeader();
-			setImportIsolationPolicy(builder, (RequireBundleHeader)header);
 		}
 		RegionFilter regionFilter = builder.build();
 		if (LOGGER.isDebugEnabled())

@@ -11,6 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
+import org.osgi.framework.namespace.PackageNamespace;
+import org.osgi.resource.Requirement;
 
 public class RequireBundleHeader implements Header<RequireBundleHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
@@ -44,6 +46,31 @@ public class RequireBundleHeader implements Header<RequireBundleHeader.Clause> {
 				parameters.put(parameter.getName(), parameter);
 			}
 			fillInDefaults(parameters);
+		}
+		
+		private static final String REGEX = "\\((" + RequireBundleRequirement.NAMESPACE + ")(=)([^\\)]+)\\)";
+		private static final Pattern PATTERN = Pattern.compile(REGEX);
+		
+		public Clause(Requirement requirement) {
+			if (!RequireBundleRequirement.NAMESPACE.equals(requirement.getNamespace()))
+				throw new IllegalArgumentException("Requirement must be in the '" + RequireBundleRequirement.NAMESPACE + "' namespace");
+			String filter = requirement.getDirectives().get(RequireBundleRequirement.DIRECTIVE_FILTER);
+			String path = null;
+			Matcher matcher = PATTERN.matcher(filter);
+			while (matcher.find()) {
+				String name = matcher.group(1);
+				String operator = matcher.group(2);
+				String value = matcher.group(3);
+				if (RequireBundleRequirement.NAMESPACE.equals(name)) {
+					path = value;
+				}
+				else if (ATTRIBUTE_BUNDLEVERSION.equals(name)) {
+					// TODO Parse the version range from the filter.
+				}
+			}
+			if (path == null)
+				throw new IllegalArgumentException("Missing filter key: " + RequireBundleRequirement.NAMESPACE);
+			this.path = path;
 		}
 		
 		@Override
@@ -122,14 +149,24 @@ public class RequireBundleHeader implements Header<RequireBundleHeader.Clause> {
 
 	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.BUNDLE_DESCRIPTION + ")(?=,|\\z)");
 	
-	private final Set<Clause> clauses = new HashSet<Clause>();
-	
-	public RequireBundleHeader(String value) {
-		Matcher matcher = PATTERN.matcher(value);
+	private static Collection<Clause> processHeader(String header) {
+		Matcher matcher = PATTERN.matcher(header);
+		Set<Clause> clauses = new HashSet<Clause>();
 		while (matcher.find())
 			clauses.add(new Clause(matcher.group()));
+		return clauses;
+	}
+	
+	private final Set<Clause> clauses;
+	
+	public RequireBundleHeader(Collection<Clause> clauses) {
 		if (clauses.isEmpty())
 			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
+		this.clauses = new HashSet<Clause>(clauses);
+	}
+	
+	public RequireBundleHeader(String value) {
+		this(processHeader(value));
 	}
 	
 	@Override
