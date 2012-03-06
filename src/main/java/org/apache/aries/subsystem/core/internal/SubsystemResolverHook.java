@@ -38,7 +38,11 @@ public class SubsystemResolverHook implements ResolverHook {
 	public void filterResolvable(Collection<BundleRevision> candidates) {
 		try {
 			for (Iterator<BundleRevision> iterator = candidates.iterator(); iterator.hasNext();) {
-				Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(iterator.next());
+				BundleRevision revision = iterator.next();
+				if (revision.getSymbolicName().startsWith(Constants.RegionContextBundleSymbolicNamePrefix))
+					// Don't want to filter out the region context bundle.
+					continue;
+				Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(revision);
 				for (AriesSubsystem subsystem : subsystems) {
 					if (subsystem.isFeature()) {
 						// Feature subsystems require no isolation.
