@@ -34,8 +34,10 @@ import org.osgi.resource.Requirement;
  * <p>
  * Resolver implementations may extend this class to provide extra state
  * information about the reason for the resolution failure.
+ * 
+ * @version $Id: 6cbd1a0da0f9c464570bfb370ef8dca07470202e $
  */
-public class ResolutionException extends RuntimeException {
+public class ResolutionException extends Exception {
 
 	private static final long				serialVersionUID	= 1L;
 

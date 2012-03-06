@@ -1,7 +1,6 @@
 package org.apache.aries.subsystem.itests.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +46,13 @@ public class TestRepositoryContent extends TestResource implements RepositoryCon
 	}
 
 	@Override
-	public InputStream getContent(String osgiContent) throws IOException {
-		return new ByteArrayInputStream(content);
+	public InputStream getContent() {
+		try {
+			return new ByteArrayInputStream(content);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

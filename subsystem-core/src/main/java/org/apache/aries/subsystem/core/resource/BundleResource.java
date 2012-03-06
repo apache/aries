@@ -104,8 +104,13 @@ public class BundleResource implements Resource, RepositoryContent {
 	}
 	
 	@Override
-	public InputStream getContent(String osgiContent) throws IOException {
-		return content.openStream();
+	public InputStream getContent() {
+		try {
+			return content.openStream();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public List<Requirement> getRequirements(String namespace) {
