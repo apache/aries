@@ -13,7 +13,6 @@
  */
 package org.apache.aries.subsystem.core.obr.felix;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -97,8 +96,13 @@ public class FelixResourceAdapter implements Resource, RepositoryContent {
 	}
 	
 	@Override
-	public InputStream getContent(String osgiContent) throws IOException {
-		return new URL(resource.getURI()).openStream();
+	public InputStream getContent() {
+		try {
+			return new URL(resource.getURI()).openStream();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public List<Requirement> getRequirements(String namespace) {

@@ -78,8 +78,13 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 	}
 
 	@Override
-	public InputStream getContent(String osgiContent) throws IOException {
-		return new FileInputStream(file);
+	public InputStream getContent() {
+		try {
+			return new FileInputStream(file);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public String getLocation() {

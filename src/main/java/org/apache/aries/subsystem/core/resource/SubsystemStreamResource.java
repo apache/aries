@@ -96,8 +96,13 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 	}
 
 	@Override
-	public InputStream getContent(String osgiContent) throws IOException {
-		return new ByteArrayInputStream(content);
+	public InputStream getContent() {
+		try {
+			return new ByteArrayInputStream(content);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
