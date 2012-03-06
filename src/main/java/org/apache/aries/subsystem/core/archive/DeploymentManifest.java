@@ -22,6 +22,7 @@ import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
+import org.osgi.framework.namespace.BundleNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Requirement;
@@ -119,6 +120,9 @@ public class DeploymentManifest {
 					header = computeRequireCapabilityHeader(resolution, deployedContent, acceptDependencies);
 					if (header != null)
 						headers.put(REQUIRE_CAPABILITY, header);
+					header = computeRequireBundleHeader(resolution, deployedContent, acceptDependencies);
+					if (header != null)
+						headers.put(REQUIRE_BUNDLE, header);
 				}
 				// TODO Compute additional headers for an application.
 			}
@@ -236,6 +240,34 @@ public class DeploymentManifest {
 		if (clauses.isEmpty())
 			return null;
 		return new ImportPackageHeader(clauses);
+	}
+	
+	private static RequireBundleHeader computeRequireBundleHeader(
+			Map<Resource, List<Wire>> resolution, 
+			Collection<Resource> content,
+			boolean acceptDependencies) {
+		Collection<RequireBundleHeader.Clause> clauses = new ArrayList<RequireBundleHeader.Clause>();
+		for (Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
+			for (Wire wire : entry.getValue()) {
+				Resource provider = wire.getProvider();
+				if (content.contains(provider))
+					// If the provider is a content resource, we don't need an import.
+					continue;
+				// The provider is a dependency that is already provisioned or needs provisioning.
+				if (acceptDependencies && !((provider instanceof BundleRevision) || (provider instanceof AriesSubsystem)))
+					// If the application accepts dependencies and the provider is a dependency that needs provisioning,
+					// we don't need an import.
+					continue;
+				// For all other cases, we need an import.
+				Requirement requirement = wire.getRequirement();
+				if (BundleNamespace.BUNDLE_NAMESPACE.equals(requirement.getNamespace())) {
+					clauses.add(new RequireBundleHeader.Clause(requirement));
+				}
+			}
+		}
+		if (clauses.isEmpty())
+			return null;
+		return new RequireBundleHeader(clauses);
 	}
 	
 	private static RequireCapabilityHeader computeRequireCapabilityHeader(
