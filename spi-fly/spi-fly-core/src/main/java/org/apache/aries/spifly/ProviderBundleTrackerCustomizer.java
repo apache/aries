@@ -197,7 +197,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             return null;
 
         List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(requirementHeader.toString());
-        GenericMetadata extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROVIDER_EXTENDER_NAME);
+        GenericMetadata extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
         if (extenderRequirement == null)
             return null;
 
