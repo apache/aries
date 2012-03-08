@@ -23,6 +23,6 @@ import org.apache.aries.mytest.AltSPI;
 public class AltSPIImpl2 implements AltSPI {
     @Override
     public long square(long l) {
-        return -l * l;
+        return -l;
     }
 }
