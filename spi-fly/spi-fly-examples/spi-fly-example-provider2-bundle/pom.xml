@@ -59,7 +59,8 @@
                         <Private-Package>
                             org.apache.aries.spifly.mysvc.impl2
                         </Private-Package>
-                        <Require-Capability>osgi.extender; osgi.extender=serviceloader.registrar</Require-Capability>
+                        <Require-Capability>osgi.extender; filter:="(osgi.extender=serviceloader.registrar)"</Require-Capability>
+                        <Provide-Capability>osgi.serviceloader; osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider</Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
