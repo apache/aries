@@ -41,7 +41,7 @@ public class ConsumerHeaderProcessor {
 
     static {
         PROCESSOR_FILTER_MATCH = new Hashtable<String, String>();
-        PROCESSOR_FILTER_MATCH.put(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.CLIENT_EXTENDER_NAME);
+        PROCESSOR_FILTER_MATCH.put(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROCESSOR_EXTENDER_NAME);
     }
 
     /**
@@ -179,7 +179,7 @@ public class ConsumerHeaderProcessor {
         Set<WeavingData> weavingData = new HashSet<WeavingData>();
 
         List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(consumerHeader);
-        GenericMetadata extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.CLIENT_EXTENDER_NAME);
+        GenericMetadata extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROCESSOR_EXTENDER_NAME);
         Collection<GenericMetadata> serviceLoaderRequirements = findAllMetadata(requirements, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
 
         if (extenderRequirement != null) {

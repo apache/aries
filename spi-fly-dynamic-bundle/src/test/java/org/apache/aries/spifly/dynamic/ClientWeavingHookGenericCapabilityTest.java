@@ -160,8 +160,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertSame("Precondition", cl, Thread.currentThread().getContextClassLoader());
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
-                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(bundle-symbolic-name=impl5)\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT);
 
         Bundle providerBundle5 = mockProviderBundle("impl5", 1);
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle5, new HashMap<String, Object>());
