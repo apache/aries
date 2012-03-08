@@ -74,7 +74,7 @@ public class Main {
         }
     }
 
-    private static void weaveJar(String jarPath) throws IOException {
+    private static void weaveJar(String jarPath) throws Exception {
         System.out.println("[SPI Fly Static Tool] Processing: " + jarPath);
 
         File jarFile = new File(jarPath);
@@ -139,7 +139,7 @@ public class Main {
         return new File(s);
     }
 
-    private static void weaveDir(File dir, String consumerHeader, String bundleClassPath) throws IOException {
+    private static void weaveDir(File dir, String consumerHeader, String bundleClassPath) throws Exception {
         String dirName = dir.getAbsolutePath();
 
         DirTree dt = new DirTree(dir);
@@ -185,7 +185,7 @@ public class Main {
         }
     }
 
-    private static void weaveBCPJar(File jarFile, String consumerHeader) throws IOException {
+    private static void weaveBCPJar(File jarFile, String consumerHeader) throws Exception {
         File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());
         try {
             Manifest manifest = unJar(jarFile, tempDir);

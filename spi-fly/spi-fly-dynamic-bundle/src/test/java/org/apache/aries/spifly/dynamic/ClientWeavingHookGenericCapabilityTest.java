@@ -259,6 +259,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("All three services should be invoked in the correct order", "ollehHELLO5", result);
     }
 
+    /* This is currently not supported in the generic model
     @Test
     public void testClientSpecifyingProvider() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
@@ -352,27 +353,26 @@ public class ClientWeavingHookGenericCapabilityTest {
         Object result = method.invoke(cls.newInstance(), "hello");
         Assert.assertEquals("All providers should be selected for this one", "ollehimpl4", result);
     }
+    */
 
     @Test
     public void testServiceFiltering() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
-                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(|(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.MySPI)" +
-                "(&(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT + "," +
+            SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE +
+                "; filter:=\"(osgi.serviceloader=org.apache.aries.mytest.AltSPI)\";");
 
-        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Bundle providerBundle4 = mockProviderBundle("impl4", 4);
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, new HashMap<String, Object>());
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, new HashMap<String, Object>());
         activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, new HashMap<String, Object>());
 
-        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle2, providerBundle4);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
 
-        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1, providerBundle2, providerBundle4);
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle2, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
         // Weave the TestClient class.
@@ -380,12 +380,11 @@ public class ClientWeavingHookGenericCapabilityTest {
         WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
         wh.weave(wc);
 
-        // Invoke the woven class and check that it propertly sets the TCCL so that the
-        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        // Invoke the woven class. Since MySPI wasn't selected nothing should be returned
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All providers should be selected for this one", "ollehHELLO5impl4", result);
+        Assert.assertEquals("No providers should be selected for this one", "", result);
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
@@ -396,24 +395,30 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {long.class});
         Object result2 = method2.invoke(cls2.newInstance(), 4096);
-        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L*4096L, result2);
+        Assert.assertEquals("All Providers should be selected", (4096L*4096L)-4096L, result2);
+
     }
 
     @Test
     public void testServiceFilteringAlternative() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
-                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(|(!(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.AltSPI))" +
-                "(&(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT + "," +
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE +
+                "; filter:=\"(|(!(osgi.serviceloader=org.apache.aries.mytest.AltSPI))" +
+                            "(&(osgi.serviceloader=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4)))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Bundle providerBundle4 = mockProviderBundle("impl4", 4);
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, new HashMap<String, Object>());
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, new HashMap<String, Object>());
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, new HashMap<String, Object>());
+        HashMap<String, Object> attrs2 = new HashMap<String, Object>();
+        attrs2.put("bundle-symbolic-name", "impl2");
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, attrs2);
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, attrs2);
+        HashMap<String, Object> attrs4 = new HashMap<String, Object>();
+        attrs4.put("bundle-symbolic-name", "impl4");
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, attrs4);
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, attrs4);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
@@ -442,23 +447,28 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {long.class});
         Object result2 = method2.invoke(cls2.newInstance(), 4096);
-        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L*4096L, result2);
+        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L, result2);
     }
 
     @Test
     public void testServiceFilteringNarrow() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
-                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(&(" + SpiFlyConstants.CONSUMED_SPI_CONDITION + "=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4))\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT + "," +
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE +
+                "; filter:=\"(&(osgi.serviceloader=org.apache.aries.mytest.AltSPI)(bundle-symbolic-name=impl4))\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
         Bundle providerBundle4 = mockProviderBundle("impl4", 4);
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, new HashMap<String, Object>());
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, new HashMap<String, Object>());
-        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, new HashMap<String, Object>());
+        HashMap<String, Object> attrs2 = new HashMap<String, Object>();
+        attrs2.put("bundle-symbolic-name", "impl2");
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, attrs2);
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle2, attrs2);
+        HashMap<String, Object> attrs4 = new HashMap<String, Object>();
+        attrs4.put("bundle-symbolic-name", "impl4");
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle4, attrs4);
+        activator.registerProviderBundle("org.apache.aries.mytest.AltSPI", providerBundle4, attrs4);
 
         Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1, providerBundle2, providerBundle4);
         activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
@@ -487,14 +497,14 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {long.class});
         Object result2 = method2.invoke(cls2.newInstance(), 4096);
-        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L*4096L, result2);
+        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L, result2);
     }
 
     @Test
     public void testFilteringCustomAttribute() throws Exception {
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT +
-                "; " + SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE + ":=\"(approval=global)\"");
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT + ", " +
+            SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; filter:=\"(approval=global)\"");
 
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);

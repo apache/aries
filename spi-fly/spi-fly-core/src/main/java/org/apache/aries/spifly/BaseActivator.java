@@ -37,7 +37,6 @@ import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTracker;
@@ -87,7 +86,7 @@ public abstract class BaseActivator implements BundleActivator {
         activator = this;
     }
 
-    public void addConsumerWeavingData(Bundle bundle, String consumerHeaderName) {
+    public void addConsumerWeavingData(Bundle bundle, String consumerHeaderName) throws Exception {
         if (bundleWeavingData.containsKey(bundle)) {
             // This bundle was already processed
             return;
@@ -229,14 +228,12 @@ public abstract class BaseActivator implements BundleActivator {
                     }
                 } else if (desc.getFilter() != null) {
                     Hashtable<String, Object> d = new Hashtable<String, Object>();
-                    d.put(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, b.getSymbolicName());
-                    d.put(Constants.BUNDLE_VERSION_ATTRIBUTE, b.getVersion());
 
                     if (ServiceLoader.class.getName().equals(className) &&
                         "load".equals(methodName)) {
                         String type = args.get(new Pair<Integer, String>(0, Class.class.getName()));
                         if (type != null) {
-                            d.put(SpiFlyConstants.CONSUMED_SPI_CONDITION, type);
+                            d.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, type);
                             d.putAll(getCustomBundleAttributes(type, b));
                         }
                     }

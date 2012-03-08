@@ -19,7 +19,10 @@
 package org.apache.aries.spifly;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Dictionary;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -34,6 +37,13 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 
 public class ConsumerHeaderProcessor {
+    private static final Dictionary<String, String> PROCESSOR_FILTER_MATCH;
+
+    static {
+        PROCESSOR_FILTER_MATCH = new Hashtable<String, String>();
+        PROCESSOR_FILTER_MATCH.put(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.CLIENT_EXTENDER_NAME);
+    }
+
     /**
      * Parses headers of the following syntax:
      * <ul>
@@ -62,7 +72,7 @@ public class ConsumerHeaderProcessor {
      * @param consumerHeader the <tt>SPI-Consumer</tt> header.
      * @return an instance of the {@link WeavingData} class.
      */
-    public static Set<WeavingData> processHeader(String consumerHeaderName, String consumerHeader) {
+    public static Set<WeavingData> processHeader(String consumerHeaderName, String consumerHeader) throws Exception {
         if (SpiFlyConstants.REQUIRE_CAPABILITY.equals(consumerHeaderName)) {
             return processRequireCapabilityHeader(consumerHeader);
         }
@@ -165,31 +175,28 @@ public class ConsumerHeaderProcessor {
         return weavingData;
     }
 
-    private static Set<WeavingData> processRequireCapabilityHeader(String consumerHeader) {
+    private static Set<WeavingData> processRequireCapabilityHeader(String consumerHeader) throws InvalidSyntaxException {
         Set<WeavingData> weavingData = new HashSet<WeavingData>();
 
         List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(consumerHeader);
-        for (GenericMetadata req : requirements) {
-            if (SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE.equals(req.getNamespace())) {
-                if (SpiFlyConstants.CLIENT_EXTENDER_NAME.equals(req.getAttributes().get(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE))) {
-                    ArgRestrictions ar = new ArgRestrictions();
-                    ar.addRestriction(0, Class.class.getName());
-                    MethodRestriction mr = new MethodRestriction("load", ar);
+        GenericMetadata extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.CLIENT_EXTENDER_NAME);
+        Collection<GenericMetadata> serviceLoaderRequirements = findAllMetadata(requirements, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
 
-                    List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
-                    String filterString = req.getDirectives().get(SpiFlyConstants.PROVIDER_FILTER_DIRECTIVE);
-                    if (filterString != null) {
-                        try {
-                            Filter filter = FrameworkUtil.createFilter(filterString);
-                            allowedBundles.add(new BundleDescriptor(filter));
-                        } catch (InvalidSyntaxException e) {
-                            throw new IllegalArgumentException("Syntax error in filter " + filterString + " which appears in " + consumerHeader);
-                        }
-                    }
+        if (extenderRequirement != null) {
+            ArgRestrictions ar = new ArgRestrictions();
+            ar.addRestriction(0, Class.class.getName());
+            MethodRestriction mr = new MethodRestriction("load", ar);
 
-                    weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+            List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
+            for (GenericMetadata req : serviceLoaderRequirements) {
+                String slFilterString = req.getDirectives().get(SpiFlyConstants.FILTER_DIRECTIVE);
+                if (slFilterString != null) {
+                    Filter slFilter = FrameworkUtil.createFilter(slFilterString);
+                    allowedBundles.add(new BundleDescriptor(slFilter));
                 }
             }
+
+            weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
         }
 
         return weavingData;
@@ -208,5 +215,45 @@ public class ConsumerHeaderProcessor {
 
         return new WeavingData(className, methodName, argClasses, restrictions,
                 allowedBundles.size() == 0 ? null : allowedBundles);
+    }
+
+    private static GenericMetadata findRequirement(List<GenericMetadata> requirements, String namespace, String type) throws InvalidSyntaxException {
+        Dictionary<String, String> nsAttr = new Hashtable<String, String>();
+        nsAttr.put(namespace, type);
+
+        for (GenericMetadata req : requirements) {
+            if (namespace.equals(req.getNamespace())) {
+                String filterString = req.getDirectives().get(SpiFlyConstants.FILTER_DIRECTIVE);
+                if (filterString != null) {
+                    Filter filter = FrameworkUtil.createFilter(filterString);
+                    if (filter.match(nsAttr)) {
+                        return req;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+//    private static GenericMetadata findMetadata(List<GenericMetadata> requirements, String namespace, String type) {
+//        for (GenericMetadata req : requirements) {
+//            if (namespace.equals(req.getNamespace())) {
+//                if (type.equals(req.getAttributes().get(namespace))) {
+//                    return req;
+//                }
+//            }
+//        }
+//        return null;
+//    }
+
+    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> requirements, String namespace) {
+        List<GenericMetadata> reqs = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
+        for (GenericMetadata req : requirements) {
+            if (namespace.equals(req.getNamespace())) {
+                reqs.add(req);
+            }
+        }
+        return reqs;
     }
 }
