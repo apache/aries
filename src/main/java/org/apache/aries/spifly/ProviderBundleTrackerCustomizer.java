@@ -221,49 +221,6 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
         }
         return serviceNames;
-
-/*
-        //******************
-        Object capabilityHeaderxx = headers.get(SpiFlyConstants.REQUIRE_CAPABILITY);
-        if (capabilityHeader == null)
-            return null;
-
-        // Find the extender namespace and check that its filter matches serviceloader.registrar
-        // if so, find all capabilties in osgi.serviceloader namespace,
-        List<GenericMetadata> capabilitiesxx = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader.toString());
-        for (GenericMetadata cap : capabilities) {
-            if (!SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE.equals(cap.getNamespace()))
-                continue;
-
-            for (Map.Entry<String, Object> entry : cap.getAttributes().entrySet()) {
-                if (SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE.equals(entry.getKey()))
-                    continue;
-
-                customAttributes.put(entry.getKey(), entry.getValue());
-            }
-
-            List<String> serviceNames = new ArrayList<String>();
-            for (Map.Entry<String, String> entry : cap.getDirectives().entrySet()) {
-                if ("filter".equals(entry.getKey()))
-                    continue;
-                if ("resolution".equals(entry.getKey()))
-                    continue;
-
-                if (SpiFlyConstants.PROVIDED_SPI_DIRECTIVE.equals(entry.getKey())) {
-                    if (entry.getValue() != null) {
-                        for (String s : entry.getValue().split(",")) {
-                            serviceNames.add(s.trim());
-                        }
-                    }
-                } else {
-                    directives.put(entry.getKey(), entry.getValue());
-                }
-            }
-
-            return serviceNames;
-        }
-        return null;
-        */
     }
 
     // null means don't register,
@@ -327,6 +284,27 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return urls;
     }
 
+    private GenericMetadata findCapability(List<GenericMetadata> capabilities, String namespace, String spiName) {
+        for (GenericMetadata cap : capabilities) {
+            if (namespace.equals(cap.getNamespace())) {
+                if (spiName.equals(cap.getAttributes().get(namespace))) {
+                    return cap;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> requirements, String namespace) {
+        List<GenericMetadata> reqs = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
+        for (GenericMetadata req : requirements) {
+            if (namespace.equals(req.getNamespace())) {
+                reqs.add(req);
+            }
+        }
+        return reqs;
+    }
+
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
         // should really be doing something here...
     }
@@ -366,26 +344,5 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
         }
         return null;
-    }
-
-    private GenericMetadata findCapability(List<GenericMetadata> capabilities, String namespace, String spiName) {
-        for (GenericMetadata cap : capabilities) {
-            if (namespace.equals(cap.getNamespace())) {
-                if (spiName.equals(cap.getAttributes().get(namespace))) {
-                    return cap;
-                }
-            }
-        }
-        return null;
-    }
-
-    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> requirements, String namespace) {
-        List<GenericMetadata> reqs = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
-        for (GenericMetadata req : requirements) {
-            if (namespace.equals(req.getNamespace())) {
-                reqs.add(req);
-            }
-        }
-        return reqs;
     }
 }
