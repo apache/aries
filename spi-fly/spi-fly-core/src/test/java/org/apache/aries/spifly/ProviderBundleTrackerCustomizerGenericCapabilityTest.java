@@ -392,10 +392,6 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         return implBC;
     }
 
-    private Bundle mockSPIBundle(BundleContext implBC) throws ClassNotFoundException {
-        return mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT);
-    }
-
     private Bundle mockSPIBundle(BundleContext implBC, String spiProviderHeader) throws ClassNotFoundException {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, spiProviderHeader);
