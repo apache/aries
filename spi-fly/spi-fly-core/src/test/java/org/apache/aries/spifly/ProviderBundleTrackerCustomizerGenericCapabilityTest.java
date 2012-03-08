@@ -300,8 +300,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         EasyMock.replay(sreg);
 
         BundleContext implBC = mockSPIBundleContext(sreg);
-        Bundle implBundle = mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT +
-                "; " + SpiFlyConstants.SERVICE_REGISTRY_DIRECTIVE + ":=false");
+        Bundle implBundle = mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT);
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(0, registrations.size());
