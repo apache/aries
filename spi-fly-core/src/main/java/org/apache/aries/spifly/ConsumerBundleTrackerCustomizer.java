@@ -25,7 +25,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 public class ConsumerBundleTrackerCustomizer implements BundleTrackerCustomizer {
     private final BaseActivator activator;
     private final String headerName;
-    
+
     public ConsumerBundleTrackerCustomizer(BaseActivator baseActivator, String consumerHeaderName) {
         activator = baseActivator;
         headerName = consumerHeaderName;
@@ -33,7 +33,11 @@ public class ConsumerBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public Object addingBundle(Bundle bundle, BundleEvent event) {
-        activator.addConsumerWeavingData(bundle, headerName);                    
+        try {
+            activator.addConsumerWeavingData(bundle, headerName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return bundle;
     }
 

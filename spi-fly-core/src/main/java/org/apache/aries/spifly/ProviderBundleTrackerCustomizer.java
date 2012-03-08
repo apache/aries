@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -40,6 +41,9 @@ import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
@@ -68,11 +72,15 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         List<String> providedServices = null;
         Map<String, Object> customAttributes = new HashMap<String, Object>();
-        Map<String, String> directives = new HashMap<String, String>();
         if (bundle.getHeaders().get(SpiFlyConstants.REQUIRE_CAPABILITY) != null) {
-            providedServices = readRequireCapability(bundle.getHeaders(), directives, customAttributes);
+            try {
+                providedServices = readRequireCapability(bundle.getHeaders(), customAttributes);
+            } catch (InvalidSyntaxException e) {
+                log(LogService.LOG_ERROR, "Unable to read capabilities from bundle " + bundle, e);
+            }
         }
 
+        boolean fromSPIProviderHeader = false;
         if (providedServices == null && bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER) != null) {
             String header = bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER).toString().trim();
             if ("*".equals(header)) {
@@ -80,6 +88,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             } else {
                 providedServices = Arrays.asList(header.split(","));
             }
+            fromSPIProviderHeader = true;
         }
 
         if (providedServices == null) {
@@ -102,12 +111,12 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         if (servicesDir == null)
             return null;
 
-        List<URL> serviceFiles = new ArrayList<URL>();
+        List<URL> serviceFileURLs = new ArrayList<URL>();
 
         @SuppressWarnings("unchecked")
         Enumeration<URL> entries = bundle.findEntries(METAINF_SERVICES, "*", false);
         if (entries != null) {
-            serviceFiles.addAll(Collections.list(entries));
+            serviceFileURLs.addAll(Collections.list(entries));
         }
 
         Object bcp = bundle.getHeaders().get(Constants.BUNDLE_CLASSPATH);
@@ -119,29 +128,29 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                 URL url = bundle.getResource(entry);
                 if (url != null) {
-                    serviceFiles.addAll(getMetaInfServiceURLsFromJar(url));
+                    serviceFileURLs.addAll(getMetaInfServiceURLsFromJar(url));
                 }
             }
         }
 
         List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
-        for (URL serviceFile : serviceFiles) {
-            log(LogService.LOG_INFO, "Found SPI resource: " + serviceFile);
+        for (URL serviceFileURL : serviceFileURLs) {
+            log(LogService.LOG_INFO, "Found SPI resource: " + serviceFileURL);
 
             try {
                 BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(serviceFile.openStream()));
+                        new InputStreamReader(serviceFileURL.openStream()));
                 String className = null;
                 while((className = reader.readLine()) != null) {
                     try {
                         if (className.startsWith("#"))
                             continue; // a comment
 
-                        String s = serviceFile.toExternalForm();
-                        int idx = s.lastIndexOf('/');
+                        String serviceFile = serviceFileURL.toExternalForm();
+                        int idx = serviceFile.lastIndexOf('/');
                         String registrationClassName = className;
-                        if (s.length() > idx) {
-                            registrationClassName = s.substring(idx + 1);
+                        if (serviceFile.length() > idx) {
+                            registrationClassName = serviceFile.substring(idx + 1);
                         }
                         if (providedServices.size() > 0 && !providedServices.contains(registrationClassName))
                             continue;
@@ -150,13 +159,16 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         Object o = cls.newInstance();
                         log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
 
-                        Hashtable<String, Object> props = new Hashtable<String, Object>();
-                        props.put(SpiFlyConstants.SPI_PROVIDER_URL_PROPERTY, serviceFile);
-                        props.putAll(customAttributes);
+                        Hashtable<String, Object> properties;
+                        if (fromSPIProviderHeader)
+                            properties = new Hashtable<String, Object>();
+                        else
+                            properties = findServiceRegistrationProperties(bundle.getHeaders(), registrationClassName, className);
 
-                        if (!"false".equalsIgnoreCase(directives.get(SpiFlyConstants.SERVICE_REGISTRY_DIRECTIVE))) {
+                        if (properties != null) {
+                            properties.put(SpiFlyConstants.SERVICELOADER_URL_PROPERTY, serviceFile);
                             ServiceRegistration reg = bundle.getBundleContext()
-                                    .registerService(registrationClassName, o, props);
+                                    .registerService(registrationClassName, o, properties);
                             registrations.add(reg);
                             log(LogService.LOG_INFO, "Registered service: " + reg);
                         }
@@ -165,11 +177,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         log(LogService.LOG_INFO, "Registered provider: " + registrationClassName + " in bundle " + bundle.getSymbolicName());
                     } catch (Exception e) {
                         log(LogService.LOG_WARNING,
-                                "Could not load SPI implementation referred from " + serviceFile, e);
+                                "Could not load SPI implementation referred from " + serviceFileURL, e);
                     }
                 }
             } catch (IOException e) {
-                log(LogService.LOG_WARNING, "Could not read SPI metadata from " + serviceFile, e);
+                log(LogService.LOG_WARNING, "Could not read SPI metadata from " + serviceFileURL, e);
             }
         }
 
@@ -179,12 +191,46 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     // An empty list returned means 'all SPIs'
     // A return value of null means no SPIs
     // A populated list means: only these SPIs
-    private List<String> readRequireCapability(Dictionary<?,?> headers, Map<String, String> directives, Map<String, Object> customAttributes) {
-        Object capabilityHeader = headers.get(SpiFlyConstants.REQUIRE_CAPABILITY);
+    private List<String> readRequireCapability(Dictionary<?,?> headers, Map<String, Object> customAttributes) throws InvalidSyntaxException {
+        Object requirementHeader = headers.get(SpiFlyConstants.REQUIRE_CAPABILITY);
+        if (requirementHeader == null)
+            return null;
+
+        List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(requirementHeader.toString());
+        GenericMetadata extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROVIDER_EXTENDER_NAME);
+        if (extenderRequirement == null)
+            return null;
+
+        List<GenericMetadata> capabilities;
+        Object capabilityHeader = headers.get(SpiFlyConstants.PROVIDE_CAPABILITY);
+        if (capabilityHeader == null) {
+            capabilities = Collections.emptyList();
+        } else {
+            capabilities = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader.toString());
+        }
+
+        List<String> serviceNames = new ArrayList<String>();
+        for (GenericMetadata serviceLoaderCapability : findAllMetadata(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
+            for (Map.Entry<String, Object> entry : serviceLoaderCapability.getAttributes().entrySet()) {
+                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(entry.getKey())) {
+                    serviceNames.add(entry.getValue().toString());
+                    continue;
+                }
+
+                customAttributes.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return serviceNames;
+
+/*
+        //******************
+        Object capabilityHeaderxx = headers.get(SpiFlyConstants.REQUIRE_CAPABILITY);
         if (capabilityHeader == null)
             return null;
 
-        List<GenericMetadata> capabilities = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader.toString());
+        // Find the extender namespace and check that its filter matches serviceloader.registrar
+        // if so, find all capabilties in osgi.serviceloader namespace,
+        List<GenericMetadata> capabilitiesxx = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader.toString());
         for (GenericMetadata cap : capabilities) {
             if (!SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE.equals(cap.getNamespace()))
                 continue;
@@ -215,6 +261,43 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
 
             return serviceNames;
+        }
+        return null;
+        */
+    }
+
+    // null means don't register,
+    // otherwise the return value should be taken as the service registration properties
+    private Hashtable<String, Object> findServiceRegistrationProperties(Dictionary<?,?> headers, String spiName, String implName) {
+        Object capabilityHeader = headers.get(SpiFlyConstants.PROVIDE_CAPABILITY);
+        if (capabilityHeader == null)
+            return null;
+
+        List<GenericMetadata> capabilities = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader.toString());
+        GenericMetadata cap = findCapability(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, spiName);
+
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        if (cap != null) {
+            for (Map.Entry<String, Object> entry : cap.getAttributes().entrySet()) {
+                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(entry.getKey()))
+                    continue;
+
+                properties.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        String registerDirective = cap.getDirectives().get(SpiFlyConstants.REGISTER_DIRECTIVE);
+        if (registerDirective == null) {
+            return properties;
+        } else {
+            if ("".equals(registerDirective.trim()))
+                return null;
+
+            if ("*".equals(registerDirective.trim()))
+                return properties;
+
+            if (implName.equals(registerDirective.trim()))
+                return properties;
         }
         return null;
     }
@@ -265,5 +348,44 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     private void log(int level, String message, Throwable th) {
         activator.log(level, message, th);
+    }
+
+    private static GenericMetadata findRequirement(List<GenericMetadata> requirements, String namespace, String type) throws InvalidSyntaxException {
+        Dictionary<String, String> nsAttr = new Hashtable<String, String>();
+        nsAttr.put(namespace, type);
+
+        for (GenericMetadata req : requirements) {
+            if (namespace.equals(req.getNamespace())) {
+                String filterString = req.getDirectives().get(SpiFlyConstants.FILTER_DIRECTIVE);
+                if (filterString != null) {
+                    Filter filter = FrameworkUtil.createFilter(filterString);
+                    if (filter.match(nsAttr)) {
+                        return req;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private GenericMetadata findCapability(List<GenericMetadata> capabilities, String namespace, String spiName) {
+        for (GenericMetadata cap : capabilities) {
+            if (namespace.equals(cap.getNamespace())) {
+                if (spiName.equals(cap.getAttributes().get(namespace))) {
+                    return cap;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> requirements, String namespace) {
+        List<GenericMetadata> reqs = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
+        for (GenericMetadata req : requirements) {
+            if (namespace.equals(req.getNamespace())) {
+                reqs.add(req);
+            }
+        }
+        return reqs;
     }
 }

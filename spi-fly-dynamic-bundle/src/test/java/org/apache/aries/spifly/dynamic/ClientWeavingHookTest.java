@@ -387,7 +387,7 @@ public class ClientWeavingHookTest {
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {long.class});
         Object result2 = method2.invoke(cls2.newInstance(), 4096);
-        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L*4096L, result2);
+        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L, result2);
     }
 
     @Test
