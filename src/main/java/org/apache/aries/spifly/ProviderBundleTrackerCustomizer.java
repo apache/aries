@@ -66,9 +66,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         log(LogService.LOG_INFO, "Bundle Considered for SPI providers: "
                 + bundle.getSymbolicName());
 
-        if (bundle.equals(spiBundle)) {
-            return null;
-        }
+        if (bundle.getBundleId() == 0)
+            return null; // don't process the system bundle
+
+        if (bundle.equals(spiBundle))
+            return null; // don't process the SPI bundle itself
 
         List<String> providedServices = null;
         Map<String, Object> customAttributes = new HashMap<String, Object>();
