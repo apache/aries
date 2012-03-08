@@ -235,25 +235,13 @@ public class ConsumerHeaderProcessor {
         return null;
     }
 
-
-//    private static GenericMetadata findMetadata(List<GenericMetadata> requirements, String namespace, String type) {
-//        for (GenericMetadata req : requirements) {
-//            if (namespace.equals(req.getNamespace())) {
-//                if (type.equals(req.getAttributes().get(namespace))) {
-//                    return req;
-//                }
-//            }
-//        }
-//        return null;
-//    }
-
-    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> requirements, String namespace) {
-        List<GenericMetadata> reqs = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
-        for (GenericMetadata req : requirements) {
-            if (namespace.equals(req.getNamespace())) {
-                reqs.add(req);
+    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> metadata, String namespace) {
+        List<GenericMetadata> matching = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
+        for (GenericMetadata md : metadata) {
+            if (namespace.equals(md.getNamespace())) {
+                matching.add(md);
             }
         }
-        return reqs;
+        return matching;
     }
 }
