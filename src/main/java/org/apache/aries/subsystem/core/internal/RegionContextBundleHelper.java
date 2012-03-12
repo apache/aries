@@ -11,25 +11,24 @@ import java.util.jar.Manifest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
-import org.osgi.framework.wiring.BundleRevision;
 
 public class RegionContextBundleHelper {
 	public static final String SYMBOLICNAME_PREFIX = Constants.RegionContextBundleSymbolicNamePrefix;
 	public static final Version VERSION = Version.parseVersion("1.0.0");
 	
-	public static BundleRevision installRegionContextBundle(AriesSubsystem subsystem) throws BundleException, IOException {
+	public static void installRegionContextBundle(AriesSubsystem subsystem) throws BundleException, IOException {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		String location = subsystem.getLocation() + '/' + subsystem.getSubsystemId();
 		Bundle b = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (b != null)
-			return b.adapt(BundleRevision.class);
+			return;
+		ThreadLocalSubsystem.set(subsystem);
 		b = subsystem.getRegion().installBundleAtLocation(location, createRegionContextBundle(symbolicName));
 		// The region context bundle must be started persistently.
 		b.start();
-		return b.adapt(BundleRevision.class);
 	}
 	
-	public static BundleRevision uninstallRegionContextBundle(AriesSubsystem subsystem) {
+	public static void uninstallRegionContextBundle(AriesSubsystem subsystem) {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		Bundle bundle = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (bundle == null)
@@ -40,7 +39,6 @@ public class RegionContextBundleHelper {
 		catch (BundleException e) {
 			// TODO Should we really eat this? At least log it?
 		}
-		return bundle.adapt(BundleRevision.class);
 	}
 	
 	private static Manifest createManifest(String symbolicName) {
