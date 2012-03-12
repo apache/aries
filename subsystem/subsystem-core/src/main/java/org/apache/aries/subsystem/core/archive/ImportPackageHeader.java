@@ -20,15 +20,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
-import org.osgi.framework.Version;
 import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
@@ -148,45 +145,7 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 		}
 		
 		public Requirement getRequirement(final Resource resource) {
-			return new Requirement() {
-				@Override
-				public String getNamespace() {
-					return BundleRevision.PACKAGE_NAMESPACE;
-				}
-				@Override
-				public Map<String, String> getDirectives() {
-					Collection<Directive> directives = Clause.this.getDirectives();
-					Map<String, String> result = new HashMap<String, String>(directives.size() + 1);
-					for (Directive directive : directives) {
-						result.put(directive.getName(), directive.getValue());
-					}
-					if (result.get(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE) == null) {
-						StringBuilder builder = new StringBuilder("(&");
-						for (Entry<String, Object> entry : getAttributes().entrySet())
-							builder.append('(').append(entry.getKey()).append('=').append(entry.getValue()).append(')');
-						result.put(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE, builder.append(')').toString());
-					}
-					return result;
-				}
-				@Override
-				public Map<String, Object> getAttributes() {
-					Collection<Attribute> attributes = Clause.this.getAttributes();
-					Map<String, Object> result = new HashMap<String, Object>(attributes.size() + 1);
-					for (Attribute attribute : attributes) {
-						result.put(attribute.getName(), attribute.getValue());
-					}
-					if (result.get(PackageNamespace.PACKAGE_NAMESPACE) == null) {
-						result.put(PackageNamespace.PACKAGE_NAMESPACE, getPath());
-					}
-					if (result.get(PackageNamespace.CAPABILITY_VERSION_ATTRIBUTE) == null)
-						result.put(PackageNamespace.CAPABILITY_VERSION_ATTRIBUTE, Version.emptyVersion.toString());
-					return result;
-				}
-				@Override
-				public Resource getResource() {
-					return resource;
-				}
-			};
+			return new ImportPackageRequirement(this, resource);
 		}
 		
 		public VersionRangeAttribute getVersionRangeAttribute() {

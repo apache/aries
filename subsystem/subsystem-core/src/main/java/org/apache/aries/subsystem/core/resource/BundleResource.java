@@ -22,8 +22,13 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.core.archive.BundleManifest;
+import org.apache.aries.subsystem.core.archive.BundleSymbolicNameHeader;
+import org.apache.aries.subsystem.core.archive.BundleVersionHeader;
 import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
+import org.apache.aries.subsystem.core.archive.ProvideBundleCapability;
+import org.apache.aries.subsystem.core.archive.ProvideCapabilityCapability;
+import org.apache.aries.subsystem.core.archive.ProvideCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
 import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
@@ -75,6 +80,17 @@ public class BundleResource implements Resource, RepositoryContent {
 		if (rbh != null)
 			for (RequireBundleHeader.Clause clause : rbh.getClauses())
 				requirements.add(new RequireBundleRequirement(clause));
+		// TODO The osgi.wiring.bundle capability should not be provided for fragments. Nor should the host capability.
+		BundleSymbolicNameHeader bsnh = (BundleSymbolicNameHeader)manifest.getHeader(BundleSymbolicNameHeader.NAME);
+		BundleVersionHeader bvh = (BundleVersionHeader)manifest.getHeader(BundleVersionHeader.NAME);
+		capabilities.add(new ProvideBundleCapability(bsnh, bvh, this));
+		ProvideCapabilityHeader pch = (ProvideCapabilityHeader)manifest.getHeader(ProvideCapabilityHeader.NAME);
+		if (pch != null) {
+			for (ProvideCapabilityHeader.Clause clause : pch.getClauses()) {
+				capabilities.add(new ProvideCapabilityCapability(clause, this));
+			}
+		}
+		// TODO Bundle-RequiredExecutionEnvironment
 	}
 	
 	private BundleResource(String content) throws IOException {

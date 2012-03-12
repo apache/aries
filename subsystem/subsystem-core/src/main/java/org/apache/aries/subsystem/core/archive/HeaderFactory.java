@@ -105,6 +105,10 @@ public class HeaderFactory {
 			return new ProvideCapabilityHeader(value);
 		if (SubsystemExportServiceHeader.NAME.equals(name))
 			return new SubsystemExportServiceHeader(value);
+		if (BundleSymbolicNameHeader.NAME.equals(name))
+			return new BundleSymbolicNameHeader(value);
+		if (BundleVersionHeader.NAME.equals(name))
+			return new BundleVersionHeader(value);
 		return new GenericHeader(name, value);
 			
 	}
