@@ -38,8 +38,8 @@ public interface SpiFlyConstants {
     String SERVICELOADER_URL_PROPERTY = "serviceloader.url";
 
     // The names of the extenders involved
-    String PROCESSOR_EXTENDER_NAME = "serviceloader.processor";
-    String REGISTRAR_EXTENDER_NAME = "serviceloader.registrar";
+    String PROCESSOR_EXTENDER_NAME = "osgi.serviceloader.processor";
+    String REGISTRAR_EXTENDER_NAME = "osgi.serviceloader.registrar";
 
     // Pre-baked requirements for consumer and provider
     String CLIENT_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + FILTER_DIRECTIVE +
