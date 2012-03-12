@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
-import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.resource.Requirement;
 
 public class RequireBundleHeader implements Header<RequireBundleHeader.Clause> {

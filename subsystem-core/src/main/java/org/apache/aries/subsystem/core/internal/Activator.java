@@ -17,14 +17,16 @@ import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.aries.subsystem.core.Resolver;
 import org.apache.felix.resolver.impl.ResolverImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleListener;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +54,6 @@ public class Activator implements BundleActivator {
 		logger.debug(LOG_EXIT, "checkInstance");
 	}
 	
-	private final BundleListener bundleListener = new SubsystemSynchronousBundleListener();
 	private final List<ServiceRegistration<?>> registrations = new ArrayList<ServiceRegistration<?>>();
 	
 	private BundleContext bundleContext;
@@ -93,11 +94,8 @@ public class Activator implements BundleActivator {
 		}
 		bundleContext = context;
 		serviceProvider = new ServiceProviderImpl(bundleContext);
-		context.getBundle(0).getBundleContext().addBundleListener(bundleListener);
+		registerBundleEventHook();
 		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(), null));
-		// TODO The registration of the Resolver service should be temporary, unless Felix 
-		// does not have an official release at the time.
-//		registrations.add(bundleContext.registerService(Resolver.class, new ResolverImpl(null), null));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
 		root = new AriesSubsystem();
 		root.install();
@@ -117,11 +115,16 @@ public class Activator implements BundleActivator {
 				logger.debug("Service had already been unregistered", e);
 			}
 		}
-		context.getBundle(0).getBundleContext().removeBundleListener(bundleListener);
 		serviceProvider.shutdown();
 		synchronized (Activator.class) {
 			instance = null;
 		}
 		logger.debug(LOG_EXIT, "stop");
+	}
+	
+	private void registerBundleEventHook() {
+		Dictionary<String, Object> properties = new Hashtable<String, Object>(1);
+		properties.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.MIN_VALUE);
+		registrations.add(bundleContext.registerService(EventHook.class, new BundleEventHook(), properties));
 	}
 }

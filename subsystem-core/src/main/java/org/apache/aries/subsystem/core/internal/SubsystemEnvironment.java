@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.core.obr;
+package org.apache.aries.subsystem.core.internal;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
@@ -30,9 +30,6 @@ import java.util.TreeSet;
 
 import org.apache.aries.subsystem.core.Environment;
 import org.apache.aries.subsystem.core.ResourceHelper;
-import org.apache.aries.subsystem.core.internal.Activator;
-import org.apache.aries.subsystem.core.internal.AriesSubsystem;
-import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
@@ -161,17 +158,29 @@ public class SubsystemEnvironment implements Environment {
 	private void findConstituentProviders(Requirement requirement, Collection<Capability> capabilities) {
 		if (logger.isDebugEnabled())
 			logger.debug(LOG_ENTRY, "findConstituentProviders", new Object[]{requirement, capabilities});
-		Subsystem subsystem = this.subsystem;
+		AriesSubsystem subsystem = this.subsystem;
+		if (requirement instanceof OsgiIdentityRequirement) {
+			// We only want to return providers from the same region as the subsystem.
+			// Find the one and only one scoped subsystem in the region, which
+			// will be either the current subsystem or one of its parents.
+			while (!(subsystem.isApplication() || subsystem.isComposite())) {
+				subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
+			}
+			// Now search the one and only one scoped parent within the same region
+			// and all children that are also in the same region for a provider.
+			findConstituentProviders(subsystem, requirement, capabilities);
+			return;
+		}
 		logger.debug("Navigating up the parent hierarchy...");
 		while (!subsystem.getParents().isEmpty()) {
-			subsystem = subsystem.getParents().iterator().next();
+			subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
 			logger.debug("Next parent is: {}", subsystem);
 		}
 		findConstituentProviders(subsystem, requirement, capabilities);
 		logger.debug(LOG_EXIT, "findConstituentProviders");
 	}
 	
-	private void findConstituentProviders(Subsystem subsystem, Requirement requirement, Collection<Capability> capabilities) {
+	private void findConstituentProviders(AriesSubsystem subsystem, Requirement requirement, Collection<Capability> capabilities) {
 		if (logger.isDebugEnabled())
 			logger.debug(LOG_ENTRY, "findConstituentProviders", new Object[]{subsystem, requirement, capabilities});
 		for (Resource resource : subsystem.getConstituents()) {
@@ -184,17 +193,16 @@ public class SubsystemEnvironment implements Environment {
 				}
 			}
 		}
-		findConstituentProviders(subsystem.getChildren(), requirement, capabilities);
-		logger.debug(LOG_EXIT, "findConstituentProviders");
-	}
-	
-	private void findConstituentProviders(Collection<Subsystem> children, Requirement requirement, Collection<Capability> capabilities) {
-		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "findConstituentProviders", new Object[]{children, requirement, capabilities});
-		for (Subsystem child : children) {
+		for (Subsystem child : subsystem.getChildren()) {
 			logger.debug("Evaluating child subsystem: {}", child);
-			findConstituentProviders(child, requirement, capabilities);
+			// If the requirement is osgi.identity and the child is not in the
+			// same region as the parent, we do not want to search it.
+			if (requirement instanceof OsgiIdentityRequirement
+					&& !subsystem.getRegion().equals(((AriesSubsystem)child).getRegion()))
+				continue;
+			findConstituentProviders((AriesSubsystem)child, requirement, capabilities);
 		}
+		logger.debug(LOG_EXIT, "findConstituentProviders");
 	}
 	
 	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, boolean content) {
