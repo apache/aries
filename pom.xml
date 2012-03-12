@@ -107,7 +107,7 @@ JRE through META-INF/services resources).
                             org.apache.aries.spifly.dynamic
                         </Private-Package>
                         <Embed-Dependency>org.apache.aries.spifly.*;scope=compile;inline=true</Embed-Dependency>
-                        <Provide-Capability>osgi.extender;osgi.extender=serviceloader.registrar,osgi.extender;osgi.extender=serviceloader.processor</Provide-Capability>
+                        <Provide-Capability>osgi.extender;osgi.extender=osgi.serviceloader.registrar,osgi.extender;osgi.extender=osgi.serviceloader.processor</Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
