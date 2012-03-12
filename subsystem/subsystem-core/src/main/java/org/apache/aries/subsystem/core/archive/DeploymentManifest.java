@@ -19,7 +19,7 @@ import java.util.jar.Manifest;
 import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.AriesSubsystem;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
-import org.apache.aries.subsystem.core.obr.SubsystemEnvironment;
+import org.apache.aries.subsystem.core.internal.SubsystemEnvironment;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.BundleNamespace;
