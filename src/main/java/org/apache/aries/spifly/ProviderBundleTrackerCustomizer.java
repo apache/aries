@@ -165,7 +165,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                             properties = findServiceRegistrationProperties(bundle.getHeaders(), registrationClassName, className);
 
                         if (properties != null) {
-                            properties.put(SpiFlyConstants.SERVICELOADER_URL_PROPERTY, serviceFile);
+                            properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
                             ServiceRegistration reg = bundle.getBundleContext()
                                     .registerService(registrationClassName, o, properties);
                             registrations.add(reg);

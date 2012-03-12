@@ -35,7 +35,7 @@ public interface SpiFlyConstants {
     String REGISTER_DIRECTIVE = "register";
 
     // Service registration property
-    String SERVICELOADER_URL_PROPERTY = "serviceloader.url";
+    String SERVICELOADER_MEDIATOR_PROPERTY = "serviceloader.mediator";
 
     // The names of the extenders involved
     String PROCESSOR_EXTENDER_NAME = "osgi.serviceloader.processor";

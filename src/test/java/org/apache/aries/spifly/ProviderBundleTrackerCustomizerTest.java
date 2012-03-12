@@ -46,14 +46,15 @@ import org.osgi.framework.ServiceRegistration;
 public class ProviderBundleTrackerCustomizerTest {
     @Test
     public void testAddingRemovedBundle() throws Exception {
-        Bundle spiBundle = EasyMock.createMock(Bundle.class);
-        EasyMock.replay(spiBundle);
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
+        EasyMock.replay(mediatorBundle);
         BaseActivator activator = new BaseActivator() {
             @Override
             public void start(BundleContext context) throws Exception {}
         };
 
-        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
         ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
         sreg.unregister();
@@ -100,14 +101,15 @@ public class ProviderBundleTrackerCustomizerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testAddingBundleWithBundleClassPath() throws Exception {
-        Bundle spiBundle = EasyMock.createMock(Bundle.class);
-        EasyMock.replay(spiBundle);
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
+        EasyMock.replay(mediatorBundle);
         BaseActivator activator = new BaseActivator() {
             @Override
             public void start(BundleContext context) throws Exception {}
         };
 
-        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
