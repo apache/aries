@@ -65,7 +65,7 @@
                             org.apache.aries.spifly.examples.client2.impl
                         </Private-Package>
                         <Bundle-Activator>org.apache.aries.spifly.examples.client2.impl.Activator</Bundle-Activator>
-                        <Require-Capability>osgi.extender; filter:="(osgi.extender=serviceloader.processor)"</Require-Capability>
+                        <Require-Capability>osgi.serviceloader; filter:="(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)";cardinality:=multiple,osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)"</Require-Capability>
                     </instructions>
                 </configuration>
             </plugin>
