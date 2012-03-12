@@ -21,18 +21,15 @@ public class VersionAttribute extends AbstractAttribute {
 	
 	public static final VersionAttribute DEFAULT = new VersionAttribute();
 	
-	private final Version version;
-	
 	public VersionAttribute() {
 		this(Version.emptyVersion.toString());
 	}
 	
 	public VersionAttribute(String value) {
-		super(NAME, value);
-		version = Version.parseVersion(value);
+		super(NAME, Version.parseVersion(value));
 	}
 
 	public Version getVersion() {
-		return version;
+		return (Version)getValue();
 	}
 }
