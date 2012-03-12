@@ -112,8 +112,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
         headers.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
-                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI; approval=yeah; " +
-                SpiFlyConstants.REGISTER_DIRECTIVE + ":=*");
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI; approval=yeah; ");
         Bundle implBundle = mockSPIBundle(implBC, headers);
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
