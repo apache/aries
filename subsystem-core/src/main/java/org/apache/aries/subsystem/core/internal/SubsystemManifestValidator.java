@@ -12,6 +12,7 @@ public class SubsystemManifestValidator {
 			if (header == null)
 				return;
 			for (SubsystemContentHeader.Content content : header.getContents()) {
+				// TODO Need to update this to use the new VersionRange.isExact() method, which is more robust.
 				if (!isExactVersion(content.getVersionRange()))
 					throw new SubsystemException("Composite subsystem using version range for content: " + content);
 			}
