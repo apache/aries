@@ -108,8 +108,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 	private static final Map<String, AriesSubsystem> locationToSubsystem = Collections.synchronizedMap(new HashMap<String, AriesSubsystem>());
 	private static final Map<Resource, Set<AriesSubsystem>> resourceToSubsystems = Collections.synchronizedMap(new HashMap<Resource, Set<AriesSubsystem>>());
 	
-	private static long lastId;
-	
 	static synchronized Collection<AriesSubsystem> getSubsystems(Resource resource) {
 		// If the provided resource is null, all subsystems are desired.
 		if (resource == null)
@@ -237,12 +235,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	private synchronized static long getNextId() {
-		if (Long.MAX_VALUE == lastId)
-			throw new IllegalStateException("The next subsystem ID would exceed Long.MAX_VALUE: " + lastId);
-		return ++lastId;
-	}
-	
 	private final SubsystemArchive archive;
 	private final Set<Resource> constituents = Collections.synchronizedSet(new HashSet<Resource>());
 	private final File directory;
@@ -263,10 +255,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 		directory = Activator.getInstance().getBundleContext().getDataFile("");
 		archive = new SubsystemArchive(directory);
 		DeploymentManifest deploymentManifest = archive.getDeploymentManifest();
+		long lastId = 0;
 		if (deploymentManifest != null) {
 			autostart = Boolean.parseBoolean(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_AUTOSTART).getValue());
 			id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
 			lastId = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LASTID).getValue());
+			SubsystemIdentifier.setLastId(lastId);
 			location = deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue();
 		}
 		else {
@@ -329,7 +323,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			
 		}
 		this.location = location;
-		id = getNextId();
+		id = SubsystemIdentifier.getNextId();
 		String directoryName = "subsystem" + id;
 		// TODO Add to constants.
 		String fileName = directoryName + ".esa";
@@ -701,7 +695,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				null,
 				autostart,
 				id,
-				lastId,
+				SubsystemIdentifier.getLastId(),
 				location,
 				false,
 				false);
@@ -775,7 +769,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 					environment,
 					autostart,
 					id,
-					lastId,
+					SubsystemIdentifier.getLastId(),
 					location,
 					true,
 					false));
@@ -1184,7 +1178,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		final Bundle bundle = ((BundleRevision)resource).getBundle();
 		if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0)
 			return;
-		bundle.start(Bundle.START_TRANSIENT);
+		bundle.start(Bundle.START_TRANSIENT | Bundle.START_ACTIVATION_POLICY);
 		if (coordination == null)
 			return;
 		coordination.addParticipant(new Participant() {
