@@ -41,6 +41,7 @@ import java.util.Map.Entry;
 import junit.framework.Assert;
 
 import org.apache.aries.subsystem.core.ResourceHelper;
+import org.apache.aries.subsystem.core.internal.SubsystemIdentifier;
 import org.apache.aries.subsystem.core.obr.felix.RepositoryAdminRepository;
 import org.apache.aries.subsystem.itests.util.RepositoryGenerator;
 import org.apache.aries.subsystem.itests.util.Utils;
@@ -318,9 +319,9 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertLastId(long id) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Subsystem root = getRootSubsystem();
-		Field lastId = root.getClass().getDeclaredField("lastId");
+		Field lastId = SubsystemIdentifier.class.getDeclaredField("lastId");
 		lastId.setAccessible(true);
-		assertEquals("Incorrect value for lastId", id, lastId.getLong(root));
+		assertEquals("Wrong lastId", id, lastId.getLong(root));
 	}
 	
 	protected void assertLocation(String expected, String actual) {
