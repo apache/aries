@@ -17,6 +17,11 @@ public class SubsystemManifestValidator {
 					throw new SubsystemException("Composite subsystem using version range for content: " + content);
 			}
 		}
+		else if (subsystem.isFeature()) {
+			if (manifest.getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies()) {
+				throw new SubsystemException("Feature subsystems may not declare a provision-policy of acceptDependencies");
+			}
+		}
 	}
 	
 	private static boolean isExactVersion(VersionRange range) {

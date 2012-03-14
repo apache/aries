@@ -18,12 +18,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.aries.subsystem.core.ResourceHelper;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
+import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemContentHeader extends AbstractHeader {
 	public static class Content {
@@ -83,8 +87,26 @@ public class SubsystemContentHeader extends AbstractHeader {
 		}
 	}
 	
-	// TODO Add to constants.
-	public static final String NAME = "Subsystem-Content";
+	public static final String NAME = SubsystemConstants.SUBSYSTEM_CONTENT;
+	
+	private static String processResources(Collection<Resource> resources) {
+		if (resources.isEmpty())
+			throw new IllegalArgumentException("At least one resource must be specified");
+		StringBuilder sb = new StringBuilder();
+		for (Resource resource : resources) {
+			Capability c = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0);
+			Map<String, Object> a = c.getAttributes();
+			String s = (String)a.get(IdentityNamespace.IDENTITY_NAMESPACE);
+			Version v = (Version)a.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
+			String t = (String)a.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
+			sb.append(s).append(';')
+				.append(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE).append('=').append(v).append(';')
+				.append(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE).append('=').append(t).append(',');
+		}
+		// Remove the trailing comma.
+		sb.deleteCharAt(sb.length() - 1);
+		return sb.toString();
+	}
 	
 	private final List<Content> contents;
 	
@@ -119,6 +141,10 @@ public class SubsystemContentHeader extends AbstractHeader {
 				return ((Integer)content1.getStartOrder()).compareTo(content2.getStartOrder());
 			}
 		});
+	}
+	
+	public SubsystemContentHeader(Collection<Resource> resources) {
+		this(processResources(resources));
 	}
 	
 	public boolean contains(Resource resource) {

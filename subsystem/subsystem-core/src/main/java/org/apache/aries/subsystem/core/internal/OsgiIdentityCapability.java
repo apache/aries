@@ -56,7 +56,7 @@ public class OsgiIdentityCapability extends AbstractCapability {
 				resource,
 				manifest.getSubsystemSymbolicNameHeader().getSymbolicName(),
 				manifest.getSubsystemVersionHeader().getVersion(),
-				manifest.getSubsystemTypeHeader().getValue());
+				manifest.getSubsystemTypeHeader().getType());
 	}
 	
 	public OsgiIdentityCapability(Resource resource, BundleManifest manifest) {

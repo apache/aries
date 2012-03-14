@@ -65,6 +65,7 @@ import org.apache.aries.subsystem.core.archive.SubsystemExportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
+import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
 import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
 import org.apache.aries.subsystem.core.resource.SubsystemStreamResource;
@@ -272,16 +273,28 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// TODO The creation of the subsystem manifest is in two places. See other constructor.
 		SubsystemManifest subsystemManifest = archive.getSubsystemManifest();
 		if (subsystemManifest == null) {
-			// This is the first time the root subsystem has been initialized in this framework or
-			// a framework clean start was requested.
+			// This is the first time the root subsystem has been initialized in
+			// this framework or a framework clean start was requested.
 			SubsystemUri uri = new SubsystemUri(ROOT_LOCATION);
-			subsystemManifest = new SubsystemManifest(uri.getSymbolicName(), uri.getVersion(), archive.getResources());
+			subsystemManifest = new SubsystemManifest.Builder(
+					uri.getSymbolicName())
+					.version(uri.getVersion())
+					.content(archive.getResources())
+					.type(SubsystemTypeHeader.TYPE_APPLICATION
+							+ ';'
+							+ SubsystemTypeHeader.DIRECTIVE_PROVISION_POLICY
+							+ ":="
+							+ SubsystemTypeHeader.PROVISION_POLICY_ACCEPT_DEPENDENCIES)
+					.build();
 			archive.setSubsystemManifest(subsystemManifest);
 		}
-		else
+		else {
 			// Need to generate a new subsystem manifest in order to generated a new deployment manifest based
 			// on any persisted resources.
-			subsystemManifest = new SubsystemManifest(getSymbolicName(), getVersion(), archive.getResources());
+			subsystemManifest = new SubsystemManifest.Builder(getSymbolicName())
+					.version(getVersion()).content(archive.getResources())
+					.build();
+		}
 		environment = new SubsystemEnvironment(this);
 		// The root subsystem establishes the subsystem graph;
 		subsystemGraph = new SubsystemGraph(this);
@@ -349,10 +362,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 			else
 				region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
 		}
-		catch (Exception e) {
+		catch (Throwable t) {
 			deleteFile(directory);
 			deleteFile(zipFile);
-			throw new SubsystemException(e);
+			if (t instanceof SubsystemException)
+				throw (SubsystemException)t;
+			throw new SubsystemException(t);
 		}
 		subsystemGraph = parent.subsystemGraph;
 	}
@@ -461,7 +476,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public String getType() {
-		return archive.getSubsystemManifest().getSubsystemTypeHeader().getValue();
+		return archive.getSubsystemManifest().getSubsystemTypeHeader().getType();
 	}
 
 	@Override
@@ -481,36 +496,33 @@ public class AriesSubsystem implements Subsystem, Resource {
 		try {
 			result = install(location, content, coordination);
 		}
-		catch (Exception e) {
-			coordination.fail(e);
+		catch (Throwable t) {
+			coordination.fail(t);
 		}
 		finally {
 			try {
 				coordination.end();
 			}
 			catch (CoordinationException e) {
-				throw new SubsystemException(e);
+				Throwable t = e.getCause();
+				if (t instanceof SubsystemException)
+					throw (SubsystemException)t;
+				throw new SubsystemException(t);
 			}
 		}
 		return result;
 	}
 	
 	public boolean isApplication() {
-		return SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(archive
-				.getSubsystemManifest().getHeaders()
-				.get(SubsystemManifest.SUBSYSTEM_TYPE).getValue());
+		return archive.getSubsystemManifest().getSubsystemTypeHeader().isApplication();
 	}
 
 	public boolean isComposite() {
-		return SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(archive
-				.getSubsystemManifest().getHeaders()
-				.get(SubsystemManifest.SUBSYSTEM_TYPE).getValue());
+		return archive.getSubsystemManifest().getSubsystemTypeHeader().isComposite();
 	}
 
 	public boolean isFeature() {
-		return SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(archive
-				.getSubsystemManifest().getHeaders()
-				.get(SubsystemManifest.SUBSYSTEM_TYPE).getValue());
+		return archive.getSubsystemManifest().getSubsystemTypeHeader().isFeature();
 	}
 	
 	/* INSTALLING	Wait, Start
@@ -778,12 +790,13 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private AriesSubsystem getProvisionTo(Resource resource, boolean transitive) {
-		// Application and composite resources are provisioned into the application or composite.
+		// Content resources are provisioned into the subsystem that declares
+		// them.
 		AriesSubsystem provisionTo = this;
 		if (transitive) {
-			// Transitive dependencies should be provisioned into the highest possible level.
-			// TODO Assumes root is always the appropriate level.
-			while (!provisionTo.getParents().isEmpty())
+			// Transitive dependencies should be provisioned into the first
+			// subsystem that accepts dependencies.
+			while (provisionTo.archive.getSubsystemManifest().getSubsystemTypeHeader().getProvisionPolicyDirective().isRejectDependencies())
 				provisionTo = (AriesSubsystem)provisionTo.getParents().iterator().next();
 		}
 		return provisionTo;
@@ -883,6 +896,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 			installSubsystemResource(subsystem, coordination, false);
 			return subsystem;
 		}
+		catch (SubsystemException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			throw new SubsystemException(e);
 		}
@@ -897,10 +913,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 		final BundleRevision revision;
 		AriesSubsystem provisionTo = getProvisionTo(resource, transitive);
 		if (resource instanceof BundleRevision) {
-			// This means the resource is a bundle that's already been installed, but we still need to establish the resource->subsystem relationship.
+			// This means the resource is an already installed bundle.
 			revision = (BundleRevision)resource;
 			// Need to simulate the install process since an install does not
-			// actually occur here and the event hook is not called.
+			// actually occur here, and the event hook is not called.
 			provisionTo.bundleInstalled(revision);
 		}
 		else {
