@@ -112,7 +112,7 @@ public class DeploymentManifest {
 			headers.put(SUBSYSTEM_SYMBOLICNAME, subsystemManifest.getSubsystemSymbolicNameHeader());
 			headers.put(SUBSYSTEM_VERSION, subsystemManifest.getSubsystemVersionHeader());
 			SubsystemTypeHeader typeHeader = subsystemManifest.getSubsystemTypeHeader();
-			if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(typeHeader.getValue())) {
+			if (typeHeader.isApplication()) {
 				if (resolution != null) {
 					Header<?> header = computeImportPackageHeader(resolution, deployedContent, acceptDependencies);
 					if (header != null)
@@ -126,7 +126,7 @@ public class DeploymentManifest {
 				}
 				// TODO Compute additional headers for an application.
 			}
-			else if (SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(typeHeader.getValue())) {
+			else if (typeHeader.isComposite()) {
 				Header<?> header = subsystemManifest.getImportPackageHeader();
 				if (header != null)
 					headers.put(IMPORT_PACKAGE, header);

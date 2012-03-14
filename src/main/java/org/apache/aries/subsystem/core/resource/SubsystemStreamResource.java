@@ -70,7 +70,7 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 				version = Version.parseVersion(value);
 			value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_TYPE);
 			if (value != null)
-				type = new SubsystemTypeHeader(value).getValue();
+				type = new SubsystemTypeHeader(value).getType();
 		}
 		if (symbolicName == null) {
 			if (uri == null)

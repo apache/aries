@@ -13,8 +13,17 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import org.osgi.framework.Constants;
+
 public class BundleManifest extends Manifest {
 	public BundleManifest(java.util.jar.Manifest manifest) {
 		super(manifest);
+		fillInDefaults();
+	}
+	
+	private void fillInDefaults() {
+		Header<?> header = headers.get(Constants.BUNDLE_VERSION);
+		if (header == null)
+			headers.put(Constants.BUNDLE_VERSION, BundleVersionHeader.DEFAULT);
 	}
 }

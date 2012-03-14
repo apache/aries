@@ -7,6 +7,8 @@ public class BundleVersionHeader extends VersionHeader {
 	public static final String DEFAULT_VALUE = Version.emptyVersion.toString();
 	public static final String NAME = Constants.BUNDLE_VERSION;
 	
+	public static final BundleVersionHeader DEFAULT = new BundleVersionHeader();
+	
 	public BundleVersionHeader() {
 		this(DEFAULT_VALUE);
 	}
