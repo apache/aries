@@ -53,7 +53,7 @@ public abstract class IntegrationTest {
     private Map<String, ServiceTracker> srs;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         srs = new HashMap<String, ServiceTracker>();
     }
     

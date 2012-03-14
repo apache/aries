@@ -167,7 +167,7 @@ public class ApplicationTest extends SubsystemTest {
 		createdApplications = true;
 	}
 	
-	public void setUp() {
+	public void setUp() throws Exception {
 		super.setUp();
 		try {
 			serviceRegistrations.add(
@@ -266,7 +266,7 @@ public class ApplicationTest extends SubsystemTest {
     			.namespace(PackageNamespace.PACKAGE_NAMESPACE)
     			.attribute(PackageNamespace.PACKAGE_NAMESPACE, "org.apache.aries.subsystem.itests.tb3")
     			.attribute(PackageNamespace.CAPABILITY_VERSION_ATTRIBUTE, "0.0.0"))
-    			.content(createTestBundle3Content())
+    	.content(createTestBundle3Content())
     	.build();
     }
     
