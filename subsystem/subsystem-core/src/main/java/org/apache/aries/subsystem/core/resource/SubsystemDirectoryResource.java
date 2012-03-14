@@ -25,7 +25,7 @@ public class SubsystemDirectoryResource implements Resource {
 				this, 
 				manifest.getSubsystemSymbolicNameHeader().getSymbolicName(), 
 				manifest.getSubsystemVersionHeader().getVersion(), 
-				manifest.getSubsystemTypeHeader().getValue()));
+				manifest.getSubsystemTypeHeader().getType()));
 		this.capabilities = Collections.unmodifiableList(capabilities);
 	}
 	
