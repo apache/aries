@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Resource;
 
-public class ExportPackageHeader implements Header<ExportPackageHeader.Clause> {
+public class ExportPackageHeader implements CapabilityHeader<ExportPackageHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String ATTRIBUTE_VERSION = Constants.VERSION_ATTRIBUTE;
 		public static final String DIRECTIVE_EXCLUDE = Constants.EXCLUDE_DIRECTIVE;
@@ -172,8 +173,9 @@ public class ExportPackageHeader implements Header<ExportPackageHeader.Clause> {
 		return toString();
 	}
 	
-	public Collection<ExportPackageCapability> toCapabilities(Resource resource) {
-		Collection<ExportPackageCapability> result = new ArrayList<ExportPackageCapability>();
+	@Override
+	public List<ExportPackageCapability> toCapabilities(Resource resource) {
+		List<ExportPackageCapability> result = new ArrayList<ExportPackageCapability>();
 		for (Clause clause : clauses)
 			result.addAll(clause.toCapabilities(resource));
 		return result;
