@@ -5,9 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
@@ -16,6 +18,8 @@ import java.util.jar.Manifest;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
@@ -189,6 +193,24 @@ public class SubsystemManifest {
 	
 	public SubsystemVersionHeader getSubsystemVersionHeader() {
 		return (SubsystemVersionHeader)getHeaders().get(SUBSYSTEM_VERSION);
+	}
+	
+	public List<Capability> toCapabilities(Resource resource) {
+		ArrayList<Capability> requirements = new ArrayList<Capability>();
+		for (Header<?> header : headers.values())
+			if (header instanceof CapabilityHeader)
+				requirements.addAll(((CapabilityHeader<?>)header).toCapabilities(resource));
+		requirements.trimToSize();
+		return requirements;
+	}
+	
+	public List<Requirement> toRequirements(Resource resource) {
+		ArrayList<Requirement> requirements = new ArrayList<Requirement>();
+		for (Header<?> header : headers.values())
+			if (header instanceof RequirementHeader)
+				requirements.addAll(((RequirementHeader<?>)header).toRequirements(resource));
+		requirements.trimToSize();
+		return requirements;
 	}
 	
 	public void write(OutputStream out) throws IOException {

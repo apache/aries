@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -29,7 +30,7 @@ import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
-public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
+public class ImportPackageHeader implements RequirementHeader<ImportPackageHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		private static final String REGEX = "\\((" + PackageNamespace.PACKAGE_NAMESPACE + ")(=)([^\\)]+)\\)";
 		private static final String REGEX1 = '(' + Grammar.PACKAGENAMES + ")(?=;|\\z)";
@@ -144,12 +145,12 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 			return myPath;
 		}
 		
-		public Requirement getRequirement(final Resource resource) {
-			return new ImportPackageRequirement(this, resource);
-		}
-		
 		public VersionRangeAttribute getVersionRangeAttribute() {
 			return (VersionRangeAttribute)myParameters.get(Constants.VERSION_ATTRIBUTE);
+		}
+		
+		public ImportPackageRequirement toRequirement(Resource resource) {
+			return new ImportPackageRequirement(this, resource);
 		}
 		
 		@Override
@@ -202,18 +203,19 @@ public class ImportPackageHeader implements Header<ImportPackageHeader.Clause> {
 		return Constants.IMPORT_PACKAGE;
 	}
 	
-	public Collection<Requirement> getRequirements(Resource resource) {
-		Collection<Clause> clauses = getClauses();
-		Collection<Requirement> result = new HashSet<Requirement>(clauses.size());
-		for (Clause clause : clauses) {
-			result.add(clause.getRequirement(resource));
-		}
-		return result;
-	}
-	
 	@Override
 	public String getValue() {
 		return toString();
+	}
+	
+	@Override
+	public List<ImportPackageRequirement> toRequirements(Resource resource) {
+		Collection<Clause> clauses = getClauses();
+		List<ImportPackageRequirement> result = new ArrayList<ImportPackageRequirement>(clauses.size());
+		for (Clause clause : clauses) {
+			result.add(clause.toRequirement(resource));
+		}
+		return result;
 	}
 	
 	@Override

@@ -18,15 +18,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
+import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class SubsystemExportServiceHeader implements Header<SubsystemExportServiceHeader.Clause> {
+public class SubsystemExportServiceHeader implements CapabilityHeader<SubsystemExportServiceHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
 		
@@ -114,6 +116,10 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 			return path;
 		}
 		
+		public SubsystemExportServiceCapability toCapability(Resource resource) {
+			return new SubsystemExportServiceCapability(this, resource);
+		}
+		
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -152,6 +158,14 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 	@Override
 	public String getValue() {
 		return toString();
+	}
+	
+	@Override
+	public List<SubsystemExportServiceCapability> toCapabilities(Resource resource) {
+		List<SubsystemExportServiceCapability> result = new ArrayList<SubsystemExportServiceCapability>();
+		for (Clause clause : clauses)
+			result.add(clause.toCapability(resource));
+		return result;
 	}
 	
 	@Override
