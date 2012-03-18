@@ -9,10 +9,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
+import org.apache.aries.subsystem.core.archive.Header;
+import org.apache.aries.subsystem.core.archive.HeaderFactory;
+import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemVersionHeader;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.apache.aries.subsystem.core.internal.SubsystemUri;
 import org.apache.aries.util.filesystem.FileSystem;
@@ -31,6 +36,7 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 	private final byte[] content;
 	private final List<Capability> capabilities;
 	private final ICloseableDirectory directory;
+	private final List<Requirement> requirements;
 	
 	public SubsystemStreamResource(String location, InputStream content) throws IOException, URISyntaxException {
 		SubsystemUri uri = null;
@@ -58,30 +64,38 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 			IOUtils.close(content);
 		}
 		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/SUBSYSTEM.MF");
-		String symbolicName = null;
-		Version version = Version.emptyVersion;
-		String type = SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
-		if (manifest != null) {
-			String value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME);
-			if (value != null)
-				symbolicName = new SubsystemSymbolicNameHeader(value).getSymbolicName();
-			value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_VERSION);
-			if (value != null)
-				version = Version.parseVersion(value);
-			value = manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_TYPE);
-			if (value != null)
-				type = new SubsystemTypeHeader(value).getType();
-		}
+		Attributes attributes = manifest.getMainAttributes();
+		String symbolicName = attributes.getValue(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME);
 		if (symbolicName == null) {
 			if (uri == null)
 				throw new IllegalArgumentException("No symbolic name");
 			symbolicName = uri.getSymbolicName();
 		}
-		if (version == Version.emptyVersion && uri != null)
-			version = uri.getVersion();
-		List<Capability> capabilities = new ArrayList<Capability>(1);
-		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version, type));
+		SubsystemManifest.Builder builder = new SubsystemManifest.Builder(symbolicName);
+		for (Entry<Object, Object> entry : attributes.entrySet()) {
+			String key = String.valueOf(entry.getKey());
+			if (key.equals(SubsystemManifest.SUBSYSTEM_SYMBOLICNAME))
+				continue;
+			builder.header(HeaderFactory.createHeader(key, String.valueOf(entry.getValue())));
+		}
+		SubsystemManifest subsystemManifest = builder.build();
+		SubsystemVersionHeader version = SubsystemVersionHeader.DEFAULT;
+		SubsystemTypeHeader type = SubsystemTypeHeader.DEFAULT;
+		Header<?> value = subsystemManifest.getSubsystemVersionHeader();
+		if (value != null)
+			version = (SubsystemVersionHeader)value;
+		value = subsystemManifest.getSubsystemTypeHeader();
+		if (value != null)
+			type = (SubsystemTypeHeader)value;
+		if (version.equals(SubsystemVersionHeader.DEFAULT) && uri != null)
+			version = new SubsystemVersionHeader(uri.getVersion());
+		List<Capability> capabilities;
+		List<Requirement> requirements;
+		capabilities = subsystemManifest.toCapabilities(this);
+		requirements = subsystemManifest.toRequirements(this);
+		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version.getVersion(), type.getType()));
 		this.capabilities = Collections.unmodifiableList(capabilities);
+		this.requirements = Collections.unmodifiableList(requirements);
 	}
 	
 	public void close() {
@@ -90,9 +104,14 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 	
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		if (namespace == null || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
+		if (namespace == null)
 			return capabilities;
-		return Collections.emptyList();
+		ArrayList<Capability> result = new ArrayList<Capability>(capabilities.size());
+		for (Capability capability : capabilities)
+			if (namespace.equals(capability.getNamespace()))
+				result.add(capability);
+		result.trimToSize();
+		return result;
 	}
 
 	@Override
@@ -107,7 +126,14 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 
 	@Override
 	public List<Requirement> getRequirements(String namespace) {
-		return Collections.emptyList();
+		if (namespace == null)
+			return requirements;
+		ArrayList<Requirement> result = new ArrayList<Requirement>(requirements.size());
+		for (Requirement requirement : requirements)
+			if (namespace.equals(requirement.getNamespace()))
+				result.add(requirement);
+		result.trimToSize();
+		return result;
 	}
 	
 	public String getSubsystemSymbolicName() {

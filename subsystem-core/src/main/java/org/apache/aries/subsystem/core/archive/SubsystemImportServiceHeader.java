@@ -5,15 +5,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
+import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class SubsystemImportServiceHeader implements Header<SubsystemImportServiceHeader.Clause> {
+public class SubsystemImportServiceHeader implements RequirementHeader<SubsystemImportServiceHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
@@ -108,6 +110,10 @@ public class SubsystemImportServiceHeader implements Header<SubsystemImportServi
 			return path;
 		}
 		
+		public SubsystemImportServiceRequirement toRequirement() {
+			return new SubsystemImportServiceRequirement(this);
+		}
+		
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -147,6 +153,14 @@ public class SubsystemImportServiceHeader implements Header<SubsystemImportServi
 	@Override
 	public String getValue() {
 		return toString();
+	}
+	
+	@Override
+	public List<SubsystemImportServiceRequirement> toRequirements(Resource resource) {
+		List<SubsystemImportServiceRequirement> requirements = new ArrayList<SubsystemImportServiceRequirement>(clauses.size());
+		for (Clause clause : clauses)
+			requirements.add(clause.toRequirement());
+		return requirements;
 	}
 	
 	@Override

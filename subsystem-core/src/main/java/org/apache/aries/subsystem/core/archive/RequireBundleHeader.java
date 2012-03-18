@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -12,8 +13,9 @@ import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
 import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 
-public class RequireBundleHeader implements Header<RequireBundleHeader.Clause> {
+public class RequireBundleHeader implements RequirementHeader<RequireBundleHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String ATTRIBUTE_BUNDLEVERSION = Constants.BUNDLE_VERSION_ATTRIBUTE;
 		public static final String DIRECTIVE_RESOLUTION = Constants.RESOLUTION_DIRECTIVE;
@@ -133,6 +135,10 @@ public class RequireBundleHeader implements Header<RequireBundleHeader.Clause> {
 			return path;
 		}
 		
+		public RequireBundleRequirement toRequirement() {
+			return new RequireBundleRequirement(this);
+		}
+		
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -181,6 +187,14 @@ public class RequireBundleHeader implements Header<RequireBundleHeader.Clause> {
 	@Override
 	public String getValue() {
 		return toString();
+	}
+	
+	@Override
+	public List<RequireBundleRequirement> toRequirements(Resource resource) {
+		List<RequireBundleRequirement> requirements = new ArrayList<RequireBundleRequirement>(clauses.size());
+		for (Clause clause : clauses)
+			requirements.add(clause.toRequirement());
+		return requirements;
 	}
 	
 	@Override

@@ -18,14 +18,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
+import org.osgi.resource.Resource;
 
-public class ProvideCapabilityHeader implements Header<ProvideCapabilityHeader.Clause> {	
+public class ProvideCapabilityHeader implements CapabilityHeader<ProvideCapabilityHeader.Clause> {	
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
 		public static final String DIRECTIVE_USES = Constants.USES_DIRECTIVE;
@@ -126,6 +128,10 @@ public class ProvideCapabilityHeader implements Header<ProvideCapabilityHeader.C
 			return path;
 		}
 		
+		public ProvideCapabilityCapability toCapability(Resource resource) {
+			return new ProvideCapabilityCapability(this, resource);
+		}
+		
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -164,6 +170,14 @@ public class ProvideCapabilityHeader implements Header<ProvideCapabilityHeader.C
 	@Override
 	public String getValue() {
 		return toString();
+	}
+	
+	@Override
+	public List<ProvideCapabilityCapability> toCapabilities(Resource resource) {
+		List<ProvideCapabilityCapability> result = new ArrayList<ProvideCapabilityCapability>();
+		for (Clause clause : clauses)
+			result.add(clause.toCapability(resource));
+		return result;
 	}
 	
 	@Override
