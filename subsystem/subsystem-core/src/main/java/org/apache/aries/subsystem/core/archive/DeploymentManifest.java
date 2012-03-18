@@ -95,7 +95,6 @@ public class DeploymentManifest {
 				}
 				// TODO This does not validate that all content bundles were found.
 				resolution = Activator.getInstance().getResolver().resolve(environment, new ArrayList<Resource>(resources), Collections.EMPTY_LIST);
-				// TODO Once we have a resolver that actually returns lists of wires, we can use them to compute other manifest headers such as Import-Package.
 				Collection<Resource> provisionResource = new HashSet<Resource>();
 				for (Resource resource : resolution.keySet()) {
 					if (contentHeader.contains(resource))

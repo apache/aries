@@ -229,16 +229,14 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void assertBundleState(int state, String symbolicName, Subsystem subsystem) {
-    	boolean found = false;
-    	for (Bundle bundle : subsystem.getBundleContext().getBundles()) {
-			if (symbolicName.equals(bundle.getSymbolicName())) { 
-				assertTrue("Wrong state: " + symbolicName + " [expected " + state + " but was " + bundle.getState() + "]", (bundle.getState() & state) != 0);
-				found = true;
-				break;
-			}
-		}
-    	assertTrue("Bundle '" + symbolicName + "' not found in region of '" + subsystem + "'", found);
+    	Bundle bundle = getBundle(subsystem, symbolicName);
+    	assertBundleState(bundle, state);
     }
+	
+	protected void assertBundleState(Bundle bundle, int state) {
+		assertNotNull("Bundle not found: " + bundle, bundle);
+		assertTrue("Wrong state: " + bundle + " [expected " + state + " but was " + bundle.getState() + "]", (bundle.getState() & state) != 0);
+	}
 	
 	protected void assertChild(Subsystem parent, Subsystem child) {
 		Collection<Subsystem> children = new ArrayList<Subsystem>(1);
@@ -526,6 +524,15 @@ public abstract class SubsystemTest extends IntegrationTest {
 			}
 		}
 		write(name, fixture);
+	}
+	
+	protected Bundle getBundle(Subsystem subsystem, String symbolicName) {
+		for (Bundle bundle : subsystem.getBundleContext().getBundles()) {
+			if (symbolicName.equals(bundle.getSymbolicName())) { 
+				return bundle;
+			}
+		}
+		return null;
 	}
 	
 	protected Resource getConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {

@@ -71,7 +71,7 @@ public class BundleResource implements Resource, RepositoryContent {
 			capabilities.addAll(eph.toCapabilities(this));
 		ImportPackageHeader iph = (ImportPackageHeader)manifest.getHeader(ImportPackageHeader.NAME);
 		if (iph != null)
-			requirements.addAll(iph.getRequirements(this));
+			requirements.addAll(iph.toRequirements(this));
 		RequireCapabilityHeader rch = (RequireCapabilityHeader)manifest.getHeader(RequireCapabilityHeader.NAME);
 		if (rch != null)
 			for (RequireCapabilityHeader.Clause clause : rch.getClauses())
