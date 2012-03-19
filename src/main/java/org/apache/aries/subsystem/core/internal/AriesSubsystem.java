@@ -585,18 +585,19 @@ public class AriesSubsystem implements Subsystem, Resource {
 				startResource(resource, coordination);
 			}
 			setState(State.ACTIVE);
-		} catch (Exception e) {
-			coordination.fail(e);
+		} catch (Throwable t) {
+			coordination.fail(t);
 			// TODO Need to reinstate complete isolation by disconnecting the
 			// region and transition to INSTALLED.
 		} finally {
 			try {
 				coordination.end();
 			} catch (CoordinationException e) {
-				LOGGER.error(
-						"An error occurred while starting a resource in subsystem "
-								+ this, e);
 				setState(State.RESOLVED);
+				Throwable t = e.getCause();
+				if (t instanceof SubsystemException)
+					throw (SubsystemException)t;
+				throw new SubsystemException(t);
 			}
 		}
 	}
@@ -1044,9 +1045,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// TODO Could avoid calling setState (and notifyAll) here and
 			// avoid the need for a lock.
 			setState(State.RESOLVED);
-		} catch (Exception e) {
+		}
+		catch (Throwable t) {
 			setState(State.INSTALLED);
-			throw new SubsystemException(e);
+			if (t instanceof SubsystemException)
+				throw (SubsystemException)t;
+			throw new SubsystemException(t);
 		}
 	}
 	
