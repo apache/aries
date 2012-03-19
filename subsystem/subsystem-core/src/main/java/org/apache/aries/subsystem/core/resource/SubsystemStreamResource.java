@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.core.archive.Header;
@@ -64,20 +63,20 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 			IOUtils.close(content);
 		}
 		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/SUBSYSTEM.MF");
-		Attributes attributes = manifest.getMainAttributes();
-		String symbolicName = attributes.getValue(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME);
+		String symbolicName = manifest == null ? null : manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME);
 		if (symbolicName == null) {
 			if (uri == null)
 				throw new IllegalArgumentException("No symbolic name");
 			symbolicName = uri.getSymbolicName();
 		}
 		SubsystemManifest.Builder builder = new SubsystemManifest.Builder(symbolicName);
-		for (Entry<Object, Object> entry : attributes.entrySet()) {
-			String key = String.valueOf(entry.getKey());
-			if (key.equals(SubsystemManifest.SUBSYSTEM_SYMBOLICNAME))
-				continue;
-			builder.header(HeaderFactory.createHeader(key, String.valueOf(entry.getValue())));
-		}
+		if (manifest != null)
+			for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
+				String key = String.valueOf(entry.getKey());
+				if (key.equals(SubsystemManifest.SUBSYSTEM_SYMBOLICNAME))
+					continue;
+				builder.header(HeaderFactory.createHeader(key, String.valueOf(entry.getValue())));
+			}
 		SubsystemManifest subsystemManifest = builder.build();
 		SubsystemVersionHeader version = SubsystemVersionHeader.DEFAULT;
 		SubsystemTypeHeader type = SubsystemTypeHeader.DEFAULT;
