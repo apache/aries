@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -14,13 +15,16 @@ import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.core.archive.Header;
 import org.apache.aries.subsystem.core.archive.HeaderFactory;
+import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemVersionHeader;
+import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
@@ -35,21 +39,28 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 	private final List<Capability> capabilities;
 	private final IDirectory directory;
 	private final File file;
+	private final IFile iFile;
 	private final String location;
 	private final List<Requirement> requirements;
 	
 	public SubsystemFileResource(File content) throws IOException {
-		file = content;
-		directory = FileSystem.getFSRoot(content);
+		this(FileSystem.getFSRoot(content), content, null);
+	}
+	
+	private SubsystemFileResource(IDirectory directory, File file, IFile iFile) throws IOException {
+		String fileName = file == null ? iFile.getName() : file.getName();
+		this.directory = directory;
+		this.file = file;
+		this.iFile = iFile;
 		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/DEPLOYMENT.MF");
 		if (manifest == null)
 			manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/SUBSYSTEM.MF");
 		
 		String symbolicName = manifest == null ? null : manifest.getMainAttributes().getValue(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME);
-		Matcher matcher = PATTERN.matcher(content.getName());
+		Matcher matcher = PATTERN.matcher(fileName);
 		if (symbolicName == null) {
 			if (!matcher.matches())
-				throw new IllegalArgumentException("No symbolic name");
+				throw new IllegalArgumentException("No syi guess the only rulembolic name");
 			symbolicName = new SubsystemSymbolicNameHeader(matcher.group(1)).getSymbolicName();
 		}
 		SubsystemManifest.Builder builder = new SubsystemManifest.Builder(symbolicName);
@@ -74,13 +85,14 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 			if (group != null)
 				version = new SubsystemVersionHeader(group);
 		}
-		List<Capability> capabilities;
-		List<Requirement> requirements;
-		capabilities = subsystemManifest.toCapabilities(this);
-		requirements = subsystemManifest.toRequirements(this);
+		List<Capability> capabilities = subsystemManifest.toCapabilities(this);
 		capabilities.add(new OsgiIdentityCapability(this, symbolicName, version.getVersion(), type.getType()));
 		this.capabilities = Collections.unmodifiableList(capabilities);
-		this.requirements = Collections.unmodifiableList(requirements);
+		if (type.getType().equals(SubsystemTypeHeader.TYPE_APPLICATION) ||
+				type.getType().equals(SubsystemTypeHeader.TYPE_FEATURE))
+			this.requirements = computeDependencies(subsystemManifest.getSubsystemContentHeader());
+		else
+			this.requirements = Collections.unmodifiableList(subsystemManifest.toRequirements(this));
 		location = "subsystem://?" + SubsystemConstants.SUBSYSTEM_SYMBOLICNAME + '=' + symbolicName + '&' + SubsystemConstants.SUBSYSTEM_VERSION + '=' + version.getVersion();
 	}
 	
@@ -99,7 +111,7 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 	@Override
 	public InputStream getContent() {
 		try {
-			return new FileInputStream(file);
+			return file == null ? iFile.open() : new FileInputStream(file);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -118,6 +130,39 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 		for (Requirement requirement : requirements)
 			if (namespace.equals(requirement.getNamespace()))
 				result.add(requirement);
+		result.trimToSize();
+		return result;
+	}
+	
+	private List<Requirement> computeDependencies(SubsystemContentHeader header) throws IOException {
+		if (header == null)
+			return Collections.emptyList();
+		LocalRepository localRepo = new LocalRepository(computeResources());
+		RepositoryServiceRepository serviceRepo = new RepositoryServiceRepository(Activator.getInstance().getBundleContext());
+		CompositeRepository compositeRepo = new CompositeRepository(localRepo, serviceRepo);
+		List<Requirement> requirements = header.toRequirements();
+		List<Resource> resources = new ArrayList<Resource>(requirements.size());
+		for (Requirement requirement : requirements) {
+			Collection<Capability> capabilities = compositeRepo.findProviders(requirement);
+			if (capabilities.isEmpty())
+				continue;
+			resources.add(capabilities.iterator().next().getResource());
+		}
+		return new DependencyCalculator(resources).calculateDependencies();
+	}
+	
+	private Collection<Resource> computeResources() throws IOException {
+		List<IFile> files = directory.listFiles();
+		if (files.isEmpty())
+			return Collections.emptyList();
+		ArrayList<Resource> result = new ArrayList<Resource>(files.size());
+		for (IFile file : directory.listFiles()) {
+			String name = file.getName();
+			if (name.endsWith(".jar"))
+				result.add(BundleResource.newInstance(file.toURL()));
+			else if (name.endsWith(".esa"))
+				result.add(new SubsystemFileResource(file.convertNested(), null, file));
+		}
 		result.trimToSize();
 		return result;
 	}
