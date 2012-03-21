@@ -1344,8 +1344,8 @@ public class ResolverImpl implements FelixResolver
             cycleMap.add(cap);
 
             // Get the package name associated with the capability.
-            String pkgName = cap.getAttributes()
-                .get(PackageNamespace.PACKAGE_NAMESPACE).toString();
+            String pkgName = String.valueOf(cap.getAttributes()
+                .get(PackageNamespace.PACKAGE_NAMESPACE));
 
             // Since a revision can export the same package more than once, get
             // all package capabilities for the specified package name.
