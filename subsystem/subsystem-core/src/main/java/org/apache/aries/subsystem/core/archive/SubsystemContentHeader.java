@@ -21,11 +21,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.ResourceHelper;
+import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
@@ -63,6 +65,10 @@ public class SubsystemContentHeader extends AbstractHeader {
 		
 		public boolean isMandatory() {
 			return mandatory;
+		}
+		
+		public Requirement toRequirement() {
+			return new OsgiIdentityRequirement(name, versionRange, type, false);
 		}
 		
 		public String toString() {
@@ -162,5 +168,12 @@ public class SubsystemContentHeader extends AbstractHeader {
 
 	public Collection<Content> getContents() {
 		return Collections.unmodifiableCollection(contents);
+	}
+	
+	public List<Requirement> toRequirements() {
+		ArrayList<Requirement> result = new ArrayList<Requirement>(contents.size());
+		for (Content content : contents)
+			result.add(content.toRequirement());
+		return result;
 	}
 }

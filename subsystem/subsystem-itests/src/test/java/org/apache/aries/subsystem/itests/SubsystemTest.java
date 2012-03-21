@@ -712,7 +712,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertState(State.UNINSTALLED, subsystem);
 		for (Subsystem parent : parents)
 			assertNotChild(parent, subsystem);
-		assertNotDirectory(subsystem);
+//		assertNotDirectory(subsystem);
 		if (b != null)
 			assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
 	}
