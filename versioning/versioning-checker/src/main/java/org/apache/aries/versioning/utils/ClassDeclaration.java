@@ -111,16 +111,16 @@ public class ClassDeclaration extends GenericDeclaration {
     }
 
 
-    public ClassDeclaration(int access, String name, String signature, String superName,
-                            String[] interfaces, URLClassLoader loader) {
-        super(access, name, signature);
-        this.superName = superName;
-        this.interfaces = interfaces;
-        this.fields = new HashMap<String, FieldDeclaration>();
-        this.methods = new HashMap<String, Set<MethodDeclaration>>();
-        this.jarsLoader = loader;
-        this.serialVisitor = null;
-    }
+//    public ClassDeclaration(int access, String name, String signature, String superName,
+//                            String[] interfaces, URLClassLoader loader) {
+//        super(access, name, signature);
+//        this.superName = superName;
+//        this.interfaces = interfaces;
+//        this.fields = new HashMap<String, FieldDeclaration>();
+//        this.methods = new HashMap<String, Set<MethodDeclaration>>();
+//        this.jarsLoader = loader;
+//        this.serialVisitor = null;
+//    }
 
     public ClassDeclaration(int access, String name, String signature, String superName,
                             String[] interfaces, URLClassLoader loader, SerialVersionClassVisitor cv) {
@@ -138,8 +138,7 @@ public class ClassDeclaration extends GenericDeclaration {
         if ((superClass != null)) {
             // load the super class of the cd
             try {
-                ClassVisitor cw = new EmptyClassVisitor();
-                SerialVersionClassVisitor cv = new SerialVersionClassVisitor(cw);
+                SerialVersionClassVisitor cv = new SerialVersionClassVisitor(null);
                 SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
                 ClassReader cr = new ClassReader(jarsLoader.getResourceAsStream(superClass + SemanticVersioningUtils.classExt));
                 cr.accept(svc, 0);
@@ -160,8 +159,7 @@ public class ClassDeclaration extends GenericDeclaration {
     private void getMethodsRecursively(String superClass) {
         if ((superClass != null)) {
             // load the super class of the cd
-            ClassVisitor cw = new EmptyClassVisitor();
-            SerialVersionClassVisitor cv = new SerialVersionClassVisitor(cw);
+            SerialVersionClassVisitor cv = new SerialVersionClassVisitor(null);
 
             SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
             // use URLClassLoader to load the class
@@ -226,8 +224,7 @@ public class ClassDeclaration extends GenericDeclaration {
 
         if (className != null) {
             // load the super class of the cd
-            ClassVisitor cw = new EmptyClassVisitor();
-            SerialVersionClassVisitor cv = new SerialVersionClassVisitor(cw);
+            SerialVersionClassVisitor cv = new SerialVersionClassVisitor(null);
 
             SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
             try {
@@ -399,8 +396,8 @@ public class ClassDeclaration extends GenericDeclaration {
             // check to see whether the serializable id is the same
             //ignore if it is enum
             if ((!getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS) && (!old.getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS)))) {
-                long oldValue = getSerialVersionUID(old);
-                long curValue = getSerialVersionUID(this);
+                Long oldValue = getSerialVersionUID(old);
+                Long curValue = getSerialVersionUID(this);
                 if ((oldValue != curValue)) {
                     reasons.add("The serializable class is no longer back compatible as the value of SerialVersionUID has changed from " + oldValue + " to " + curValue + ".");
                 }
@@ -409,19 +406,17 @@ public class ClassDeclaration extends GenericDeclaration {
 
     }
 
-    private long getSerialVersionUID(ClassDeclaration cd) {
+    private Long getSerialVersionUID(ClassDeclaration cd) {
         FieldDeclaration serialID = cd.getAllFields().get(SemanticVersioningUtils.SERIAL_VERSION_UTD);
         if (serialID != null) {
             if (serialID.isFinal() && serialID.isStatic() && Type.LONG_TYPE.equals(Type.getType(serialID.getDesc()))) {
                 if (serialID.getValue() != null) {
                     return (Long) (serialID.getValue());
-                } else {
-                    return 0;
                 }
             }
         }
         // get the generated value
-        return cd.getSerialVisitor().getComputeSerialVersionUID();
+        return cd.getSerialVisitor() == null? null: cd.getSerialVisitor().getComputeSerialVersionUID();
     }
 
     private boolean isFieldTypeSame(FieldDeclaration bef_fd, FieldDeclaration cur_fd) {
