@@ -56,7 +56,6 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public class RunningApplication implements ServiceTrackerCustomizer {
 
   private static final String NONE = "NONE";
-  private static final String ALL = "ALL";
   
   private final AppContext ctx;
   private final Bundle bundle;
@@ -141,7 +140,11 @@ public class RunningApplication implements ServiceTrackerCustomizer {
     Dictionary<String, String> d = bundle.getHeaders();
     String valueOfExportEJBHeader = d.get("Export-EJB");
     
-    if((valueOfExportEJBHeader == null)||(valueOfExportEJBHeader.equals(""))){
+    if((valueOfExportEJBHeader == null)){
+      return;
+    }
+        
+    if(names.contains(NONE)){
       return;
     }
     
@@ -150,13 +153,9 @@ public class RunningApplication implements ServiceTrackerCustomizer {
       names.add(nvp.getName());
     }
     
-    if(names.contains(NONE)){
-      return;
-    }
-    
-    if(names.contains(ALL)){
-      names = new AllCollection<String>();
-    }
+    if(valueOfExportEJBHeader.trim().equals("")){
+        names = new AllCollection<String>();
+      }
     
     //Register our session beans
     for (BeanContext beanContext : ctx.getDeployments()) {
