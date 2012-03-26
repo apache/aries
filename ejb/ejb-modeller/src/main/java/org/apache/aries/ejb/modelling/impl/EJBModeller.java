@@ -42,20 +42,21 @@ public class EJBModeller implements ServiceModeller {
   
   /**
    * This modeller only searches for EJBs if there is an Export-EJB header with
-   * a value other than NONE (which is also the default).
+   * a value other than NONE (the default empty string value means ALL exported).
    */
   public ParsedServiceElements modelServices(BundleManifest manifest, IDirectory bundle) 
     throws ModellerException {
-    logger.trace("modelServices", new Object[] {manifest, bundle});
+    logger.debug("modelServices", new Object[] {manifest, bundle});
     ParsedEJBServices ejbServices = new ParsedEJBServices();
     
     String header = manifest.getRawAttributes().getValue("Export-EJB");
     logger.debug("Export-EJB header is " + header);
     
-    if(header == null || "".equals(header))
+   
+    if(header == null)
       return ejbServices;
     
-    Collection<String> allowedNames = getNames(header);
+    Collection<String> allowedNames = getNames(header.trim());
     
     if(allowedNames.contains("NONE"))
       return ejbServices;
@@ -63,7 +64,7 @@ public class EJBModeller implements ServiceModeller {
     ejbServices.setAllowedNames(allowedNames);
     locator.findEJBs(manifest, bundle, ejbServices);
     
-    logger.trace("modelServices", ejbServices);
+    logger.debug("modelServices", ejbServices);
     return ejbServices;
   }
 

@@ -45,9 +45,9 @@ public class ParsedEJBServicesTest {
   }  
   
   @Test
-  public void testALL() throws ModellerException {
+  public void testEmpty() throws ModellerException {
     ParsedEJBServices pes = new ParsedEJBServices();
-    pes.setAllowedNames(Arrays.asList("ALL", "Foo"));
+    pes.setAllowedNames(Arrays.asList(""));
     pes.addEJBView("Foo", "Stateless", "com.acme.Bar", false);
     pes.addEJBView("Baz", "Stateless", "com.acme.Bar", true);
     
@@ -89,19 +89,15 @@ public class ParsedEJBServicesTest {
   @Test
   public void testCases() throws ModellerException {
     ParsedEJBServices pes = new ParsedEJBServices();
-    pes.setAllowedNames(Arrays.asList("ALL", "Foo"));
+    pes.setAllowedNames(Arrays.asList("ALL", "Foo", " "));
     pes.addEJBView("Foo", "STATELESS", "com.acme.Bar", false);
     pes.addEJBView("Bar", "StAtElEsS", "com.acme.Bar", true);
     pes.addEJBView("Baz", "stateless", "com.acme.Baz", true);
-    assertEquals(3, pes.getServices().size());
+    assertEquals(1, pes.getServices().size());
     
     Iterator it = pes.getServices().iterator();
     assertEquals(new EJBServiceExport("Foo", "Stateless", "com.acme.Bar", false), 
         it.next());
     
-    assertEquals(new EJBServiceExport("Bar", "Stateless", "com.acme.Bar", true),
-        it.next());
-    assertEquals(new EJBServiceExport("Baz", "Stateless", "com.acme.Baz", true),
-        it.next());
   }
 }

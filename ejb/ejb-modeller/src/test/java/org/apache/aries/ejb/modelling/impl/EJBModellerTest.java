@@ -62,7 +62,8 @@ public class EJBModellerTest {
     setBasicHeaders(man);
     man.getMainAttributes().putValue("Export-EJB", "");
     modeller.modelServices(new BundleManifest(man), bundleLocation);
-    ejbLocator.assertSkeletonNotCalled();
+    ejbLocator.assertCalled(new MethodCall(EJBLocator.class, "findEJBs", BundleManifest.class,
+            bundleLocation, ParsedEJBServices.class));
   }
   
   @Test

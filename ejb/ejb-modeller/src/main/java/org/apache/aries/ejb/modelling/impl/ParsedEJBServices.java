@@ -62,10 +62,12 @@ public class ParsedEJBServices implements ParsedServiceElements, EJBRegistry {
       allowedNames.clear();
       return;
     }
-    if(names.contains("ALL")) {
-      all = true;
-      return;
+
+    if(names.size() == 1 && "".equals(names.iterator().next())) {
+        all = true;
+        return;
     }
+    
     allowedNames.addAll(names);
   }
   
