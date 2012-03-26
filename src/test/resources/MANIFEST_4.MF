@@ -1,6 +1,6 @@
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: foo
 Bundle-ClassPath: yes
-Export-EJB: ALL
+Export-EJB: 
 Web-ContextPath: test
 
