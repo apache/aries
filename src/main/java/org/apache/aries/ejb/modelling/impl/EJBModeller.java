@@ -35,7 +35,8 @@ public class EJBModeller implements ServiceModeller {
   private static final Logger logger = LoggerFactory.getLogger(EJBModeller.class);
   
   private EJBLocator locator;
-  
+  private final static String LOG_ENTRY = "Method entry: {}, args {}";
+  private final static String LOG_EXIT = "Method exit: {}, returning {}";
   public void setLocator(EJBLocator locator) {
     this.locator = locator;
   }
@@ -46,7 +47,7 @@ public class EJBModeller implements ServiceModeller {
    */
   public ParsedServiceElements modelServices(BundleManifest manifest, IDirectory bundle) 
     throws ModellerException {
-    logger.debug("modelServices", new Object[] {manifest, bundle});
+    logger.debug(LOG_ENTRY, "modelServices", new Object[] {manifest, bundle});
     ParsedEJBServices ejbServices = new ParsedEJBServices();
     
     String header = manifest.getRawAttributes().getValue("Export-EJB");
@@ -64,7 +65,7 @@ public class EJBModeller implements ServiceModeller {
     ejbServices.setAllowedNames(allowedNames);
     locator.findEJBs(manifest, bundle, ejbServices);
     
-    logger.debug("modelServices", ejbServices);
+    logger.debug(LOG_EXIT, "modelServices", ejbServices);
     return ejbServices;
   }
 
