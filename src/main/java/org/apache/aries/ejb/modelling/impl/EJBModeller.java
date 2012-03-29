@@ -45,7 +45,7 @@ public class EJBModeller implements ServiceModeller {
    */
   public ParsedServiceElements modelServices(BundleManifest manifest, IDirectory bundle) 
     throws ModellerException {
-    logger.debug("modelServices() Entry>> Manifest: " + manifest + " Bundle: " + bundle);
+    logger.debug("modelServices", new Object[] {manifest, bundle});
     ParsedEJBServices ejbServices = new ParsedEJBServices();
     
     String header = manifest.getRawAttributes().getValue("Export-EJB");
@@ -63,7 +63,7 @@ public class EJBModeller implements ServiceModeller {
     ejbServices.setAllowedNames(allowedNames);
     locator.findEJBs(manifest, bundle, ejbServices);
     
-    logger.debug("modelServices() Exit<< ejbServices: " + ejbServices);
+    logger.debug("ejbServices", ejbServices);
     return ejbServices;
   }
 
