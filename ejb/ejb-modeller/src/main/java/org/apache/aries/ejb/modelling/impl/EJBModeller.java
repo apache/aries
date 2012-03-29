@@ -63,7 +63,7 @@ public class EJBModeller implements ServiceModeller {
     ejbServices.setAllowedNames(allowedNames);
     locator.findEJBs(manifest, bundle, ejbServices);
     
-    logger.debug("modelServices", ejbServices);
+    logger.debug("ejbServices", ejbServices);
     return ejbServices;
   }
 
