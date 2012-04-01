@@ -13,16 +13,19 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemVersionHeader;
 import org.osgi.framework.Version;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemUri {
 	private static final String REGEXP = "([^=]*)=([^&]*)&?";
@@ -56,6 +59,16 @@ public class SubsystemUri {
 		this.version = version;
 	}
 	
+	public SubsystemUri(String symbolicName, Version version, URL url) {
+		// TODO symbolicName should conform to OSGi grammar.
+		if (symbolicName == null || symbolicName.length() == 0)
+			throw new IllegalArgumentException(
+					"Missing required parameter: symbolicName");
+		this.symbolicName = symbolicName;
+		this.version = version;
+		this.url = url;
+	}
+	
 	public String getSymbolicName() {
 		return symbolicName;
 	}
@@ -66,5 +79,22 @@ public class SubsystemUri {
 	
 	public Version getVersion() {
 		return version;
+	}
+	
+	public String toString() {
+		StringBuilder builder = new StringBuilder("subsystem://");
+		if (url != null) {
+			try {
+				builder.append(URLEncoder.encode(url.toString(), "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				builder.append(URLEncoder.encode(url.toString()));
+			}
+		}
+		builder.append('?').append(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME)
+				.append('=').append(symbolicName);
+		if (version != null)
+			builder.append('&').append(SubsystemConstants.SUBSYSTEM_VERSION)
+					.append('=').append(version);
+		return builder.toString();
 	}
 }

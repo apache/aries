@@ -15,10 +15,6 @@ public class RequireBundleRequirement extends AbstractRequirement {
 	private final Map<String, String> directives = new HashMap<String, String>(1);
 	private final Resource resource;
 	
-	public RequireBundleRequirement(RequireBundleHeader.Clause clause) {
-		this(clause, null);
-	}
-	
 	public RequireBundleRequirement(
 			RequireBundleHeader.Clause clause, Resource resource) {
 		StringBuilder builder = new StringBuilder("(&(")

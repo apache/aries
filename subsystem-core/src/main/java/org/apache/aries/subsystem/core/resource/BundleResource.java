@@ -75,11 +75,11 @@ public class BundleResource implements Resource, RepositoryContent {
 		RequireCapabilityHeader rch = (RequireCapabilityHeader)manifest.getHeader(RequireCapabilityHeader.NAME);
 		if (rch != null)
 			for (RequireCapabilityHeader.Clause clause : rch.getClauses())
-				requirements.add(new RequireCapabilityRequirement(clause));
+				requirements.add(new RequireCapabilityRequirement(clause, this));
 		RequireBundleHeader rbh = (RequireBundleHeader)manifest.getHeader(RequireBundleHeader.NAME);
 		if (rbh != null)
 			for (RequireBundleHeader.Clause clause : rbh.getClauses())
-				requirements.add(new RequireBundleRequirement(clause));
+				requirements.add(new RequireBundleRequirement(clause, this));
 		// TODO The osgi.wiring.bundle capability should not be provided for fragments. Nor should the host capability.
 		BundleSymbolicNameHeader bsnh = (BundleSymbolicNameHeader)manifest.getHeader(BundleSymbolicNameHeader.NAME);
 		BundleVersionHeader bvh = (BundleVersionHeader)manifest.getHeader(BundleVersionHeader.NAME);
