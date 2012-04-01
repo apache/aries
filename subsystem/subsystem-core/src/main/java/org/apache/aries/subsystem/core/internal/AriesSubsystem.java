@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,7 +69,7 @@ import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
 import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
-import org.apache.aries.subsystem.core.resource.SubsystemStreamResource;
+import org.apache.aries.subsystem.core.resource.tmp.SubsystemResource;
 import org.apache.aries.util.io.IOUtils;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
@@ -240,7 +241,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	private final SubsystemArchive archive;
 	private final Set<Resource> constituents = Collections.synchronizedSet(new HashSet<Resource>());
 	private final File directory;
-	private final SubsystemEnvironment environment;
+//	private final SubsystemEnvironment environment;
 	private final long id;
 	private final String location;
 	private final Region region;
@@ -277,8 +278,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// This is the first time the root subsystem has been initialized in
 			// this framework or a framework clean start was requested.
 			SubsystemUri uri = new SubsystemUri(ROOT_LOCATION);
-			subsystemManifest = new SubsystemManifest.Builder(
-					uri.getSymbolicName())
+			subsystemManifest = new SubsystemManifest.Builder()
+					.symbolicName(uri.getSymbolicName())
 					.version(uri.getVersion())
 					.content(archive.getResources())
 					.type(SubsystemTypeHeader.TYPE_APPLICATION
@@ -292,17 +293,19 @@ public class AriesSubsystem implements Subsystem, Resource {
 		else {
 			// Need to generate a new subsystem manifest in order to generated a new deployment manifest based
 			// on any persisted resources.
-			subsystemManifest = new SubsystemManifest.Builder(getSymbolicName())
+			subsystemManifest = new SubsystemManifest.Builder()
+					.symbolicName(getSymbolicName())
 					.version(getVersion()).content(archive.getResources())
 					.build();
 		}
-		environment = new SubsystemEnvironment(this);
+//		environment = new SubsystemEnvironment(this);
 		// The root subsystem establishes the subsystem graph;
 		subsystemGraph = new SubsystemGraph(this);
 		archive.setDeploymentManifest(new DeploymentManifest(
 				deploymentManifest, 
 				subsystemManifest, 
-				environment,
+//				environment,
+				new SubsystemEnvironment(this),
 				autostart,
 				id,
 				lastId,
@@ -348,7 +351,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			copyContent(content, zipFile);
 			unzipContent(zipFile, directory);
 			archive = new SubsystemArchive(directory);
-			environment = new SubsystemEnvironment(this);
+//			environment = new SubsystemEnvironment(this);
 			// Make sure the relevant headers are derived, if absent.
 			archive.setSubsystemManifest(new SubsystemManifest(
 					archive.getSubsystemManifest(),
@@ -372,7 +375,41 @@ public class AriesSubsystem implements Subsystem, Resource {
 		subsystemGraph = parent.subsystemGraph;
 	}
 	
+	public AriesSubsystem(SubsystemResource resource, AriesSubsystem parent) throws Exception {
+		subsystemGraph = parent.subsystemGraph;
+		this.location = resource.getLocation();
+		id = SubsystemIdentifier.getNextId();
+		String directoryName = "subsystem" + id;
+//		String fileName = directoryName + ".esa";
+//		File zipFile = new File(parent.directory, fileName);
+		directory = new File(Activator.getInstance().getBundleContext().getDataFile(""), directoryName);
+		if (!directory.mkdir())
+			throw new IOException("Unable to make directory for " + directory.getCanonicalPath());
+		try {
+//			copyContent(resource.getContent(), zipFile);
+//			unzipContent(zipFile, directory);
+			archive = new SubsystemArchive(resource, directory);
+			archive.setSubsystemManifest(resource.getSubsystemManifest());
+			if (resource.getDeploymentManifest() != null)
+				archive.setDeploymentManifest(resource.getDeploymentManifest());
+			SubsystemManifestValidator.validate(this, archive.getSubsystemManifest());
+			// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
+			if (isFeature())
+				region = parent.region;
+			else
+				region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
+		}
+		catch (Throwable t) {
+//			deleteFile(directory);
+//			deleteFile(zipFile);
+			if (t instanceof SubsystemException)
+				throw (SubsystemException)t;
+			throw new SubsystemException(t);
+		}
+	}
+	
 	public AriesSubsystem(SubsystemArchive archive, AriesSubsystem parent) throws Exception {
+		subsystemGraph = parent.subsystemGraph;
 		this.archive = archive;
 		DeploymentManifest manifest = archive.getDeploymentManifest();
 		if (manifest == null)
@@ -382,13 +419,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 		location = manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue();
 		String directoryName = "subsystem" + id;
 		directory = new File(parent.directory, directoryName);
-		environment = new SubsystemEnvironment(this);
+//		environment = new SubsystemEnvironment(this);
 		// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
 		if (isFeature())
 			region = parent.region;
 		else
 			region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
-		subsystemGraph = parent.subsystemGraph;
 	}
 	
 	public SubsystemArchive getArchive() {
@@ -781,19 +817,20 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return region;
 	}
 	
-	private DeploymentManifest getDeploymentManifest() throws IOException {
-		if (archive.getDeploymentManifest() == null) {
+	private DeploymentManifest getDeploymentManifest() throws IOException, URISyntaxException {
+//		if (archive.getDeploymentManifest() == null) {
 			archive.setDeploymentManifest(new DeploymentManifest(
-					null,
+					archive.getDeploymentManifest(),
 					archive.getSubsystemManifest(), 
-					environment,
+//					environment,
+					new SubsystemEnvironment(this),
 					autostart,
 					id,
 					SubsystemIdentifier.getLastId(),
 					location,
 					true,
 					false));
-		}
+//		}
 		return archive.getDeploymentManifest();
 	}
 	
@@ -825,8 +862,14 @@ public class AriesSubsystem implements Subsystem, Resource {
 					}
 				});
 		List<Resource> transitiveDependencies = new ArrayList<Resource>();
+		// Set up the sharing policy before installing the resources so that the
+		// environment can filter out capabilities from dependencies being
+		// provisioned to regions that are out of scope. This doesn't hurt
+		// anything since the resources are disabled from resolving anyway.
+		setImportIsolationPolicy();
 		DeploymentManifest manifest = getDeploymentManifest();
 		DeployedContentHeader contentHeader = manifest.getDeployedContentHeader();
+		SubsystemEnvironment environment = new SubsystemEnvironment(this);
 		if (contentHeader != null) {
 			for (DeployedContent content : contentHeader.getDeployedContents()) {
 				Collection<Capability> capabilities = environment.findProviders(
@@ -848,46 +891,45 @@ public class AriesSubsystem implements Subsystem, Resource {
 				transitiveDependencies.add(resource);
 			}
 		}
-		// Install the content resources.
-		for (Resource resource : contentResources) {
-			installResource(resource, coordination, false);
-		}
 		// Discover and install transitive dependencies.
 		for (Resource resource : transitiveDependencies) {
 			installResource(resource, coordination, true);
 		}
+		// Install the content resources.
+		for (Resource resource : contentResources) {
+			installResource(resource, coordination, false);
+		}
 		setState(State.INSTALLED);
-		setImportIsolationPolicy();
 		if (autostart)
 			start();
 	}
 	
 	private synchronized Subsystem install(String location, InputStream content, Coordination coordination) throws SubsystemException {
-		SubsystemStreamResource ssr = null;
+		SubsystemResource ssr = null;
 		try {
 			TargetRegion region = new TargetRegion(this);
-			ssr = new SubsystemStreamResource(location, content);
+			ssr = SubsystemResource.newInstance(location, content);
 			AriesSubsystem subsystem = locationToSubsystem.get(location);
 			if (subsystem != null) {
 				if (!region.contains(subsystem))
 					throw new SubsystemException("Location already exists but existing subsystem is not part of target region: " + location);
-				if (!(subsystem.getSymbolicName().equals(ssr.getSubsystemSymbolicName())
-						&& subsystem.getVersion().equals(ssr.getSubsystemVersion())
-						&& subsystem.getType().equals(ssr.getSubsystemType())))
+				if (!(subsystem.getSymbolicName().equals(ssr.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName())
+						&& subsystem.getVersion().equals(ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion())
+						&& subsystem.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType())))
 					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
-				subsystemGraph.add(this, subsystem);
-				constituents.add(subsystem);
+				subsystemInstalled(subsystem);
 				return subsystem;
 			}
-			subsystem = (AriesSubsystem)region.find(ssr.getSubsystemSymbolicName(), ssr.getSubsystemVersion());
+			subsystem = (AriesSubsystem)region.find(
+					ssr.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName(), 
+					ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion());
 			if (subsystem != null) {
-				if (!subsystem.getType().equals(ssr.getSubsystemType()))
+				if (!subsystem.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType()))
 					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
-				subsystemGraph.add(this, subsystem);
-				constituents.add(subsystem);
+				subsystemInstalled(subsystem);
 				return subsystem;
 			}
-			subsystem = new AriesSubsystem(location, ssr.getContent(), this);
+			subsystem = new AriesSubsystem(ssr, this);
 			installResource(subsystem, coordination, false);
 			return subsystem;
 		}
@@ -898,8 +940,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 			throw new SubsystemException(e);
 		}
 		finally {
-			if (ssr != null)
-				ssr.close();
+//			if (ssr != null)
+//				ssr.close();
 			IOUtils.close(content);
 		}
 	}
@@ -914,8 +956,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			// Transitive runtime resources need no further processing here.
 			if (!transitive) {
 				// Need to simulate the install process since an install does
-				// not
-				// actually occur here, and the event hook is not called.
+				// not actually occur here, and the event hook is not called.
 				bundleInstalled(revision);
 			}
 			return revision;
@@ -998,6 +1039,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 			SubsystemDirectoryResource sdr = (SubsystemDirectoryResource)resource;
 			subsystem = new AriesSubsystem(sdr.getArchive(), this);
 		}
+		else if (resource instanceof SubsystemResource) {
+			subsystem = new AriesSubsystem((SubsystemResource)resource, this);
+		}
 		else {
 			throw new IllegalArgumentException("Unrecognized subsystem resource: " + resource);
 		}
@@ -1054,7 +1098,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	private void setExportIsolationPolicy() throws InvalidSyntaxException, IOException, BundleException {
+	private void setExportIsolationPolicy() throws InvalidSyntaxException, IOException, BundleException, URISyntaxException {
 		if (isRoot())
 			// Nothing to do if this is the root subsystem.
 			return;
@@ -1121,7 +1165,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 
-	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException {
+	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (isRoot())
 			// Nothing to do if this is the root subsystem.
 			return;
@@ -1134,17 +1178,17 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (isApplication() || isComposite()) {
 			// Both applications and composites have Import-Package headers that require processing.
 			// In the case of applications, the header is generated.
-			Header<?> header = getDeploymentManifest().getImportPackageHeader();
+			Header<?> header = archive.getSubsystemManifest().getImportPackageHeader();
 			setImportIsolationPolicy(builder, (ImportPackageHeader)header);
 			// Both applications and composites have Require-Capability headers that require processing.
 			// In the case of applications, the header is generated.
-			header = getDeploymentManifest().getRequireCapabilityHeader();
+			header = archive.getSubsystemManifest().getRequireCapabilityHeader();
 			setImportIsolationPolicy(builder, (RequireCapabilityHeader)header);
 			// Both applications and composites have Subsystem-ImportService headers that require processing.
 			// In the case of applications, the header is generated.
-			header = getDeploymentManifest().getSubsystemImportServiceHeader();
+			header = archive.getSubsystemManifest().getSubsystemImportServiceHeader();
 			setImportIsolationPolicy(builder, (SubsystemImportServiceHeader)header);
-			header = getDeploymentManifest().getRequireBundleHeader();
+			header = archive.getSubsystemManifest().getRequireBundleHeader();
 			setImportIsolationPolicy(builder, (RequireBundleHeader)header);
 		}
 		if (isApplication()) {
@@ -1162,12 +1206,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 		from.connectRegion(to, regionFilter);
 	}
 	
-	private static void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header) throws InvalidSyntaxException {
+	private void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
 		for (ImportPackageHeader.Clause clause : header.getClauses()) {
-			ImportPackageRequirement requirement = new ImportPackageRequirement(clause);
+			ImportPackageRequirement requirement = new ImportPackageRequirement(clause, this);
 			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
 			if (LOGGER.isDebugEnabled())
 				LOGGER.debug("Allowing " + policy + " of " + filter);
@@ -1175,11 +1219,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	private static void setImportIsolationPolicy(RegionFilterBuilder builder, RequireBundleHeader header) throws InvalidSyntaxException {
+	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireBundleHeader header) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		for (RequireBundleHeader.Clause clause : header.getClauses()) {
-			RequireBundleRequirement requirement = new RequireBundleRequirement(clause);
+			RequireBundleRequirement requirement = new RequireBundleRequirement(clause, this);
 			String policy = RegionFilter.VISIBLE_REQUIRE_NAMESPACE;
 			String filter = requirement.getDirectives().get(RequireBundleRequirement.DIRECTIVE_FILTER);
 			if (LOGGER.isDebugEnabled())
@@ -1188,11 +1232,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	private static void setImportIsolationPolicy(RegionFilterBuilder builder, RequireCapabilityHeader header) throws InvalidSyntaxException {
+	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireCapabilityHeader header) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		for (RequireCapabilityHeader.Clause clause : header.getClauses()) {
-			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause);
+			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause, this);
 			String policy = requirement.getNamespace();
 			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
 			if (LOGGER.isDebugEnabled())
@@ -1201,11 +1245,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	private static void setImportIsolationPolicy(RegionFilterBuilder builder, SubsystemImportServiceHeader header) throws InvalidSyntaxException {
+	private void setImportIsolationPolicy(RegionFilterBuilder builder, SubsystemImportServiceHeader header) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		for (SubsystemImportServiceHeader.Clause clause : header.getClauses()) {
-			SubsystemImportServiceRequirement requirement = new SubsystemImportServiceRequirement(clause);
+			SubsystemImportServiceRequirement requirement = new SubsystemImportServiceRequirement(clause, this);
 			String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
 			String filter = requirement.getDirectives().get(SubsystemImportServiceRequirement.DIRECTIVE_FILTER);
 			if (LOGGER.isDebugEnabled())

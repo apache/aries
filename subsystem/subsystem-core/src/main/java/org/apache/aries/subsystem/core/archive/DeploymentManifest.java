@@ -32,6 +32,26 @@ import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class DeploymentManifest {
+	public static class Builder {
+		private Map<String, Header<?>> headers = new HashMap<String, Header<?>>();
+		
+		public DeploymentManifest build() {
+			return new DeploymentManifest(headers);
+		}
+		
+		public Builder header(Header<?> value) {
+			if (value != null)
+				headers.put(value.getName(), value);
+			return this;
+		}
+		
+		public Builder manifest(SubsystemManifest value) {
+			for (Entry<String, Header<?>> entry : value.getHeaders().entrySet())
+				header(entry.getValue());
+			return this;
+		}
+	}
+	
 	public static final String DEPLOYED_CONTENT = SubsystemConstants.DEPLOYED_CONTENT;
 	public static final String DEPLOYMENT_MANIFESTVERSION = SubsystemConstants.DEPLOYMENT_MANIFESTVERSION;
 	public static final String EXPORT_PACKAGE = Constants.EXPORT_PACKAGE;
@@ -51,6 +71,16 @@ public class DeploymentManifest {
 	public static final String ARIESSUBSYSTEM_LOCATION = "AriesSubsystem-Location";
 	
 	private final Map<String, Header<?>> headers;
+	
+	public DeploymentManifest(java.util.jar.Manifest manifest) {
+		headers = new HashMap<String, Header<?>>();
+		for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
+			String key = String.valueOf(entry.getKey());
+			if (key.equals(SubsystemManifest.SUBSYSTEM_SYMBOLICNAME))
+				continue;
+			headers.put(key, HeaderFactory.createHeader(key, String.valueOf(entry.getValue())));
+		}
+	}
 	
 	public DeploymentManifest(File file) throws FileNotFoundException, IOException {
 		Manifest manifest = ManifestProcessor.parseManifest(new FileInputStream(file));
@@ -160,6 +190,11 @@ public class DeploymentManifest {
 		headers.put(ARIESSUBSYSTEM_LOCATION, new GenericHeader(ARIESSUBSYSTEM_LOCATION, location));
 		headers.put(ARIESSUBSYSTEM_LASTID, new GenericHeader(ARIESSUBSYSTEM_LASTID, Long.toString(lastId)));
 		this.headers = Collections.unmodifiableMap(headers);
+	}
+	
+	private DeploymentManifest(Map<String, Header<?>> headers) {
+		Map<String, Header<?>> map = new HashMap<String, Header<?>>(headers);
+		this.headers = Collections.unmodifiableMap(map);
 	}
 	
 	public DeployedContentHeader getDeployedContentHeader() {

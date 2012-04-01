@@ -117,8 +117,8 @@ public class RequireCapabilityHeader implements RequirementHeader<RequireCapabil
 			return getNamespace();
 		}
 		
-		public RequireCapabilityRequirement toRequirement() {
-			return new RequireCapabilityRequirement(this);
+		public RequireCapabilityRequirement toRequirement(Resource resource) {
+			return new RequireCapabilityRequirement(this, resource);
 		}
 		
 		@Override
@@ -175,7 +175,7 @@ public class RequireCapabilityHeader implements RequirementHeader<RequireCapabil
 	public List<RequireCapabilityRequirement> toRequirements(Resource resource) {
 		List<RequireCapabilityRequirement> requirements = new ArrayList<RequireCapabilityRequirement>(clauses.size());
 		for (Clause clause : clauses)
-			requirements.add(clause.toRequirement());
+			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}
 	

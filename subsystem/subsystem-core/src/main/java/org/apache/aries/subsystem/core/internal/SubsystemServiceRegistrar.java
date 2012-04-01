@@ -32,7 +32,7 @@ public class SubsystemServiceRegistrar {
 	public synchronized void unregister(Subsystem subsystem) {
 		ServiceRegistration<Subsystem> registration = map.remove(subsystem);
 		if (registration == null)
-			throw new IllegalArgumentException("Subsystem '" + subsystem + "' is not registered");
+			throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
 		registration.unregister();
 	}
 	
@@ -47,7 +47,7 @@ public class SubsystemServiceRegistrar {
 	public synchronized void update(Subsystem subsystem) {
 		ServiceRegistration<Subsystem> registration = map.get(subsystem);
 		if (registration == null)
-			throw new IllegalArgumentException("Subsystem '" + subsystem + "' is not registered");
+			throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
 		Dictionary<String, Object> properties = properties(subsystem);
 		registration.setProperties(properties);
 	}

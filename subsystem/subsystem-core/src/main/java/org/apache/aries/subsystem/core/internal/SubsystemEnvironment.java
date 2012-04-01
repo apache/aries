@@ -22,16 +22,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.aries.subsystem.core.Environment;
 import org.apache.aries.subsystem.core.ResourceHelper;
+import org.eclipse.equinox.region.Region;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
@@ -50,11 +50,21 @@ import org.slf4j.LoggerFactory;
 public class SubsystemEnvironment implements Environment {
 	private static final Logger logger = LoggerFactory.getLogger(SubsystemEnvironment.class);
 	
-	private final Set<Resource> resources = new HashSet<Resource>();
+//	private final Set<Resource> resources = new HashSet<Resource>();
+	private final SharingPolicyValidator validator;
 	private final AriesSubsystem subsystem;
 	
 	public SubsystemEnvironment(AriesSubsystem subsystem) throws IOException, URISyntaxException {
 		this.subsystem = subsystem;
+		Region regionTo = subsystem.getRegion();
+		while (subsystem.getArchive().getSubsystemManifest()
+				.getSubsystemTypeHeader().getProvisionPolicyDirective()
+				.isRejectDependencies()) {
+			subsystem = (AriesSubsystem) subsystem.getParents()
+					.iterator().next();
+		}
+		Region regionFrom = subsystem.getRegion();
+		validator = new SharingPolicyValidator(regionFrom, regionTo);
 	}
 	
 	@Override
@@ -78,23 +88,24 @@ public class SubsystemEnvironment implements Environment {
 						return result;
 					}
 				});
-		if (requirement instanceof OsgiIdentityRequirement) {
+		if (requirement instanceof OsgiIdentityRequirement) { 
 			logger.debug("The requirement is an instance of OsgiIdentityRequirement");
 			// TODO Consider returning only the first capability matched by the requirement in this case.
-			// This means we're looking for a content resource.
 			OsgiIdentityRequirement identity = (OsgiIdentityRequirement)requirement;
-			if (subsystem.isFeature()) {
-				// Features share content resources as well as transitive dependencies.
+			// Unscoped subsystems share content resources as well as transitive
+			// dependencies. Scoped subsystems share transitive dependencies as
+			// long as they're in the same region.
+			if (subsystem.isFeature() || identity.isTransitiveDependency()) {
 				findConstituentProviders(requirement, capabilities);
 			}
-			findArchiveProviders(capabilities, identity, !identity.isTransitiveDependency());
-			findRepositoryServiceProviders(capabilities, identity, !identity.isTransitiveDependency());
+			findArchiveProviders(capabilities, identity/*, !identity.isTransitiveDependency()*/);
+			findRepositoryServiceProviders(capabilities, identity/*, !identity.isTransitiveDependency()*/);
 		}
 		else {
 			logger.debug("The requirement is NOT an instance of OsgiIdentityRequirement");
 			// This means we're looking for capabilities satisfying a requirement within a content resource or transitive dependency.
-			findArchiveProviders(capabilities, requirement, false);
-			findRepositoryServiceProviders(capabilities, requirement, false);
+			findArchiveProviders(capabilities, requirement/*, false*/);
+			findRepositoryServiceProviders(capabilities, requirement/*, false*/);
 			// TODO The following is a quick fix to ensure this environment always returns capabilities provided by the system bundle. Needs some more thought.
 			findConstituentProviders(requirement, capabilities);
 		}
@@ -141,10 +152,11 @@ public class SubsystemEnvironment implements Environment {
 	}
 	
 	public boolean isContentResource(Resource resource) {
-		logger.debug(LOG_ENTRY, "isContentResource", resource);
-		boolean result = resources.contains(resource);
-		logger.debug(LOG_EXIT, "isContentResource", result);
-		return result;
+//		logger.debug(LOG_ENTRY, "isContentResource", resource);
+//		boolean result = resources.contains(resource);
+//		logger.debug(LOG_EXIT, "isContentResource", result);
+//		return result;
+		return subsystem.getArchive().getSubsystemManifest().getSubsystemContentHeader().contains(resource);
 	}
 
 	@Override
@@ -163,9 +175,9 @@ public class SubsystemEnvironment implements Environment {
 			// We only want to return providers from the same region as the subsystem.
 			// Find the one and only one scoped subsystem in the region, which
 			// will be either the current subsystem or one of its parents.
-			while (!(subsystem.isApplication() || subsystem.isComposite())) {
+			do {
 				subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
-			}
+			} while (!(subsystem.isApplication() || subsystem.isComposite()));
 			// Now search the one and only one scoped parent within the same region
 			// and all children that are also in the same region for a provider.
 			findConstituentProviders(subsystem, requirement, capabilities);
@@ -183,10 +195,21 @@ public class SubsystemEnvironment implements Environment {
 	private void findConstituentProviders(AriesSubsystem subsystem, Requirement requirement, Collection<Capability> capabilities) {
 		if (logger.isDebugEnabled())
 			logger.debug(LOG_ENTRY, "findConstituentProviders", new Object[]{subsystem, requirement, capabilities});
+		// Because constituent providers are already provisioned resources, the
+		// sharing policy check must be between the requiring subsystem and the
+		// offering subsystem, not the subsystem the resource would be
+		// provisioned to as in the other methods.
+		SharingPolicyValidator validator = new SharingPolicyValidator(subsystem.getRegion(), this.subsystem.getRegion());
 		for (Resource resource : subsystem.getConstituents()) {
 			logger.debug("Evaluating resource: {}", resource);
 			for (Capability capability : resource.getCapabilities(requirement.getNamespace())) {
 				logger.debug("Evaluating capability: {}", capability);
+				// Filter out capabilities offered by dependencies that will be
+				// or already are provisioned to an out of scope region. This
+				// filtering does not apply to osgi.identity requirements within
+				// the same region.
+				if (!(requirement instanceof OsgiIdentityRequirement) && !validator.isValid(capability))
+					continue;
 				if (ResourceHelper.matches(requirement, capability)) {
 					logger.debug("Adding capability: {}", capability);
 					capabilities.add(capability);
@@ -205,48 +228,52 @@ public class SubsystemEnvironment implements Environment {
 		logger.debug(LOG_EXIT, "findConstituentProviders");
 	}
 	
-	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, boolean content) {
+	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement/*, boolean content*/) {
 		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "findArchiveProviders", new Object[]{capabilities, requirement, content});
+			logger.debug(LOG_ENTRY, "findArchiveProviders", new Object[]{capabilities, requirement/*, content*/});
 		AriesSubsystem subsystem = this.subsystem;
 		logger.debug("Navigating up the parent hierarchy...");
 		while (!subsystem.getParents().isEmpty()) {
 			subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
 			logger.debug("Next parent is: {}", subsystem);
 		}
-		findArchiveProviders(capabilities, requirement, subsystem, content);
+		findArchiveProviders(capabilities, requirement, subsystem/*, content*/);
 		logger.debug(LOG_EXIT, "findArchiveProviders");
 	}
 	
-	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, AriesSubsystem subsystem, boolean content) {
+	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, AriesSubsystem subsystem/*, boolean content*/) {
 		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "findArchiveProviders", new Object[]{capabilities, requirement, subsystem, content});
+			logger.debug(LOG_ENTRY, "findArchiveProviders", new Object[]{capabilities, requirement, subsystem/*, content*/});
 		for (Capability capability : subsystem.getArchive().findProviders(requirement)) {
 			logger.debug("Adding capability: {}", capability);
+			// Filter out capabilities offered by dependencies that will be or
+			// already are provisioned to an out of scope region.
+			if (!requirement.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE) && !isContentResource(capability.getResource()) && !validator.isValid(capability))
+				continue;
 			capabilities.add(capability);
-			if (content) {
-				Resource resource = capability.getResource();
-				logger.debug("Adding content resource: {}", resource);
-				resources.add(resource);
-			}
+//			if (content) {
+//				Resource resource = capability.getResource();
+//				logger.debug("Adding content resource: {}", resource);
+//				resources.add(resource);
+//			}
 		}
-		findArchiveProviders(capabilities, requirement, subsystem.getChildren(), content);
+		findArchiveProviders(capabilities, requirement, subsystem.getChildren()/*, content*/);
 		logger.debug(LOG_EXIT, "findArchiveProviders");
 	}
 	
-	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, Collection<Subsystem> children, boolean content) {
+	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement, Collection<Subsystem> children/*, boolean content*/) {
 		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "findArchiveProviders", new Object[]{capabilities, requirement, children, content});
+			logger.debug(LOG_ENTRY, "findArchiveProviders", new Object[]{capabilities, requirement, children/*, content*/});
 		for (Subsystem child : children) {
 			logger.debug("Evaluating child subsystem: {}", child);
-			findArchiveProviders(capabilities, requirement, (AriesSubsystem)child, content);
+			findArchiveProviders(capabilities, requirement, (AriesSubsystem)child/*, content*/);
 		}
 		logger.debug(LOG_EXIT, "findArchiveProviders");
 	}
 	
-	private void findRepositoryServiceProviders(Collection<Capability> capabilities, Requirement requirement, boolean content) {
+	private void findRepositoryServiceProviders(Collection<Capability> capabilities, Requirement requirement/*, boolean content*/) {
 		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "findRepositoryServiceProviders", new Object[]{capabilities, requirement, content});
+			logger.debug(LOG_ENTRY, "findRepositoryServiceProviders", new Object[]{capabilities, requirement/*, content*/});
 		Collection<Repository> repositories = Activator.getInstance().getServiceProvider().getServices(Repository.class);
 		for (Repository repository : repositories) {
 			logger.debug("Evaluating repository: {}", repository);
@@ -255,12 +282,16 @@ public class SubsystemEnvironment implements Environment {
 			if (caps != null) {
 				for (Capability capability : caps) {
 					logger.debug("Adding capability: {}", capability);
+					// Filter out capabilities offered by dependencies that will be or
+					// already are provisioned to an out of scope region.
+					if (!requirement.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE) && !isContentResource(capability.getResource()) && !validator.isValid(capability))
+						continue;
 					capabilities.add(capability);
-					if (content) {
-						Resource resource = capability.getResource();
-						logger.debug("Adding content resource: {}", resource);
-						resources.add(resource);
-					}
+//					if (content) {
+//						Resource resource = capability.getResource();
+//						logger.debug("Adding content resource: {}", resource);
+//						resources.add(resource);
+//					}
 				}
 			}
 		}

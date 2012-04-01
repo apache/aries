@@ -69,7 +69,7 @@ public class SubsystemStreamResource implements Resource, RepositoryContent {
 				throw new IllegalArgumentException("No symbolic name");
 			symbolicName = uri.getSymbolicName();
 		}
-		SubsystemManifest.Builder builder = new SubsystemManifest.Builder(symbolicName);
+		SubsystemManifest.Builder builder = new SubsystemManifest.Builder().symbolicName(symbolicName);
 		if (manifest != null)
 			for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
 				String key = String.valueOf(entry.getKey());

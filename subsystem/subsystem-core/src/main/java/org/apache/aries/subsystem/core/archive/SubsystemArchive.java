@@ -11,12 +11,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.resource.BundleResource;
 import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
 import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
+import org.apache.aries.subsystem.core.resource.tmp.SubsystemResource;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -28,16 +30,24 @@ public class SubsystemArchive implements Repository {
 	private static final Logger logger = LoggerFactory.getLogger(SubsystemArchive.class);
 	
 	private final File directory;
-	private final Map<Resource, URL> resources = new HashMap<Resource, URL>();
+	private final Collection<Resource> resources;
 	
 	private DeploymentManifest deploymentManifest;
 	private SubsystemManifest subsystemManifest;
+	
+	public SubsystemArchive(SubsystemResource resource, File directory) {
+		this.directory = directory;
+		resources = resource.getResources();
+		deploymentManifest = resource.getDeploymentManifest();
+		subsystemManifest = resource.getSubsystemManifest();
+	}
 	
 	public SubsystemArchive(File content) throws Exception {
 		logger.debug(LOG_ENTRY, "init", content);
 		if (!content.isDirectory())
 			throw new IllegalArgumentException("Not a directory: " + content.getAbsolutePath());
 		directory = content;
+		resources = new HashSet<Resource>();
 		for (File file : content.listFiles()) {
 			if (file.isDirectory() && "OSGI-INF".equals(file.getName())) {
 				for (File f : file.listFiles()) {
@@ -58,7 +68,7 @@ public class SubsystemArchive implements Repository {
 	public synchronized Collection<Capability> findProviders(Requirement requirement) {
 		logger.debug(LOG_ENTRY, "findProviders", requirement);
 		Collection<Capability> capabilities = new ArrayList<Capability>(1);
-		for (Resource resource : resources.keySet()) {
+		for (Resource resource : resources) {
 			logger.debug("Evaluating resource: " + resource);
 			for (Capability capability : resource.getCapabilities(requirement.getNamespace())) {
 				logger.debug("Evaluating capability: " + capability);
@@ -85,7 +95,7 @@ public class SubsystemArchive implements Repository {
 	}
 	
 	public Collection<Resource> getResources() {
-		return resources.keySet();
+		return resources;
 	}
 	
 	public synchronized SubsystemManifest getSubsystemManifest() {
@@ -130,13 +140,13 @@ public class SubsystemArchive implements Repository {
 	private void processResource(File file) throws Exception {
 		String name = file.getName();
 		if (file.isDirectory() && name.startsWith("subsystem"))
-			resources.put(new SubsystemDirectoryResource(file), file.toURI().toURL());
+			resources.add(new SubsystemDirectoryResource(file));
 		else if (name.endsWith(".jar")) {
 			URL url = file.toURI().toURL();
-			resources.put(BundleResource.newInstance(url), url);
+			resources.add(BundleResource.newInstance(url));
 		}
 		// TODO Add to constants.
 		else if (name.endsWith(".esa") && !name.startsWith("subsystem"))
-			resources.put(new SubsystemFileResource(file), file.toURI().toURL());
+			resources.add(new SubsystemFileResource(file));
 	}
 }
