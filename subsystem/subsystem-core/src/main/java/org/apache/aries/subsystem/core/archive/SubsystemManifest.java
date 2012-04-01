@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -26,10 +27,6 @@ import org.osgi.service.subsystem.SubsystemConstants;
 public class SubsystemManifest {
 	public static class Builder {
 		private Map<String, Header<?>> headers = new HashMap<String, Header<?>>();
-		
-		public Builder(String symbolicName) {
-			headers.put(SUBSYSTEM_SYMBOLICNAME, new SubsystemSymbolicNameHeader(symbolicName));
-		}
 		
 		public SubsystemManifest build() {
 			return new SubsystemManifest(headers);
@@ -51,6 +48,20 @@ public class SubsystemManifest {
 			if (value != null)
 				headers.put(value.getName(), value);
 			return this;
+		}
+		
+		public Builder manifest(SubsystemManifest value) {
+			for (Entry<String, Header<?>> entry : value.getHeaders().entrySet())
+				header(entry.getValue());
+			return this;
+		}
+		
+		public Builder symbolicName(String value) {
+			return value == null ? this : symbolicName(new SubsystemSymbolicNameHeader(value));
+		}
+		
+		public Builder symbolicName(SubsystemSymbolicNameHeader value) {
+			return header(value);
 		}
 		
 		public Builder type(String value) {
@@ -90,6 +101,15 @@ public class SubsystemManifest {
 	public static final String SUBSYSTEM_TYPE = SubsystemConstants.SUBSYSTEM_TYPE;
 	public static final String SUBSYSTEM_VERSION = SubsystemConstants.SUBSYSTEM_VERSION;
 	
+	private static Map<String, Header<?>> parseHeaders(java.util.jar.Manifest manifest) {
+		Map<String, Header<?>> result = new HashMap<String, Header<?>>();
+		for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
+			String key = String.valueOf(entry.getKey());
+			result.put(key, HeaderFactory.createHeader(key, String.valueOf(entry.getValue())));
+		}
+		return result;
+	}
+	
 	private static void fillInDefaults(Map<String, Header<?>> headers) {
 		Header<?> header = headers.get(SUBSYSTEM_VERSION);
 		if (header == null) {
@@ -106,6 +126,10 @@ public class SubsystemManifest {
 		Map<String, Header<?>> map = new HashMap<String, Header<?>>(headers);
 		fillInDefaults(map);
 		this.headers = Collections.unmodifiableMap(map);
+	}
+	
+	public SubsystemManifest(java.util.jar.Manifest manifest) {
+		this(parseHeaders(manifest));
 	}
 	
 	public SubsystemManifest(File file) throws FileNotFoundException, IOException {
@@ -196,12 +220,17 @@ public class SubsystemManifest {
 	}
 	
 	public List<Capability> toCapabilities(Resource resource) {
-		ArrayList<Capability> requirements = new ArrayList<Capability>();
+		ArrayList<Capability> capabilities = new ArrayList<Capability>();
 		for (Header<?> header : headers.values())
 			if (header instanceof CapabilityHeader)
-				requirements.addAll(((CapabilityHeader<?>)header).toCapabilities(resource));
-		requirements.trimToSize();
-		return requirements;
+				capabilities.addAll(((CapabilityHeader<?>)header).toCapabilities(resource));
+		capabilities.add(new OsgiIdentityCapability(
+				resource,
+				getSubsystemSymbolicNameHeader().getSymbolicName(),
+				getSubsystemVersionHeader().getVersion(),
+				getSubsystemTypeHeader().getType()));
+		capabilities.trimToSize();
+		return capabilities;
 	}
 	
 	public List<Requirement> toRequirements(Resource resource) {

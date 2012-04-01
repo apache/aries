@@ -110,8 +110,8 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 			return path;
 		}
 		
-		public SubsystemImportServiceRequirement toRequirement() {
-			return new SubsystemImportServiceRequirement(this);
+		public SubsystemImportServiceRequirement toRequirement(Resource resource) {
+			return new SubsystemImportServiceRequirement(this, resource);
 		}
 		
 		@Override
@@ -159,7 +159,7 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 	public List<SubsystemImportServiceRequirement> toRequirements(Resource resource) {
 		List<SubsystemImportServiceRequirement> requirements = new ArrayList<SubsystemImportServiceRequirement>(clauses.size());
 		for (Clause clause : clauses)
-			requirements.add(clause.toRequirement());
+			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}
 	

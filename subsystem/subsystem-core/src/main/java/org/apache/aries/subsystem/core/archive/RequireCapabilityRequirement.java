@@ -15,10 +15,6 @@ public class RequireCapabilityRequirement extends AbstractRequirement {
 	private final String namespace;
 	private final Resource resource;
 	
-	public RequireCapabilityRequirement(RequireCapabilityHeader.Clause clause) {
-		this(clause, null);
-	}
-	
 	public RequireCapabilityRequirement(RequireCapabilityHeader.Clause clause, Resource resource) {
 		namespace = clause.getNamespace();
 		Directive filter = clause.getDirective(RequireCapabilityHeader.Clause.DIRECTIVE_FILTER);

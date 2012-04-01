@@ -135,8 +135,8 @@ public class RequireBundleHeader implements RequirementHeader<RequireBundleHeade
 			return path;
 		}
 		
-		public RequireBundleRequirement toRequirement() {
-			return new RequireBundleRequirement(this);
+		public RequireBundleRequirement toRequirement(Resource resource) {
+			return new RequireBundleRequirement(this, resource);
 		}
 		
 		@Override
@@ -193,7 +193,7 @@ public class RequireBundleHeader implements RequirementHeader<RequireBundleHeade
 	public List<RequireBundleRequirement> toRequirements(Resource resource) {
 		List<RequireBundleRequirement> requirements = new ArrayList<RequireBundleRequirement>(clauses.size());
 		for (Clause clause : clauses)
-			requirements.add(clause.toRequirement());
+			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}
 	

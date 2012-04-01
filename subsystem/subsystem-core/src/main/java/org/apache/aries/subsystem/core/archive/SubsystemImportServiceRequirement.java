@@ -17,10 +17,6 @@ public class SubsystemImportServiceRequirement extends AbstractRequirement {
 	private final Map<String, String> directives = new HashMap<String, String>(1);
 	private final Resource resource;
 	
-	public SubsystemImportServiceRequirement(SubsystemImportServiceHeader.Clause clause) {
-		this(clause, null);
-	}
-	
 	public SubsystemImportServiceRequirement(
 			SubsystemImportServiceHeader.Clause clause, Resource resource) {
 		StringBuilder builder = new StringBuilder("(&(")
