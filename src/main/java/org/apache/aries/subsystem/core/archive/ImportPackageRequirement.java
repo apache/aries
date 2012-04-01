@@ -16,10 +16,6 @@ public class ImportPackageRequirement extends AbstractRequirement {
 	private final Map<String, String> directives = new HashMap<String, String>(1);
 	private final Resource resource;
 	
-	public ImportPackageRequirement(ImportPackageHeader.Clause clause) {
-		this(clause, null);
-	}
-	
 	public ImportPackageRequirement(ImportPackageHeader.Clause clause, Resource resource) {
 		Collection<String> packageNames = clause.getPackageNames();
 		if (packageNames.isEmpty() || packageNames.size() > 1)
