@@ -98,7 +98,7 @@
         <proxy.api.version>0.4.1-SNAPSHOT</proxy.api.version>
         <proxy.impl.version>0.4.1-SNAPSHOT</proxy.impl.version>
         <quiesce.api.version>0.3</quiesce.api.version>
-        <util.version>0.5-SNAPSHOT</util.version>
+        <util.version>1.0.0-SNAPSHOT</util.version>
     </properties>
 
     <profiles>
@@ -111,7 +111,7 @@
                 <proxy.api.version>0.4.1-SNAPSHOT</proxy.api.version>
                 <proxy.impl.version>0.4.1-SNAPSHOT</proxy.impl.version>
                 <quiesce.api.version>0.3.1-SNAPSHOT</quiesce.api.version>
-                <util.version>0.5-SNAPSHOT</util.version>
+                <util.version>1.0.0-SNAPSHOT</util.version>
             </properties>
         </profile>
     </profiles>
