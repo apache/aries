@@ -55,29 +55,29 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
             <scope>test</scope>
-            <version>0.4</version>
+            <version>0.4.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
-            <version>0.4</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
-            <version>0.4</version>
+            <version>0.4.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-annotation</artifactId>
-            <version>0.3.2</version>
+            <version>0.3.3-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-fragment</artifactId>
-            <version>0.3.2</version>
+            <version>0.3.3-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -139,17 +139,17 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-            <version>0.3</version>
+            <version>0.3.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.impl</artifactId>
-            <version>0.3.2</version>
+            <version>0.3.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <version>0.4</version>
+            <version>0.5-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -100,8 +100,8 @@
         
         <!-- Aries Proxy Versions -->
         <ariesProxyApiVersion>0.4</ariesProxyApiVersion>
-        <ariesProxyVersion>0.4</ariesProxyVersion>
-        <ariesProxyImplVersion>0.4</ariesProxyImplVersion>
+        <ariesProxyVersion>0.4.1-SNAPSHOT</ariesProxyVersion>
+        <ariesProxyImplVersion>0.4.1-SNAPSHOT</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
         <ariesQuiesceApiVersion>0.3</ariesQuiesceApiVersion>
@@ -118,7 +118,7 @@
         <ariesTransactionWrappersVersion>0.3.1-SNAPSHOT</ariesTransactionWrappersVersion>
 
         <!-- Aries Util Versions -->
-        <ariesUtilVersion>0.5-SNAPSHOT</ariesUtilVersion>
+        <ariesUtilVersion>1.0.0-SNAPSHOT</ariesUtilVersion>
 
         <!-- Aries Web Versions -->
         <ariesWebVersion>0.3.1-SNAPSHOT</ariesWebVersion>
