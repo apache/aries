@@ -20,14 +20,14 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.sample</artifactId>
     <name>Apache Aries Blueprint Sample</name>
     <packaging>bundle</packaging>
-    <version>0.3.3-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         Example blueprint application, mostly used for integration tests.
     </description>
@@ -45,7 +45,7 @@
         <aries.osgi.activator>
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
-        <aries.osgi.private.pkg/>
+        <aries.osgi.private.pkg />
         <aries.osgi.import.pkg>*
         </aries.osgi.import.pkg>
     </properties>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>0.3</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

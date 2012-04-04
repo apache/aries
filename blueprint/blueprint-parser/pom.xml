@@ -22,14 +22,14 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint-parser</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Blueprint Parser</name>
-    <version>0.4.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         This bundle contains the blueprint parser in a plain jar.
     </description>
@@ -41,7 +41,7 @@
     </scm>
 
     <properties>
-        <blueprint.api.version>0.3</blueprint.api.version>
+        <blueprint.api.version>1.0.0-SNAPSHOT</blueprint.api.version>
     </properties>
 
     <profiles>
