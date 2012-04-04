@@ -93,10 +93,10 @@
         <ariesJndiUrlVersion>0.3.2-SNAPSHOT</ariesJndiUrlVersion>
 
         <!-- Aries Jpa Versions -->
-        <ariesJpaApiVersion>0.3.1-SNAPSHOT</ariesJpaApiVersion>
-        <ariesJpaBlueprintAriesVersion>0.3.1-SNAPSHOT</ariesJpaBlueprintAriesVersion>
-        <ariesJpaContainerVersion>0.3.1-SNAPSHOT</ariesJpaContainerVersion>
-        <ariesJpaContainerContextVersion>0.3.1-SNAPSHOT</ariesJpaContainerContextVersion>
+        <ariesJpaApiVersion>1.0.0-SNAPSHOT</ariesJpaApiVersion>
+        <ariesJpaBlueprintAriesVersion>1.0.0-SNAPSHOT</ariesJpaBlueprintAriesVersion>
+        <ariesJpaContainerVersion>1.0.0-SNAPSHOT</ariesJpaContainerVersion>
+        <ariesJpaContainerContextVersion>1.0.0-SNAPSHOT</ariesJpaContainerContextVersion>
         
         <!-- Aries Proxy Versions -->
         <ariesProxyApiVersion>0.4.1-SNAPSHOT</ariesProxyApiVersion>
