@@ -81,7 +81,7 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
             <scope>provided</scope>
-            <version>0.3</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Blueprint API must come before OSGi compendium because we want to compile against the Java 5 interfaces
