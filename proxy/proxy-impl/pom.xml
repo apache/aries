@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.proxy.impl</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Service</name>
-    <version>0.4.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         This bundle contains the proxy service implementation for Apache Aries
     </description>
@@ -114,7 +114,7 @@
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.api</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

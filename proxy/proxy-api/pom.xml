@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.proxy.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy API</name>
-    <version>0.4.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         This bundle contains the Apache Aries Proxy service API.
     </description>
