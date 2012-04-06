@@ -85,12 +85,12 @@
         <ariesJmxWhiteboardVersion>0.3.1-SNAPSHOT</ariesJmxWhiteboardVersion>
 
         <!-- Aries Jndi Versions -->
-        <ariesJndiApiVersion>0.3.1-SNAPSHOT</ariesJndiApiVersion>
-        <ariesJndiVersion>0.3.2-SNAPSHOT</ariesJndiVersion>
-        <ariesJndiCoreVersion>0.3.2-SNAPSHOT</ariesJndiCoreVersion>
-        <ariesJndiLegacySupportVersion>0.3.2-SNAPSHOT</ariesJndiLegacySupportVersion>
-        <ariesJndiRmiVersion>0.3.2-SNAPSHOT</ariesJndiRmiVersion>
-        <ariesJndiUrlVersion>0.3.2-SNAPSHOT</ariesJndiUrlVersion>
+        <ariesJndiApiVersion>1.0.0-SNAPSHOT</ariesJndiApiVersion>
+        <ariesJndiVersion>1.0.0-SNAPSHOT</ariesJndiVersion>
+        <ariesJndiCoreVersion>1.0.0-SNAPSHOT</ariesJndiCoreVersion>
+        <ariesJndiLegacySupportVersion>1.0.0-SNAPSHOT</ariesJndiLegacySupportVersion>
+        <ariesJndiRmiVersion>1.0.0-SNAPSHOT</ariesJndiRmiVersion>
+        <ariesJndiUrlVersion>1.0.0-SNAPSHOT</ariesJndiUrlVersion>
 
         <!-- Aries Jpa Versions -->
         <ariesJpaApiVersion>1.0.0-SNAPSHOT</ariesJpaApiVersion>
