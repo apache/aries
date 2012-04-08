@@ -26,7 +26,7 @@
     <artifactId>org.apache.aries.web.itests</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Web integration tests</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
      <scm>
          <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/web/web-itests</connection>
@@ -140,7 +140,7 @@
             <groupId>org.apache.aries.web</groupId>
             <artifactId>org.apache.aries.web.urlhandler</artifactId>
             <scope>provided</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
