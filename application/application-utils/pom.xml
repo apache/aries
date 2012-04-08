@@ -22,14 +22,14 @@
        <groupId>org.apache.aries</groupId>
        <artifactId>java5-parent</artifactId>
        <version>1.0.0-SNAPSHOT</version>
-       <relativePath  />
+       <relativePath />
     </parent>
 
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.utils</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Utils</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
       Utilities for working with Aries Applications.
     </description>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Dependency on other Aries module bundles -->

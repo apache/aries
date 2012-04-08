@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.application.resolver.noop</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application No-op Resolver</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
       Dummy implementation of the AriesApplicationResolver
     </description>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

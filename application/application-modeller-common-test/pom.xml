@@ -29,7 +29,7 @@
     <artifactId>application-modeller-common-test</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Application Modelling tests</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
       Modelling utilities for working with Aries Applications (distribution for offline use).
     </description>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>application-modeller-standalone</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

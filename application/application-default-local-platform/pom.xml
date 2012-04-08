@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.application.default.local.platform</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Default local platform</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <description>
       Implementation of the default local Platform Repository
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

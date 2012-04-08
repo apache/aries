@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.application.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application API</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
       Application API.
     </description>
