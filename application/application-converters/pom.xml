@@ -73,7 +73,7 @@
             <groupId>org.apache.aries.web</groupId>
             <artifactId>org.apache.aries.web.urlhandler</artifactId>
             <scope>provided</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <!--External dependencies. Versions may be specified in default parent -->
         <dependency>
