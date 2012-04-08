@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.jmx.whiteboard</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Whiteboard</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         This bundle implements whiteboard pattern support for DynamicMBean
         services registered with the OSGi service registry. Each DynamicMBean
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.core</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -189,9 +189,7 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <copy
-                                            file="${project.build.directory}/${project.build.finalName}.jar"
-                                            tofile="${project.build.directory}/jmx-whiteboard.jar" />
+                                        <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/jmx-whiteboard.jar" />
                                     </tasks>
                                 </configuration>
                             </execution>

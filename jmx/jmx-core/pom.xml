@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.jmx.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Core</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         This bundle contains the core implementation 
 		of the JMX Control specification
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
