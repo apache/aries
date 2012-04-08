@@ -77,12 +77,12 @@
 
         <!-- Aries Jmx Versions -->
         <ariesJmxiApiVersion>0.3.1-SNAPSHOT</ariesJmxiApiVersion>
-        <ariesJmxBlueprintApiVersion>0.3.1-SNAPSHOT</ariesJmxBlueprintApiVersion>
-        <ariesJmxBlueprintVersion>0.3.1-SNAPSHOT</ariesJmxBlueprintVersion>
-        <ariesJmxBlueprintCoreVersion>0.3.1-SNAPSHOT</ariesJmxBlueprintCoreVersion>
-        <ariesJmxVersion>0.3.1-SNAPSHOT</ariesJmxVersion>
-        <ariesJmxCoreVersion>0.3.1-SNAPSHOT</ariesJmxCoreVersion>
-        <ariesJmxWhiteboardVersion>0.3.1-SNAPSHOT</ariesJmxWhiteboardVersion>
+        <ariesJmxBlueprintApiVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintApiVersion>
+        <ariesJmxBlueprintVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintVersion>
+        <ariesJmxBlueprintCoreVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintCoreVersion>
+        <ariesJmxVersion>1.0.0-SNAPSHOT</ariesJmxVersion>
+        <ariesJmxCoreVersion>1.0.0-SNAPSHOT</ariesJmxCoreVersion>
+        <ariesJmxWhiteboardVersion>1.0.0-SNAPSHOT</ariesJmxWhiteboardVersion>
 
         <!-- Aries Jndi Versions -->
         <ariesJndiApiVersion>1.0.0-SNAPSHOT</ariesJndiApiVersion>
@@ -442,7 +442,7 @@
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.api</artifactId>
-                <version>${ariesJmxApiVersion}</version>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
