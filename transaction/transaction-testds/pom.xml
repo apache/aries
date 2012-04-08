@@ -25,7 +25,7 @@
 	<groupId>org.apache.aries.transaction</groupId>
 	<artifactId>org.apache.aries.transaction.testds</artifactId>
 	<name>Apache Aries Transaction Test Datasource Configuration</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
      <scm>

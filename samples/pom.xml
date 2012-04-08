@@ -112,10 +112,10 @@
         <ariesTestsupportUnitVersion>0.5-SNAPSHOT</ariesTestsupportUnitVersion>
 
         <!-- Aries Transaction Versions -->
-        <ariesTransactionBlueprintVersion>0.3.1-SNAPSHOT</ariesTransactionBlueprintVersion>
-        <ariesTransactionManagerVersion>0.3.1-SNAPSHOT</ariesTransactionManagerVersion>
-        <ariesTransactionTestdsVersion>0.3.1-SNAPSHOT</ariesTransactionTestdsVersion>
-        <ariesTransactionWrappersVersion>0.3.1-SNAPSHOT</ariesTransactionWrappersVersion>
+        <ariesTransactionBlueprintVersion>1.0.0-SNAPSHOT</ariesTransactionBlueprintVersion>
+        <ariesTransactionManagerVersion>1.0.0-SNAPSHOT</ariesTransactionManagerVersion>
+        <ariesTransactionTestdsVersion>1.0.0-SNAPSHOT</ariesTransactionTestdsVersion>
+        <ariesTransactionWrappersVersion>1.0.0-SNAPSHOT</ariesTransactionWrappersVersion>
 
         <!-- Aries Util Versions -->
         <ariesUtilVersion>1.0.0-SNAPSHOT</ariesUtilVersion>
