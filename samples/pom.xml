@@ -49,23 +49,23 @@
         <ariesEbaMavenPluginVersion>0.4-SNAPSHOT</ariesEbaMavenPluginVersion>
 
         <!-- Aries Application Versions -->
-        <ariesApplicationApiVersion>0.3.1-SNAPSHOT</ariesApplicationApiVersion>
-        <ariesApplicationVersion>0.3.1-SNAPSHOT</ariesApplicationVersion>
-        <ariesApplicationConvertersVersion>0.3.1-SNAPSHOT</ariesApplicationConvertersVersion>
-        <ariesApplicationDefaultLocalPlatformVersion>0.3.1-SNAPSHOT</ariesApplicationDefaultLocalPlatformVersion>
-        <ariesApplicationDeploymentManagementVersion>0.3.1-SNAPSHOT</ariesApplicationDeploymentManagementVersion>
-        <ariesApplicationInstallVersion>0.3.1-SNAPSHOT</ariesApplicationInstallVersion>
-        <ariesApplicationItestInterfaceVersion>0.3.1-SNAPSHOT</ariesApplicationItestInterfaceVersion>
-        <ariesApplicationManagementVersion>0.3.1-SNAPSHOT</ariesApplicationManagementVersion>
-        <ariesApplicationModellerVersion>0.3.1-SNAPSHOT</ariesApplicationModellerVersion>
-        <ariesApplicationNoopResolverVersion>0.3.1-SNAPSHOT</ariesApplicationNoopResolverVersion>
-        <ariesApplicationObrResolverVersion>0.3.1-SNAPSHOT</ariesApplicationObrResolverVersion>
-        <ariesApplicationRuntimeVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeVersion>
-        <ariesApplicationRuntimeFrameworkVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeFrameworkVersion>
-        <ariesApplicationRuntimeFrameworkManagementVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeFrameworkManagementVersion>
-        <ariesApplicationRuntimeIsolatedVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeIsolatedVersion>
-        <ariesApplicationRuntimeRepositoryVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeRepositoryVersion>
-        <ariesApplicationUtilsVersion>0.3.1-SNAPSHOT</ariesApplicationUtilsVersion>
+        <ariesApplicationApiVersion>1.0.0-SNAPSHOT</ariesApplicationApiVersion>
+        <ariesApplicationVersion>1.0.0-SNAPSHOT</ariesApplicationVersion>
+        <ariesApplicationConvertersVersion>1.0.0-SNAPSHOT</ariesApplicationConvertersVersion>
+        <ariesApplicationDefaultLocalPlatformVersion>1.0.0-SNAPSHOT</ariesApplicationDefaultLocalPlatformVersion>
+        <ariesApplicationDeploymentManagementVersion>1.0.0-SNAPSHOT</ariesApplicationDeploymentManagementVersion>
+        <ariesApplicationInstallVersion>1.0.0-SNAPSHOT</ariesApplicationInstallVersion>
+        <ariesApplicationItestInterfaceVersion>1.0.0-SNAPSHOT</ariesApplicationItestInterfaceVersion>
+        <ariesApplicationManagementVersion>1.0.0-SNAPSHOT</ariesApplicationManagementVersion>
+        <ariesApplicationModellerVersion>1.0.0-SNAPSHOT</ariesApplicationModellerVersion>
+        <ariesApplicationNoopResolverVersion>1.0.0-SNAPSHOT</ariesApplicationNoopResolverVersion>
+        <ariesApplicationObrResolverVersion>1.0.0-SNAPSHOT</ariesApplicationObrResolverVersion>
+        <ariesApplicationRuntimeVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeVersion>
+        <ariesApplicationRuntimeFrameworkVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkVersion>
+        <ariesApplicationRuntimeFrameworkManagementVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkManagementVersion>
+        <ariesApplicationRuntimeIsolatedVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeIsolatedVersion>
+        <ariesApplicationRuntimeRepositoryVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeRepositoryVersion>
+        <ariesApplicationUtilsVersion>1.0.0-SNAPSHOT</ariesApplicationUtilsVersion>
 
         <!-- Aries Blueprint Versions -->
         <ariesBlueprintAnnotationApiVersion>1.0.0-SNAPSHOT</ariesBlueprintAnnotationApiVersion>

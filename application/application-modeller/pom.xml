@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.application.modeller</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Modelling</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
       Modelling utilities for working with Aries Applications.
     </description>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
              <groupId>org.apache.aries</groupId>
@@ -116,7 +116,7 @@
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.utils</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
