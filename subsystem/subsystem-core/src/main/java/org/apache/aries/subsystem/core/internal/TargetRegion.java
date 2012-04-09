@@ -5,14 +5,22 @@ import java.util.HashSet;
 
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
-import org.osgi.service.subsystem.SubsystemConstants;
 
 public class TargetRegion {
 	Collection<Subsystem> region = new HashSet<Subsystem>();
 
-	public TargetRegion(AriesSubsystem target) {
-		region.add(target);
-		addToRegion(target.getChildren());
+	public TargetRegion(AriesSubsystem subsystem) {
+		// Find the scoped subsystem that controls the region.
+		AriesSubsystem controllingScopedSubsystem = subsystem;
+		while (controllingScopedSubsystem.isFeature())
+			controllingScopedSubsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
+		// The scoped subsystem controlling the region is part of the region.
+		region.add(controllingScopedSubsystem);
+		// All children of the scoped subsystem are part of the region. If the
+		// child is a feature, then all descendants of the child that are
+		// features and part of an unbroken line of features are part of the
+		// region.
+		addChildrenToRegion(controllingScopedSubsystem);
 	}
 
 	public boolean contains(Subsystem subsystem) {
@@ -32,15 +40,25 @@ public class TargetRegion {
 		}
 		return null;
 	}
-
-	private void addToRegion(Collection<Subsystem> children) {
-		for (Subsystem child : children) {
-			if (SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(child
-					.getSubsystemHeaders(null).get(
-							SubsystemConstants.SUBSYSTEM_TYPE))) {
-				addToRegion(child.getChildren());
-			}
+	
+	private void addChildrenToRegion(AriesSubsystem controllingScopedSubsystem) {
+		for (Subsystem child : controllingScopedSubsystem.getChildren()) {
 			region.add(child);
+			// If the child is a feature, all of its children that are features
+			// must be added as well.
+			if (((AriesSubsystem)child).isFeature())
+				addFeatureDescendentsToRegion((AriesSubsystem)child);
 		}
+	}
+	
+	private void addFeatureDescendentsToRegion(AriesSubsystem parent) {
+		for (Subsystem child : parent.getChildren())
+			// If the descendant is not a feature, skip it.
+			if (((AriesSubsystem)child).isFeature()) {
+				region.add(child);
+				// All descendants that are features and part of an unbroken
+				// line of features must be added.
+				addFeatureDescendentsToRegion((AriesSubsystem)child);
+			}
 	}
 }

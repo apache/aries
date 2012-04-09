@@ -22,6 +22,7 @@ import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemVersionHeader;
 import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.SubsystemUri;
 import org.apache.aries.subsystem.core.resource.BundleResource;
@@ -44,6 +45,7 @@ import org.osgi.service.subsystem.SubsystemException;
 public abstract class SubsystemResource implements Resource {
 	protected static class Location {
 		private final String symbolicName;
+		private final URL url;
 		private final String value;
 		private final Version version;
 		
@@ -53,6 +55,7 @@ public abstract class SubsystemResource implements Resource {
 			if (location.startsWith("subsystem://"))
 				uri = new SubsystemUri(location);
 			symbolicName = uri == null ? null : uri.getSymbolicName();
+			url = uri == null ? null : uri.getURL();
 			version = uri == null ? null : uri.getVersion();
 		}
 		
@@ -67,23 +70,28 @@ public abstract class SubsystemResource implements Resource {
 		public Version getVersion() {
 			return version;
 		}
+		
+		public InputStream open() throws IOException {
+			return url == null ? new URL(value).openStream() : url.openStream();
+		}
 	}
 	
 	protected static final Pattern PATTERN = Pattern.compile("([^@]+)(?:@(.+))?.esa");
 	
 	public static SubsystemResource newInstance(String location, InputStream content) throws IOException, URISyntaxException {
+		Location loc = new Location(location);
 		if (content == null)
-			content = new URL(location).openStream();
+			content = loc.open();
 		IDirectory directory = FileSystem.getFSRoot(content);
 		SubsystemManifest manifest = computeSubsystemManifest(directory);
 		String type = manifest.getSubsystemTypeHeader().getType();
 		// TODO Make an enum out of the types?
 		if (SubsystemTypeHeader.TYPE_APPLICATION.equals(type))
-			return new ApplicationResource(new Location(location), directory, manifest);
+			return new ApplicationResource(loc, directory, manifest);
 		if (SubsystemTypeHeader.TYPE_COMPOSITE.equals(type))
-			return new CompositeResource(new Location(location), directory, manifest);
+			return new CompositeResource(loc, directory, manifest);
 		if (SubsystemTypeHeader.TYPE_FEATURE.equals(type))
-			return new FeatureResource(new Location(location), directory, manifest);
+			return new FeatureResource(loc, directory, manifest);
 		throw new SubsystemException("Unsupported subsystem type: " + type);
 	}
 	
@@ -209,6 +217,10 @@ public abstract class SubsystemResource implements Resource {
 		addHeader(builder, computeSubsystemSymbolicNameHeader(manifest));
 	}
 	
+	protected void addSubsystemVersionHeader(SubsystemManifest.Builder builder, SubsystemManifest manifest) {
+		addHeader(builder, computeSubsystemVersionHeader(manifest));
+	}
+	
 	protected List<Capability> computeCapabilities() {
 		return subsystemManifest.toCapabilities(this);
 	}
@@ -322,14 +334,22 @@ public abstract class SubsystemResource implements Resource {
 	protected SubsystemManifest computeSubsystemManifestBeforeRequirements(SubsystemManifest manifest) {
 		SubsystemManifest.Builder builder = new SubsystemManifest.Builder().manifest(manifest);
 		addSubsystemSymbolicNameHeader(builder, manifest);
+		addSubsystemVersionHeader(builder, manifest);
 		addSubsystemContentHeader(builder, manifest);
 		return builder.build();
 	}
 	
 	protected SubsystemSymbolicNameHeader computeSubsystemSymbolicNameHeader(SubsystemManifest manifest) {
-		Header<?> header = manifest.getSubsystemSymbolicNameHeader();
+		SubsystemSymbolicNameHeader header = manifest.getSubsystemSymbolicNameHeader();
 		if (header == null)
 			header = new SubsystemSymbolicNameHeader(location.getSymbolicName());
-		return (SubsystemSymbolicNameHeader)header;
+		return header;
+	}
+	
+	protected SubsystemVersionHeader computeSubsystemVersionHeader(SubsystemManifest manifest) {
+		SubsystemVersionHeader header = manifest.getSubsystemVersionHeader();
+		if (header.getVersion().equals(Version.emptyVersion) && location.getVersion() != null)
+			header = new SubsystemVersionHeader(location.getVersion());
+		return header;
 	}
 }

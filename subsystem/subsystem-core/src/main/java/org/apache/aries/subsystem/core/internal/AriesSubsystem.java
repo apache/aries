@@ -433,21 +433,14 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public BundleContext getBundleContext() {
-		if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(getState()))
+		if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(
+				getState()))
 			return null;
-		Region region = this.region;
-		Subsystem subsystem = this;
-		// Features, and unscoped subsystems in general, do not have their own region context
-		// bundle but rather share with the scoped subsystem in the same region.
-		if (isFeature()) {
-			for (Subsystem parent : getParents()) {
-				if (!((AriesSubsystem)parent).isFeature()) {
-					region = ((AriesSubsystem)parent).getRegion();
-					subsystem = parent;
-				}
-			}
-		}
-		return region.getBundle(RegionContextBundleHelper.SYMBOLICNAME_PREFIX + subsystem.getSubsystemId(), RegionContextBundleHelper.VERSION).getBundleContext();
+		AriesSubsystem subsystem = findScopedSubsystemInRegion();
+		return region.getBundle(
+				RegionContextBundleHelper.SYMBOLICNAME_PREFIX
+						+ subsystem.getSubsystemId(),
+				RegionContextBundleHelper.VERSION).getBundleContext();
 	}
 	
 	@Override
@@ -706,7 +699,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				.getServiceProvider().getService(Coordinator.class)
 				.create(getSymbolicName() + "-" + getSubsystemId(), 0);
 		try {
-			install(coordination);
+			install(coordination, null);
 		} catch (Exception e) {
 			coordination.fail(e);
 		} finally {
@@ -800,6 +793,34 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
+	private void addSubsystemServiceImportToSharingPolicy(
+			RegionFilterBuilder builder) throws InvalidSyntaxException {
+		builder.allow(
+				RegionFilter.VISIBLE_SERVICE_NAMESPACE,
+				new StringBuilder("(&(")
+						.append(org.osgi.framework.Constants.OBJECTCLASS)
+						.append('=').append(Subsystem.class.getName())
+						.append(")(")
+						.append(Constants.SubsystemServicePropertyRegions)
+						.append('=').append(region.getName())
+						.append("))").toString());
+	}
+	
+	private void addSubsystemServiceImportToSharingPolicy(RegionFilterBuilder builder, Region to)
+			throws InvalidSyntaxException, BundleException {
+		// TODO This check seems brittle. There is apparently no constant for
+		// the root region's name in Digraph.
+		if (to.getName().equals("org.eclipse.equinox.region.kernel"))
+			addSubsystemServiceImportToSharingPolicy(builder);
+		else {
+			to = findRootRegion();
+			builder = to.getRegionDigraph().createRegionFilterBuilder();
+			addSubsystemServiceImportToSharingPolicy(builder);
+			RegionFilter regionFilter = builder.build();
+			region.connectRegion(to, regionFilter);
+		}
+	}
+	
 	private void checkRoot() {
 		if (isRoot()) {
 			throw new SubsystemException("This operation may not be performed on the root subsystem");
@@ -815,6 +836,24 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (region == null)
 			return digraph.createRegion(name);
 		return region;
+	}
+	
+	private Region findRootRegion() {
+		return findRootSubsystem().region;
+	}
+	
+	private AriesSubsystem findRootSubsystem() {
+		AriesSubsystem root = this;
+		while (!root.isRoot())
+			root = ((AriesSubsystem)root.getParents().iterator().next());
+		return root;
+	}
+	
+	private AriesSubsystem findScopedSubsystemInRegion() {
+		AriesSubsystem result = this;
+		while (!result.isScoped())
+			result = (AriesSubsystem)result.getParents().iterator().next();
+		return result;
 	}
 	
 	private DeploymentManifest getDeploymentManifest() throws IOException, URISyntaxException {
@@ -834,10 +873,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return archive.getDeploymentManifest();
 	}
 	
-	private synchronized void install(Coordination coordination) throws Exception {
+	private synchronized void install(Coordination coordination, AriesSubsystem parent) throws Exception {
 		if (!isFeature())
 			RegionContextBundleHelper.installRegionContextBundle(this);
-		Activator.getInstance().getSubsystemServiceRegistrar().register(this);
+		Activator.getInstance().getSubsystemServiceRegistrar().register(this, parent);
 		Set<Resource> contentResources = new TreeSet<Resource>(
 				new Comparator<Resource>() {
 					@Override
@@ -917,6 +956,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 						&& subsystem.getVersion().equals(ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion())
 						&& subsystem.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType())))
 					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
+				subsystemInstalling(subsystem);
 				subsystemInstalled(subsystem);
 				return subsystem;
 			}
@@ -926,6 +966,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 			if (subsystem != null) {
 				if (!subsystem.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType()))
 					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
+				subsystemInstalling(subsystem);
 				subsystemInstalled(subsystem);
 				return subsystem;
 			}
@@ -1050,7 +1091,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// before the child. This results in the child (i.e. this subsystem) being uninstalled as part
 		// of that process, but its state has not moved from INSTALLING to INSTALL_FAILED, which results
 		// in an eternal wait for a state change.
-		subsystemInstalled(subsystem);
+		subsystemInstalling(subsystem);
 		coordination.addParticipant(new Participant() {
 			public void ended(Coordination coordination) throws Exception {
 				// noop
@@ -1062,7 +1103,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 				subsystemUninstalled(subsystem);
 			}
 		});
-		subsystem.install(coordination);
+		subsystem.install(coordination, this);
+		subsystemInstalled(subsystem);
 		return subsystem;
 	}
 
@@ -1070,9 +1112,15 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return ROOT_LOCATION.equals(getLocation());
 	}
 	
+	private boolean isScoped() {
+		return isApplication() || isComposite();
+	}
+	
 	private void resolve() {
 		setState(State.RESOLVING);
 		try {
+			for (Subsystem child : subsystemGraph.getChildren(this))
+				((AriesSubsystem)child).resolve();
 			// TODO I think this is insufficient. Do we need both
 			// pre-install and post-install environments for the Resolver?
 			Collection<Bundle> bundles = getBundles();
@@ -1166,15 +1214,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 
 	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
-		if (isRoot())
-			// Nothing to do if this is the root subsystem.
-			return;
-		if (isFeature())
-			// Features share the same isolation as that of their scoped parent.
+		if (isRoot() || isFeature())
 			return;
 		Region from = region;
-		Region to = ((AriesSubsystem)getParents().iterator().next()).region;
 		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
+		Region to = ((AriesSubsystem)getParents().iterator().next()).region;
+		addSubsystemServiceImportToSharingPolicy(builder, to);
 		if (isApplication() || isComposite()) {
 			// Both applications and composites have Import-Package headers that require processing.
 			// In the case of applications, the header is generated.
@@ -1330,6 +1375,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private synchronized void subsystemInstalled(AriesSubsystem subsystem) {
+		Activator.getInstance().getSubsystemServiceRegistrar().addRegion(subsystem, region);
+	}
+	
+	private synchronized void subsystemInstalling(AriesSubsystem subsystem) {
 		locationToSubsystem.put(subsystem.getLocation(), subsystem);
 		subsystemGraph.add(this, subsystem);
 		addResourceToSubsystem(subsystem, this);
@@ -1337,6 +1386,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private synchronized void subsystemUninstalled(AriesSubsystem subsystem) {
+		Activator.getInstance().getSubsystemServiceRegistrar().removeRegion(subsystem, region);
 		constituents.remove(subsystem);
 		removeResourceToSubsystem(subsystem, this);
 		subsystemGraph.remove(subsystem);
@@ -1345,7 +1395,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	private void uninstall(boolean changeState) {
 		if (changeState)
-			setState(State.UNINSTALLING);
+			setState(State.INSTALLED);
+		setState(State.UNINSTALLING);
 		// Uninstall child subsystems first.
 		for (Subsystem subsystem : getChildren()) {
 			try {
@@ -1378,8 +1429,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		subsystemGraph.remove(this);
 		locationToSubsystem.remove(location);
 		deleteFile(directory);
-		if (changeState)
-			setState(State.UNINSTALLED);
+		setState(State.UNINSTALLED);
 		Activator.getInstance().getSubsystemServiceRegistrar().unregister(this);
 		if (!isFeature())
 			RegionContextBundleHelper.uninstallRegionContextBundle(this);
