@@ -114,6 +114,7 @@ public class FeatureTest extends SubsystemTest {
 			try {
 				uninstallSubsystem(feature1);
 				if (feature2 != null) {
+					assertEvent(feature2, Subsystem.State.INSTALLED, 5000);
 					assertEvent(feature2, Subsystem.State.UNINSTALLING, 5000);
 					assertEvent(feature2, Subsystem.State.UNINSTALLED, 5000);
 					assertNotChild(feature1, feature2);

@@ -3,6 +3,7 @@ package org.apache.aries.subsystem.core.internal;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.osgi.framework.VersionRange;
+import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class SubsystemManifestValidator {
@@ -18,9 +19,10 @@ public class SubsystemManifestValidator {
 			}
 		}
 		else if (subsystem.isFeature()) {
-			if (manifest.getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies()) {
+			if (manifest.getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies())
 				throw new SubsystemException("Feature subsystems may not declare a provision-policy of acceptDependencies");
-			}
+			if (manifest.getHeaders().get(SubsystemConstants.PREFERRED_PROVIDER) != null)
+				throw new SubsystemException("Feature subsystems may not declare a " + SubsystemConstants.PREFERRED_PROVIDER + " header");
 		}
 	}
 	
