@@ -26,9 +26,7 @@ public class SubsystemGraph {
 			if (!(o instanceof SubsystemWrapper))
 				return false;
 			SubsystemWrapper that = (SubsystemWrapper)o;
-			return s.getSymbolicName().equals(that.s.getSymbolicName())
-					&& s.getVersion().equals(that.s.getVersion())
-					&& s.getType().equals(that.s.getType());
+			return s.getLocation().equals(that.s.getLocation());
 		}
 		
 		public Subsystem getSubsystem() {
@@ -37,28 +35,24 @@ public class SubsystemGraph {
 		
 		@Override
 		public int hashCode() {
-			int result = 17;
-			result = result + 31 * s.getSymbolicName().hashCode();
-			result = result + 31 * s.getVersion().hashCode();
-			result = result + 31 * s.getType().hashCode();
-			return result;
+			return s.getLocation().hashCode();
 		}
 		
 		@Override
 		public String toString() {
-			return new StringBuilder().append(s.getClass().getName())
-					.append(": symbolicName=").append(s.getSymbolicName())
+			return new StringBuilder("location=").append(s.getLocation())
+					.append(", symbolicName=").append(s.getSymbolicName())
 					.append(", version=").append(s.getVersion())
 					.append(", type=").append(s.getType()).toString();
 		}
 	}
 	private final Map<SubsystemWrapper, Collection<SubsystemWrapper>> adjacencyList = new HashMap<SubsystemWrapper, Collection<SubsystemWrapper>>();
 	
-	public SubsystemGraph(Subsystem root) {
+	public SubsystemGraph(AriesSubsystem root) {
 		adjacencyList.put(new SubsystemWrapper(root), new HashSet<SubsystemWrapper>());
 	}
 	
-	public synchronized void add(Subsystem parent, Subsystem child) {
+	public synchronized void add(AriesSubsystem parent, AriesSubsystem child) {
 		SubsystemWrapper parentWrap = new SubsystemWrapper(parent);
 		SubsystemWrapper childWrap = new SubsystemWrapper(child);
 		if (containsAncestor(childWrap, parentWrap))
@@ -76,7 +70,7 @@ public class SubsystemGraph {
 		subsystems.add(childWrap);
 	}
 	
-	public synchronized Collection<Subsystem> getChildren(Subsystem parent) {
+	public synchronized Collection<Subsystem> getChildren(AriesSubsystem parent) {
 		Collection<SubsystemWrapper> children = adjacencyList.get(new SubsystemWrapper(parent));
 		if (children == null || children.isEmpty())
 			return Collections.emptySet();
@@ -86,7 +80,7 @@ public class SubsystemGraph {
  		return Collections.unmodifiableCollection(result);
 	}
 	
-	public synchronized Collection<Subsystem> getParents(Subsystem child) {
+	public synchronized Collection<Subsystem> getParents(AriesSubsystem child) {
 		Collection<SubsystemWrapper> parents = getParents(new SubsystemWrapper(child));
 		Collection<Subsystem> result = new ArrayList<Subsystem>(parents.size());
 		for (SubsystemWrapper parent : parents) {
@@ -95,7 +89,7 @@ public class SubsystemGraph {
 		return Collections.unmodifiableCollection(result);
 	}
 	
-	public synchronized void remove(Subsystem subsystem) {
+	public synchronized void remove(AriesSubsystem subsystem) {
 		SubsystemWrapper subsystemWrap = new SubsystemWrapper(subsystem);
 		Collection<SubsystemWrapper> parents = getParents(subsystemWrap);
 		for (SubsystemWrapper parent : parents)
