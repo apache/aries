@@ -11,48 +11,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.core.obr.felix;
+package org.apache.aries.subsystem.itests.obr.felix;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.osgi.framework.Constants;
+import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.resource.Capability;
-import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
-public class FelixRequirementAdapter implements Requirement {
-	private final org.apache.felix.bundlerepository.Requirement requirement;
+public class FelixCapabilityAdapter extends AbstractCapability {
+	private final org.apache.felix.bundlerepository.Capability capability;
 	private final Resource resource;
 	
-	public FelixRequirementAdapter(org.apache.felix.bundlerepository.Requirement requirement, Resource resource) {
-		if (requirement == null)
-			throw new NullPointerException("Missing required parameter: requirement");
-		if (resource == null)
-			throw new NullPointerException("Missing required parameter: resource");
-		this.requirement = requirement;
+	public FelixCapabilityAdapter(org.apache.felix.bundlerepository.Capability capability, Resource resource) {
+		if (capability == null)
+			throw new NullPointerException("Missing required parameter: capability");
+		this.capability = capability;
 		this.resource = resource;
 	}
 
 	public Map<String, Object> getAttributes() {
-		return Collections.emptyMap();
-	}
-
-	public Map<String, String> getDirectives() {
-		Map<String, String> result = new HashMap<String, String>(1);
-		/* (1) The Felix OBR specific "mandatory:<*" syntax must be stripped out of the filter.
-		 * (2) The namespace must be translated.
-		 */
-		result.put(Constants.FILTER_DIRECTIVE, requirement.getFilter()
-				.replaceAll("\\(mandatory\\:\\<\\*[^\\)]*\\)", "")
-				.replaceAll(requirement.getName() + '=', getNamespace() + '='));
+		Map<String, Object> result = capability.getPropertiesAsMap();
+		result.put(getNamespace(), result.get(capability.getName()));
 		return result;
 	}
 
+	public Map<String, String> getDirectives() {
+		return Collections.emptyMap();
+	}
+
 	public String getNamespace() {
-		String namespace = requirement.getName();
+		String namespace = capability.getName();
 		if (namespace.equals(org.apache.felix.bundlerepository.Capability.BUNDLE))
 			return BundleRevision.BUNDLE_NAMESPACE;
 		if (namespace.equals(org.apache.felix.bundlerepository.Capability.FRAGMENT))
@@ -65,9 +55,4 @@ public class FelixRequirementAdapter implements Requirement {
 	public Resource getResource() {
 		return resource;
 	}
-
-	public boolean matches(Capability capability) {
-		return requirement.isSatisfied(new OsgiCapabilityAdapter(capability));
-	}
-
 }
