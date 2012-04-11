@@ -109,6 +109,8 @@ public class HeaderFactory {
 			return new BundleSymbolicNameHeader(value);
 		if (BundleVersionHeader.NAME.equals(name))
 			return new BundleVersionHeader(value);
+		if (PreferredProviderHeader.NAME.equals(name))
+			return new PreferredProviderHeader(value);
 		return new GenericHeader(name, value);
 			
 	}

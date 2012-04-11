@@ -857,11 +857,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private DeploymentManifest getDeploymentManifest() throws IOException, URISyntaxException {
-//		if (archive.getDeploymentManifest() == null) {
+		if (archive.getDeploymentManifest() == null)
 			archive.setDeploymentManifest(new DeploymentManifest(
 					archive.getDeploymentManifest(),
 					archive.getSubsystemManifest(), 
-//					environment,
 					new SubsystemEnvironment(this),
 					autostart,
 					id,
@@ -869,11 +868,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 					location,
 					true,
 					false));
-//		}
 		return archive.getDeploymentManifest();
 	}
 	
 	private synchronized void install(Coordination coordination, AriesSubsystem parent) throws Exception {
+		if (!State.INSTALLING.equals(getState()))
+			return;
 		if (!isFeature())
 			RegionContextBundleHelper.installRegionContextBundle(this);
 		Activator.getInstance().getSubsystemServiceRegistrar().register(this, parent);
