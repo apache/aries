@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -28,6 +27,7 @@ import java.util.TreeSet;
 
 import org.apache.aries.subsystem.core.Environment;
 import org.apache.aries.subsystem.core.ResourceHelper;
+import org.apache.aries.subsystem.core.archive.PreferredProviderHeader;
 import org.eclipse.equinox.region.Region;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -48,6 +48,64 @@ import org.slf4j.LoggerFactory;
  * So does the locating of providers for feature content with respect to children of the first parent that is not a feature.
  */
 public class SubsystemEnvironment implements Environment {
+	private static final class Comparator implements java.util.Comparator<Capability> {
+		private final AriesSubsystem subsystem;
+		
+		public Comparator(AriesSubsystem subsystem) {
+			this.subsystem = subsystem;
+		}
+		
+		@Override
+		public int compare(Capability c1, Capability c2) {
+			if (logger.isDebugEnabled())
+				logger.debug(LOG_ENTRY, "compare", new Object[]{c1, c2});
+			int result = comparePreferredProvider(c1, c2);
+			if (result == 0)
+				result = compareRuntimeResource(c1, c2);
+			logger.debug(LOG_EXIT, "compare", result);
+			return result;
+		}
+		
+		private int comparePreferredProvider(Capability c1, Capability c2) {
+			boolean pp1 = isPreferredProvider(c1);
+			boolean pp2 = isPreferredProvider(c2);
+			if (pp1 && !pp2)
+				return -1;
+			else if (!pp1 && pp2)
+				return 1;
+			return 0;
+		}
+		
+		private int compareRuntimeResource(Capability c1, Capability c2) {
+			boolean rr1 = isRuntimeResource(c1);
+			boolean rr2 = isRuntimeResource(c2);
+			if (rr1 && !rr2)
+				return -1;
+			else if (!rr1 && rr2)
+				return 1;
+			return 0;
+		}
+		
+		private boolean isPreferredProvider(Resource resource) {
+			PreferredProviderHeader header = subsystem.getArchive().getSubsystemManifest().getPreferredProviderHeader();
+			if (header == null)
+				return false;
+			return header.contains(resource);
+		}
+		
+		private boolean isPreferredProvider(Capability capability) {
+			return isPreferredProvider(capability.getResource());
+		}
+		
+		private boolean isRuntimeResource(Resource resource) {
+			return resource instanceof BundleRevision || resource instanceof AriesSubsystem;
+		}
+		
+		private boolean isRuntimeResource(Capability capability) {
+			return isRuntimeResource(capability.getResource());
+		}
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(SubsystemEnvironment.class);
 	
 //	private final Set<Resource> resources = new HashSet<Resource>();
@@ -71,23 +129,7 @@ public class SubsystemEnvironment implements Environment {
 	public SortedSet<Capability> findProviders(Requirement requirement) {
 		logger.debug(LOG_ENTRY, "findProviders", requirement);
 		// TODO Need a more robust comparator. This is just a temporary place holder.
-		SortedSet<Capability> capabilities = new TreeSet<Capability>(
-				new Comparator<Capability>() {
-					@Override
-					public int compare(Capability capability1, Capability capability2) {
-						if (logger.isDebugEnabled())
-							logger.debug(LOG_ENTRY, "compare", new Object[]{capability1, capability2});
-						int result = 0;
-						boolean br1 = capability1.getResource() instanceof BundleRevision;
-						boolean br2 = capability2.getResource() instanceof BundleRevision;
-						if (br1 && !br2)
-							result = -1;
-						else if (!br1 && br2)
-							result = 1;
-						logger.debug(LOG_EXIT, "compare", result);
-						return result;
-					}
-				});
+		SortedSet<Capability> capabilities = new TreeSet<Capability>(new Comparator(subsystem));
 		if (requirement instanceof OsgiIdentityRequirement) { 
 			logger.debug("The requirement is an instance of OsgiIdentityRequirement");
 			// TODO Consider returning only the first capability matched by the requirement in this case.

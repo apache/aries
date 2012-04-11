@@ -183,6 +183,10 @@ public class SubsystemManifest {
 		return (ImportPackageHeader)getHeaders().get(IMPORT_PACKAGE);
 	}
 	
+	public PreferredProviderHeader getPreferredProviderHeader() {
+		return (PreferredProviderHeader)getHeaders().get(PREFERRED_PROVIDER);
+	}
+	
 	public ProvideCapabilityHeader getProvideCapabilityHeader() {
 		return (ProvideCapabilityHeader)getHeaders().get(PROVIDE_CAPABILITY);
 	}
