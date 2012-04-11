@@ -13,13 +13,16 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.aries.subsystem.core.archive.PreferredProviderHeader;
 import org.osgi.framework.hooks.resolver.ResolverHook;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.Subsystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +35,24 @@ public class SubsystemResolverHook implements ResolverHook {
 	}
 
 	public void filterMatches(BundleRequirement requirement, Collection<BundleCapability> candidates) {
-		// noop
+		// Filter out candidates that don't come from preferred providers when
+		// there is at least one preferred provider.
+		// (1) Find the subsystem(s) containing requirement.getResource() as a
+		// constituent.
+		Collection<AriesSubsystem> requirers = AriesSubsystem.getSubsystems(requirement.getResource());
+		// (2) For each candidate, ask each subsystem if the candidate or any of
+		// the candidate's containing subsystems is a preferred provider. If at
+		// least one preferred provider exists, filter out all other candidates
+		// that are not also preferred providers.
+		Collection<BundleCapability> preferredProviders = new ArrayList<BundleCapability>(candidates.size());
+		for (BundleCapability candidate : candidates)
+			for (AriesSubsystem subsystem : requirers) {
+				PreferredProviderHeader header = subsystem.getArchive().getSubsystemManifest().getPreferredProviderHeader();
+				if (header != null && (header.contains(candidate.getResource()) || isResourceConstituentOfPreferredSubsystem(candidate.getResource(), subsystem)))
+					preferredProviders.add(candidate);
+			}
+		if (!preferredProviders.isEmpty())
+			candidates.retainAll(preferredProviders);
 	}
 
 	public void filterResolvable(Collection<BundleRevision> candidates) {
@@ -64,5 +84,13 @@ public class SubsystemResolverHook implements ResolverHook {
 
 	public void filterSingletonCollisions(BundleCapability singleton, Collection<BundleCapability> collisionCandidates) {
 		// noop
+	}
+	
+	private boolean isResourceConstituentOfPreferredSubsystem(Resource resource, AriesSubsystem preferer) {
+		Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(resource);
+		for (AriesSubsystem subsystem : subsystems)
+			if (preferer.getArchive().getSubsystemManifest().getPreferredProviderHeader().contains(subsystem))
+				return true;
+		return false;
 	}
 }

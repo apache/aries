@@ -13,10 +13,12 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import org.osgi.framework.namespace.IdentityNamespace;
+
 public class TypeAttribute extends AbstractAttribute {
 	public static final TypeAttribute DEFAULT = new TypeAttribute();
 	// TODO Add to constants.
-	public static final String DEFAULT_VALUE = "osgi.bundle";
+	public static final String DEFAULT_VALUE = IdentityNamespace.TYPE_BUNDLE;
 	// TODO Add to constants.
 	public static final String NAME = "type";
 	

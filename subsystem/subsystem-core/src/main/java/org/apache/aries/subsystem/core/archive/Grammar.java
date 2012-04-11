@@ -137,6 +137,9 @@ public interface Grammar {
 	public static final String SUBSYSTEM_EXPORTSERVICE = SERVICE + "(?:,\\s*(?:" + SERVICE + "))*";
 	public static final String SUBSYSTEM_IMPORTSERVICE = SERVICE + "(?:,\\s*(?:" + SERVICE + "))*";
 	
+	public static final String RESOURCE = SYMBOLICNAME + "(?:;\\s*(?:" + PARAMETER + "))*";
+	public static final String PREFERRED_PROVIDER = RESOURCE + "(?:,\\s*(?:" + RESOURCE + "))*";
+	
 	/*
 	 * number ::= digit+
 	 * version ::= major( '.' minor ( '.' micro ( '.' qualifier )? )? )?

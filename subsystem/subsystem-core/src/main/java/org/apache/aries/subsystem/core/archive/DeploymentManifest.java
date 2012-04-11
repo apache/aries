@@ -17,15 +17,10 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.core.internal.Activator;
-import org.apache.aries.subsystem.core.internal.AriesSubsystem;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.internal.SubsystemEnvironment;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
-import org.osgi.framework.namespace.BundleNamespace;
-import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -106,7 +101,7 @@ public class DeploymentManifest {
 		Map<String, Header<?>> headers;
 		if (deploymentManifest == null // We're generating a new deployment manifest.
 				|| (deploymentManifest != null && overwrite)) { // A deployment manifest already exists but overwriting it with subsystem manifest content is desired.
-			headers = new HashMap<String, Header<?>>();
+			headers = computeHeaders(subsystemManifest);
 			Collection<Resource> resources = new HashSet<Resource>();
 			SubsystemContentHeader contentHeader = subsystemManifest.getSubsystemContentHeader();
 			Map<Resource, List<Wire>> resolution = null;
@@ -138,48 +133,6 @@ public class DeploymentManifest {
 				if (!provisionResource.isEmpty())
 					headers.put(PROVISION_RESOURCE, ProvisionResourceHeader.newInstance(provisionResource));
 			}
-			headers.put(SUBSYSTEM_SYMBOLICNAME, subsystemManifest.getSubsystemSymbolicNameHeader());
-			headers.put(SUBSYSTEM_VERSION, subsystemManifest.getSubsystemVersionHeader());
-			SubsystemTypeHeader typeHeader = subsystemManifest.getSubsystemTypeHeader();
-			if (typeHeader.isApplication()) {
-				if (resolution != null) {
-					Header<?> header = computeImportPackageHeader(resolution, deployedContent, acceptDependencies);
-					if (header != null)
-						headers.put(IMPORT_PACKAGE, header);
-					header = computeRequireCapabilityHeader(resolution, deployedContent, acceptDependencies);
-					if (header != null)
-						headers.put(REQUIRE_CAPABILITY, header);
-					header = computeRequireBundleHeader(resolution, deployedContent, acceptDependencies);
-					if (header != null)
-						headers.put(REQUIRE_BUNDLE, header);
-				}
-				// TODO Compute additional headers for an application.
-			}
-			else if (typeHeader.isComposite()) {
-				Header<?> header = subsystemManifest.getImportPackageHeader();
-				if (header != null)
-					headers.put(IMPORT_PACKAGE, header);
-				header = subsystemManifest.getRequireCapabilityHeader();
-				if (header != null)
-					headers.put(REQUIRE_CAPABILITY, header);
-				header = subsystemManifest.getSubsystemImportServiceHeader();
-				if (header != null)
-					headers.put(SUBSYSTEM_IMPORTSERVICE, header);
-				header = subsystemManifest.getRequireBundleHeader();
-				if (header != null)
-					headers.put(REQUIRE_BUNDLE, header);
-				header = subsystemManifest.getExportPackageHeader();
-				if (header != null)
-					headers.put(EXPORT_PACKAGE, header);
-				header = subsystemManifest.getProvideCapabilityHeader();
-				if (header != null)
-					headers.put(PROVIDE_CAPABILITY, header);
-				header = subsystemManifest.getSubsystemExportServiceHeader();
-				if (header != null)
-					headers.put(SUBSYSTEM_EXPORTSERVICE, header);
-				// TODO Compute additional headers for a composite. 
-			}
-			// Features require no additional headers.
 		}
 		else {
 			headers = new HashMap<String, Header<?>>(deploymentManifest.getHeaders());
@@ -248,88 +201,7 @@ public class DeploymentManifest {
 		manifest.write(out);
 	}
 	
-	private static ImportPackageHeader computeImportPackageHeader(
-			Map<Resource, List<Wire>> resolution, 
-			Collection<Resource> content,
-			boolean acceptDependencies) {
-		Collection<ImportPackageHeader.Clause> clauses = new ArrayList<ImportPackageHeader.Clause>();
-		for (Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
-			for (Wire wire : entry.getValue()) {
-				Resource provider = wire.getProvider();
-				if (content.contains(provider))
-					// If the provider is a content resource, we don't need an import.
-					continue;
-				// The provider is a dependency that is already provisioned or needs provisioning.
-				if (acceptDependencies && !((provider instanceof BundleRevision) || (provider instanceof AriesSubsystem)))
-					// If the application accepts dependencies and the provider is a dependency that needs provisioning,
-					// we don't need an import.
-					continue;
-				// For all other cases, we need an import.
-				Requirement requirement = wire.getRequirement();
-				if (PackageNamespace.PACKAGE_NAMESPACE.equals(requirement.getNamespace())) {
-					clauses.add(new ImportPackageHeader.Clause(requirement));
-				}
-			}
-		}
-		if (clauses.isEmpty())
-			return null;
-		return new ImportPackageHeader(clauses);
-	}
-	
-	private static RequireBundleHeader computeRequireBundleHeader(
-			Map<Resource, List<Wire>> resolution, 
-			Collection<Resource> content,
-			boolean acceptDependencies) {
-		Collection<RequireBundleHeader.Clause> clauses = new ArrayList<RequireBundleHeader.Clause>();
-		for (Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
-			for (Wire wire : entry.getValue()) {
-				Resource provider = wire.getProvider();
-				if (content.contains(provider))
-					// If the provider is a content resource, we don't need an import.
-					continue;
-				// The provider is a dependency that is already provisioned or needs provisioning.
-				if (acceptDependencies && !((provider instanceof BundleRevision) || (provider instanceof AriesSubsystem)))
-					// If the application accepts dependencies and the provider is a dependency that needs provisioning,
-					// we don't need an import.
-					continue;
-				// For all other cases, we need an import.
-				Requirement requirement = wire.getRequirement();
-				if (BundleNamespace.BUNDLE_NAMESPACE.equals(requirement.getNamespace())) {
-					clauses.add(new RequireBundleHeader.Clause(requirement));
-				}
-			}
-		}
-		if (clauses.isEmpty())
-			return null;
-		return new RequireBundleHeader(clauses);
-	}
-	
-	private static RequireCapabilityHeader computeRequireCapabilityHeader(
-			Map<Resource, List<Wire>> resolution, 
-			Collection<Resource> content,
-			boolean acceptDependencies) {
-		Collection<RequireCapabilityHeader.Clause> clauses = new ArrayList<RequireCapabilityHeader.Clause>();
-		for (Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
-			for (Wire wire : entry.getValue()) {
-				Resource provider = wire.getProvider();
-				if (content.contains(provider))
-					// If the provider is a content resource, we don't need an imported capability.
-					continue;
-				// The provider is a dependency that is already provisioned or needs provisioning.
-				if (acceptDependencies && !((provider instanceof BundleRevision) || (provider instanceof AriesSubsystem)))
-					// If the application accepts dependencies and the provider is a dependency that needs provisioning,
-					// we don't need an import.
-					continue;
-				// For all other cases, we need an import.
-				Requirement requirement = wire.getRequirement();
-				// TODO Not sure if the startsWith check will be sufficient.
-				if (!requirement.getNamespace().startsWith("osgi.")) {
-					clauses.add(new RequireCapabilityHeader.Clause(requirement));
-				}
-			}
-		}
-		if (clauses.isEmpty())
-			return null;
-		return new RequireCapabilityHeader(clauses);
+	private Map<String, Header<?>> computeHeaders(SubsystemManifest manifest) {
+		return new HashMap<String, Header<?>>(manifest.getHeaders());
 	}
 }
