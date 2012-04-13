@@ -104,8 +104,8 @@
         <ariesProxyImplVersion>1.0.0-SNAPSHOT</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
-        <ariesQuiesceApiVersion>0.3.1-SNAPSHOT</ariesQuiesceApiVersion>
-        <ariesQuiesceManagerVersion>0.3.2-SNAPSHOT</ariesQuiesceManagerVersion>
+        <ariesQuiesceApiVersion>1.0.0-SNAPSHOT</ariesQuiesceApiVersion>
+        <ariesQuiesceManagerVersion>1.0.0-SNAPSHOT</ariesQuiesceManagerVersion>
         
 
         <!-- Aries Testsupport Versions -->
