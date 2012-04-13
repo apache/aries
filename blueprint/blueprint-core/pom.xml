@@ -97,7 +97,7 @@
         <blueprint.parser.version>1.0.0-SNAPSHOT</blueprint.parser.version>
         <proxy.api.version>1.0.0-SNAPSHOT</proxy.api.version>
         <proxy.impl.version>1.0.0-SNAPSHOT</proxy.impl.version>
-        <quiesce.api.version>0.3.1-SNAPSHOT</quiesce.api.version>
+        <quiesce.api.version>1.0.0-SNAPSHOT</quiesce.api.version>
         <util.version>1.0.0-SNAPSHOT</util.version>
     </properties>
 

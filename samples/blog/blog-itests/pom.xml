@@ -399,7 +399,7 @@
 		<dependency>
       		<groupId>org.apache.aries.quiesce</groupId>
       		<artifactId>org.apache.aries.quiesce.manager</artifactId>
-      		<version>0.3.2-SNAPSHOT</version>
+      		<version>1.0.0-SNAPSHOT</version>
       		<scope>test</scope>
 		</dependency>
 		
