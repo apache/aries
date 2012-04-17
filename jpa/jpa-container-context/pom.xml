@@ -49,7 +49,6 @@
             org.apache.aries.jpa.container.context;version="$&lt;range;[==,=+)&gt;",
             org.apache.aries.quiesce.manager;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
             org.apache.aries.quiesce.participant;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
       <aries.osgi.activator>

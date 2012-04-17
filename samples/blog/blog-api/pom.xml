@@ -36,9 +36,6 @@
               org.apache.aries.samples.blog.api.comment.persistence,
               org.apache.aries.samples.blog.api.persistence,
          </aries.osgi.export.pkg>
-         <aries.osgi.import>
-               *
-         </aries.osgi.import>
          <aries.osgi.private.pkg />
     </properties>
 

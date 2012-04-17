@@ -42,9 +42,6 @@
         <aries.osgi.export.pkg>
             org.apache.aries.subsystem.scope.*
         </aries.osgi.export.pkg>
-         <aries.osgi.import>
-             *
-         </aries.osgi.import>
     </properties>
 
     <dependencies>

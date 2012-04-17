@@ -36,9 +36,6 @@
          <aries.osgi.export>
                org.apache.aries.samples.ariestrader.beans
          </aries.osgi.export>
-         <aries.osgi.import>
-               *
-         </aries.osgi.import>
          <aries.osgi.private.pkg />
     </properties>
 

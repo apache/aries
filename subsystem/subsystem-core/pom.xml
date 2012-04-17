@@ -53,9 +53,6 @@
             org.apache.felix.resolver,
             org.apache.felix.resolver.impl
         </aries.osgi.private.pkg>
-         <aries.osgi.import>
-         	*
-         </aries.osgi.import>
     </properties>
 
     <dependencies>

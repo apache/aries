@@ -43,7 +43,6 @@
         <aries.osgi.export.pkg />
         <aries.osgi.import>
             javax.persistence;version="[1.0.0,3.0.0)",
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.export.service>
