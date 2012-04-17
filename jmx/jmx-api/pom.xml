@@ -48,9 +48,6 @@
             org.osgi.jmx.service.provisioning;uses:="javax.management.openmbean",
             org.osgi.jmx.service.useradmin;uses:="org.osgi.jmx,javax.management.openmbean"
         </aries.osgi.export.pkg>
-        <aries.osgi.import>
-            *
-        </aries.osgi.import>
         <aries.osgi.private.pkg />
     </properties>
 

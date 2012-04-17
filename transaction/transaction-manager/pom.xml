@@ -50,7 +50,6 @@
             org.osgi.framework,
             org.osgi.service.cm,
             javax.transaction*,
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>

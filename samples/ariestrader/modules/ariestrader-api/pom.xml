@@ -31,9 +31,6 @@
             org.apache.aries.samples.ariestrader.api,
             org.apache.aries.samples.ariestrader.api.persistence
          </aries.osgi.export>
-         <aries.osgi.import>
-               *
-         </aries.osgi.import>
          <aries.osgi.private.pkg />
     </properties>
 

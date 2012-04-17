@@ -68,7 +68,6 @@
             org.apache.aries.blueprint.annotation.service;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
             org.apache.aries.quiesce.manager;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
             org.apache.aries.quiesce.participant;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <!-- Export package versions are maintained in packageinfo files -->

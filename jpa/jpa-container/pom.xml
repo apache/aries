@@ -49,7 +49,6 @@
             !javax.transaction,
             org.apache.aries.quiesce.manager;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
             org.apache.aries.quiesce.participant;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             org.osgi.framework;version="[1.5,2)",
             org.osgi.framework.hooks.weaving;resolution:=optional,
             org.osgi.framework.wiring;resolution:=optional,
