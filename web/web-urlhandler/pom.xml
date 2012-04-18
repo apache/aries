@@ -47,8 +47,6 @@
 			org.apache.aries.web.converter.impl,
 			org.apache.aries.web.url
 		</aries.osgi.private.pkg>
-		<aries.osgi.import.pkg>*
-		</aries.osgi.import.pkg>
 	</properties>
 
     <dependencies>
