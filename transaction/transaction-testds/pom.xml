@@ -35,8 +35,6 @@
      </scm>
 
      <properties>
-         <aries.osgi.import.pkg>*
-         </aries.osgi.import.pkg>
          <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
          <aries.osgi.private.pkg />
      </properties>

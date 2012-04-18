@@ -36,10 +36,6 @@
     <properties>
         <aries.osgi.export.pkg>
         </aries.osgi.export.pkg>
-        <aries.osgi.import.pkg>
-    	    org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
-            *
-        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.application.resolve.transform.cm
         </aries.osgi.private.pkg>
