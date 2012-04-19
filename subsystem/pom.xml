@@ -160,7 +160,7 @@
                     <plugin>
                         <groupId>com.savage7.maven.plugins</groupId>
                         <artifactId>maven-external-dependency-plugin</artifactId>
-                        <version>0.5-SNAPSHOT</version>
+                        <version>0.6-SNAPSHOT</version>
                         <inherited>false</inherited>
                         <configuration>
                             <createChecksum>true</createChecksum>
@@ -172,14 +172,14 @@
                                     <artifactId>org.eclipse.osgi</artifactId>
                                     <version>3.8.0-SNAPSHOT</version>
                                     <packaging>jar</packaging>
-                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/N20120222-2000/org.eclipse.osgi_3.8.0.N20120222-2000.jar&amp;url=http://download.eclipse.org/equinox/drops/N20120222-2000/org.eclipse.osgi_3.8.0.N20120222-2000.jar&amp;mirror_id=1</downloadUrl>
+                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M6-201203141800/org.eclipse.osgi_3.8.0.v20120312-2035.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M6-201203141800/org.eclipse.osgi_3.8.0.v20120312-2035.jar&amp;mirror_id=1</downloadUrl>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.eclipse.equinox</groupId>
                                     <artifactId>org.eclipse.equinox.coordinator</artifactId>
                                     <version>3.8.0-SNAPSHOT</version>
                                     <packaging>jar</packaging>
-                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/N20120223-2000/org.eclipse.equinox.coordinator_1.1.0.N20120223-2000.jar&amp;url=http://download.eclipse.org/equinox/drops/N20120223-2000/org.eclipse.equinox.coordinator_1.1.0.N20120223-2000.jar&amp;mirror_id=1</downloadUrl>
+                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M6-201203141800/org.eclipse.equinox.coordinator_1.1.0.v20120219-1616.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M6-201203141800/org.eclipse.equinox.coordinator_1.1.0.v20120219-1616.jar&amp;mirror_id=1</downloadUrl>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.eclipse.equinox</groupId>
