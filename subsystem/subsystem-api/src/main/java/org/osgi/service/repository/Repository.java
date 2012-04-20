@@ -22,7 +22,6 @@ package org.osgi.service.repository;
 
 import java.util.Collection;
 import java.util.Map;
-
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -39,11 +38,16 @@ import org.osgi.resource.Resource;
  * properties.
  * 
  * @ThreadSafe
- * @version $Id: 556d89153e612c5188c74e62004fdcacdd62949e $
+ * @noimplement
+ * @version $Id: 7c1e9f0758f6dc1530645699c62843182c84dc1e $
  */
 public interface Repository {
 	/**
-	 * Service property to provide an optional URL related to this repository
+	 * Service property to provide URLs related to this repository.
+	 * 
+	 * <p>
+	 * The value of this property must be of type {@code String},
+	 * {@code String[]}, or {@code Collection<String>}.
 	 */
 	String	URL	= "repository.url";
 
@@ -59,6 +63,5 @@ public interface Repository {
 	 *         an empty collection. The returned map is the property of the
 	 *         caller and can be modified by the caller.
 	 */
-	Map<Requirement, Collection<Capability>> findProviders(
-			Collection< ? extends Requirement> requirements);
+	Map<Requirement, Collection<Capability>> findProviders(Collection<? extends Requirement> requirements);
 }
