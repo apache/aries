@@ -22,7 +22,6 @@ package org.osgi.service.resolver;
 
 import java.util.List;
 import java.util.Map;
-
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
 
@@ -32,7 +31,7 @@ import org.osgi.resource.Wire;
  * 
  * @ThreadSafe
  * @noimplement
- * @version $Id: 871a5f8f97eba146fc1b8657e84a41b571533fbb $
+ * @version $Id: dfb89b8d09af62ecf62321b80d7e2310512f27a1 $
  */
 public interface Resolver {
 	/**
@@ -69,6 +68,5 @@ public interface Resolver {
 	 *         and can be modified by the caller.
 	 * @throws ResolutionException If the resolution cannot be satisfied.
 	 */
-	Map<Resource, List<Wire>> resolve(ResolveContext context)
-			throws ResolutionException;
+	Map<Resource, List<Wire>> resolve(ResolveContext context) throws ResolutionException;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2010, 2011). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2010, 2012). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 /**
- * Resolver Package Version 1.0.
+ * Resolver Service Package Version 1.0.
  * 
  * <p>
  * Bundles wishing to use this package must list the package in the
@@ -32,7 +32,8 @@
  * <p>
  * {@code  Import-Package: org.osgi.service.resolver; version="[1.0,1.1)"}
  * 
- * @version $Id: d59eb041c07b894a395e45b82a24f058aadbec32 $
+ * @version $Id: db1706d83ca104187f77cb1feb7cf52b92b3740d $
  */
 
 package org.osgi.service.resolver;
+
