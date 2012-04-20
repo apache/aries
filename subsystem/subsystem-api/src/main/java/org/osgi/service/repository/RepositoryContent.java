@@ -17,7 +17,6 @@
 package org.osgi.service.repository;
 
 import java.io.InputStream;
-
 import org.osgi.resource.Resource;
 
 /**
@@ -29,7 +28,8 @@ import org.osgi.resource.Resource;
  * {@code InputStream} to the default content of the resource.
  * 
  * @ThreadSafe
- * @version $Id: ec32a007f35510827791c7e5af99f3c5d579ce87 $
+ * @noimplement
+ * @version $Id: 65c9ca60467654e7147a2fddc86acef58a634042 $
  */
 public interface RepositoryContent {
 
