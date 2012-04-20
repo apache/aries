@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2010, 2011). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2010, 2012). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 /**
- * Repository Package Version 1.0.
+ * Repository Service Package Version 1.0.
  * 
  * <p>
  * Bundles wishing to use this package must list the package in the
@@ -32,7 +32,8 @@
  * <p>
  * {@code  Import-Package: org.osgi.service.repository; version="[1.0,1.1)"}
  * 
- * @version $Id: 124471567e9a3f769ead5e9a593cf8581f307a02 $
+ * @version $Id: 2f90fa85cba8d54a6431ff843f2dac5eb7beb7dc $
  */
 
 package org.osgi.service.repository;
+

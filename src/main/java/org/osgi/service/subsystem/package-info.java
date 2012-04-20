@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2010, 2011). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2010, 2012). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 /**
- * Subsystem Package Version 1.0.
+ * Subsystem Service Package Version 1.0.
  * 
  * <p>
  * Bundles wishing to use this package must list the package in the
@@ -32,7 +32,8 @@
  * <p>
  * {@code  Import-Package: org.osgi.service.subsystem; version="[1.0,1.1)"}
  * 
- * @version $Id: c92a6ccec8a36b4507b349e8d539a327fd2515d3 $
+ * @version $Id: 3d0a1cfa6351c5c269c23358cfe3cc21403ba453 $
  */
 
 package org.osgi.service.subsystem;
+
