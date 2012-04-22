@@ -154,20 +154,16 @@ public class SubsystemContentHeader extends AbstractHeader {
 	}
 	
 	public boolean contains(Resource resource) {
-		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
-		Version version = ResourceHelper.getVersionAttribute(resource);
-		String type = ResourceHelper.getTypeAttribute(resource);
-		for (Content content : contents) {
-			if (symbolicName.equals(content.getName())
-					&& content.getVersionRange().includes(version)
-					&& type.equals(content.getType()))
-				return true;
-		}
-		return false;
+		return getContent(resource) != null;
 	}
 
 	public Collection<Content> getContents() {
 		return Collections.unmodifiableCollection(contents);
+	}
+	
+	public boolean isMandatory(Resource resource) {
+		Content content = getContent(resource);
+		return content == null ? false : content.isMandatory();
 	}
 	
 	public List<Requirement> toRequirements() {
@@ -175,5 +171,18 @@ public class SubsystemContentHeader extends AbstractHeader {
 		for (Content content : contents)
 			result.add(content.toRequirement());
 		return result;
+	}
+	
+	private Content getContent(Resource resource) {
+		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
+		Version version = ResourceHelper.getVersionAttribute(resource);
+		String type = ResourceHelper.getTypeAttribute(resource);
+		for (Content content : contents) {
+			if (symbolicName.equals(content.getName())
+					&& content.getVersionRange().includes(version)
+					&& type.equals(content.getType()))
+				return content;
+		}
+		return null;
 	}
 }
