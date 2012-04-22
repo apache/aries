@@ -6,30 +6,33 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.aries.subsystem.core.Resolver;
 import org.apache.aries.subsystem.core.ResourceHelper;
-import org.apache.felix.resolver.impl.ResolverImpl;
+import org.apache.aries.subsystem.core.internal.Activator;
+import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
 import org.osgi.resource.Wiring;
+import org.osgi.service.resolver.HostedCapability;
+import org.osgi.service.resolver.ResolutionException;
+import org.osgi.service.resolver.Resolver;
 
 public class DependencyCalculator {
-	private static class Environment implements
-			org.apache.aries.subsystem.core.Environment {
+	private static class ResolveContext extends
+			org.osgi.service.resolver.ResolveContext {
 		private final Collection<Resource> resources;
 
-		public Environment(Collection<Resource> resources) {
+		public ResolveContext(Collection<Resource> resources) {
 			this.resources = resources;
 		}
 
 		@Override
-		public SortedSet<Capability> findProviders(Requirement requirement) {
+		public List<Capability> findProviders(Requirement requirement) {
 			ArrayList<Capability> capabilities = new ArrayList<Capability>();
 			for (Resource resource : resources)
 				for (Capability capability : resource
@@ -39,26 +42,29 @@ public class DependencyCalculator {
 			if (capabilities.isEmpty())
 				capabilities.add(new MissingCapability(requirement));
 			capabilities.trimToSize();
-			return new TreeSet<Capability>(capabilities);
-		}
-
-		@Override
-		public Map<Requirement, SortedSet<Capability>> findProviders(
-				Collection<? extends Requirement> requirements) {
-			Map<Requirement, SortedSet<Capability>> result = new HashMap<Requirement, SortedSet<Capability>>();
-			for (Requirement requirement : requirements)
-				result.put(requirement, findProviders(requirement));
-			return result;
+			return capabilities;
 		}
 
 		@Override
 		public boolean isEffective(Requirement requirement) {
 			return true;
 		}
+		
+		@Override
+		public Collection<Resource> getMandatoryResources() {
+			return resources;
+		}
 
 		@Override
 		public Map<Resource, Wiring> getWirings() {
 			return Collections.emptyMap();
+		}
+
+		@Override
+		public int insertHostedCapability(List<Capability> capabilities,
+				HostedCapability hostedCapability) {
+			capabilities.add(hostedCapability);
+			return capabilities.size() - 1;
 		}
 	}
 
@@ -86,15 +92,17 @@ public class DependencyCalculator {
 			}
 		}
 		
+		private final Map<String, Object> attributes = new HashMap<String, Object>();
 		private final Requirement requirement;
 
 		public MissingCapability(Requirement requirement) {
 			this.requirement = requirement;
+			initializeAttributes();
 		}
 
 		@Override
 		public Map<String, Object> getAttributes() {
-			return Collections.emptyMap();
+			return Collections.unmodifiableMap(attributes);
 		}
 
 		@Override
@@ -111,21 +119,25 @@ public class DependencyCalculator {
 		public Resource getResource() {
 			return Resource.INSTANCE;
 		}
+		
+		private void initializeAttributes() {
+			Pattern pattern = Pattern.compile("\\(([^(=]+)=([^)]+)\\)");
+			Matcher matcher = pattern.matcher(requirement.getDirectives().get(Constants.FILTER_DIRECTIVE));
+			while (matcher.find())
+				attributes.put(matcher.group(1), matcher.group(2));
+		}
 	}
 
-	private final Environment environment;
-	private final Collection<Resource> resources;
+	private final ResolveContext context;
 
 	public DependencyCalculator(Collection<Resource> resources) {
-		environment = new Environment(resources);
-		this.resources = resources;
+		context = new ResolveContext(resources);
 	}
 
-	public List<Requirement> calculateDependencies() {
+	public List<Requirement> calculateDependencies() throws ResolutionException {
 		ArrayList<Requirement> result = new ArrayList<Requirement>();
-		Resolver resolver = new ResolverImpl(null);
-		Map<Resource, List<Wire>> resolution = resolver.resolve(environment,
-				Collections.EMPTY_LIST, resources);
+		Resolver resolver = Activator.getInstance().getResolver();
+		Map<Resource, List<Wire>> resolution = resolver.resolve(context);
 		for (List<Wire> wires : resolution.values())
 			for (Wire wire : wires)
 				if (wire.getCapability() instanceof MissingCapability)

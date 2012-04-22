@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.felix.resolver.impl;
+package org.apache.felix.resolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,14 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.apache.aries.subsystem.core.Environment;
-import org.apache.aries.subsystem.core.ResolutionException;
-import org.apache.felix.resolver.FelixEnvironment;
-import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
@@ -43,6 +36,9 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
 import org.osgi.resource.Wiring;
+import org.osgi.service.resolver.HostedCapability;
+import org.osgi.service.resolver.ResolutionException;
+import org.osgi.service.resolver.ResolveContext;
 
 class Candidates
 {
@@ -50,15 +46,14 @@ class Candidates
     public static final int OPTIONAL = 1;
     public static final int ON_DEMAND = 2;
 
-    // Set of all mandatory bundle revisions.
-    private final Set<Resource> m_mandatoryRevisions;
+    private final Set<Resource> m_mandatoryResources;
     // Maps a capability to requirements that match it.
     private final Map<Capability, Set<Requirement>> m_dependentMap;
     // Maps a requirement to the capability it matches.
-    private final Map<Requirement, SortedSet<Capability>> m_candidateMap;
+    private final Map<Requirement, List<Capability>> m_candidateMap;
     // Maps a bundle revision to its associated wrapped revision; this only happens
     // when a revision being resolved has fragments to attach to it.
-    private final Map<Resource, HostResource> m_allWrappedHosts;
+    private final Map<Resource, WrappedResource> m_allWrappedHosts;
     // Map used when populating candidates to hold intermediate and final results.
     private final Map<Resource, Object> m_populateResultCache;
 
@@ -73,12 +68,13 @@ class Candidates
      * @param wrappedHosts the wrapped hosts map.
     **/
     private Candidates(
-        Set<Resource> mandatoryRevisions, Map<Capability, Set<Requirement>> dependentMap,
-        Map<Requirement, SortedSet<Capability>> candidateMap,
-        Map<Resource, HostResource> wrappedHosts, Map<Resource, Object> populateResultCache,
+        Set<Resource> mandatoryResources,
+        Map<Capability, Set<Requirement>> dependentMap,
+        Map<Requirement, List<Capability>> candidateMap,
+        Map<Resource, WrappedResource> wrappedHosts, Map<Resource, Object> populateResultCache,
         boolean fragmentsPresent)
     {
-        m_mandatoryRevisions = mandatoryRevisions;
+        m_mandatoryResources = mandatoryResources;
         m_dependentMap = dependentMap;
         m_candidateMap = candidateMap;
         m_allWrappedHosts = wrappedHosts;
@@ -91,10 +87,10 @@ class Candidates
     **/
     public Candidates()
     {
-        m_mandatoryRevisions = new HashSet<Resource>();
+        m_mandatoryResources = new HashSet<Resource>();
         m_dependentMap = new HashMap<Capability, Set<Requirement>>();
-        m_candidateMap = new HashMap<Requirement, SortedSet<Capability>>();
-        m_allWrappedHosts = new HashMap<Resource, HostResource>();
+        m_candidateMap = new HashMap<Requirement, List<Capability>>();
+        m_allWrappedHosts = new HashMap<Resource, WrappedResource>();
         m_populateResultCache = new HashMap<Resource, Object>();
     }
 
@@ -115,7 +111,7 @@ class Candidates
      * @param resolution indicates the resolution type.
      */
     public final void populate(
-        FelixEnvironment env, Resource resource, int resolution)
+        ResolveContext rc, Resource resource, int resolution) throws ResolutionException
     {
         // Get the current result cache value, to make sure the revision
         // hasn't already been populated.
@@ -136,7 +132,7 @@ class Candidates
         // populate optional non-fragment revisions if they aren't already
         // resolved.
         boolean isFragment = Util.isFragment(resource);
-        if (!isFragment && env.getWirings().containsKey(resource))
+        if (!isFragment && rc.getWirings().containsKey(resource))
         {
             return;
         }
@@ -145,16 +141,16 @@ class Candidates
         // However, for on-demand fragments only populate if their host
         // is already populated.
         if ((resolution != ON_DEMAND)
-            || (isFragment && populateFragmentOndemand(env, resource)))
+            || (isFragment && populateFragmentOndemand(rc, resource)))
         {
             if (resolution == MANDATORY)
             {
-                m_mandatoryRevisions.add(resource);
+                m_mandatoryResources.add(resource);
             }
             try
             {
                 // Try to populate candidates for the optional revision.
-                populateRevision(env, resource);
+                populateResource(rc, resource);
             }
             catch (ResolutionException ex)
             {
@@ -173,7 +169,7 @@ class Candidates
      * @param revision the revision whose candidates should be populated.
      */
 // TODO: FELIX3 - Modify to not be recursive.
-    private void populateRevision(FelixEnvironment env, Resource resource)
+    private void populateResource(ResolveContext rc, Resource resource) throws ResolutionException
     {
         // Determine if we've already calculated this revision's candidates.
         // The result cache will have one of three values:
@@ -195,7 +191,7 @@ class Candidates
 
         // Keeps track of the candidates we've already calculated for the
         // current revision's requirements.
-        Map<Requirement, SortedSet<Capability>> localCandidateMap = null;
+        Map<Requirement, List<Capability>> localCandidateMap = null;
 
         // Keeps track of the current revision's requirements for which we
         // haven't yet found candidates.
@@ -232,12 +228,6 @@ class Candidates
         // do some one-time checks and initialization.
         if ((remainingReqs == null) && (localCandidateMap == null))
         {
-            // Verify that any required execution environment is satisfied.
-            env.checkExecutionEnvironment(resource);
-
-            // Verify that any native libraries match the current platform.
-            env.checkNativeLibraries(resource);
-
             // Record cycle count.
             cycleCount = new Integer(0);
 
@@ -256,29 +246,35 @@ class Candidates
         }
 
         // If we have requirements remaining, then find candidates for them.
-        while (remainingReqs.size() > 0)
+        while (!remainingReqs.isEmpty())
         {
             Requirement req = remainingReqs.remove(0);
 
             // Ignore non-effective and dynamic requirements.
-            String resolution = req.getDirectives().get(Constants.RESOLUTION_DIRECTIVE);
-            if (!env.isEffective(req)
+            String resolution = req.getDirectives()
+                .get(PackageNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
+            if (!rc.isEffective(req)
                 || ((resolution != null)
-// TODO: RFC-112 - We need a constant here.
-                    && resolution.equals("dynamic")))
+                    && resolution.equals(PackageNamespace.RESOLUTION_DYNAMIC)))
             {
                 continue;
             }
 
             // Process the candidates, removing any candidates that
             // cannot resolve.
-            SortedSet<Capability> candidates = env.findProviders(req);
-            ResolutionException rethrow = processCandidates(env, resource, candidates);
+            List<Capability> candidates = rc.findProviders(req);
+            ResolutionException rethrow = processCandidates(rc, resource, candidates);
 
-            // If there are no candidates for the current requirement
-            // and it is not optional, then create, cache, and throw
-            // a resolve exception.
-            if (candidates.isEmpty() && !Util.isOptional(req))
+            // First, due to cycles, makes sure we haven't already failed in
+            // a deeper recursion.
+            Object result = m_populateResultCache.get(resource);
+            if (result instanceof ResolutionException)
+            {
+                throw (ResolutionException) result;
+            }
+            // Next, if are no candidates remaining and the requirement is not
+            // not optional, then record and throw a resolve exception.
+            else if (candidates.isEmpty() && !Util.isOptional(req))
             {
                 String msg = "Unable to resolve " + resource
                     + ": missing requirement " + req;
@@ -290,7 +286,7 @@ class Candidates
                 m_populateResultCache.put(resource, rethrow);
                 throw rethrow;
             }
-            // If we actually have candidates for the requirement, then
+            // Otherwise, if we actually have candidates for the requirement, then
             // add them to the local candidate map.
             else if (candidates.size() > 0)
             {
@@ -317,11 +313,12 @@ class Candidates
         }
     }
 
-    private boolean populateFragmentOndemand(FelixEnvironment env, Resource resource)
+    private boolean populateFragmentOndemand(ResolveContext rc, Resource resource)
         throws ResolutionException
     {
         // Create a modifiable list of the revision's requirements.
-        List<Requirement> remainingReqs = new ArrayList<Requirement>(resource.getRequirements(null));
+        List<Requirement> remainingReqs =
+            new ArrayList(resource.getRequirements(null));
         // Find the host requirement.
         Requirement hostReq = null;
         for (Iterator<Requirement> it = remainingReqs.iterator();
@@ -336,7 +333,7 @@ class Candidates
             }
         }
         // Get candidates hosts and keep any that have been populated.
-        SortedSet<Capability> hosts = env.findProviders(hostReq);
+        List<Capability> hosts = rc.findProviders(hostReq);
         for (Iterator<Capability> it = hosts.iterator(); it.hasNext(); )
         {
             Capability host = it.next();
@@ -351,20 +348,16 @@ class Candidates
         {
             return false;
         }
-        // If there are populates host candidates, then finish up
-        // some other checks and prepopulate the result cache with
-        // the work we've done so far.
-        // Verify that any required execution environment is satisfied.
-        env.checkExecutionEnvironment(resource);
-        // Verify that any native libraries match the current platform.
-        env.checkNativeLibraries(resource);
+
+        // If there are populated host candidates, then prepopulate
+        // the result cache with the work we've done so far.
         // Record cycle count, but start at -1 since it will
         // be incremented again in populate().
         Integer cycleCount = new Integer(-1);
         // Create a local map for populating candidates first, just in case
         // the revision is not resolvable.
-        Map<Requirement, SortedSet<Capability>> localCandidateMap =
-            new HashMap<Requirement, SortedSet<Capability>>();
+        Map<Requirement, List<Capability>> localCandidateMap =
+            new HashMap<Requirement, List<Capability>>();
         // Add the discovered host candidates to the local candidate map.
         localCandidateMap.put(hostReq, hosts);
         // Add these value to the result cache so we know we are
@@ -376,19 +369,19 @@ class Candidates
     }
 
     public void populateDynamic(
-        FelixEnvironment env, Resource resource,
-        Requirement req, SortedSet<Capability> candidates)
+        ResolveContext rc, Resource resource,
+        Requirement req, List<Capability> candidates) throws ResolutionException
     {
         // Record the revision associated with the dynamic require
         // as a mandatory revision.
-        m_mandatoryRevisions.add(resource);
+        m_mandatoryResources.add(resource);
 
         // Add the dynamic imports candidates.
         add(req, candidates);
 
         // Process the candidates, removing any candidates that
         // cannot resolve.
-        ResolutionException rethrow = processCandidates(env, resource, candidates);
+        ResolutionException rethrow = processCandidates(rc, resource, candidates);
 
         if (candidates.isEmpty())
         {
@@ -415,9 +408,9 @@ class Candidates
      * @return a resolve exception to be re-thrown, if any, or null.
      */
     private ResolutionException processCandidates(
-        FelixEnvironment env,
+        ResolveContext rc,
         Resource resource,
-        SortedSet<Capability> candidates)
+        List<Capability> candidates)
     {
         // Get satisfying candidates and populate their candidates if necessary.
         ResolutionException rethrow = null;
@@ -453,13 +446,12 @@ class Candidates
             // since we effectively chain exception messages for each level
             // of recursion; thus, any avoided recursion results in fewer
             // exceptions to chain when an error does occur.
-            if (isFragment
-                || (!env.getWirings().containsKey(candCap.getResource())
-                    && !candCap.getResource().equals(resource)))
+            if ((isFragment || !rc.getWirings().containsKey(candCap.getResource()))
+                && !candCap.getResource().equals(resource))
             {
                 try
                 {
-                    populateRevision(env, candCap.getResource());
+                    populateResource(rc, candCap.getResource());
                 }
                 catch (ResolutionException ex)
                 {
@@ -483,7 +475,7 @@ class Candidates
             for (Capability fragCand : fragmentCands)
             {
                 // Only necessary for resolved fragments.
-                Wiring wiring = env.getWirings().get(fragCand.getResource());
+                Wiring wiring = rc.getWirings().get(fragCand.getResource());
                 if (wiring != null)
                 {
                     // Fragments only have host wire, so each wire represents
@@ -494,13 +486,25 @@ class Candidates
                         // host actually provides it in its resolved capabilities,
                         // since it may be a substitutable export.
                         if (!fragCand.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE)
-                            || env.getWirings().get(wire.getProvider())
+                            || rc.getWirings().get(wire.getProvider())
                                 .getResourceCapabilities(null).contains(fragCand))
                         {
                             // Note that we can just add this as a candidate
                             // directly, since we know it is already resolved.
-                            candidates.add(
-                                new HostedCapability(
+                            // NOTE: We are synthesizing a hosted capability here,
+                            // but we are not using a ShadowList like we do when
+                            // we synthesizing capabilities for unresolved hosts.
+                            // It is not necessary to use the ShadowList here since
+                            // the host is resolved, because in that case we can
+                            // calculate the proper package space by traversing
+                            // the wiring. In the unresolved case, this isn't possible
+                            // so we need to use the ShadowList so we can keep
+                            // a reference to a synthesized resource with attached
+                            // fragments so we can correctly calculate its package
+                            // space.
+                            rc.insertHostedCapability(
+                                candidates,
+                                new WrappedCapability(
                                     wire.getCapability().getResource(),
                                     fragCand));
                         }
@@ -512,15 +516,15 @@ class Candidates
         return rethrow;
     }
 
-    public boolean isPopulated(Resource revision)
+    public boolean isPopulated(Resource resource)
     {
-        Object value = m_populateResultCache.get(revision);
+        Object value = m_populateResultCache.get(resource);
         return ((value != null) && (value instanceof Boolean));
     }
 
-    public ResolutionException getResolveException(Resource revision)
+    public ResolutionException getResolveException(Resource resource)
     {
-        Object value = m_populateResultCache.get(revision);
+        Object value = m_populateResultCache.get(resource);
         return ((value != null) && (value instanceof ResolutionException))
             ? (ResolutionException) value : null;
     }
@@ -534,7 +538,7 @@ class Candidates
      * @param req the requirement to add.
      * @param candidates the candidates matching the requirement.
     **/
-    private void add(Requirement req, SortedSet<Capability> candidates)
+    private void add(Requirement req, List<Capability> candidates)
     {
         if (req.getNamespace().equals(HostNamespace.HOST_NAMESPACE))
         {
@@ -551,9 +555,9 @@ class Candidates
      * be further modified by the caller.
      * @param candidates the bulk requirements and candidates to add.
     **/
-    private void add(Map<Requirement, SortedSet<Capability>> candidates)
+    private void add(Map<Requirement, List<Capability>> candidates)
     {
-        for (Entry<Requirement, SortedSet<Capability>> entry : candidates.entrySet())
+        for (Entry<Requirement, List<Capability>> entry : candidates.entrySet())
         {
             add(entry.getKey(), entry.getValue());
         }
@@ -566,10 +570,10 @@ class Candidates
      * @param m the module whose wrapper is desired.
      * @return the wrapper module or the module itself if it was not wrapped.
     **/
-    public Resource getWrappedHost(Resource m)
+    public Resource getWrappedHost(Resource r)
     {
-        Resource wrapped = m_allWrappedHosts.get(m);
-        return (wrapped == null) ? m : wrapped;
+        Resource wrapped = m_allWrappedHosts.get(r);
+        return (wrapped == null) ? r : wrapped;
     }
 
     /**
@@ -577,7 +581,7 @@ class Candidates
      * @param req the requirement whose candidates are desired.
      * @return the matching candidates or null.
     **/
-    public SortedSet<Capability> getCandidates(Requirement req)
+    public List<Capability> getCandidates(Requirement req)
     {
         return m_candidateMap.get(req);
     }
@@ -598,7 +602,7 @@ class Candidates
      * @throws ResolveException if the removal of any unselected fragments result
      *         in the root module being unable to resolve.
     **/
-    public void prepare()
+    public void prepare(ResolveContext rc) throws ResolutionException
     {
         // Maps a host capability to a map containing its potential fragments;
         // the fragment map maps a fragment symbolic name to a map that maps
@@ -626,7 +630,7 @@ class Candidates
         //      with host's attached fragment capabilities.
 
         // Steps 1 and 2
-        List<HostResource> hostRevisions = new ArrayList<HostResource>();
+        List<WrappedResource> hostResources = new ArrayList<WrappedResource>();
         List<Resource> unselectedFragments = new ArrayList<Resource>();
         for (Entry<Capability, Map<String, Map<Version, List<Requirement>>>>
             hostEntry : hostFragments.entrySet())
@@ -661,7 +665,7 @@ class Candidates
                         else
                         {
                             m_dependentMap.get(hostCap).remove(hostReq);
-                            SortedSet<Capability> hosts = m_candidateMap.get(hostReq);
+                            List<Capability> hosts = m_candidateMap.get(hostReq);
                             hosts.remove(hostCap);
                             if (hosts.isEmpty())
                             {
@@ -673,33 +677,32 @@ class Candidates
             }
 
             // Step 2
-            HostResource wrappedHost =
-                new HostResource(hostCap.getResource(), selectedFragments);
-            hostRevisions.add(wrappedHost);
+            WrappedResource wrappedHost =
+                new WrappedResource(hostCap.getResource(), selectedFragments);
+            hostResources.add(wrappedHost);
             m_allWrappedHosts.put(hostCap.getResource(), wrappedHost);
         }
 
         // Step 3
-        for (Resource frag : unselectedFragments)
+        for (Resource fragment : unselectedFragments)
         {
-            removeRevision(frag,
+            removeResource(fragment,
                 new ResolutionException(
-                    "Fragment was not selected for attachment: " + frag));
+                    "Fragment was not selected for attachment: " + fragment));
         }
 
         // Step 4
-        for (HostResource hostRevision : hostRevisions)
+        for (WrappedResource hostResource : hostResources)
         {
             // Replaces capabilities from fragments with the capabilities
             // from the merged host.
-            for (Capability c : hostRevision.getCapabilities(null))
+            for (Capability c : hostResource.getCapabilities(null))
             {
                 // Don't replace the host capability, since the fragment will
                 // really be attached to the original host, not the wrapper.
                 if (!c.getNamespace().equals(HostNamespace.HOST_NAMESPACE))
                 {
-                    Capability origCap =
-                        ((HostedCapability) c).getOriginalCapability();
+                    Capability origCap = ((HostedCapability) c).getDeclaredCapability();
                     // Note that you might think we could remove the original cap
                     // from the dependent map, but you can't since it may come from
                     // a fragment that is attached to multiple hosts, so each host
@@ -711,23 +714,81 @@ class Candidates
                         m_dependentMap.put(c, dependents);
                         for (Requirement r : dependents)
                         {
-                            Set<Capability> cands = m_candidateMap.get(r);
-                            cands.remove(origCap);
-                            cands.add(c);
+                            // We have synthesized hosted capabilities for all
+                            // fragments that have been attached to hosts by
+                            // wrapping the host bundle and their attached
+                            // fragments. We need to use the ResolveContext to
+                            // determine the proper priority order for hosted
+                            // capabilities since the order may depend on the
+                            // declaring host/fragment combination. However,
+                            // internally we completely wrap the host revision
+                            // and make all capabilities/requirements point back
+                            // to the wrapped host not the declaring host. The
+                            // ResolveContext expects HostedCapabilities to point
+                            // to the declaring revision, so we need two separate
+                            // candidate lists: one for the ResolveContext with
+                            // HostedCapabilities pointing back to the declaring
+                            // host and one for the resolver with HostedCapabilities
+                            // pointing back to the wrapped host. We ask the
+                            // ResolveContext to insert its appropriate HostedCapability
+                            // into its list, then we mirror the insert into a
+                            // shadow list with the resolver's HostedCapability.
+                            // We only need to ask the ResolveContext to find
+                            // the insert position for fragment caps since these
+                            // were synthesized and we don't know their priority.
+                            // However, in the resolver's candidate list we need
+                            // to replace all caps with the wrapped caps, no
+                            // matter if they come from the host or fragment,
+                            // since we are completing replacing the declaring
+                            // host and fragments with the wrapped host.
+                            List<Capability> cands = m_candidateMap.get(r);
+                            if (!(cands instanceof ShadowList))
+                            {
+                                ShadowList<Capability> shadow =
+                                    new ShadowList<Capability>(cands);
+                                m_candidateMap.put(r, shadow);
+                                cands = shadow;
+                            }
+
+                            // If the original capability is from a fragment, then
+                            // ask the ResolveContext to insert it and update the
+                            // shadow copy of the list accordingly.
+                            if (!origCap.getResource().equals(hostResource.getDeclaredResource()))
+                            {
+                                List<Capability> original = ((ShadowList) cands).getOriginal();
+                                int removeIdx = original.indexOf(origCap);
+                                if (removeIdx != -1)
+                                {
+                                    original.remove(removeIdx);
+                                    cands.remove(removeIdx);
+                                }
+                                int insertIdx = rc.insertHostedCapability(
+                                    original,
+                                    new SimpleHostedCapability(
+                                        hostResource.getDeclaredResource(),
+                                        origCap));
+                                cands.add(insertIdx, c);
+                            }
+                            // If the original capability is from the host, then
+                            // we just need to replace it in the shadow list.
+                            else
+                            {
+                                int idx = cands.indexOf(origCap);
+                                cands.set(idx, c);
+                            }
                         }
                     }
                 }
             }
 
             // Copy candidates for fragment requirements to the host.
-            for (Requirement r : hostRevision.getRequirements(null))
+            for (Requirement r : hostResource.getRequirements(null))
             {
-                Requirement origReq =
-                    ((HostedRequirement) r).getOriginalRequirement();
-                SortedSet<Capability> cands = m_candidateMap.get(origReq);
+                Requirement origReq = ((WrappedRequirement) r).getDeclaredRequirement();
+                List<Capability> cands = m_candidateMap.get(origReq);
                 if (cands != null)
                 {
-                    m_candidateMap.put(r, new TreeSet<Capability>(cands));
+                    m_candidateMap.put(r, new ArrayList<Capability>(cands));
                     for (Capability cand : cands)
                     {
                         Set<Requirement> dependents = m_dependentMap.get(cand);
@@ -741,11 +802,11 @@ class Candidates
         // Lastly, verify that all mandatory revisions are still
         // populated, since some might have become unresolved after
         // selecting fragments/singletons.
-        for (Resource br : m_mandatoryRevisions)
+        for (Resource resource : m_mandatoryResources)
         {
-            if (!isPopulated(br))
+            if (!isPopulated(resource))
             {
-                throw getResolveException(br);
+                throw getResolveException(resource);
             }
         }
     }
@@ -760,10 +821,10 @@ class Candidates
         Map<Capability, Map<String, Map<Version, List<Requirement>>>>
             hostFragments = new HashMap<Capability,
                 Map<String, Map<Version, List<Requirement>>>>();
-        for (Entry<Requirement, SortedSet<Capability>> entry : m_candidateMap.entrySet())
+        for (Entry<Requirement, List<Capability>> entry : m_candidateMap.entrySet())
         {
             Requirement req = entry.getKey();
-            SortedSet<Capability> caps = entry.getValue();
+            List<Capability> caps = entry.getValue();
             for (Capability cap : caps)
             {
                 // Record the requirement as dependent on the capability.
@@ -817,20 +878,21 @@ class Candidates
      * @param revision the module to remove.
      * @throws ResolveException if removing the module caused the resolve to fail.
     **/
-    private void removeRevision(Resource revision, ResolutionException ex)
+    private void removeResource(Resource resource, ResolutionException ex)
+        throws ResolutionException
     {
         // Add removal reason to result cache.
-        m_populateResultCache.put(revision, ex);
+        m_populateResultCache.put(resource, ex);
         // Remove from dependents.
-        Set<Resource> unresolvedRevisions = new HashSet<Resource>();
-        remove(revision, unresolvedRevisions);
+        Set<Resource> unresolvedResources = new HashSet<Resource>();
+        remove(resource, unresolvedResources);
         // Remove dependents that failed as a result of removing revision.
-        while (!unresolvedRevisions.isEmpty())
+        while (!unresolvedResources.isEmpty())
         {
-            Iterator<Resource> it = unresolvedRevisions.iterator();
-            revision = it.next();
+            Iterator<Resource> it = unresolvedResources.iterator();
+            resource = it.next();
             it.remove();
-            remove(revision, unresolvedRevisions);
+            remove(resource, unresolvedResources);
         }
     }
 
@@ -844,7 +906,7 @@ class Candidates
      *        also need to be removed.
      * @throws ResolveException if removing the module caused the resolve to fail.
     **/
-    private void remove(Resource resource, Set<Resource> unresolvedRevisions)
+    private void remove(Resource resource, Set<Resource> unresolvedResources)
         throws ResolutionException
     {
         for (Requirement r : resource.getRequirements(null))
@@ -854,7 +916,7 @@ class Candidates
 
         for (Capability c : resource.getCapabilities(null))
         {
-            remove(c, unresolvedRevisions);
+            remove(c, unresolvedResources);
         }
     }
 
@@ -866,7 +928,7 @@ class Candidates
     {
         boolean isFragment = req.getNamespace().equals(HostNamespace.HOST_NAMESPACE);
 
-        SortedSet<Capability> candidates = m_candidateMap.remove(req);
+        List<Capability> candidates = m_candidateMap.remove(req);
         if (candidates != null)
         {
             for (Capability cap : candidates)
@@ -889,7 +951,7 @@ class Candidates
      *        also need to be removed.
      * @throws ResolveException if removing the module caused the resolve to fail.
     **/
-    private void remove(Capability c, Set<Resource> unresolvedRevisions)
+    private void remove(Capability c, Set<Resource> unresolvedResources)
         throws ResolutionException
     {
         Set<Requirement> dependents = m_dependentMap.remove(c);
@@ -897,7 +959,7 @@ class Candidates
         {
             for (Requirement r : dependents)
             {
-                SortedSet<Capability> candidates = m_candidateMap.get(r);
+                List<Capability> candidates = m_candidateMap.get(r);
                 candidates.remove(c);
                 if (candidates.isEmpty())
                 {
@@ -909,7 +971,7 @@ class Candidates
                         m_populateResultCache.put(
                             r.getResource(),
                             new ResolutionException(msg, null, Collections.singleton(r)));
-                        unresolvedRevisions.add(r.getResource());
+                        unresolvedResources.add(r.getResource());
                     }
                 }
             }
@@ -931,53 +993,54 @@ class Candidates
             dependentMap.put(entry.getKey(), dependents);
         }
 
-        Map<Requirement, SortedSet<Capability>> candidateMap =
-            new HashMap<Requirement, SortedSet<Capability>>();
-        for (Entry<Requirement, SortedSet<Capability>> entry
+        Map<Requirement, List<Capability>> candidateMap =
+            new HashMap<Requirement, List<Capability>>();
+        for (Entry<Requirement, List<Capability>> entry
             : m_candidateMap.entrySet())
         {
-            SortedSet<Capability> candidates =
-                new TreeSet<Capability>(entry.getValue());
+            List<Capability> candidates =
+                new ArrayList<Capability>(entry.getValue());
             candidateMap.put(entry.getKey(), candidates);
         }
 
         return new Candidates(
-            m_mandatoryRevisions, dependentMap, candidateMap,
+            m_mandatoryResources, dependentMap, candidateMap,
             m_allWrappedHosts, m_populateResultCache, m_fragmentsPresent);
     }
 
-    public void dump(Environment env)
+    public void dump(ResolveContext rc)
     {
         // Create set of all revisions from requirements.
         Set<Resource> resources = new HashSet<Resource>();
-        for (Entry<Requirement, SortedSet<Capability>> entry
+        for (Entry<Requirement, List<Capability>> entry
             : m_candidateMap.entrySet())
         {
             resources.add(entry.getKey().getResource());
         }
         // Now dump the revisions.
         System.out.println("=== BEGIN CANDIDATE MAP ===");
-        for (Resource res : resources)
+        for (Resource resource : resources)
         {
-            System.out.println("  " + res
-                 + " (" + ((env.getWirings().containsKey(res)) ? "RESOLVED)" : "UNRESOLVED)"));
-            List<Requirement> reqs = (env.getWirings().containsKey(res))
-                ? env.getWirings().get(res).getResourceRequirements(null)
-                : res.getRequirements(null);
+            Wiring wiring = rc.getWirings().get(resource);
+            System.out.println("  " + resource
+                 + " (" + ((wiring != null) ? "RESOLVED)" : "UNRESOLVED)"));
+            List<Requirement> reqs = (wiring != null)
+                ? wiring.getResourceRequirements(null)
+                : resource.getRequirements(null);
             for (Requirement req : reqs)
             {
-                SortedSet<Capability> candidates = m_candidateMap.get(req);
+                List<Capability> candidates = m_candidateMap.get(req);
                 if ((candidates != null) && (candidates.size() > 0))
                 {
                     System.out.println("    " + req + ": " + candidates);
                 }
             }
-            reqs = (env.getWirings().containsKey(res))
-                ? Util.getDynamicRequirements(env.getWirings().get(res).getResourceRequirements(null))
-                : Util.getDynamicRequirements(res.getRequirements(null));
+            reqs = (wiring != null)
+                ? Util.getDynamicRequirements(wiring.getResourceRequirements(null))
+                : Util.getDynamicRequirements(resource.getRequirements(null));
             for (Requirement req : reqs)
             {
-                SortedSet<Capability> candidates = m_candidateMap.get(req);
+                List<Capability> candidates = m_candidateMap.get(req);
                 if ((candidates != null) && (candidates.size() > 0))
                 {
                     System.out.println("    " + req + ": " + candidates);
