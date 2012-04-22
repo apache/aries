@@ -33,6 +33,7 @@ import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.RepositoryContent;
+import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
@@ -50,11 +51,11 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 	private final Collection<Resource> resources;
 	private final SubsystemManifest subsystemManifest;
 	
-	public SubsystemFileResource(File content) throws IOException {
+	public SubsystemFileResource(File content) throws IOException, ResolutionException {
 		this(FileSystem.getFSRoot(content), content, null);
 	}
 	
-	private SubsystemFileResource(IDirectory directory, File file, IFile iFile) throws IOException {
+	private SubsystemFileResource(IDirectory directory, File file, IFile iFile) throws IOException, ResolutionException {
 		this.directory = directory;
 		this.file = file;
 		this.iFile = iFile;
@@ -116,14 +117,14 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 		return subsystemManifest;
 	}
 	
-	private List<Requirement> computeDependencies() throws IOException {
+	private List<Requirement> computeDependencies() throws IOException, ResolutionException {
 		SubsystemTypeHeader type = subsystemManifest.getSubsystemTypeHeader();
 		if (SubsystemTypeHeader.TYPE_APPLICATION.equals(type.getType()))
 			return computeDependenciesForApplication();
 		return subsystemManifest.toRequirements(this);
 	}
 	
-	private List<Requirement> computeDependenciesForApplication() throws IOException {
+	private List<Requirement> computeDependenciesForApplication() throws IOException, ResolutionException {
 		SubsystemContentHeader header = subsystemManifest.getSubsystemContentHeader();
 		if (header == null)
 			return Collections.emptyList();
@@ -195,7 +196,7 @@ public class SubsystemFileResource implements Resource, RepositoryContent {
 		return new RequireCapabilityHeader(clauses);
 	}
 	
-	private Collection<Resource> computeResources() throws IOException {
+	private Collection<Resource> computeResources() throws IOException, ResolutionException {
 		List<IFile> files = directory.listFiles();
 		if (files.isEmpty())
 			return Collections.emptyList();

@@ -16,21 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.felix.resolver.impl;
+package org.apache.felix.resolver;
 
 import java.util.Map;
-
-import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
-public class HostedRequirement implements Requirement
+public class WrappedRequirement implements Requirement
 {
     private final Resource m_host;
     private final Requirement m_req;
 
-    public HostedRequirement(Resource host, Requirement req)
+    public WrappedRequirement(Resource host, Requirement req)
     {
         m_host = host;
         m_req = req;
@@ -47,7 +45,7 @@ public class HostedRequirement implements Requirement
         {
             return false;
         }
-        final HostedRequirement other = (HostedRequirement) obj;
+        final WrappedRequirement other = (WrappedRequirement) obj;
         if (m_host != other.m_host && (m_host == null || !m_host.equals(other.m_host)))
         {
             return false;
@@ -68,7 +66,7 @@ public class HostedRequirement implements Requirement
         return hash;
     }
 
-    public Requirement getOriginalRequirement()
+    public Requirement getDeclaredRequirement()
     {
         return m_req;
     }
@@ -83,17 +81,6 @@ public class HostedRequirement implements Requirement
         return m_req.getNamespace();
     }
 
-// TODO: RFC-112: Create Felix type for these?
-//    public SimpleFilter getFilter()
-//    {
-//        return m_req.getFilter();
-//    }
-//
-//    public boolean isOptional()
-//    {
-//        return m_req.isOptional();
-//    }
-
     public Map<String, String> getDirectives()
     {
         return m_req.getDirectives();
@@ -104,15 +91,12 @@ public class HostedRequirement implements Requirement
         return m_req.getAttributes();
     }
 
-    public boolean matches(Capability capability)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     @Override
     public String toString()
     {
-        return "[" + m_host + "] " + getNamespace() + "; "
+        return "[" + m_host + "] "
+            + getNamespace()
+            + "; "
             + getDirectives().get(Namespace.REQUIREMENT_FILTER_DIRECTIVE);
     }
 }

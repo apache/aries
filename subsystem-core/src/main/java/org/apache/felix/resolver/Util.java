@@ -16,20 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.felix.resolver.impl;
+package org.apache.felix.resolver;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.aries.subsystem.core.Environment;
-import org.apache.aries.subsystem.core.ResourceHelper;
-import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.resource.Capability;
+import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.resource.Wiring;
 
 public class Util
 {
@@ -77,8 +74,8 @@ public class Util
 
     public static boolean isOptional(Requirement req)
     {
-        String resolution = req.getDirectives().get(Constants.RESOLUTION_DIRECTIVE);
-        return Constants.RESOLUTION_OPTIONAL.equals(resolution);
+        String resolution = req.getDirectives().get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
+        return Namespace.RESOLUTION_OPTIONAL.equalsIgnoreCase(resolution);
     }
 
     public static List<Requirement> getDynamicRequirements(List<Requirement> reqs)
@@ -88,34 +85,15 @@ public class Util
         {
             for (Requirement req : reqs)
             {
-                String resolution = req.getDirectives().get(Constants.RESOLUTION_DIRECTIVE);
-                if ((resolution != null) && resolution.equals("dynamic"))
+                String resolution = req.getDirectives()
+                    .get(PackageNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
+                if ((resolution != null)
+                    && resolution.equals(PackageNamespace.RESOLUTION_DYNAMIC))
                 {
                     result.add(req);
                 }
             }
         }
         return result;
-    }
-
-    public static Capability getSatisfyingCapability(
-        Environment env, Resource br, Requirement req)
-    {
-        Wiring wiring = env.getWirings().get(br);
-        List<Capability> caps = (wiring != null)
-            ? wiring.getResourceCapabilities(null)
-            : br.getCapabilities(null);
-        if (caps != null)
-        {
-            for (Capability cap : caps)
-            {
-                if (cap.getNamespace().equals(req.getNamespace())
-                    && ResourceHelper.matches(req, cap))
-                {
-                    return cap;
-                }
-            }
-        }
-        return null;
     }
 }

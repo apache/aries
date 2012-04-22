@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,11 +18,12 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.core.internal.Activator;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
-import org.apache.aries.subsystem.core.internal.SubsystemEnvironment;
+import org.apache.aries.subsystem.core.internal.SubsystemResolveContext;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
+import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
@@ -91,13 +92,13 @@ public class DeploymentManifest {
 	public DeploymentManifest(
 			DeploymentManifest deploymentManifest, 
 			SubsystemManifest subsystemManifest, 
-			SubsystemEnvironment environment,
+			SubsystemResolveContext resolveContext,
 			boolean autostart, 
 			long id, 
 			long lastId, 
 			String location,
 			boolean overwrite,
-			boolean acceptDependencies) {
+			boolean acceptDependencies) throws ResolutionException, IOException, URISyntaxException {
 		Map<String, Header<?>> headers;
 		if (deploymentManifest == null // We're generating a new deployment manifest.
 				|| (deploymentManifest != null && overwrite)) { // A deployment manifest already exists but overwriting it with subsystem manifest content is desired.
@@ -109,7 +110,7 @@ public class DeploymentManifest {
 			if (contentHeader != null) {
 				for (SubsystemContentHeader.Content content : contentHeader.getContents()) {
 					OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
-					Resource resource = environment.findResource(requirement);
+					Resource resource = resolveContext.findResource(requirement);
 					// If the resource is null, can't continue.
 					if (resource == null) {
 						if (content.isMandatory())
@@ -119,7 +120,7 @@ public class DeploymentManifest {
 					resources.add(resource);
 				}
 				// TODO This does not validate that all content bundles were found.
-				resolution = Activator.getInstance().getResolver().resolve(environment, new ArrayList<Resource>(resources), Collections.EMPTY_LIST);
+				resolution = Activator.getInstance().getResolver().resolve(new SubsystemResolveContext(resolveContext.getSubsystem(), resources));
 				Collection<Resource> provisionResource = new HashSet<Resource>();
 				for (Resource resource : resolution.keySet()) {
 					if (contentHeader.contains(resource))

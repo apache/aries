@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.felix.resolver.impl;
+package org.apache.felix.resolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,16 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.StringTokenizer;
-
-import org.apache.aries.subsystem.core.Environment;
-import org.apache.aries.subsystem.core.ResolutionException;
-import org.apache.felix.resolver.FelixCapability;
-import org.apache.felix.resolver.FelixEnvironment;
-import org.apache.felix.resolver.FelixResolver;
-import org.apache.felix.resolver.Logger;
-import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.BundleNamespace;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
@@ -47,8 +38,12 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
 import org.osgi.resource.Wiring;
+import org.osgi.service.resolver.HostedCapability;
+import org.osgi.service.resolver.ResolutionException;
+import org.osgi.service.resolver.ResolveContext;
+import org.osgi.service.resolver.Resolver;
 
-public class ResolverImpl implements FelixResolver
+public class ResolverImpl implements Resolver
 {
     private final Logger m_logger;
 
@@ -61,36 +56,22 @@ public class ResolverImpl implements FelixResolver
 
     public ResolverImpl(Logger logger)
     {
-        m_logger = (logger != null) ? logger : new Logger() {
-
-            public void log(int level, String msg)
-            {
-                // Just eat the log message.
-            }
-
-            public void log(int level, String msg, Throwable throwable)
-            {
-                // Just eat the log message.
-            }
-        };
+        m_logger = logger;
     }
 
-    public Map<Resource, List<Wire>> resolve(
-        Environment env,
-        Collection<? extends Resource> mandatoryRevisions,
-        Collection<? extends Resource> optionalRevisions)
+    public Map<Resource, List<Wire>> resolve(ResolveContext rc) throws ResolutionException
     {
-        return resolve(env instanceof FelixEnvironment ? (FelixEnvironment)env : new EnvironmentAdaptor(env), mandatoryRevisions, optionalRevisions, Collections.EMPTY_SET);
-    }
+        Map<Resource, List<Wire>> wireMap =
+            new HashMap<Resource, List<Wire>>();
+        Map<Resource, Packages> resourcePkgMap =
+            new HashMap<Resource, Packages>();
 
-    public Map<Resource, List<Wire>> resolve(
-        FelixEnvironment env,
-        Collection<? extends Resource> mandatoryRevisions,
-        Collection<? extends Resource> optionalRevisions,
-        Collection<? extends Resource> ondemandFragments)
-    {
-        Map<Resource, List<Wire>> wireMap = new HashMap<Resource, List<Wire>>();
-        Map<Resource, Packages> revisionPkgMap = new HashMap<Resource, Packages>();
+        Collection<Resource> mandatoryResources = rc.getMandatoryResources();
+        Collection<Resource> optionalResources = rc.getOptionalResources();
+// TODO: RFC-112 - Need impl-specific type.
+//        Collection<Resource> ondemandFragments = (rc instanceof ResolveContextImpl)
+//            ? ((ResolveContextImpl) rc).getOndemandResources() : Collections.EMPTY_LIST;
+        Collection<Resource> ondemandFragments =  Collections.EMPTY_LIST;
 
         boolean retry;
         do
@@ -102,15 +83,15 @@ public class ResolverImpl implements FelixResolver
                 // Create object to hold all candidates.
                 Candidates allCandidates = new Candidates();
 
-                // Populate mandatory revisions; since these are mandatory
-                // revisions, failure throws a resolve exception.
-                for (Iterator<? extends Resource> it = mandatoryRevisions.iterator();
+                // Populate mandatory resources; since these are mandatory
+                // resources, failure throws a resolve exception.
+                for (Iterator<Resource> it = mandatoryResources.iterator();
                     it.hasNext(); )
                 {
-                    Resource br = it.next();
-                    if (Util.isFragment(br) || !env.getWirings().containsKey(br))
+                    Resource resource = it.next();
+                    if (Util.isFragment(resource) || (rc.getWirings().get(resource) == null))
                     {
-                        allCandidates.populate(env, br, Candidates.MANDATORY);
+                        allCandidates.populate(rc, resource, Candidates.MANDATORY);
                     }
                     else
                     {
@@ -118,42 +99,42 @@ public class ResolverImpl implements FelixResolver
                     }
                 }
 
-                // Populate optional revisions; since these are optional
-                // revisions, failure does not throw a resolve exception.
-                for (Resource br : optionalRevisions)
+                // Populate optional resources; since these are optional
+                // resources, failure does not throw a resolve exception.
+                for (Resource resource : optionalResources)
                 {
-                    boolean isFragment = Util.isFragment(br);
-                    if (isFragment || !env.getWirings().containsKey(br))
+                    boolean isFragment = Util.isFragment(resource);
+                    if (isFragment || (rc.getWirings().get(resource) == null))
                     {
-                        allCandidates.populate(env, br, Candidates.OPTIONAL);
+                        allCandidates.populate(rc, resource, Candidates.OPTIONAL);
                     }
                 }
 
                 // Populate ondemand fragments; since these are optional
-                // revisions, failure does not throw a resolve exception.
-                for (Resource br : ondemandFragments)
+                // resources, failure does not throw a resolve exception.
+                for (Resource resource : ondemandFragments)
                 {
-                    boolean isFragment = Util.isFragment(br);
+                    boolean isFragment = Util.isFragment(resource);
                     if (isFragment)
                     {
-                        allCandidates.populate(env, br, Candidates.ON_DEMAND);
+                        allCandidates.populate(rc, resource, Candidates.ON_DEMAND);
                     }
                 }
 
                 // Merge any fragments into hosts.
-                allCandidates.prepare();
+                allCandidates.prepare(rc);
 
-                // Create a combined list of populated revisions; for
-                // optional revisions. We do not need to consider ondemand
+                // Create a combined list of populated resources; for
+                // optional resources. We do not need to consider ondemand
                 // fragments, since they will only be pulled in if their
                 // host is already present.
-                Set<Resource> allRevisions =
-                    new HashSet<Resource>(mandatoryRevisions);
-                for (Resource br : optionalRevisions)
+                Set<Resource> allResources =
+                    new HashSet<Resource>(mandatoryResources);
+                for (Resource resource : optionalResources)
                 {
-                    if (allCandidates.isPopulated(br))
+                    if (allCandidates.isPopulated(resource))
                     {
-                        allRevisions.add(br);
+                        allResources.add(resource);
                     }
                 }
 
@@ -162,18 +143,18 @@ public class ResolverImpl implements FelixResolver
 
                 ResolutionException rethrow = null;
 
-                // If a populated revision is a fragment, then its host
+                // If a populated resource is a fragment, then its host
                 // must ultimately be verified, so store its host requirement
                 // to use for package space calculation.
                 Map<Resource, List<Requirement>> hostReqs =
                     new HashMap<Resource, List<Requirement>>();
-                for (Resource br : allRevisions)
+                for (Resource resource : allResources)
                 {
-                    if (Util.isFragment(br))
+                    if (Util.isFragment(resource))
                     {
                         hostReqs.put(
-                            br,
-                            br.getRequirements(HostNamespace.HOST_NAMESPACE));
+                            resource,
+                            resource.getRequirements(HostNamespace.HOST_NAMESPACE));
                     }
                 }
 
@@ -181,7 +162,7 @@ public class ResolverImpl implements FelixResolver
                 {
                     rethrow = null;
 
-                    revisionPkgMap.clear();
+                    resourcePkgMap.clear();
                     m_packageSourcesCache.clear();
 
                     allCandidates = (m_usesPermutations.size() > 0)
@@ -189,13 +170,13 @@ public class ResolverImpl implements FelixResolver
                         : m_importPermutations.remove(0);
 //allCandidates.dump();
 
-                    for (Resource br : allRevisions)
+                    for (Resource resource : allResources)
                     {
-                        Resource target = br;
+                        Resource target = resource;
 
                         // If we are resolving a fragment, then get its
                         // host candidate and verify it instead.
-                        List<Requirement> hostReq = hostReqs.get(br);
+                        List<Requirement> hostReq = hostReqs.get(resource);
                         if (hostReq != null)
                         {
                             target = allCandidates.getCandidates(hostReq.get(0))
@@ -203,17 +184,17 @@ public class ResolverImpl implements FelixResolver
                         }
 
                         calculatePackageSpaces(
-                            env, allCandidates.getWrappedHost(target), allCandidates,
-                            revisionPkgMap, new HashMap(), new HashSet());
+                            rc, allCandidates.getWrappedHost(target), allCandidates,
+                            resourcePkgMap, new HashMap(), new HashSet());
 //System.out.println("+++ PACKAGE SPACES START +++");
-//dumpRevisionPkgMap(revisionPkgMap);
+//dumpResourcePkgMap(resourcePkgMap);
 //System.out.println("+++ PACKAGE SPACES END +++");
 
                         try
                         {
                             checkPackageSpaceConsistency(
-                                env, false, allCandidates.getWrappedHost(target),
-                                allCandidates, revisionPkgMap, new HashMap());
+                                rc, false, allCandidates.getWrappedHost(target),
+                                allCandidates, resourcePkgMap, new HashMap());
                         }
                         catch (ResolutionException ex)
                         {
@@ -225,27 +206,31 @@ public class ResolverImpl implements FelixResolver
                     && ((m_usesPermutations.size() > 0) || (m_importPermutations.size() > 0)));
 
                 // If there is a resolve exception, then determine if an
-                // optionally resolved revision is to blame (typically a fragment).
+                // optionally resolved resource is to blame (typically a fragment).
                 // If so, then remove the optionally resolved resolved and try
                 // again; otherwise, rethrow the resolve exception.
                 if (rethrow != null)
                 {
                     Collection<Requirement> exReqs = rethrow.getUnresolvedRequirements();
-                    Requirement faultyReq = ((exReqs == null) || exReqs.isEmpty())
+                    Requirement faultyReq = ((exReqs == null) || (exReqs.isEmpty()))
                         ? null : exReqs.iterator().next();
-                    Resource faultyRevision = (faultyReq == null)
-                        ? null : getActualResource(faultyReq.getResource());
-                    if (faultyReq instanceof HostedRequirement)
+                    Resource faultyResource = (faultyReq == null)
+                        ? null : getDeclaredResource(faultyReq.getResource());
+                    // If the faulty requirement is wrapped, then it may
+                    // be from a fragment, so consider the fragment faulty
+                    // instead of the host.
+                    if (faultyReq instanceof WrappedRequirement)
                     {
-                        faultyRevision =
-                            ((HostedRequirement) faultyReq)
-                                .getOriginalRequirement().getResource();
+                        faultyResource =
+                            ((WrappedRequirement) faultyReq)
+                                .getDeclaredRequirement().getResource();
                     }
-                    if (optionalRevisions.remove(faultyRevision))
+                    // Try to ignore the faulty resource if it is not mandatory.
+                    if (optionalResources.remove(faultyResource))
                     {
                         retry = true;
                     }
-                    else if (ondemandFragments.remove(faultyRevision))
+                    else if (ondemandFragments.remove(faultyResource))
                     {
                         retry = true;
                     }
@@ -258,13 +243,13 @@ public class ResolverImpl implements FelixResolver
                 // resolve, so populate the wire map.
                 else
                 {
-                    for (Resource br : allRevisions)
+                    for (Resource resource : allResources)
                     {
-                        Resource target = br;
+                        Resource target = resource;
 
                         // If we are resolving a fragment, then we
                         // actually want to populate its host's wires.
-                        List<Requirement> hostReq = hostReqs.get(br);
+                        List<Requirement> hostReq = hostReqs.get(resource);
                         if (hostReq != null)
                         {
                             target = allCandidates.getCandidates(hostReq.get(0))
@@ -275,8 +260,8 @@ public class ResolverImpl implements FelixResolver
                         {
                             wireMap =
                                 populateWireMap(
-                                    env, allCandidates.getWrappedHost(target),
-                                    revisionPkgMap, wireMap, allCandidates);
+                                    rc, allCandidates.getWrappedHost(target),
+                                    resourcePkgMap, wireMap, allCandidates);
                         }
                     }
                 }
@@ -293,21 +278,31 @@ public class ResolverImpl implements FelixResolver
         return wireMap;
     }
 
-// TODO: RFC-112 - This method should replace the following method as the proper
-//       way to do dynamic imports. This leaves the verification and requirement
-//       synthesization to the environment. The resolver just has to verify that
-//       the candidate doesn't result in a conflict with an existing package.
+/*
+ TODO: RFC-112 - Modify dynamic import handling to be like obr-resolver prototype.
     public Map<Resource, List<Wire>> resolve(
-        FelixEnvironment env, Resource resource, Requirement req, SortedSet<Capability> candidates,
-        Collection<? extends Resource> ondemandFragments)
+        ResolveContext rc, Resouce resource, String pkgName)
     {
-        if (env.getWirings().containsKey(resource) && !candidates.isEmpty())
+        // We can only create a dynamic import if the following
+        // conditions are met:
+        // 1. The specified resource is resolved.
+        // 2. The package in question is not already imported.
+        // 3. The package in question is not accessible via require-bundle.
+        // 4. The package in question is not exported by the resource.
+        // 5. The package in question matches a dynamic import of the resource.
+        // The following call checks all of these conditions and returns
+        // the associated dynamic import and matching capabilities.
+        Candidates allCandidates =
+            getDynamicImportCandidates(rc, resource, pkgName);
+        if (allCandidates != null)
         {
-            Candidates allCandidates = new Candidates();
-            allCandidates.populateDynamic(env, resource, req, candidates);
+            Collection<Resource> ondemandFragments = (rc instanceof ResolveContextImpl)
+                ? ((ResolveContextImpl) rc).getOndemandResources() : Collections.EMPTY_LIST;
 
-            Map<Resource, List<Wire>> wireMap = new HashMap<Resource, List<Wire>>();
-            Map<Resource, Packages> resourcePkgMap = new HashMap<Resource, Packages>();
+            Map<Resource, List<ResolverWire>> wireMap =
+                new HashMap<Resource, List<ResolverWire>>();
+            Map<Resource, Packages> resourcePkgMap =
+                new HashMap<Resource, Packages>();
 
             boolean retry;
             do
@@ -317,21 +312,21 @@ public class ResolverImpl implements FelixResolver
                 try
                 {
                     // Try to populate optional fragments.
-                    for (Resource br : ondemandFragments)
+                    for (Resource r : ondemandFragments)
                     {
-                        if (Util.isFragment(br))
+                        if (Util.isFragment(r))
                         {
-                            allCandidates.populate(env, br, Candidates.ON_DEMAND);
+                            allCandidates.populate(rc, r, Candidates.ON_DEMAND);
                         }
                     }
 
                     // Merge any fragments into hosts.
-                    allCandidates.prepare();
+                    allCandidates.prepare(rc);
 
                     // Record the initial candidate permutation.
                     m_usesPermutations.add(allCandidates);
 
-                    ResolutionException rethrow = null;
+                    ResolveException rethrow = null;
 
                     do
                     {
@@ -345,25 +340,25 @@ public class ResolverImpl implements FelixResolver
                             : m_importPermutations.remove(0);
 //allCandidates.dump();
 
-                        // For a dynamic import, the instigating revision
+                        // For a dynamic import, the instigating resource
                         // will never be a fragment since fragments never
                         // execute code, so we don't need to check for
                         // this case like we do for a normal resolve.
 
                         calculatePackageSpaces(
-                            env, resource, allCandidates,
-                            resourcePkgMap, new HashMap(), new HashSet());
+                            allCandidates.getWrappedHost(resource), allCandidates, resourcePkgMap,
+                            new HashMap(), new HashSet());
 //System.out.println("+++ PACKAGE SPACES START +++");
-//dumpRevisionPkgMap(revisionPkgMap);
+//dumpResourcePkgMap(resourcePkgMap);
 //System.out.println("+++ PACKAGE SPACES END +++");
 
                         try
                         {
                             checkPackageSpaceConsistency(
-                                env, false, resource,
+                                false, allCandidates.getWrappedHost(resource),
                                 allCandidates, resourcePkgMap, new HashMap());
                         }
-                        catch (ResolutionException ex)
+                        catch (ResolveException ex)
                         {
                             rethrow = ex;
                         }
@@ -372,20 +367,18 @@ public class ResolverImpl implements FelixResolver
                         && ((m_usesPermutations.size() > 0) || (m_importPermutations.size() > 0)));
 
                     // If there is a resolve exception, then determine if an
-                    // optionally resolved revision is to blame (typically a fragment).
-                    // If so, then remove the optionally resolved revision and try
+                    // optionally resolved resource is to blame (typically a fragment).
+                    // If so, then remove the optionally resolved resource and try
                     // again; otherwise, rethrow the resolve exception.
                     if (rethrow != null)
                     {
-                        Collection<Requirement> exReqs = rethrow.getUnresolvedRequirements();
-                        Requirement faultyReq = ((exReqs == null) || exReqs.isEmpty())
-                            ? null : exReqs.iterator().next();
-                        Resource faultyResource = null;
-                        if (faultyReq instanceof HostedRequirement)
+                        Resource faultyResource =
+                            getDeclaredResource(rethrow.getResource()));
+                        if (rethrow.getRequirement() instanceof WrappedRequirement)
                         {
                             faultyResource =
-                                ((HostedRequirement) faultyReq)
-                                    .getOriginalRequirement().getResource();
+                                ((WrappedRequirement) rethrow.getRequirement())
+                                    .getOriginalRequirement().getResource());
                         }
                         if (ondemandFragments.remove(faultyResource))
                         {
@@ -401,7 +394,7 @@ public class ResolverImpl implements FelixResolver
                     else
                     {
                         wireMap = populateDynamicWireMap(
-                            env, resource, req, resourcePkgMap, wireMap, allCandidates);
+                            resource, pkgName, resourcePkgMap, wireMap, allCandidates);
                         return wireMap;
                     }
                 }
@@ -418,11 +411,108 @@ public class ResolverImpl implements FelixResolver
         return null;
     }
 
+    private static Candidates getDynamicImportCandidates(
+        ResolveContext rc, Resource resource, String pkgName)
+    {
+        // Unresolved resources cannot dynamically import, nor can the default
+        // package be dynamically imported.
+        if ((resource.getWiring() == null) || pkgName.length() == 0)
+        {
+            return null;
+        }
+
+        // If the resource doesn't have dynamic imports, then just return
+        // immediately.
+        List<Requirement> dynamics =
+            Util.getDynamicRequirements(resource.getWiring().getRequirements(null));
+        if ((dynamics == null) || dynamics.isEmpty())
+        {
+            return null;
+        }
+
+        // If the resource exports this package, then we cannot
+        // attempt to dynamically import it.
+        for (Capability cap : resource.getWiring().getCapabilities(null))
+        {
+            if (cap.getNamespace().equals(Resource.PACKAGE_NAMESPACE)
+                && cap.getAttributes().get(Resource.PACKAGE_NAMESPACE).equals(pkgName))
+            {
+                return null;
+            }
+        }
+
+        // If this resource already imports or requires this package, then
+        // we cannot dynamically import it.
+        if (((WiringImpl) resource.getWiring()).hasPackageSource(pkgName))
+        {
+            return null;
+        }
+
+        // Determine if any providers of the package exist.
+        Map<String, Object> attrs = Collections.singletonMap(
+            PackageNamespace.PACKAGE_NAMESPACE, (Object) pkgName);
+        RequirementImpl req = new RequirementImpl(
+            resource,
+            PackageNamespace.PACKAGE_NAMESPACE,
+            Collections.EMPTY_MAP,
+            attrs);
+        List<Capability> candidates = rc.findProviders(req, false);
+
+        // Try to find a dynamic requirement that matches the capabilities.
+        RequirementImpl dynReq = null;
+        for (int dynIdx = 0;
+            (candidates.size() > 0) && (dynReq == null) && (dynIdx < dynamics.size());
+            dynIdx++)
+        {
+            for (Iterator<Capability> itCand = candidates.iterator();
+                (dynReq == null) && itCand.hasNext(); )
+            {
+                Capability cap = itCand.next();
+                if (CapabilitySet.matches(
+                    (CapabilityImpl) cap,
+                    ((RequirementImpl) dynamics.get(dynIdx)).getFilter()))
+                {
+                    dynReq = (RequirementImpl) dynamics.get(dynIdx);
+                }
+            }
+        }
+
+        // If we found a matching dynamic requirement, then filter out
+        // any candidates that do not match it.
+        if (dynReq != null)
+        {
+            for (Iterator<Capability> itCand = candidates.iterator();
+                itCand.hasNext(); )
+            {
+                Capability cap = itCand.next();
+                if (!CapabilitySet.matches(
+                    (CapabilityImpl) cap, dynReq.getFilter()))
+                {
+                    itCand.remove();
+                }
+            }
+        }
+        else
+        {
+            candidates.clear();
+        }
+
+        Candidates allCandidates = null;
+
+        if (candidates.size() > 0)
+        {
+            allCandidates = new Candidates();
+            allCandidates.populateDynamic(rc, resource, dynReq, candidates);
+        }
+
+        return allCandidates;
+    }
+*/
     private void calculatePackageSpaces(
-        Environment env,
+        ResolveContext rc,
         Resource resource,
         Candidates allCandidates,
-        Map<Resource, Packages> revisionPkgMap,
+        Map<Resource, Packages> resourcePkgMap,
         Map<Capability, List<Resource>> usesCycleMap,
         Set<Resource> cycle)
     {
@@ -432,12 +522,18 @@ public class ResolverImpl implements FelixResolver
         }
         cycle.add(resource);
 
+        // Make sure package space hasn't already been calculated.
+        if (resourcePkgMap.containsKey(resource))
+        {
+            return;
+        }
+
         // Create parallel arrays for requirement and proposed candidate
-        // capability or actual capability if revision is resolved or not.
+        // capability or actual capability if resource is resolved or not.
         List<Requirement> reqs = new ArrayList();
         List<Capability> caps = new ArrayList();
         boolean isDynamicImporting = false;
-        Wiring wiring = env.getWirings().get(resource);
+        Wiring wiring = rc.getWirings().get(resource);
         if (wiring != null)
         {
             // Use wires to get actual requirements and satisfying capabilities.
@@ -451,39 +547,40 @@ public class ResolverImpl implements FelixResolver
                 Requirement r = wire.getRequirement();
                 if (!r.getResource().equals(wire.getRequirer())
                     || ((r.getDirectives()
-                            .get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE) != null)
-// TODO: RFC-112 - Need dynamic constant.
-                        && r.getDirectives()
-                            .get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE).equals("dynamic")))
+                        .get(PackageNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE) != null)
+                    && r.getDirectives()
+                        .get(PackageNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE)
+                            .equals(PackageNamespace.RESOLUTION_DYNAMIC)))
                 {
-                    r = new HostedRequirement(wire.getRequirer(), r);
+                    r = new WrappedRequirement(wire.getRequirer(), r);
                 }
                 // Wrap the capability as a hosted capability if it comes
                 // from a fragment, since we will need to know the host.
                 Capability c = wire.getCapability();
                 if (!c.getResource().equals(wire.getProvider()))
                 {
-                    c = new HostedCapability(wire.getProvider(), c);
+                    c = new WrappedCapability(wire.getProvider(), c);
                 }
                 reqs.add(r);
                 caps.add(c);
             }
 
-            // Since the revision is resolved, it could be dynamically importing,
+            // Since the resource is resolved, it could be dynamically importing,
             // so check to see if there are candidates for any of its dynamic
             // imports.
             for (Requirement req
                 : Util.getDynamicRequirements(wiring.getResourceRequirements(null)))
             {
                 // Get the candidates for the current requirement.
-                SortedSet<Capability> candCaps = allCandidates.getCandidates(req);
+                List<Capability> candCaps = allCandidates.getCandidates(req);
                 // Optional requirements may not have any candidates.
                 if (candCaps == null)
                 {
                     continue;
                 }
 
-                Capability cap = candCaps.iterator().next();
+                // Grab first (i.e., highest priority) candidate.
+                Capability cap = candCaps.get(0);
                 reqs.add(req);
                 caps.add(cap);
                 isDynamicImporting = true;
@@ -497,37 +594,38 @@ public class ResolverImpl implements FelixResolver
             for (Requirement req : resource.getRequirements(null))
             {
                 String resolution = req.getDirectives()
-                    .get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
-// TODO: RFC-112 - Need dynamic constant.
-                if ((resolution == null) || !resolution.equals("dynamic"))
+                    .get(PackageNamespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
+                if ((resolution == null)
+                    || !resolution.equals(PackageNamespace.RESOLUTION_DYNAMIC))
                 {
                     // Get the candidates for the current requirement.
-                    SortedSet<Capability> candCaps = allCandidates.getCandidates(req);
+                    List<Capability> candCaps = allCandidates.getCandidates(req);
                     // Optional requirements may not have any candidates.
                     if (candCaps == null)
                     {
                         continue;
                     }
 
-                    Capability cap = candCaps.iterator().next();
+                    // Grab first (i.e., highest priority) candidate.
+                    Capability cap = candCaps.get(0);
                     reqs.add(req);
                     caps.add(cap);
                 }
             }
         }
 
-        // First, add all exported packages to the target revision's package space.
-        calculateExportedPackages(env, resource, allCandidates, revisionPkgMap);
-        Packages revisionPkgs = revisionPkgMap.get(resource);
+        // First, add all exported packages to the target resource's package space.
+        calculateExportedPackages(rc, resource, allCandidates, resourcePkgMap);
+        Packages resourcePkgs = resourcePkgMap.get(resource);
 
-        // Second, add all imported packages to the target revision's package space.
+        // Second, add all imported packages to the target resource's package space.
         for (int i = 0; i < reqs.size(); i++)
         {
             Requirement req = reqs.get(i);
             Capability cap = caps.get(i);
-            calculateExportedPackages(env, cap.getResource(), allCandidates, revisionPkgMap);
+            calculateExportedPackages(rc, cap.getResource(), allCandidates, resourcePkgMap);
             mergeCandidatePackages(
-                env, resource, req, cap, revisionPkgMap, allCandidates,
+                rc, resource, req, cap, resourcePkgMap, allCandidates,
                 new HashMap<Resource, List<Capability>>());
         }
 
@@ -535,17 +633,17 @@ public class ResolverImpl implements FelixResolver
         for (int i = 0; i < caps.size(); i++)
         {
             calculatePackageSpaces(
-                env, caps.get(i).getResource(), allCandidates, revisionPkgMap,
+                rc, caps.get(i).getResource(), allCandidates, resourcePkgMap,
                 usesCycleMap, cycle);
         }
 
-        // Fourth, if the target revision is unresolved or is dynamically importing,
+        // Fourth, if the target resource is unresolved or is dynamically importing,
         // then add all the uses constraints implied by its imported and required
         // packages to its package space.
-        // NOTE: We do not need to do this for resolved revisions because their
+        // NOTE: We do not need to do this for resolved resources because their
         // package space is consistent by definition and these uses constraints
-        // are only needed to verify the consistency of a resolving revision. The
-        // only exception is if a resolved revision is dynamically importing, then
+        // are only needed to verify the consistency of a resolving resource. The
+        // only exception is if a resolved resource is dynamically importing, then
         // we need to calculate its uses constraints again to make sure the new
         // import is consistent with the existing package space.
         if ((wiring == null) || isDynamicImporting)
@@ -560,45 +658,45 @@ public class ResolverImpl implements FelixResolver
                 if (!req.getNamespace().equals(BundleNamespace.BUNDLE_NAMESPACE)
                     && !req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                 {
-                    List<Requirement> blameReqs = new ArrayList();
+                    List<Requirement> blameReqs = new ArrayList<Requirement>();
                     blameReqs.add(req);
 
                     mergeUses(
-                        env,
+                        rc,
                         resource,
-                        revisionPkgs,
+                        resourcePkgs,
                         cap,
                         blameReqs,
-                        revisionPkgMap,
+                        resourcePkgMap,
                         allCandidates,
                         usesCycleMap);
                 }
             }
             // Merge uses constraints from imported packages.
-            for (Entry<String, List<Blame>> entry : revisionPkgs.m_importedPkgs.entrySet())
+            for (Entry<String, List<Blame>> entry : resourcePkgs.m_importedPkgs.entrySet())
             {
                 for (Blame blame : entry.getValue())
                 {
-                    // Ignore revisions that import from themselves.
+                    // Ignore resources that import from themselves.
                     if (!blame.m_cap.getResource().equals(resource))
                     {
                         List<Requirement> blameReqs = new ArrayList();
                         blameReqs.add(blame.m_reqs.get(0));
 
                         mergeUses(
-                            env,
+                            rc,
                             resource,
-                            revisionPkgs,
+                            resourcePkgs,
                             blame.m_cap,
                             blameReqs,
-                            revisionPkgMap,
+                            resourcePkgMap,
                             allCandidates,
                             usesCycleMap);
                     }
                 }
             }
             // Merge uses constraints from required bundles.
-            for (Entry<String, List<Blame>> entry : revisionPkgs.m_requiredPkgs.entrySet())
+            for (Entry<String, List<Blame>> entry : resourcePkgs.m_requiredPkgs.entrySet())
             {
                 for (Blame blame : entry.getValue())
                 {
@@ -606,12 +704,12 @@ public class ResolverImpl implements FelixResolver
                     blameReqs.add(blame.m_reqs.get(0));
 
                     mergeUses(
-                        env,
+                        rc,
                         resource,
-                        revisionPkgs,
+                        resourcePkgs,
                         blame.m_cap,
                         blameReqs,
-                        revisionPkgMap,
+                        resourcePkgMap,
                         allCandidates,
                         usesCycleMap);
                 }
@@ -620,8 +718,8 @@ public class ResolverImpl implements FelixResolver
     }
 
     private void mergeCandidatePackages(
-        Environment env, Resource current, Requirement currentReq,
-        Capability candCap, Map<Resource, Packages> revisionPkgMap,
+        ResolveContext rc, Resource current, Requirement currentReq,
+        Capability candCap, Map<Resource, Packages> resourcePkgMap,
         Candidates allCandidates, Map<Resource, List<Capability>> cycles)
     {
         List<Capability> cycleCaps = cycles.get(current);
@@ -639,20 +737,20 @@ public class ResolverImpl implements FelixResolver
         if (candCap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
         {
             mergeCandidatePackage(
-                current, false, currentReq, candCap, revisionPkgMap);
+                current, false, currentReq, candCap, resourcePkgMap);
         }
         else if (candCap.getNamespace().equals(BundleNamespace.BUNDLE_NAMESPACE))
         {
 // TODO: FELIX3 - THIS NEXT LINE IS A HACK. IMPROVE HOW/WHEN WE CALCULATE EXPORTS.
             calculateExportedPackages(
-                env, candCap.getResource(), allCandidates, revisionPkgMap);
+                rc, candCap.getResource(), allCandidates, resourcePkgMap);
 
             // Get the candidate's package space to determine which packages
-            // will be visible to the current revision.
-            Packages candPkgs = revisionPkgMap.get(candCap.getResource());
+            // will be visible to the current resource.
+            Packages candPkgs = resourcePkgMap.get(candCap.getResource());
 
             // We have to merge all exported packages from the candidate,
-            // since the current revision requires it.
+            // since the current resource requires it.
             for (Entry<String, Blame> entry : candPkgs.m_exportedPkgs.entrySet())
             {
                 mergeCandidatePackage(
@@ -660,30 +758,31 @@ public class ResolverImpl implements FelixResolver
                     true,
                     currentReq,
                     entry.getValue().m_cap,
-                    revisionPkgMap);
+                    resourcePkgMap);
             }
 
             // If the candidate requires any other bundles with reexport visibility,
             // then we also need to merge their packages too.
-            Wiring candWiring = env.getWirings().get(candCap.getResource());
+            Wiring candWiring = rc.getWirings().get(candCap.getResource());
             if (candWiring != null)
             {
-                for (Wire bw : candWiring.getRequiredResourceWires(null))
+                for (Wire w : candWiring.getRequiredResourceWires(null))
                 {
-                    if (bw.getRequirement().getNamespace()
+                    if (w.getRequirement().getNamespace()
                         .equals(BundleNamespace.BUNDLE_NAMESPACE))
                     {
-                        String value = bw.getRequirement()
-                            .getDirectives().get(Constants.VISIBILITY_DIRECTIVE);
+                        String value = w.getRequirement()
+                            .getDirectives()
+                                .get(BundleNamespace.REQUIREMENT_VISIBILITY_DIRECTIVE);
                         if ((value != null)
-                            && value.equals(Constants.VISIBILITY_REEXPORT))
+                            && value.equals(BundleNamespace.VISIBILITY_REEXPORT))
                         {
                             mergeCandidatePackages(
-                                env,
+                                rc,
                                 current,
                                 currentReq,
-                                bw.getCapability(),
-                                revisionPkgMap,
+                                w.getCapability(),
+                                resourcePkgMap,
                                 allCandidates,
                                 cycles);
                         }
@@ -692,23 +791,23 @@ public class ResolverImpl implements FelixResolver
             }
             else
             {
-                for (Requirement req
-                    : candCap.getResource().getRequirements(null))
+                for (Requirement req : candCap.getResource().getRequirements(null))
                 {
                     if (req.getNamespace().equals(BundleNamespace.BUNDLE_NAMESPACE))
                     {
                         String value =
-                            req.getDirectives().get(Constants.VISIBILITY_DIRECTIVE);
+                            req.getDirectives()
+                                .get(BundleNamespace.REQUIREMENT_VISIBILITY_DIRECTIVE);
                         if ((value != null)
-                            && value.equals(Constants.VISIBILITY_REEXPORT)
+                            && value.equals(BundleNamespace.VISIBILITY_REEXPORT)
                             && (allCandidates.getCandidates(req) != null))
                         {
                             mergeCandidatePackages(
-                                env,
+                                rc,
                                 current,
                                 currentReq,
                                 allCandidates.getCandidates(req).iterator().next(),
-                                revisionPkgMap,
+                                resourcePkgMap,
                                 allCandidates,
                                 cycles);
                         }
@@ -723,11 +822,11 @@ public class ResolverImpl implements FelixResolver
     private void mergeCandidatePackage(
         Resource current, boolean requires,
         Requirement currentReq, Capability candCap,
-        Map<Resource, Packages> revisionPkgMap)
+        Map<Resource, Packages> resourcePkgMap)
     {
         if (candCap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
         {
-            // Merge the candidate capability into the revision's package space
+            // Merge the candidate capability into the resource's package space
             // for imported or required packages, appropriately.
 
             String pkgName = (String)
@@ -736,7 +835,7 @@ public class ResolverImpl implements FelixResolver
             List blameReqs = new ArrayList();
             blameReqs.add(currentReq);
 
-            Packages currentPkgs = revisionPkgMap.get(current);
+            Packages currentPkgs = resourcePkgMap.get(current);
 
             Map<String, List<Blame>> packages = (requires)
                 ? currentPkgs.m_requiredPkgs
@@ -749,19 +848,19 @@ public class ResolverImpl implements FelixResolver
             }
             blames.add(new Blame(candCap, blameReqs));
 
-//dumpRevisionPkgs(current, currentPkgs);
+//dumpResourcePkgs(current, currentPkgs);
         }
     }
 
     private void mergeUses(
-        Environment env, Resource current, Packages currentPkgs,
+        ResolveContext rc, Resource current, Packages currentPkgs,
         Capability mergeCap, List<Requirement> blameReqs,
-        Map<Resource, Packages> revisionPkgMap,
+        Map<Resource, Packages> resourcePkgMap,
         Candidates allCandidates,
         Map<Capability, List<Resource>> cycleMap)
     {
         // If there are no uses, then just return.
-        // If the candidate revision is the same as the current revision,
+        // If the candidate resource is the same as the current resource,
         // then we don't need to verify and merge the uses constraints
         // since this will happen as we build up the package space.
         if (current.equals(mergeCap.getResource()))
@@ -779,14 +878,15 @@ public class ResolverImpl implements FelixResolver
         list.add(current);
         cycleMap.put(mergeCap, list);
 
-        for (Capability candSourceCap : getPackageSources(env, mergeCap, revisionPkgMap))
+        for (Capability candSourceCap : getPackageSources(rc, mergeCap, resourcePkgMap))
         {
             List<String> uses;
-            if (candSourceCap instanceof FelixCapability)
-            {
-                uses = ((FelixCapability) candSourceCap).getUses();
-            }
-            else
+// TODO: RFC-112 - Need impl-specific type
+//            if (candSourceCap instanceof FelixCapability)
+//            {
+//                uses = ((FelixCapability) candSourceCap).getUses();
+//            }
+//            else
             {
                 uses = Collections.EMPTY_LIST;
                 String s = candSourceCap.getDirectives()
@@ -804,7 +904,7 @@ public class ResolverImpl implements FelixResolver
             }
             for (String usedPkgName : uses)
             {
-                Packages candSourcePkgs = revisionPkgMap.get(candSourceCap.getResource());
+                Packages candSourcePkgs = resourcePkgMap.get(candSourceCap.getResource());
                 List<Blame> candSourceBlames = null;
                 // Check to see if the used package is exported.
                 Blame candExportedBlame = candSourcePkgs.m_exportedPkgs.get(usedPkgName);
@@ -844,14 +944,14 @@ public class ResolverImpl implements FelixResolver
                         List<Requirement> blameReqs2 = new ArrayList(blameReqs);
                         blameReqs2.add(blame.m_reqs.get(blame.m_reqs.size() - 1));
                         usedCaps.add(new Blame(blame.m_cap, blameReqs2));
-                        mergeUses(env, current, currentPkgs, blame.m_cap, blameReqs2,
-                            revisionPkgMap, allCandidates, cycleMap);
+                        mergeUses(rc, current, currentPkgs, blame.m_cap, blameReqs2,
+                            resourcePkgMap, allCandidates, cycleMap);
                     }
                     else
                     {
                         usedCaps.add(new Blame(blame.m_cap, blameReqs));
-                        mergeUses(env, current, currentPkgs, blame.m_cap, blameReqs,
-                            revisionPkgMap, allCandidates, cycleMap);
+                        mergeUses(rc, current, currentPkgs, blame.m_cap, blameReqs,
+                            resourcePkgMap, allCandidates, cycleMap);
                     }
                 }
             }
@@ -859,23 +959,23 @@ public class ResolverImpl implements FelixResolver
     }
 
     private void checkPackageSpaceConsistency(
-        Environment env,
+        ResolveContext rc,
         boolean isDynamicImporting,
-        Resource revision,
+        Resource resource,
         Candidates allCandidates,
-        Map<Resource, Packages> revisionPkgMap,
-        Map<Resource, Object> resultCache)
+        Map<Resource, Packages> resourcePkgMap,
+        Map<Resource, Object> resultCache) throws ResolutionException
     {
-        if (env.getWirings().containsKey(revision) && !isDynamicImporting)
+        if (rc.getWirings().containsKey(resource) && !isDynamicImporting)
         {
             return;
         }
-        else if (resultCache.containsKey(revision))
+        else if(resultCache.containsKey(resource))
         {
             return;
         }
 
-        Packages pkgs = revisionPkgMap.get(revision);
+        Packages pkgs = resourcePkgMap.get(resource);
 
         ResolutionException rethrow = null;
         Candidates permutation = null;
@@ -901,21 +1001,21 @@ public class ResolverImpl implements FelixResolver
                         permutate(allCandidates, sourceBlame.m_reqs.get(0), m_importPermutations);
                         // Report conflict.
                         ResolutionException ex = new ResolutionException(
-                            "Uses constraint violation. Unable to resolve bundle revision "
-                            + Util.getSymbolicName(revision)
-                            + " [" + revision
+                            "Uses constraint violation. Unable to resolve resource "
+                            + Util.getSymbolicName(resource)
+                            + " [" + resource
                             + "] because it is exposed to package '"
                             + entry.getKey()
-                            + "' from bundle revisions "
+                            + "' from resources "
                             + Util.getSymbolicName(sourceBlame.m_cap.getResource())
                             + " [" + sourceBlame.m_cap.getResource()
                             + "] and "
                             + Util.getSymbolicName(blame.m_cap.getResource())
                             + " [" + blame.m_cap.getResource()
                             + "] via two dependency chains.\n\nChain 1:\n"
-                            + toStringBlame(env, sourceBlame)
+                            + toStringBlame(rc, allCandidates, sourceBlame)
                             + "\n\nChain 2:\n"
-                            + toStringBlame(env, blame),
+                            + toStringBlame(rc, allCandidates, blame),
                             null,
                             Collections.singleton(blame.m_reqs.get(0)));
                         m_logger.log(
@@ -929,6 +1029,7 @@ public class ResolverImpl implements FelixResolver
             }
         }
 
+        // Check if there are any uses conflicts with exported packages.
         for (Entry<String, Blame> entry : pkgs.m_exportedPkgs.entrySet())
         {
             String pkgName = entry.getKey();
@@ -939,7 +1040,7 @@ public class ResolverImpl implements FelixResolver
             }
             for (Blame usedBlame : pkgs.m_usedPkgs.get(pkgName))
             {
-                if (!isCompatible(env, exportBlame.m_cap, usedBlame.m_cap, revisionPkgMap))
+                if (!isCompatible(rc, exportBlame.m_cap, usedBlame.m_cap, resourcePkgMap))
                 {
                     // Create a candidate permutation that eliminates all candidates
                     // that conflict with existing selected candidates.
@@ -949,16 +1050,16 @@ public class ResolverImpl implements FelixResolver
                     rethrow = (rethrow != null)
                         ? rethrow
                         : new ResolutionException(
-                            "Uses constraint violation. Unable to resolve bundle revision "
-                            + Util.getSymbolicName(revision)
-                            + " [" + revision
+                            "Uses constraint violation. Unable to resolve resource "
+                            + Util.getSymbolicName(resource)
+                            + " [" + resource
                             + "] because it exports package '"
                             + pkgName
-                            + "' and is also exposed to it from bundle revision "
+                            + "' and is also exposed to it from resource "
                             + Util.getSymbolicName(usedBlame.m_cap.getResource())
                             + " [" + usedBlame.m_cap.getResource()
                             + "] via the following dependency chain:\n\n"
-                            + toStringBlame(env, usedBlame),
+                            + toStringBlame(rc, allCandidates, usedBlame),
                             null,
                             null);
 
@@ -979,16 +1080,14 @@ public class ResolverImpl implements FelixResolver
                         }
 
                         // See if we can permutate the candidates for blamed
-                        // requirement; there may be no candidates if the revision
+                        // requirement; there may be no candidates if the resource
                         // associated with the requirement is already resolved.
-                        SortedSet<Capability> candidates =
-                            permutation.getCandidates(req);
+                        List<Capability> candidates = permutation.getCandidates(req);
                         if ((candidates != null) && (candidates.size() > 1))
                         {
                             mutated.add(req);
-                            Iterator it = candidates.iterator();
-                            it.next();
-                            it.remove();
+                            // Remove the conflicting candidate.
+                            candidates.remove(0);
                             // Continue with the next uses constraint.
                             break;
                         }
@@ -1023,7 +1122,7 @@ public class ResolverImpl implements FelixResolver
                 }
                 for (Blame usedBlame : pkgs.m_usedPkgs.get(pkgName))
                 {
-                    if (!isCompatible(env, importBlame.m_cap, usedBlame.m_cap, revisionPkgMap))
+                    if (!isCompatible(rc, importBlame.m_cap, usedBlame.m_cap, resourcePkgMap))
                     {
                         // Create a candidate permutation that eliminates any candidates
                         // that conflict with existing selected candidates.
@@ -1033,21 +1132,21 @@ public class ResolverImpl implements FelixResolver
                         rethrow = (rethrow != null)
                             ? rethrow
                             : new ResolutionException(
-                                "Uses constraint violation. Unable to resolve bundle revision "
-                                + Util.getSymbolicName(revision)
-                                + " [" + revision
+                                "Uses constraint violation. Unable to resolve resource "
+                                + Util.getSymbolicName(resource)
+                                + " [" + resource
                                 + "] because it is exposed to package '"
                                 + pkgName
-                                + "' from bundle revisions "
+                                + "' from resources "
                                 + Util.getSymbolicName(importBlame.m_cap.getResource())
                                 + " [" + importBlame.m_cap.getResource()
                                 + "] and "
                                 + Util.getSymbolicName(usedBlame.m_cap.getResource())
                                 + " [" + usedBlame.m_cap.getResource()
                                 + "] via two dependency chains.\n\nChain 1:\n"
-                                + toStringBlame(env, importBlame)
+                                + toStringBlame(rc, allCandidates, importBlame)
                                 + "\n\nChain 2:\n"
-                                + toStringBlame(env, usedBlame),
+                                + toStringBlame(rc, allCandidates, usedBlame),
                                 null,
                                 null);
 
@@ -1068,16 +1167,14 @@ public class ResolverImpl implements FelixResolver
                             }
 
                             // See if we can permutate the candidates for blamed
-                            // requirement; there may be no candidates if the revision
+                            // requirement; there may be no candidates if the resource
                             // associated with the requirement is already resolved.
-                            SortedSet<Capability> candidates =
-                                permutation.getCandidates(req);
+                            List<Capability> candidates = permutation.getCandidates(req);
                             if ((candidates != null) && (candidates.size() > 1))
                             {
                                 mutated.add(req);
-                                Iterator it = candidates.iterator();
-                                it.next();
-                                it.remove();
+                                // Remove the conflicting candidate.
+                                candidates.remove(0);
                                 // Continue with the next uses constraint.
                                 break;
                             }
@@ -1122,10 +1219,10 @@ public class ResolverImpl implements FelixResolver
             }
         }
 
-        resultCache.put(revision, Boolean.TRUE);
+        resultCache.put(resource, Boolean.TRUE);
 
-        // Now check the consistency of all revisions on which the
-        // current revision depends. Keep track of the current number
+        // Now check the consistency of all resources on which the
+        // current resource depends. Keep track of the current number
         // of permutations so we know if the lower level check was
         // able to create a permutation or not in the case of failure.
         int permCount = m_usesPermutations.size() + m_importPermutations.size();
@@ -1133,19 +1230,19 @@ public class ResolverImpl implements FelixResolver
         {
             for (Blame importBlame : entry.getValue())
             {
-                if (!revision.equals(importBlame.m_cap.getResource()))
+                if (!resource.equals(importBlame.m_cap.getResource()))
                 {
                     try
                     {
                         checkPackageSpaceConsistency(
-                            env, false, importBlame.m_cap.getResource(),
-                            allCandidates, revisionPkgMap, resultCache);
+                            rc, false, importBlame.m_cap.getResource(),
+                            allCandidates, resourcePkgMap, resultCache);
                     }
                     catch (ResolutionException ex)
                     {
                         // If the lower level check didn't create any permutations,
                         // then we should create an import permutation for the
-                        // requirement with the dependency on the failing revision
+                        // requirement with the dependency on the failing resource
                         // to backtrack on our current candidate selection.
                         if (permCount == (m_usesPermutations.size() + m_importPermutations.size()))
                         {
@@ -1162,14 +1259,12 @@ public class ResolverImpl implements FelixResolver
     private static void permutate(
         Candidates allCandidates, Requirement req, List<Candidates> permutations)
     {
-        SortedSet<Capability> candidates = allCandidates.getCandidates(req);
+        List<Capability> candidates = allCandidates.getCandidates(req);
         if (candidates.size() > 1)
         {
             Candidates perm = allCandidates.copy();
             candidates = perm.getCandidates(req);
-            Iterator it = candidates.iterator();
-            it.next();
-            it.remove();
+            candidates.remove(0);
             permutations.add(perm);
         }
     }
@@ -1177,7 +1272,7 @@ public class ResolverImpl implements FelixResolver
     private static void permutateIfNeeded(
         Candidates allCandidates, Requirement req, List<Candidates> permutations)
     {
-        SortedSet<Capability> candidates = allCandidates.getCandidates(req);
+        List<Capability> candidates = allCandidates.getCandidates(req);
         if (candidates.size() > 1)
         {
             // Check existing permutations to make sure we haven't
@@ -1189,8 +1284,8 @@ public class ResolverImpl implements FelixResolver
             boolean permutated = false;
             for (Candidates existingPerm : permutations)
             {
-                Set<Capability> existingPermCands = existingPerm.getCandidates(req);
-                if (!existingPermCands.iterator().next().equals(candidates.iterator().next()))
+                List<Capability> existingPermCands = existingPerm.getCandidates(req);
+                if (!existingPermCands.get(0).equals(candidates.get(0)))
                 {
                     permutated = true;
                 }
@@ -1205,32 +1300,31 @@ public class ResolverImpl implements FelixResolver
     }
 
     private static void calculateExportedPackages(
-        Environment env,
-        Resource revision,
+        ResolveContext rc,
+        Resource resource,
         Candidates allCandidates,
-        Map<Resource, Packages> revisionPkgMap)
+        Map<Resource, Packages> resourcePkgMap)
     {
-        Packages packages = revisionPkgMap.get(revision);
+        Packages packages = resourcePkgMap.get(resource);
         if (packages != null)
         {
             return;
         }
-        packages = new Packages(revision);
+        packages = new Packages(resource);
 
         // Get all exported packages.
-        Wiring wiring = env.getWirings().get(revision);
+        Wiring wiring = rc.getWirings().get(resource);
         List<Capability> caps = (wiring != null)
             ? wiring.getResourceCapabilities(null)
-            : revision.getCapabilities(null);
-        Map<String, Capability> exports =
-            new HashMap<String, Capability>(caps.size());
+            : resource.getCapabilities(null);
+        Map<String, Capability> exports = new HashMap<String, Capability>(caps.size());
         for (Capability cap : caps)
         {
             if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
             {
-                if (!cap.getResource().equals(revision))
+                if (!cap.getResource().equals(resource))
                 {
-                    cap = new HostedCapability(revision, cap);
+                    cap = new WrappedCapability(resource, cap);
                 }
                 exports.put(
                     (String) cap.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE),
@@ -1238,22 +1332,22 @@ public class ResolverImpl implements FelixResolver
             }
         }
         // Remove substitutable exports that were imported.
-        // For resolved revisions BundleWiring.getCapabilities()
+        // For resolved resources Wiring.getCapabilities()
         // already excludes imported substitutable exports, but
-        // for resolving revisions we must look in the candidate
+        // for resolving resources we must look in the candidate
         // map to determine which exports are substitutable.
         if (!exports.isEmpty())
         {
             if (wiring == null)
             {
-                for (Requirement req : revision.getRequirements(null))
+                for (Requirement req : resource.getRequirements(null))
                 {
                     if (req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                     {
-                        Set<Capability> cands = allCandidates.getCandidates(req);
+                        List<Capability> cands = allCandidates.getCandidates(req);
                         if ((cands != null) && !cands.isEmpty())
                         {
-                            String pkgName = (String) cands.iterator().next()
+                            String pkgName = (String) cands.get(0)
                                 .getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE);
                             exports.remove(pkgName);
                         }
@@ -1261,7 +1355,7 @@ public class ResolverImpl implements FelixResolver
                 }
             }
 
-            // Add all non-substituted exports to the revisions's package space.
+            // Add all non-substituted exports to the resources's package space.
             for (Entry<String, Capability> entry : exports.entrySet())
             {
                 packages.m_exportedPkgs.put(
@@ -1269,12 +1363,12 @@ public class ResolverImpl implements FelixResolver
             }
         }
 
-        revisionPkgMap.put(revision, packages);
+        resourcePkgMap.put(resource, packages);
     }
 
     private boolean isCompatible(
-        Environment env, Capability currentCap, Capability candCap,
-        Map<Resource, Packages> revisionPkgMap)
+        ResolveContext rc, Capability currentCap, Capability candCap,
+        Map<Resource, Packages> resourcePkgMap)
     {
         if ((currentCap != null) && (candCap != null))
         {
@@ -1285,14 +1379,14 @@ public class ResolverImpl implements FelixResolver
 
             List<Capability> currentSources =
                 getPackageSources(
-                    env,
+                    rc,
                     currentCap,
-                    revisionPkgMap);
+                    resourcePkgMap);
             List<Capability> candSources =
                 getPackageSources(
-                    env,
+                    rc,
                     candCap,
-                    revisionPkgMap);
+                    resourcePkgMap);
 
             return currentSources.containsAll(candSources)
                 || candSources.containsAll(currentSources);
@@ -1300,11 +1394,10 @@ public class ResolverImpl implements FelixResolver
         return true;
     }
 
-    private Map<Capability, List<Capability>> m_packageSourcesCache
-        = new HashMap();
+    private Map<Capability, List<Capability>> m_packageSourcesCache = new HashMap();
 
     private List<Capability> getPackageSources(
-        Environment env, Capability cap, Map<Resource, Packages> revisionPkgMap)
+        ResolveContext rc, Capability cap, Map<Resource, Packages> resourcePkgMap)
     {
         // If it is a package, then calculate sources for it.
         if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
@@ -1313,7 +1406,7 @@ public class ResolverImpl implements FelixResolver
             if (sources == null)
             {
                 sources = getPackageSourcesInternal(
-                    env, cap, revisionPkgMap, new ArrayList(), new HashSet());
+                    rc, cap, resourcePkgMap, new ArrayList(), new HashSet());
                 m_packageSourcesCache.put(cap, sources);
             }
             return sources;
@@ -1332,7 +1425,7 @@ public class ResolverImpl implements FelixResolver
     }
 
     private static List<Capability> getPackageSourcesInternal(
-        Environment env, Capability cap, Map<Resource, Packages> revisionPkgMap,
+        ResolveContext rc, Capability cap, Map<Resource, Packages> resourcePkgMap,
         List<Capability> sources, Set<Capability> cycleMap)
     {
         if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
@@ -1344,35 +1437,41 @@ public class ResolverImpl implements FelixResolver
             cycleMap.add(cap);
 
             // Get the package name associated with the capability.
-            String pkgName = String.valueOf(cap.getAttributes()
-                .get(PackageNamespace.PACKAGE_NAMESPACE));
+            String pkgName = cap.getAttributes()
+                .get(PackageNamespace.PACKAGE_NAMESPACE).toString();
 
-            // Since a revision can export the same package more than once, get
+            // Since a resource can export the same package more than once, get
             // all package capabilities for the specified package name.
-            Wiring wiring = env.getWirings().get(cap.getResource());
+            Wiring wiring = rc.getWirings().get(cap.getResource());
             List<Capability> caps = (wiring != null)
                 ? wiring.getResourceCapabilities(null)
                 : cap.getResource().getCapabilities(null);
-            for (int capIdx = 0; capIdx < caps.size(); capIdx++)
+            for (Capability sourceCap : caps)
             {
-                if (caps.get(capIdx).getNamespace()
-                        .equals(PackageNamespace.PACKAGE_NAMESPACE)
-                    && caps.get(capIdx).getAttributes()
-                        .get(PackageNamespace.PACKAGE_NAMESPACE).equals(pkgName))
+                if (sourceCap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE)
+                    && sourceCap.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE).equals(pkgName))
                 {
-                    sources.add(caps.get(capIdx));
+                    // Since capabilities may come from fragments, we need to check
+                    // for that case and wrap them.
+                    if (!cap.getResource().equals(sourceCap.getResource()))
+                    {
+                        sources.add(new WrappedCapability(cap.getResource(), sourceCap));
+                    }
+                    else
+                    {
+                        sources.add(sourceCap);
+                    }
                 }
             }
 
             // Then get any addition sources for the package from required bundles.
-            Packages pkgs = revisionPkgMap.get(cap.getResource());
+            Packages pkgs = resourcePkgMap.get(cap.getResource());
             List<Blame> required = pkgs.m_requiredPkgs.get(pkgName);
             if (required != null)
             {
                 for (Blame blame : required)
                 {
-                    getPackageSourcesInternal(env, blame.m_cap,
-                        revisionPkgMap, sources, cycleMap);
+                    getPackageSourcesInternal(rc, blame.m_cap, resourcePkgMap, sources, cycleMap);
                 }
             }
         }
@@ -1380,41 +1479,39 @@ public class ResolverImpl implements FelixResolver
         return sources;
     }
 
-    private static Resource getActualResource(Resource br)
+    private static Resource getDeclaredResource(Resource resource)
     {
-        if (br instanceof HostResource)
+        if (resource instanceof WrappedResource)
         {
-            return ((HostResource) br).getHost();
+            return ((WrappedResource) resource).getDeclaredResource();
         }
-        return br;
+        return resource;
     }
 
-    private static Capability getActualCapability(Capability c)
+    private static Capability getDeclaredCapability(Capability c)
     {
         if (c instanceof HostedCapability)
         {
-            return ((HostedCapability) c).getOriginalCapability();
+            return ((HostedCapability) c).getDeclaredCapability();
         }
         return c;
     }
 
-    private static Requirement getActualRequirement(Requirement r)
+    private static Requirement getDeclaredRequirement(Requirement r)
     {
-        if (r instanceof HostedRequirement)
+        if (r instanceof WrappedRequirement)
         {
-            return ((HostedRequirement) r).getOriginalRequirement();
+            return ((WrappedRequirement) r).getDeclaredRequirement();
         }
         return r;
     }
 
     private static Map<Resource, List<Wire>> populateWireMap(
-        Environment env, Resource resource,
-        Map<Resource, Packages> revisionPkgMap,
-        Map<Resource, List<Wire>> wireMap,
-        Candidates allCandidates)
+        ResolveContext rc, Resource resource, Map<Resource, Packages> resourcePkgMap,
+        Map<Resource, List<Wire>> wireMap, Candidates allCandidates)
     {
-        Resource unwrappedResource = getActualResource(resource);
-        if (!env.getWirings().containsKey(unwrappedResource)
+        Resource unwrappedResource = getDeclaredResource(resource);
+        if (!rc.getWirings().containsKey(unwrappedResource)
             && !wireMap.containsKey(unwrappedResource))
         {
             wireMap.put(unwrappedResource, (List<Wire>) Collections.EMPTY_LIST);
@@ -1425,24 +1522,24 @@ public class ResolverImpl implements FelixResolver
 
             for (Requirement req : resource.getRequirements(null))
             {
-                SortedSet<Capability> cands = allCandidates.getCandidates(req);
+                List<Capability> cands = allCandidates.getCandidates(req);
                 if ((cands != null) && (cands.size() > 0))
                 {
-                    Capability cand = cands.iterator().next();
-                    // Ignore revisions that import themselves.
+                    Capability cand = cands.get(0);
+                    // Ignore resources that import themselves.
                     if (!resource.equals(cand.getResource()))
                     {
-                        if (!env.getWirings().containsKey(cand.getResource()))
+                        if (!rc.getWirings().containsKey(cand.getResource()))
                         {
-                            populateWireMap(env, cand.getResource(),
-                                revisionPkgMap, wireMap, allCandidates);
+                            populateWireMap(rc, cand.getResource(),
+                                resourcePkgMap, wireMap, allCandidates);
                         }
-                        Packages candPkgs = revisionPkgMap.get(cand.getResource());
+                        Packages candPkgs = resourcePkgMap.get(cand.getResource());
                         Wire wire = new WireImpl(
                             unwrappedResource,
-                            getActualRequirement(req),
-                            getActualResource(cand.getResource()),
-                            getActualCapability(cand));
+                            getDeclaredRequirement(req),
+                            getDeclaredResource(cand.getResource()),
+                            getDeclaredCapability(cand));
                         if (req.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                         {
                             packageWires.add(wire);
@@ -1465,9 +1562,9 @@ public class ResolverImpl implements FelixResolver
             wireMap.put(unwrappedResource, packageWires);
 
             // Add host wire for any fragments.
-            if (resource instanceof HostResource)
+            if (resource instanceof WrappedResource)
             {
-                List<Resource> fragments = ((HostResource) resource).getFragments();
+                List<Resource> fragments = ((WrappedResource) resource).getFragments();
                 for (Resource fragment : fragments)
                 {
                     List<Wire> hostWires = wireMap.get(fragment);
@@ -1478,7 +1575,7 @@ public class ResolverImpl implements FelixResolver
                     }
                     hostWires.add(
                         new WireImpl(
-                            getActualResource(fragment),
+                            getDeclaredResource(fragment),
                             fragment.getRequirements(
                                 HostNamespace.HOST_NAMESPACE).get(0),
                             unwrappedResource,
@@ -1492,8 +1589,8 @@ public class ResolverImpl implements FelixResolver
     }
 
     private static Map<Resource, List<Wire>> populateDynamicWireMap(
-        Environment env, Resource resource, Requirement dynReq,
-        Map<Resource, Packages> revisionPkgMap,
+        ResolveContext rc, Resource resource, Requirement dynReq,
+        Map<Resource, Packages> resourcePkgMap,
         Map<Resource, List<Wire>> wireMap, Candidates allCandidates)
     {
         wireMap.put(resource, (List<Wire>) Collections.EMPTY_LIST);
@@ -1501,13 +1598,13 @@ public class ResolverImpl implements FelixResolver
         List<Wire> packageWires = new ArrayList<Wire>();
 
         // Get the candidates for the current dynamic requirement.
-        SortedSet<Capability> candCaps = allCandidates.getCandidates(dynReq);
+        List<Capability> candCaps = allCandidates.getCandidates(dynReq);
         // Record the dynamic candidate.
-        Capability dynCand = candCaps.first();
+        Capability dynCand = candCaps.get(0);
 
-        if (!env.getWirings().containsKey(dynCand.getResource()))
+        if (!rc.getWirings().containsKey(dynCand.getResource()))
         {
-            populateWireMap(env, dynCand.getResource(), revisionPkgMap,
+            populateWireMap(rc, dynCand.getResource(), resourcePkgMap,
                 wireMap, allCandidates);
         }
 
@@ -1515,103 +1612,28 @@ public class ResolverImpl implements FelixResolver
             new WireImpl(
                 resource,
                 dynReq,
-                getActualResource(dynCand.getResource()),
-                getActualCapability(dynCand)));
+                getDeclaredResource(dynCand.getResource()),
+                getDeclaredCapability(dynCand)));
 
         wireMap.put(resource, packageWires);
 
         return wireMap;
     }
 
-    private static Set<String> calculatePackageSpace(
-        Environment env, Resource resource, Wiring wiring)
+    private static void dumpResourcePkgMap(
+        ResolveContext rc, Map<Resource, Packages> resourcePkgMap)
     {
-        if (Util.isFragment(resource))
+        System.out.println("+++RESOURCE PKG MAP+++");
+        for (Entry<Resource, Packages> entry : resourcePkgMap.entrySet())
         {
-            return Collections.EMPTY_SET;
-        }
-        Set<String> pkgSpace = new HashSet<String>();
-        for (Wire wire : wiring.getRequiredResourceWires(null))
-        {
-            if (wire.getCapability().getNamespace()
-                .equals(PackageNamespace.PACKAGE_NAMESPACE))
-            {
-                pkgSpace.add(
-                    (String) wire.getCapability().getAttributes()
-                        .get(PackageNamespace.PACKAGE_NAMESPACE));
-            }
-            else if (wire.getCapability().getNamespace()
-                .equals(BundleNamespace.BUNDLE_NAMESPACE))
-            {
-                Set<String> pkgs = calculateExportedAndReexportedPackages(
-                    env,
-                    wire.getProvider(),
-                    new HashSet<String>(),
-                    new HashSet<Resource>());
-                pkgSpace.addAll(pkgs);
-            }
-        }
-        return pkgSpace;
-    }
-
-    private static Set<String> calculateExportedAndReexportedPackages(
-        Environment env,
-        Resource res,
-        Set<String> pkgs,
-        Set<Resource> cycles)
-    {
-        if (!cycles.contains(res))
-        {
-            cycles.add(res);
-
-            // Add all exported packages.
-            for (Capability cap : res.getCapabilities(null))
-            {
-                if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
-                {
-                    pkgs.add((String)
-                        cap.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE));
-                }
-            }
-
-            // Now check to see if any required bundles are required with reexport
-            // visibility, since we need to include those packages too.
-            for (Wire wire : env.getWirings().get(res).getRequiredResourceWires(null))
-            {
-                if (wire.getCapability().getNamespace().equals(
-                    BundleNamespace.BUNDLE_NAMESPACE))
-                {
-                    String dir = wire.getRequirement()
-                        .getDirectives().get(Constants.VISIBILITY_DIRECTIVE);
-                    if ((dir != null) && (dir.equals(Constants.VISIBILITY_REEXPORT)))
-                    {
-                        calculateExportedAndReexportedPackages(
-                            env,
-                            wire.getProvider(),
-                            pkgs,
-                            cycles);
-                    }
-                }
-            }
-        }
-
-        return pkgs;
-    }
-
-    private static void dumpRevisionPkgMap(
-        Environment env, Map<Resource, Packages> revisionPkgMap)
-    {
-        System.out.println("+++BUNDLE REVISION PKG MAP+++");
-        for (Entry<Resource, Packages> entry : revisionPkgMap.entrySet())
-        {
-            dumpRevisionPkgs(env, entry.getKey(), entry.getValue());
+            dumpResourcePkgs(rc, entry.getKey(), entry.getValue());
         }
     }
 
-    private static void dumpRevisionPkgs(
-        Environment env, Resource resource, Packages packages)
+    private static void dumpResourcePkgs(
+        ResolveContext rc, Resource resource, Packages packages)
     {
-        Wiring wiring = env.getWirings().get(resource);
+        Wiring wiring = rc.getWirings().get(resource);
         System.out.println(resource
             + " (" + ((wiring != null) ? "RESOLVED)" : "UNRESOLVED)"));
         System.out.println("  EXPORTED");
@@ -1636,7 +1658,8 @@ public class ResolverImpl implements FelixResolver
         }
     }
 
-    private static String toStringBlame(Environment env, Blame blame)
+    private static String toStringBlame(
+        ResolveContext rc, Candidates allCandidates, Blame blame)
     {
         StringBuffer sb = new StringBuffer();
         if ((blame.m_reqs != null) && !blame.m_reqs.isEmpty())
@@ -1669,9 +1692,9 @@ public class ResolverImpl implements FelixResolver
                 }
                 if ((i + 1) < blame.m_reqs.size())
                 {
-                    Capability cap = Util.getSatisfyingCapability(
-                        env,
-                        blame.m_reqs.get(i + 1).getResource(),
+                    Capability cap = getSatisfyingCapability(
+                        rc,
+                        allCandidates,
                         blame.m_reqs.get(i));
                     if (cap.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE))
                     {
@@ -1679,21 +1702,11 @@ public class ResolverImpl implements FelixResolver
                         sb.append("=");
                         sb.append(cap.getAttributes()
                             .get(PackageNamespace.PACKAGE_NAMESPACE).toString());
-                        Capability usedCap;
-                        if ((i + 2) < blame.m_reqs.size())
-                        {
-                            usedCap = Util.getSatisfyingCapability(
-                                env,
-                                blame.m_reqs.get(i + 2).getResource(),
+                        Capability usedCap =
+                            getSatisfyingCapability(
+                                rc,
+                                allCandidates,
                                 blame.m_reqs.get(i + 1));
-                        }
-                        else
-                        {
-                            usedCap = Util.getSatisfyingCapability(
-                                env,
-                                blame.m_cap.getResource(),
-                                blame.m_reqs.get(i + 1));
-                        }
                         sb.append("; uses:=");
                         sb.append(usedCap.getAttributes()
                             .get(PackageNamespace.PACKAGE_NAMESPACE));
@@ -1706,9 +1719,9 @@ public class ResolverImpl implements FelixResolver
                 }
                 else
                 {
-                    Capability export = Util.getSatisfyingCapability(
-                        env,
-                        blame.m_cap.getResource(),
+                    Capability export = getSatisfyingCapability(
+                        rc,
+                        allCandidates,
                         blame.m_reqs.get(i));
                     sb.append(export.getNamespace());
                     sb.append("=");
@@ -1716,11 +1729,10 @@ public class ResolverImpl implements FelixResolver
                     if (export.getNamespace().equals(PackageNamespace.PACKAGE_NAMESPACE)
                         && !export.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE)
                             .equals(blame.m_cap.getAttributes().get(
-                            		PackageNamespace.PACKAGE_NAMESPACE)))
+                                PackageNamespace.PACKAGE_NAMESPACE)))
                     {
                         sb.append("; uses:=");
-                        sb.append(blame.m_cap.getAttributes()
-                            .get(PackageNamespace.PACKAGE_NAMESPACE));
+                        sb.append(blame.m_cap.getAttributes().get(PackageNamespace.PACKAGE_NAMESPACE));
                         sb.append("\n    export: ");
                         sb.append(PackageNamespace.PACKAGE_NAMESPACE);
                         sb.append("=");
@@ -1742,17 +1754,54 @@ public class ResolverImpl implements FelixResolver
         return sb.toString();
     }
 
+    private static Capability getSatisfyingCapability(
+        ResolveContext rc, Candidates allCandidates, Requirement req)
+    {
+        Capability cap = null;
+
+        // If the requiring revision is not resolved, then check in the
+        // candidate map for its matching candidate.
+        List<Capability> cands = allCandidates.getCandidates(req);
+        if (cands != null)
+        {
+            cap = cands.get(0);
+        }
+        // Otherwise, if the requiring revision is resolved then check
+        // in its wires for the capability satisfying the requirement.
+        else if (rc.getWirings().containsKey(req.getResource()))
+        {
+            List<Wire> wires =
+                rc.getWirings().get(req.getResource()).getRequiredResourceWires(null);
+            req = getDeclaredRequirement(req);
+            for (Wire w : wires)
+            {
+                if (w.getRequirement().equals(req))
+                {
+// TODO: RESOLVER - This is not 100% correct, since requirements for
+//       dynamic imports with wildcards will reside on many wires and
+//       this code only finds the first one, not necessarily the correct
+//       one. This is only used for the diagnostic message, but it still
+//       could confuse the user.
+                    cap = w.getCapability();
+                    break;
+                }
+            }
+        }
+
+        return cap;
+    }
+
     private static class Packages
     {
-        private final Resource m_revision;
+        private final Resource m_resource;
         public final Map<String, Blame> m_exportedPkgs = new HashMap();
         public final Map<String, List<Blame>> m_importedPkgs = new HashMap();
         public final Map<String, List<Blame>> m_requiredPkgs = new HashMap();
         public final Map<String, List<Blame>> m_usedPkgs = new HashMap();
 
-        public Packages(Resource revision)
+        public Packages(Resource resource)
         {
-            m_revision = revision;
+            m_resource = resource;
         }
     }
 

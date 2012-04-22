@@ -143,7 +143,7 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 	
 	public static final String NAME = SubsystemConstants.PREFERRED_PROVIDER;
 
-	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.PREFERRED_PROVIDER + ")(?=,|\\z)");
+	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.RESOURCE + ")(?=,|\\z)");
 	
 	private static Collection<Clause> processHeader(String header) {
 		Matcher matcher = PATTERN.matcher(header);
@@ -190,6 +190,7 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 	@Override
 	public List<RequireBundleRequirement> toRequirements(Resource resource) {
 		List<RequireBundleRequirement> requirements = new ArrayList<RequireBundleRequirement>(clauses.size());
+		// TODO What's going on here? Why is this commented out?
 //		for (Clause clause : clauses)
 //			requirements.add(clause.toRequirement(resource));
 		return requirements;

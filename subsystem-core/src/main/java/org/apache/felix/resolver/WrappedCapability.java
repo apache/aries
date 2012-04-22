@@ -1,35 +1,32 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Copyright (c) OSGi Alliance (2012). All Rights Reserved.
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-package org.apache.felix.resolver.impl;
+package org.apache.felix.resolver;
 
 import java.util.Map;
-
 import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
+import org.osgi.service.resolver.HostedCapability;
 
-public class HostedCapability implements Capability
+public class WrappedCapability implements HostedCapability
 {
     private final Resource m_host;
     private final Capability m_cap;
 
-    public HostedCapability(Resource host, Capability cap)
+    public WrappedCapability(Resource host, Capability cap)
     {
         m_host = host;
         m_cap = cap;
@@ -46,7 +43,7 @@ public class HostedCapability implements Capability
         {
             return false;
         }
-        final HostedCapability other = (HostedCapability) obj;
+        final WrappedCapability other = (WrappedCapability) obj;
         if (m_host != other.m_host && (m_host == null || !m_host.equals(other.m_host)))
         {
             return false;
@@ -67,7 +64,7 @@ public class HostedCapability implements Capability
         return hash;
     }
 
-    public Capability getOriginalCapability()
+    public Capability getDeclaredCapability()
     {
         return m_cap;
     }
@@ -92,7 +89,7 @@ public class HostedCapability implements Capability
         return m_cap.getAttributes();
     }
 
-// TODO: RFC-112 - Create a Felix type for this.
+// TODO: RFC-112 - Need impl-specific type.
 //    public List<String> getUses()
 //    {
 //        return m_cap.getUses();

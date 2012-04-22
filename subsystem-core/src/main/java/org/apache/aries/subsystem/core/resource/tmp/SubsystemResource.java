@@ -40,6 +40,7 @@ import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
+import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemException;
 
 public abstract class SubsystemResource implements Resource {
@@ -78,7 +79,7 @@ public abstract class SubsystemResource implements Resource {
 	
 	protected static final Pattern PATTERN = Pattern.compile("([^@]+)(?:@(.+))?.esa");
 	
-	public static SubsystemResource newInstance(String location, InputStream content) throws IOException, URISyntaxException {
+	public static SubsystemResource newInstance(String location, InputStream content) throws IOException, URISyntaxException, ResolutionException {
 		Location loc = new Location(location);
 		if (content == null)
 			content = loc.open();
@@ -137,7 +138,7 @@ public abstract class SubsystemResource implements Resource {
 	protected final Collection<Resource> resources;
 	protected final SubsystemManifest subsystemManifest;
 	
-	public SubsystemResource(Location location, IDirectory directory, SubsystemManifest manifest) throws IOException, URISyntaxException {
+	public SubsystemResource(Location location, IDirectory directory, SubsystemManifest manifest) throws IOException, URISyntaxException, ResolutionException {
 		this.location = location;
 		this.directory = directory;
 		resources = computeResources();
@@ -281,7 +282,7 @@ public abstract class SubsystemResource implements Resource {
 		return new RequireCapabilityHeader(clauses);
 	}
 	
-	protected List<Requirement> computeRequirements(SubsystemManifest manifest) {
+	protected List<Requirement> computeRequirements(SubsystemManifest manifest) throws ResolutionException {
 		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
 		if (header == null)
 			return Collections.emptyList();
@@ -300,7 +301,7 @@ public abstract class SubsystemResource implements Resource {
 		return new DependencyCalculator(resources).calculateDependencies();
 	}
 	
-	protected Collection<Resource> computeResources() throws IOException, URISyntaxException {
+	protected Collection<Resource> computeResources() throws IOException, URISyntaxException, UnsupportedOperationException, ResolutionException {
 		List<IFile> files = directory.listFiles();
 		if (files.isEmpty())
 			return Collections.emptyList();

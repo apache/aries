@@ -18,9 +18,44 @@
  */
 package org.apache.felix.resolver;
 
-import java.util.List;
+import java.util.Map;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Resource;
+import org.osgi.service.resolver.HostedCapability;
 
-public interface FelixCapability
+class SimpleHostedCapability implements HostedCapability
 {
-    List<String> getUses();
+    private final Resource m_host;
+    private final Capability m_cap;
+
+    SimpleHostedCapability(Resource host, Capability cap)
+    {
+        m_host = host;
+        m_cap = cap;
+    }
+
+    public Resource getResource()
+    {
+        return m_host;
+    }
+
+    public Capability getDeclaredCapability()
+    {
+        return m_cap;
+    }
+
+    public String getNamespace()
+    {
+        return m_cap.getNamespace();
+    }
+
+    public Map<String, String> getDirectives()
+    {
+        return m_cap.getDirectives();
+    }
+
+    public Map<String, Object> getAttributes()
+    {
+        return m_cap.getAttributes();
+    }
 }
