@@ -16,31 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.felix.resolver.impl;
+package org.apache.felix.resolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import org.osgi.framework.namespace.ExecutionEnvironmentNamespace;
 import org.osgi.framework.namespace.HostNamespace;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
-class HostResource implements Resource
+class WrappedResource implements Resource
 {
     private final Resource m_host;
     private final List<Resource> m_fragments;
     private List<Capability> m_cachedCapabilities = null;
     private List<Requirement> m_cachedRequirements = null;
 
-    public HostResource(Resource host, List<Resource> fragments)
+    public WrappedResource(Resource host, List<Resource> fragments)
     {
         m_host = host;
         m_fragments = fragments;
     }
 
-    public Resource getHost()
+    public Resource getDeclaredResource()
     {
         return m_host;
     }
@@ -59,7 +60,7 @@ class HostResource implements Resource
             // Wrap host capabilities.
             for (Capability cap : m_host.getCapabilities(null))
             {
-                caps.add(new HostedCapability(this, cap));
+                caps.add(new WrappedCapability(this, cap));
             }
 
             // Wrap fragment capabilities.
@@ -69,9 +70,13 @@ class HostResource implements Resource
                 {
                     for (Capability cap : fragment.getCapabilities(null))
                     {
-// TODO: OSGi R4.4 - OSGi R4.4 may introduce an identity capability, if so
-//       that will need to be excluded from here.
-                        caps.add(new HostedCapability(this, cap));
+                        // Filter out identity capabilities, since they
+                        // are not part of the fragment payload.
+                        if (!cap.getNamespace()
+                            .equals(IdentityNamespace.IDENTITY_NAMESPACE))
+                        {
+                            caps.add(new WrappedCapability(this,  cap));
+                        }
                     }
                 }
             }
@@ -89,7 +94,7 @@ class HostResource implements Resource
             // Wrap host requirements.
             for (Requirement req : m_host.getRequirements(null))
             {
-                reqs.add(new HostedRequirement(this, req));
+                reqs.add(new WrappedRequirement(this, req));
             }
 
             // Wrap fragment requirements.
@@ -99,9 +104,13 @@ class HostResource implements Resource
                 {
                     for (Requirement req : fragment.getRequirements(null))
                     {
-                        if (!req.getNamespace().equals(HostNamespace.HOST_NAMESPACE))
+                        // Filter out host and execution environment requirements,
+                        // since they are not part of the fragment payload.
+                        if (!req.getNamespace().equals(HostNamespace.HOST_NAMESPACE)
+                            && !req.getNamespace().equals(
+                                ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE))
                         {
-                            reqs.add(new HostedRequirement(this, req));
+                            reqs.add(new WrappedRequirement(this, req));
                         }
                     }
                 }

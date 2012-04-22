@@ -21,13 +21,13 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.aries.subsystem.core.Resolver;
-import org.apache.felix.resolver.impl.ResolverImpl;
+import org.apache.felix.resolver.ResolverImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
+import org.osgi.service.resolver.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

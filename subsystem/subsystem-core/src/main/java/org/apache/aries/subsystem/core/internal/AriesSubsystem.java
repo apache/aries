@@ -91,6 +91,7 @@ import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.coordinator.Participant;
 import org.osgi.service.repository.RepositoryContent;
+import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
@@ -305,7 +306,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 				deploymentManifest, 
 				subsystemManifest, 
 //				environment,
-				new SubsystemEnvironment(this),
+				new SubsystemResolveContext(this, Collections.EMPTY_LIST),
 				autostart,
 				id,
 				lastId,
@@ -596,10 +597,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (state == State.STARTING || state == State.ACTIVE) {
 			return;
 		}
-		// Resolve the subsystem, if necessary.
-		if (state == State.INSTALLED) {
-			resolve();
-		}
+		resolve();
 		setState(State.STARTING);
 		autostart = true;
 		// TODO Need to hold a lock here to guarantee that another start
@@ -746,20 +744,20 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		// TODO Can we automatically assume it actually is resolved?
 		setState(State.RESOLVED);
-		DeploymentManifest manifest = new DeploymentManifest(
-				archive.getDeploymentManifest(),
-				null,
-				null,
-				autostart,
-				id,
-				SubsystemIdentifier.getLastId(),
-				location,
-				false,
-				false);
 		try {
+			DeploymentManifest manifest = new DeploymentManifest(
+					archive.getDeploymentManifest(),
+					null,
+					null,
+					autostart,
+					id,
+					SubsystemIdentifier.getLastId(),
+					location,
+					false,
+					false);
 			archive.setDeploymentManifest(manifest);
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			throw new SubsystemException(e);
 		}
 	}
@@ -856,12 +854,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return result;
 	}
 	
-	private DeploymentManifest getDeploymentManifest() throws IOException, URISyntaxException {
+	private DeploymentManifest getDeploymentManifest() throws IOException, URISyntaxException, ResolutionException {
 		if (archive.getDeploymentManifest() == null)
 			archive.setDeploymentManifest(new DeploymentManifest(
 					archive.getDeploymentManifest(),
 					archive.getSubsystemManifest(), 
-					new SubsystemEnvironment(this),
+					new SubsystemResolveContext(this, Collections.EMPTY_LIST),
 					autostart,
 					id,
 					SubsystemIdentifier.getLastId(),
@@ -908,7 +906,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		setImportIsolationPolicy();
 		DeploymentManifest manifest = getDeploymentManifest();
 		DeployedContentHeader contentHeader = manifest.getDeployedContentHeader();
-		SubsystemEnvironment environment = new SubsystemEnvironment(this);
+		SubsystemResolveContext environment = new SubsystemResolveContext(this, Collections.EMPTY_LIST);
 		if (contentHeader != null) {
 			for (DeployedContent content : contentHeader.getDeployedContents()) {
 				Collection<Capability> capabilities = environment.findProviders(
@@ -1117,6 +1115,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 	}
 	
 	private void resolve() {
+		if (state != State.INSTALLED)
+			return;
 		setState(State.RESOLVING);
 		try {
 			for (Subsystem child : subsystemGraph.getChildren(this))
@@ -1146,7 +1146,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	private void setExportIsolationPolicy() throws InvalidSyntaxException, IOException, BundleException, URISyntaxException {
+	private void setExportIsolationPolicy() throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
 		if (isRoot())
 			// Nothing to do if this is the root subsystem.
 			return;
