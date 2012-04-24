@@ -194,6 +194,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.apache.aries", "org.apache.aries.util").version("0.5-SNAPSHOT"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
 				mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+				mavenBundle("org.apache.felix", "org.apache.felix.resolver"),
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.coordinator").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
@@ -213,7 +214,6 @@ public abstract class SubsystemTest extends IntegrationTest {
 		super.setUp();
 		new RepositoryGenerator(bundleContext).generateOBR();
 		serviceRegistrations.add(bundleContext.registerService(Repository.class, new RepositoryAdminRepository(getOsgiService(RepositoryAdmin.class)), null));
-		serviceRegistrations.add(bundleContext.registerService(Resolver.class, new ResolverImpl(null), null));
 		try {
 			bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
 		}

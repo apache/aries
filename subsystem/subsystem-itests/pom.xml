@@ -24,29 +24,52 @@
     <name>Apache Aries Subsystem iTests</name>
     <description>
         Integration tests using the subsystem api, core for the implementation
-        and subsystem-sample for the subsysem to be tested.
+        and subsystem-sample for the subsystem to be tested.
     </description>
 
     <dependencies>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
+    	<dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <scope>test</scope>
-            <version>3.8.0-SNAPSHOT</version>
+        </dependency>
+    	<dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <scope>test</scope>
+            <version>0.5-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    	<dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.api</artifactId>
+            <scope>test</scope>
+            <version>0.3.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi.services</artifactId>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
             <scope>test</scope>
-            <version>3.8.0-SNAPSHOT</version>
+            <version>0.3.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.equinox</groupId>
-            <artifactId>org.eclipse.equinox.event</artifactId>
-            <scope>test</scope>
-            <version>3.8.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
+    	<dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <scope>test</scope>
@@ -56,12 +79,6 @@
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
-                <!-- 
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
-                </exclusion>
-                -->
             </exclusions>
         </dependency>
         <dependency>
@@ -74,12 +91,6 @@
             		<groupId>org.osgi</groupId>
             		<artifactId>org.osgi.core</artifactId>
             	</exclusion>
-            	<!-- 
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
-                </exclusion>
-                -->
             </exclusions>
         </dependency>
         <dependency>
@@ -92,93 +103,27 @@
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
-                <!-- 
                 <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
+                	<groupId>org.ops4j.pax.runner</groupId>
+            		<artifactId>pax-runner-no-jcl</artifactId>
                 </exclusion>
-                -->
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.api</artifactId>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
             <scope>test</scope>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.6.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
-                <!-- 
                 <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
-                </exclusion>
-                -->
+            		<groupId>org.apache.felix</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries</groupId>
-            <artifactId>org.apache.aries.util</artifactId>
-            <scope>test</scope>
-            <version>0.5-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-                <!-- 
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
-                </exclusion>
-                -->
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-default</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.url</groupId>
-            <artifactId>pax-url-mvn</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit-extender-impl</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.runner</groupId>
-            <artifactId>pax-runner-no-jcl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -186,6 +131,25 @@
             <scope>test</scope>
             <version>1.2.8</version>
             <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+                <exclusion>
+            		<groupId>org.apache.felix</groupId>
+            		<artifactId>org.osgi.core</artifactId>
+            	</exclusion>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.felix</groupId>
+        	<artifactId>org.apache.felix.resolver</artifactId>
+        	<version>0.1.0-SNAPSHOT</version>
+        	<exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.core</artifactId>
@@ -221,38 +185,62 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <groupId>org.eclipse</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
             <scope>test</scope>
-            <version>1.6.4</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-                <exclusion>
-            		<groupId>org.apache.felix</groupId>
-            		<artifactId>org.osgi.core</artifactId>
-            	</exclusion>
-            	<!-- 
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>
-                </exclusion>
-                -->
-            </exclusions>
+            <version>3.8.0-SNAPSHOT</version>
+        </dependency>
+    	<dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.event</artifactId>
+            <scope>test</scope>
+            <version>3.8.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.utils</artifactId>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
             <scope>test</scope>
-            <version>0.3.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>3.8.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-default</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit-extender-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-service</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.runner</groupId>
+            <artifactId>pax-runner-no-jcl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-mvn</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
