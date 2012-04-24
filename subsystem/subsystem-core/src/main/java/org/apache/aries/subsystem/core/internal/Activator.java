@@ -16,18 +16,28 @@ package org.apache.aries.subsystem.core.internal;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
 
-import org.apache.felix.resolver.ResolverImpl;
+import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
+import org.osgi.service.coordinator.Coordinator;
+import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.Resolver;
+import org.osgi.service.subsystem.SubsystemException;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * The bundle activator for the this bundle. When the bundle is starting, this
  * activator will create and register the SubsystemAdmin service.
  */
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, ServiceTrackerCustomizer<Object, Object> {
 	private static final Logger logger = LoggerFactory.getLogger(Activator.class);
 	
 	private static Activator instance;
@@ -54,32 +64,38 @@ public class Activator implements BundleActivator {
 		logger.debug(LOG_EXIT, "checkInstance");
 	}
 	
-	private final List<ServiceRegistration<?>> registrations = new ArrayList<ServiceRegistration<?>>();
-	
 	private BundleContext bundleContext;
-	private SubsystemServiceRegistrar registrar;
+	private volatile Coordinator coordinator;
+	private volatile SubsystemServiceRegistrar registrar;
+	private volatile RegionDigraph regionDigraph;
+	private volatile Resolver resolver;
 	private AriesSubsystem root;
-	private ServiceProviderImpl serviceProvider;
+	private ServiceTracker<?,?> serviceTracker;
 	
-	public synchronized BundleContext getBundleContext() {
-		logger.debug(LOG_ENTRY, "getBundleContext");
-		BundleContext result = bundleContext;
-		logger.debug(LOG_EXIT, "getBundleContext", result);
-		return result;
+	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
+	private final Collection<Repository> repositories = Collections.synchronizedSet(new HashSet<Repository>());
+	
+	public BundleContext getBundleContext() {
+		return bundleContext;
+	}
+	
+	public Coordinator getCoordinator() {
+		return coordinator;
+	}
+	
+	public RegionDigraph getRegionDigraph() {
+		return regionDigraph;
+	}
+	
+	public Collection<Repository> getRepositories() {
+		return Collections.unmodifiableCollection(repositories);
 	}
 	
 	public Resolver getResolver() {
-		return new ResolverImpl(null);
+		return resolver;
 	}
 	
-	public synchronized ServiceProvider getServiceProvider() {
-		logger.debug(LOG_ENTRY, "getServiceProvider");
-		ServiceProvider result = serviceProvider;
-		logger.debug(LOG_EXIT, "getServiceProvider", result);
-		return result;
-	}
-	
-	public synchronized SubsystemServiceRegistrar getSubsystemServiceRegistrar() {
+	public SubsystemServiceRegistrar getSubsystemServiceRegistrar() {
 		logger.debug(LOG_ENTRY, "getSubsystemServiceRegistrar");
 		SubsystemServiceRegistrar result = registrar;
 		logger.debug(LOG_EXIT, "getSubsystemServiceRegistrar", result);
@@ -87,39 +103,98 @@ public class Activator implements BundleActivator {
 	}
 
 	@Override
-	public synchronized void start(final BundleContext context) throws Exception {
+	public synchronized void start(BundleContext context) throws Exception {
 		logger.debug(LOG_ENTRY, "start", context);
-		synchronized (Activator.class) {
-			instance = this;
-		}
 		bundleContext = context;
-		serviceProvider = new ServiceProviderImpl(bundleContext);
-		registerBundleEventHook();
-		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(), null));
-		registrar = new SubsystemServiceRegistrar(bundleContext);
-		root = new AriesSubsystem();
-		root.install();
-		root.start();
+		serviceTracker = new ServiceTracker<Object, Object>(bundleContext, generateServiceFilter(), this);
+		serviceTracker.open();
 		logger.debug(LOG_EXIT, "start");
 	}
 
 	@Override
-	public synchronized void stop(BundleContext context) /*throws Exception*/ {
+	public synchronized void stop(BundleContext context) {
 		logger.debug(LOG_ENTRY, "stop", context);
+		serviceTracker.close();
+		serviceTracker = null;
+		bundleContext = null;
+		logger.debug(LOG_EXIT, "stop");
+	}
+	
+	private void activate() {
+		if (isActive() || !hasRequiredServices())
+			return;
+		synchronized (Activator.class) {
+			instance = Activator.this;
+		}
+		registerBundleEventHook();
+		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(), null));
+		registrar = new SubsystemServiceRegistrar(bundleContext);
+		try {
+			root = new AriesSubsystem();
+		}
+		catch (SubsystemException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new SubsystemException(e);
+		}
+		root.install();
+		root.start();
+	}
+	
+	private void deactivate() {
+		if (!isActive() || hasRequiredServices())
+			return;
 		root.stop0();
-		for (int i = registrations.size() - 1; i >= 0; i--) {
+		for (ServiceRegistration<?> registration : registrations) {
 			try {
-				registrations.get(i).unregister();
+				registration.unregister();
 			}
 			catch (IllegalStateException e) {
 				logger.debug("Service had already been unregistered", e);
 			}
 		}
-		serviceProvider.shutdown();
 		synchronized (Activator.class) {
 			instance = null;
 		}
-		logger.debug(LOG_EXIT, "stop");
+	}
+	
+	private Object findAlternateServiceFor(Object service) {
+		Object[] services = serviceTracker.getServices();
+		if (services == null)
+			return null;
+		for (Object alternate : services)
+			if (alternate.getClass().equals(service.getClass()))
+					return alternate;
+		return null;
+	}
+	
+	private Filter generateServiceFilter() throws InvalidSyntaxException {
+		return FrameworkUtil.createFilter(generateServiceFilterString());
+	}
+	
+	private String generateServiceFilterString() {
+		return new StringBuilder("(|(")
+				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
+				.append(Coordinator.class.getName()).append(")(")
+				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
+				.append(RegionDigraph.class.getName()).append(")(")
+				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
+				.append(Resolver.class.getName()).append(")(")
+				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
+				.append(Repository.class.getName()).append("))").toString();
+	}
+	
+	private boolean hasRequiredServices() {
+		return coordinator != null &&
+				regionDigraph != null &&
+				resolver != null;
+	}
+	
+	private boolean isActive() {
+		synchronized (Activator.class) {
+			return instance != null;
+		}
 	}
 	
 	private void registerBundleEventHook() {
@@ -127,4 +202,63 @@ public class Activator implements BundleActivator {
 		properties.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.MIN_VALUE);
 		registrations.add(bundleContext.registerService(EventHook.class, new BundleEventHook(), properties));
 	}
+	
+	/* Begin ServiceTrackerCustomizer methods */
+
+	@Override
+	public synchronized Object addingService(ServiceReference<Object> reference) {
+		Object service = bundleContext.getService(reference);
+		if (service instanceof Coordinator) {
+			if (coordinator == null) {
+				coordinator = (Coordinator)service;
+				activate();
+			}
+		}
+		else if (service instanceof RegionDigraph) {
+			if (regionDigraph == null) {
+				regionDigraph = (RegionDigraph)service;
+				activate();
+			}
+		}
+		else if (service instanceof Resolver) {
+			if (resolver == null) {
+				resolver = (Resolver)service;
+				activate();
+			}
+		}
+		else
+			repositories.add((Repository)service);
+		return service;
+	}
+
+	@Override
+	public void modifiedService(ServiceReference<Object> reference, Object service) {
+		// Nothing
+	}
+
+	@Override
+	public synchronized void removedService(ServiceReference<Object> reference, Object service) {
+		if (service instanceof Coordinator) {
+			if (service.equals(coordinator)) {
+				coordinator = (Coordinator)findAlternateServiceFor(coordinator);
+				deactivate();
+			}
+		}
+		else if (service instanceof RegionDigraph) {
+			if (service.equals(regionDigraph)) {
+				regionDigraph = (RegionDigraph)findAlternateServiceFor(regionDigraph);
+				deactivate();
+			}
+		}
+		else if (service instanceof Resolver) {
+			if (service.equals(resolver)) {
+				resolver = (Resolver)findAlternateServiceFor(regionDigraph);
+				deactivate();
+			}
+		}
+		else
+			repositories.remove(service);
+	}
+	
+	/* End ServiceTrackerCustomizer methods */
 }

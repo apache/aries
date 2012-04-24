@@ -324,7 +324,7 @@ public class SubsystemResolveContext extends ResolveContext {
 	private void findRepositoryServiceProviders(Collection<Capability> capabilities, Requirement requirement) {
 		if (logger.isDebugEnabled())
 			logger.debug(LOG_ENTRY, "findRepositoryServiceProviders", new Object[]{capabilities, requirement});
-		Collection<Repository> repositories = Activator.getInstance().getServiceProvider().getServices(Repository.class);
+		Collection<Repository> repositories = Activator.getInstance().getRepositories();
 		for (Repository repository : repositories) {
 			logger.debug("Evaluating repository: {}", repository);
 			Map<Requirement, Collection<Capability>> map = repository.findProviders(Arrays.asList(requirement));
