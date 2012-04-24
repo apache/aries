@@ -53,6 +53,7 @@ import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ManifestFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
+import org.apache.felix.resolver.ResolverImpl;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
@@ -68,6 +69,7 @@ import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.repository.RepositoryContent;
+import org.osgi.service.resolver.Resolver;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -211,6 +213,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 		super.setUp();
 		new RepositoryGenerator(bundleContext).generateOBR();
 		serviceRegistrations.add(bundleContext.registerService(Repository.class, new RepositoryAdminRepository(getOsgiService(RepositoryAdmin.class)), null));
+		serviceRegistrations.add(bundleContext.registerService(Resolver.class, new ResolverImpl(null), null));
 		try {
 			bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
 		}

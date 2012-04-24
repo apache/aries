@@ -88,7 +88,6 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
-import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.coordinator.Participant;
 import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.resolver.ResolutionException;
@@ -537,7 +536,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	@Override
 	public Subsystem install(String location, InputStream content) throws SubsystemException {
-		Coordination coordination = Activator.getInstance().getServiceProvider().getService(Coordinator.class).create(getSymbolicName() + '-' + getSubsystemId(), 0);
+		Coordination coordination = Activator.getInstance().getCoordinator().create(getSymbolicName() + '-' + getSubsystemId(), 0);
 		Subsystem result = null;
 		try {
 			result = install(location, content, coordination);
@@ -604,7 +603,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// operation can't occur when the state goes to RESOLVED.
 		// Start the subsystem.
 		Coordination coordination = Activator.getInstance()
-				.getServiceProvider().getService(Coordinator.class)
+				.getCoordinator()
 				.create(getSymbolicName() + '-' + getSubsystemId(), 0);
 		try {
 			// TODO Need to make sure the resources are ordered by start level.
@@ -694,7 +693,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	void install() {
 		Coordination coordination = Activator.getInstance()
-				.getServiceProvider().getService(Coordinator.class)
+				.getCoordinator()
 				.create(getSymbolicName() + "-" + getSubsystemId(), 0);
 		try {
 			install(coordination, null);
@@ -827,7 +826,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	private Region createRegion(String name) throws BundleException {
 		Activator activator = Activator.getInstance();
-		RegionDigraph digraph = activator.getServiceProvider().getService(RegionDigraph.class);
+		RegionDigraph digraph = activator.getRegionDigraph();
 		if (name == null)
 			return digraph.getRegion(activator.getBundleContext().getBundle());
 		Region region = digraph.getRegion(name);
