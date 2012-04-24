@@ -54,7 +54,7 @@ public class BundleEventHook implements EventHook {
 			// This means Region Digraph was used to install the bundle. The
 			// bundle needs to be associated with the scoped subsystem of the
 			// region used to install the bundle.
-			RegionDigraph digraph = Activator.getInstance().getServiceProvider().getService(RegionDigraph.class);
+			RegionDigraph digraph = Activator.getInstance().getRegionDigraph();
 			Region region = digraph.getRegion(origin);
 			for (AriesSubsystem s : AriesSubsystem.getSubsystems(null)) {
 				if ((s.isApplication() || s.isComposite())
