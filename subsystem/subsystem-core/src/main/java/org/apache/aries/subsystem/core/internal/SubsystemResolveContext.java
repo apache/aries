@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.archive.PreferredProviderHeader;
 import org.eclipse.equinox.region.Region;
 import org.osgi.framework.Bundle;
@@ -142,9 +141,8 @@ public class SubsystemResolveContext extends ResolveContext {
 			// Unscoped subsystems share content resources as well as transitive
 			// dependencies. Scoped subsystems share transitive dependencies as
 			// long as they're in the same region.
-			if (subsystem.isFeature() || identity.isTransitiveDependency()) {
-				findConstituentProviders(requirement, capabilities);
-			}
+			if (subsystem.isFeature() || identity.isTransitiveDependency())
+				capabilities.addAll(new SystemRepository(subsystem).findProviders(requirement));
 			findArchiveProviders(capabilities, identity);
 			findRepositoryServiceProviders(capabilities, identity);
 		}
@@ -154,7 +152,7 @@ public class SubsystemResolveContext extends ResolveContext {
 			findArchiveProviders(capabilities, requirement);
 			findRepositoryServiceProviders(capabilities, requirement);
 			// TODO The following is a quick fix to ensure this environment always returns capabilities provided by the system bundle. Needs some more thought.
-			findConstituentProviders(requirement, capabilities);
+			capabilities.addAll(new SystemRepository(subsystem).findProviders(requirement));
 		}
 		logger.debug(LOG_EXIT, "findProviders", capabilities);
 		return new ArrayList<Capability>(capabilities);
@@ -220,67 +218,6 @@ public class SubsystemResolveContext extends ResolveContext {
 		boolean result = true;
 		logger.debug(LOG_EXIT, "isEffective", result);
 		return true;
-	}
-	
-	private void findConstituentProviders(Requirement requirement, Collection<Capability> capabilities) {
-		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "findConstituentProviders", new Object[]{requirement, capabilities});
-		AriesSubsystem subsystem = this.subsystem;
-		if (requirement instanceof OsgiIdentityRequirement) {
-			// We only want to return providers from the same region as the subsystem.
-			// Find the one and only one scoped subsystem in the region, which
-			// will be either the current subsystem or one of its parents.
-			do {
-				subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
-			} while (!(subsystem.isApplication() || subsystem.isComposite()));
-			// Now search the one and only one scoped parent within the same region
-			// and all children that are also in the same region for a provider.
-			findConstituentProviders(subsystem, requirement, capabilities);
-			return;
-		}
-		logger.debug("Navigating up the parent hierarchy...");
-		while (!subsystem.getParents().isEmpty()) {
-			subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
-			logger.debug("Next parent is: {}", subsystem);
-		}
-		findConstituentProviders(subsystem, requirement, capabilities);
-		logger.debug(LOG_EXIT, "findConstituentProviders");
-	}
-	
-	private void findConstituentProviders(AriesSubsystem subsystem, Requirement requirement, Collection<Capability> capabilities) {
-		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "findConstituentProviders", new Object[]{subsystem, requirement, capabilities});
-		// Because constituent providers are already provisioned resources, the
-		// sharing policy check must be between the requiring subsystem and the
-		// offering subsystem, not the subsystem the resource would be
-		// provisioned to as in the other methods.
-		SharingPolicyValidator validator = new SharingPolicyValidator(subsystem.getRegion(), this.subsystem.getRegion());
-		for (Resource resource : subsystem.getConstituents()) {
-			logger.debug("Evaluating resource: {}", resource);
-			for (Capability capability : resource.getCapabilities(requirement.getNamespace())) {
-				logger.debug("Evaluating capability: {}", capability);
-				// Filter out capabilities offered by dependencies that will be
-				// or already are provisioned to an out of scope region. This
-				// filtering does not apply to osgi.identity requirements within
-				// the same region.
-				if (!(requirement instanceof OsgiIdentityRequirement) && !validator.isValid(capability))
-					continue;
-				if (ResourceHelper.matches(requirement, capability)) {
-					logger.debug("Adding capability: {}", capability);
-					capabilities.add(capability);
-				}
-			}
-		}
-		for (Subsystem child : subsystem.getChildren()) {
-			logger.debug("Evaluating child subsystem: {}", child);
-			// If the requirement is osgi.identity and the child is not in the
-			// same region as the parent, we do not want to search it.
-			if (requirement instanceof OsgiIdentityRequirement
-					&& !subsystem.getRegion().equals(((AriesSubsystem)child).getRegion()))
-				continue;
-			findConstituentProviders((AriesSubsystem)child, requirement, capabilities);
-		}
-		logger.debug(LOG_EXIT, "findConstituentProviders");
 	}
 	
 	private void findArchiveProviders(Collection<Capability> capabilities, Requirement requirement) {
