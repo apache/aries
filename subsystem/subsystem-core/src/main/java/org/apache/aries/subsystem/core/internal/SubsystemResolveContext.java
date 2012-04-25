@@ -144,13 +144,13 @@ public class SubsystemResolveContext extends ResolveContext {
 			if (subsystem.isFeature() || identity.isTransitiveDependency())
 				capabilities.addAll(new SystemRepository(subsystem).findProviders(requirement));
 			findArchiveProviders(capabilities, identity);
-			findRepositoryServiceProviders(capabilities, identity);
+			capabilities.addAll(new RepositoryServiceRepository().findProviders(identity));
 		}
 		else {
 			logger.debug("The requirement is NOT an instance of OsgiIdentityRequirement");
 			// This means we're looking for capabilities satisfying a requirement within a content resource or transitive dependency.
 			findArchiveProviders(capabilities, requirement);
-			findRepositoryServiceProviders(capabilities, requirement);
+			capabilities.addAll(new RepositoryServiceRepository().findProviders(requirement));
 			// TODO The following is a quick fix to ensure this environment always returns capabilities provided by the system bundle. Needs some more thought.
 			capabilities.addAll(new SystemRepository(subsystem).findProviders(requirement));
 		}
@@ -256,28 +256,6 @@ public class SubsystemResolveContext extends ResolveContext {
 			findArchiveProviders(capabilities, requirement, (AriesSubsystem)child);
 		}
 		logger.debug(LOG_EXIT, "findArchiveProviders");
-	}
-	
-	private void findRepositoryServiceProviders(Collection<Capability> capabilities, Requirement requirement) {
-		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "findRepositoryServiceProviders", new Object[]{capabilities, requirement});
-		Collection<Repository> repositories = Activator.getInstance().getRepositories();
-		for (Repository repository : repositories) {
-			logger.debug("Evaluating repository: {}", repository);
-			Map<Requirement, Collection<Capability>> map = repository.findProviders(Arrays.asList(requirement));
-			Collection<Capability> caps = map.get(requirement);
-			if (caps != null) {
-				for (Capability capability : caps) {
-					logger.debug("Adding capability: {}", capability);
-					// Filter out capabilities offered by dependencies that will be or
-					// already are provisioned to an out of scope region.
-					if (!requirement.getNamespace().equals(IdentityNamespace.IDENTITY_NAMESPACE) && !isContentResource(capability.getResource()) && !validator.isValid(capability))
-						continue;
-					capabilities.add(capability);
-				}
-			}
-		}
-		logger.debug(LOG_EXIT, "findRepositoryServiceProviders");
 	}
 	
 	private void initializeResources(Collection<Resource> resources) {
