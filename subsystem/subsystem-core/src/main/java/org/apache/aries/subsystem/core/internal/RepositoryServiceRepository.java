@@ -1,4 +1,4 @@
-package org.apache.aries.subsystem.core.resource;
+package org.apache.aries.subsystem.core.internal;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +16,10 @@ import org.osgi.service.repository.Repository;
 
 public class RepositoryServiceRepository implements Repository {
 	private final BundleContext context;
+	
+	public RepositoryServiceRepository() {
+		this(Activator.getInstance().getBundleContext());
+	}
 	
 	public RepositoryServiceRepository(BundleContext context) {
 		this.context = context;
