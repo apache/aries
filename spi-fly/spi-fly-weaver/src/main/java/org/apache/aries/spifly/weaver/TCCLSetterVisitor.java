@@ -46,7 +46,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     private static final Type UTIL_CLASS = Type.getType(Util.class);
 
     private static final Type CLASS_TYPE = Type.getType(Class.class);
-    
+
     private static final Type String_TYPE = Type.getType(String.class);
 
     private final Type targetClass;
@@ -55,6 +55,9 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     // Set to true when the weaving code has changed the client such that an additional import
     // (to the Util.class.getPackage()) is needed.
     private boolean additionalImportRequired = false;
+
+    // This field is true when the class was woven
+    private boolean woven = false;
 
     public TCCLSetterVisitor(ClassVisitor cv, String className, Set<WeavingData> weavingData) {
         super(cv);
@@ -73,6 +76,15 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
 
     @Override
     public void visitEnd() {
+        if (!woven) {
+            System.out.println("+++ not woven: " + targetClass);
+            // if this class wasn't woven, then don't add the synthesized method either.
+            super.visitEnd();
+            return;
+        } else {
+            System.out.println("+++ woven: " + targetClass);
+        }
+
         // Add generated static method
         Set<String> methodNames = new HashSet<String>();
 
@@ -88,25 +100,25 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
 
              methodNames.add(methodName);
              Method method = new Method(methodName, Type.VOID_TYPE, new Type[] {CLASS_TYPE});
-             
+
              GeneratorAdapter mv = new GeneratorAdapter(cv.visitMethod(ACC_PRIVATE + ACC_STATIC, methodName,
                      method.getDescriptor(), null, null), ACC_PRIVATE + ACC_STATIC, methodName,
                      method.getDescriptor());
-             
+
              //Load the strings, method parameter and target
              mv.visitLdcInsn(wd.getClassName());
              mv.visitLdcInsn(wd.getMethodName());
              mv.loadArg(0);
              mv.visitLdcInsn(targetClass);
-             
+
              //Change the class on the stack into a classloader
-             mv.invokeVirtual(CLASS_TYPE, new Method("getClassLoader", 
+             mv.invokeVirtual(CLASS_TYPE, new Method("getClassLoader",
                  CLASSLOADER_TYPE, new Type[0]));
-             
+
              //Call our util method
-             mv.invokeStatic(UTIL_CLASS, new Method("fixContextClassloader", Type.VOID_TYPE, 
+             mv.invokeStatic(UTIL_CLASS, new Method("fixContextClassloader", Type.VOID_TYPE,
                  new Type[] {String_TYPE, String_TYPE, CLASS_TYPE, CLASSLOADER_TYPE}));
-             
+
              mv.returnValue();
              mv.endMethod();
         }
@@ -165,18 +177,19 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 System.out.println("+++ Gotcha!");
 
                 additionalImportRequired = true;
-                
+                woven = true;
+
                 Label startTry = newLabel();
                 Label endTry = newLabel();
-                
+
                 //start try block
                 visitTryCatchBlock(startTry, endTry, endTry, null);
                 mark(startTry);
-                
+
                 // Add: Util.storeContextClassloader();
                 invokeStatic(UTIL_CLASS, new Method("storeContextClassloader", Type.VOID_TYPE, new Type[0]));
-                
-                
+
+
                 // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);
                 if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
                     "load".equals(wd.getMethodName()) &&
@@ -184,7 +197,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                     // ServiceLoader.load() is a special case because it's a general-purpose service loader,
                     // therefore, the target class it the class being passed in to the ServiceLoader.load()
                     // call itself.
-                    
+
                     mv.visitLdcInsn(lastLDCType);
                 } else {
                     // In any other case, we're not dealing with a general-purpose service loader, but rather
@@ -202,14 +215,14 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
                 //If no exception then go to the finally (finally blocks are a catch block with a jump)
                 Label afterCatch = newLabel();
                 goTo(afterCatch);
-                
-                
-                //start the catch 
+
+
+                //start the catch
                 mark(endTry);
                 //Run the restore method then throw on the exception
                 invokeStatic(UTIL_CLASS, new Method("restoreContextClassloader", Type.VOID_TYPE, new Type[0]));
                 throwException();
-                
+
                 //start the finally
                 mark(afterCatch);
                 //Run the restore and continue
