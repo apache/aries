@@ -33,7 +33,7 @@
     <groupId>org.apache.aries</groupId>
     <artifactId>aries</artifactId>
     <name>Apache Aries</name>
-    <version>0.4-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
