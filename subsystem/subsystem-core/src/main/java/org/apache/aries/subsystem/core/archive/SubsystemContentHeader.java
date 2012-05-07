@@ -20,8 +20,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;

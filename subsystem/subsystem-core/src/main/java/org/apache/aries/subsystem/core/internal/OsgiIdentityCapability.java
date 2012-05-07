@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
-import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;

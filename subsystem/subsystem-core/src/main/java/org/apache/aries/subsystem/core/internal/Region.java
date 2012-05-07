@@ -7,14 +7,17 @@ import java.util.Map;
 
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
-import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 
-public class SystemRepository implements Repository {
-	private final AriesSubsystem root;
+public class Region implements Repository {
+	private final AriesSubsystem scopedSubsystem;
+	private final Collection<AriesSubsystem> subsystems = new HashSet<AriesSubsystem>();
 	
-	public SystemRepository(AriesSubsystem root) {
-		this.root = root;
+	public Region(AriesSubsystem scopedSubsystem) {
+		if (!scopedSubsystem.isApplication() || !scopedSubsystem.isComposite())
+			throw new IllegalArgumentException("A region may only start with a scoped subsystem");
+		this.scopedSubsystem = scopedSubsystem;
+		subsystems.add(scopedSubsystem);
 	}
 
 	@Override
@@ -28,17 +31,11 @@ public class SystemRepository implements Repository {
 	
 	public Collection<Capability> findProviders(Requirement requirement) {
 		Collection<Capability> result = new HashSet<Capability>();
-		findProviders(requirement, result, root);
+		findProviders(requirement, result);
 		return result;
 	}
 	
-	private void findProviders(Requirement requirement, Collection<Capability> capabilities, AriesSubsystem subsystem) {
-		for (Resource constituent : subsystem.getConstituents()) {
-			if (constituent instanceof AriesSubsystem)
-				findProviders(requirement, capabilities, (AriesSubsystem)constituent);
-			for (Capability capability : constituent.getCapabilities(requirement.getNamespace()))
-				if (ResourceHelper.matches(requirement, capability))
-					capabilities.add(capability);
-		}
+	private void findProviders(Requirement requirement, Collection<Capability> capabilities) {
+		
 	}
 }

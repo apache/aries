@@ -1,4 +1,4 @@
-package org.apache.aries.subsystem.core.resource;
+package org.apache.aries.subsystem.core.internal;
 
 import org.osgi.resource.Capability;
 

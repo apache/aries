@@ -6,26 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.aries.subsystem.core.internal.Activator;
-import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
-import org.apache.aries.subsystem.core.internal.SubsystemResolveContext;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
-import org.osgi.resource.Resource;
-import org.osgi.resource.Wire;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemConstants;
-import org.osgi.service.subsystem.SubsystemException;
 
 public class DeploymentManifest {
 	public static class Builder {
@@ -92,7 +83,6 @@ public class DeploymentManifest {
 	public DeploymentManifest(
 			DeploymentManifest deploymentManifest, 
 			SubsystemManifest subsystemManifest, 
-			SubsystemResolveContext resolveContext,
 			boolean autostart, 
 			long id, 
 			long lastId, 
@@ -103,37 +93,6 @@ public class DeploymentManifest {
 		if (deploymentManifest == null // We're generating a new deployment manifest.
 				|| (deploymentManifest != null && overwrite)) { // A deployment manifest already exists but overwriting it with subsystem manifest content is desired.
 			headers = computeHeaders(subsystemManifest);
-			Collection<Resource> resources = new HashSet<Resource>();
-			SubsystemContentHeader contentHeader = subsystemManifest.getSubsystemContentHeader();
-			Map<Resource, List<Wire>> resolution = null;
-			Collection<Resource> deployedContent = new HashSet<Resource>();
-			if (contentHeader != null) {
-				for (SubsystemContentHeader.Content content : contentHeader.getContents()) {
-					OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(content.getName(), content.getVersionRange(), content.getType(), false);
-					Resource resource = resolveContext.findResource(requirement);
-					// If the resource is null, can't continue.
-					if (resource == null) {
-						if (content.isMandatory())
-							throw new SubsystemException("Resource does not exist: " + requirement);
-						continue;
-					}
-					resources.add(resource);
-				}
-				// TODO This does not validate that all content bundles were found.
-				resolution = Activator.getInstance().getResolver().resolve(new SubsystemResolveContext(resolveContext.getSubsystem(), resources));
-				Collection<Resource> provisionResource = new HashSet<Resource>();
-				for (Resource resource : resolution.keySet()) {
-					if (contentHeader.contains(resource))
-						deployedContent.add(resource);
-					else
-						provisionResource.add(resource);
-				}
-				// Make sure any already resolved content resources are added back in.
-				deployedContent.addAll(resources);
-				headers.put(DEPLOYED_CONTENT, DeployedContentHeader.newInstance(deployedContent));
-				if (!provisionResource.isEmpty())
-					headers.put(PROVISION_RESOURCE, ProvisionResourceHeader.newInstance(provisionResource));
-			}
 		}
 		else {
 			headers = new HashMap<String, Header<?>>(deploymentManifest.getHeaders());
