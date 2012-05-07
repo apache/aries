@@ -27,7 +27,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.subsystem.core.ResourceHelper;
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.felix.bundlerepository.Resource;
 import org.osgi.framework.Constants;

@@ -39,11 +39,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
+import org.apache.aries.subsystem.core.internal.BundleResource;
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.SubsystemIdentifier;
-import org.apache.aries.subsystem.core.resource.BundleResource;
 import org.apache.aries.subsystem.itests.obr.felix.RepositoryAdminRepository;
 import org.apache.aries.subsystem.itests.util.RepositoryGenerator;
 import org.apache.aries.subsystem.itests.util.TestRepository;
@@ -53,7 +53,6 @@ import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ManifestFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
-import org.apache.felix.resolver.ResolverImpl;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
@@ -69,7 +68,6 @@ import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.repository.RepositoryContent;
-import org.osgi.service.resolver.Resolver;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -699,6 +697,15 @@ public abstract class SubsystemTest extends IntegrationTest {
 		catch (Throwable t) {
 			t.printStackTrace();
 		}
+	}
+	
+	protected void uninstallSilently(Bundle bundle) {
+		if (bundle == null)
+			return;
+		try {
+			bundle.uninstall();
+		}
+		catch (Exception e) {}
 	}
 	
 	protected void uninstallSubsystem(Subsystem subsystem) throws Exception {

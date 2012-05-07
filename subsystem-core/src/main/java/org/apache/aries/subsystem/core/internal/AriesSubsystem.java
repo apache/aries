@@ -16,16 +16,10 @@ package org.apache.aries.subsystem.core.internal;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,13 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
-import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
-import org.apache.aries.subsystem.core.archive.DeployedContentHeader.DeployedContent;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.ExportPackageCapability;
 import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
@@ -54,8 +42,6 @@ import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ImportPackageRequirement;
 import org.apache.aries.subsystem.core.archive.ProvideCapabilityCapability;
 import org.apache.aries.subsystem.core.archive.ProvideCapabilityHeader;
-import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
-import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader.ProvisionedResource;
 import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
 import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
@@ -67,9 +53,6 @@ import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
-import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
-import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
-import org.apache.aries.subsystem.core.resource.tmp.SubsystemResource;
 import org.apache.aries.util.io.IOUtils;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
@@ -142,84 +125,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (subsystems.isEmpty())
 			resourceToSubsystems.remove(resource);
 	}
-	
-	private static void copyContent(InputStream content, File destination) throws IOException {
-		copyContent(
-				new BufferedInputStream(content),
-				new BufferedOutputStream(new FileOutputStream(destination)));
-	}
-	
-	private static void copyContent(InputStream content, OutputStream destination) throws IOException {
-		// TODO What's the optimal byte array size? Put this in a constant?
-		byte[] bytes = new byte[2048];
-		int read;
-		try {
-			while ((read = content.read(bytes)) != -1)
-				destination.write(bytes, 0, read);
-		}
-		finally {
-			try {
-				destination.close();
-			}
-			catch (IOException e) {}
-			try {
-				content.close();
-			}
-			catch (IOException e) {}
-		}
-	}
-	
-	private static void unzipContent(File content, File destination) throws IOException {
-		unzipContent(
-				new BufferedInputStream(new FileInputStream(content)),
-				destination);
-	}
-	
-	private static void unzipContent(InputStream content, File destination) throws IOException {
-		ZipInputStream zis = new ZipInputStream(content);
-		try {
-			ZipEntry entry;
-			while ((entry = zis.getNextEntry()) != null) {
-				try {
-					File file = new File(destination, entry.getName());
-					if (entry.isDirectory()) {
-						if (!file.exists() && !file.mkdirs())
-							throw new SubsystemException("Failed to create resource directory: " + file);
-					}
-					// TODO Let's just overwrite any existing resources for now.
-//					else if (file.exists())
-//						throw new SubsystemException("Resource already exists: " + file);
-					else {
-						OutputStream fos = new FileOutputStream(file);
-						try {
-							byte[] bytes = new byte[2048];
-							int read;
-							while ((read = zis.read(bytes)) != -1)
-								fos.write(bytes, 0, read);
-						}
-						finally {
-							try {
-								fos.close();
-							}
-							catch (IOException e) {}
-						}
-					}
-				}
-				finally {
-					try {
-						zis.closeEntry();
-					}
-					catch (IOException e) {}
-				}
-			}
-		}
-		finally {
-			try {
-				zis.close();
-			}
-			catch (IOException e) {}
-		}
-	}
 
 	private static void deleteFile(File file) {
 		LOGGER.debug(LOG_ENTRY, "deleteFile", file);
@@ -241,10 +146,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 	private final SubsystemArchive archive;
 	private final Set<Resource> constituents = Collections.synchronizedSet(new HashSet<Resource>());
 	private final File directory;
-//	private final SubsystemEnvironment environment;
 	private final long id;
 	private final String location;
 	private final Region region;
+	private final SubsystemResource resource;
 	private final SubsystemGraph subsystemGraph;
 	
 	private boolean autostart;
@@ -298,14 +203,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 					.version(getVersion()).content(archive.getResources())
 					.build();
 		}
-//		environment = new SubsystemEnvironment(this);
 		// The root subsystem establishes the subsystem graph;
 		subsystemGraph = new SubsystemGraph(this);
 		archive.setDeploymentManifest(new DeploymentManifest(
 				deploymentManifest, 
 				subsystemManifest, 
-//				environment,
-				new SubsystemResolveContext(this, Collections.EMPTY_LIST),
 				autostart,
 				id,
 				lastId,
@@ -323,71 +225,20 @@ public class AriesSubsystem implements Subsystem, Resource {
 			bundleInstalled(br);
 		}
 		// TODO End proof of concept.
+		resource = null;
 		LOGGER.debug(LOG_EXIT, "init");
 	}
 	
-	public AriesSubsystem(String location, InputStream content, AriesSubsystem parent) throws Exception {
-		// Create a non-root subsystem.
-		SubsystemUri uri = null;
-		if (location.startsWith("subsystem://"))
-			uri = new SubsystemUri(location);
-		if (content == null) {
-			if (uri != null)
-				content = uri.getURL().openStream();
-			else
-				content = new URL(location).openStream();
-			
-		}
-		this.location = location;
-		id = SubsystemIdentifier.getNextId();
-		String directoryName = "subsystem" + id;
-		// TODO Add to constants.
-		String fileName = directoryName + ".esa";
-		File zipFile = new File(parent.directory, fileName);
-		directory = new File(parent.directory, directoryName);
-		if (!directory.mkdir())
-			throw new IOException("Unable to make directory for " + directory.getCanonicalPath());
-		try {
-			copyContent(content, zipFile);
-			unzipContent(zipFile, directory);
-			archive = new SubsystemArchive(directory);
-//			environment = new SubsystemEnvironment(this);
-			// Make sure the relevant headers are derived, if absent.
-			archive.setSubsystemManifest(new SubsystemManifest(
-					archive.getSubsystemManifest(),
-					uri == null ? null : uri.getSymbolicName(), 
-					uri == null ? null : uri.getVersion(), 
-					archive.getResources()));
-			SubsystemManifestValidator.validate(this, archive.getSubsystemManifest());
-			// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
-			if (isFeature())
-				region = parent.region;
-			else
-				region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
-		}
-		catch (Throwable t) {
-			deleteFile(directory);
-			deleteFile(zipFile);
-			if (t instanceof SubsystemException)
-				throw (SubsystemException)t;
-			throw new SubsystemException(t);
-		}
-		subsystemGraph = parent.subsystemGraph;
-	}
-	
 	public AriesSubsystem(SubsystemResource resource, AriesSubsystem parent) throws Exception {
+		this.resource = resource;
 		subsystemGraph = parent.subsystemGraph;
 		this.location = resource.getLocation();
 		id = SubsystemIdentifier.getNextId();
 		String directoryName = "subsystem" + id;
-//		String fileName = directoryName + ".esa";
-//		File zipFile = new File(parent.directory, fileName);
 		directory = new File(Activator.getInstance().getBundleContext().getDataFile(""), directoryName);
 		if (!directory.mkdir())
 			throw new IOException("Unable to make directory for " + directory.getCanonicalPath());
 		try {
-//			copyContent(resource.getContent(), zipFile);
-//			unzipContent(zipFile, directory);
 			archive = new SubsystemArchive(resource, directory);
 			archive.setSubsystemManifest(resource.getSubsystemManifest());
 			if (resource.getDeploymentManifest() != null)
@@ -400,8 +251,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 				region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
 		}
 		catch (Throwable t) {
-//			deleteFile(directory);
-//			deleteFile(zipFile);
 			if (t instanceof SubsystemException)
 				throw (SubsystemException)t;
 			throw new SubsystemException(t);
@@ -419,12 +268,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 		location = manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue();
 		String directoryName = "subsystem" + id;
 		directory = new File(parent.directory, directoryName);
-//		environment = new SubsystemEnvironment(this);
 		// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
 		if (isFeature())
 			region = parent.region;
 		else
 			region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
+		resource = null;
 	}
 	
 	public SubsystemArchive getArchive() {
@@ -747,7 +596,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 			DeploymentManifest manifest = new DeploymentManifest(
 					archive.getDeploymentManifest(),
 					null,
-					null,
 					autostart,
 					id,
 					SubsystemIdentifier.getLastId(),
@@ -858,7 +706,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 			archive.setDeploymentManifest(new DeploymentManifest(
 					archive.getDeploymentManifest(),
 					archive.getSubsystemManifest(), 
-					new SubsystemResolveContext(this, Collections.EMPTY_LIST),
 					autostart,
 					id,
 					SubsystemIdentifier.getLastId(),
@@ -874,66 +721,27 @@ public class AriesSubsystem implements Subsystem, Resource {
 		if (!isFeature())
 			RegionContextBundleHelper.installRegionContextBundle(this);
 		Activator.getInstance().getSubsystemServiceRegistrar().register(this, parent);
-		Set<Resource> contentResources = new TreeSet<Resource>(
-				new Comparator<Resource>() {
-					@Override
-					public int compare(Resource o1, Resource o2) {
-						if (o1.equals(o2))
-							// Consistent with equals.
-							return 0;
-						String t1 = ResourceHelper.getTypeAttribute(o1);
-						String t2 = ResourceHelper.getTypeAttribute(o2);
-						boolean b1 = IdentityNamespace.TYPE_BUNDLE.equals(t1)
-								|| IdentityNamespace.TYPE_FRAGMENT.equals(t1);
-						boolean b2 = IdentityNamespace.TYPE_BUNDLE.equals(t2)
-								|| IdentityNamespace.TYPE_FRAGMENT.equals(t2);
-						if (b1 && !b2)
-							// o1 is a bundle or fragment but o2 is not.
-							return -1;
-						if (!b1 && b2)
-							// o1 is not a bundle or fragment but o2 is.
-							return 1;
-						// Either both or neither are bundles or fragments. In this case we don't care about the order.
-						return -1;
-					}
-				});
-		List<Resource> transitiveDependencies = new ArrayList<Resource>();
 		// Set up the sharing policy before installing the resources so that the
 		// environment can filter out capabilities from dependencies being
 		// provisioned to regions that are out of scope. This doesn't hurt
 		// anything since the resources are disabled from resolving anyway.
 		setImportIsolationPolicy();
-		DeploymentManifest manifest = getDeploymentManifest();
-		DeployedContentHeader contentHeader = manifest.getDeployedContentHeader();
-		SubsystemResolveContext environment = new SubsystemResolveContext(this, Collections.EMPTY_LIST);
-		if (contentHeader != null) {
-			for (DeployedContent content : contentHeader.getDeployedContents()) {
-				Collection<Capability> capabilities = environment.findProviders(
-						new OsgiIdentityRequirement(content.getName(), content.getDeployedVersion(), content.getNamespace(), false));
-				if (capabilities.isEmpty())
-					throw new SubsystemException("Subsystem content resource does not exist: " + content.getName() + ";version=" + content.getDeployedVersion());
-				Resource resource = capabilities.iterator().next().getResource();
-				contentResources.add(resource);
-			}
-		}
-		ProvisionResourceHeader resourceHeader = manifest.getProvisionResourceHeader();
-		if (resourceHeader != null) {
-			for (ProvisionedResource content : resourceHeader.getProvisionedResources()) {
-				Collection<Capability> capabilities = environment.findProviders(
-						new OsgiIdentityRequirement(content.getName(), content.getDeployedVersion(), content.getNamespace(), true));
-				if (capabilities.isEmpty())
-					throw new SubsystemException("Subsystem provisioned resource does not exist: " + content.getName() + ";version=" + content.getDeployedVersion());
-				Resource resource = capabilities.iterator().next().getResource();
-				transitiveDependencies.add(resource);
-			}
-		}
-		// Discover and install transitive dependencies.
-		for (Resource resource : transitiveDependencies) {
-			installResource(resource, coordination, true);
-		}
-		// Install the content resources.
-		for (Resource resource : contentResources) {
-			installResource(resource, coordination, false);
+		// The subsystem resource will be null for the root subsystem.
+		if (this.resource != null) {
+			Comparator<Resource> comparator = new InstallResourceComparator();
+			// Install dependencies first...
+			List<Resource> dependencies = new ArrayList<Resource>(resource.getInstallableDependencies());
+			Collections.sort(dependencies, comparator);
+			for (Resource resource : dependencies)
+				installResource(resource, coordination, true);
+			// ...followed by content.
+			List<Resource> content = new ArrayList<Resource>(resource.getInstallableContent());
+			Collections.sort(content, comparator);
+			for (Resource resource : content)
+				installResource(resource, coordination, false);
+			// Simulate installation of shared content so that necessary relationships are established.
+			for (Resource resource : this.resource.getSharedContent())
+				installResource(resource, coordination, false);
 		}
 		setState(State.INSTALLED);
 		if (autostart)
@@ -944,7 +752,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		SubsystemResource ssr = null;
 		try {
 			TargetRegion region = new TargetRegion(this);
-			ssr = SubsystemResource.newInstance(location, content);
+			ssr = new SubsystemResource(location, content, this);
 			AriesSubsystem subsystem = locationToSubsystem.get(location);
 			if (subsystem != null) {
 				if (!region.contains(subsystem))
@@ -978,8 +786,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 			throw new SubsystemException(e);
 		}
 		finally {
-//			if (ssr != null)
-//				ssr.close();
 			IOUtils.close(content);
 		}
 	}
@@ -1060,12 +866,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	private Resource installSubsystemResource(Resource resource, Coordination coordination, boolean transitive) throws Exception {
 		final AriesSubsystem subsystem;
-		if (resource instanceof SubsystemFileResource) {
-			SubsystemFileResource sfr = (SubsystemFileResource)resource;
-			subsystem = (AriesSubsystem)install(sfr.getLocation(), sfr.getContent(), coordination);
-			return subsystem;
-		}
-		else if (resource instanceof RepositoryContent) {
+		if (resource instanceof RepositoryContent) {
 			String location = getSubsystemId() + "@" + getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
 			subsystem = (AriesSubsystem)install(location, ((RepositoryContent)resource).getContent(), coordination);
 			return subsystem;
@@ -1073,9 +874,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 		else if (resource instanceof AriesSubsystem) {
 			subsystem = (AriesSubsystem)resource;
 		}
-		else if (resource instanceof SubsystemDirectoryResource) {
-			SubsystemDirectoryResource sdr = (SubsystemDirectoryResource)resource;
-			subsystem = new AriesSubsystem(sdr.getArchive(), this);
+		else if (resource instanceof RawSubsystemResource) {
+			subsystem = new AriesSubsystem(new SubsystemResource((RawSubsystemResource)resource, this), this);
 		}
 		else if (resource instanceof SubsystemResource) {
 			subsystem = new AriesSubsystem((SubsystemResource)resource, this);

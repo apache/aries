@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.resource.AbstractCapability;
 import org.osgi.resource.Resource;
 
 public class OsgiContentCapability extends AbstractCapability {

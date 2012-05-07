@@ -7,18 +7,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
-import org.apache.aries.subsystem.core.resource.BundleResource;
-import org.apache.aries.subsystem.core.resource.SubsystemDirectoryResource;
-import org.apache.aries.subsystem.core.resource.SubsystemFileResource;
-import org.apache.aries.subsystem.core.resource.tmp.SubsystemResource;
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
+import org.apache.aries.subsystem.core.internal.SubsystemResource;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -59,8 +55,6 @@ public class SubsystemArchive implements Repository {
 					}
 				}
 			}
-			else
-				processResource(file);
 		}
 		logger.debug(LOG_EXIT, "init");
 	}
@@ -135,18 +129,5 @@ public class SubsystemArchive implements Repository {
 		// TODO What if the provided deployment manifest's file is out of sync?
 		subsystemManifest = manifest;
 		logger.debug(LOG_EXIT, "setSubsystemManifest");
-	}
-	
-	private void processResource(File file) throws Exception {
-		String name = file.getName();
-		if (file.isDirectory() && name.startsWith("subsystem"))
-			resources.add(new SubsystemDirectoryResource(file));
-		else if (name.endsWith(".jar")) {
-			URL url = file.toURI().toURL();
-			resources.add(BundleResource.newInstance(url));
-		}
-		// TODO Add to constants.
-		else if (name.endsWith(".esa") && !name.startsWith("subsystem"))
-			resources.add(new SubsystemFileResource(file));
 	}
 }

@@ -1,11 +1,10 @@
-package org.apache.aries.subsystem.core.resource;
+package org.apache.aries.subsystem.core.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;

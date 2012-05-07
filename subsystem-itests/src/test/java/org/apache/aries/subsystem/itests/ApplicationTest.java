@@ -219,7 +219,7 @@ public class ApplicationTest extends SubsystemTest {
 	    	}
     	}
     	finally {
-    		b.uninstall();
+    		uninstallSilently(b);
     	}
     }
     
@@ -238,7 +238,7 @@ public class ApplicationTest extends SubsystemTest {
 	    	}
     	}
     	finally {
-    		b.uninstall();
+    		uninstallSilently(b);
     	}
     }
     

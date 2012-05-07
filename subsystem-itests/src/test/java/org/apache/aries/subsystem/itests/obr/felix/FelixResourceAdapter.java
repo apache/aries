@@ -18,9 +18,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.OsgiContentCapability;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;

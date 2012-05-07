@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.VersionRange;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -27,7 +27,7 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 		private static void fillInDefaults(Map<String, Parameter> parameters) {
 			Parameter parameter = parameters.get(ATTRIBUTE_VERSION);
 			if (parameter == null)
-				parameters.put(ATTRIBUTE_VERSION, VersionAttribute.DEFAULT);
+				parameters.put(ATTRIBUTE_VERSION, VersionRangeAttribute.DEFAULT);
 			parameter = parameters.get(ATTRIBUTE_TYPE);
 			if (parameter == null)
 				parameters.put(ATTRIBUTE_TYPE, TypeAttribute.newInstance(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE));
@@ -130,6 +130,10 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 			return new VersionRange(attribute.getValue().toString());
 		}
 		
+		public PreferredProviderRequirement toRequirement(Resource resource) {
+			return new PreferredProviderRequirement(this, resource);
+		}
+		
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -188,11 +192,10 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 	}
 	
 	@Override
-	public List<RequireBundleRequirement> toRequirements(Resource resource) {
-		List<RequireBundleRequirement> requirements = new ArrayList<RequireBundleRequirement>(clauses.size());
-		// TODO What's going on here? Why is this commented out?
-//		for (Clause clause : clauses)
-//			requirements.add(clause.toRequirement(resource));
+	public List<PreferredProviderRequirement> toRequirements(Resource resource) {
+		List<PreferredProviderRequirement> requirements = new ArrayList<PreferredProviderRequirement>(clauses.size());
+		for (Clause clause : clauses)
+			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}
 	

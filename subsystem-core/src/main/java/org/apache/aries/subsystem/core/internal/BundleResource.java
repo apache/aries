@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.core.resource;
+package org.apache.aries.subsystem.core.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +33,6 @@ import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
 import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
-import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.resource.AbstractCapability;
+import org.apache.aries.subsystem.core.internal.AbstractCapability;
 import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.resource.Resource;
 
