@@ -5,18 +5,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.internal.AbstractRequirement;
-import org.osgi.framework.namespace.BundleNamespace;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 
-public class RequireBundleRequirement extends AbstractRequirement {
-	public static final String DIRECTIVE_FILTER = BundleNamespace.REQUIREMENT_FILTER_DIRECTIVE;
-	public static final String NAMESPACE = BundleNamespace.BUNDLE_NAMESPACE;
+public class PreferredProviderRequirement extends AbstractRequirement {
+	public static final String DIRECTIVE_FILTER = IdentityNamespace.REQUIREMENT_FILTER_DIRECTIVE;
+	public static final String NAMESPACE = IdentityNamespace.IDENTITY_NAMESPACE;
 	
-	private final Map<String, String> directives = new HashMap<String, String>(1);
+	private final Map<String, String> directives = new HashMap<String, String>();
 	private final Resource resource;
 	
-	public RequireBundleRequirement(
-			RequireBundleHeader.Clause clause, Resource resource) {
+	public PreferredProviderRequirement(
+			PreferredProviderHeader.Clause clause, Resource resource) {
 		StringBuilder builder = new StringBuilder("(&(")
 				.append(NAMESPACE).append('=')
 				.append(clause.getSymbolicName()).append(')');

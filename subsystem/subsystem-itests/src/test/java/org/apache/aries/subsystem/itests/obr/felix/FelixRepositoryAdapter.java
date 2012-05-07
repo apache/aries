@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;

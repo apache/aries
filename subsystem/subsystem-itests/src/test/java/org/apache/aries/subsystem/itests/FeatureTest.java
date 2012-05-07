@@ -25,7 +25,7 @@ import java.util.Collection;
 
 import junit.framework.AssertionFailedError;
 
-import org.apache.aries.subsystem.core.ResourceHelper;
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;

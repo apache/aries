@@ -101,6 +101,10 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		logger.debug(LOG_EXIT, "getSubsystemServiceRegistrar", result);
 		return result;
 	}
+	
+	public Repository getSystemRepository() {
+		return new SystemRepository(root);
+	}
 
 	@Override
 	public synchronized void start(BundleContext context) throws Exception {

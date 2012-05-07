@@ -16,7 +16,7 @@ package org.apache.aries.subsystem.itests.obr.felix;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.resource.AbstractCapability;
+import org.apache.aries.subsystem.core.internal.AbstractCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
 
