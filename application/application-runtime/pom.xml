@@ -44,6 +44,11 @@
 
      <properties>
      <aries.osgi.export.pkg />
+     <aries.osgi.import.pkg>
+       org.apache.aries.application.management;provide:=true,
+       org.apache.aries.application.management.spi.runtime;provide:=true,
+       * 
+     </aries.osgi.import.pkg>
      </properties>
 
     <dependencies>

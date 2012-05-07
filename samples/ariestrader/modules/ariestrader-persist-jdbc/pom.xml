@@ -57,6 +57,10 @@
                     <instructions>
                         <Private-Package>org.apache.aries.samples.ariestrader.persist.jdbc.*</Private-Package>
                         <Export-Package>!org.apache.aries.samples.ariestrader.persist.jdbc.*</Export-Package>
+                        <Import-Package>
+                          org.apache.aries.samples.ariestrader.api;provide:=true,
+                          *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

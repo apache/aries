@@ -459,7 +459,8 @@
                         <Include-Resource>${aries.osgi.include.resource}</Include-Resource>
                         <_removeheaders>${aries.osgi.remove.headers}}</_removeheaders>
                         <_failok>${aries.osgi.failok}</_failok>
-                        <_versionpolicy>${aries.osgi.import.default.version}</_versionpolicy>
+                        <_consumer-policy>${aries.osgi.import.default.version}</_consumer-policy>
+                        <_provider-policy>$&lt;range;[==,=+)&gt;</_provider-policy>
                         <Export-Service>${aries.osgi.export.service}</Export-Service>
                         <Import-Service>${aries.osgi.import.service}</Import-Service>
                     </instructions>

@@ -44,6 +44,11 @@
     <properties>
         <aries.osgi.export.pkg>
         </aries.osgi.export.pkg>
+        <aries.osgi.import.pkg>
+           org.apache.aries.application.management;provide:=true,
+           org.apache.aries.application.management.spi.framework;provide:=true,
+           *
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
 			org.apache.aries.application.runtime.framework.management
         </aries.osgi.private.pkg>

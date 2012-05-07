@@ -40,6 +40,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Private-Package>org.apache.aries.samples.blog.comment.*</Private-Package>
                         <Export-Package>!org.apache.aries.samples.blog.comment.*</Export-Package>
+                        <Import-Package>org.apache.aries.samples.blog.api.comment.persistence;provide:=true,*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>

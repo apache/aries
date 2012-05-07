@@ -43,6 +43,12 @@
         <aries.osgi.export.pkg>
             org.apache.aries.application.resolver.obr.ext;
         </aries.osgi.export.pkg>
+        <aries.osgi.import.pkg>
+           org.apache.aries.application.modelling;provide:=true,
+           org.apache.aries.application.management.spi.repository;provide:=true,
+           org.apache.aries.application.management.spi.resolve;provide:=true,
+           *
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.application.resolver.obr;
             org.apache.aries.application.resolver.obr.impl;
