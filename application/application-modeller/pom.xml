@@ -46,7 +46,12 @@
             org.apache.aries.application.modelling.internal;
             org.apache.aries.application.modelling.utils.impl
         </aries.osgi.private.pkg>
-    	<aries.osgi.export.pkg />
+    	<aries.osgi.export.pkg/>
+    	<aries.osgi.import.pkg>
+            org.apache.aries.application.modelling;provide:=true,
+            org.apache.aries.application.modelling.utils;provide:=true,
+            *
+        </aries.osgi.import.pkg>
     	
     </properties>
 

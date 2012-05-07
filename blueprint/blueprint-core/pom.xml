@@ -55,20 +55,16 @@
             org.apache.aries.blueprint.utils,
             org.osgi.service.blueprint;version=1.0.0
         </aries.osgi.export.pkg>
-        <!--
-            We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
-            stabilizing API. This should be removed once the dependency is available at a
-            version greater than or equal to 1.0.0
-        -->
         <aries.osgi.import>
             !org.osgi.service.blueprint,
             !org.apache.aries.blueprint*,
-            org.apache.aries.util.tracker;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.quiesce.manager;provide:=true;resolution:=optional,
+            org.apache.aries.quiesce.participant;provide:=true;resolution:=optional,
+            org.apache.aries.blueprint.annotation.service,
+            org.osgi.service.blueprint.*;provide:=true,
             org.osgi.service.event*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
-            org.apache.aries.blueprint.annotation.service;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
-            org.apache.aries.quiesce.manager;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
-            org.apache.aries.quiesce.participant;version="$&lt;range;[==,=+)&gt;";resolution:=optional,
+            org.apache.aries.proxy;provide:=true,
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>

@@ -42,6 +42,11 @@
 
     <properties>
         <aries.osgi.export.pkg />
+        <aries.osgi.import.pkg>
+           org.apache.aries.blueprint.annotation;provide:=true,
+           org.apache.aries.blueprint.annotation.service;provide:=true,
+           *
+        </aries.osgi.import.pkg>
         <aries.osgi.activator>
             org.apache.aries.blueprint.annotation.impl.Activator
         </aries.osgi.activator>

@@ -41,7 +41,7 @@
         <!-- Export package versions are maintained in packageinfo files -->
 
 		<aries.osgi.export.pkg>
-			org.apache.aries.web.converter
+			org.apache.aries.web.converter;provide:=true
 		</aries.osgi.export.pkg>
 		<aries.osgi.private.pkg>
 			org.apache.aries.web.converter.impl,
