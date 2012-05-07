@@ -843,9 +843,13 @@ public class BeanRecipe extends AbstractRecipe {
     
     @Override
     public void destroy(Object obj) {
-        //This object should *always* be an UnwrapperedBeanHolder, so cast it and get the bean out.
-    	obj = ((UnwrapperedBeanHolder)obj).unwrapperedBean;
-    	
+        if (!(obj instanceof UnwrapperedBeanHolder)) {
+            LOGGER.warn("Object to be destroyed is not an instance of UnwrapperedBeanHolder, type: " + obj);
+            return;
+        }
+    
+        obj = ((UnwrapperedBeanHolder)obj).unwrapperedBean;
+    
         for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.beforeDestroy(obj, getName());
         }
