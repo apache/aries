@@ -18,26 +18,7 @@ import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
 
 public class VersionRangeAttribute extends AbstractAttribute {
-//	public static String toFilterString(VersionRange range) {
-//		String version = Constants.VERSION_ATTRIBUTE;
-//		Version min = range.getMinimumVersion();
-//		Version max = range.getMaximumVersion();
-//		StringBuilder sb = new StringBuilder();
-//		if (max != null)
-//			sb.append("(&");
-//		if (range.isMinimumExclusive())
-//			sb.append("(!(").append(version).append("<=").append(min).append("))");
-//		else
-//			sb.append('(').append(version).append(">=").append(min).append(')');
-//		if (max != null) {
-//			if (range.isMaximumExclusive())
-//				sb.append("(!(").append(version).append(">=").append(range.getMaximumVersion()).append("))");
-//			else
-//				sb.append('(').append(version).append("<=").append(max).append(')');
-//			sb.append(')');
-//		}
-//		return sb.toString();
-//	}
+	public static final VersionRangeAttribute DEFAULT = new VersionRangeAttribute();
 	
 	private final VersionRange range;
 	

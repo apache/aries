@@ -1,4 +1,4 @@
-package org.apache.aries.subsystem.core.resource;
+package org.apache.aries.subsystem.core.internal;
 
 import java.util.Arrays;
 import java.util.Collection;
