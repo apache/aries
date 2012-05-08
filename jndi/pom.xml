@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>  
 
@@ -30,7 +30,7 @@
     <artifactId>jndi</artifactId>
     <name>Apache Aries JNDI</name>
     <packaging>pom</packaging>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <description>
         JNDI support for OSGi - Reactor POM

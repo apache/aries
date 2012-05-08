@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>
 
@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.application.deployment.management</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Deployment Management</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
       Deployment Manager for resolving an Aries Applications.
     </description>
@@ -41,7 +41,7 @@
      </scm>
 
     <properties>
-        <aries.osgi.export.pkg/>
+        <aries.osgi.export.pkg />
         <aries.osgi.import.pkg>
             org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
@@ -49,6 +49,21 @@
     </properties>
 
     <dependencies>
+    <!-- We need OSGi in the classpath before the pax bundles
+         which testsupport pulls in as transitive dependencies
+         or risk an "java.lang.NoClassDefFoundError: org.osgi.vendor.framework
+         property not set" error. --> 
+        <dependency>
+           <groupId>org.osgi</groupId>
+           <artifactId>org.osgi.core</artifactId>
+           <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -57,23 +72,12 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
              <groupId>org.apache.aries</groupId>
              <artifactId>org.apache.aries.util</artifactId>
-            <version>0.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <scope>test</scope>
-            <version>0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -88,12 +92,12 @@
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.utils</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.modeller</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         
         

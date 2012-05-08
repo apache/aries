@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>
 
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.legacy.support</artifactId>
     <packaging>bundle</packaging>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Apache Aries JNDI Support for Legacy Runtimes</name>
     <description>
       This bundle contains support for legacy runtimes which rely on the thread context classloader to load JNDI implementations. It is intended for use with OSGi Web Container implementations which do not correctly work with the OSGi JNDI Service specification.

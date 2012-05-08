@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.ejb.modeller</artifactId>
     <packaging>bundle</packaging>
     <name>Aries EJB Modelling Integration</name>
-    <version>0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
      <scm>
          <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/ejb/ejb-modeller</connection>
@@ -44,7 +44,7 @@
         <aries.osgi.private.pkg>
           org.apache.aries.ejb.modelling.*
         </aries.osgi.private.pkg>
-        <aries.osgi.import.pkg > 
+        <aries.osgi.import.pkg> 
           org.apache.openejb.*;resolution:=optional,
           org.apache.xbean.*;resolution:=optional,
           *
@@ -55,12 +55,12 @@
     	<dependency>
     		<groupId>org.apache.aries.application</groupId>
     		<artifactId>org.apache.aries.application.api</artifactId>
-    		<version>0.3.1-SNAPSHOT</version>
+    		<version>1.0.0-SNAPSHOT</version>
     	</dependency>
     	<dependency>
     		<groupId>org.apache.aries</groupId>
     		<artifactId>org.apache.aries.util</artifactId>
-    		<version>0.5-SNAPSHOT</version>
+    		<version>1.0.0-SNAPSHOT</version>
     	</dependency>
     	<dependency>
     		<groupId>org.apache.openejb</groupId>
@@ -85,7 +85,7 @@
     	<dependency>
     		<groupId>org.apache.aries.application</groupId>
     		<artifactId>org.apache.aries.application.utils</artifactId>
-    		<version>0.3.1-SNAPSHOT</version>
+    		<version>1.0.0-SNAPSHOT</version>
     	</dependency>
          <dependency>
             <groupId>org.slf4j</groupId>
@@ -100,7 +100,7 @@
         <dependency>
         	<groupId>org.apache.aries.testsupport</groupId>
         	<artifactId>org.apache.aries.testsupport.unit</artifactId>
-        	<version>0.4</version>
+        	<version>1.0.0-SNAPSHOT</version>
         	<scope>test</scope>
         </dependency>
         <dependency>
