@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>
     
@@ -30,7 +30,7 @@
     <artifactId>org.apache.aries.application.runtime.isolated.itests</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Application integration tests</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         Integration tests for the Application runtime
     </description>
@@ -65,19 +65,19 @@
         <dependency>
 			<groupId>org.apache.aries</groupId>
 			<artifactId>org.apache.aries.util</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
 			<artifactId>org.apache.aries.blueprint</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.proxy</groupId>
 			<artifactId>org.apache.aries.proxy</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -130,93 +130,93 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.framework</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         	<scope>test</scope>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         	<scope>test</scope>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.repository</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         	<scope>test</scope>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.isolated</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         	<scope>test</scope>
         </dependency>
         
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         	<scope>test</scope>
         </dependency>
         
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
        
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.noop</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
 		    <groupId>org.apache.aries.application</groupId>
 		    <artifactId>org.apache.aries.application.resolve.transform.cm</artifactId>
-		    <version>0.3.1-SNAPSHOT</version>
+		    <version>1.0.0-SNAPSHOT</version>
        	</dependency>
         <dependency>
              <groupId>org.apache.aries.application</groupId>
              <artifactId>org.apache.aries.application.default.local.platform</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
              <scope>test</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.transaction</groupId>
         	<artifactId>org.apache.aries.transaction.blueprint</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         	<scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
           <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>0.4</version>
+          <version>1.0.0-SNAPSHOT</version>
           <scope>test</scope>
         </dependency>
         <dependency>
