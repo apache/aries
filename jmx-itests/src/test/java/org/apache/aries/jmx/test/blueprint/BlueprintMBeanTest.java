@@ -23,6 +23,8 @@ import static org.junit.Assert.fail;
 
 import static org.apache.aries.itest.ExtraOptions.*;
 
+import java.util.Arrays;
+
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
@@ -65,6 +67,8 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
                 mavenBundle("org.ow2.asm", "asm-all"),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator"), 
+                mavenBundle("org.apache.commons", "commons-jexl"), 
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"), 
                 mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint"),
                 mavenBundle("org.osgi", "org.osgi.compendium")
@@ -105,7 +109,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         
         // test getBlueprintBundleIds
         long[] bpBundleIds = stateProxy.getBlueprintBundleIds();
-        assertEquals(2, bpBundleIds.length);
+        assertEquals("The blueprint bundle ids are: " + Arrays.toString(bpBundleIds), 3, bpBundleIds.length);
         // test getLastEvent
         BlueprintEventValidator sampleValidator = new BlueprintEventValidator(sampleBundleId, extenderBundleId, 2);
         sampleValidator.validate(stateProxy.getLastEvent(sampleBundleId));
@@ -135,7 +139,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         
         // test getBlueprintContainerServiceIds
         long[] bpContainerServiceIds = metadataProxy.getBlueprintContainerServiceIds();
-        assertEquals(2, bpContainerServiceIds.length);
+        assertEquals(3, bpContainerServiceIds.length);
         
         // test getBlueprintContainerServiceId
         assertEquals(sampleBlueprintContainerServiceId, metadataProxy.getBlueprintContainerServiceId(sampleBundleId));

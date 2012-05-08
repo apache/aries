@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>
 
@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.jmx.core.whiteboard</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Core via Whiteboards</name>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         This bundle contains an implementation of the JMX Core specification which registers the
         MBeans as services in the service registry. This allows the whiteboard module to be
@@ -67,12 +67,12 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.core</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.4</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
