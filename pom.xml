@@ -19,15 +19,15 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.5</version>
-        <relativePath/>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Annotation API</name>
-    <version>0.3.3-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         This bundle contains the blueprint annotation api and the corresponding xml schema.
     </description>
@@ -46,7 +46,7 @@
         <aries.osgi.import>
             *
         </aries.osgi.import>
-        <aries.osgi.private.pkg/>
+        <aries.osgi.private.pkg />
     </properties>
 
     <dependencies>
