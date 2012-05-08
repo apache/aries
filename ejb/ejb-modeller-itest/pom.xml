@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.apache.aries.ejb</groupId>
         <artifactId>ejb</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.ejb</groupId>
     <artifactId>org.apache.aries.ejb.modeller.itest</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Aries EJB Modelling iTests</name>
 
      <scm>
@@ -82,13 +82,13 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -112,41 +112,41 @@
         <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
           <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>0.4</version>
+          <version>1.0.0-SNAPSHOT</version>
           <scope>test</scope>
         </dependency>        
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.api</artifactId>
-        	<version>0.3.1-SNAPSHOT</version>
+        	<version>1.0.0-SNAPSHOT</version>
         	<type>bundle</type>
         	<scope>test</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.modeller</artifactId>
-        	<version>0.3.1-SNAPSHOT</version>
+        	<version>1.0.0-SNAPSHOT</version>
         	<type>bundle</type>
         	<scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>application-modeller-standalone</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <type>bundle</type>
             <scope>test</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.utils</artifactId>
-        	<version>0.3.1-SNAPSHOT</version>
+        	<version>1.0.0-SNAPSHOT</version>
         	<type>bundle</type>
         	<scope>test</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.ejb</groupId>
         	<artifactId>org.apache.aries.ejb.modeller</artifactId>
-        	<version>0.1-SNAPSHOT</version>
+        	<version>1.0.0-SNAPSHOT</version>
         	<type>bundle</type>
         	<scope>test</scope>
         </dependency>

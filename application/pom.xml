@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>
 
@@ -28,7 +28,7 @@
     <artifactId>application</artifactId>
     <name>Apache Aries Application</name>
     <packaging>pom</packaging>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <description>
        Reactor pom for the Aries Application module 

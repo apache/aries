@@ -20,14 +20,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>org.apache.aries.samples</groupId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <artifactId>samples</artifactId>
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
@@ -46,82 +46,82 @@
 
     <properties>
         <!-- Aries eba-maven-plugin Version -->
-        <ariesEbaMavenPluginVersion>0.4-SNAPSHOT</ariesEbaMavenPluginVersion>
+        <ariesEbaMavenPluginVersion>1.0.0-SNAPSHOT</ariesEbaMavenPluginVersion>
 
         <!-- Aries Application Versions -->
-        <ariesApplicationApiVersion>0.3.1-SNAPSHOT</ariesApplicationApiVersion>
-        <ariesApplicationVersion>0.3.1-SNAPSHOT</ariesApplicationVersion>
-        <ariesApplicationConvertersVersion>0.3.1-SNAPSHOT</ariesApplicationConvertersVersion>
-        <ariesApplicationDefaultLocalPlatformVersion>0.3.1-SNAPSHOT</ariesApplicationDefaultLocalPlatformVersion>
-        <ariesApplicationDeploymentManagementVersion>0.3.1-SNAPSHOT</ariesApplicationDeploymentManagementVersion>
-        <ariesApplicationInstallVersion>0.3.1-SNAPSHOT</ariesApplicationInstallVersion>
-        <ariesApplicationItestInterfaceVersion>0.3.1-SNAPSHOT</ariesApplicationItestInterfaceVersion>
-        <ariesApplicationManagementVersion>0.3.1-SNAPSHOT</ariesApplicationManagementVersion>
-        <ariesApplicationModellerVersion>0.3.1-SNAPSHOT</ariesApplicationModellerVersion>
-        <ariesApplicationNoopResolverVersion>0.3.1-SNAPSHOT</ariesApplicationNoopResolverVersion>
-        <ariesApplicationObrResolverVersion>0.3.1-SNAPSHOT</ariesApplicationObrResolverVersion>
-        <ariesApplicationRuntimeVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeVersion>
-        <ariesApplicationRuntimeFrameworkVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeFrameworkVersion>
-        <ariesApplicationRuntimeFrameworkManagementVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeFrameworkManagementVersion>
-        <ariesApplicationRuntimeIsolatedVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeIsolatedVersion>
-        <ariesApplicationRuntimeRepositoryVersion>0.3.1-SNAPSHOT</ariesApplicationRuntimeRepositoryVersion>
-        <ariesApplicationUtilsVersion>0.3.1-SNAPSHOT</ariesApplicationUtilsVersion>
+        <ariesApplicationApiVersion>1.0.0-SNAPSHOT</ariesApplicationApiVersion>
+        <ariesApplicationVersion>1.0.0-SNAPSHOT</ariesApplicationVersion>
+        <ariesApplicationConvertersVersion>1.0.0-SNAPSHOT</ariesApplicationConvertersVersion>
+        <ariesApplicationDefaultLocalPlatformVersion>1.0.0-SNAPSHOT</ariesApplicationDefaultLocalPlatformVersion>
+        <ariesApplicationDeploymentManagementVersion>1.0.0-SNAPSHOT</ariesApplicationDeploymentManagementVersion>
+        <ariesApplicationInstallVersion>1.0.0-SNAPSHOT</ariesApplicationInstallVersion>
+        <ariesApplicationItestInterfaceVersion>1.0.0-SNAPSHOT</ariesApplicationItestInterfaceVersion>
+        <ariesApplicationManagementVersion>1.0.0-SNAPSHOT</ariesApplicationManagementVersion>
+        <ariesApplicationModellerVersion>1.0.0-SNAPSHOT</ariesApplicationModellerVersion>
+        <ariesApplicationNoopResolverVersion>1.0.0-SNAPSHOT</ariesApplicationNoopResolverVersion>
+        <ariesApplicationObrResolverVersion>1.0.0-SNAPSHOT</ariesApplicationObrResolverVersion>
+        <ariesApplicationRuntimeVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeVersion>
+        <ariesApplicationRuntimeFrameworkVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkVersion>
+        <ariesApplicationRuntimeFrameworkManagementVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkManagementVersion>
+        <ariesApplicationRuntimeIsolatedVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeIsolatedVersion>
+        <ariesApplicationRuntimeRepositoryVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeRepositoryVersion>
+        <ariesApplicationUtilsVersion>1.0.0-SNAPSHOT</ariesApplicationUtilsVersion>
 
         <!-- Aries Blueprint Versions -->
-        <ariesBlueprintAnnotationApiVersion>0.3.2</ariesBlueprintAnnotationApiVersion>
-        <ariesBlueprintAnnotationImplVersion>0.3.2</ariesBlueprintAnnotationImplVersion>
-        <ariesBlueprintApiVersion>0.3.1</ariesBlueprintApiVersion>
-        <ariesBlueprintVersion>0.4.1-SNAPSHOT</ariesBlueprintVersion>
-        <ariesBlueprintCmVersion>0.3.2</ariesBlueprintCmVersion>
-        <ariesBlueprintCoreVersion>0.4.1-SNAPSHOT</ariesBlueprintCoreVersion>
+        <ariesBlueprintAnnotationApiVersion>1.0.0-SNAPSHOT</ariesBlueprintAnnotationApiVersion>
+        <ariesBlueprintAnnotationImplVersion>1.0.0-SNAPSHOT</ariesBlueprintAnnotationImplVersion>
+        <ariesBlueprintApiVersion>1.0.0-SNAPSHOT</ariesBlueprintApiVersion>
+        <ariesBlueprintVersion>1.0.0-SNAPSHOT</ariesBlueprintVersion>
+        <ariesBlueprintCmVersion>1.0.0-SNAPSHOT</ariesBlueprintCmVersion>
+        <ariesBlueprintCoreVersion>1.0.0-SNAPSHOT</ariesBlueprintCoreVersion>
 
         <!-- Aries Jmx Versions -->
         <ariesJmxiApiVersion>0.3.1-SNAPSHOT</ariesJmxiApiVersion>
-        <ariesJmxBlueprintApiVersion>0.3.1-SNAPSHOT</ariesJmxBlueprintApiVersion>
-        <ariesJmxBlueprintVersion>0.3.1-SNAPSHOT</ariesJmxBlueprintVersion>
-        <ariesJmxBlueprintCoreVersion>0.3.1-SNAPSHOT</ariesJmxBlueprintCoreVersion>
-        <ariesJmxVersion>0.3.1-SNAPSHOT</ariesJmxVersion>
-        <ariesJmxCoreVersion>0.3.1-SNAPSHOT</ariesJmxCoreVersion>
-        <ariesJmxWhiteboardVersion>0.3.1-SNAPSHOT</ariesJmxWhiteboardVersion>
+        <ariesJmxBlueprintApiVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintApiVersion>
+        <ariesJmxBlueprintVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintVersion>
+        <ariesJmxBlueprintCoreVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintCoreVersion>
+        <ariesJmxVersion>1.0.0-SNAPSHOT</ariesJmxVersion>
+        <ariesJmxCoreVersion>1.0.0-SNAPSHOT</ariesJmxCoreVersion>
+        <ariesJmxWhiteboardVersion>1.0.0-SNAPSHOT</ariesJmxWhiteboardVersion>
 
         <!-- Aries Jndi Versions -->
-        <ariesJndiApiVersion>0.3.1-SNAPSHOT</ariesJndiApiVersion>
-        <ariesJndiVersion>0.3.2-SNAPSHOT</ariesJndiVersion>
-        <ariesJndiCoreVersion>0.3.2-SNAPSHOT</ariesJndiCoreVersion>
-        <ariesJndiLegacySupportVersion>0.3.2-SNAPSHOT</ariesJndiLegacySupportVersion>
-        <ariesJndiRmiVersion>0.3.2-SNAPSHOT</ariesJndiRmiVersion>
-        <ariesJndiUrlVersion>0.3.2-SNAPSHOT</ariesJndiUrlVersion>
+        <ariesJndiApiVersion>1.0.0-SNAPSHOT</ariesJndiApiVersion>
+        <ariesJndiVersion>1.0.0-SNAPSHOT</ariesJndiVersion>
+        <ariesJndiCoreVersion>1.0.0-SNAPSHOT</ariesJndiCoreVersion>
+        <ariesJndiLegacySupportVersion>1.0.0-SNAPSHOT</ariesJndiLegacySupportVersion>
+        <ariesJndiRmiVersion>1.0.0-SNAPSHOT</ariesJndiRmiVersion>
+        <ariesJndiUrlVersion>1.0.0-SNAPSHOT</ariesJndiUrlVersion>
 
         <!-- Aries Jpa Versions -->
-        <ariesJpaApiVersion>0.3.1-SNAPSHOT</ariesJpaApiVersion>
-        <ariesJpaBlueprintAriesVersion>0.3.1-SNAPSHOT</ariesJpaBlueprintAriesVersion>
-        <ariesJpaContainerVersion>0.3.1-SNAPSHOT</ariesJpaContainerVersion>
-        <ariesJpaContainerContextVersion>0.3.1-SNAPSHOT</ariesJpaContainerContextVersion>
+        <ariesJpaApiVersion>1.0.0-SNAPSHOT</ariesJpaApiVersion>
+        <ariesJpaBlueprintAriesVersion>1.0.0-SNAPSHOT</ariesJpaBlueprintAriesVersion>
+        <ariesJpaContainerVersion>1.0.0-SNAPSHOT</ariesJpaContainerVersion>
+        <ariesJpaContainerContextVersion>1.0.0-SNAPSHOT</ariesJpaContainerContextVersion>
         
         <!-- Aries Proxy Versions -->
-        <ariesProxyApiVersion>0.4</ariesProxyApiVersion>
-        <ariesProxyVersion>0.4</ariesProxyVersion>
-        <ariesProxyImplVersion>0.4</ariesProxyImplVersion>
+        <ariesProxyApiVersion>1.0.0-SNAPSHOT</ariesProxyApiVersion>
+        <ariesProxyVersion>1.0.0-SNAPSHOT</ariesProxyVersion>
+        <ariesProxyImplVersion>1.0.0-SNAPSHOT</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
-        <ariesQuiesceApiVersion>0.3</ariesQuiesceApiVersion>
-        <ariesQuiesceManagerVersion>0.3.1</ariesQuiesceManagerVersion>
+        <ariesQuiesceApiVersion>1.0.0-SNAPSHOT</ariesQuiesceApiVersion>
+        <ariesQuiesceManagerVersion>1.0.0-SNAPSHOT</ariesQuiesceManagerVersion>
         
 
         <!-- Aries Testsupport Versions -->
-        <ariesTestsupportUnitVersion>0.4</ariesTestsupportUnitVersion>
+        <ariesTestsupportUnitVersion>1.0.0-SNAPSHOT</ariesTestsupportUnitVersion>
 
         <!-- Aries Transaction Versions -->
-        <ariesTransactionBlueprintVersion>0.3.1-SNAPSHOT</ariesTransactionBlueprintVersion>
-        <ariesTransactionManagerVersion>0.3.1-SNAPSHOT</ariesTransactionManagerVersion>
-        <ariesTransactionTestdsVersion>0.3.1-SNAPSHOT</ariesTransactionTestdsVersion>
-        <ariesTransactionWrappersVersion>0.3.1-SNAPSHOT</ariesTransactionWrappersVersion>
+        <ariesTransactionBlueprintVersion>1.0.0-SNAPSHOT</ariesTransactionBlueprintVersion>
+        <ariesTransactionManagerVersion>1.0.0-SNAPSHOT</ariesTransactionManagerVersion>
+        <ariesTransactionTestdsVersion>1.0.0-SNAPSHOT</ariesTransactionTestdsVersion>
+        <ariesTransactionWrappersVersion>1.0.0-SNAPSHOT</ariesTransactionWrappersVersion>
 
         <!-- Aries Util Versions -->
-        <ariesUtilVersion>0.5-SNAPSHOT</ariesUtilVersion>
+        <ariesUtilVersion>1.0.0-SNAPSHOT</ariesUtilVersion>
 
         <!-- Aries Web Versions -->
-        <ariesWebVersion>0.3.1-SNAPSHOT</ariesWebVersion>
+        <ariesWebVersion>1.0.0-SNAPSHOT</ariesWebVersion>
 
 
 
@@ -442,7 +442,7 @@
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.api</artifactId>
-                <version>${ariesJmxApiVersion}</version>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>

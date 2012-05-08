@@ -21,13 +21,13 @@
     <parent>
        <groupId>org.apache.aries</groupId>
        <artifactId>java5-parent</artifactId>
-       <version>0.5</version>
+       <version>1.0.0-SNAPSHOT</version>
        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.proxy</groupId>
     <artifactId>org.apache.aries.proxy.itests</artifactId>
-    <version>0.4.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     
     <name>Apache Aries Proxy iTests</name>
     <description>
@@ -66,18 +66,18 @@
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
             <scope>test</scope>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
-            <version>0.5-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
           <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>0.4</version>
+          <version>1.0.0-SNAPSHOT</version>
           <scope>test</scope>
         </dependency>
         <dependency>

@@ -21,7 +21,7 @@
     <parent>
        <groupId>org.apache.aries</groupId>
        <artifactId>java5-parent</artifactId>
-       <version>0.5</version>
+       <version>1.0.0-SNAPSHOT</version>
        <relativePath />
     </parent>
 
@@ -29,7 +29,7 @@
 	<groupId>org.apache.aries.application</groupId>
 	<artifactId>org.apache.aries.application-isolated-distro</artifactId>
 	<name>Application distribution for isolated application support</name>
-    <version>0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -43,62 +43,62 @@
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime.isolated</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime.framework</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime.repository</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.install</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.modeller</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.default.local.platform</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.deployment.management</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

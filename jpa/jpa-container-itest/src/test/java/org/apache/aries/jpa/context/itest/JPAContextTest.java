@@ -18,6 +18,8 @@ package org.apache.aries.jpa.context.itest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
+
 import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.lang.reflect.InvocationHandler;
@@ -436,7 +438,11 @@ public abstract class JPAContextTest extends AbstractIntegrationTest {
         
 //        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
 //        waitForFrameworkStartup(),
-        
-        equinox().version("3.5.0"));
+
+        // Add in a workaround to get OSGi 4.3 support with the current version of pax-exam
+        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+        equinox().version("3.7.0.v20110613")
+    );
+      
   }
 }
