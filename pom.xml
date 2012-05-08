@@ -21,15 +21,15 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
-        <version>0.5</version>
-        <relativePath/>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.annotation.impl</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Annotation Impl</name>
-    <version>0.3.3-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         This bundle contains an implementation of Blueprint annotation support
     </description>
@@ -41,7 +41,7 @@
     </scm>
 
     <properties>
-        <aries.osgi.export.pkg/>
+        <aries.osgi.export.pkg />
         <aries.osgi.activator>
             org.apache.aries.blueprint.annotation.impl.Activator
         </aries.osgi.activator>
@@ -63,7 +63,7 @@
         </aries.osgi.export.service>
 
         <blueprint.annotation.api.version>0.3</blueprint.annotation.api.version>
-        <util.version>0.4</util.version>
+        <util.version>1.0.0-SNAPSHOT</util.version>
     </properties>
 
     <profiles>
@@ -71,7 +71,7 @@
             <id>dev</id>
             <properties>
                 <blueprint.annotation.api.version>0.3.3-SNAPSHOT</blueprint.annotation.api.version>
-                <util.version>0.5-SNAPSHOT</util.version>
+                <util.version>1.0.0-SNAPSHOT</util.version>
             </properties>
         </profile>
     </profiles>
@@ -80,12 +80,12 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-            <version>0.3</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.4</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
