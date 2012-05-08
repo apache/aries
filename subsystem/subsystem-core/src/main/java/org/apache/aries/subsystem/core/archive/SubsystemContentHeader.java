@@ -16,7 +16,6 @@ package org.apache.aries.subsystem.core.archive;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -135,18 +134,12 @@ public class SubsystemContentHeader extends AbstractHeader {
 			if (attribute != null) {
 				versionRange = new VersionRange(String.valueOf(attribute.getValue()));
 			}
-			int startOrder = StartOrderDirective.DEFAULT_VALUE;
+			int startOrder = -1;
 			directive = clause.getDirective(StartOrderDirective.NAME);
 			if (directive != null)
 				startOrder = ((StartOrderDirective)directive).getStartOrder();
 			contents.add(new Content(mandatory, name, type, versionRange, startOrder));
 		}
-		Collections.sort(contents, new Comparator<Content>() {
-			@Override
-			public int compare(Content content1, Content content2) {
-				return ((Integer)content1.getStartOrder()).compareTo(content2.getStartOrder());
-			}
-		});
 	}
 	
 	public SubsystemContentHeader(Collection<Resource> resources) {
@@ -155,6 +148,19 @@ public class SubsystemContentHeader extends AbstractHeader {
 	
 	public boolean contains(Resource resource) {
 		return getContent(resource) != null;
+	}
+	
+	public Content getContent(Resource resource) {
+		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
+		Version version = ResourceHelper.getVersionAttribute(resource);
+		String type = ResourceHelper.getTypeAttribute(resource);
+		for (Content content : contents) {
+			if (symbolicName.equals(content.getName())
+					&& content.getVersionRange().includes(version)
+					&& type.equals(content.getType()))
+				return content;
+		}
+		return null;
 	}
 
 	public Collection<Content> getContents() {
@@ -171,18 +177,5 @@ public class SubsystemContentHeader extends AbstractHeader {
 		for (Content content : contents)
 			result.add(content.toRequirement());
 		return result;
-	}
-	
-	private Content getContent(Resource resource) {
-		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
-		Version version = ResourceHelper.getVersionAttribute(resource);
-		String type = ResourceHelper.getTypeAttribute(resource);
-		for (Content content : contents) {
-			if (symbolicName.equals(content.getName())
-					&& content.getVersionRange().includes(version)
-					&& type.equals(content.getType()))
-				return content;
-		}
-		return null;
 	}
 }

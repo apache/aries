@@ -13,10 +13,10 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import org.osgi.service.subsystem.SubsystemConstants;
+
 public class StartOrderDirective extends AbstractDirective {
-	public static final int DEFAULT_VALUE = 1;
-	// TODO Add to constants.
-	public static final String NAME = "start-order";
+	public static final String NAME = SubsystemConstants.START_ORDER_DIRECTIVE;
 	
 	private final int startOrder;
 	

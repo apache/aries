@@ -433,18 +433,16 @@ public class AriesSubsystem implements Subsystem, Resource {
 	@Override
 	public synchronized void start() throws SubsystemException {
 		State state = getState();
-		if (state == State.UNINSTALLING || state == State.UNINSTALLED) {
+		if (state == State.UNINSTALLING || state == State.UNINSTALLED)
 			throw new SubsystemException("Cannot stop from state " + state);
-		}
 		if (state == State.INSTALLING || state == State.RESOLVING || state == State.STOPPING) {
 			waitForStateChange();
 			start();
 			return;
 		}
 		// TODO Should we wait on STARTING to see if the outcome is ACTIVE?
-		if (state == State.STARTING || state == State.ACTIVE) {
+		if (state == State.STARTING || state == State.ACTIVE)
 			return;
-		}
 		resolve();
 		setState(State.STARTING);
 		autostart = true;
@@ -455,10 +453,11 @@ public class AriesSubsystem implements Subsystem, Resource {
 				.getCoordinator()
 				.create(getSymbolicName() + '-' + getSubsystemId(), 0);
 		try {
-			// TODO Need to make sure the resources are ordered by start level.
-			for (Resource resource : resourceReferences.getResources(this)) {
+			List<Resource> resources = new ArrayList<Resource>(resourceReferences.getResources(this));
+			if (resource != null)
+				Collections.sort(resources, new StartResourceComparator(resource.getSubsystemManifest().getSubsystemContentHeader()));
+			for (Resource resource : resources)
 				startResource(resource, coordination);
-			}
 			setState(State.ACTIVE);
 		} catch (Throwable t) {
 			coordination.fail(t);
@@ -566,18 +565,23 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 		setState(State.STOPPING);
 		// Stop child subsystems first.
-		for (Subsystem subsystem : subsystemGraph.getChildren(this)) {
-			try {
-				stopSubsystemResource((AriesSubsystem)subsystem);
-			}
-			catch (Exception e) {
-				LOGGER.error("An error occurred while stopping resource "
-						+ subsystem + " of subsystem " + this, e);
-			}
-		}
+//		for (Subsystem subsystem : subsystemGraph.getChildren(this)) {
+//			try {
+//				stopSubsystemResource((AriesSubsystem)subsystem);
+//			}
+//			catch (Exception e) {
+//				LOGGER.error("An error occurred while stopping resource "
+//						+ subsystem + " of subsystem " + this, e);
+//			}
+//		}
 		// For non-root subsystems, stop any remaining constituents.
 		if (!isRoot()){
-			for (Resource resource : resourceReferences.getResources(this)) {
+			List<Resource> resources = new ArrayList<Resource>(resourceReferences.getResources(this));
+			if (resource != null) {
+				Collections.sort(resources, new StartResourceComparator(resource.getSubsystemManifest().getSubsystemContentHeader()));
+				Collections.reverse(resources);
+			}
+			for (Resource resource : resources) {
 				// Don't stop the region context bundle.
 				if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
 					continue;
