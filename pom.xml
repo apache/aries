@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.5</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Test Bundle for Aries JPA Container iTests</name>
 
@@ -83,12 +83,12 @@
                   <phase>process-classes</phase>
                   <configuration>
                     <tasks>
-                      <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="maven.compile.classpath"/>
+                      <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="maven.compile.classpath" />
                       <openjpac>
-                          <classpath refid="maven.compile.classpath"/> 
+                          <classpath refid="maven.compile.classpath" /> 
                           <classpath>
-                            <pathelement location="target/classes"/>
-                            <pathelement location="src/main/resources"/>
+                            <pathelement location="target/classes" />
+                            <pathelement location="src/main/resources" />
                           </classpath>
                       </openjpac>
                     </tasks>
