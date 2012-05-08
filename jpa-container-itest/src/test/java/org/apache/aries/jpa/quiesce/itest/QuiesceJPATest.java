@@ -19,6 +19,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
+
 import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.util.Collections;
@@ -646,7 +648,11 @@ public class QuiesceJPATest extends AbstractIntegrationTest {
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm"),
         
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle"),
-        
-        equinox().version("3.5.0"));
+
+        // Add in a workaround to get OSGi 4.3 support with the current version of pax-exam
+        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+        equinox().version("3.7.0.v20110613")
+    );
+      
   }
 }

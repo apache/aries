@@ -16,6 +16,7 @@
 package org.apache.aries.jpa.container.itest;
 
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import static org.apache.aries.itest.ExtraOptions.*;
 
 import javax.persistence.EntityManagerFactory;
@@ -86,8 +87,12 @@ public class JPAContainerTest extends AbstractIntegrationTest {
         //waitForFrameworkStartup(),
         
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle"),
-        
-        equinox().version("3.5.0"));
+
+        // Add in a workaround to get OSGi 4.3 support with the current version of pax-exam
+        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+        equinox().version("3.7.0.v20110613")
+    );
+ 
   }
 
 }
