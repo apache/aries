@@ -19,8 +19,6 @@
 package org.apache.aries.samples.blog.itests;
 
 import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
-import static org.ops4j.pax.exam.OptionUtils.combine;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -186,17 +184,6 @@ public abstract class AbstractIntegrationTest {
 		}
 	}
 
-
-	protected static Option[] updateOptions(Option[] options) {
-	if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
-            Option[] ibmOptions = options(
-                wrappedBundle(mavenBundle("org.ops4j.pax.exam", "pax-exam-junit"))
-            );
-            options = combine(ibmOptions, options);
-        }
-
-        return options;
-    }
 
   public static String getHTTPResponse(HttpURLConnection conn) throws IOException
   {

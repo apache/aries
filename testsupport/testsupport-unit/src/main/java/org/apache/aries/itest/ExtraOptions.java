@@ -149,7 +149,16 @@ public class ExtraOptions {
      * @return
      */
     public static Option[] testOptions(Object ... params) {
+    // We need to add pax-exam-junit here when running with the ibm
+    // jdk to avoid the following exception during the test run:
+    // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
+
+    // We also need to pass through local repository properties
         return combine(flatOptions(params),
+            when(System.getProperty("maven.repo.local") != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + System.getProperty("maven.repo.local"))),
+    
+            when(System.getProperty("org.ops4j.pax.url.mvn.localRepository") != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + System.getProperty("org.ops4j.pax.url.mvn.localRepository"))),
+
                 when("IBM Corporation".equals(System.getProperty("java.vendor")))
                     .useOptions(wrappedBundle(mavenBundle("org.ops4j.pax.exam", "pax-exam-junit"))),
                 mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit")
