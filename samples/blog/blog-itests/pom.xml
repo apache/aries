@@ -69,6 +69,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.aries.samples.blog</groupId>
             <artifactId>org.apache.aries.samples.blog.api</artifactId>
             <scope>test</scope>
