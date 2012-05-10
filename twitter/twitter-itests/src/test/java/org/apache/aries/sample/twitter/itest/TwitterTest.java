@@ -20,9 +20,9 @@ package org.apache.aries.sample.twitter.itest;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -122,7 +122,7 @@ public class TwitterTest extends AbstractIntegrationTest
   
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
-    Option[] options = options(
+    Option[] options = testOptions(
         // Log
         mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
         mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
@@ -162,7 +162,6 @@ public class TwitterTest extends AbstractIntegrationTest
         */
 
         equinox().version("3.5.0"));
-    options = updateOptions(options);
     return options;
   }
 }

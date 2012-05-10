@@ -17,8 +17,6 @@
 package org.apache.aries.sample.twitter.itest;
 
 import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
-import static org.ops4j.pax.exam.OptionUtils.combine;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -97,19 +95,6 @@ public class AbstractIntegrationTest {
   }
 
   
-  protected static Option[] updateOptions(Option[] options) {
-    // We need to add pax-exam-junit here when running with the ibm
-    // jdk to avoid the following exception during the test run:
-    // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
-    if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
-      Option[] ibmOptions = options(wrappedBundle(mavenBundle(
-          "org.ops4j.pax.exam", "pax-exam-junit")));
-      options = combine(ibmOptions, options);
-    }
-
-    return options;
-  }
-
   protected <T> T getOsgiService(Class<T> type, long timeout) {
     return getOsgiService(type, null, timeout);
   }
