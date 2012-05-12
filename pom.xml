@@ -43,8 +43,6 @@
         <aries.osgi.export.pkg>
             org.apache.aries.jmx.blueprint
         </aries.osgi.export.pkg>
-        <aries.osgi.import.pkg> *
-        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg />
     </properties>
 
