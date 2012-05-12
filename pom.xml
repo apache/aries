@@ -48,15 +48,6 @@
             ${project.artifactId}*
         </aries.osgi.private.pkg>
         <aries.osgi.export.pkg />
-        <!-- 
-          We use the range macro to get a 0.x to 0.x+1 version range while Aries is still
-          stabilizing API. This should be removed once the dependency is available at a 
-          version greater than or equal to 1.0.0
-        -->
-        <aries.osgi.import.pkg>
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
-            *
-        </aries.osgi.import.pkg>
     </properties>
 
     <dependencies>
