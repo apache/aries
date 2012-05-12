@@ -47,6 +47,8 @@
         <aries.osgi.import.pkg> 
           org.apache.openejb.*;resolution:=optional,
           org.apache.xbean.*;resolution:=optional,
+          org.apache.aries.application.modelling;provide:=true,
+          org.apache.aries.util.filesystem;provide:=true,
           *
         </aries.osgi.import.pkg>
     </properties>
