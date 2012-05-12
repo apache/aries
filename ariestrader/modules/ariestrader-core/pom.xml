@@ -52,6 +52,7 @@
                     <instructions>
                         <Private-Package>org.apache.aries.samples.ariestrader.core.*</Private-Package>
                         <Export-Package>!org.apache.aries.samples.ariestrader.core.*</Export-Package>
+                        <Import-Package>org.apache.aries.samples.ariestrader.api;provide:=true,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -37,6 +37,11 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>                        
+                        <Import-Package>
+                          org.apache.aries.samples.blueprint.idverifier.api;provide:=true,
+                          *
+                        </Import-Package>
+
                     </instructions>
                 </configuration>
             </plugin>
