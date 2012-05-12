@@ -49,7 +49,7 @@ public class SharedBundleFramework
    * org.osgi.service.blueprint package is deliberately unversioned as it is
    * not part of the osgi compendium.
    */
-  private static final String RUNTIME_PACKAGES = "org.osgi.service.blueprint,org.osgi.service.blueprint.container;version=\"[1.0.0,1.0.1]\",org.osgi.service.blueprint.reflect;version=\"[1.0.0,1.0.1]\",org.apache.aries.transaction.exception;version=\"[0.1,1.0.0)\",org.osgi.service.cm;resolution:=optional";
+  private static final String RUNTIME_PACKAGES = "org.osgi.service.blueprint,org.osgi.service.blueprint.container;version=\"[1.0.0,1.0.1]\",org.osgi.service.blueprint.reflect;version=\"[1.0.0,1.0.1]\",org.apache.aries.transaction.exception;version=\"[1.0.0,2.0.0)\",org.osgi.service.cm;resolution:=optional";
 
   /**
    * create using any bundle context in EBA App framework as we want to create

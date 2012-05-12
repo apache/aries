@@ -47,7 +47,6 @@
         <aries.osgi.import>
             org.osgi.framework,
             org.osgi.service.cm,
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>

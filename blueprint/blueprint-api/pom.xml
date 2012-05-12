@@ -43,9 +43,6 @@
         <aries.osgi.export.pkg>
             org.osgi.service.blueprint*
         </aries.osgi.export.pkg>
-        <aries.osgi.import>
-            *
-        </aries.osgi.import>
         <aries.osgi.private.pkg />
     </properties>
 

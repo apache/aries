@@ -46,8 +46,6 @@
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
         <aries.osgi.private.pkg />
-        <aries.osgi.import.pkg>*
-        </aries.osgi.import.pkg>
     </properties>
 
     <dependencies>

@@ -43,7 +43,7 @@
             org.apache.aries.blueprint.fragment;-noimport:=true
         </aries.osgi.export>
         <aries.osgi.import>
-            org.apache.aries.blueprint.annotation;version="$&lt;range;[==,=+)&gt;",
+            org.apache.aries.blueprint.annotation;provide:=true,
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg />

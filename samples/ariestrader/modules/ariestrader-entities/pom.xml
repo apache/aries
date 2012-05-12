@@ -123,6 +123,7 @@
                             org.apache.aries.samples.ariestrader.entities
                         </Export-Package>
                         <Import-Package>
+                            org.apache.aries.samples.ariestrader.api.persistence;provide:=true,
                             org.apache.openjpa.enhance;version="[1.0.0,2.1.0)",
                             org.apache.openjpa.util;version="[1.0.0,2.1.0)",
                             javax.persistence;version="[1.0.0,2.1.0)",

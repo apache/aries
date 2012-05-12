@@ -42,10 +42,6 @@
     <aries.osgi.export.pkg>
       !org.apache.aries.transaction.jdbc
     </aries.osgi.export.pkg>
-    <aries.osgi.import>
-        org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
-        *
-    </aries.osgi.import>
     <aries.osgi.private.pkg>
       org.apache.aries.transaction.jdbc
     </aries.osgi.private.pkg>

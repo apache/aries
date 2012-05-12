@@ -47,9 +47,6 @@
             org.apache.aries.jndi.api,
             org.apache.aries.jndi.spi
         </aries.osgi.export.pkg>
-        <aries.osgi.import>
-            *
-        </aries.osgi.import>
         <aries.osgi.private.pkg />
     </properties>
 

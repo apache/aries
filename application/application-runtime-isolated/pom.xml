@@ -44,13 +44,15 @@
     <properties>
         <aries.osgi.export.pkg>
         </aries.osgi.export.pkg>
+        <aries.osgi.import.pkg>
+           org.apache.aries.application.management;provide:=true,
+           org.apache.aries.application.management.spi.framework;provide:=true,
+           org.apache.aries.application.management.spi.runtime;provide:=true,
+           *
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
 			org.apache.aries.application.runtime.isolated.impl
         </aries.osgi.private.pkg>
-        <aries.osgi.import.pkg>
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
-            *
-        </aries.osgi.import.pkg>
     </properties>
     
     <dependencies>

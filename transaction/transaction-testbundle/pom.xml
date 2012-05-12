@@ -46,8 +46,6 @@
     <aries.osgi.private.pkg>
       org.apache.aries.transaction.test.impl
     </aries.osgi.private.pkg>
-    <aries.osgi.import.pkg>*
-    </aries.osgi.import.pkg>
   </properties>
 
 </project>
