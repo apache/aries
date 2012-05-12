@@ -41,6 +41,10 @@
 		<aries.osgi.export />
 		<aries.osgi.import>
 		  org.apache.aries.jpa.container.context;resolution:=optional,
+                  org.apache.aries.proxy;provide:=true,
+                  org.apache.openejb.config;provide:=true,
+                  org.apache.openejb.persistence;provide:=true,
+                  org.apache.openejb.util.proxy;provide:=true,
 		  *
 		</aries.osgi.import>
         <aries.osgi.private.pkg>
