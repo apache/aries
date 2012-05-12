@@ -40,6 +40,7 @@
      </scm>
     <properties>
         <aries.osgi.export>
+            org.apache.geronimo.transaction.manager;version="2.2.1";provide:=true,
             org.apache.geronimo.transaction*;version="2.2.1",
             javax.transaction*;version="1.1.0"
         </aries.osgi.export>
@@ -50,7 +51,6 @@
             org.osgi.framework,
             org.osgi.service.cm,
             javax.transaction*,
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
