@@ -48,7 +48,6 @@
         <aries.osgi.import>
             org.osgi.framework;version="[1.5,2)",
             org.slf4j;version="[1.5,2)",
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
             *
         </aries.osgi.import>
         <aries.osgi.export.pkg>
