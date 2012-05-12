@@ -43,10 +43,6 @@
      </scm>
     
     <properties>
-        <aries.osgi.import.pkg>
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
-            *
-        </aries.osgi.import.pkg>
     </properties>
     
     <dependencies>

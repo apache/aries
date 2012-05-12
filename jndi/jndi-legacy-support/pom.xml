@@ -48,8 +48,6 @@
         <aries.osgi.activator>
             org.apache.aries.jndi.legacy.support.Activator
         </aries.osgi.activator>
-        <aries.osgi.import.pkg> *
-        </aries.osgi.import.pkg>
     </properties>
 
     <dependencies>

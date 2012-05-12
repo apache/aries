@@ -53,7 +53,7 @@
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
             org.osgi.service.blueprint;resolution:=optional,
-            org.apache.aries.*;version="$&lt;range;[==,=+)&gt;",
+            org.apache.aries.application;provide:=true,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
