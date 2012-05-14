@@ -237,7 +237,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     if (url == null) {
                         LOGGER.warn("No URL is defined for schema " + ns + ". This schema will not be validated");
                     } else {
-                        schemaSources.add(new StreamSource(url.openStream()));
+                        schemaSources.add(new StreamSource(url.openStream(), url.toExternalForm()));
                     }
                 }
                 schema = getSchemaFactory().newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
