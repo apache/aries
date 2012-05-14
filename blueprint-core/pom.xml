@@ -115,20 +115,4 @@
       	<artifactId>org.apache.aries.proxy.api</artifactId>
       </dependency>
   </dependencies>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>../blueprint-api/src/main/resources/org/osgi/service/blueprint</directory>
-                <targetPath>org/apache/aries/blueprint</targetPath>
-                <includes>
-                    <include>blueprint.xsd</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
-  
 </project>

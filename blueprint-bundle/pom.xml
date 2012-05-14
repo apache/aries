@@ -25,6 +25,7 @@
     <artifactId>org.apache.aries.blueprint</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Bundle</name>
+    <version>0.3.2-SNAPSHOT</version>
     <description>
         This bundle contains the standalone implementation along with the API.
         It's composed of the blueprint-api, blueprint-core and blueprint-cm modules.
@@ -56,7 +57,7 @@
             org.osgi.service.blueprint.container;version="1.0.1",
             org.osgi.service.blueprint.reflect;version="1.0.1",
             !org.apache.aries.blueprint.annotation*,
-            org.apache.aries.blueprint*;version="${pom.version}"
+            org.apache.aries.blueprint*;version="${project.version}"
         </aries.osgi.export>
         <aries.osgi.private.pkg>
             OSGI-INF*
@@ -80,14 +81,17 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
+            <version>0.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
+            <version>0.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
