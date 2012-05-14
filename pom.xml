@@ -27,6 +27,7 @@
   <artifactId>org.apache.aries.blueprint.core</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Blueprint Core</name>
+  <version>0.3.2-SNAPSHOT</version>
   <description>
       This bundle contains the core implementation of Blueprint 
       along with the "ext" namespace handler.
@@ -59,11 +60,13 @@
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>org.apache.aries.blueprint.api</artifactId>
+          <version>0.3.1</version>
       </dependency>
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
           <optional>true</optional>
+          <version>0.3.1</version>
       </dependency>
       <dependency>
           <groupId>org.apache.aries</groupId>
