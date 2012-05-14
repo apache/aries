@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+           default-availability="mandatory" >
+
+    <type-converters>
+            <bean id="converter1" class="org.apache.aries.blueprint.pojos.ConverterA">
+                <property name="bundle" ref="blueprintBundleContext" />
+            </bean>
+    </type-converters>
+
+    <service id="service1" ref="pojoB" interface="org.apache.aries.blueprint.pojos.PojoB">
+        <service-properties>
+            <entry key="key1" value="value1"/>
+            <entry key="key2" value="value2"/>
+        </service-properties>    
+    </service>
+
+    <bean id="pojoC" class="org.apache.aries.blueprint.pojos.PojoB" scope = "prototype">
+        <property name="uri" value="urn:myuri" />
+        <property name="objects">
+            <list>
+                <value>list value</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="pojoB" class="org.apache.aries.blueprint.pojos.PojoB" init-method = "init" destroy-method = "destroy" >
+        <property name="uri" value="urn:myuri" />
+    </bean>
+
+    <bean id="pojoA" class="org.apache.aries.blueprint.pojos.PojoA">
+        <property name="pojob" ref="pojoB"/>
+        <property name="map">
+            <map>
+                <entry key="key" value="val"/>
+                <entry key-ref="pojoB" value-ref="pojoB" />
+                <entry>
+                     <key><value type="java.lang.Integer">5</value></key>
+                     <value type="java.net.URI">http://geronimo.apache.org</value>
+                </entry>
+            </map>
+        </property>
+        <property name="set">
+            <set value-type="java.net.URI">
+                <value type="java.lang.String">set value</value>
+                <ref component-id="pojoB" />
+                <value>http://geronimo.apache.org</value>
+            </set>
+        </property>
+        <property name="list">
+            <list>
+                <value>list value</value>
+                <ref component-id="pojoC" />
+                <value type="java.lang.Integer">55</value>
+                <value type="java.net.URI">http://geronimo.apache.org</value>
+                <ref component-id="pojoC" />
+            </list>
+        </property>
+        <property name="props">
+            <props>
+                <prop key="key1" value="value1" />
+                <prop key="2" value="value2" />
+                <prop key="foo">bar</prop>
+            </props>
+        </property>
+        <property name="array">
+            <array>
+                <value>list value</value>
+                <ref component-id="pojoB" />
+                <value type="java.lang.Integer">55</value>
+                <value type="java.net.URI">http://geronimo.apache.org</value>
+            </array>
+        </property>        
+        <property name="intArray">
+            <array>
+                <value>1</value>
+                <value>50</value>
+                <value>100</value>
+            </array>
+        </property>
+        <property name="numberArray">
+            <array>
+                <value type="int">1</value>
+                <value type="java.math.BigInteger">50</value>
+                <value type="java.lang.Long">100</value>
+                <value type="int">200</value>
+            </array>
+        </property>
+        <property name="number">
+            <value type="java.math.BigInteger">10</value>
+        </property>
+    </bean>
+
+    <bean id="compound" class="org.apache.aries.blueprint.pojos.PojoB">
+        <property name="bean.name" value="hello bean property" />
+    </bean>
+    
+    <bean id="goodIdRef" class="org.apache.aries.blueprint.pojos.BeanD">
+        <property name="name">
+          <idref component-id="pojoA"/>
+        </property>
+    </bean>
+    
+    <bean id="FITestBean" ext:field-injection="true" class="org.apache.aries.blueprint.pojos.FITestBean">
+        <property name="attr" value="value" />
+        <property name="upperCaseAttr" value="is_lower" />
+        <property name="bean.name" value="aName" />
+    </bean>
+
+    <bean id="FIFailureTestBean" class="org.apache.aries.blueprint.pojos.FITestBean">
+        <property name="attr" value="value" />
+    </bean>
+    
+    <bean id="FIFailureTest2Bean" class="org.apache.aries.blueprint.pojos.FITestBean" ext:field-injection="false">
+        <property name="attr" value="value" />
+    </bean>
+    
+    <bean id="ambiguousViaInt" class="org.apache.aries.blueprint.pojos.AmbiguousPojo">
+    	<property name="sum" value="5" />
+    </bean>
+    
+    <bean id="ambiguousViaList" class="org.apache.aries.blueprint.pojos.AmbiguousPojo">
+    	<property name="sum">
+    		<list>
+    			<value>3</value>
+    			<value>4</value>
+    		</list>
+    	</property>
+    </bean>
+
+</blueprint>
