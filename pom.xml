@@ -39,9 +39,12 @@
     </scm>
 
     <properties>
-        <!-- Export package versions are maintained in packageinfo files -->
+        <!-- Export package versions are maintained in packageinfo files.
+             We're verbose since the regexp processing is a bit 
+             funny and org.osgi.service.blueprint should not be exported.  -->
         <aries.osgi.export.pkg>
-            org.osgi.service.blueprint*
+            !org.osgi.service.blueprint,
+            org.osgi.service.blueprint.*
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg />
     </properties>
