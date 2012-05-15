@@ -12,7 +12,7 @@ JMX_TARGET_DIR=$OSGI_GIT_DIR/licensed/repo
 cp $ARIES_DIR/sandbox/jmx-next/jmx-bundle/target/org.apache.aries.jmx-1.1.0-SNAPSHOT.jar $JMX_TARGET_DIR/org.apache.aries.jmx/org.apache.aries.jmx-1.1.0.jar
 
 #mkdir -p -v $JMX_TARGET_DIR/org.apache.aries.util
-cp $ARIES_DIR/util/util/target/org.apache.aries.util-0.5-SNAPSHOT.jar $JMX_TARGET_DIR/org.apache.aries.util/org.apache.aries.util-0.5.0.jar
+cp $ARIES_DIR/util/util/target/org.apache.aries.util-1.0.0-SNAPSHOT.jar $JMX_TARGET_DIR/org.apache.aries.util/org.apache.aries.util-1.0.0.jar
 
 # mkdir -p -v $LIB_BASE
 # echo "slf4j.api; version=1.5.10" > $LIB_FILE
