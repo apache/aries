@@ -447,7 +447,6 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 findCompatibleNamespaceHandler(ns);
             }
             URL url = bundle.getResource("OSGI-INF/blueprint/schema.map");
-            System.out.println("MAP: " + url);
             if (url != null) {
                 InputStream ins = null;
                 try {
@@ -466,7 +465,6 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     }
                 }
             }
-            System.out.println("MAP: " + schemaMap);
             for (Object ns : schemaMap.keySet()) {
                 try {
                     this.namespaces.remove(new URI(ns.toString()));
@@ -474,7 +472,6 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     //ignore
                 }
             }
-            System.out.println("NS: " + namespaces);
         }
 
         public boolean isComplete() {
