@@ -40,7 +40,7 @@ public class SubsystemResource implements Resource {
 	private final Collection<Resource> sharedContent = new HashSet<Resource>();
 	private final Collection<Resource> sharedDependencies = new HashSet<Resource>();
 	
-	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws UnsupportedOperationException, URISyntaxException, IOException, ResolutionException {
+	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException {
 		this(new RawSubsystemResource(location, content), parent);
 	}
 	
