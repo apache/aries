@@ -21,8 +21,11 @@ import static org.apache.aries.jmx.util.FrameworkUtils.resolveService;
 import static org.osgi.jmx.JmxConstants.PROPERTIES_TYPE;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -30,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.management.AttributeChangeNotification;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
@@ -57,7 +61,7 @@ import org.osgi.service.log.LogService;
 
 /**
  * Implementation of <code>ServiceStateMBean</code> which emits JMX <code>Notification</code> for framework
- * <code>ServiceEvent</code> events
+ * <code>ServiceEvent</code> events and changes to the <code>ServiceIds</code> attribute.
  *
  * @version $Rev$ $Date$
  */
@@ -69,6 +73,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     protected ExecutorService eventDispatcher;
     protected AllServiceListener serviceListener;
     private AtomicInteger notificationSequenceNumber = new AtomicInteger(1);
+    private AtomicInteger attributeChangeNotificationSequenceNumber = new AtomicInteger(1);
     private AtomicInteger registrations = new AtomicInteger(0);
     private Lock lock = new ReentrantLock();
     // notification type description
@@ -176,11 +181,17 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
      * @see javax.management.NotificationBroadcasterSupport#getNotificationInfo()
      */
     public MBeanNotificationInfo[] getNotificationInfo() {
-        String[] types = new String[] { SERVICE_EVENT };
-        String name = Notification.class.getName();
-        String description = "A ServiceEvent issued from the Framework describing a service lifecycle change";
-        MBeanNotificationInfo info = new MBeanNotificationInfo(types, name, description);
-        return new MBeanNotificationInfo[] { info };
+        MBeanNotificationInfo eventInfo = new MBeanNotificationInfo(
+                new String[] { SERVICE_EVENT },
+                Notification.class.getName(),
+                "A ServiceEvent issued from the Framework describing a service lifecycle change");
+
+        MBeanNotificationInfo attributeChangeInfo = new MBeanNotificationInfo(
+                new String[] { AttributeChangeNotification.ATTRIBUTE_CHANGE },
+                AttributeChangeNotification.class.getName(),
+                "An attribute of this MBean has changed");
+
+        return new MBeanNotificationInfo[] { eventInfo, attributeChangeInfo };
     }
 
     /**
@@ -195,6 +206,10 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
                 long id = (Long) ref.getProperty(Constants.SERVICE_ID);
                 ids[i] = id;
             }
+
+            // The IDs are sorted here. It's not required by the spec but it's nice
+            // to have an ordered list returned.
+            Arrays.sort(ids);
 
             return ids;
         } catch (InvalidSyntaxException e) {
@@ -236,13 +251,45 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
             if (serviceListener == null) {
                 serviceListener = new AllServiceListener() {
                     public void serviceChanged(ServiceEvent serviceevent) {
-                        final Notification notification = new Notification(EVENT, OBJECTNAME,
-                                notificationSequenceNumber.getAndIncrement());
                         try {
+                            // Create a notification for the event
+                            final Notification notification = new Notification(EVENT, OBJECTNAME,
+                                    notificationSequenceNumber.getAndIncrement());
                             notification.setUserData(new ServiceEventData(serviceevent).toCompositeData());
+
+                            // also send notifications to the serviceIDs attribute listeners, if a service was added or removed
+                            final AttributeChangeNotification attributeChangeNotification;
+                            int eventType = serviceevent.getType();
+                            switch (eventType) {
+                            case ServiceEvent.REGISTERED:
+                            case ServiceEvent.UNREGISTERING:
+                                long serviceID = (Long) serviceevent.getServiceReference().getProperty(Constants.SERVICE_ID);
+                                long[] ids = getServiceIds();
+
+                                List<Long> without = new ArrayList<Long>(ids.length);
+                                for (long id : ids) {
+                                    if (id != serviceID)
+                                        without.add(id);
+                                }
+                                List<Long> with = new ArrayList<Long>(without);
+                                with.add(serviceID);
+                                Collections.sort(with);
+
+                                Long[] oldIDs = (eventType == ServiceEvent.REGISTERED ? without : with).toArray(new Long[] {});
+                                Long[] newIDs = (eventType == ServiceEvent.REGISTERED ? with : without).toArray(new Long[] {});
+
+                                attributeChangeNotification = new AttributeChangeNotification(OBJECTNAME, attributeChangeNotificationSequenceNumber.getAndIncrement(),
+                                        System.currentTimeMillis(), "ServiceIds changed", "ServiceIds", "[Ljava.lang.Long;", oldIDs, newIDs);
+                                break;
+                            default:
+                                attributeChangeNotification = null;
+                            }
+
                             eventDispatcher.submit(new Runnable() {
                                 public void run() {
                                     sendNotification(notification);
+                                    if (attributeChangeNotification != null)
+                                        sendNotification(attributeChangeNotification);
                                 }
                             });
                         } catch (RejectedExecutionException re) {
