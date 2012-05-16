@@ -48,6 +48,8 @@ public class SubsystemResource implements Resource {
 		this.parent = parent;
 		this.resource = resource;
 		preferredProviderRepository = new PreferredProviderRepository(this);
+		computeContentResources();
+		computeDependencies();
 		deploymentManifest = computeDeploymentManifest();
 	}
 
@@ -163,15 +165,10 @@ public class SubsystemResource implements Resource {
 				to.add(c);
 	}
 	
-	private DeploymentManifest computeExistingDeploymentManifest() throws IOException {
-		return resource.getDeploymentManifest();
-	}
-	
-	private DeployedContentHeader computeDeployedContentHeader() {
-		Collection<Resource> resources = new HashSet<Resource>();
+	private void computeContentResources() {
 		SubsystemContentHeader contentHeader = resource.getSubsystemManifest().getSubsystemContentHeader();
 		if (contentHeader == null)
-			return null;
+			return;
 		for (SubsystemContentHeader.Content content : contentHeader.getContents()) {
 			OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
 					content.getName(), content.getVersionRange(),
@@ -182,10 +179,28 @@ public class SubsystemResource implements Resource {
 					throw new SubsystemException("Resource does not exist: "+ requirement);
 				continue;
 			}
-			resources.add(resource);
 			addContentResource(resource);
 		}
-		return DeployedContentHeader.newInstance(resources);
+	}
+	
+	private void computeDependencies() {
+		SubsystemContentHeader contentHeader = resource.getSubsystemManifest().getSubsystemContentHeader();
+		try {
+			Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
+			for (Resource resource : resolution.keySet())
+				if (!contentHeader.contains(resource))
+					addDependency(resource);
+		}
+		catch (ResolutionException e) {
+			throw new SubsystemException(e);
+		}
+	}
+	
+	private DeployedContentHeader computeDeployedContentHeader() {
+		Collection<Resource> content = getContentResources();
+		if (content.isEmpty())
+			return null;
+		return DeployedContentHeader.newInstance(content);
 	}
 	
 	private DeploymentManifest computeDeploymentManifest() throws IOException {
@@ -198,26 +213,15 @@ public class SubsystemResource implements Resource {
 		return result;
 	}
 	
+	private DeploymentManifest computeExistingDeploymentManifest() throws IOException {
+		return resource.getDeploymentManifest();
+	}
+	
 	private ProvisionResourceHeader computeProvisionResourceHeader() {
-		SubsystemContentHeader contentHeader = resource.getSubsystemManifest().getSubsystemContentHeader();
-		// TODO This does not validate that all content bundles were found.
-		Map<Resource, List<Wire>> resolution;
-		try {
-			resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
-		}
-		catch (ResolutionException e) {
-			throw new SubsystemException(e);
-		}
-		Collection<Resource> provisionResource = new HashSet<Resource>();
-		for (Resource resource : resolution.keySet()) {
-			if (!contentHeader.contains(resource)) {
-				provisionResource.add(resource);
-				addDependency(resource);
-			}
-		}
-		if (provisionResource.isEmpty())
+		Collection<Resource> dependencies = getDepedencies();
+		if (dependencies.isEmpty())
 			return null;
-		return ProvisionResourceHeader.newInstance(provisionResource);
+		return ProvisionResourceHeader.newInstance(dependencies);
 	}
 	
 	private ResolveContext createResolveContext() {
@@ -298,6 +302,20 @@ public class SubsystemResource implements Resource {
 		while (!isAcceptDependencies(subsystem))
 			subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
 		return subsystem;
+	}
+	
+	private Collection<Resource> getContentResources() {
+		Collection<Resource> result = new ArrayList<Resource>(installableContent.size() + sharedContent.size());
+		result.addAll(installableContent);
+		result.addAll(sharedContent);
+		return result;
+	}
+	
+	private Collection<Resource> getDepedencies() {
+		Collection<Resource> result = new ArrayList<Resource>(installableDependencies.size() + sharedDependencies.size());
+		result.addAll(installableDependencies);
+		result.addAll(sharedDependencies);
+		return result;
 	}
 	
 	private boolean isAcceptDependencies(AriesSubsystem subsystem) {
