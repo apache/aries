@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.management.AttributeChangeNotification;
 import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -56,75 +57,82 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 
 /**
- * 
+ *
  *
  * @version $Rev$ $Date$
  */
 public class ServiceStateTest {
 
-    
+
     @Test
     public void testNotificationsForServiceEvents() throws Exception {
-        
+
         BundleContext context = mock(BundleContext.class);
         Logger logger = mock(Logger.class);
-        
+
         ServiceState serviceState = new ServiceState(context, logger);
-        
+
         ServiceReference reference = mock(ServiceReference.class);
         Bundle b1 = mock(Bundle.class);
-        
+
         when(b1.getBundleId()).thenReturn(new Long(9));
         when(b1.getSymbolicName()).thenReturn("bundle");
         when(b1.getLocation()).thenReturn("file:/location");
         when(reference.getBundle()).thenReturn(b1);
         when(reference.getProperty(Constants.SERVICE_ID)).thenReturn(new Long(44));
         when(reference.getProperty(Constants.OBJECTCLASS)).thenReturn(new String[] {"org.apache.aries.jmx.Mock"});
-        
+
+        when(context.getAllServiceReferences(null, null)).thenReturn(new ServiceReference[] {reference});
+
         ServiceEvent registeredEvent = mock(ServiceEvent.class);
         when(registeredEvent.getServiceReference()).thenReturn(reference);
         when(registeredEvent.getType()).thenReturn(ServiceEvent.REGISTERED);
-       
+
         ServiceEvent modifiedEvent = mock(ServiceEvent.class);
         when(modifiedEvent.getServiceReference()).thenReturn(reference);
         when(modifiedEvent.getType()).thenReturn(ServiceEvent.MODIFIED);
-        
+
         MBeanServer server = mock(MBeanServer.class);
-        
+
         //setup for notification
         ObjectName objectName = new ObjectName(OBJECTNAME);
         serviceState.preRegister(server, objectName);
         serviceState.postRegister(true);
-        
+
         //holder for Notifications captured
         final List<Notification> received = new LinkedList<Notification>();
-        
+        final List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
+
         //add NotificationListener to receive the events
         serviceState.addNotificationListener(new NotificationListener() {
             public void handleNotification(Notification notification, Object handback) {
-               received.add(notification);
+                if (notification instanceof AttributeChangeNotification) {
+                    attributeChanges.add((AttributeChangeNotification) notification);
+                } else {
+                    received.add(notification);
+                }
             }
         }, null, null);
-        
+
         // capture the ServiceListener registered with BundleContext to issue ServiceEvents
-        ArgumentCaptor<AllServiceListener> argument = ArgumentCaptor.forClass(AllServiceListener.class);        
+        ArgumentCaptor<AllServiceListener> argument = ArgumentCaptor.forClass(AllServiceListener.class);
         verify(context).addServiceListener(argument.capture());
-        
+
         //send events
         AllServiceListener serviceListener = argument.getValue();
         serviceListener.serviceChanged(registeredEvent);
         serviceListener.serviceChanged(modifiedEvent);
-        
-        //shutdown dispatcher via unregister callback 
+
+        //shutdown dispatcher via unregister callback
         serviceState.postDeregister();
         //check the ServiceListener is cleaned up
         verify(context).removeServiceListener(serviceListener);
-        
+
         ExecutorService dispatcher = serviceState.getEventDispatcher();
         assertTrue(dispatcher.isShutdown());
         dispatcher.awaitTermination(2, TimeUnit.SECONDS);
         assertTrue(dispatcher.isTerminated());
-        
+
         assertEquals(2, received.size());
         Notification registered = received.get(0);
         assertEquals(1, registered.getSequenceNumber());
@@ -135,7 +143,7 @@ public class ServiceStateTest {
         assertEquals("bundle", data.get(BUNDLE_SYMBOLIC_NAME));
         assertArrayEquals(new String[] {"org.apache.aries.jmx.Mock" }, (String[]) data.get(OBJECT_CLASS));
         assertEquals(ServiceEvent.REGISTERED, data.get(EVENT));
-        
+
         Notification modified = received.get(1);
         assertEquals(2, modified.getSequenceNumber());
         data = (CompositeData) modified.getUserData();
@@ -145,58 +153,64 @@ public class ServiceStateTest {
         assertEquals("bundle", data.get(BUNDLE_SYMBOLIC_NAME));
         assertArrayEquals(new String[] {"org.apache.aries.jmx.Mock" }, (String[]) data.get(OBJECT_CLASS));
         assertEquals(ServiceEvent.MODIFIED, data.get(EVENT));
-        
+
+        assertEquals(1, attributeChanges.size());
+        AttributeChangeNotification ac = attributeChanges.get(0);
+        assertEquals("ServiceIds", ac.getAttributeName());
+        assertEquals(0, ((Long [])ac.getOldValue()).length);
+        assertEquals(1, ((Long [])ac.getNewValue()).length);
+        assertEquals(new Long(44), ((Long [])ac.getNewValue())[0]);
     }
-    
+
     @Test
     public void testLifeCycleOfNotificationSupport() throws Exception {
-        
+
         BundleContext context = mock(BundleContext.class);
         Logger logger = mock(Logger.class);
-        
+
         ServiceState serviceState = new ServiceState(context, logger);
-        
+
         MBeanServer server1 = mock(MBeanServer.class);
         MBeanServer server2 = mock(MBeanServer.class);
 
         ObjectName objectName = new ObjectName(OBJECTNAME);
         serviceState.preRegister(server1, objectName);
         serviceState.postRegister(true);
-        
+
         // capture the ServiceListener registered with BundleContext to issue ServiceEvents
-        ArgumentCaptor<AllServiceListener> argument = ArgumentCaptor.forClass(AllServiceListener.class);        
+        ArgumentCaptor<AllServiceListener> argument = ArgumentCaptor.forClass(AllServiceListener.class);
         verify(context).addServiceListener(argument.capture());
-        
+
         AllServiceListener serviceListener = argument.getValue();
         assertNotNull(serviceListener);
-        
+
         ExecutorService dispatcher = serviceState.getEventDispatcher();
-        
+
         //do registration with another server
         serviceState.preRegister(server2, objectName);
         serviceState.postRegister(true);
-        
+
         // check no more actions on BundleContext
-        argument = ArgumentCaptor.forClass(AllServiceListener.class);              
+        argument = ArgumentCaptor.forClass(AllServiceListener.class);
         verify(context, atMost(1)).addServiceListener(argument.capture());
         assertEquals(1, argument.getAllValues().size());
-        
+
         //do one unregister
         serviceState.postDeregister();
-        
+
         //verify bundleListener not invoked
         verify(context, never()).removeServiceListener(serviceListener);
         assertFalse(dispatcher.isShutdown());
-        
+
         //do second unregister and check cleanup
         serviceState.postDeregister();
         verify(context).removeServiceListener(serviceListener);
         assertTrue(dispatcher.isShutdown());
         dispatcher.awaitTermination(2, TimeUnit.SECONDS);
         assertTrue(dispatcher.isTerminated());
-        
-      
-        
+
+
+
     }
 
 }

@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.AttributeChangeNotification;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
@@ -58,6 +61,7 @@ import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.jmx.JmxConstants;
 import org.osgi.jmx.framework.ServiceStateMBean;
 import org.osgi.service.cm.ManagedService;
@@ -209,10 +213,15 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         // notifications
 
         final List<Notification> received = new ArrayList<Notification>();
+        final List<AttributeChangeNotification> attributeChanges = new ArrayList<AttributeChangeNotification>();
 
         mbeanServer.addNotificationListener(objectName, new NotificationListener() {
             public void handleNotification(Notification notification, Object handback) {
-               received.add(notification);
+                if (notification instanceof AttributeChangeNotification) {
+                    attributeChanges.add((AttributeChangeNotification) notification);
+                } else {
+                    received.add(notification);
+                }
             }
         }, null, null);
 
@@ -231,14 +240,67 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         assertNotNull(refs);
         assertEquals(1, refs.length);
 
-        int i = 0;
-        while (received.size() < 4 && i < 3) {
-            Thread.sleep(1000);
-            i++;
-        }
+        waitForListToReachSize(received, 4);
 
         assertEquals(4, received.size());
+        assertEquals(4, attributeChanges.size());
+    }
 
+    @Test
+    public void testAttributeChangeNotifications() throws Exception {
+        ObjectName objectName = waitForMBean(new ObjectName(ServiceStateMBean.OBJECTNAME));
+        ServiceStateMBean mbean = getMBean(objectName, ServiceStateMBean.class);
+
+        final List<AttributeChangeNotification> attributeChanges = new ArrayList<AttributeChangeNotification>();
+        mbeanServer.addNotificationListener(objectName, new NotificationListener() {
+            public void handleNotification(Notification notification, Object handback) {
+                if (notification instanceof AttributeChangeNotification) {
+                    attributeChanges.add((AttributeChangeNotification) notification);
+                }
+            }
+        }, null, null);
+
+        assertEquals("Precondition", 0, attributeChanges.size());
+
+        long[] ids = mbean.getServiceIds();
+        Long[] idsWithoutService = new Long[ids.length];
+        for(int i=0; i < ids.length; i++) {
+            idsWithoutService[i] = ids[i];
+        }
+
+        String svc = "A String Service";
+        ServiceRegistration<?> reg = bundleContext.registerService(String.class.getName(), svc, null);
+        long id = (Long) reg.getReference().getProperty(Constants.SERVICE_ID);
+
+        List<Long> newIDList = new ArrayList<Long>(Arrays.asList(idsWithoutService));
+        newIDList.add(id);
+        Collections.sort(newIDList);
+        Long[] idsWithService = newIDList.toArray(new Long [] {});
+
+        waitForListToReachSize(attributeChanges, 1);
+        AttributeChangeNotification ac = attributeChanges.get(0);
+        assertEquals("ServiceIds", ac.getAttributeName());
+        assertEquals(1, ac.getSequenceNumber());
+        assertTrue(Arrays.equals(idsWithoutService, (Long []) ac.getOldValue()));
+        assertTrue(Arrays.equals(idsWithService, (Long []) ac.getNewValue()));
+
+        Dictionary<String, Object> props = new Hashtable<String, Object>();
+        props.put("somekey", "someval");
+        reg.setProperties(props);
+
+        // Setting the properties updates the service registration, however it should not cause the attribute notification
+        Thread.sleep(500); // Give the system a bit of time to send potential notifications
+        assertEquals("Changing the service registration should not cause an attribute notification",
+                1, attributeChanges.size());
+
+        reg.unregister();
+
+        waitForListToReachSize(attributeChanges, 2);
+        AttributeChangeNotification ac2 = attributeChanges.get(1);
+        assertEquals("ServiceIds", ac2.getAttributeName());
+        assertEquals(2, ac2.getSequenceNumber());
+        assertTrue(Arrays.equals(idsWithService, (Long []) ac2.getOldValue()));
+        assertTrue(Arrays.equals(idsWithoutService, (Long []) ac2.getNewValue()));
     }
 
     @Test
@@ -368,6 +430,14 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
             assertNotNull(cd.get(ServiceStateMBean.IDENTIFIER));
             assertNull(cd.get(ServiceStateMBean.OBJECT_CLASS));
             assertNull(cd.get(ServiceStateMBean.USING_BUNDLES));
+        }
+    }
+
+    private void waitForListToReachSize(List<?> list, int targetSize) throws InterruptedException {
+        int i = 0;
+        while (list.size() < targetSize && i < 3) {
+            Thread.sleep(1000);
+            i++;
         }
     }
 }
