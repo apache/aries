@@ -31,11 +31,11 @@ public class SubsystemArchive implements Repository {
 	private DeploymentManifest deploymentManifest;
 	private SubsystemManifest subsystemManifest;
 	
-	public SubsystemArchive(SubsystemResource resource, File directory) {
+	public SubsystemArchive(SubsystemResource resource, File directory) throws IOException {
 		this.directory = directory;
 		resources = resource.getResources();
-		deploymentManifest = resource.getDeploymentManifest();
-		subsystemManifest = resource.getSubsystemManifest();
+		setSubsystemManifest(resource.getSubsystemManifest());
+		setDeploymentManifest(resource.getDeploymentManifest());
 	}
 	
 	public SubsystemArchive(File content) throws Exception {
