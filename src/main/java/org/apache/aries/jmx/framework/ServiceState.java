@@ -305,11 +305,21 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
             // Sorting is not mandatory, but its nice for the user, note that getServiceIds() also returns a sorted array
             Collections.sort(with);
 
-            Long[] oldIDs = (eventType == ServiceEvent.REGISTERED ? without : with).toArray(new Long[] {});
-            Long[] newIDs = (eventType == ServiceEvent.REGISTERED ? with : without).toArray(new Long[] {});
+            List<Long> oldList = eventType == ServiceEvent.REGISTERED ? without : with;
+            List<Long> newList = eventType == ServiceEvent.REGISTERED ? with : without;
+
+            long[] oldIDs = new long[oldList.size()];
+            for (int i = 0; i < oldIDs.length; i++) {
+                oldIDs[i] = oldList.get(i);
+            }
+
+            long[] newIDs = new long[newList.size()];
+            for (int i = 0; i < newIDs.length; i++) {
+                newIDs[i] = newList.get(i);
+            }
 
             return new AttributeChangeNotification(OBJECTNAME, attributeChangeNotificationSequenceNumber.getAndIncrement(),
-                    System.currentTimeMillis(), "ServiceIds changed", "ServiceIds", "[Ljava.lang.Long;", oldIDs, newIDs);
+                    System.currentTimeMillis(), "ServiceIds changed", "ServiceIds", "Array of long", oldIDs, newIDs);
         default:
             return null;
         }
