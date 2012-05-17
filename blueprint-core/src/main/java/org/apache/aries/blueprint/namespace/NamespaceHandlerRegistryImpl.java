@@ -18,6 +18,9 @@
  */
 package org.apache.aries.blueprint.namespace;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.net.URI;
@@ -30,25 +33,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.HashSet;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.Source;
-import javax.xml.XMLConstants;
-
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSResourceResolver;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
@@ -59,20 +57,20 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Default implementation of the NamespaceHandlerRegistry.
- * 
+ *
  * This registry will track NamespaceHandler objects in the OSGi registry and make
  * them available, calling listeners when handlers are registered or unregistered.
  *
  * @version $Rev$, $Date$
  */
 public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, ServiceTrackerCustomizer {
-    
+
     public static final URI BLUEPRINT_NAMESPACE = URI.create("http://www.osgi.org/xmlns/blueprint/v1.0.0");
 
     public static final String NAMESPACE = "osgi.service.blueprint.namespace";
@@ -85,6 +83,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     private final Map<Map<URI, NamespaceHandler>, Reference<Schema>> schemas = new LRUMap<Map<URI, NamespaceHandler>, Reference<Schema>>(10);
     private SchemaFactory schemaFactory;
     private List<NamespaceHandlerSetImpl> sets;
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public NamespaceHandlerRegistryImpl(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
@@ -206,7 +205,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             throw new IllegalArgumentException("NamespaceHandler service has an associated " + NAMESPACE + " property defined which can not be converted to an array of URI");
         }
     }
-    
+
     public synchronized NamespaceHandlerSet getNamespaceHandlers(Set<URI> uris, Bundle bundle) {
         NamespaceHandlerSetImpl s = new NamespaceHandlerSetImpl(uris, bundle);
         sets.add(s);
@@ -216,33 +215,38 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     public void destroy() {
         tracker.close();
     }
-    public synchronized Schema getSchema(Map<URI, NamespaceHandler> handlers)
-        throws IOException, SAXException {
+    public Schema getSchema(Map<URI, NamespaceHandler> handlers)
+            throws IOException, SAXException {
         return getSchema(handlers, null, new Properties());
     }
-    private synchronized Schema getSchema(Map<URI, NamespaceHandler> handlers, 
-                                          final Bundle bundle,
-                                          final Properties schemaMap) throws IOException, SAXException {
-        Schema schema = null;
+
+    private Schema getSchema(Map<URI, NamespaceHandler> handlers,
+                             final Bundle bundle,
+                             final Properties schemaMap) throws IOException, SAXException {
         // Find a schema that can handle all the requested namespaces
         // If it contains additional namespaces, it should not be a problem since
         // they won't be used at all
         if (schemaMap == null || schemaMap.isEmpty()) {
-            for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
-                boolean found = true;
-                for (URI uri : handlers.keySet()) {
-                    if (!handlers.get(uri).equals(key.get(uri))) {
-                        found = false;
-                        break;
+            try {
+                lock.readLock().lock();
+                for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
+                    boolean found = true;
+                    for (URI uri : handlers.keySet()) {
+                        if (!handlers.get(uri).equals(key.get(uri))) {
+                            found = false;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        return schemas.get(key).get();
                     }
                 }
-                if (found) {
-                    schema = schemas.get(key).get();
-                    break;
-                }
+            } finally {
+                lock.readLock().unlock();
             }
         }
-        if (schema == null) {
+        try {
+            lock.writeLock().lock();
             final List<StreamSource> schemaSources = new ArrayList<StreamSource>();
             try {
                 schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/aries/blueprint/blueprint.xsd")));
@@ -266,8 +270,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 }
                 SchemaFactory factory = getSchemaFactory();
                 factory.setResourceResolver(new LSResourceResolver() {
-                    public LSInput resolveResource(String type, 
-                                                   final String namespaceURI, 
+                    public LSInput resolveResource(String type,
+                                                   final String namespaceURI,
                                                    final String publicId,
                                                    String systemId, String baseURI) {
                         String loc = null;
@@ -284,8 +288,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                             URL url = bundle.getResource(loc);
                             if (url != null) {
                                 try {
-                                    StreamSource source 
-                                        = new StreamSource(url.openStream(), url.toExternalForm());
+                                    StreamSource source
+                                            = new StreamSource(url.openStream(), url.toExternalForm());
                                     schemaSources.add(source);
                                     return new SourceLSInput(source, publicId, url);
                                 } catch (IOException e) {
@@ -309,11 +313,11 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                                         // ignore and use the given systemId
                                     }
                                 }
-                                
-                                
+
+
                                 try {
-                                    final StreamSource source 
-                                        = new StreamSource(url.openStream(), url.toExternalForm());
+                                    final StreamSource source
+                                            = new StreamSource(url.openStream(), url.toExternalForm());
                                     schemaSources.add(source);
                                     return new SourceLSInput(source, publicId, url);
                                 } catch (IOException e) {
@@ -323,9 +327,9 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                         }
                         return null;
                     }
-                    
+
                 });
-                schema = factory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+                Schema schema = factory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
                 // Remove schemas that are fully included
                 for (Iterator<Map<URI, NamespaceHandler>> iterator = schemas.keySet().iterator(); iterator.hasNext();) {
                     Map<URI, NamespaceHandler> key = iterator.next();
@@ -346,6 +350,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     //only cache non-custom schemas
                     schemas.put(handlers, new SoftReference<Schema>(schema));
                 }
+                return schema;
             } finally {
                 for (StreamSource s : schemaSources) {
                     try {
@@ -355,10 +360,11 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     }
                 }
             }
+        } finally {
+            lock.writeLock().unlock();
         }
-        return schema;
     }
-    
+
     private class SourceLSInput implements LSInput {
         StreamSource source;
         URL systemId;
