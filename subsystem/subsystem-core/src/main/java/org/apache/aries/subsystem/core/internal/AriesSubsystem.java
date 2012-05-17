@@ -239,12 +239,9 @@ public class AriesSubsystem implements Subsystem, Resource {
 			throw new SubsystemException("Unable to make directory for " + directory.getAbsolutePath());
 		try {
 			archive = new SubsystemArchive(resource, directory);
-			archive.setSubsystemManifest(resource.getSubsystemManifest());
-			if (resource.getDeploymentManifest() != null)
-				archive.setDeploymentManifest(resource.getDeploymentManifest());
 			SubsystemManifestValidator.validate(this, archive.getSubsystemManifest());
 			// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
-			if (isFeature())
+			if (isUnscoped())
 				region = parent.region;
 			else
 				region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
@@ -254,25 +251,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 				throw (SubsystemException)t;
 			throw new SubsystemException(t);
 		}
-	}
-	
-	public AriesSubsystem(SubsystemArchive archive, AriesSubsystem parent) throws Exception {
-		subsystemGraph = parent.subsystemGraph;
-		this.archive = archive;
-		DeploymentManifest manifest = archive.getDeploymentManifest();
-		if (manifest == null)
-			throw new IllegalStateException("Missing deployment manifest");
-		autostart = Boolean.parseBoolean(manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_AUTOSTART).getValue());
-		id = Long.parseLong(manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
-		location = manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue();
-		String directoryName = "subsystem" + id;
-		directory = new File(parent.directory, directoryName);
-		// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
-		if (isFeature())
-			region = parent.region;
-		else
-			region = createRegion(getSymbolicName() + ';' + getVersion() + ';' + getType() + ';' + getSubsystemId());
-		resource = null;
 	}
 	
 	public SubsystemArchive getArchive() {
@@ -517,16 +495,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 			return;
 		}
 		setState(State.STOPPING);
-		// Stop child subsystems first.
-//		for (Subsystem subsystem : subsystemGraph.getChildren(this)) {
-//			try {
-//				stopSubsystemResource((AriesSubsystem)subsystem);
-//			}
-//			catch (Exception e) {
-//				LOGGER.error("An error occurred while stopping resource "
-//						+ subsystem + " of subsystem " + this, e);
-//			}
-//		}
 		// For non-root subsystems, stop any remaining constituents.
 		if (!isRoot()){
 			List<Resource> resources = new ArrayList<Resource>(resourceReferences.getResources(this));
@@ -651,17 +619,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return root;
 	}
 	
-	private DeploymentManifest getDeploymentManifest() throws IOException, URISyntaxException, ResolutionException {
-		if (archive.getDeploymentManifest() == null)
-			archive.setDeploymentManifest(new DeploymentManifest(
-					archive.getDeploymentManifest(),
-					archive.getSubsystemManifest(), 
-					autostart,
-					id,
-					SubsystemIdentifier.getLastId(),
-					location,
-					true,
-					false));
+	private DeploymentManifest getDeploymentManifest() {
 		return archive.getDeploymentManifest();
 	}
 	
@@ -819,6 +777,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	private boolean isScoped() {
 		return isApplication() || isComposite();
+	}
+	
+	private boolean isUnscoped() {
+		return !isScoped();
 	}
 	
 	void resolve() {
