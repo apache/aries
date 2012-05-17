@@ -76,6 +76,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     private AtomicInteger attributeChangeNotificationSequenceNumber = new AtomicInteger(1);
     private AtomicInteger registrations = new AtomicInteger(0);
     private Lock lock = new ReentrantLock();
+
     // notification type description
     public static String SERVICE_EVENT = "org.osgi.service.event";
 
@@ -258,32 +259,8 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
                             notification.setUserData(new ServiceEventData(serviceevent).toCompositeData());
 
                             // also send notifications to the serviceIDs attribute listeners, if a service was added or removed
-                            final AttributeChangeNotification attributeChangeNotification;
-                            int eventType = serviceevent.getType();
-                            switch (eventType) {
-                            case ServiceEvent.REGISTERED:
-                            case ServiceEvent.UNREGISTERING:
-                                long serviceID = (Long) serviceevent.getServiceReference().getProperty(Constants.SERVICE_ID);
-                                long[] ids = getServiceIds();
-
-                                List<Long> without = new ArrayList<Long>(ids.length);
-                                for (long id : ids) {
-                                    if (id != serviceID)
-                                        without.add(id);
-                                }
-                                List<Long> with = new ArrayList<Long>(without);
-                                with.add(serviceID);
-                                Collections.sort(with);
-
-                                Long[] oldIDs = (eventType == ServiceEvent.REGISTERED ? without : with).toArray(new Long[] {});
-                                Long[] newIDs = (eventType == ServiceEvent.REGISTERED ? with : without).toArray(new Long[] {});
-
-                                attributeChangeNotification = new AttributeChangeNotification(OBJECTNAME, attributeChangeNotificationSequenceNumber.getAndIncrement(),
-                                        System.currentTimeMillis(), "ServiceIds changed", "ServiceIds", "[Ljava.lang.Long;", oldIDs, newIDs);
-                                break;
-                            default:
-                                attributeChangeNotification = null;
-                            }
+                            final AttributeChangeNotification attributeChangeNotification =
+                                    getAttributeChangeNotification(serviceevent);
 
                             eventDispatcher.submit(new Runnable() {
                                 public void run() {
@@ -307,6 +284,35 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
             lock.unlock();
         }
         return name;
+    }
+
+    protected AttributeChangeNotification getAttributeChangeNotification(ServiceEvent serviceevent) throws IOException {
+        int eventType = serviceevent.getType();
+        switch (eventType) {
+        case ServiceEvent.REGISTERED:
+        case ServiceEvent.UNREGISTERING:
+            long serviceID = (Long) serviceevent.getServiceReference().getProperty(Constants.SERVICE_ID);
+            long[] ids = getServiceIds();
+
+            List<Long> without = new ArrayList<Long>(ids.length);
+            for (long id : ids) {
+                if (id != serviceID)
+                    without.add(id);
+            }
+            List<Long> with = new ArrayList<Long>(without);
+            with.add(serviceID);
+
+            // Sorting is not mandatory, but its nice for the user, note that getServiceIds() also returns a sorted array
+            Collections.sort(with);
+
+            Long[] oldIDs = (eventType == ServiceEvent.REGISTERED ? without : with).toArray(new Long[] {});
+            Long[] newIDs = (eventType == ServiceEvent.REGISTERED ? with : without).toArray(new Long[] {});
+
+            return new AttributeChangeNotification(OBJECTNAME, attributeChangeNotificationSequenceNumber.getAndIncrement(),
+                    System.currentTimeMillis(), "ServiceIds changed", "ServiceIds", "[Ljava.lang.Long;", oldIDs, newIDs);
+        default:
+            return null;
+        }
     }
 
     /*

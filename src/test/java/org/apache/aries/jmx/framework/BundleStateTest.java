@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.management.AttributeChangeNotification;
 import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -54,63 +55,69 @@ public class BundleStateTest {
 
     @Test
     public void testNotificationsForBundleEvents() throws Exception {
-        
+
         BundleContext context = mock(BundleContext.class);
+        when(context.getBundles()).thenReturn(new Bundle [] {});
         PackageAdmin admin = mock(PackageAdmin.class);
         StartLevel startLevel = mock(StartLevel.class);
         Logger logger = mock(Logger.class);
-        
-        //holder for Notifications captured
-        final List<Notification> received = new LinkedList<Notification>();
-        
+
         BundleState bundleState = new BundleState(context, admin, startLevel, logger);
-        
+
         Bundle b1 = mock(Bundle.class);
         when(b1.getBundleId()).thenReturn(new Long(9));
         when(b1.getSymbolicName()).thenReturn("bundle");
         when(b1.getLocation()).thenReturn("file:/location");
-        
+
         BundleEvent installedEvent = mock(BundleEvent.class);
         when(installedEvent.getBundle()).thenReturn(b1);
         when(installedEvent.getType()).thenReturn(BundleEvent.INSTALLED);
-       
+
         BundleEvent resolvedEvent = mock(BundleEvent.class);
         when(resolvedEvent.getBundle()).thenReturn(b1);
         when(resolvedEvent.getType()).thenReturn(BundleEvent.RESOLVED);
-        
+
         MBeanServer server = mock(MBeanServer.class);
-        
+
         //setup for notification
         ObjectName objectName = new ObjectName(OBJECTNAME);
         bundleState.preRegister(server, objectName);
         bundleState.postRegister(true);
-        
+
+        //holders for Notifications captured
+        final List<Notification> received = new LinkedList<Notification>();
+        final List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
+
         //add NotificationListener to receive the events
         bundleState.addNotificationListener(new NotificationListener() {
             public void handleNotification(Notification notification, Object handback) {
-               received.add(notification);
+                if (notification instanceof AttributeChangeNotification) {
+                    attributeChanges.add((AttributeChangeNotification) notification);
+                } else {
+                    received.add(notification);
+                }
             }
         }, null, null);
-        
+
         // capture the BundleListener registered with BundleContext to issue BundleEvents
-        ArgumentCaptor<BundleListener> argument = ArgumentCaptor.forClass(BundleListener.class);        
+        ArgumentCaptor<BundleListener> argument = ArgumentCaptor.forClass(BundleListener.class);
         verify(context).addBundleListener(argument.capture());
-        
+
         //send events
         BundleListener listener = argument.getValue();
         listener.bundleChanged(installedEvent);
         listener.bundleChanged(resolvedEvent);
-        
-        //shutdown dispatcher via unregister callback 
+
+        //shutdown dispatcher via unregister callback
         bundleState.postDeregister();
         //check the BundleListener is cleaned up
         verify(context).removeBundleListener(listener);
-        
+
         ExecutorService dispatcher = bundleState.getEventDispatcher();
         assertTrue(dispatcher.isShutdown());
         dispatcher.awaitTermination(2, TimeUnit.SECONDS);
         assertTrue(dispatcher.isTerminated());
-        
+
         assertEquals(2, received.size());
         Notification installed = received.get(0);
         assertEquals(1, installed.getSequenceNumber());
@@ -120,7 +127,7 @@ public class BundleStateTest {
         assertEquals(9, installedData.getBundleId());
         assertEquals("file:/location", installedData.getLocation());
         assertEquals(BundleEvent.INSTALLED, installedData.getEventType());
-        
+
         Notification resolved = received.get(1);
         assertEquals(2, resolved.getSequenceNumber());
         CompositeData resolvedCompositeData = (CompositeData) resolved.getUserData();
@@ -129,60 +136,66 @@ public class BundleStateTest {
         assertEquals(9, resolvedData.getBundleId());
         assertEquals("file:/location", resolvedData.getLocation());
         assertEquals(BundleEvent.RESOLVED, resolvedData.getEventType());
-        
+
+        assertEquals(1, attributeChanges.size());
+        AttributeChangeNotification ac = attributeChanges.get(0);
+        assertEquals("BundleIds", ac.getAttributeName());
+        assertEquals(0, ((long [])ac.getOldValue()).length);
+        assertEquals(1, ((long [])ac.getNewValue()).length);
+        assertEquals(9L, ((long [])ac.getNewValue())[0]);
     }
-    
+
     @Test
     public void testLifeCycleOfNotificationSupport() throws Exception {
-        
+
         BundleContext context = mock(BundleContext.class);
         PackageAdmin admin = mock(PackageAdmin.class);
         StartLevel startLevel = mock(StartLevel.class);
         Logger logger = mock(Logger.class);
-        
+
         BundleState bundleState = new BundleState(context, admin, startLevel, logger);
-        
+
         MBeanServer server1 = mock(MBeanServer.class);
         MBeanServer server2 = mock(MBeanServer.class);
 
         ObjectName objectName = new ObjectName(OBJECTNAME);
         bundleState.preRegister(server1, objectName);
         bundleState.postRegister(true);
-        
+
         // capture the BundleListener registered with BundleContext
-        ArgumentCaptor<BundleListener> argument = ArgumentCaptor.forClass(BundleListener.class);        
+        ArgumentCaptor<BundleListener> argument = ArgumentCaptor.forClass(BundleListener.class);
         verify(context).addBundleListener(argument.capture());
         assertEquals(1, argument.getAllValues().size());
-        
+
         BundleListener listener = argument.getValue();
         assertNotNull(listener);
-        
+
         ExecutorService dispatcher = bundleState.getEventDispatcher();
-        
+
         //do registration with another server
         bundleState.preRegister(server2, objectName);
         bundleState.postRegister(true);
-        
+
         // check no more actions on BundleContext
-        argument = ArgumentCaptor.forClass(BundleListener.class);        
+        argument = ArgumentCaptor.forClass(BundleListener.class);
         verify(context, atMost(1)).addBundleListener(argument.capture());
         assertEquals(1, argument.getAllValues().size());
-        
+
         //do one unregister
         bundleState.postDeregister();
-        
+
         //verify bundleListener not invoked
         verify(context, never()).removeBundleListener(listener);
         assertFalse(dispatcher.isShutdown());
-        
+
         //do second unregister and check cleanup
         bundleState.postDeregister();
         verify(context).removeBundleListener(listener);
         assertTrue(dispatcher.isShutdown());
         dispatcher.awaitTermination(2, TimeUnit.SECONDS);
         assertTrue(dispatcher.isTerminated());
-        
-      
-        
+
+
+
     }
 }
