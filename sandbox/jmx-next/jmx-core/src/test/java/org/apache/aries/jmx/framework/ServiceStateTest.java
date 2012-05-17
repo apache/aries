@@ -157,9 +157,9 @@ public class ServiceStateTest {
         assertEquals(1, attributeChanges.size());
         AttributeChangeNotification ac = attributeChanges.get(0);
         assertEquals("ServiceIds", ac.getAttributeName());
-        assertEquals(0, ((Long [])ac.getOldValue()).length);
-        assertEquals(1, ((Long [])ac.getNewValue()).length);
-        assertEquals(new Long(44), ((Long [])ac.getNewValue())[0]);
+        assertEquals(0, ((long [])ac.getOldValue()).length);
+        assertEquals(1, ((long [])ac.getNewValue()).length);
+        assertEquals(44L, ((long [])ac.getNewValue())[0]);
     }
 
     @Test
