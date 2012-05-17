@@ -313,7 +313,14 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 if (compatible) {
                     final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, pathList);
                     containers.put(bundle, blueprintContainer);
-                    blueprintContainer.schedule();
+                    String val = context.getProperty("org.apache.aries.blueprint.synchronous");
+                    if (Boolean.parseBoolean(val)) {
+                        LOGGER.debug("Starting creation of blueprint bundle {} synchronously", bundle.getSymbolicName());
+                        blueprintContainer.run();
+                    } else {
+                        LOGGER.debug("Scheduling creation of blueprint bundle {} asynchronously", bundle.getSymbolicName());
+                        blueprintContainer.schedule();
+                    }
                 } else {
                     LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
                 }
