@@ -18,82 +18,56 @@ package org.apache.aries.transaction;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.HashMap;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  */
-public class Activator implements BundleActivator, ManagedServiceFactory {
+public class Activator implements BundleActivator, ManagedService {
 
-    private static final Logger log = LoggerFactory.getLogger("org.apache.aries.transaction");
+    public static final String PID = "org.apache.aries.transaction";
+
+    private static final Logger log = LoggerFactory.getLogger(PID);
 
     private BundleContext bundleContext;
-    private Map managers = new HashMap<String, TransactionManagerService>();
+    private TransactionManagerService manager;
 
     public void start(BundleContext bundleContext) throws Exception {
         this.bundleContext = bundleContext;
         Hashtable props = new Hashtable();
-        props.put(Constants.SERVICE_PID, getName());
-        bundleContext.registerService(ManagedServiceFactory.class.getName(), this, props);
-
-        Hashtable ht = new Hashtable();
-        updated("initial", ht);
-    }
-
-    private void set(Hashtable ht, String key) {
-        String o = bundleContext.getProperty(key);
-        if (o == null) {
-            o = System.getenv(key.toUpperCase().replaceAll(".", "_"));
-            if (o == null) {
-                return;
-            }
-        }
-        ht.put(key, o);
+        props.put(Constants.SERVICE_PID, PID);
+        bundleContext.registerService(ManagedService.class.getName(), this, props);
+        updated(props);
     }
 
     public void stop(BundleContext context) throws Exception {
-        for (Iterator w = managers.values().iterator(); w.hasNext();) {
-            try {
-                TransactionManagerService mgr = (TransactionManagerService) w.next();
-                w.remove();
-                mgr.close();
-            } catch (Exception e) {
-                // Ignore
-            }
-        }
+        deleted();
     }
 
-    public String getName() {
-        return "org.apache.aries.transaction";
-    }
-
-    public void updated(String pid, Dictionary properties) throws ConfigurationException {
-        deleted(pid);
-        TransactionManagerService mgr = new TransactionManagerService(pid, properties, bundleContext);
-        managers.put(pid, mgr);
+    public synchronized void updated(Dictionary properties) throws ConfigurationException {
+        deleted();
+        manager = new TransactionManagerService(PID, properties, bundleContext);
         try {
-            mgr.start();
+            manager.start();
         } catch (Exception e) {
             log.error("Error starting transaction manager", e);
         }
     }
 
-    public void deleted(String pid) {
-        TransactionManagerService mgr = (TransactionManagerService) managers.remove(pid);
-        if (mgr != null) {
+    public synchronized void deleted() {
+        if (manager != null) {
             try {
-                mgr.close();
+                manager.close();
             } catch (Exception e) {
                 log.error("Error stopping transaction manager", e);
+            } finally {
+                manager = null;
             }
         }
     }
