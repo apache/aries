@@ -99,7 +99,7 @@ public class ServiceStateTest {
         serviceState.preRegister(server, objectName);
         serviceState.postRegister(true);
 
-        //holder for Notifications captured
+        //holders for Notifications captured
         final List<Notification> received = new LinkedList<Notification>();
         final List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
 

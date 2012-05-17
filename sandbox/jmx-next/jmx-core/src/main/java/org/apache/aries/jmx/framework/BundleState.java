@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
@@ -43,6 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.management.AttributeChangeNotification;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
@@ -83,6 +85,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     protected ExecutorService eventDispatcher;
     protected BundleListener bundleListener;
     private AtomicInteger notificationSequenceNumber = new AtomicInteger(1);
+    private AtomicInteger attributeChangeNotificationSequenceNumber = new AtomicInteger(1);
     private Lock lock = new ReentrantLock();
     private AtomicInteger registrations = new AtomicInteger(0);
 
@@ -311,6 +314,11 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
         for (int i=0; i < bundles.length; i++) {
             ids[i] = bundles[i].getBundleId();
         }
+
+        // The IDs are sorted here. It's not required by the spec but it's nice
+        // to have an ordered list returned.
+        Arrays.sort(ids);
+
         return ids;
     }
 
@@ -344,11 +352,17 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
      * @see javax.management.NotificationBroadcasterSupport#getNotificationInfo()
      */
     public MBeanNotificationInfo[] getNotificationInfo() {
-        String[] types = new String[] { BUNDLE_EVENT };
-        String name = Notification.class.getName();
-        String description = "A BundleEvent issued from the Framework describing a bundle lifecycle change";
-        MBeanNotificationInfo info = new MBeanNotificationInfo(types, name, description);
-        return new MBeanNotificationInfo[] { info };
+        MBeanNotificationInfo eventInfo = new MBeanNotificationInfo(
+                new String[] { BUNDLE_EVENT },
+                Notification.class.getName(),
+                "A BundleEvent issued from the Framework describing a bundle lifecycle change");
+
+        MBeanNotificationInfo attributeChangeInfo = new MBeanNotificationInfo(
+                new String [] {AttributeChangeNotification.ATTRIBUTE_CHANGE },
+                AttributeChangeNotification.class.getName(),
+                "An attribute of this MBean has changed");
+
+        return new MBeanNotificationInfo[] { eventInfo, attributeChangeInfo };
     }
 
     /**
@@ -386,13 +400,20 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
             if (bundleListener == null) {
                 bundleListener = new BundleListener() {
                     public void bundleChanged(BundleEvent event) {
-                        final Notification notification = new Notification(EVENT, OBJECTNAME,
-                                notificationSequenceNumber.getAndIncrement());
                         try {
+                            final Notification notification = new Notification(EVENT, OBJECTNAME,
+                                    notificationSequenceNumber.getAndIncrement());
                             notification.setUserData(new BundleEventData(event).toCompositeData());
+
+                            // also send notifications to the bundleIDs attribute listeners, if a bundle was added or removed
+                            final AttributeChangeNotification attributeChangeNotification =
+                                    getAttributeChangeNotification(event);
+
                             eventDispatcher.submit(new Runnable() {
                                 public void run() {
                                     sendNotification(notification);
+                                    if (attributeChangeNotification != null)
+                                        sendNotification(attributeChangeNotification);
                                 }
                             });
                         } catch (RejectedExecutionException re) {
@@ -409,6 +430,45 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
             lock.unlock();
         }
         return name;
+    }
+
+    protected AttributeChangeNotification getAttributeChangeNotification(BundleEvent event) throws IOException {
+        int eventType = event.getType();
+        switch (eventType) {
+        case BundleEvent.INSTALLED:
+        case BundleEvent.UNINSTALLED:
+            long bundleID = event.getBundle().getBundleId();
+            long[] ids = getBundleIds();
+
+            List<Long> without = new ArrayList<Long>();
+            for (long id : ids) {
+                if (id != bundleID)
+                    without.add(id);
+            }
+            List<Long> with = new ArrayList<Long>(without);
+            with.add(bundleID);
+
+            // Sorting is not mandatory, but its nice for the user, note that getBundleIds() also returns a sorted array
+            Collections.sort(with);
+
+            List<Long> oldList = eventType == BundleEvent.INSTALLED ? without : with;
+            List<Long> newList = eventType == BundleEvent.INSTALLED ? with : without;
+
+            long[] oldIDs = new long[oldList.size()];
+            for (int i = 0; i < oldIDs.length; i++) {
+                oldIDs[i] = oldList.get(i);
+            }
+
+            long[] newIDs = new long[newList.size()];
+            for (int i = 0; i < newIDs.length; i++) {
+                newIDs[i] = newList.get(i);
+            }
+
+            return new AttributeChangeNotification(OBJECTNAME, attributeChangeNotificationSequenceNumber.getAndIncrement(),
+                    System.currentTimeMillis(), "BundleIds changed", "BundleIds", "Array of long", oldIDs, newIDs);
+        default:
+            return null;
+        }
     }
 
     /*

@@ -41,7 +41,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
+import javax.management.AttributeChangeNotification;
+import javax.management.AttributeChangeNotificationFilter;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
@@ -302,7 +306,61 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         }
 
         assertEquals(2, received.size());
+    }
 
+    @Test
+    public void testAttributeChangeNotifications() throws Exception {
+        ObjectName objectName = waitForMBean(new ObjectName(BundleStateMBean.OBJECTNAME));
+        BundleStateMBean mbean = getMBean(objectName, BundleStateMBean.class);
+
+        final List<AttributeChangeNotification> attributeChanges = new ArrayList<AttributeChangeNotification>();
+        AttributeChangeNotificationFilter filter = new AttributeChangeNotificationFilter();
+        filter.disableAllAttributes();
+        filter.enableAttribute("BundleIds");
+
+        mbeanServer.addNotificationListener(objectName, new NotificationListener() {
+            public void handleNotification(Notification notification, Object handback) {
+                attributeChanges.add((AttributeChangeNotification) notification);
+            }
+        }, filter, null);
+
+        long[] idsWithout = mbean.getBundleIds();
+
+        assertEquals("Precondition", 0, attributeChanges.size());
+
+        Manifest mf = new Manifest();
+        mf.getMainAttributes().putValue("Bundle-ManifestVersion", "2");
+        mf.getMainAttributes().putValue("Bundle-SymbolicName", "empty-test-bundle");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JarOutputStream jos = new JarOutputStream(baos, mf);
+        jos.closeEntry();
+        jos.close();
+
+        InputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        Bundle bundle = bundleContext.installBundle("http://somelocation", bais);
+
+        long[] idsWith = new long[idsWithout.length + 1];
+        System.arraycopy(idsWithout, 0, idsWith, 0, idsWithout.length);
+        idsWith[idsWith.length - 1] = bundle.getBundleId();
+        Arrays.sort(idsWith);
+
+        waitForListToReachSize(attributeChanges, 1);
+
+        assertEquals(1, attributeChanges.size());
+        AttributeChangeNotification ac = attributeChanges.get(0);
+        assertEquals("BundleIds", ac.getAttributeName());
+        assertEquals(1, ac.getSequenceNumber());
+        assertTrue(Arrays.equals(idsWithout, (long []) ac.getOldValue()));
+        assertTrue(Arrays.equals(idsWith, (long []) ac.getNewValue()));
+
+        bundle.uninstall();
+
+        waitForListToReachSize(attributeChanges, 2);
+        AttributeChangeNotification ac2 = attributeChanges.get(1);
+        assertEquals("BundleIds", ac2.getAttributeName());
+        assertEquals(2, ac2.getSequenceNumber());
+        assertTrue(Arrays.equals(idsWith, (long []) ac2.getOldValue()));
+        assertTrue(Arrays.equals(idsWithout, (long []) ac2.getNewValue()));
     }
 
     @Test
@@ -377,5 +435,13 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
             }
         }
         return false;
+    }
+
+    private void waitForListToReachSize(List<?> list, int targetSize) throws InterruptedException {
+        int i = 0;
+        while (list.size() < targetSize && i < 3) {
+            Thread.sleep(1000);
+            i++;
+        }
     }
 }
