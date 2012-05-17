@@ -820,7 +820,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             handlerSet.destroy();
         }
         unregisterServices();
-        untrackServiceReferences();
 
         synchronized (running) {
             while (running.get()) {
@@ -834,6 +833,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
         destroyComponents();
         
+        untrackServiceReferences();
+
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundleContext().getBundle(), getExtenderBundle()));
         LOGGER.debug("Blueprint container destroyed: {}", this.bundleContext);
     }
