@@ -27,7 +27,7 @@
 
     <artifactId>org.apache.aries.util</artifactId>
     <packaging>bundle</packaging>
-    <version>0.3</version>
+    <version>0.3.1-SNAPSHOT</version>
     <name>Apache Aries Util</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries
