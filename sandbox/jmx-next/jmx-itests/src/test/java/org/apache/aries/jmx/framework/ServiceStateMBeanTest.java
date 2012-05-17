@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -262,27 +261,23 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 
         assertEquals("Precondition", 0, attributeChanges.size());
 
-        long[] ids = mbean.getServiceIds();
-        Long[] idsWithoutService = new Long[ids.length];
-        for(int i=0; i < ids.length; i++) {
-            idsWithoutService[i] = ids[i];
-        }
+        long[] idsWithout = mbean.getServiceIds();
 
         String svc = "A String Service";
         ServiceRegistration<?> reg = bundleContext.registerService(String.class.getName(), svc, null);
         long id = (Long) reg.getReference().getProperty(Constants.SERVICE_ID);
 
-        List<Long> newIDList = new ArrayList<Long>(Arrays.asList(idsWithoutService));
-        newIDList.add(id);
-        Collections.sort(newIDList);
-        Long[] idsWithService = newIDList.toArray(new Long [] {});
+        long[] idsWith = new long[idsWithout.length + 1];
+        System.arraycopy(idsWithout, 0, idsWith, 0, idsWithout.length);
+        idsWith[idsWith.length - 1] = id;
+        Arrays.sort(idsWith);
 
         waitForListToReachSize(attributeChanges, 1);
         AttributeChangeNotification ac = attributeChanges.get(0);
         assertEquals("ServiceIds", ac.getAttributeName());
         assertEquals(1, ac.getSequenceNumber());
-        assertTrue(Arrays.equals(idsWithoutService, (Long []) ac.getOldValue()));
-        assertTrue(Arrays.equals(idsWithService, (Long []) ac.getNewValue()));
+        assertTrue(Arrays.equals(idsWithout, (long []) ac.getOldValue()));
+        assertTrue(Arrays.equals(idsWith, (long []) ac.getNewValue()));
 
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put("somekey", "someval");
@@ -299,8 +294,8 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         AttributeChangeNotification ac2 = attributeChanges.get(1);
         assertEquals("ServiceIds", ac2.getAttributeName());
         assertEquals(2, ac2.getSequenceNumber());
-        assertTrue(Arrays.equals(idsWithService, (Long []) ac2.getOldValue()));
-        assertTrue(Arrays.equals(idsWithoutService, (Long []) ac2.getNewValue()));
+        assertTrue(Arrays.equals(idsWith, (long []) ac2.getOldValue()));
+        assertTrue(Arrays.equals(idsWithout, (long []) ac2.getNewValue()));
     }
 
     @Test
