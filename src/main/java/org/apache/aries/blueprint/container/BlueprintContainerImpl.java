@@ -23,12 +23,9 @@ import java.net.URI;
 import java.net.URL;
 import java.security.AccessControlContext;
 import java.security.AccessController;
-import java.security.DomainCombiner;
-import java.security.Permission;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -100,6 +97,11 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
+    private static final Class[] SECURITY_BUGFIX = {
+            BlueprintDomainCombiner.class,
+            BlueprintProtectionDomain.class,
+    };
+    
     private enum State {
         Unknown,
         WaitForNamespaceHandlers,
@@ -151,7 +153,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.executors = executors;
         this.processors = new ArrayList<Processor>();
         if (System.getSecurityManager() != null) {
-            this.accessControlContext = createAccessControlContext();
+            this.accessControlContext = BlueprintDomainCombiner.createAccessControlContext(bundleContext);
         }
     }
 
@@ -424,21 +426,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 }            
             }, accessControlContext);
         }
-    }
-    
-    private AccessControlContext createAccessControlContext() {
-        return new AccessControlContext(AccessController.getContext(),
-                new DomainCombiner() {               
-                    public ProtectionDomain[] combine(ProtectionDomain[] arg0,
-                                                      ProtectionDomain[] arg1) {                    
-                        return new ProtectionDomain[] { new ProtectionDomain(null, null) {                        
-                            public boolean implies(Permission permission) {                                                           
-                                return bundleContext.getBundle().hasPermission(permission);
-                            }
-                        } 
-                    };
-                }
-        });
     }
     
     public AccessControlContext getAccessControlContext() {
@@ -874,6 +861,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             schedule();
         }
     }
+
 
 }
 
