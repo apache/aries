@@ -28,6 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>org.apache.aries.transaction.manager</artifactId>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Aries Transaction Manager</name> 
 
