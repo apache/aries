@@ -414,19 +414,21 @@ public class ReflectionUtils {
         }
 
         protected void internalSet(final ExtendedBlueprintContainer container, final Object instance, final Object value) throws Exception {
-            if (useContainersPermission(container)) {
-                try {
-                    AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-                        public Object run() throws Exception {
-                            doInternalSet(container, instance, value);
-                            return null;
-                        }                        
-                    });
-                } catch (PrivilegedActionException pae) {
-                    throw pae.getException();
+            try {
+                Boolean wasSet = AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>() {
+                    public Boolean run() throws Exception {
+                      if (useContainersPermission(container)) {
+                        doInternalSet(container, instance, value);
+                        return Boolean.TRUE;
+                      }
+                      return Boolean.FALSE;
+                    }                        
+                });
+                if(!!!wasSet) {
+                  doInternalSet(container, instance, value);
                 }
-            } else {
-                doInternalSet(container, instance, value);
+            } catch (PrivilegedActionException pae) {
+                throw pae.getException();
             }
         }
         
