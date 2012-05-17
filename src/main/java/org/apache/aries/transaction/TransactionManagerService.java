@@ -16,29 +16,26 @@
  */
 package org.apache.aries.transaction;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Properties;
-import java.io.File;
-import java.io.IOException;
-
-import javax.transaction.xa.XAException;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
+import javax.transaction.xa.XAException;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ConfigurationException;
+import org.apache.geronimo.transaction.log.HOWLLog;
+import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
+import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.apache.geronimo.transaction.manager.XidFactoryImpl;
-import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
-import org.apache.geronimo.transaction.log.HOWLLog;
-import org.apache.geronimo.transaction.log.UnrecoverableLog;
-import org.objectweb.howl.log.LogConfigurationException;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.ConfigurationException;
 
 /**
  */
@@ -127,10 +124,8 @@ public class TransactionManagerService {
                                              threadsWaitingForceThreshold,
                                              xidFactory != null ? xidFactory : new XidFactoryImpl(),
                                              null);
-            } catch (LogConfigurationException e) {
-                // This should not really happen as we've checked properties earlier
-                throw new ConfigurationException(null, null, e);
-            } catch (IOException e) {
+                ((HOWLLog) transactionLog).doStart();
+            } catch (Exception e) {
                 // This should not really happen as we've checked properties earlier
                 throw new ConfigurationException(null, null, e);
             }
@@ -151,9 +146,6 @@ public class TransactionManagerService {
     }
 
     public void start() throws Exception {
-        if (transactionLog instanceof HOWLLog) {
-            ((HOWLLog) transactionLog).doStart();
-        }
         List<String> clazzes = new ArrayList<String>();
         clazzes.add(TransactionManager.class.getName());
         clazzes.add(TransactionSynchronizationRegistry.class.getName());
