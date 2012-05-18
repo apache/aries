@@ -50,6 +50,7 @@ import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.Processor;
+import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
@@ -863,5 +864,30 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
 
+
+    public void injectBeanInstance(BeanMetadata bmd, Object o) 
+        throws IllegalArgumentException, ComponentDefinitionException {
+        ExecutionContext origContext 
+            = ExecutionContext.Holder.setContext((ExecutionContext)getRepository());
+        try {
+            ComponentMetadata cmd = componentDefinitionRegistry.getComponentDefinition(bmd.getId());
+            if (cmd == null || cmd != bmd) {
+                throw new IllegalArgumentException(bmd.getId() + " not found in blueprint container");
+            }
+            Recipe r = this.getRepository().getRecipe(bmd.getId());
+            if (r instanceof BeanRecipe) {
+                BeanRecipe br = (BeanRecipe)r;
+                if (!br.getType().isInstance(o)) {
+                    throw new IllegalArgumentException("Instance class " + o.getClass().getName() 
+                                                       + " is not an instance of " + br.getClass());
+                }
+                br.setProperties(o);
+            } else {
+                throw new IllegalArgumentException(bmd.getId() + " does not refer to a BeanRecipe");
+            }
+        } finally {
+            ExecutionContext.Holder.setContext(origContext);
+        }
+    }
 }
 
