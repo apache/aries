@@ -40,7 +40,6 @@
         </aries.osgi.activator>
         <aries.osgi.import>
             !org.apache.aries.blueprint*,
-            !org.osgi.service.blueprint*,
             org.eclipse.osgi.internal.loader;resolution:=optional,
             org.eclipse.osgi.framework.internal.core;resolution:=optional,
             org.eclipse.osgi.framework.adaptor;resolution:=optional,
