@@ -83,8 +83,8 @@ public class TransactionManagerService {
         if (transactionTimeout <= 0) {
             throw new ConfigurationException(TRANSACTION_TIMEOUT, NLS.MESSAGES.getMessage("tx.timeout.greaterthan.zero"));
         }
-        // XID factory
-        XidFactory xidFactory = new XidFactoryImpl(pid.getBytes());
+        // the max length of the factory should be 64
+        XidFactory xidFactory = new XidFactoryImpl(pid.substring(0, Math.min(pid.length(), 64)).getBytes());
         // Transaction log
         if (getBool(RECOVERABLE, DEFAULT_RECOVERABLE)) {
             String bufferClassName = getString(HOWL_BUFFER_CLASS_NAME, "org.objectweb.howl.log.BlockLogBuffer");
