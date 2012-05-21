@@ -22,19 +22,24 @@ import org.apache.aries.util.internal.DefaultWorker;
 import org.apache.aries.util.internal.EquinoxWorker;
 import org.apache.aries.util.internal.FelixWorker;
 import org.apache.aries.util.internal.FrameworkUtilWorker;
+import org.apache.aries.util.internal.R43Worker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-public final class AriesFrameworkUtil 
+public final class AriesFrameworkUtil
 {
   private static FrameworkUtilWorker worker;
   
   static {
+    try {
+      worker = new R43Worker();
+    } catch (Throwable e) {
+    }
     Bundle b = FrameworkUtil.getBundle(AriesFrameworkUtil.class);
-    String bundleClassName = b.getClass().getName();
-    if (isEquinox(bundleClassName)) {
+    String bundleClassName = b == null? "": b.getClass().getName();
+    if (worker == null && isEquinox(bundleClassName)) {
       worker = new EquinoxWorker();
-    } else if (bundleClassName.startsWith("org.apache.felix")) {
+    } else if (worker == null && bundleClassName.startsWith("org.apache.felix")) {
       worker = new FelixWorker();
     } 
     

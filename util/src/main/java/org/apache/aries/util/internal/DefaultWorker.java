@@ -36,14 +36,29 @@ import org.osgi.framework.FrameworkUtil;
 public class DefaultWorker implements FrameworkUtilWorker, BundleListener, FrameworkListener
 {
   private Map<Bundle, ClassLoader> classLoaders = new IdentityHashMap<Bundle, ClassLoader>();
-  private static final Bundle myFrameworkBundle = FrameworkUtil.getBundle(DefaultWorker.class).getBundleContext().getBundle(0);
+  private static final Bundle myFrameworkBundle;
 
+  static
+  {
+    Bundle bundle = FrameworkUtil.getBundle(DefaultWorker.class);
+    BundleContext myContext = bundle == null? null: bundle.getBundleContext();
+    
+    // This may be created during framework shutdown when the bundle context is null.
+    // So we need to cope and not NPE during construction.
+    if (myContext != null) {
+      myFrameworkBundle = myContext.getBundle(0);
+    } else {
+      myFrameworkBundle = null;
+    }
+  }
+  
+  
   public ClassLoader getClassLoader(final Bundle b) 
   {
     ClassLoader cl = get(b);
     
     if (cl != null) return cl;
-    
+
     // so first off try to get the real classloader. We can do this by loading a known class
     // such as the bundle activator. There is no guarantee this will work, so we have a back door too.
     String activator = (String) b.getHeaders().get(Constants.BUNDLE_ACTIVATOR);
