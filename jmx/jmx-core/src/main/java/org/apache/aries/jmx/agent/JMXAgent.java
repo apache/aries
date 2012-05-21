@@ -57,7 +57,14 @@ public interface JMXAgent {
 
     /**
      * Unregisters MBean with all available MBeanServers.
+     * @param mBeanHandler handler which contains MBean info.
+     */
+    void unregisterMBean(final MBeanHandler mBeanHandler);
+
+    /**
+     * Unregisters MBean with all available MBeanServers.
      * @param name of MBean to be unregistered.
+     * @deprecated
      */
     void unregisterMBean(final String name);
 
