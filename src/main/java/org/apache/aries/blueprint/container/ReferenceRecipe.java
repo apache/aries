@@ -220,11 +220,16 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                   } 
                   
                   if (failed) {
-                    LOGGER.info("Timeout expired when waiting for OSGi service {}", getOsgiFilter());
-                    throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", getOsgiFilter());
+                    if (metadata.getAvailability() == ServiceReferenceMetadata.AVAILABILITY_MANDATORY) {
+                        LOGGER.info("Timeout expired when waiting for mandatory OSGi service reference {}", getOsgiFilter());
+                        throw new ServiceUnavailableException("Timeout expired when waiting for mandatory OSGi service reference: " + getOsgiFilter(), getOsgiFilter());
+                    } else {
+                        LOGGER.info("No matching service for optional OSGi service reference {}", getOsgiFilter());
+                        throw new ServiceUnavailableException("No matching service for optional OSGi service reference: " + getOsgiFilter(), getOsgiFilter());
+                    }
                   }
                 } else {
-                    throw new ServiceUnavailableException("The Blueprint container is being or has been destroyed", getOsgiFilter());
+                    throw new ServiceUnavailableException("The Blueprint container is being or has been destroyed: " + getOsgiFilter(), getOsgiFilter());
                 }
             } else {
             
