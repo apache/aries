@@ -48,6 +48,7 @@
         <aries.osgi.import.pkg>
             !org.apache.aries.util*,
             org.osgi.framework.launch;resolution:=optional,
+            org.osgi.framework.wiring.*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
             org.eclipse.osgi.internal.loader;resolution:=optional,
             org.eclipse.osgi.framework.internal.core;resolution:=optional,
@@ -63,6 +64,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <version>4.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

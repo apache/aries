@@ -183,7 +183,7 @@ public final class MessageUtil
               public Class<? extends ListResourceBundle> run()
               {
                 try {
-                  return b.loadClass(bundleName);
+                  return (Class<? extends ListResourceBundle>) b.loadClass(bundleName);
                 } catch (ClassNotFoundException e) {
                   return null;
                 }
