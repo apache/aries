@@ -24,6 +24,7 @@
 
     <artifactId>org.apache.aries.jmx</artifactId>
     <packaging>bundle</packaging>
+    <version>0.3.1-SNAPSHOT</version>
     <name>Apache Aries JMX Bundle</name>
     <description>
        This bundle contains the standalone implementation of the along with the API.
@@ -75,10 +76,12 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.api</artifactId>
+		    <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.core</artifactId>
+		    <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
