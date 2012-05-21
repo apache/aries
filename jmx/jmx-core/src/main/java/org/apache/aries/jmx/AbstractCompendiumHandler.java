@@ -116,7 +116,7 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
             ExecutorService executor = agentContext.getRegistrationExecutor();
             executor.submit(new Runnable() {
                 public void run() {
-                    agentContext.unregisterMBean(getName());
+                    agentContext.unregisterMBean(AbstractCompendiumHandler.this);
                 }
             });
             trackedId = null;
