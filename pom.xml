@@ -24,6 +24,7 @@
 
     <artifactId>org.apache.aries.jmx.core</artifactId>
     <packaging>bundle</packaging>
+    <version>0.3.1-SNAPSHOT</version>
     <name>Apache Aries JMX Core</name>
     <description>
         This bundle contains the core implementation 
