@@ -76,8 +76,8 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
         Long serviceId = (Long) reference.getProperty(Constants.SERVICE_ID);
         //API stipulates versions for compendium services with static ObjectName
         //This shouldn't happen but added as a consistency check
-        if (getTrackingCount() > 0) {
-            String serviceDescription = (String) ((reference.getProperty(Constants.SERVICE_DESCRIPTION) != null) ? 
+        if (trackedId != null) {
+            String serviceDescription = (String) ((reference.getProperty(Constants.SERVICE_DESCRIPTION) != null) ?
                     reference.getProperty(Constants.SERVICE_DESCRIPTION) : reference.getProperty(Constants.OBJECTCLASS));
             logger.log(LogService.LOG_WARNING, "Detected secondary ServiceReference for [" + serviceDescription
                     + "] with " + Constants.SERVICE_ID + " [" + serviceId + "] Only 1 instance will be JMX managed");
