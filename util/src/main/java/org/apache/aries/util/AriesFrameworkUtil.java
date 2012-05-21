@@ -51,7 +51,7 @@ public final class AriesFrameworkUtil
    */
   public static ClassLoader getClassLoader(Bundle b)
   {
-    if (b.getState() != Bundle.UNINSTALLED && b.getState() != Bundle.INSTALLED) {
+    if (b != null && b.getState() != Bundle.UNINSTALLED && b.getState() != Bundle.INSTALLED) {
       return worker.getClassLoader(b);
     } else {
       return null;
@@ -85,6 +85,8 @@ public final class AriesFrameworkUtil
    */
   public static ClassLoader getClassLoaderForced(Bundle b)
   {
+    if (b == null)
+      return null;
     try {
       b.loadClass("java.lang.Object");
     } catch (ClassNotFoundException e) {
