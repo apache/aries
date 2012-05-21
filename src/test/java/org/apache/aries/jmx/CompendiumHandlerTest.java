@@ -16,16 +16,9 @@
  */
 package org.apache.aries.jmx;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.agent.JMXAgentContext;
@@ -34,6 +27,8 @@ import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
+
+import static org.mockito.Mockito.*;
 
 public class CompendiumHandlerTest {
 
@@ -106,7 +101,7 @@ public class CompendiumHandlerTest {
         //service unget
         verify(bundleContext).ungetService(reference);
         //unregister is invoked on context
-        verify(agentContext).unregisterMBean(name);
+        verify(agentContext).unregisterMBean(target);
         
     }
 
