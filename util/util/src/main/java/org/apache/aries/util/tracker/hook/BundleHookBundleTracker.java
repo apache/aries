@@ -65,12 +65,10 @@ public class BundleHookBundleTracker<T> extends BundleTracker {
     tracked = new Tracked();
     EventHook hook = new BundleEventHook(tracked);
     sr = context.registerService(EventHook.class.getName(), hook, null);
-      super.open();
   }
 
   @Override
   public void close() {
-      super.close();
     sr.unregister();
     tracked.close();
     tracked = null;
