@@ -26,16 +26,21 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import org.apache.aries.blueprint.container.GenericType;
-import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ReifiedType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRecipe implements Recipe {
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(AbstractRecipe.class);
 
     protected final String name;
     protected boolean prototype = true;
 
     protected AbstractRecipe(String name) {
-        if (name == null) throw new NullPointerException("name is null");
+        if (name == null)
+            throw new NullPointerException("name is null");
         this.name = name;
     }
 
@@ -55,7 +60,8 @@ public abstract class AbstractRecipe implements Recipe {
         // Ensure a container has been set
         ExecutionContext context = ExecutionContext.Holder.getContext();
 
-        // if this recipe has already been executed in this context, return the currently registered value
+        // if this recipe has already been executed in this context, return the
+        // currently registered value
         Object result = context.getPartialObject(name);
         if (result != null) {
             return result;
@@ -66,12 +72,15 @@ public abstract class AbstractRecipe implements Recipe {
         boolean didCreate = false;
         try {
             if (!prototype) {
-                FutureTask<Object> objectCreation = new FutureTask<Object>(new Callable<Object>() {
-                    public Object call() throws ComponentDefinitionException {
-                        return internalCreate();
-                    }                
-                });
-                Future<Object> resultFuture = context.addFullObject(name, objectCreation);
+                FutureTask<Object> objectCreation = new FutureTask<Object>(
+                        new Callable<Object>() {
+                            public Object call()
+                                    throws ComponentDefinitionException {
+                                return internalCreate();
+                            }
+                        });
+                Future<Object> resultFuture = context.addFullObject(name,
+                        objectCreation);
 
                 // are we the first to try to create it
                 if (resultFuture == null) {
@@ -79,8 +88,7 @@ public abstract class AbstractRecipe implements Recipe {
                     objectCreation.run();
                     resultFuture = objectCreation;
                 }
-                
-                
+
                 try {
                     result = resultFuture.get();
                 } catch (InterruptedException ie) {
@@ -90,45 +98,51 @@ public abstract class AbstractRecipe implements Recipe {
                         throw (ComponentDefinitionException) ee.getCause();
                     else if (ee.getCause() instanceof RuntimeException)
                         throw (RuntimeException) ee.getCause();
-                    else 
+                    else
                         throw (Error) ee.getCause();
                 }
-                
+
             } else {
                 result = internalCreate();
             }
         } finally {
-            if (didCreate) context.removePartialObject(name);
-            
+            if (didCreate)
+                context.removePartialObject(name);
+
             Recipe popped = context.pop();
             if (popped != this) {
-                //noinspection ThrowFromFinallyBlock
-                throw new IllegalStateException("Internal Error: recipe stack is corrupt:" +
-                        " Expected " + this + " to be popped of the stack but was " + popped);
+                // noinspection ThrowFromFinallyBlock
+                throw new IllegalStateException(
+                        "Internal Error: recipe stack is corrupt:"
+                                + " Expected " + this
+                                + " to be popped of the stack but was "
+                                + popped);
             }
         }
-        
+
         return result;
     }
 
-    protected abstract Object internalCreate() throws ComponentDefinitionException;
-    
+    protected abstract Object internalCreate()
+            throws ComponentDefinitionException;
+
     protected void addPartialObject(Object obj) {
-        if (!prototype) {                 
+        if (!prototype) {
             ExecutionContext.Holder.getContext().addPartialObject(name, obj);
         }
     }
-    
+
     protected boolean canConvert(Object obj, ReifiedType type) {
-    	return ExecutionContext.Holder.getContext().canConvert(obj, type);
+        return ExecutionContext.Holder.getContext().canConvert(obj, type);
     }
-    
+
     protected Object convert(Object obj, ReifiedType type) throws Exception {
         return ExecutionContext.Holder.getContext().convert(obj, type);
     }
 
     protected Object convert(Object obj, Type type) throws Exception {
-        return ExecutionContext.Holder.getContext().convert(obj, new GenericType(type));
+        return ExecutionContext.Holder.getContext().convert(obj,
+                new GenericType(type));
     }
 
     protected Class loadClass(String className) {
@@ -144,10 +158,41 @@ public abstract class AbstractRecipe implements Recipe {
         if (typeName == null) {
             return null;
         }
+        return doLoadType(typeName, fromClassLoader, true, false);
+    }
+
+    private ReifiedType doLoadType(String typeName,
+            ClassLoader fromClassLoader, boolean checkNestedIfFailed,
+            boolean retry) {
         try {
-            return GenericType.parse(typeName, fromClassLoader != null ? fromClassLoader : ExecutionContext.Holder.getContext());
+            return GenericType.parse(typeName,
+                    fromClassLoader != null ? fromClassLoader
+                            : ExecutionContext.Holder.getContext());
         } catch (ClassNotFoundException e) {
-            throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, e);
+            String errorMessage = "Unable to load class " + typeName
+                    + " from recipe " + this;
+            if (checkNestedIfFailed) {
+                int lastDot = typeName.lastIndexOf('.');
+                if (lastDot > 0 && lastDot < typeName.length()) {
+                    String nestedTypeName = typeName.substring(0, lastDot)
+                            + "$" + typeName.substring(lastDot + 1);
+                    LOGGER.debug(errorMessage
+                            + ", trying to load a nested class "
+                            + nestedTypeName);
+                    try {
+                        return doLoadType(nestedTypeName, fromClassLoader,
+                                false, true);
+                    } catch (ComponentDefinitionException e2) {
+                        // ignore, the recursive call will throw this exception,
+                        // but ultimately the exception referencing the original
+                        // typeName has to be thrown
+                    }
+                }
+            }
+            if (!retry) {
+                LOGGER.error(errorMessage);
+            }
+            throw new ComponentDefinitionException(errorMessage, e);
         }
     }
 
@@ -157,11 +202,9 @@ public abstract class AbstractRecipe implements Recipe {
     public List<Recipe> getConstructorDependencies() {
         return Collections.emptyList();
     }
-    
+
     public String toString() {
-        return getClass().getSimpleName() + "[" +
-                "name='" + name + '\'' +
-                ']';
+        return getClass().getSimpleName() + "[" + "name='" + name + '\'' + ']';
 
     }
 
