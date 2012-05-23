@@ -106,10 +106,30 @@ public abstract class AbstractRecipe implements Recipe {
         if (typeName == null) {
             return null;
         }
+        return doLoadType(typeName, fromClassLoader, true);
+    }
+
+    private ReifiedType doLoadType(String typeName, ClassLoader fromClassLoader, 
+                                   boolean checkNestedIfFailed) {
         try {
             return GenericType.parse(typeName, fromClassLoader != null ? fromClassLoader : ExecutionContext.Holder.getContext());
         } catch (ClassNotFoundException e) {
-            throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, e);
+            String errorMessage = "Unable to load class " + typeName + " from recipe " + this;
+            if (checkNestedIfFailed) {
+                int lastDot = typeName.lastIndexOf('.');
+                if (lastDot > 0 && lastDot < typeName.length()) {
+                    String nestedTypeName = typeName.substring(0, lastDot)
+                            + "$" + typeName.substring(lastDot + 1);
+                    try {
+                        return doLoadType(nestedTypeName, fromClassLoader, false);
+                    } catch (ComponentDefinitionException e2) {
+                        // ignore, the recursive call will throw this exception,
+                        // but ultimately the exception referencing the original
+                        // typeName has to be thrown
+                    }
+                }
+            }
+            throw new ComponentDefinitionException(errorMessage, e);
         }
     }
 
