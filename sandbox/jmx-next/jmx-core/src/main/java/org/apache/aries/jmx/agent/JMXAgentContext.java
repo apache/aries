@@ -28,7 +28,7 @@ import org.osgi.framework.BundleContext;
  * <p>This class <tt>JMXAgentContext</tt> represents context of JMXAgent.
  * Delegates registration and unregistration methods to {@link JMXAgent}.</p>
  * @see JMXAgent
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class JMXAgentContext {
@@ -52,7 +52,7 @@ public class JMXAgentContext {
     /**
      * Delegates invocation to JMX agent.
      * @see org.apache.aries.jmx.agent.JMXAgent#registerMBeans(MBeanServer)
-     * 
+     *
      */
     public void registerMBeans(final MBeanServer server) {
         agent.registerMBeans(server);
@@ -68,7 +68,7 @@ public class JMXAgentContext {
 
     /**
      * Delegates invocation to JMX agent.
-     * @see org.apache.aries.jmx.agent.JMXAgentl#registerMBean(MBeanHandler)
+     * @see org.apache.aries.jmx.agent.JMXAgent#registerMBean(MBeanHandler)
      */
     public void registerMBean(final MBeanHandler mbeanData) {
         agent.registerMBean(mbeanData);
@@ -76,7 +76,16 @@ public class JMXAgentContext {
 
     /**
      * Delegates invocation to JMX agent.
+     * @see org.apache.aries.jmx.agent.JMXAgent#unregisterMBean(MBeanHandler)
+     */
+    public void unregisterMBean(final MBeanHandler mBeanHandler) {
+        agent.unregisterMBean(mBeanHandler);
+    }
+
+    /**
+     * Delegates invocation to JMX agent.
      * @see org.apache.aries.jmx.agent.JMXAgent#unregisterMBean(String)
+     * @deprecated
      */
     public void unregisterMBean(final String name) {
         agent.unregisterMBean(name);
