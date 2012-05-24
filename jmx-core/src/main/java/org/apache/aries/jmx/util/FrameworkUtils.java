@@ -131,7 +131,9 @@ public class FrameworkUtils {
                 result = references[0];
             }
         } catch (InvalidSyntaxException e) {
-            throw new IOException("Failure when resolving service ", e);
+            IOException ioe = new IOException("Failure when resolving service ");
+            ioe.initCause(e);
+            throw ioe;
         }
         return result;
     }
