@@ -24,7 +24,7 @@
 
     <artifactId>org.apache.aries.jmx</artifactId>
     <packaging>bundle</packaging>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.1</version>
     <name>Apache Aries JMX Bundle</name>
     <description>
        This bundle contains the standalone implementation of the along with the API.
@@ -200,9 +200,9 @@
         </profile>
     </profiles>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/blueprint-0.3.2-fixes/jmx-bundle</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/blueprint-0.3.2-fixes/jmx-bundle</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/blueprint-0.3.2-fixes/jmx-bundle</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx-0.3.1</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx-0.3.1</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx-0.3.1</url>
     </scm>
 
 </project>
