@@ -25,7 +25,7 @@
     <artifactId>org.apache.aries.blueprint</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Bundle</name>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.2</version>
     <description>
         This bundle contains the standalone implementation along with the API.
         It's composed of the blueprint-api, blueprint-core and blueprint-cm modules.
@@ -252,8 +252,8 @@
     </profiles>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/blueprint-0.3.2-fixes/blueprint-bundle</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/blueprint-0.3.2-fixes/blueprint-bundle</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/blueprint-0.3.2-fixes/blueprint-bundle</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint-0.3.2</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint-0.3.2</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint-0.3.2</url>
     </scm>
 </project>
