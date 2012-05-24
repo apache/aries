@@ -27,7 +27,7 @@
   <artifactId>org.apache.aries.blueprint.core</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Blueprint Core</name>
-  <version>0.3.2-SNAPSHOT</version>
+  <version>0.3.2</version>
   <description>
       This bundle contains the core implementation of Blueprint 
       along with the "ext" namespace handler.
@@ -115,4 +115,10 @@
       	<artifactId>org.apache.aries.proxy.api</artifactId>
       </dependency>
   </dependencies>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.core-0.3.2</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.core-0.3.2</developerConnection>
+    <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.core-0.3.2</url>
+  </scm>
 </project>
