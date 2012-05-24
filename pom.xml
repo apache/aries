@@ -24,7 +24,7 @@
 
     <artifactId>org.apache.aries.jmx.core</artifactId>
     <packaging>bundle</packaging>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.1</version>
     <name>Apache Aries JMX Core</name>
     <description>
         This bundle contains the core implementation 
@@ -89,9 +89,9 @@
         </dependency>
     </dependencies>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/blueprint-0.3.2-fixes/jmx-core</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/blueprint-0.3.2-fixes/jmx-core</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/branches/blueprint-0.3.2-fixes/jmx-core</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.core-0.3.1</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.core-0.3.1</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx.core-0.3.1</url>
     </scm>
 
  </project>
