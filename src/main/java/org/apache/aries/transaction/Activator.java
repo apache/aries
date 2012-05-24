@@ -42,8 +42,8 @@ public class Activator implements BundleActivator, ManagedService {
         this.bundleContext = bundleContext;
         Hashtable props = new Hashtable();
         props.put(Constants.SERVICE_PID, PID);
-        bundleContext.registerService(ManagedService.class.getName(), this, props);
         updated(props);
+        bundleContext.registerService(ManagedService.class.getName(), this, props);
     }
 
     public void stop(BundleContext context) throws Exception {
