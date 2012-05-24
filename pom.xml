@@ -87,5 +87,10 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/blueprint-0.3.2-fixes/jmx-core</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/blueprint-0.3.2-fixes/jmx-core</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/blueprint-0.3.2-fixes/jmx-core</url>
+    </scm>
 
  </project>
