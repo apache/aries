@@ -62,7 +62,23 @@ public class BundleHookBundleTracker<T> extends BundleTracker {
 
   @Override
   public void open() {
-    tracked = new Tracked();
+    synchronized (this) {
+      tracked = new Tracked();
+      Bundle[] bundles = context.getBundles();
+      if (bundles != null) {
+        int length = bundles.length;
+        for (int i = 0; i < length; i++) {
+          int state = bundles[i].getState();
+          if ((state & mask) == 0) {
+            /* null out bundles whose states are not interesting */
+            bundles[i] = null;
+          }
+        }
+        /* set tracked with the initial bundles */
+        tracked.setInitial(bundles);
+      }
+    }
+    tracked.trackInitial();
     EventHook hook = new BundleEventHook(tracked);
     sr = context.registerService(EventHook.class.getName(), hook, null);
   }
