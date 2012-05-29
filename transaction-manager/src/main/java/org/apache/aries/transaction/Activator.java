@@ -51,6 +51,12 @@ public class Activator implements BundleActivator, ManagedService {
     }
 
     public synchronized void updated(Dictionary properties) throws ConfigurationException {
+    	if (properties == null)
+    	{
+    		// Use defaults if there's no configuration for us
+    		properties = new Hashtable();
+    		properties.put(Constants.SERVICE_PID, PID);
+    	}
         deleted();
         manager = new TransactionManagerService(PID, properties, bundleContext);
         try {
