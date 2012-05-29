@@ -30,6 +30,7 @@
     <packaging>eba</packaging>
     <name>AriesTrader :: Assemblies - EBA - ALL</name>
     <description>An EBA version of AriesTrader ALL</description>
+    <version>1.0.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
