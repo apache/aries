@@ -39,7 +39,7 @@ public class SubsystemResolverHook implements ResolverHook {
 		// there is at least one preferred provider.
 		// (1) Find the subsystem(s) containing requirement.getResource() as a
 		// constituent.
-		Collection<AriesSubsystem> requirers = AriesSubsystem.getSubsystems(requirement.getResource());
+		Collection<AriesSubsystem> requirers = Activator.getInstance().getSubsystems().getSubsystemsReferencing(requirement.getResource());
 		// (2) For each candidate, ask each subsystem if the candidate or any of
 		// the candidate's containing subsystems is a preferred provider. If at
 		// least one preferred provider exists, filter out all other candidates
@@ -62,7 +62,7 @@ public class SubsystemResolverHook implements ResolverHook {
 				if (revision.getSymbolicName().startsWith(Constants.RegionContextBundleSymbolicNamePrefix))
 					// Don't want to filter out the region context bundle.
 					continue;
-				Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(revision);
+				Collection<AriesSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(revision);
 				for (AriesSubsystem subsystem : subsystems) {
 					if (subsystem.isFeature()) {
 						// Feature subsystems require no isolation.
@@ -87,7 +87,7 @@ public class SubsystemResolverHook implements ResolverHook {
 	}
 	
 	private boolean isResourceConstituentOfPreferredSubsystem(Resource resource, AriesSubsystem preferer) {
-		Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(resource);
+		Collection<AriesSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource);
 		for (AriesSubsystem subsystem : subsystems)
 			if (preferer.getArchive().getSubsystemManifest().getPreferredProviderHeader().contains(subsystem))
 				return true;

@@ -26,14 +26,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.ExportPackageCapability;
@@ -54,6 +52,7 @@ import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
+import org.apache.aries.util.io.IOUtils;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.eclipse.equinox.region.RegionFilter;
@@ -70,8 +69,8 @@ import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Participant;
-import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -89,69 +88,15 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AriesSubsystem.class);
 	
-	static final Map<String, AriesSubsystem> locationToSubsystem = Collections.synchronizedMap(new HashMap<String, AriesSubsystem>());
-	static final ResourceReferences resourceReferences = new ResourceReferences();
-	private static final Map<Resource, Set<AriesSubsystem>> resourceToSubsystems = Collections.synchronizedMap(new HashMap<Resource, Set<AriesSubsystem>>());
-	
-	static synchronized Collection<AriesSubsystem> getSubsystems(Resource resource) {
-		// If the provided resource is null, all subsystems are desired.
-		if (resource == null)
-			return locationToSubsystem.values();
-		// Otherwise, only subsystems associated with the provided resource are
-		// desired.
-		Collection<AriesSubsystem> result = resourceToSubsystems.get(resource);
-		if (result == null)
-			return Collections.emptyList();
-		// TODO Does this need to be a copy? Unmodifiable?
-		return result;
-	}
-	
-	private static synchronized void addResourceToSubsystem(Resource resource, AriesSubsystem subsystem) {
-		Set<AriesSubsystem> subsystems = resourceToSubsystems.get(resource);
-		if (subsystems == null) {
-			// TODO The new HashSet needs to be guarded by a lock.
-			subsystems = new HashSet<AriesSubsystem>();
-			resourceToSubsystems.put(resource, subsystems);
-		}
-		subsystems.add(subsystem);
-	}
-	
-	private static synchronized void removeResourceToSubsystem(Resource resource, AriesSubsystem subsystem) {
-		Set<AriesSubsystem> subsystems = resourceToSubsystems.get(resource);
-		if (subsystems == null)
-			return;
-		subsystems.remove(subsystem);
-		if (subsystems.isEmpty())
-			resourceToSubsystems.remove(resource);
-	}
-
-	private static void deleteFile(File file) {
-		LOGGER.debug(LOG_ENTRY, "deleteFile", file);
-		if (file.isDirectory()) {
-			deleteFiles(file.listFiles());
-		}
-		LOGGER.debug("Deleting file {}", file);
-		if (!file.delete())
-			LOGGER.warn("Unable to delete file {}", file);
-		LOGGER.debug(LOG_EXIT, "deleteFile");
-	}
-	
-	private static void deleteFiles(File[] files) {
-		for (File file : files) {
-			deleteFile(file);
-		}
-	}
+	final SubsystemResource resource;
+	boolean autostart;
 	
 	private final SubsystemArchive archive;
-	private final Set<Resource> constituents = Collections.synchronizedSet(new HashSet<Resource>());
 	private final File directory;
 	private final long id;
 	private final String location;
 	private final Region region;
-	final SubsystemResource resource;
-	private final SubsystemGraph subsystemGraph;
 	
-	boolean autostart;
 	private Subsystem.State state = State.INSTALLING;
 	 
 	public AriesSubsystem() throws Exception {
@@ -176,7 +121,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 			location = ROOT_LOCATION;
 		}
 		region = createRegion(null);
-		// TODO The creation of the subsystem manifest is in two places. See other constructor.
 		SubsystemManifest subsystemManifest = archive.getSubsystemManifest();
 		if (subsystemManifest == null) {
 			// This is the first time the root subsystem has been initialized in
@@ -202,8 +146,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 					.version(getVersion()).content(archive.getResources())
 					.build();
 		}
-		// The root subsystem establishes the subsystem graph;
-		subsystemGraph = new SubsystemGraph(this);
 		archive.setDeploymentManifest(new DeploymentManifest(
 				deploymentManifest, 
 				subsystemManifest, 
@@ -213,32 +155,17 @@ public class AriesSubsystem implements Subsystem, Resource {
 				location,
 				true,
 				true));
-		// TODO Begin proof of concept.
-		// This is a proof of concept for initializing the relationships between the root subsystem and bundles
-		// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
-		// since this does not take into account the possibility of already existing bundles going away or new bundles
-		// being installed out of band while this initialization is taking place. Need a bundle event hook for that.
-		BundleContext context = Activator.getInstance().getBundleContext();
-		for (long id : region.getBundleIds()) {
-			BundleRevision br = context.getBundle(id).adapt(BundleRevision.class);
-			bundleInstalled(br);
-		}
-		// TODO End proof of concept.
 		resource = null;
 		LOGGER.debug(LOG_EXIT, "init");
 	}
 	
 	public AriesSubsystem(SubsystemResource resource, AriesSubsystem parent) {
 		this.resource = resource;
-		subsystemGraph = parent.subsystemGraph;
 		this.location = resource.getLocation();
-		id = SubsystemIdentifier.getNextId();
-		String directoryName = "subsystem" + id;
-		directory = new File(Activator.getInstance().getBundleContext().getDataFile(""), directoryName);
-		if (!directory.mkdir())
-			throw new SubsystemException("Unable to make directory for " + directory.getAbsolutePath());
+		id = resource.getId();
+		directory = resource.getDirectory();
 		try {
-			archive = new SubsystemArchive(resource, directory);
+			archive = new SubsystemArchive(resource);
 			SubsystemManifestValidator.validate(this, archive.getSubsystemManifest());
 			// Unscoped subsystems don't get their own region. They share the region with their scoped parent.
 			if (isUnscoped())
@@ -284,12 +211,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	@Override
 	public Collection<Subsystem> getChildren() {
-		return subsystemGraph.getChildren(this);
+		return Activator.getInstance().getSubsystems().getChildren(this);
 	}
 
 	@Override
-	public synchronized Collection<Resource> getConstituents() {
-		return Collections.unmodifiableCollection(new ArrayList<Resource>(constituents));
+	public Collection<Resource> getConstituents() {
+		return Activator.getInstance().getSubsystems().getConstituents(this);
 	}
 
 	@Override
@@ -300,7 +227,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	@Override
 	public Collection<Subsystem> getParents() {
-		return subsystemGraph.getParents(this);
+		return Activator.getInstance().getSubsystems().getParents(this);
 	}
 
 	@Override
@@ -353,7 +280,13 @@ public class AriesSubsystem implements Subsystem, Resource {
 	@Override
 	// TODO Remove this synchronization when the 'location lock' has been implemented.
 	public synchronized Subsystem install(String location, InputStream content) throws SubsystemException {
-		return AccessController.doPrivileged(new InstallAction(location, content, this, AccessController.getContext()));
+		try {
+			return AccessController.doPrivileged(new InstallAction(location, content, this, AccessController.getContext()));
+		}
+		finally {
+			// This method must guarantee the content input stream was closed.
+			IOUtils.close(content);
+		}
 	}
 	
 	public boolean isApplication() {
@@ -432,31 +365,22 @@ public class AriesSubsystem implements Subsystem, Resource {
 				// The root subsystem may not be uninstalled.
 				checkRoot();
 				State state = getState();
-				if (state == State.UNINSTALLING || state == State.UNINSTALLED || state == State.INSTALL_FAILED) {
+				// UNINSTALLING is included here because the transition to
+				// UNINSTALLED is guaranteed, so there's no point in waiting.
+				if (EnumSet.of(State.UNINSTALLING, State.UNINSTALLED).contains(state))
 					return null;
-				}
-				else if (state == State.INSTALLING || state == State.RESOLVING || state == State.STARTING || state == State.STOPPING) {
+				else if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
 					waitForStateChange();
 					uninstall();
 				}
-				else if (getState() == State.ACTIVE) {
+				else if (state.equals(State.ACTIVE)) {
 					stop();
 					uninstall();
 				}
-				uninstall(true);
+				ResourceUninstaller.newInstance(AriesSubsystem.this).uninstall();
 				return null;
 			}
 		});
-	}
-	
-	synchronized void bundleInstalled(BundleRevision revision) {
-		addResourceToSubsystem(revision, this);
-		constituents.add(revision);
-	}
-	
-	synchronized void bundleUninstalled(BundleRevision revision) {
-		constituents.remove(revision);
-		removeResourceToSubsystem(revision, this);
 	}
 	
 	AriesSubsystem findScopedSubsystemInRegion() {
@@ -464,6 +388,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 		while (!result.isScoped())
 			result = (AriesSubsystem)result.getParents().iterator().next();
 		return result;
+	}
+	
+	File getDirectory() {
+		return directory;
 	}
 	
 	Region getRegion() {
@@ -475,6 +403,17 @@ public class AriesSubsystem implements Subsystem, Resource {
 				.getCoordinator()
 				.create(getSymbolicName() + "-" + getSubsystemId(), 0);
 		try {
+			// TODO Begin proof of concept.
+			// This is a proof of concept for initializing the relationships between the root subsystem and bundles
+			// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
+			// since this does not take into account the possibility of already existing bundles going away or new bundles
+			// being installed out of band while this initialization is taking place. Need a bundle event hook for that.
+			BundleContext context = Activator.getInstance().getBundleContext();
+			for (long id : region.getBundleIds()) {
+				BundleRevision br = context.getBundle(id).adapt(BundleRevision.class);
+				installResource(br, coordination, false);
+			}
+			// TODO End proof of concept.
 			install(coordination, null);
 		} catch (Exception e) {
 			coordination.fail(e);
@@ -483,6 +422,138 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
+	synchronized void install(Coordination coordination, AriesSubsystem parent) throws Exception {
+		if (!State.INSTALLING.equals(getState()))
+			return;
+		Activator.getInstance().getSubsystems().addSubsystem(this);
+		coordination.addParticipant(new Participant() {
+			@Override
+			public void ended(Coordination arg0) throws Exception {
+				// Nothing
+			}
+	
+			@Override
+			public void failed(Coordination arg0) throws Exception {
+				Activator.getInstance().getSubsystems().removeSubsystem(AriesSubsystem.this);
+			}
+		});
+		if (!isFeature())
+			RegionContextBundleHelper.installRegionContextBundle(this);
+		Activator.getInstance().getSubsystemServiceRegistrar().register(this, parent);
+		// Set up the sharing policy before installing the resources so that the
+		// environment can filter out capabilities from dependencies being
+		// provisioned to regions that are out of scope. This doesn't hurt
+		// anything since the resources are disabled from resolving anyway.
+		setImportIsolationPolicy();
+		// The subsystem resource will be null for the root subsystem.
+		if (this.resource != null) {
+			Comparator<Resource> comparator = new InstallResourceComparator();
+			// Install dependencies first...
+			List<Resource> dependencies = new ArrayList<Resource>(resource.getInstallableDependencies());
+			Collections.sort(dependencies, comparator);
+			for (Resource resource : dependencies)
+				installResource(resource, coordination, true);
+			// ...followed by content.
+			List<Resource> content = new ArrayList<Resource>(resource.getInstallableContent());
+			Collections.sort(content, comparator);
+			for (Resource resource : content)
+				installResource(resource, coordination, false);
+			// Simulate installation of shared content so that necessary relationships are established.
+			for (Resource resource : this.resource.getSharedContent())
+				installResource(resource, coordination, false);
+		}
+		setState(State.INSTALLED);
+		if (autostart)
+			start();
+	}
+
+	void installResource(Resource resource) {
+		Coordination coordination = Utils.createCoordination(this);
+		try {
+			installResource(resource, coordination, false);
+		}
+		catch (Throwable t) {
+			coordination.fail(t);
+		}
+		finally {
+			try {
+				coordination.end();
+			}
+			catch (CoordinationException e) {
+				Throwable t = e.getCause();
+				if (t instanceof SubsystemException)
+					throw (SubsystemException)t;
+				if (t instanceof SecurityException)
+					throw (SecurityException)t;
+				throw new SubsystemException(t);
+			}
+		}
+	}
+
+	void installResource(Resource resource, Coordination coordination, boolean transitive) throws Exception {
+		String type = ResourceHelper.getTypeAttribute(resource);
+		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
+			new SubsystemResourceInstaller(coordination, resource, this, transitive).install();
+		else if (IdentityNamespace.TYPE_BUNDLE.equals(type) ||
+				IdentityNamespace.TYPE_FRAGMENT.equals(type))
+			new BundleResourceInstaller(coordination, resource, this, transitive).install();
+		else
+			throw new SubsystemException("Unsupported resource type: " + type);
+	}
+
+	boolean isScoped() {
+		return isApplication() || isComposite();
+	}
+
+	void resolve() {
+		if (state != State.INSTALLED)
+			return;
+		setState(State.RESOLVING);
+		try {
+			for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(this))
+				((AriesSubsystem)child).resolve();
+			// TODO I think this is insufficient. Do we need both
+			// pre-install and post-install environments for the Resolver?
+			Collection<Bundle> bundles = getBundles();
+			if (!Activator.getInstance().getBundleContext().getBundle(0)
+					.adapt(FrameworkWiring.class).resolveBundles(bundles)) {
+				LOGGER.error(
+						"Unable to resolve bundles for subsystem/version/id {}/{}/{}: {}",
+						new Object[] { getSymbolicName(), getVersion(),
+								getSubsystemId(), bundles });
+				// TODO SubsystemException?
+				throw new SubsystemException("Framework could not resolve the bundles");
+			}
+			setExportIsolationPolicy();
+			// TODO Could avoid calling setState (and notifyAll) here and
+			// avoid the need for a lock.
+			setState(State.RESOLVED);
+		}
+		catch (Throwable t) {
+			setState(State.INSTALLED);
+			if (t instanceof SubsystemException)
+				throw (SubsystemException)t;
+			throw new SubsystemException(t);
+		}
+	}
+
+	void startResource(Resource resource, Coordination coordination) throws BundleException, IOException {
+		String type = ResourceHelper.getTypeAttribute(resource);
+		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
+			startSubsystemResource(resource, coordination);
+		else if (IdentityNamespace.TYPE_BUNDLE.equals(type))
+			startBundleResource(resource, coordination);
+		else if (IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
+			// Fragments are not started.
+		}
+		else
+			throw new SubsystemException("Unsupported resource type: " + type);
+	}
+
 	void stop0() {
 		if (getState() == State.UNINSTALLING || getState() == State.UNINSTALLED) {
 			throw new SubsystemException("Cannot stop from state " + getState());
@@ -497,7 +568,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 		setState(State.STOPPING);
 		// For non-root subsystems, stop any remaining constituents.
 		if (!isRoot()){
-			List<Resource> resources = new ArrayList<Resource>(resourceReferences.getResources(this));
+			List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(this));
 			if (resource != null) {
 				Collections.sort(resources, new StartResourceComparator(resource.getSubsystemManifest().getSubsystemContentHeader()));
 				Collections.reverse(resources);
@@ -534,11 +605,21 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
+	synchronized void waitForStateChange() {
+		try {
+			wait();
+		}
+		catch (InterruptedException e) {
+			throw new SubsystemException(e);
+		}
+	}
+	
 	protected boolean contains(Resource resource) {
-		return constituents.contains(resource);
+		return Activator.getInstance().getSubsystems().getConstituents(this).contains(resource);
 	}
 	
 	protected Collection<Bundle> getBundles() {
+		Collection<Resource> constituents = Activator.getInstance().getSubsystems().getConstituents(this);
 		ArrayList<Bundle> result = new ArrayList<Bundle>(constituents.size());
 		for (Resource resource : constituents) {
 			if (resource instanceof BundleRevision)
@@ -552,15 +633,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 		this.state = state;
 		Activator.getInstance().getSubsystemServiceRegistrar().update(this);
 		notifyAll();
-	}
-	
-	synchronized void waitForStateChange() {
-		try {
-			wait();
-		}
-		catch (InterruptedException e) {
-			throw new SubsystemException(e);
-		}
 	}
 	
 	private void addSubsystemServiceImportToSharingPolicy(
@@ -623,196 +695,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return archive.getDeploymentManifest();
 	}
 	
-	private synchronized void install(Coordination coordination, AriesSubsystem parent) throws Exception {
-		if (!State.INSTALLING.equals(getState()))
-			return;
-		if (!isFeature())
-			RegionContextBundleHelper.installRegionContextBundle(this);
-		Activator.getInstance().getSubsystemServiceRegistrar().register(this, parent);
-		// Set up the sharing policy before installing the resources so that the
-		// environment can filter out capabilities from dependencies being
-		// provisioned to regions that are out of scope. This doesn't hurt
-		// anything since the resources are disabled from resolving anyway.
-		setImportIsolationPolicy();
-		// The subsystem resource will be null for the root subsystem.
-		if (this.resource != null) {
-			Comparator<Resource> comparator = new InstallResourceComparator();
-			// Install dependencies first...
-			List<Resource> dependencies = new ArrayList<Resource>(resource.getInstallableDependencies());
-			Collections.sort(dependencies, comparator);
-			for (Resource resource : dependencies)
-				installResource(resource, coordination, true);
-			// ...followed by content.
-			List<Resource> content = new ArrayList<Resource>(resource.getInstallableContent());
-			Collections.sort(content, comparator);
-			for (Resource resource : content)
-				installResource(resource, coordination, false);
-			// Simulate installation of shared content so that necessary relationships are established.
-			for (Resource resource : this.resource.getSharedContent())
-				installResource(resource, coordination, false);
-		}
-		setState(State.INSTALLED);
-		if (autostart)
-			start();
-	}
-
-	private Resource installBundleResource(Resource resource,
-			Coordination coordination, boolean transitive)
-			throws BundleException, IOException {
-		final BundleRevision revision;
-		if (resource instanceof BundleRevision) {
-			// This means the resource is an already installed bundle.
-			revision = (BundleRevision) resource;
-			// Transitive runtime resources need no further processing here.
-			if (!transitive) {
-				// Need to simulate the install process since an install does
-				// not actually occur here, and the event hook is not called.
-				bundleInstalled(revision);
-			}
-			return revision;
-		}
-		InputStream content = ((RepositoryContent) resource).getContent();
-		// By default, the resource is provisioned into this subsystem.
-		AriesSubsystem provisionTo = this;
-		if (transitive) {
-			// But transitive dependencies should be provisioned into the
-			// first subsystem that accepts dependencies.
-			while (provisionTo.archive.getSubsystemManifest()
-					.getSubsystemTypeHeader().getProvisionPolicyDirective()
-					.isRejectDependencies()) {
-				provisionTo = (AriesSubsystem) provisionTo.getParents()
-						.iterator().next();
-			}
-		}
-		String location = provisionTo.getSubsystemId() + "@"
-				+ provisionTo.getSymbolicName() + "@"
-				+ ResourceHelper.getSymbolicNameAttribute(resource);
-		ThreadLocalSubsystem.set(provisionTo);
-		Bundle bundle = provisionTo.region.installBundle(location, content);
-		revision = bundle.adapt(BundleRevision.class);
-		// Only need to add a participant when this subsystem is the actual
-		// installer of the bundle.
-		coordination.addParticipant(new Participant() {
-			public void ended(Coordination coordination) throws Exception {
-				// noop
-			}
-
-			public void failed(Coordination coordination) throws Exception {
-				revision.getBundle().uninstall();
-			}
-		});
-		return revision;
-	}
-
-	void installResource(Resource resource, Coordination coordination, boolean transitive) throws Exception {
-		final Resource installed;
-		String type = ResourceHelper.getTypeAttribute(resource);
-		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
-			installed = installSubsystemResource(resource, coordination, transitive);
-		else if (IdentityNamespace.TYPE_BUNDLE.equals(type) ||
-				IdentityNamespace.TYPE_FRAGMENT.equals(type))
-			installed = installBundleResource(resource, coordination, transitive);
-		else
-			throw new SubsystemException("Unsupported resource type: " + type);
-		resourceReferences.addReference(this, installed);
-		coordination.addParticipant(new Participant() {
-			@Override
-			public void ended(Coordination coordination) throws Exception {
-				// noop
-			}
-
-			@Override
-			public void failed(Coordination coordination) throws Exception {
-				resourceReferences.removeReference(AriesSubsystem.this, installed);
-			}
-		});
-	}
-
-	private Resource installSubsystemResource(Resource resource, Coordination coordination, boolean transitive) throws Exception {
-		final AriesSubsystem subsystem;
-		if (resource instanceof RepositoryContent) {
-			String location = getSubsystemId() + "@" + getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
-			InputStream content = ((RepositoryContent)resource).getContent();
-			return AccessController.doPrivileged(new InstallAction(location, content, this, null, coordination, true));
-		}
-		else if (resource instanceof AriesSubsystem) {
-			subsystem = (AriesSubsystem)resource;
-		}
-		else if (resource instanceof RawSubsystemResource) {
-			subsystem = new AriesSubsystem(new SubsystemResource((RawSubsystemResource)resource, this), this);
-		}
-		else if (resource instanceof SubsystemResource) {
-			subsystem = new AriesSubsystem((SubsystemResource)resource, this);
-		}
-		else {
-			throw new IllegalArgumentException("Unrecognized subsystem resource: " + resource);
-		}
-		// Detect a cycle before becoming a participant; otherwise, install failure cleanup goes awry
-		// because the parent in the cycle (i.e. the subsystem attempting to install here) is cleaned up 
-		// before the child. This results in the child (i.e. this subsystem) being uninstalled as part
-		// of that process, but its state has not moved from INSTALLING to INSTALL_FAILED, which results
-		// in an eternal wait for a state change.
-		subsystemInstalling(subsystem);
-		coordination.addParticipant(new Participant() {
-			public void ended(Coordination coordination) throws Exception {
-				// noop
-			}
-	
-			public void failed(Coordination coordination) throws Exception {
-				subsystem.setState(State.INSTALL_FAILED);
-				subsystem.uninstall(false);
-				subsystemUninstalled(subsystem);
-			}
-		});
-		subsystem.install(coordination, this);
-		subsystemInstalled(subsystem);
-		return subsystem;
-	}
-
 	private boolean isRoot() {
 		return ROOT_LOCATION.equals(getLocation());
 	}
 	
-	private boolean isScoped() {
-		return isApplication() || isComposite();
-	}
-	
 	private boolean isUnscoped() {
 		return !isScoped();
-	}
-	
-	void resolve() {
-		if (state != State.INSTALLED)
-			return;
-		setState(State.RESOLVING);
-		try {
-			for (Subsystem child : subsystemGraph.getChildren(this))
-				((AriesSubsystem)child).resolve();
-			// TODO I think this is insufficient. Do we need both
-			// pre-install and post-install environments for the Resolver?
-			Collection<Bundle> bundles = getBundles();
-			if (!Activator.getInstance().getBundleContext().getBundle(0)
-					.adapt(FrameworkWiring.class).resolveBundles(bundles)) {
-				LOGGER.error(
-						"Unable to resolve bundles for subsystem/version/id {}/{}/{}: {}",
-						new Object[] { getSymbolicName(), getVersion(),
-								getSubsystemId(), bundles });
-				// TODO SubsystemException?
-				throw new SubsystemException("Framework could not resolve the bundles");
-			}
-			setExportIsolationPolicy();
-			// TODO Could avoid calling setState (and notifyAll) here and
-			// avoid the need for a lock.
-			setState(State.RESOLVED);
-		}
-		catch (Throwable t) {
-			setState(State.INSTALLED);
-			if (t instanceof SubsystemException)
-				throw (SubsystemException)t;
-			throw new SubsystemException(t);
-		}
 	}
 	
 	private void setExportIsolationPolicy() throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
@@ -990,21 +878,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 		});
 	}
 
-	void startResource(Resource resource, Coordination coordination) throws BundleException, IOException {
-		String type = ResourceHelper.getTypeAttribute(resource);
-		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
-			startSubsystemResource(resource, coordination);
-		else if (IdentityNamespace.TYPE_BUNDLE.equals(type))
-			startBundleResource(resource, coordination);
-		else if (IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
-			// Fragments are not started.
-		}
-		else
-			throw new SubsystemException("Unsupported resource type: " + type);
-	}
-
 	private void startSubsystemResource(Resource resource, Coordination coordination) throws IOException {
 		final AriesSubsystem subsystem = (AriesSubsystem)resource;
 		subsystem.start();
@@ -1041,107 +914,5 @@ public class AriesSubsystem implements Subsystem, Resource {
 
 	private void stopSubsystemResource(Resource resource) throws IOException {
 		((AriesSubsystem)resource).stop();
-	}
-	
-	synchronized void subsystemInstalled(AriesSubsystem subsystem) {
-		Activator.getInstance().getSubsystemServiceRegistrar().addRegion(subsystem, region);
-	}
-	
-	synchronized void subsystemInstalling(AriesSubsystem subsystem) {
-		locationToSubsystem.put(subsystem.getLocation(), subsystem);
-		subsystemGraph.add(this, subsystem);
-		addResourceToSubsystem(subsystem, this);
-		constituents.add(subsystem);
-	}
-	
-	private synchronized void subsystemUninstalled(AriesSubsystem subsystem) {
-		Activator.getInstance().getSubsystemServiceRegistrar().removeRegion(subsystem, region);
-		constituents.remove(subsystem);
-		removeResourceToSubsystem(subsystem, this);
-		subsystemGraph.remove(subsystem);
-		locationToSubsystem.remove(subsystem.getLocation());
-	}
-	
-	private void uninstall(boolean changeState) {
-		if (changeState)
-			setState(State.INSTALLED);
-		setState(State.UNINSTALLING);
-		// Uninstall child subsystems first.
-		for (Subsystem subsystem : getChildren()) {
-			try {
-				uninstallSubsystemResource((AriesSubsystem)subsystem);
-			}
-			catch (Exception e) {
-				LOGGER.error("An error occurred while uninstalling resource " + subsystem + " of subsystem " + this, e);
-				// TODO Should FAILED go out for each failure?
-			}
-		}
-		// Uninstall any remaining constituents.
-		for (Resource resource : resourceReferences.getResources(this)) {
-			// Don't uninstall a resource that is still referenced by other subsystems.
-			if (resourceReferences.getSubsystems(resource).size() > 1)
-				continue;
-			// Don't uninstall the region context bundle here.
-			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
-				continue;
-			try {
-				uninstallResource(resource);
-			}
-			catch (Exception e) {
-				LOGGER.error("An error occurred while uninstalling resource " + resource + " of subsystem " + this, e);
-				// TODO Should FAILED go out for each failure?
-			}
-		}
-		for (Subsystem parent : getParents()) {
-			((AriesSubsystem)parent).constituents.remove(this);
-		}
-		subsystemGraph.remove(this);
-		locationToSubsystem.remove(location);
-		deleteFile(directory);
-		setState(State.UNINSTALLED);
-		Activator.getInstance().getSubsystemServiceRegistrar().unregister(this);
-		if (!isFeature())
-			RegionContextBundleHelper.uninstallRegionContextBundle(this);
-	}
-
-	private void uninstallBundleResource(Resource resource) throws BundleException {
-		LOGGER.debug(LOG_ENTRY, "uninstallBundleResource", resource);
-		BundleRevision revision = (BundleRevision)resource;
-		if (getSubsystems(revision).size() > 1) {
-			bundleUninstalled(revision);
-			return;
-		}
-		Bundle bundle = revision.getBundle();
-		LOGGER.debug("Uninstalling bundle {}", bundle);
-		bundle.uninstall();
-		LOGGER.debug(LOG_EXIT, "uninstallBundleResource");
-	}
-
-	private void uninstallResource(Resource resource) throws BundleException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(LOG_ENTRY, "uninstallResource", resource);
-			LOGGER.debug("Subsystem {} is uninstalling resource {};{};{}", new Object[]{
-					getSymbolicName(),
-					ResourceHelper.getSymbolicNameAttribute(resource),
-					ResourceHelper.getVersionAttribute(resource),
-					ResourceHelper.getTypeAttribute(resource)
-			});
-		}
-		resourceReferences.removeReference(this, resource);
-		String type = ResourceHelper.getTypeAttribute(resource);
-		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
-			uninstallSubsystemResource(resource);
-		else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type))
-			uninstallBundleResource(resource);
-		else
-			throw new SubsystemException("Unsupported resource type: " + type);
-		LOGGER.debug(LOG_EXIT, "uninstallResource");
-	}
-
-	private void uninstallSubsystemResource(Resource resource) {
-		removeResourceToSubsystem(resource, this);
-		((AriesSubsystem)resource).uninstall();
 	}
 }

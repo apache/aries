@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.Version;
 import org.osgi.resource.Resource;
 
@@ -75,6 +76,23 @@ public class ProvisionResourceHeader extends AbstractHeader {
 							attribute == null ? Version.emptyVersion : attribute.getDeployedVersion(),
 							typeAttribute == null ? TypeAttribute.DEFAULT_VALUE : typeAttribute.getType()));
 		}
+	}
+	
+	public boolean contains(Resource resource) {
+		return getProvisionedResource(resource) != null;
+	}
+	
+	public ProvisionedResource getProvisionedResource(Resource resource) {
+		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
+		Version version = ResourceHelper.getVersionAttribute(resource);
+		String type = ResourceHelper.getTypeAttribute(resource);
+		for (ProvisionedResource provisionedResource : provisionedResources) {
+			if (symbolicName.equals(provisionedResource.getName())
+					&& provisionedResource.getDeployedVersion().equals(version)
+					&& type.equals(provisionedResource.getNamespace()))
+				return provisionedResource;
+		}
+		return null;
 	}
 
 	public List<ProvisionedResource> getProvisionedResources() {
