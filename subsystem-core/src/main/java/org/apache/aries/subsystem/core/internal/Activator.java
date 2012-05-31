@@ -69,8 +69,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private volatile SubsystemServiceRegistrar registrar;
 	private volatile RegionDigraph regionDigraph;
 	private volatile Resolver resolver;
-	private AriesSubsystem root;
 	private ServiceTracker<?,?> serviceTracker;
+	private volatile Subsystems subsystems;
 	
 	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
 	private final Collection<Repository> repositories = Collections.synchronizedSet(new HashSet<Repository>());
@@ -95,6 +95,10 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		return resolver;
 	}
 	
+	public Subsystems getSubsystems() {
+		return subsystems;
+	}
+	
 	public SubsystemServiceRegistrar getSubsystemServiceRegistrar() {
 		logger.debug(LOG_ENTRY, "getSubsystemServiceRegistrar");
 		SubsystemServiceRegistrar result = registrar;
@@ -103,7 +107,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	}
 	
 	public Repository getSystemRepository() {
-		return new SystemRepository(root);
+		return new SystemRepository(subsystems.getRootSubsystem());
 	}
 
 	@Override
@@ -134,7 +138,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(), null));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
 		try {
-			root = new AriesSubsystem();
+			subsystems = new Subsystems();
 		}
 		catch (SubsystemException e) {
 			throw e;
@@ -142,6 +146,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		catch (Exception e) {
 			throw new SubsystemException(e);
 		}
+		AriesSubsystem root = subsystems.getRootSubsystem();
 		root.install();
 		root.start();
 	}
@@ -149,7 +154,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private void deactivate() {
 		if (!isActive() || hasRequiredServices())
 			return;
-		root.stop0();
+		subsystems.getRootSubsystem().stop0();
 		for (ServiceRegistration<?> registration : registrations) {
 			try {
 				registration.unregister();

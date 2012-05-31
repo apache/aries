@@ -716,8 +716,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
 				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE))
 			b = getRegionContextBundle(subsystem);
+		State state = subsystem.getState();
 		subsystem.uninstall();
-		assertEvent(subsystem, State.INSTALLED, 5000);
+		if (!EnumSet.of(State.INSTALL_FAILED, State.INSTALLED, State.INSTALLING).contains(state))
+			assertEvent(subsystem, State.INSTALLED, 5000);
 		assertEvent(subsystem, State.UNINSTALLING, 5000);
 		assertEvent(subsystem, State.UNINSTALLED, 5000);
 		assertState(State.UNINSTALLED, subsystem);

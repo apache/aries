@@ -89,12 +89,18 @@ public class SubsystemGraph {
 		return Collections.unmodifiableCollection(result);
 	}
 	
-	public synchronized void remove(AriesSubsystem subsystem) {
-		SubsystemWrapper subsystemWrap = new SubsystemWrapper(subsystem);
+	public synchronized void remove(AriesSubsystem child) {
+		SubsystemWrapper subsystemWrap = new SubsystemWrapper(child);
 		Collection<SubsystemWrapper> parents = getParents(subsystemWrap);
 		for (SubsystemWrapper parent : parents)
 			adjacencyList.get(parent).remove(subsystemWrap);
 		adjacencyList.remove(subsystemWrap);
+	}
+	
+	public synchronized void remove(AriesSubsystem parent, AriesSubsystem child) {
+		SubsystemWrapper parentWrap = new SubsystemWrapper(parent);
+		SubsystemWrapper childWrap = new SubsystemWrapper(child);
+		adjacencyList.get(parentWrap).remove(childWrap);
 	}
 	
 	private boolean containsAncestor(SubsystemWrapper subsystem, SubsystemWrapper ancestor) {

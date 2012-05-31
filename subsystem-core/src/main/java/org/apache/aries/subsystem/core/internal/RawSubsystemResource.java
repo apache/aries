@@ -1,5 +1,7 @@
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -24,6 +26,7 @@ import org.apache.aries.subsystem.core.archive.SubsystemVersionHeader;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.BundleNamespace;
@@ -34,6 +37,7 @@ import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemConstants;
+import org.osgi.service.subsystem.SubsystemException;
 
 public class RawSubsystemResource implements Resource {
 	private static final Pattern PATTERN = Pattern.compile("([^@]+)(?:@(.+))?.esa");
@@ -74,7 +78,8 @@ public class RawSubsystemResource implements Resource {
 	
 	private final List<Capability> capabilities;
 	private final DeploymentManifest deploymentManifest;
-	private final IDirectory directory;
+	private final File directory;
+	private final long id;
 	private final Repository localRepository;
 	private final Location location;
 	private final List<Requirement> requirements;
@@ -85,15 +90,32 @@ public class RawSubsystemResource implements Resource {
 		this.location = new Location(location);
 		if (content == null)
 			content = this.location.open();
-		directory = FileSystem.getFSRoot(content);
-		resources = computeResources();
-		localRepository = computeLocalRepository();
-		SubsystemManifest manifest = computeSubsystemManifest(directory);
-		manifest = computeSubsystemManifestBeforeRequirements(manifest);
-		requirements = computeRequirements(manifest);
-		subsystemManifest = computeSubsystemManifestAfterRequirements(manifest);
-		capabilities = computeCapabilities();
-		deploymentManifest = computeDeploymentManifest();
+		id = SubsystemIdentifier.getNextId();
+		directory = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(id));
+		if (!directory.mkdir())
+			throw new SubsystemException("Unable to make directory " + directory.getAbsolutePath());
+		File file = new File(directory, Long.toString(id) + ".ssa");
+		FileOutputStream fos = new FileOutputStream(file);
+		try {
+			IOUtils.copy(content, fos);
+		}
+		finally {
+			IOUtils.close(fos);
+		}
+		IDirectory idir = FileSystem.getFSRoot(file);
+		try {
+			resources = computeResources(idir);
+			localRepository = computeLocalRepository();
+			SubsystemManifest manifest = computeSubsystemManifest(idir);
+			manifest = computeSubsystemManifestBeforeRequirements(manifest);
+			requirements = computeRequirements(manifest);
+			subsystemManifest = computeSubsystemManifestAfterRequirements(manifest);
+			capabilities = computeCapabilities();
+			deploymentManifest = computeDeploymentManifest(idir);
+		}
+		finally {
+			IOUtils.close(idir.toCloseable());
+		}
 	}
 
 	@Override
@@ -110,6 +132,14 @@ public class RawSubsystemResource implements Resource {
 	
 	public DeploymentManifest getDeploymentManifest() {
 		return deploymentManifest;
+	}
+	
+	public File getDirectory() {
+		return directory;
+	}
+	
+	public long getId() {
+		return id;
 	}
 	
 	public Repository getLocalRepository() {
@@ -177,11 +207,11 @@ public class RawSubsystemResource implements Resource {
 		return subsystemManifest.toCapabilities(this);
 	}
 	
-	private DeploymentManifest computeDeploymentManifest() throws IOException {
-		return computeExistingDeploymentManifest();
+	private DeploymentManifest computeDeploymentManifest(IDirectory directory) throws IOException {
+		return computeExistingDeploymentManifest(directory);
 	}
 	
-	private DeploymentManifest computeExistingDeploymentManifest() throws IOException {
+	private DeploymentManifest computeExistingDeploymentManifest(IDirectory directory) throws IOException {
 		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/DEPLOYMENT.MF");
 		if (manifest == null)
 			return null;
@@ -258,7 +288,7 @@ public class RawSubsystemResource implements Resource {
 		return new DependencyCalculator(resources).calculateDependencies();
 	}
 	
-	private Collection<Resource> computeResources() throws IOException, URISyntaxException, UnsupportedOperationException, ResolutionException {
+	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, UnsupportedOperationException, ResolutionException {
 		List<IFile> files = directory.listFiles();
 		if (files.isEmpty())
 			return Collections.emptyList();
