@@ -11,6 +11,7 @@ import java.util.jar.Manifest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleRevision;
 
 public class RegionContextBundleHelper {
 	public static final String SYMBOLICNAME_PREFIX = Constants.RegionContextBundleSymbolicNamePrefix;
@@ -24,6 +25,7 @@ public class RegionContextBundleHelper {
 			return;
 		ThreadLocalSubsystem.set(subsystem);
 		b = subsystem.getRegion().installBundleAtLocation(location, createRegionContextBundle(symbolicName));
+		subsystem.installResource(b.adapt(BundleRevision.class));
 		// The region context bundle must be started persistently.
 		b.start();
 	}
@@ -33,12 +35,15 @@ public class RegionContextBundleHelper {
 		Bundle bundle = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (bundle == null)
 			throw new IllegalStateException("Missing region context bundle: " + symbolicName);
+		ThreadLocalSubsystem.set(subsystem);
+		BundleRevision revision = bundle.adapt(BundleRevision.class);
 		try {
 			bundle.uninstall();
 		}
 		catch (BundleException e) {
 			// TODO Should we really eat this? At least log it?
 		}
+		ResourceUninstaller.newInstance(revision, subsystem).uninstall();
 	}
 	
 	private static Manifest createManifest(String symbolicName) {

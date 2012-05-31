@@ -31,8 +31,8 @@ public class SubsystemArchive implements Repository {
 	private DeploymentManifest deploymentManifest;
 	private SubsystemManifest subsystemManifest;
 	
-	public SubsystemArchive(SubsystemResource resource, File directory) throws IOException {
-		this.directory = directory;
+	public SubsystemArchive(SubsystemResource resource) throws IOException {
+		this.directory = resource.getDirectory();
 		resources = resource.getResources();
 		setSubsystemManifest(resource.getSubsystemManifest());
 		setDeploymentManifest(resource.getDeploymentManifest());

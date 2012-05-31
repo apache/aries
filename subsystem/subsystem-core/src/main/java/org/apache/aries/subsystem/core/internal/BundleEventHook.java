@@ -34,49 +34,30 @@ public class BundleEventHook implements EventHook {
 		}
 	}
 	
-	private boolean handleExplicitlyInstalledBundleBundleContext(BundleRevision originRevision, BundleRevision bundleRevision) {
-		// This means that some other bundle's context was used. The bundle
-		// needs to be associated with all subsystems that are associated with
-		// the bundle whose context was used to install the bundle.
-		Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(originRevision);
+	private void handleExplicitlyInstalledBundleBundleContext(BundleRevision originRevision, BundleRevision bundleRevision) {
+		// The bundle needs to be associated with all subsystems that are 
+		// associated with the bundle whose context was used to install the 
+		// bundle.
+		Collection<AriesSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(originRevision);
 		if (subsystems.isEmpty())
 			throw new IllegalStateException("Orphaned bundle revision detected: " + originRevision);
 		for (AriesSubsystem s : subsystems)
-			s.bundleInstalled(bundleRevision);
-		return true;
+			s.installResource(bundleRevision);
 	}
 	
-	private boolean handleExplicitlyInstalledBundleRegionDigraph(Bundle origin, BundleRevision bundleRevision) {
-		// Otherwise, this is an explicitly installed bundle. That is, the
-		// bundle is being installed outside of the Subsystem API using Region
-		// Digraph or some other bundle's context.
-		if ("org.eclipse.equionox.region".equals(origin.getSymbolicName())) {
-			// This means Region Digraph was used to install the bundle. The
-			// bundle needs to be associated with the scoped subsystem of the
-			// region used to install the bundle.
+	private void handleExplicitlyInstalledBundleRegionDigraph(Bundle origin, BundleRevision bundleRevision) {
+			// The bundle needs to be associated with the scoped subsystem of 
+			// the region used to install the bundle.
 			RegionDigraph digraph = Activator.getInstance().getRegionDigraph();
 			Region region = digraph.getRegion(origin);
-			for (AriesSubsystem s : AriesSubsystem.getSubsystems(null)) {
+			for (AriesSubsystem s : Activator.getInstance().getSubsystems().getSubsystems()) {
 				if ((s.isApplication() || s.isComposite())
 						&& region.equals(s.getRegion())) {
-					s.bundleInstalled(bundleRevision);
-					return true;
+					s.installResource(bundleRevision);
+					return;
 				}
 			}
 			throw new IllegalStateException("No subsystem found for bundle " + bundleRevision + " in region " + region);
-		}
-		return false;
-	}
-	
-	private boolean handleImplicitlyInstalledResource(BundleRevision bundleRevision) {
-		// If the thread local variable is set, this is an implicitly installed
-		// bundle and needs to be associated with the subsystem installing it.
-		AriesSubsystem subsystem = ThreadLocalSubsystem.get();
-		if (subsystem != null) {
-			subsystem.bundleInstalled(bundleRevision);
-			return true;
-		}
-		return false;
 	}
 	
 	private void handleInstalledEvent(BundleEvent event) {
@@ -84,21 +65,26 @@ public class BundleEventHook implements EventHook {
 		BundleRevision originRevision = origin.adapt(BundleRevision.class);
 		Bundle bundle = event.getBundle();
 		BundleRevision bundleRevision = bundle.adapt(BundleRevision.class);
-		if (!handleImplicitlyInstalledResource(bundleRevision)) {
-			if (!handleExplicitlyInstalledBundleRegionDigraph(origin, bundleRevision)) {
-				handleExplicitlyInstalledBundleBundleContext(originRevision, bundleRevision);
-			}
-		}
 		bundleToRevision.put(bundle, bundleRevision);
+		// Only handle explicitly installed bundles. An explicitly installed
+		// bundle is a bundle that was installed using some other bundle's
+		// BundleContext or using RegionDigraph.
+		if (ThreadLocalSubsystem.get() != null)
+			return;
+		if ("org.eclipse.equionox.region".equals(origin.getSymbolicName()))
+			// The bundle was installed using RegionDigraph.
+			handleExplicitlyInstalledBundleRegionDigraph(origin, bundleRevision);
+		else
+			// The bundle was installed using some other bundle's BundleContext.
+			handleExplicitlyInstalledBundleBundleContext(originRevision, bundleRevision);
 	}
 	
 	private void handleUninstalledEvent(BundleEvent event) {
 		Bundle bundle = event.getBundle();
 		BundleRevision revision = bundleToRevision.remove(bundle);
-		Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(revision);
-		if (subsystems.isEmpty())
-			throw new IllegalStateException("Orphaned bundle revision detected: " + revision);
-		for (AriesSubsystem subsystem : subsystems)
-			subsystem.bundleUninstalled(revision);
+		if (ThreadLocalSubsystem.get() != null)
+			return;
+		for (AriesSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsByConstituent(revision))
+			ResourceUninstaller.newInstance(revision, subsystem).uninstall();
 	}
 }
