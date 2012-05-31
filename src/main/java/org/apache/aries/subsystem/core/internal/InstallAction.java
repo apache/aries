@@ -5,8 +5,10 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.apache.aries.util.io.IOUtils;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
+import org.osgi.service.coordinator.Participant;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class InstallAction implements PrivilegedAction<AriesSubsystem> {
@@ -38,8 +40,19 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 			coordination = Activator.getInstance().getCoordinator().create(parent.getSymbolicName() + '-' + parent.getSubsystemId(), 0);
 		try {
 			TargetRegion region = new TargetRegion(parent);
-			SubsystemResource ssr = new SubsystemResource(location, content, parent);
-			result = AriesSubsystem.locationToSubsystem.get(location);
+			final SubsystemResource ssr = new SubsystemResource(location, content, parent);
+			coordination.addParticipant(new Participant() {
+				@Override
+				public void ended(Coordination c) throws Exception {
+					// Nothing
+				}
+
+				@Override
+				public void failed(Coordination c) throws Exception {
+					IOUtils.deleteRecursive(ssr.getDirectory());
+				}
+			});
+			result = Activator.getInstance().getSubsystems().getSubsystemByLocation(location);
 			if (result != null) {
 				checkLifecyclePermission(result);
 				if (!region.contains(result))
@@ -48,8 +61,7 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 						&& result.getVersion().equals(ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion())
 						&& result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType())))
 					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
-				parent.subsystemInstalling(result);
-				parent.subsystemInstalled(result);
+				parent.installResource(result);
 				return result;
 			}
 			result = (AriesSubsystem)region.find(
@@ -59,8 +71,7 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 				checkLifecyclePermission(result);
 				if (!result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType()))
 					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
-				parent.subsystemInstalling(result);
-				parent.subsystemInstalled(result);
+				parent.installResource(result);
 				return result;
 			}
 			result = new AriesSubsystem(ssr, parent);

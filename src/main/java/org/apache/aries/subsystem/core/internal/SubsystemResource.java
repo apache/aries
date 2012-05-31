@@ -1,5 +1,6 @@
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -60,6 +61,14 @@ public class SubsystemResource implements Resource {
 	
 	public DeploymentManifest getDeploymentManifest() {
 		return deploymentManifest;
+	}
+	
+	public File getDirectory() {
+		return resource.getDirectory();
+	}
+	
+	public long getId() {
+		return resource.getId();
 	}
 	
 	public Collection<Resource> getInstallableContent() {
@@ -278,7 +287,7 @@ public class SubsystemResource implements Resource {
 			if (map.containsKey(requirement)) {
 				Collection<Capability> capabilities = map.get(requirement);
 				for (Capability capability : capabilities) {
-					Collection<AriesSubsystem> subsystems = AriesSubsystem.getSubsystems(capability.getResource());
+					Collection<AriesSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource());
 					if (!subsystems.isEmpty())
 						if (subsystems.iterator().next().getRegion().equals(parent.getRegion()))
 							return capability.getResource();
@@ -297,13 +306,6 @@ public class SubsystemResource implements Resource {
 		return null;
 	}
 	
-	private AriesSubsystem findFirstSubsystemAcceptingDependencies() {
-		AriesSubsystem subsystem = parent;
-		while (!isAcceptDependencies(subsystem))
-			subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
-		return subsystem;
-	}
-	
 	private Collection<Resource> getContentResources() {
 		Collection<Resource> result = new ArrayList<Resource>(installableContent.size() + sharedContent.size());
 		result.addAll(installableContent);
@@ -316,10 +318,6 @@ public class SubsystemResource implements Resource {
 		result.addAll(installableDependencies);
 		result.addAll(sharedDependencies);
 		return result;
-	}
-	
-	private boolean isAcceptDependencies(AriesSubsystem subsystem) {
-		return subsystem.getArchive().getSubsystemManifest().getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies();
 	}
 	
 	private boolean isInstallable(Resource resource) {
@@ -350,9 +348,9 @@ public class SubsystemResource implements Resource {
 	private boolean isValid(Capability capability) {
 		AriesSubsystem subsystem;
 		if (isInstallable(capability.getResource()))
-			subsystem = findFirstSubsystemAcceptingDependencies();
+			subsystem = Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(parent);
 		else
-			subsystem = AriesSubsystem.getSubsystems(capability.getResource()).iterator().next();
+			subsystem = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource()).iterator().next();
 		return new SharingPolicyValidator(subsystem.getRegion(), parent.getRegion()).isValid(capability);
 	}
 }
