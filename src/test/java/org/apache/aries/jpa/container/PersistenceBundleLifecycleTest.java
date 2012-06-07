@@ -45,7 +45,6 @@ import java.util.zip.ZipEntry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
@@ -56,9 +55,7 @@ import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.quiesce.manager.QuiesceCallback;
 import org.apache.aries.quiesce.participant.QuiesceParticipant;
-import org.apache.aries.unittest.mocks.DefaultInvocationHandler;
 import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.MethodCallHandler;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
 import org.junit.Before;
@@ -75,10 +72,6 @@ import org.osgi.service.jdbc.DataSourceFactory;
 
 public class PersistenceBundleLifecycleTest
 {
-  private static final String JPA_WEAVING_PACKAGES = "org.apache.aries.jpa.container.weaving.packages";
-  private static final String[] JPA_PACKAGES = new String[] { "org.apache.openjpa.enhance", "org.apache.openjpa.util" };
-
-  private MethodCall call;
   private Bundle persistenceBundle;
   private BundleContext persistenceBundleContext;
   
@@ -97,38 +90,16 @@ public class PersistenceBundleLifecycleTest
   private PersistenceBundleManager mgr;
   private PersistenceProvider pp;
   
-  private class MethodCallHandlerImpl implements MethodCallHandler {
-      private Skeleton skel;
-      
-      public MethodCallHandlerImpl(Skeleton skel) {
-          this.skel = skel;
-      }
-
-      @Override
-      public Object handle(MethodCall methodCall, Skeleton parent) throws Exception {
-          ClassTransformer ct = Skeleton.newMock(ClassTransformer.class);
-          PersistenceUnitInfo pui = (PersistenceUnitInfo) methodCall.getArguments()[0];
-
-          if (pui != null)
-              pui.addTransformer(ct);
-
-          return (new DefaultInvocationHandler(skel)).createProxy(EntityManagerFactory.class);
-      }      
-  }
- 
   @Before
   public void setUp() throws Exception
   {
     persistenceBundle = Skeleton.newMock(new BundleMock("scooby.doo", new Hashtable<String, Object>()), Bundle.class);
     persistenceBundleContext = persistenceBundle.getBundleContext();
     
-    call = new MethodCall(PersistenceProvider.class, "createContainerEntityManagerFactory", PersistenceUnitInfo.class, Map.class);
     pp = Skeleton.newMock(PersistenceProvider.class);
-    Skeleton skel = Skeleton.getSkeleton(pp);
-    skel.registerMethodCallHandler(call, new MethodCallHandlerImpl(skel));
     
     providerBundleP100 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
-    skel = Skeleton.getSkeleton(providerBundleP100);
+    Skeleton skel = Skeleton.getSkeleton(providerBundleP100);
     skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.0.0"));
 
     providerBundleP101 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
@@ -216,7 +187,6 @@ public class PersistenceBundleLifecycleTest
     Hashtable<String,Object> hash1 = new Hashtable<String, Object>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
     hash1.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -240,9 +210,8 @@ public class PersistenceBundleLifecycleTest
     
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     
@@ -264,9 +233,8 @@ public class PersistenceBundleLifecycleTest
     
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     
@@ -287,9 +255,8 @@ public class PersistenceBundleLifecycleTest
   {
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -324,9 +291,8 @@ public class PersistenceBundleLifecycleTest
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     assertNotNull("We should have an EntityManagerFactoryManager", getTrackedObject());
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -354,9 +320,8 @@ public class PersistenceBundleLifecycleTest
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     assertNotNull("We should have an EntityManagerFactoryManager", getTrackedObject());
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -366,10 +331,9 @@ public class PersistenceBundleLifecycleTest
     testSuccessfulCreationEvent(ref, extenderContext, 1);
     testSuccessfulRegistrationEvent(ref, extenderContext, 1);
     
-    Hashtable<String, Object> hash2 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash2 = new Hashtable<String, String>();
     hash2.put("javax.persistence.provider", "no.such.Provider");
     hash2.put("key", "value");
-    hash2.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash2 );
     ServiceReference ref2 = reg2.getReference();
@@ -413,9 +377,8 @@ public class PersistenceBundleLifecycleTest
     mgr = new PersistenceBundleManager();
     mgr.start(extenderContext);
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName(), "no.such.Provider"} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -443,8 +406,6 @@ public class PersistenceBundleLifecycleTest
     //Now try Resolving
     Skeleton.getSkeleton(persistenceBundle).setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.RESOLVED);
     mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.RESOLVED, persistenceBundle), o);
-    
-    testSuccessfulCreationEvent(ref, extenderContext, 1);
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     
     
@@ -493,9 +454,8 @@ public class PersistenceBundleLifecycleTest
     setupPersistenceBundle("file4", "");
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName(), "no.such.Provider"} ,
         pp, hash1 );
     
@@ -527,7 +487,6 @@ public class PersistenceBundleLifecycleTest
     mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.RESOLVED, persistenceBundle), getTrackedObject());
     
     //We will have created the EMF a total of 2 times
-    testSuccessfulCreationEvent(ref, extenderContext, 2);
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
   }
   
@@ -537,9 +496,8 @@ public class PersistenceBundleLifecycleTest
     setupPersistenceBundle("file4", "");
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName(), "no.such.Provider"} ,
         pp, hash1 );
     
@@ -571,9 +529,8 @@ public class PersistenceBundleLifecycleTest
   {
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -600,9 +557,8 @@ public class PersistenceBundleLifecycleTest
     
     mgr = new PersistenceBundleManager();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -627,7 +583,6 @@ public class PersistenceBundleLifecycleTest
     Hashtable<String,Object> hash1 = new Hashtable<String, Object>();
     hash1.put("javax.persistence.provider", "use.this.Provider");
     hash1.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ppRef = reg.getReference();
@@ -657,7 +612,6 @@ public class PersistenceBundleLifecycleTest
     Hashtable<String,Object> hash1 = new Hashtable<String, Object>();
     hash1.put("javax.persistence.provider", "use.this.Provider");
     hash1.put(Constants.SERVICE_RANKING, Integer.MIN_VALUE);
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ppRef = reg.getReference();
@@ -690,9 +644,8 @@ public class PersistenceBundleLifecycleTest
   {
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -725,9 +678,8 @@ public class PersistenceBundleLifecycleTest
     
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -759,9 +711,8 @@ public class PersistenceBundleLifecycleTest
     
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -985,9 +936,8 @@ public class PersistenceBundleLifecycleTest
     //Check we correctly parse and register EMFactories according to the Meta-Persistence Header
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     
@@ -1261,9 +1211,8 @@ public class PersistenceBundleLifecycleTest
     //Basic startup
     BundleContext extenderContext = preExistingBundleSetup();
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
@@ -1282,7 +1231,7 @@ public class PersistenceBundleLifecycleTest
     testSuccessfulRegistrationEvent(ref, extenderContext, 0);
     
     //Register the DSF for alpha and it should appear
-    hash1 = new Hashtable<String, Object>();
+    hash1 = new Hashtable<String, String>();
     hash1.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "alpha.db.class");
     reg = persistenceBundle.getBundleContext().registerService(new String[] {DataSourceFactory.class.getName()} ,
         Skeleton.newMock(DataSourceFactory.class), hash1 );
@@ -1290,7 +1239,7 @@ public class PersistenceBundleLifecycleTest
     testSuccessfulRegistrationEvent(ref, extenderContext, 1, "alpha");
     
     //Register the other DSF
-    hash1 = new Hashtable<String, Object>();
+    hash1 = new Hashtable<String, String>();
     hash1.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "shared.db.class");
     persistenceBundle.getBundleContext().registerService(new String[] {DataSourceFactory.class.getName()} ,
         Skeleton.newMock(DataSourceFactory.class), hash1 );
@@ -1449,26 +1398,14 @@ public class PersistenceBundleLifecycleTest
   private void registerVersionedPersistenceProviders() {
     
     providerP100 = Skeleton.newMock(PersistenceProvider.class);
-    Skeleton skel = Skeleton.getSkeleton(providerP100);
-    skel.registerMethodCallHandler(call, new MethodCallHandlerImpl(skel));
-
     providerP101 = Skeleton.newMock(PersistenceProvider.class);
-    skel = Skeleton.getSkeleton(providerP101);
-    skel.registerMethodCallHandler(call, new MethodCallHandlerImpl(skel));
-    
     providerP110 = Skeleton.newMock(PersistenceProvider.class);
-    skel = Skeleton.getSkeleton(providerP110);
-    skel.registerMethodCallHandler(call, new MethodCallHandlerImpl(skel));
-    
     providerP111 = Skeleton.newMock(PersistenceProvider.class);
-    skel = Skeleton.getSkeleton(providerP111);
-    skel.registerMethodCallHandler(call, new MethodCallHandlerImpl(skel));
     
     ServiceRegistration reg;
     
-    Hashtable<String, Object> hash1 = new Hashtable<String, Object>();
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    hash1.put(JPA_WEAVING_PACKAGES, JPA_PACKAGES);
     reg = providerBundleP100.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
             providerP100, hash1 );
     
