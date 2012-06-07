@@ -28,11 +28,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
 import javax.persistence.spi.ClassTransformer;
+import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
-import org.apache.aries.jpa.container.PersistenceUnitInfo;
 import org.apache.aries.jpa.container.annotation.impl.AnnotationScanner;
 import org.apache.aries.jpa.container.annotation.impl.AnnotationScannerFactory;
 import org.apache.aries.jpa.container.impl.NLS;
@@ -88,10 +88,6 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
       reg.addTransformer(bundle, arg0, providerRef);
       transformer = arg0;
     }
-  }
-
-  public synchronized ClassTransformer getTransformer() {
-    return transformer;
   }
 
   public boolean internalExcludeUnlistedClasses() {
