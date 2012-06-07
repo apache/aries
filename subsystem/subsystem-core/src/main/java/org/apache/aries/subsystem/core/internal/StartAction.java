@@ -42,8 +42,8 @@ public class StartAction implements PrivilegedAction<Object> {
 				.create(subsystem.getSymbolicName() + '-' + subsystem.getSubsystemId(), 0);
 		try {
 			List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem));
-			if (subsystem.resource != null)
-				Collections.sort(resources, new StartResourceComparator(subsystem.resource.getSubsystemManifest().getSubsystemContentHeader()));
+			if (!subsystem.isRoot())
+				Collections.sort(resources, new StartResourceComparator(subsystem.getSubsystemManifest().getSubsystemContentHeader()));
 			for (Resource resource : resources)
 				subsystem.startResource(resource, coordination);
 			subsystem.setState(State.ACTIVE);
