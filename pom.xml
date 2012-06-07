@@ -22,8 +22,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <!-- use 0.4 instead of 1.0.0 for now as the enforcer doesn't like the JDBC java.sql.Connection stuff -->
-        <version>0.4</version>
+        <version>1.0.0</version>
         <relativePath />
     </parent>
   <groupId>org.apache.aries.transaction</groupId>
@@ -70,6 +69,22 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-annotations</artifactId>
+            <version>1.7</version>
+            <optional>true</optional>
         </dependency>
   </dependencies>
 

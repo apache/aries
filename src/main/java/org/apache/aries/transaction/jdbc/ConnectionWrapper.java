@@ -18,6 +18,8 @@
  */
 package org.apache.aries.transaction.jdbc;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -35,8 +37,12 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 import javax.transaction.xa.XAResource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is a wrapper around a {@link Connection} that performs
@@ -46,6 +52,8 @@ import javax.transaction.xa.XAResource;
  */
 public class ConnectionWrapper implements Connection {
     
+    private static final Logger logger = LoggerFactory.getLogger("org.apache.aries.transaction.jdbc");
+
     private Connection connection;
     
     private boolean closed;
@@ -116,44 +124,54 @@ public class ConnectionWrapper implements Connection {
     
     public Array createArrayOf(String typeName, Object[] elements)
             throws SQLException {
-        return connection.createArrayOf(typeName, elements);
+		Method method= getMethod("createArrayOf", String.class, Object[].class);
+ 		return (Array) invokeByReflection(method, typeName, elements);
     }
 
     public Blob createBlob() throws SQLException {
-        return connection.createBlob();
+		Method method= getMethod("createBlob");
+ 		return (Blob) invokeByReflection(method);
     }
 
     public Clob createClob() throws SQLException {
-        return connection.createClob();
+		Method method= getMethod("createClob");
+ 		return (Clob) invokeByReflection(method);
     }
 
+    @IgnoreJRERequirement
     public NClob createNClob() throws SQLException {
-        return connection.createNClob();
+		Method method= getMethod("createNClob");
+ 		return (NClob) invokeByReflection(method);
     }
 
+    @IgnoreJRERequirement
     public SQLXML createSQLXML() throws SQLException {
-        return connection.createSQLXML();
+		Method method= getMethod("createSQLXML");
+ 		return (SQLXML) invokeByReflection(method);
     }
 
     public Statement createStatement() throws SQLException {
-        return connection.createStatement();
+		Method method= getMethod("createStatement");
+ 		return (Statement) invokeByReflection(method);
     }
 
     public Statement createStatement(int resultSetType,
             int resultSetConcurrency, int resultSetHoldability)
             throws SQLException {
-        return connection.createStatement(resultSetType, resultSetConcurrency,
-                resultSetHoldability);
-    }
+		Method method= getMethod("createStatement", int.class, int.class, int.class);
+ 		return (Statement) invokeByReflection(method, resultSetType, resultSetConcurrency, resultSetHoldability);
+   }
 
     public Statement createStatement(int resultSetType, int resultSetConcurrency)
             throws SQLException {
-        return connection.createStatement(resultSetType, resultSetConcurrency);
+		Method method= getMethod("createStatement", int.class, int.class);
+ 		return (Statement) invokeByReflection(method, resultSetType, resultSetConcurrency);
     }
 
     public Struct createStruct(String typeName, Object[] attributes)
             throws SQLException {
-        return connection.createStruct(typeName, attributes);
+		Method method= getMethod("createStruct", String.class, Object[].class);
+ 		return (Struct) invokeByReflection(method, typeName, attributes);
     }
 
     public boolean getAutoCommit() throws SQLException {
@@ -165,12 +183,22 @@ public class ConnectionWrapper implements Connection {
     }
 
     public Properties getClientInfo() throws SQLException {
-        return connection.getClientInfo();
+		Method method= getMethod("getClientInfo");
+ 		Properties properties = (Properties) invokeByReflection(method);
+ 		if (properties == null)
+ 		{
+ 			properties = new Properties();
+ 		}
+ 		return properties;
     }
 
     public String getClientInfo(String name) throws SQLException {
-        return connection.getClientInfo(name);
-    }
+		Method method= getMethod("getClientInfo", String.class);
+	   	// This method may return null if the specified client info property 
+        // has not been set and does not have a default value,
+        // so we can return the result even if it's null
+ 		return (String) invokeByReflection(method, name);
+     }
 
     public int getHoldability() throws SQLException {
         return connection.getHoldability();
@@ -201,11 +229,32 @@ public class ConnectionWrapper implements Connection {
     }
 
     public boolean isValid(int timeout) throws SQLException {
-        return connection.isValid(timeout);
+		Method method= getMethod("isValid", int.class);
+		Boolean answer = (Boolean) invokeByReflection(method, timeout);
+    	
+    	if (answer != null)
+    	{
+    		return answer.booleanValue();
+    	}
+    	
+        return false;
     }
 
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return connection.isWrapperFor(iface);
+    	// Try and work out the answer ourselves to support older drivers
+    	if (iface.isInstance(connection)) {
+    		return true;
+    	}
+
+    	Method method= getMethod("isWrapperFor", Class.class);
+		Boolean answer = (Boolean) invokeByReflection(method, iface);
+    	
+    	if (answer != null)
+    	{
+    		return answer.booleanValue();
+    	}
+    	
+         return false;
     }
 
     public String nativeSQL(String sql) throws SQLException {
@@ -272,14 +321,28 @@ public class ConnectionWrapper implements Connection {
         connection.setCatalog(catalog);
     }
 
+    @IgnoreJRERequirement
     public void setClientInfo(Properties properties)
             throws SQLClientInfoException {
-        connection.setClientInfo(properties);
+		Method method= getMethod("setClientInfo", Properties.class);
+		try {
+			invokeByReflection(method, properties);
+		} catch (SQLException e) {
+			logger.debug(e.toString());
+			throw new SQLClientInfoException(e.toString(), null);
+		}
     }
 
+    @IgnoreJRERequirement
     public void setClientInfo(String name, String value)
             throws SQLClientInfoException {
-        connection.setClientInfo(name, value);
+		Method method= getMethod("setClientInfo", String.class, String.class);
+		try {
+			invokeByReflection(method, name, value);
+		} catch (SQLException e) {
+			logger.debug(e.toString());
+			throw new SQLClientInfoException(e.toString(), null);
+		}
     }
 
     public void setHoldability(int holdability) throws SQLException {
@@ -298,7 +361,50 @@ public class ConnectionWrapper implements Connection {
         connection.setTypeMap(map);
     }
 
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        return connection.unwrap(iface);
+	@SuppressWarnings("unchecked")
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+	   	// Try and work out the answer ourselves to support older drivers
+		if (iface.isInstance(connection)) {
+    		return (T) connection;
+    	}
+
+	   	Method method= getMethod("unwrap", Class.class);
+		return (T) invokeByReflection(method, iface);
+    	
     }
+
+	private Method getMethod(String methodName, Class<?> ...paramTypes) {
+		Method method = null;
+		try {
+			method = getClass().getMethod(methodName, paramTypes);
+		} catch (SecurityException e) {
+			// Famous last words: this should never happen :) 
+			logger.debug(e.toString());
+		} catch (NoSuchMethodException e) {
+			// If this happens it's a developer error, not a user one, so debug only
+			logger.debug(e.toString());
+		}
+		return method;
+	}
+
+	private Object invokeByReflection(Method method, Object ... params) throws SQLException {
+		Object answer = null;
+		try {
+    	Method m = connection.getClass().getMethod(method.getName(), method.getParameterTypes());
+    	answer = m.invoke(connection, params);
+    	} catch (NoSuchMethodException e)
+    	{
+    		// That's fine, we're probably looking at a Java 5 interface
+			logger.debug(e.toString());
+    	} catch (IllegalArgumentException e) {
+			logger.debug(e.toString());
+		} catch (IllegalAccessException e) {
+			logger.debug(e.toString());
+		} catch (InvocationTargetException e) {
+        	// Don't pass the exception as a cause, since that method isn't available on Java 5
+			throw new SQLException(e.getCause().toString());
+		}
+		
+		return answer;
+	}
 }
