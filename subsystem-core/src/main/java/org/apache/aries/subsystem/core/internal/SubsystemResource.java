@@ -282,6 +282,8 @@ public class SubsystemResource implements Resource {
 	
 	private Resource findContent(OsgiIdentityRequirement requirement) {
 		Map<Requirement, Collection<Capability>> map;
+		// TODO System repository for scoped subsystems should be searched in
+		// the case of a persisted subsystem.
 		if (isUnscoped()) {
 			map = Activator.getInstance().getSystemRepository().findProviders(Collections.singleton(requirement));
 			if (map.containsKey(requirement)) {

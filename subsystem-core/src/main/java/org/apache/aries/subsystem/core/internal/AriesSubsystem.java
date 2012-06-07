@@ -88,7 +88,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AriesSubsystem.class);
 	
-	final SubsystemResource resource;
 	boolean autostart;
 	
 	private final SubsystemArchive archive;
@@ -96,6 +95,7 @@ public class AriesSubsystem implements Subsystem, Resource {
 	private final long id;
 	private final String location;
 	private final Region region;
+	private final SubsystemResource resource;
 	
 	private Subsystem.State state = State.INSTALLING;
 	 
@@ -178,10 +178,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 				throw (SubsystemException)t;
 			throw new SubsystemException(t);
 		}
-	}
-	
-	public SubsystemArchive getArchive() {
-		return archive;
 	}
 	
 	@Override
@@ -289,18 +285,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 		}
 	}
 	
-	public boolean isApplication() {
-		return archive.getSubsystemManifest().getSubsystemTypeHeader().isApplication();
-	}
-
-	public boolean isComposite() {
-		return archive.getSubsystemManifest().getSubsystemTypeHeader().isComposite();
-	}
-
-	public boolean isFeature() {
-		return archive.getSubsystemManifest().getSubsystemTypeHeader().isFeature();
-	}
-	
 	/* INSTALLING	Wait, Start
 	 * INSTALLED	-
 	 * RESOLVING	Wait, Start
@@ -390,6 +374,10 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return result;
 	}
 	
+	SubsystemArchive getArchive() {
+		return archive;
+	}
+
 	File getDirectory() {
 		return directory;
 	}
@@ -398,10 +386,12 @@ public class AriesSubsystem implements Subsystem, Resource {
 		return region;
 	}
 	
+	SubsystemManifest getSubsystemManifest() {
+		return resource.getSubsystemManifest();
+	}
+	
 	void install() {
-		Coordination coordination = Activator.getInstance()
-				.getCoordinator()
-				.create(getSymbolicName() + "-" + getSubsystemId(), 0);
+		Coordination coordination = Utils.createCoordination(this);
 		try {
 			// TODO Begin proof of concept.
 			// This is a proof of concept for initializing the relationships between the root subsystem and bundles
@@ -445,14 +435,14 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// provisioned to regions that are out of scope. This doesn't hurt
 		// anything since the resources are disabled from resolving anyway.
 		setImportIsolationPolicy();
-		// The subsystem resource will be null for the root subsystem.
-		if (this.resource != null) {
+		if (!isRoot()) {
 			Comparator<Resource> comparator = new InstallResourceComparator();
 			// Install dependencies first...
 			List<Resource> dependencies = new ArrayList<Resource>(resource.getInstallableDependencies());
 			Collections.sort(dependencies, comparator);
 			for (Resource resource : dependencies)
 				installResource(resource, coordination, true);
+			// TODO Why aren't shared dependencies being installed here?
 			// ...followed by content.
 			List<Resource> content = new ArrayList<Resource>(resource.getInstallableContent());
 			Collections.sort(content, comparator);
@@ -501,6 +491,22 @@ public class AriesSubsystem implements Subsystem, Resource {
 			new BundleResourceInstaller(coordination, resource, this, transitive).install();
 		else
 			throw new SubsystemException("Unsupported resource type: " + type);
+	}
+	
+	boolean isApplication() {
+		return archive.getSubsystemManifest().getSubsystemTypeHeader().isApplication();
+	}
+
+	boolean isComposite() {
+		return archive.getSubsystemManifest().getSubsystemTypeHeader().isComposite();
+	}
+
+	boolean isFeature() {
+		return archive.getSubsystemManifest().getSubsystemTypeHeader().isFeature();
+	}
+
+	boolean isRoot() {
+		return ROOT_LOCATION.equals(getLocation());
 	}
 
 	boolean isScoped() {
@@ -569,10 +575,8 @@ public class AriesSubsystem implements Subsystem, Resource {
 		// For non-root subsystems, stop any remaining constituents.
 		if (!isRoot()){
 			List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(this));
-			if (resource != null) {
-				Collections.sort(resources, new StartResourceComparator(resource.getSubsystemManifest().getSubsystemContentHeader()));
-				Collections.reverse(resources);
-			}
+			Collections.sort(resources, new StartResourceComparator(getSubsystemManifest().getSubsystemContentHeader()));
+			Collections.reverse(resources);
 			for (Resource resource : resources) {
 				// Don't stop the region context bundle.
 				if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
@@ -693,10 +697,6 @@ public class AriesSubsystem implements Subsystem, Resource {
 	
 	private DeploymentManifest getDeploymentManifest() {
 		return archive.getDeploymentManifest();
-	}
-	
-	private boolean isRoot() {
-		return ROOT_LOCATION.equals(getLocation());
 	}
 	
 	private boolean isUnscoped() {
