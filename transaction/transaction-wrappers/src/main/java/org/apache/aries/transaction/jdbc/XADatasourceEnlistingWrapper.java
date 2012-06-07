@@ -92,7 +92,8 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
         try {
             return (tm.getStatus() == Status.STATUS_ACTIVE) ? tm.getTransaction() : null;
         } catch (SystemException e) {
-            throw new SQLException(NLS.MESSAGES.getMessage("unable.to.get.tx"), e);
+        	// Don't pass the exception as a cause, since that method isn't available on Java 5
+            throw new SQLException(NLS.MESSAGES.getMessage("unable.to.get.tx"));
         }
     }
     
