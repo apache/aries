@@ -31,12 +31,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
-import org.apache.aries.jpa.container.PersistenceUnitInfo;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
@@ -90,16 +89,16 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   private ConcurrentMap<String, ServiceRegistration> registrations = null;
   /** Quiesce this Manager */
   private boolean quiesce = false;
-
+  
   private volatile ServiceTracker tracker; 
-
+  
   /** DataSourceFactories in use by persistence units in this bundle - class name key to collection of unit values */
   private final ConcurrentMap<String, Collection<String>> dataSourceFactories = 
-    new ConcurrentHashMap<String, Collection<String>>();
+         new ConcurrentHashMap<String, Collection<String>>();
 
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
-
+  
   /**
    * Create an {@link EntityManagerFactoryManager} for
    * the supplied persistence bundle.
@@ -147,12 +146,12 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    * @return true if the the provider is being used by this manager
    */
   public synchronized boolean providerRemoved(ServiceReference ref) {
-
+    
     boolean toReturn = provider.equals(ref);
-
+    
     if(toReturn)
       destroy();
-
+    
     return toReturn;
   }
 
@@ -166,17 +165,16 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    *                                         should be destroyed
    */
   public synchronized void bundleStateChange() throws InvalidPersistenceUnitException {
-
+    
     switch(bundle.getState()) {
       case Bundle.RESOLVED :
         //If we are Resolved as a result of having stopped
         //and missed the STOPPING event we need to unregister
         unregisterEntityManagerFactories();
-        //Create the EMF objects if necessary
-        createEntityManagerFactories();
         break;
         //Starting and active both require EMFs to be registered
       case Bundle.STARTING :
+        //Create the EMF objects if necessary
         createEntityManagerFactories();
       case Bundle.ACTIVE :
         if(tracker == null) {
@@ -238,31 +236,31 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     if(registrations == null) {
       registrations = new ConcurrentHashMap<String, ServiceRegistration>();
     }
-
+    
     if(provider != null && !quiesce) {
       //Make sure the EntityManagerFactories are instantiated
       createEntityManagerFactories();
-
+      
       String providerName = (String) provider.getProperty("javax.persistence.provider");
       if(providerName == null) {
         _logger.warn( NLS.MESSAGES.getMessage("no.provider.specified", 
-            bundle.getSymbolicName() + '/' + bundle.getVersion(), 
-            PersistenceUnitConstants.OSGI_UNIT_PROVIDER, provider));
+                      bundle.getSymbolicName() + '/' + bundle.getVersion(), 
+                      PersistenceUnitConstants.OSGI_UNIT_PROVIDER, provider));
       }
       //Register each EMF
       for(Entry<String, ? extends EntityManagerFactory> entry : emfs.entrySet())
       {
-
+        
         Hashtable<String,Object> props = new Hashtable<String, Object>();
         String unitName = entry.getKey();
-
+        
         if(registrations.containsKey(unitName) || !!!availableDataSourceFactory(unitName))
           continue;
-
+        
         props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, unitName);
         if(providerName != null)
           props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, providerName);
-
+        
         props.put(PersistenceUnitConstants.OSGI_UNIT_VERSION, bundle.getVersion());
         props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
         props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(unitName));
@@ -279,15 +277,15 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
 
   private boolean availableDataSourceFactory(String unitName) {
     ManagedPersistenceUnitInfo mpui = persistenceUnits.get(unitName);
-
+        
     String driver = (String) mpui.getPersistenceUnitInfo().getProperties().
     get(PersistenceUnitConstants.DATA_SOURCE_FACTORY_CLASS_NAME);
-
+    
     //True if the property is not "true" and the jdbc driver is set
     if(Boolean.parseBoolean((String)mpui.getContainerProperties().
         get(PersistenceUnitConstants.USE_DATA_SOURCE_FACTORY)) &&
         driver != null) {
-
+      
       if(dataSourceFactories.containsKey(driver)) {
         dataSourceFactories.get(driver).add(unitName);
         if(_logger.isDebugEnabled())
@@ -316,7 +314,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
       if(emfs == null && !quiesce) {
         try {
           emfs = new HashMap<String, CountingEntityManagerFactory>();
-
+        
           //Get hold of the provider
           PersistenceProvider providerService = (PersistenceProvider) containerContext.getService(provider);
 
@@ -326,33 +324,13 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
           }
 
           for(Entry<String, ? extends ManagedPersistenceUnitInfo> entry : 
-            persistenceUnits.entrySet()){
+               persistenceUnits.entrySet()){
             ManagedPersistenceUnitInfo mpui = entry.getValue();
             emfs.put(entry.getKey(), new CountingEntityManagerFactory(
                 providerService.createContainerEntityManagerFactory(
                     mpui.getPersistenceUnitInfo(), mpui.getContainerProperties()), entry.getKey()));
           }
         } finally {
-          //Make sure that we have ClassTransformers, required for JPA entity enhancement to work,
-          //before proceeding. If not, tear everything down so that we can try again later.
-          for(Entry<String, ? extends ManagedPersistenceUnitInfo> entry : 
-            persistenceUnits.entrySet()){
-            ManagedPersistenceUnitInfo mpui = entry.getValue();
-            Object object = mpui.getPersistenceUnitInfo();
-
-            if (object instanceof PersistenceUnitInfo) {
-              PersistenceUnitInfo pui = (PersistenceUnitInfo) object;
-              ClassTransformer transformer = pui.getTransformer();
-
-              if (transformer == null) {
-                if (_logger.isDebugEnabled())
-                  _logger.debug(NLS.MESSAGES.getMessage("no.classtransformer.available"), entry.getKey());
-                destroyEntityManagerFactories();
-                break;
-              }
-            }
-          }
-
           //Remember to unget the provider
           containerContext.ungetService(provider);
         }
@@ -374,7 +352,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     provider = ref;
     persistenceUnits = getInfoMap(infos);
   }
-
+  
   /**
    * Manage the EntityManagerFactories for the following
    * provider, updated persistence xmls and {@link PersistenceUnitInfo}s
@@ -399,7 +377,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    */
   public synchronized void destroy() {
     destroyEntityManagerFactories();
-
+    
     provider = null;
     persistenceUnits = null;
     if(tracker != null) {
@@ -436,7 +414,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   }
   /** Quiesce this Manager */
   public void quiesce(DestroyCallback countdown) {
-
+    
     //Find the EMFs to quiesce, and their Service registrations
     Map<CountingEntityManagerFactory, ServiceRegistration> entries = new HashMap<CountingEntityManagerFactory, ServiceRegistration>();
     Collection<String> names = new ArrayList<String>();
@@ -454,7 +432,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     if(entries.isEmpty())
       countdown.callback();
     else {
-      NamedCallback callback = new NamedCallback(names, countdown);
+    NamedCallback callback = new NamedCallback(names, countdown);
       for(Entry<CountingEntityManagerFactory, ServiceRegistration> entry : entries.entrySet()) {
         CountingEntityManagerFactory emf = entry.getKey();
         emf.quiesce(callback, entry.getValue());
@@ -466,7 +444,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   public StringBuffer addingService(ServiceReference reference) {
     //Use String.valueOf to save us from nulls
     StringBuffer sb = new StringBuffer(String.valueOf(reference.getProperty("osgi.jdbc.driver.class")));
-
+    
     //Only notify of a potential change if a new data source class is available
     if(dataSourceFactories.putIfAbsent(sb.toString(), new ArrayList<String>()) == null) {
       if(_logger.isDebugEnabled())
@@ -477,7 +455,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
       } catch (InvalidPersistenceUnitException e) {
         //Not much we can do here unfortunately
         _logger.warn(NLS.MESSAGES.getMessage("new.datasourcefactory.error", sb.toString(), 
-            bundle.getSymbolicName(), bundle.getVersion()), e);
+          bundle.getSymbolicName(), bundle.getVersion()), e);
       }
     }
     return sb;
@@ -487,11 +465,11 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   public void modifiedService(ServiceReference reference, Object service) {
     //Updates only matter if they change the value of the driver class
     if(!!!service.toString().equals(reference.getProperty("osgi.jdbc.driver.class"))) {
-
+      
       if(_logger.isDebugEnabled())
         _logger.debug(NLS.MESSAGES.getMessage("changed.datasourcefactory.available", service.toString(), 
             reference.getProperty("osgi.jdbc.driver.class"), bundle.getSymbolicName(), bundle.getVersion()));
-
+      
       //Remove the service
       removedService(reference, service);
       //Clear the old driver class
@@ -504,11 +482,11 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
 
   @Override
   public void removedService(ServiceReference reference, Object service) {
-
+    
     if(_logger.isDebugEnabled())
       _logger.debug(NLS.MESSAGES.getMessage("datasourcefactory.unavailable", service.toString(), 
           bundle.getSymbolicName(), bundle.getVersion()));
-
+    
     Object[] objects = tracker.getServices();
 
     boolean gone = true;
