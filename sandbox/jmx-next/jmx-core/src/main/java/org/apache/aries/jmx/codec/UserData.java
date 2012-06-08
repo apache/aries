@@ -16,12 +16,14 @@
  */
 package org.apache.aries.jmx.codec;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.TabularData;
 
 import org.osgi.jmx.service.useradmin.UserAdminMBean;
 import org.osgi.service.useradmin.User;
@@ -38,28 +40,29 @@ import org.osgi.service.useradmin.User;
 public class UserData extends RoleData {
 
     /**
-     * Constructs new UserData.
-     * 
-     * @param name user name.
-     * @param type role type.
-     */
-    public UserData(String name, int type){
-        super(name, type);
-    }
-    
-    /**
      * Constructs new UserData from {@link User} object.
-     * 
+     *
      * @param user {@link User} instance.
      */
     public UserData(User user){
-        this(user.getName(), user.getType());
+        super(user.getName(), user.getType(), user.getProperties());
     }
-    
+
+    /**
+     * Constructs new UserData.
+     *
+     * @param name user name.
+     * @param type role type.
+     * @param properties user properties.
+     */
+    public UserData(String name, int type, Dictionary properties) {
+        super(name, type, properties);
+    }
+
     /**
      * Translates UserData to CompositeData represented by
      * compositeType {@link UserAdminMBean#USER_TYPE}.
-     * 
+     *
      * @return translated UserData to compositeData.
      */
     public CompositeData toCompositeData() {
@@ -67,6 +70,7 @@ public class UserData extends RoleData {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
+            items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
             return new CompositeDataSupport(UserAdminMBean.USER_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Can't create CompositeData" + e);
@@ -75,7 +79,7 @@ public class UserData extends RoleData {
 
     /**
      * Static factory method to create UserData from CompositeData object.
-     * 
+     *
      * @param data {@link CompositeData} instance.
      * @return UserData instance.
      */
@@ -85,6 +89,8 @@ public class UserData extends RoleData {
         }
         String name = (String) data.get(UserAdminMBean.NAME);
         int type = (Integer)data.get(UserAdminMBean.TYPE);
-        return new UserData(name, type);
+        Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
+
+        return new UserData(name, type, props);
     }
 }
