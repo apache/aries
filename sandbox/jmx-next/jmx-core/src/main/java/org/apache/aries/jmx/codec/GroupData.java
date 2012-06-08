@@ -58,7 +58,7 @@ public class GroupData extends UserData {
      * @param group {@link Group} instance.
      */
     public GroupData(Group group) {
-        super(group.getName(), Role.GROUP, group.getProperties());
+        super(group.getName(), Role.GROUP, group.getProperties(), group.getCredentials());
         this.members = toArray(group.getMembers());
         this.requiredMembers = toArray(group.getRequiredMembers());
     }
@@ -71,8 +71,8 @@ public class GroupData extends UserData {
      * @param members basic members.
      * @param requiredMembers required members.
      */
-    public GroupData(String name, Dictionary properties, String[] members, String[] requiredMembers) {
-        super(name, Role.GROUP, properties);
+    public GroupData(String name, Dictionary properties, Dictionary credentials, String[] members, String[] requiredMembers) {
+        super(name, Role.GROUP, properties, credentials);
         this.members = (members == null) ? new String[0] : members;
         this.requiredMembers = (requiredMembers == null) ? new String[0] : requiredMembers;
     }
@@ -88,6 +88,7 @@ public class GroupData extends UserData {
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
             items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
+            items.put(UserAdminMBean.CREDENTIALS, getCredentialsTable());
             items.put(UserAdminMBean.MEMBERS, members);
             items.put(UserAdminMBean.REQUIRED_MEMBERS, requiredMembers);
             return new CompositeDataSupport(UserAdminMBean.GROUP_TYPE, items);
@@ -109,10 +110,11 @@ public class GroupData extends UserData {
         }
         String name = (String) data.get(UserAdminMBean.NAME);
         Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
+        Dictionary<String, Object> credentials = propertiesFrom((TabularData) data.get(UserAdminMBean.CREDENTIALS));
 
         String[] members = (String[]) data.get(UserAdminMBean.MEMBERS);
         String[] requiredMembers = (String[]) data.get(UserAdminMBean.REQUIRED_MEMBERS);
-        return new GroupData(name, props, members, requiredMembers);
+        return new GroupData(name, props, credentials, members, requiredMembers);
     }
 
     /**
