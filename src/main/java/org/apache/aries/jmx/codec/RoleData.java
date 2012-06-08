@@ -16,11 +16,13 @@
  */
 package org.apache.aries.jmx.codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
@@ -43,7 +45,7 @@ import org.osgi.service.useradmin.Role;
  * @version $Rev$ $Date$
  */
 public class RoleData {
-    
+
     /**
      * role name.
      */
@@ -52,29 +54,42 @@ public class RoleData {
      * role type.
      */
     protected int type;
-    
+    /**
+     * role propeties.
+     */
+    protected List<PropertyData<? extends Object>> properties = new ArrayList<PropertyData<? extends Object>>();
+
+
     /**
      * Constructs new RoleData from Role object.
      * @param role {@link Role} instance.
      */
     public RoleData(Role role){
-        this(role.getName(),role.getType());
+        this(role.getName(), role.getType(), role.getProperties());
     }
-    
+
     /**
      * Constructs new RoleData.
      * @param name role name.
      * @param type role type.
+     * @param properties role properties.
      */
-    public RoleData(String name, int type){
+    public RoleData(String name, int type, Dictionary properties) {
         this.name = name;
         this.type = type;
+
+        if (properties != null) {
+            for (Enumeration e = properties.keys(); e.hasMoreElements(); ) {
+                String key = e.nextElement().toString();
+                this.properties.add(PropertyData.newInstance(key, properties.get(key)));
+            }
+        }
     }
-    
+
     /**
      * Translates RoleData to CompositeData represented by
      * compositeType {@link UserAdminMBean#ROLE_TYPE}.
-     * 
+     *
      * @return translated RoleData to compositeData.
      */
     public CompositeData toCompositeData() {
@@ -82,15 +97,24 @@ public class RoleData {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
+            items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
             return new CompositeDataSupport(UserAdminMBean.ROLE_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Can't create CompositeData" + e);
         }
     }
 
+    protected TabularData getPropertiesTable() {
+        TabularData propertiesTable = new TabularDataSupport(JmxConstants.PROPERTIES_TYPE);
+        for (PropertyData<? extends Object> propertyData : properties) {
+            propertiesTable.put(propertyData.toCompositeData());
+        }
+        return propertiesTable;
+    }
+
     /**
      * Static factory method to create RoleData from CompositeData object.
-     * 
+     *
      * @param data {@link CompositeData} instance.
      * @return RoleData instance.
      */
@@ -100,12 +124,14 @@ public class RoleData {
         }
         String name = (String) data.get(UserAdminMBean.NAME);
         int type = (Integer) data.get(UserAdminMBean.TYPE);
-        return new RoleData(name, type);
+        Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
+
+        return new RoleData(name, type, props);
     }
 
     /**
      * Creates TabularData from Dictionary.
-     * 
+     *
      * @param props Dictionary instance.
      * @return TabularData instance.
      */
@@ -120,10 +146,10 @@ public class RoleData {
         }
         return data;
     }
-    
+
     /**
      * Creates properties from TabularData object.
-     * 
+     *
      * @param data {@link TabularData} instance.
      * @return translated tabular data to properties {@link Dictionary}.
      */
@@ -131,13 +157,13 @@ public class RoleData {
         if(data == null){
             return null;
         }
-        
+
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         for(CompositeData compositeData : (Collection<CompositeData>)data.values()){
             PropertyData  property = PropertyData.from(compositeData);
             props.put(property.getKey(), property.getValue());
         }
-        
+
         return props;
     }
     /**
