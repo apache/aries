@@ -16,8 +16,11 @@
  */
 package org.apache.aries.jmx.codec;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
@@ -40,12 +43,17 @@ import org.osgi.service.useradmin.User;
 public class UserData extends RoleData {
 
     /**
+     * user credentials.
+     */
+    protected List<PropertyData<? extends Object>> credentials = new ArrayList<PropertyData<? extends Object>>();
+
+    /**
      * Constructs new UserData from {@link User} object.
      *
      * @param user {@link User} instance.
      */
     public UserData(User user){
-        super(user.getName(), user.getType(), user.getProperties());
+        this(user.getName(), user.getType(), user.getProperties(), user.getCredentials());
     }
 
     /**
@@ -54,9 +62,17 @@ public class UserData extends RoleData {
      * @param name user name.
      * @param type role type.
      * @param properties user properties.
+     * @param credentials user credentials.
      */
-    public UserData(String name, int type, Dictionary properties) {
+    public UserData(String name, int type, Dictionary properties, Dictionary credentials) {
         super(name, type, properties);
+
+        if (credentials != null) {
+            for (Enumeration e = credentials.keys(); e.hasMoreElements(); ) {
+                String key = e.nextElement().toString();
+                this.credentials.add(PropertyData.newInstance(key, credentials.get(key)));
+            }
+        }
     }
 
     /**
@@ -71,10 +87,15 @@ public class UserData extends RoleData {
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
             items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
+            items.put(UserAdminMBean.CREDENTIALS, getCredentialsTable());
             return new CompositeDataSupport(UserAdminMBean.USER_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Can't create CompositeData" + e);
         }
+    }
+
+    protected TabularData getCredentialsTable() {
+        return getPropertiesTable(credentials);
     }
 
     /**
@@ -90,7 +111,7 @@ public class UserData extends RoleData {
         String name = (String) data.get(UserAdminMBean.NAME);
         int type = (Integer)data.get(UserAdminMBean.TYPE);
         Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
-
-        return new UserData(name, type, props);
+        Dictionary<String, Object> credentials = propertiesFrom((TabularData) data.get(UserAdminMBean.CREDENTIALS));
+        return new UserData(name, type, props, credentials);
     }
 }

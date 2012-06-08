@@ -105,8 +105,12 @@ public class RoleData {
     }
 
     protected TabularData getPropertiesTable() {
+        return getPropertiesTable(properties);
+    }
+
+    protected static TabularData getPropertiesTable(List<PropertyData<? extends Object>> data) {
         TabularData propertiesTable = new TabularDataSupport(JmxConstants.PROPERTIES_TYPE);
-        for (PropertyData<? extends Object> propertyData : properties) {
+        for (PropertyData<? extends Object> propertyData : data) {
             propertiesTable.put(propertyData.toCompositeData());
         }
         return propertiesTable;
