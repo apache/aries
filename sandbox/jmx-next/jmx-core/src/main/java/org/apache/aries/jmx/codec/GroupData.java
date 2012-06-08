@@ -17,6 +17,7 @@
 package org.apache.aries.jmx.codec;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.Map;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.TabularData;
 
 import org.osgi.jmx.service.useradmin.UserAdminMBean;
 import org.osgi.service.useradmin.Group;
@@ -35,7 +37,7 @@ import org.osgi.service.useradmin.Role;
  * for the <code>CompositeData</code> representing a Group.
  * </p>
  * </p>
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class GroupData extends UserData {
@@ -56,27 +58,28 @@ public class GroupData extends UserData {
      * @param group {@link Group} instance.
      */
     public GroupData(Group group) {
-        super(group.getName(), Role.GROUP);
+        super(group.getName(), Role.GROUP, group.getProperties());
         this.members = toArray(group.getMembers());
         this.requiredMembers = toArray(group.getRequiredMembers());
     }
 
     /**
      * Constructs new GroupData.
-     * 
+     *
      * @param name group name.
+     * @param properties group properties.
      * @param members basic members.
      * @param requiredMembers required members.
      */
-    public GroupData(String name, String[] members, String[] requiredMembers) {
-        super(name, Role.GROUP);
+    public GroupData(String name, Dictionary properties, String[] members, String[] requiredMembers) {
+        super(name, Role.GROUP, properties);
         this.members = (members == null) ? new String[0] : members;
         this.requiredMembers = (requiredMembers == null) ? new String[0] : requiredMembers;
     }
 
     /**
      * Translates GroupData to CompositeData represented by compositeType {@link UserAdminMBean#GROUP_TYPE}.
-     * 
+     *
      * @return translated GroupData to compositeData.
      */
     public CompositeData toCompositeData() {
@@ -84,6 +87,7 @@ public class GroupData extends UserData {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
+            items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
             items.put(UserAdminMBean.MEMBERS, members);
             items.put(UserAdminMBean.REQUIRED_MEMBERS, requiredMembers);
             return new CompositeDataSupport(UserAdminMBean.GROUP_TYPE, items);
@@ -94,7 +98,7 @@ public class GroupData extends UserData {
 
     /**
      * Static factory method to create GroupData from CompositeData object.
-     * 
+     *
      * @param data
      *            {@link CompositeData} instance.
      * @return GroupData instance.
@@ -104,9 +108,11 @@ public class GroupData extends UserData {
             return null;
         }
         String name = (String) data.get(UserAdminMBean.NAME);
+        Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
+
         String[] members = (String[]) data.get(UserAdminMBean.MEMBERS);
         String[] requiredMembers = (String[]) data.get(UserAdminMBean.REQUIRED_MEMBERS);
-        return new GroupData(name, members, requiredMembers);
+        return new GroupData(name, props, members, requiredMembers);
     }
 
     /**
