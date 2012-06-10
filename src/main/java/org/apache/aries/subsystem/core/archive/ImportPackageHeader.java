@@ -79,6 +79,12 @@ public class ImportPackageHeader implements RequirementHeader<ImportPackageHeade
 			matcher.usePattern(PATTERN2);
 			while (matcher.find()) {
 				Parameter parameter = ParameterFactory.create(matcher.group());
+				// TODO Revisit the following fix.
+				// All version attributes on an ImportPackage header are ranges. The ParameterFactory will return
+				// a VersionAttribute when the value is a single version (e.g., version=1.0.0). This causes a
+				// ClassCastException in getVersionRangeAttribute().
+				if (parameter instanceof VersionAttribute)
+					parameter = new VersionRangeAttribute(String.valueOf(parameter.getValue()));
 				myParameters.put(parameter.getName(), parameter);
 			}
 			fillInDefaults(myParameters);
