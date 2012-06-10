@@ -146,14 +146,28 @@ public class ExportPackageHeader implements CapabilityHeader<ExportPackageHeader
 	
 	public static final String NAME = Constants.EXPORT_PACKAGE;
 	
-	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.EXPORT + ")(?=,|\\z)");
-	
 	private final Set<Clause> clauses = new HashSet<Clause>();
 	
 	public ExportPackageHeader(String value) {
-		Matcher matcher = PATTERN.matcher(value);
-		while (matcher.find())
-			clauses.add(new Clause(matcher.group()));
+		int numOfChars = value.length();
+		StringBuilder builder = new StringBuilder(numOfChars);
+		int numOfQuotes = 0;
+		for (char c : value.toCharArray()) {
+			numOfChars--;
+			if (c == ',') {
+				if (numOfQuotes % 2 == 0) {
+					clauses.add(new Clause(builder.toString()));
+					builder = new StringBuilder(numOfChars);
+				}
+				else
+					builder.append(c);
+			}
+			else if (c == '"')
+				numOfQuotes++;
+			else
+				builder.append(c);
+		}
+		clauses.add(new Clause(builder.toString()));
 		if (clauses.isEmpty())
 			throw new IllegalArgumentException("An " + NAME + " header must have at least one clause");
 	}
