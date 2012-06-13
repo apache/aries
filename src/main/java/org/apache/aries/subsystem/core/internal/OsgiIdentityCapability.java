@@ -19,6 +19,8 @@ import java.util.Map;
 
 import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
+import org.apache.aries.subsystem.core.archive.SymbolicNameHeader;
+import org.apache.aries.subsystem.core.archive.VersionHeader;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -61,8 +63,8 @@ public class OsgiIdentityCapability extends AbstractCapability {
 	public OsgiIdentityCapability(Resource resource, BundleManifest manifest) {
 		this(
 				resource,
-				manifest.getHeader(Constants.BUNDLE_SYMBOLICNAME).getValue(),
-				Version.parseVersion(manifest.getHeader(Constants.BUNDLE_VERSION).getValue()),
+				((SymbolicNameHeader)manifest.getHeader(Constants.BUNDLE_SYMBOLICNAME)).getSymbolicName(),
+				((VersionHeader)manifest.getHeader(Constants.BUNDLE_VERSION)).getVersion(),
 				IdentityNamespace.TYPE_BUNDLE);
 	}
 
