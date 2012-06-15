@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
-import javax.management.openmbean.TabularData;
 
 import org.osgi.jmx.service.useradmin.UserAdminMBean;
 import org.osgi.service.useradmin.Group;
@@ -87,8 +86,8 @@ public class GroupData extends UserData {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
-            items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
-            items.put(UserAdminMBean.CREDENTIALS, getCredentialsTable());
+            // items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
+            // items.put(UserAdminMBean.CREDENTIALS, getCredentialsTable());
             items.put(UserAdminMBean.MEMBERS, members);
             items.put(UserAdminMBean.REQUIRED_MEMBERS, requiredMembers);
             return new CompositeDataSupport(UserAdminMBean.GROUP_TYPE, items);
@@ -109,12 +108,12 @@ public class GroupData extends UserData {
             return null;
         }
         String name = (String) data.get(UserAdminMBean.NAME);
-        Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
-        Dictionary<String, Object> credentials = propertiesFrom((TabularData) data.get(UserAdminMBean.CREDENTIALS));
+        // Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
+        // Dictionary<String, Object> credentials = propertiesFrom((TabularData) data.get(UserAdminMBean.CREDENTIALS));
 
         String[] members = (String[]) data.get(UserAdminMBean.MEMBERS);
         String[] requiredMembers = (String[]) data.get(UserAdminMBean.REQUIRED_MEMBERS);
-        return new GroupData(name, props, credentials, members, requiredMembers);
+        return new GroupData(name, null, null,/* props, credentials, */ members, requiredMembers);
     }
 
     /**
