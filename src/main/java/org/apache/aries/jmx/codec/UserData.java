@@ -86,8 +86,8 @@ public class UserData extends RoleData {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
-            items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
-            items.put(UserAdminMBean.CREDENTIALS, getCredentialsTable());
+            // items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
+            // items.put(UserAdminMBean.CREDENTIALS, getCredentialsTable());
             return new CompositeDataSupport(UserAdminMBean.USER_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Can't create CompositeData" + e);
@@ -110,8 +110,8 @@ public class UserData extends RoleData {
         }
         String name = (String) data.get(UserAdminMBean.NAME);
         int type = (Integer)data.get(UserAdminMBean.TYPE);
-        Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
-        Dictionary<String, Object> credentials = propertiesFrom((TabularData) data.get(UserAdminMBean.CREDENTIALS));
-        return new UserData(name, type, props, credentials);
+        // Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
+        // Dictionary<String, Object> credentials = propertiesFrom((TabularData) data.get(UserAdminMBean.CREDENTIALS));
+        return new UserData(name, type, null, null /* props, credentials */);
     }
 }
