@@ -97,7 +97,7 @@ public class RoleData {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
-            items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
+            // items.put(UserAdminMBean.PROPERTIES, getPropertiesTable());
             return new CompositeDataSupport(UserAdminMBean.ROLE_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Can't create CompositeData" + e);
@@ -128,9 +128,9 @@ public class RoleData {
         }
         String name = (String) data.get(UserAdminMBean.NAME);
         int type = (Integer) data.get(UserAdminMBean.TYPE);
-        Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
+        // Dictionary<String, Object> props = propertiesFrom((TabularData) data.get(UserAdminMBean.PROPERTIES));
 
-        return new RoleData(name, type, props);
+        return new RoleData(name, type, null /* props */);
     }
 
     /**
