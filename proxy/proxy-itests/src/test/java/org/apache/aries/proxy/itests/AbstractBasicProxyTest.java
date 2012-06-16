@@ -40,7 +40,7 @@ import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 @RunWith(JUnit4TestRunner.class)
-public class BasicProxyTest extends AbstractProxyTest
+public class AbstractBasicProxyTest extends AbstractProxyTest
 {
   /**
    * This test does two things. First of all it checks that we throw a FinalModifierException if we
@@ -63,7 +63,7 @@ public class BasicProxyTest extends AbstractProxyTest
       assertTrue("The message didn't appear in the toString", e.toString().endsWith(msg));
     }
   }
-  
+
   /**
    * This method checks that we correctly fail to proxy a class with final methods.
    * It also does a quick validation on the exception message.
@@ -85,26 +85,5 @@ public class BasicProxyTest extends AbstractProxyTest
     } catch (FinalModifierException e) {
       assertTrue("The methods didn't appear in the message", e.getMessage().contains("run"));
     }
-  }
-  
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
-      return testOptions(
-          paxLogging("DEBUG"),
-
-          // Bundles
-          mavenBundle("org.apache.aries", "org.apache.aries.util"),
-          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-          mavenBundle("org.ow2.asm", "asm-all"),
-          // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
-          // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-          mavenBundle("org.osgi", "org.osgi.compendium"),
-         /* vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-          waitForFrameworkStartup(),*/
-          
-          
-          
-          equinox().version("3.5.0")
-      );
   }
 }
