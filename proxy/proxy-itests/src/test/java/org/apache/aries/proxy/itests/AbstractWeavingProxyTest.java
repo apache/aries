@@ -45,7 +45,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
 @RunWith(JUnit4TestRunner.class)
-public class WeavingProxyTest extends AbstractProxyTest
+public class AbstractWeavingProxyTest extends AbstractProxyTest
 {
 
   /**
@@ -117,24 +117,6 @@ public class WeavingProxyTest extends AbstractProxyTest
     Object o = mgr.createDelegatingProxy(b, classes, c, callable);
     if(o instanceof WovenProxy)
       fail("Proxy should not have been woven!");
-  }
-
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
-    return testOptions(
-        paxLogging("DEBUG"),
-
-        // Bundles
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-        mavenBundle("org.ow2.asm", "asm-all"),
-        // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
-        // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-        mavenBundle("org.osgi", "org.osgi.compendium"),
-        // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-        equinox().version("3.7.0.v20110613")
-    );
   }
 
   private static class TestFinalDelegate extends AbstractList<String> implements Callable<String> {

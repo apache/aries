@@ -18,10 +18,15 @@
  */
 package org.apache.aries.proxy.itests;
 
+import static org.apache.aries.itest.ExtraOptions.flatOptions;
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.equinox;
+
 import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -33,6 +38,8 @@ import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.junit.Test;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -264,5 +271,50 @@ public class AbstractProxyTest extends AbstractIntegrationTest {
     assertEquals(pre, listener.preInvoke);
     assertEquals(post, listener.postInvoke);
     assertEquals(ex, listener.postInvokeExceptionalReturn);
+  }
+  
+  protected static Option[] generalOptions() {
+	  return  flatOptions(paxLogging("DEBUG"),
+
+	          // Bundles
+	          mavenBundle("org.apache.aries", "org.apache.aries.util"),
+	          mavenBundle("org.ow2.asm", "asm-all"),
+	          // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
+	          // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
+	          mavenBundle("org.osgi", "org.osgi.compendium")
+	         /* vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+	          waitForFrameworkStartup(),*/
+	  );
+
+  }
+
+  protected static Option[] proxyBundles()
+  {
+	  return new Option[] {          
+	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
+	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
+	  };
+  }
+
+  protected static Option[] proxyUberBundle()
+  {
+	  return new Option[] {          
+	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
+	  };
+  }
+
+  protected static Option[] equinox35()
+  {
+	  return new Option[] {          
+	          equinox().version("3.5.0")
+	  };
+  }
+  
+  protected static Option[] equinox37()
+  {
+	  return new Option[] {          
+			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
+	          equinox().version("3.7.0.v20110613")
+	  };
   }
 }
