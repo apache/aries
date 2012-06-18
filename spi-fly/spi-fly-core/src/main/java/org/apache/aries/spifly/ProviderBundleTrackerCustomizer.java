@@ -73,7 +73,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         Map<String, Object> customAttributes = new HashMap<String, Object>();
         if (bundle.getHeaders().get(SpiFlyConstants.REQUIRE_CAPABILITY) != null) {
             try {
-                providedServices = readRequireCapability(bundle.getHeaders(), customAttributes);
+                providedServices = readServiceLoaderMediatorCapabilityMetadata(bundle.getHeaders(), customAttributes);
             } catch (InvalidSyntaxException e) {
                 log(LogService.LOG_ERROR, "Unable to read capabilities from bundle " + bundle, e);
             }
@@ -190,7 +190,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     // An empty list returned means 'all SPIs'
     // A return value of null means no SPIs
     // A populated list means: only these SPIs
-    private List<String> readRequireCapability(Dictionary<?,?> headers, Map<String, Object> customAttributes) throws InvalidSyntaxException {
+    private List<String> readServiceLoaderMediatorCapabilityMetadata(Dictionary<?,?> headers, Map<String, Object> customAttributes) throws InvalidSyntaxException {
         Object requirementHeader = headers.get(SpiFlyConstants.REQUIRE_CAPABILITY);
         if (requirementHeader == null)
             return null;
@@ -249,9 +249,6 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             if ("".equals(registerDirective.trim()))
                 return null;
 
-            if ("*".equals(registerDirective.trim()))
-                return properties;
-
             if (implName.equals(registerDirective.trim()))
                 return properties;
         }
@@ -294,14 +291,14 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return null;
     }
 
-    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> requirements, String namespace) {
-        List<GenericMetadata> reqs = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
-        for (GenericMetadata req : requirements) {
-            if (namespace.equals(req.getNamespace())) {
-                reqs.add(req);
+    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> requirementsOrCapabilities, String namespace) {
+        List<GenericMetadata> reqsCaps = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
+        for (GenericMetadata reqCap : requirementsOrCapabilities) {
+            if (namespace.equals(reqCap.getNamespace())) {
+                reqsCaps.add(reqCap);
             }
         }
-        return reqs;
+        return reqsCaps;
     }
 
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
