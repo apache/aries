@@ -142,6 +142,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 String className = null;
                 while((className = reader.readLine()) != null) {
                     try {
+                        className = className.trim();
+
+                        if (className.length() == 0)
+                            continue; // empty line
+
                         if (className.startsWith("#"))
                             continue; // a comment
 
@@ -155,8 +160,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                             continue;
 
                         Class<?> cls = bundle.loadClass(className);
-                        Object o = cls.newInstance();
-                        log(LogService.LOG_INFO, "Instantiated SPI provider: " + o);
+                        log(LogService.LOG_INFO, "Loaded SPI provider: " + cls);
 
                         Hashtable<String, Object> properties;
                         if (fromSPIProviderHeader)
@@ -166,8 +170,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                         if (properties != null) {
                             properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
-                            ServiceRegistration reg = bundle.getBundleContext()
-                                    .registerService(registrationClassName, o, properties);
+                            properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, cls.getName());
+                            ServiceRegistration reg = bundle.getBundleContext().registerService(
+                                registrationClassName, new ProviderServiceFactory(cls), properties);
                             registrations.add(reg);
                             log(LogService.LOG_INFO, "Registered service: " + reg);
                         }

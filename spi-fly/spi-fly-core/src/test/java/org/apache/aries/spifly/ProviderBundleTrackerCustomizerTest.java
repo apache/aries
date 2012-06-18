@@ -32,15 +32,12 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.aries.spifly.api.SpiFlyConstants;
-import org.apache.aries.spifly.impl1.MySPIImpl1;
-import org.apache.aries.spifly.impl2.MySPIImpl2a;
-import org.apache.aries.spifly.impl2.MySPIImpl2b;
-import org.apache.aries.spifly.impl3.MySPIImpl3;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
 public class ProviderBundleTrackerCustomizerTest {
@@ -114,16 +111,8 @@ public class ProviderBundleTrackerCustomizerTest {
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
                 EasyMock.eq("org.apache.aries.mytest.MySPI"),
-                EasyMock.isA(MySPIImpl2a.class),
-                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(EasyMock.createNiceMock(ServiceRegistration.class));
-        EasyMock.<Object>expect(implBC.registerService(
-                EasyMock.eq("org.apache.aries.mytest.MySPI"),
-                EasyMock.isA(MySPIImpl2b.class),
-                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(EasyMock.createNiceMock(ServiceRegistration.class));
-        EasyMock.<Object>expect(implBC.registerService(
-                EasyMock.eq("org.apache.aries.mytest.MySPI"),
-                EasyMock.isA(MySPIImpl3.class),
-                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(EasyMock.createNiceMock(ServiceRegistration.class));
+                EasyMock.isA(ServiceFactory.class),
+                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(EasyMock.createNiceMock(ServiceRegistration.class)).times(3);
         EasyMock.replay(implBC);
 
 
@@ -173,7 +162,7 @@ public class ProviderBundleTrackerCustomizerTest {
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
                 EasyMock.eq("org.apache.aries.mytest.MySPI"),
-                EasyMock.isA(MySPIImpl1.class),
+                EasyMock.isA(ServiceFactory.class),
                 (Dictionary<String,?>) EasyMock.anyObject())).andReturn(sreg);
         EasyMock.replay(implBC);
         return implBC;
