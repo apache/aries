@@ -238,7 +238,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(entry.getKey()))
                     continue;
 
-                properties.put(entry.getKey(), entry.getValue());
+                if (!entry.getKey().startsWith("."))
+                    properties.put(entry.getKey(), entry.getValue());
             }
         }
 
