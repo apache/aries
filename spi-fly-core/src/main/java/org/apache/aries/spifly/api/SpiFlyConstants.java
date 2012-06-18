@@ -36,6 +36,7 @@ public interface SpiFlyConstants {
 
     // Service registration property
     String SERVICELOADER_MEDIATOR_PROPERTY = "serviceloader.mediator";
+    String PROVIDER_IMPLCLASS_PROPERTY = ".org.apache.aries.spifly.provider.implclass";
 
     // The names of the extenders involved
     String PROCESSOR_EXTENDER_NAME = "osgi.serviceloader.processor";

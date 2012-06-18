@@ -36,11 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.mytest.MySPI;
+import org.apache.aries.mytest.MySPI2;
 import org.apache.aries.spifly.api.SpiFlyConstants;
-import org.apache.aries.spifly.impl1.MySPIImpl1;
-import org.apache.aries.spifly.impl2.MySPIImpl2a;
-import org.apache.aries.spifly.impl2.MySPIImpl2b;
-import org.apache.aries.spifly.impl3.MySPIImpl3;
 import org.apache.aries.spifly.impl4.MySPIImpl4a;
 import org.apache.aries.spifly.impl4.MySPIImpl4b;
 import org.apache.aries.spifly.impl4.MySPIImpl4c;
@@ -50,6 +48,7 @@ import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
@@ -190,7 +189,10 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(1, registrations.size());
-        assertEquals("org.apache.aries.mytest.MySPI2", registrations.iterator().next().getReference().getProperty(Constants.OBJECTCLASS));
+
+        String[] objectClassProp = (String [])registrations.iterator().next().getReference().getProperty(Constants.OBJECTCLASS);
+        assertEquals(1, objectClassProp.length);
+        assertEquals("org.apache.aries.mytest.MySPI2", objectClassProp[0]);
         assertNotNull(registrations.iterator().next().getReference().getProperty(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY));
         assertEquals("yeah", registrations.iterator().next().getReference().getProperty("approval"));
     }
@@ -226,12 +228,13 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         boolean foundMySPI = false;
         boolean foundMySPI2 = false;
         for (ServiceRegistration sr : registrations) {
-            actualObjectClasses.add((String) sr.getReference().getProperty(Constants.OBJECTCLASS));
+            List<String> objectClasses = Arrays.asList((String[]) sr.getReference().getProperty(Constants.OBJECTCLASS));
+            actualObjectClasses.addAll(objectClasses);
             assertNotNull(sr.getReference().getProperty(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY));
-            if ("org.apache.aries.mytest.MySPI".equals(sr.getReference().getProperty(Constants.OBJECTCLASS))) {
+            if (objectClasses.contains("org.apache.aries.mytest.MySPI")) {
                 assertEquals("yeah", sr.getReference().getProperty("approval"));
                 foundMySPI = true;
-            } else if ("org.apache.aries.mytest.MySPI2".equals(sr.getReference().getProperty(Constants.OBJECTCLASS))) {
+            } else if (objectClasses.contains("org.apache.aries.mytest.MySPI2")) {
                 assertNull(sr.getReference().getProperty("approval"));
                 foundMySPI2 = true;
             }
@@ -271,16 +274,28 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         boolean foundA = false, foundB = false, foundC = false;
         for (ServiceRegistration sreg : registrations) {
             ServiceReference sref = sreg.getReference();
-            String objectClassName = sref.getProperty(Constants.OBJECTCLASS).toString();
-            String serviceImplClassName = sref.getProperty("serviceObject").getClass().getName();
+            String objectClassName = ((String [])sref.getProperty(Constants.OBJECTCLASS))[0];
+            String serviceImplClassName = (String) sref.getProperty(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY);
             if (MySPIImpl4a.class.getName().equals(serviceImplClassName)) {
                 assertEquals("org.apache.aries.mytest.MySPI", objectClassName);
+
+                MySPI svc = (MySPI) implBC.getService(sreg.getReference());
+                assertEquals("impl4a", svc.someMethod(""));
+
                 foundA = true;
             } else if (MySPIImpl4b.class.getName().equals(serviceImplClassName)) {
                 assertEquals("org.apache.aries.mytest.MySPI2", objectClassName);
+
+                MySPI2 svc = (MySPI2) implBC.getService(sreg.getReference());
+                assertEquals("impl4b", svc.someMethod(""));
+
                 foundB = true;
             } else if (MySPIImpl4c.class.getName().equals(serviceImplClassName)) {
                 assertEquals("org.apache.aries.mytest.MySPI2", objectClassName);
+
+                MySPI2 svc = (MySPI2) implBC.getService(sreg.getReference());
+                assertEquals("impl4c", svc.someMethod(""));
+
                 foundC = true;
             }
         }
@@ -331,16 +346,8 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
                 EasyMock.eq("org.apache.aries.mytest.MySPI"),
-                EasyMock.isA(MySPIImpl2a.class),
-                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(EasyMock.createNiceMock(ServiceRegistration.class));
-        EasyMock.<Object>expect(implBC.registerService(
-                EasyMock.eq("org.apache.aries.mytest.MySPI"),
-                EasyMock.isA(MySPIImpl2b.class),
-                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(EasyMock.createNiceMock(ServiceRegistration.class));
-        EasyMock.<Object>expect(implBC.registerService(
-                EasyMock.eq("org.apache.aries.mytest.MySPI"),
-                EasyMock.isA(MySPIImpl3.class),
-                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(EasyMock.createNiceMock(ServiceRegistration.class));
+                EasyMock.isA(ServiceFactory.class),
+                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(EasyMock.createNiceMock(ServiceRegistration.class)).times(3);
         EasyMock.replay(implBC);
 
 
@@ -393,7 +400,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
                 EasyMock.eq("org.apache.aries.mytest.MySPI"),
-                EasyMock.isA(MySPIImpl1.class),
+                EasyMock.isA(ServiceFactory.class),
                 (Dictionary<String,?>) EasyMock.anyObject())).andReturn(sreg);
         EasyMock.replay(implBC);
         return implBC;
@@ -431,37 +438,28 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     private BundleContext mockSPIBundleContext4() {
         BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
 
-        EasyMock.expect(implBC.
-            registerService((String) EasyMock.anyObject(), EasyMock.anyObject(), (Dictionary<String,?>)EasyMock.anyObject())).
+        EasyMock.expect(implBC.registerService((String) EasyMock.anyObject(), EasyMock.anyObject(), (Dictionary<String,?>)EasyMock.anyObject())).
             andAnswer(new IAnswer<ServiceRegistration>() {
                 @Override
                 public ServiceRegistration answer() throws Throwable {
                     final String className = (String) EasyMock.getCurrentArguments()[0];
                     final Object serviceObject = EasyMock.getCurrentArguments()[1];
-                    final Dictionary<String,?> registrationProps =
-                            (Dictionary<String, ?>) EasyMock.getCurrentArguments()[2];
-
-                    ServiceReference sref = EasyMock.createMock(ServiceReference.class);
-                    EasyMock.expect(sref.getProperty(EasyMock.anyObject(String.class))).andAnswer(new IAnswer<Object>() {
-                        @Override
-                        public Object answer() throws Throwable {
-                            Object prop = EasyMock.getCurrentArguments()[0];
-                            if (Constants.OBJECTCLASS.equals(prop)) {
-                                return className;
-                            } else if ("serviceObject".equals(prop)) {
-                                // just used by the test to check the service object that was registered.
-                                return serviceObject;
-                            } else {
-                                return registrationProps.get(prop);
-                            }
-                        }
-                    }).anyTimes();
-                    EasyMock.replay(sref);
-
-                    ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
-                    EasyMock.expect(sreg.getReference()).andReturn(sref).anyTimes();
-                    EasyMock.replay(sreg);
-                    return sreg;
+                    final Dictionary<String, Object> registrationProps =
+                        (Dictionary<String, Object>) EasyMock.getCurrentArguments()[2];
+                    return new ServiceRegistrationImpl(className, serviceObject, registrationProps);
+                }
+            }).anyTimes();
+        EasyMock.expect(implBC.getService(EasyMock.anyObject(ServiceReference.class))).
+            andAnswer(new IAnswer<Object>() {
+                @Override
+                public Object answer() throws Throwable {
+                    ServiceRegistrationImpl reg = (ServiceRegistrationImpl) EasyMock.getCurrentArguments()[0];
+                    Object svc = reg.getServiceObject();
+                    if (svc instanceof ServiceFactory) {
+                        return ((ServiceFactory) svc).getService(null, reg);
+                    } else {
+                        return svc;
+                    }
                 }
             }).anyTimes();
 
@@ -496,5 +494,64 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         EasyMock.replay(implBundle);
         return implBundle;
+    }
+
+    private static class ServiceRegistrationImpl implements ServiceRegistration, ServiceReference {
+        private final Object serviceObject;
+        private final Dictionary<String, Object> properties;
+
+        public ServiceRegistrationImpl(String className, Object serviceObject, Dictionary<String, Object> properties) {
+            this.serviceObject = serviceObject;
+            this.properties = properties;
+            this.properties.put(Constants.OBJECTCLASS, new String[] {className});
+        }
+
+        Object getServiceObject() {
+            return serviceObject;
+        }
+
+        @Override
+        public ServiceReference getReference() {
+            return this;
+        }
+
+        @Override
+        public void setProperties(@SuppressWarnings("rawtypes") Dictionary properties) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void unregister() {
+        }
+
+        @Override
+        public Object getProperty(String key) {
+            return properties.get(key);
+        }
+
+        @Override
+        public String[] getPropertyKeys() {
+            return Collections.list(properties.keys()).toArray(new String [] {});
+        }
+
+        @Override
+        public Bundle getBundle() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Bundle[] getUsingBundles() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isAssignableTo(Bundle bundle, String className) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int compareTo(Object reference) {
+            throw new UnsupportedOperationException();
+        }
     }
 }
