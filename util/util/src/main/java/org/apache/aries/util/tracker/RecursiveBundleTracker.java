@@ -42,6 +42,7 @@ public final class RecursiveBundleTracker {
             Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING;
 
     private final BundleTracker tracker;
+    private final BundleTracker compositeTracker;
 
     /**
      * Constructor
@@ -54,6 +55,7 @@ public final class RecursiveBundleTracker {
      *                                  flags
      */
     public RecursiveBundleTracker(BundleContext context, int stateMask, BundleTrackerCustomizer customizer) {
+        //This test only makes sense for composite bundles, but in the interests of more consistent behavior lets leave it.
         // We always need INSTALLED events so we can recursively listen to the frameworks
         if ((stateMask & COMPOSITE_BUNDLE_MASK) != COMPOSITE_BUNDLE_MASK)
             throw new IllegalArgumentException();
@@ -63,14 +65,14 @@ public final class RecursiveBundleTracker {
             tracker = new BundleHookBundleTracker(context, stateMask, customizer);
         } catch (Throwable e) {
         }
-        if (tracker == null) {
-            if (areMultipleFrameworksAvailable(context)) {
-                //not sure if this ever happens, non R43 composite bundles
-                tracker = new InternalRecursiveBundleTracker(context, stateMask, customizer);
-            } else {
-                //R42
-                tracker = new BundleTracker(context, stateMask, customizer);
-            }
+        if (areMultipleFrameworksAvailable(context)) {
+            compositeTracker = new InternalRecursiveBundleTracker(context, stateMask, customizer, tracker == null);
+        } else {
+            compositeTracker = null;
+        }
+        if (tracker == null && compositeTracker == null) {
+            //R42
+            tracker = new BundleTracker(context, stateMask, customizer);
         }
         this.tracker = tracker;
     }
@@ -86,7 +88,12 @@ public final class RecursiveBundleTracker {
      * @see BundleTracker#open()
      */
     public void open() {
-        tracker.open();
+        if (tracker != null) {
+            tracker.open();
+        }
+        if (compositeTracker != null) {
+            compositeTracker.open();
+        }
     }
 
     /**
@@ -95,7 +102,12 @@ public final class RecursiveBundleTracker {
      * @see BundleTracker#close()
      */
     public void close() {
-        tracker.close();
+        if (tracker != null) {
+            tracker.close();
+        }
+        if (compositeTracker != null) {
+            compositeTracker.close();
+        }
     }
 
 }

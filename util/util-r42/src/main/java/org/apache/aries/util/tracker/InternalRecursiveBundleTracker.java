@@ -44,12 +44,15 @@ public class InternalRecursiveBundleTracker extends BundleTracker
 
   private final BundleTrackerCustomizer customizer;
 
+  private final boolean nested;
+
   public InternalRecursiveBundleTracker(BundleContext context, int stateMask,
-      BundleTrackerCustomizer customizer)
+      BundleTrackerCustomizer customizer, boolean nested)
   {
     super(context, stateMask, null);
     mask = stateMask;
     this.customizer = customizer;
+    this.nested = nested;
   }
 
   /*
@@ -64,7 +67,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
     if (b instanceof CompositeBundle) {
       customizedProcessBundle(this, b, event, false);
       o = b;
-    } else {
+    } else if (nested) {
       // Delegate to our customizer for normal bundles
       if (customizer != null) {
         o = customizer.addingBundle(b, event);
@@ -154,7 +157,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
 
       // let's track each of the bundle in the CompositeBundle
       BundleTracker bt = new InternalRecursiveBundleTracker(compositeBundleContext, stateMask,
-          customizer);
+          customizer, true);
       bt.open();
       BundleTrackerFactory.registerBundleTracker(bundleScope, bt);
     }

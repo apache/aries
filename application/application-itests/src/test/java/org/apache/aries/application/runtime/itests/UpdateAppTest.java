@@ -58,6 +58,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -246,8 +247,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
     assertEquals(message, hw.getMessage());
   }
 
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
+  private static Option[] generalConfiguration() {
     return testOptions(
         paxLogging("DEBUG"),
         
@@ -273,7 +273,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.repository"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.isolated"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec"),
+        mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec")
 
         // new VMOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5011"),
 
@@ -282,6 +282,26 @@ public class UpdateAppTest extends AbstractIntegrationTest {
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
          */
-        equinox().version("3.5.0"));
+        );
   }
+  
+  @org.ops4j.pax.exam.junit.Configuration
+  public static Option[] equinox35Options()
+  {
+	  return testOptions(
+			  generalConfiguration(),
+	          equinox().version("3.5.0")
+	          );
+  }
+
+  @org.ops4j.pax.exam.junit.Configuration
+  public static Option[] equinox37Options()
+  {
+	  return testOptions(
+			  generalConfiguration(),
+			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
+	          equinox().version("3.7.0.v20110613")
+	          );
+  }
+
 }
