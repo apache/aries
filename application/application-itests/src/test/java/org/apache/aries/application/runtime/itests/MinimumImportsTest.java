@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -164,8 +165,7 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
     sr.unregister();
   }
 
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
+  public static Option[] generalConfiguration() {
     return testOptions(
         paxLogging("DEBUG"),
 
@@ -184,7 +184,7 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.ow2.asm", "asm-all"),
         mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-        mavenBundle("org.osgi", "org.osgi.compendium"),
+        mavenBundle("org.osgi", "org.osgi.compendium")
 
         /* For debugging, uncomment the next two lines*/
         /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5007"),
@@ -195,6 +195,26 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
           import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;*/
 
 
-        equinox().version("3.5.0"));
+        );
   }
+  
+  @org.ops4j.pax.exam.junit.Configuration
+  public static Option[] equinox35Options()
+  {
+	  return testOptions(
+			  generalConfiguration(),
+	          equinox().version("3.5.0")
+	          );
+  }
+
+  @org.ops4j.pax.exam.junit.Configuration
+  public static Option[] equinox37Options()
+  {
+	  return testOptions(
+			  generalConfiguration(),
+			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
+	          equinox().version("3.7.0.v20110613")
+	          );
+  }
+
 }
