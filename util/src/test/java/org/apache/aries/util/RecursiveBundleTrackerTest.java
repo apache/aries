@@ -118,7 +118,7 @@ public class RecursiveBundleTrackerTest {
         BundleTrackerCustomizer customizer = Skeleton.newMock(BundleTrackerCustomizer.class);
 
         sut = new InternalRecursiveBundleTracker(context, 
-                Bundle.INSTALLED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, customizer);
+                Bundle.INSTALLED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, customizer, true);
         
         sut.open();
     }
