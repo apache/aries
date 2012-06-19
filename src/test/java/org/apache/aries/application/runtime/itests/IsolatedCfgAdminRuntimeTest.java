@@ -57,6 +57,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.BundleContext;
@@ -359,8 +360,7 @@ public class IsolatedCfgAdminRuntimeTest extends AbstractIntegrationTest {
      * @return the various required options
      * @throws Exception
      */
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() throws Exception {
+    private static Option[] generalConfiguration() throws Exception {
         return testOptions(
                 repository("http://repository.ops4j.org/maven2"),
                 paxLogging("DEBUG"),
@@ -384,9 +384,27 @@ public class IsolatedCfgAdminRuntimeTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.repository"),
                 mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
                 mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
-                mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
+                mavenBundle("org.ops4j.pax.url", "pax-url-mvn"));
                 //vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"), 
-                equinox().version("3.5.0"));
+    }
+
+    @org.ops4j.pax.exam.junit.Configuration
+    public static Option[] equinox35Options() throws Exception
+    {
+  	  return testOptions(
+  			  generalConfiguration(),
+  	          equinox().version("3.5.0")
+  	          );
+    }
+
+    @org.ops4j.pax.exam.junit.Configuration
+    public static Option[] equinox37Options() throws Exception
+    {
+  	  return testOptions(
+  			  generalConfiguration(),
+  			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
+  	          equinox().version("3.7.0.v20110613")
+  	          );
     }
 
     /**

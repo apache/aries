@@ -50,6 +50,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
@@ -300,13 +301,12 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   private void assertHelloWorldService(String appName, String message) throws Exception
   {
     HelloWorld hw = IsolationTestUtils.findHelloWorldService(bundleContext, appName);
-    assertNotNull(hw);
+    assertNotNull("The Hello World service could not be found.", hw);
     assertEquals(message, hw.getMessage());
   }
   
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
-    return testOptions(
+  private static Option[] generalConfiguration() {
+    return flatOptions(
         repository( "http://repository.ops4j.org/maven2" ),
         
         paxLogging("DEBUG"),
@@ -331,7 +331,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.framework.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.repository"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec"),
+        mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec")
 
         /* For debugging, uncommenting the following two lines and add the imports */
         /*
@@ -343,6 +343,26 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
          */
-        equinox().version("3.5.0"));
+          );
   }
+  
+  @org.ops4j.pax.exam.junit.Configuration
+  public static Option[] equinox35Options()
+  {
+	  return testOptions(
+			  generalConfiguration(),
+	          equinox().version("3.5.0")
+	          );
+  }
+
+  @org.ops4j.pax.exam.junit.Configuration
+  public static Option[] equinox37Options()
+  {
+	  return testOptions(
+			  generalConfiguration(),
+			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
+	          equinox().version("3.7.0.v20110613")
+	          );
+  }
+
 }
