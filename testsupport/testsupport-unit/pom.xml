@@ -28,15 +28,15 @@
   <artifactId>org.apache.aries.testsupport.unit</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Unit Test Support</name>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <description>
       This bundle provides unit test support.
   </description>
 
   <scm>
-     <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.testsupport.unit-1.0.0</connection>
-     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.testsupport.unit-1.0.0</developerConnection>
-     <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.testsupport.unit-1.0.0</url>
+     <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/testsupport/testsupport-unit</connection>
+     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/testsupport/testsupport-unit</developerConnection>
+     <url>http://svn.apache.org/viewvc/aries/trunk/testsupport/testsupport-unit</url>
   </scm>
 
 
