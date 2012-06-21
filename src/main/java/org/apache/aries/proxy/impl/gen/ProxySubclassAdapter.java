@@ -19,7 +19,9 @@
 package org.apache.aries.proxy.impl.gen;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Modifier;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -139,7 +141,20 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
     }
     // otherwise invoke the java.lang.Object no args constructor
     else {
-      methodAdapter.invokeConstructor(OBJECT_TYPE, new Method("<init>", Type.VOID_TYPE, NO_ARGS));
+        try {
+            //if the superclass has a no-arg constructor that we can call, we need to call it
+            // otherwise invoke the java.lang.Object no args constructor.  However, that will fail 
+            // on the most recent versions of the JDK (1.6.0_u34 and 1.7.0_u5 and newer).  For the
+            // newer JDK's, there is NOTHING we can do and the proxy will fail.
+            Constructor<?> cons = superclassClass.getDeclaredConstructor();
+            if (!Modifier.isPrivate(cons.getModifiers())) {
+                methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>", Type.VOID_TYPE, NO_ARGS));
+            } else {
+                methodAdapter.invokeConstructor(OBJECT_TYPE, new Method("<init>", Type.VOID_TYPE, NO_ARGS));
+            }
+        } catch (Exception e) {
+            methodAdapter.invokeConstructor(OBJECT_TYPE, new Method("<init>", Type.VOID_TYPE, NO_ARGS));
+        }
     }
     // call from the constructor to setInvocationHandler
     Method setter = new Method("setInvocationHandler", Type.VOID_TYPE, new Type[] { IH_TYPE });
