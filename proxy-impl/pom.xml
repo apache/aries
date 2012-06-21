@@ -95,4 +95,9 @@
         </dependency>
     </dependencies>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/proxy-0.3.x/proxy-impl/</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/proxy-0.3.x/proxy-impl/</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/proxy-0.3.x/proxy-impl/</url>
+    </scm>
 </project>
