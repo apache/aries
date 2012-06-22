@@ -19,6 +19,12 @@
 package org.apache.aries.blueprint.container;
 
 import java.lang.reflect.Method;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.DomainCombiner;
+import java.security.Permission;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -81,6 +87,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private final AtomicBoolean satisfied = new AtomicBoolean();
     private SatisfactionListener satisfactionListener;
 
+	private final AccessControlContext accessControlContext;
+
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
                                              ServiceReferenceMetadata metadata,
@@ -96,6 +104,14 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.filter = createOsgiFilter(metadata);
+        
+        if (System.getSecurityManager() != null) {
+            accessControlContext = createAccessControlContext();
+        } else
+        {
+        	accessControlContext = null;
+        }
+
     }
 
 
@@ -176,6 +192,46 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     public String getOsgiFilter() {
         return filter;
+    }
+
+	protected Object getServiceSecurely(final ServiceReference serviceReference) {
+		if (accessControlContext == null) {
+			return getBundleContextForServiceLookup().getService(
+					serviceReference);
+
+		} else {
+			// If we're operating with security, use the privileges of the bundle
+			// we're managing to do the lookup
+			return AccessController.doPrivileged(
+					new PrivilegedAction<Object>() {
+						public Object run() {
+							return getBundleContextForServiceLookup()
+									.getService(serviceReference);
+						}
+					}, accessControlContext);
+		}
+	}
+    
+
+	/**
+	 * We may need to execute code within a doPrivileged block, and if so, it should be the 
+	 * privileges of the bundle with the blueprint file that get used, not the privileges 
+	 * of blueprint-core. To achieve this we use an access context. 
+	 * @return
+	 */
+    private AccessControlContext createAccessControlContext() {
+        return new AccessControlContext(AccessController.getContext(),
+                new DomainCombiner() {               
+                    public ProtectionDomain[] combine(ProtectionDomain[] arg0,
+                                                      ProtectionDomain[] arg1) {                    
+                        return new ProtectionDomain[] { new ProtectionDomain(null, null) {                        
+                            public boolean implies(Permission permission) {                                                           
+                                return getBundleContextForServiceLookup().getBundle().hasPermission(permission);
+                            }
+                        } 
+                    };
+                }
+        });
     }
 
     protected void createListeners() {
