@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 
+import org.apache.aries.proxy.impl.ProxyUtils;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
@@ -110,13 +111,14 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
       throw new TypeNotPresentException(superclassBinaryName, cnfe);
     }
 
-    // move the existing class name to become the superclass
-    // modify the version of the dynamic subclass to be Java 1.6
-    int newVersion = Opcodes.V1_6;
-    // keep the same access and signature as the superclass
+    // keep the same access and signature as the superclass (unless it's abstract)
     // remove all the superclass interfaces because they will be inherited
     // from the superclass anyway
-    cv.visit(newVersion, access, newClassName, signature, name, null);
+    if((access & ACC_ABSTRACT) != 0) {
+      //If the super was abstract the subclass should not be!
+      access &= ~ACC_ABSTRACT;
+    }
+    cv.visit(ProxyUtils.getWeavingJavaVersion(), access, newClassName, signature, name, null);
 
     // add a private field for the invocation handler
     // this isn't static in case we have multiple instances of the same
@@ -139,7 +141,6 @@ public class ProxySubclassAdapter extends ClassAdapter implements Opcodes
       methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>",
           Type.VOID_TYPE, NO_ARGS));
     }
-    // otherwise invoke the java.lang.Object no args constructor
     else {
         try {
             //if the superclass has a no-arg constructor that we can call, we need to call it
