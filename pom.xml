@@ -78,7 +78,7 @@
         <dependency>
         	<groupId>org.apache.aries.proxy</groupId>
         	<artifactId>org.apache.aries.proxy.impl</artifactId>
-        	<version>${project.version}</version>
+        	<version>0.3.1</version>
         </dependency>
     </dependencies>
     <scm>
