@@ -234,11 +234,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             } else {
             
               if (trackedService == null) {
-            	  trackedService = AccessController.doPrivileged(new PrivilegedAction<Object>() {
-            	    public Object run() {
-            		  return getBundleContextForServiceLookup().getService(trackedServiceReference);
-            		}
-            	  });
+            	  trackedService = getServiceSecurely(trackedServiceReference);
               }
               
               if (trackedService == null) {
