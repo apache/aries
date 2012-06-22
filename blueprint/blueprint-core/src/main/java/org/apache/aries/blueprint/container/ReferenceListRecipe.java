@@ -209,7 +209,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                 throw new ServiceUnavailableException("Service is unavailable", getOsgiFilter());
             }
             if (service == null) {
-                service = getBundleContextForServiceLookup().getService(reference);
+                service = getServiceSecurely(reference);
             }
             return service;
         }
