@@ -147,14 +147,14 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 			throw new SubsystemException(e);
 		}
 		AriesSubsystem root = subsystems.getRootSubsystem();
-		root.install();
 		root.start();
 	}
 	
 	private void deactivate() {
-		if (!isActive() || hasRequiredServices())
+		if (!isActive())
 			return;
-		subsystems.getRootSubsystem().stop0();
+		new StopAction(subsystems.getRootSubsystem(), true).run();
+//		subsystems.getRootSubsystem().stop();
 		for (ServiceRegistration<?> registration : registrations) {
 			try {
 				registration.unregister();
@@ -249,20 +249,26 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	public synchronized void removedService(ServiceReference<Object> reference, Object service) {
 		if (service instanceof Coordinator) {
 			if (service.equals(coordinator)) {
-				coordinator = (Coordinator)findAlternateServiceFor(coordinator);
-				deactivate();
+				Coordinator coordinator = (Coordinator)findAlternateServiceFor(this.coordinator);
+				if (coordinator == null)
+					deactivate();
+				this.coordinator = coordinator;
 			}
 		}
 		else if (service instanceof RegionDigraph) {
 			if (service.equals(regionDigraph)) {
-				regionDigraph = (RegionDigraph)findAlternateServiceFor(regionDigraph);
-				deactivate();
+				RegionDigraph regionDigraph = (RegionDigraph)findAlternateServiceFor(this.regionDigraph);
+				if (regionDigraph == null)
+					deactivate();
+				this.regionDigraph = regionDigraph;
 			}
 		}
 		else if (service instanceof Resolver) {
 			if (service.equals(resolver)) {
-				resolver = (Resolver)findAlternateServiceFor(regionDigraph);
-				deactivate();
+				Resolver resolver = (Resolver)findAlternateServiceFor(this.resolver);
+				if (resolver == null)
+					deactivate();
+				this.resolver = resolver;
 			}
 		}
 		else

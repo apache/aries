@@ -11,26 +11,51 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.archive.Attribute;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
+import org.apache.aries.subsystem.core.archive.Header;
+import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
+import org.apache.aries.subsystem.core.archive.ImportPackageRequirement;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
+import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
+import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
+import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
+import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.IDirectory;
+import org.eclipse.equinox.region.Region;
+import org.eclipse.equinox.region.RegionDigraph;
+import org.eclipse.equinox.region.RegionFilter;
+import org.eclipse.equinox.region.RegionFilterBuilder;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wire;
 import org.osgi.resource.Wiring;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Participant;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.HostedCapability;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.resolver.ResolveContext;
+import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class SubsystemResource implements Resource {
+	private Region region;
+	
 	private final DeploymentManifest deploymentManifest;
+	private final long id;
 	private final Collection<Resource> installableContent = new HashSet<Resource>();
 	private final Collection<Resource> installableDependencies = new HashSet<Resource>();
 	private final Collection<Resource> mandatoryResources = new HashSet<Resource>();
@@ -48,10 +73,25 @@ public class SubsystemResource implements Resource {
 	public SubsystemResource(RawSubsystemResource resource, AriesSubsystem parent) throws IOException {
 		this.parent = parent;
 		this.resource = resource;
+		id = SubsystemIdentifier.getNextId();
 		preferredProviderRepository = new PreferredProviderRepository(this);
-		computeContentResources();
-		computeDependencies();
+		computeContentResources(resource.getDeploymentManifest());
+		computeDependencies(resource.getDeploymentManifest());
 		deploymentManifest = computeDeploymentManifest();
+	}
+	
+	public SubsystemResource(File file) throws IOException, URISyntaxException, ResolutionException {
+		this(FileSystem.getFSRoot(file));
+	}
+	
+	public SubsystemResource(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
+		parent = null;
+		resource = new RawSubsystemResource(directory);
+		preferredProviderRepository = null;
+		deploymentManifest = resource.getDeploymentManifest();
+		id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
+		computeContentResources(deploymentManifest);
+		computeDependencies(deploymentManifest);
 	}
 
 	@Override
@@ -63,12 +103,8 @@ public class SubsystemResource implements Resource {
 		return deploymentManifest;
 	}
 	
-	public File getDirectory() {
-		return resource.getDirectory();
-	}
-	
 	public long getId() {
-		return resource.getId();
+		return id;
 	}
 	
 	public Collection<Resource> getInstallableContent() {
@@ -87,8 +123,38 @@ public class SubsystemResource implements Resource {
 		return resource.getLocation().getValue();
 	}
 	
-	public AriesSubsystem getParent() {
-		return parent;
+	public Collection<AriesSubsystem> getParents() {
+		if (parent == null) {
+			Header<?> header = getDeploymentManifest().getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_PARENTS);
+			if (header == null)
+				return Collections.emptyList();
+			String[] parents = header.getValue().split(",");
+			Collection<AriesSubsystem> result = new ArrayList<AriesSubsystem>(parents.length);
+			for (String parent : parents)
+				result.add(Activator.getInstance().getSubsystems().getSubsystemById(Long.valueOf(parent)));
+			return result;
+		}
+		return Collections.singleton(parent);
+	}
+	
+	public synchronized Region getRegion() throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+		if (region == null) {
+			region = createRegion(getId());
+			Coordination coordination = Activator.getInstance().getCoordinator().peek();
+			coordination.addParticipant(new Participant() {
+				@Override
+				public void ended(Coordination arg0) throws Exception {
+//					region.getRegionDigraph().removeRegion(region);
+				}
+
+				@Override
+				public void failed(Coordination arg0) throws Exception {
+					region.getRegionDigraph().removeRegion(region);
+				}
+			});
+			setImportIsolationPolicy();
+		}
+		return region;
 	}
 
 	@Override
@@ -125,7 +191,7 @@ public class SubsystemResource implements Resource {
 			sharedContent.add(resource);
 	}
 	
-	private boolean addDependencies(Repository repository, Requirement requirement, List<Capability> capabilities) {
+	private boolean addDependencies(Repository repository, Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Map<Requirement, Collection<Capability>> m = repository.findProviders(Collections.singleton(requirement));
 		if (m.containsKey(requirement)) {
 			Collection<Capability> cc = m.get(requirement);
@@ -135,26 +201,26 @@ public class SubsystemResource implements Resource {
 		return !capabilities.isEmpty();
 	}
 	
-	private boolean addDependenciesFromContentRepository(Requirement requirement, List<Capability> capabilities) {
+	private boolean addDependenciesFromContentRepository(Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Repository repository = new ContentRepository(installableContent, sharedContent);
 		return addDependencies(repository, requirement, capabilities);
 	}
 	
-	private boolean addDependenciesFromLocalRepository(Requirement requirement, List<Capability> capabilities) {
+	private boolean addDependenciesFromLocalRepository(Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Repository repository = resource.getLocalRepository();
 		return addDependencies(repository, requirement, capabilities);
 	}
 	
-	private boolean addDependenciesFromPreferredProviderRepository(Requirement requirement, List<Capability> capabilities) {
+	private boolean addDependenciesFromPreferredProviderRepository(Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		return addDependencies(preferredProviderRepository, requirement, capabilities);
 	}
 	
-	private boolean addDependenciesFromRepositoryServiceRepositories(Requirement requirement, List<Capability> capabilities) {
+	private boolean addDependenciesFromRepositoryServiceRepositories(Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Repository repository = new RepositoryServiceRepository();
 		return addDependencies(repository, requirement, capabilities);
 	}
 	
-	private boolean addDependenciesFromSystemRepository(Requirement requirement, List<Capability> capabilities) {
+	private boolean addDependenciesFromSystemRepository(Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Repository repository = Activator.getInstance().getSystemRepository();
 		return addDependencies(repository, requirement, capabilities);
 	}
@@ -168,14 +234,64 @@ public class SubsystemResource implements Resource {
 			sharedDependencies.add(resource);
 	}
 	
-	private void addValidCapabilities(Collection<Capability> from, Collection<Capability> to) {
+	private void addValidCapabilities(Collection<Capability> from, Collection<Capability> to) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		for (Capability c : from)
 			if (isValid(c))
 				to.add(c);
 	}
 	
-	private void computeContentResources() {
-		SubsystemContentHeader contentHeader = resource.getSubsystemManifest().getSubsystemContentHeader();
+	private void addSubsystemServiceImportToSharingPolicy(
+			RegionFilterBuilder builder) throws InvalidSyntaxException, BundleException, IOException, URISyntaxException {
+		builder.allow(
+				RegionFilter.VISIBLE_SERVICE_NAMESPACE,
+				new StringBuilder("(&(")
+						.append(org.osgi.framework.Constants.OBJECTCLASS)
+						.append('=').append(Subsystem.class.getName())
+						.append(")(")
+						.append(Constants.SubsystemServicePropertyRegions)
+						.append('=').append(getRegion().getName())
+						.append("))").toString());
+	}
+	
+	private void addSubsystemServiceImportToSharingPolicy(RegionFilterBuilder builder, Region to)
+			throws InvalidSyntaxException, BundleException, IOException, URISyntaxException {
+		if (to.getName().equals(AriesSubsystem.ROOT_REGION))
+			addSubsystemServiceImportToSharingPolicy(builder);
+		else {
+			to = Activator.getInstance().getSubsystems().getRootSubsystem().getRegion();
+			builder = to.getRegionDigraph().createRegionFilterBuilder();
+			addSubsystemServiceImportToSharingPolicy(builder);
+			RegionFilter regionFilter = builder.build();
+			getRegion().connectRegion(to, regionFilter);
+		}
+	}
+	
+	private void computeContentResources(DeploymentManifest manifest) {
+		if (manifest == null)
+			computeContentResources(getSubsystemManifest());
+		else {
+			DeployedContentHeader header = manifest.getDeployedContentHeader();
+			if (header == null)
+				return;
+			for (DeployedContentHeader.Clause clause : header.getClauses()) {
+				Resource resource = findContent(clause);
+				if (resource == null)
+					throw new SubsystemException("Resource does not exist: " + clause);
+				addContentResource(resource);
+			}
+		}
+//		if (parent == null) {
+//			if (deploymentManifest == null)
+//				return;
+//			computeContentResourcesFromDeploymentManifest();
+//		}
+//		else {
+//			computeContentResourcesFromSubsystemManifest();
+//		}
+	}
+	
+	private void computeContentResources(SubsystemManifest manifest) {
+		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		if (contentHeader == null)
 			return;
 		for (SubsystemContentHeader.Content content : contentHeader.getContents()) {
@@ -192,8 +308,49 @@ public class SubsystemResource implements Resource {
 		}
 	}
 	
-	private void computeDependencies() {
-		SubsystemContentHeader contentHeader = resource.getSubsystemManifest().getSubsystemContentHeader();
+	private void computeDependencies(DeploymentManifest manifest) {
+		if (manifest == null)
+			computeDependencies(getSubsystemManifest());
+		else {
+			ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
+			if (header == null)
+				return;
+			for (ProvisionResourceHeader.ProvisionedResource provisionedResource : header.getProvisionedResources()) {
+				Resource resource = findDependency(provisionedResource);
+				if (resource == null)
+					throw new SubsystemException("Resource does not exist: " + provisionedResource);
+				addDependency(resource);
+			}
+		}	
+//		if (parent == null) {
+//			if (deploymentManifest == null)
+//				return;
+//			ProvisionResourceHeader header = deploymentManifest.getProvisionResourceHeader();
+//			if (header == null)
+//				return;
+//			for (ProvisionResourceHeader.ProvisionedResource provisionedResource : header.getProvisionedResources()) {
+//				Resource resource = findDependency(provisionedResource);
+//				if (resource == null)
+//					throw new SubsystemException("Resource does not exist: " + provisionedResource);
+//				addContentResource(resource);
+//			}
+//		}
+//		else {
+//			SubsystemContentHeader contentHeader = resource.getSubsystemManifest().getSubsystemContentHeader();
+//			try {
+//				Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
+//				for (Resource resource : resolution.keySet())
+//					if (!contentHeader.contains(resource))
+//						addDependency(resource);
+//			}
+//			catch (ResolutionException e) {
+//				throw new SubsystemException(e);
+//			}
+//		}
+	}
+	
+	private void computeDependencies(SubsystemManifest manifest) {
+		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		try {
 			Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
 			for (Resource resource : resolution.keySet())
@@ -233,21 +390,53 @@ public class SubsystemResource implements Resource {
 		return ProvisionResourceHeader.newInstance(dependencies);
 	}
 	
+	private Region createRegion(long id) throws BundleException {
+		if (!isScoped())
+			return getParents().iterator().next().getRegion();
+		Activator activator = Activator.getInstance();
+		RegionDigraph digraph = activator.getRegionDigraph();
+		if (getParents().isEmpty())
+			return digraph.getRegion(AriesSubsystem.ROOT_REGION);
+		String name = getSubsystemManifest()
+				.getSubsystemSymbolicNameHeader().getSymbolicName()
+				+ ';'
+				+ getSubsystemManifest().getSubsystemVersionHeader()
+						.getVersion()
+				+ ';'
+				+ getSubsystemManifest().getSubsystemTypeHeader()
+						.getType() + ';' + Long.toString(id);
+		Region region = digraph.getRegion(name);
+		// TODO New regions need to be cleaned up if this subsystem fails to
+		// install, but there's no access to the coordination here.
+		if (region == null)
+			return digraph.createRegion(name);
+		return region;
+	}
+	
 	private ResolveContext createResolveContext() {
 		return new ResolveContext() {
 			@Override
 			public List<Capability> findProviders(Requirement requirement) {
 				List<Capability> result = new ArrayList<Capability>();
-				if (addDependenciesFromContentRepository(requirement, result))
-					return result;
-				if (addDependenciesFromPreferredProviderRepository(requirement, result))
-					return result;
-				if (addDependenciesFromSystemRepository(requirement, result))
-					return result;
-				if (addDependenciesFromLocalRepository(requirement, result))
-					return result;
-				if (addDependenciesFromRepositoryServiceRepositories(requirement, result))
-					return result;
+				try {
+					if (addDependenciesFromContentRepository(requirement, result))
+						return result;
+					if (addDependenciesFromPreferredProviderRepository(requirement, result))
+						return result;
+					if (addDependenciesFromSystemRepository(requirement, result))
+						return result;
+					if (addDependenciesFromLocalRepository(requirement, result))
+						return result;
+					if (addDependenciesFromRepositoryServiceRepositories(requirement, result))
+						return result;
+				}
+				catch (Throwable t) {
+					if (t instanceof SubsystemException)
+						throw (SubsystemException)t;
+					if (t instanceof SecurityException)
+						throw (SecurityException)t;
+					throw new SubsystemException(t);
+				}
 				return result;
 			}
 			
@@ -308,6 +497,41 @@ public class SubsystemResource implements Resource {
 		return null;
 	}
 	
+	private Resource findContent(DeployedContentHeader.Clause clause) {
+		Attribute attribute = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
+		long resourceId = attribute == null ? -1 : Long.parseLong(String.valueOf(attribute.getValue()));
+		if (resourceId != -1) {
+			String type = clause.getType();
+			if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
+				return Activator.getInstance().getBundleContext().getBundle(0).getBundleContext().getBundle(resourceId).adapt(BundleRevision.class);
+			}
+			else
+				return Activator.getInstance().getSubsystems().getSubsystemById(resourceId);
+		}
+		OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
+				clause.getPath(), clause.getDeployedVersion(),
+				clause.getType(), false);
+		return findContent(requirement);
+	}
+	
+	private Resource findDependency(ProvisionResourceHeader.ProvisionedResource provisionedResource) {
+		long resourceId = provisionedResource.getResourceId();
+		if (resourceId != -1) {
+			String type = provisionedResource.getNamespace();
+			if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type))
+				return Activator.getInstance().getBundleContext().getBundle(0).getBundleContext().getBundle(resourceId).adapt(BundleRevision.class);
+			else
+				return Activator.getInstance().getSubsystems().getSubsystemById(resourceId);
+		}
+		OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
+				provisionedResource.getName(), provisionedResource.getDeployedVersion(),
+				provisionedResource.getNamespace(), false);
+		List<Capability> capabilities = createResolveContext().findProviders(requirement);
+		if (capabilities.isEmpty())
+			return null;
+		return capabilities.get(0).getResource();
+	}
+	
 	private Collection<Resource> getContentResources() {
 		Collection<Resource> result = new ArrayList<Resource>(installableContent.size() + sharedContent.size());
 		result.addAll(installableContent);
@@ -322,6 +546,10 @@ public class SubsystemResource implements Resource {
 		return result;
 	}
 	
+	private boolean isContent(Resource resource) {
+		return getSubsystemManifest().getSubsystemContentHeader().contains(resource);
+	}
+	
 	private boolean isInstallable(Resource resource) {
 		return !isShared(resource);
 	}
@@ -333,8 +561,12 @@ public class SubsystemResource implements Resource {
 		return header.isMandatory(resource);
 	}
 	
+	private boolean isRoot() {
+		return AriesSubsystem.ROOT_LOCATION.equals(getLocation());
+	}
+	
 	private boolean isShared(Resource resource) {
-		return resource instanceof AriesSubsystem || resource instanceof BundleRevision;
+		return Utils.isSharedResource(resource);
 	}
 	
 	private boolean isScoped() {
@@ -347,12 +579,91 @@ public class SubsystemResource implements Resource {
 		return !isScoped();
 	}
 	
-	private boolean isValid(Capability capability) {
-		AriesSubsystem subsystem;
-		if (isInstallable(capability.getResource()))
-			subsystem = Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(parent);
+	private boolean isValid(Capability capability) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace()))
+			return true;
+		Region region;
+		if (isInstallable(capability.getResource())) {
+			if (isContent(capability.getResource()))
+				region = getRegion();
+			else
+				region = Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(parent).getRegion();
+		}
 		else
-			subsystem = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource()).iterator().next();
-		return new SharingPolicyValidator(subsystem.getRegion(), parent.getRegion()).isValid(capability);
+			region = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource()).iterator().next().getRegion();
+		return new SharingPolicyValidator(region, getRegion()).isValid(capability);
+	}
+	
+	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+		if (isRoot() || !isScoped())
+			return;
+		Region region = getRegion();
+		Region from = region;
+		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
+		Region to = ((AriesSubsystem)getParents().iterator().next()).getRegion();
+		addSubsystemServiceImportToSharingPolicy(builder, to);
+		// TODO Is this check really necessary? Looks like it was done at the beginning of this method.
+		if (isScoped()) {
+			// Both applications and composites have Import-Package headers that require processing.
+			// In the case of applications, the header is generated.
+			Header<?> header = getSubsystemManifest().getImportPackageHeader();
+			setImportIsolationPolicy(builder, (ImportPackageHeader)header);
+			// Both applications and composites have Require-Capability headers that require processing.
+			// In the case of applications, the header is generated.
+			header = getSubsystemManifest().getRequireCapabilityHeader();
+			setImportIsolationPolicy(builder, (RequireCapabilityHeader)header);
+			// Both applications and composites have Subsystem-ImportService headers that require processing.
+			// In the case of applications, the header is generated.
+			header = getSubsystemManifest().getSubsystemImportServiceHeader();
+			setImportIsolationPolicy(builder, (SubsystemImportServiceHeader)header);
+			header = getSubsystemManifest().getRequireBundleHeader();
+			setImportIsolationPolicy(builder, (RequireBundleHeader)header);
+		}
+		RegionFilter regionFilter = builder.build();
+		from.connectRegion(to, regionFilter);
+	}
+	
+	private void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
+		for (ImportPackageHeader.Clause clause : header.getClauses()) {
+			ImportPackageRequirement requirement = new ImportPackageRequirement(clause, this);
+			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
+			builder.allow(policy, filter);
+		}
+	}
+	
+	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireBundleHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		for (RequireBundleHeader.Clause clause : header.getClauses()) {
+			RequireBundleRequirement requirement = new RequireBundleRequirement(clause, this);
+			String policy = RegionFilter.VISIBLE_REQUIRE_NAMESPACE;
+			String filter = requirement.getDirectives().get(RequireBundleRequirement.DIRECTIVE_FILTER);
+			builder.allow(policy, filter);
+		}
+	}
+	
+	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireCapabilityHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		for (RequireCapabilityHeader.Clause clause : header.getClauses()) {
+			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause, this);
+			String policy = requirement.getNamespace();
+			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
+			builder.allow(policy, filter);
+		}
+	}
+	
+	private void setImportIsolationPolicy(RegionFilterBuilder builder, SubsystemImportServiceHeader header) throws InvalidSyntaxException {
+		if (header == null)
+			return;
+		for (SubsystemImportServiceHeader.Clause clause : header.getClauses()) {
+			SubsystemImportServiceRequirement requirement = new SubsystemImportServiceRequirement(clause, this);
+			String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
+			String filter = requirement.getDirectives().get(SubsystemImportServiceRequirement.DIRECTIVE_FILTER);
+			builder.allow(policy, filter);
+		}
 	}
 }

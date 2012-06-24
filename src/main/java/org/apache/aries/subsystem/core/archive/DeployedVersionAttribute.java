@@ -14,23 +14,12 @@
 package org.apache.aries.subsystem.core.archive;
 
 import org.osgi.framework.Version;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 public class DeployedVersionAttribute extends AbstractAttribute {
-	public static final String NAME = "deployed-version";
-	
-	public static DeployedVersionAttribute newInstance(String value) {
-		if (value == null) {
-			return new DeployedVersionAttribute();
-		}
-		return new DeployedVersionAttribute();
-	}
+	public static final String NAME = SubsystemConstants.DEPLOYED_VERSION_ATTRIBUTE;
 	
 	private final Version deployedVersion;
-	
-	public DeployedVersionAttribute() {
-		super(NAME, Version.emptyVersion.toString());
-		deployedVersion = Version.emptyVersion;
-	}
 	
 	public DeployedVersionAttribute(String value) {
 		super(NAME, value);
@@ -38,6 +27,10 @@ public class DeployedVersionAttribute extends AbstractAttribute {
 	}
 
 	public Version getDeployedVersion() {
+		return deployedVersion;
+	}
+	
+	public Version getVersion() {
 		return deployedVersion;
 	}
 }
