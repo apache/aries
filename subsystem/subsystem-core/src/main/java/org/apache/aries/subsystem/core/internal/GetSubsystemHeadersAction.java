@@ -16,7 +16,7 @@ public class GetSubsystemHeadersAction implements PrivilegedAction<Map<String, S
 	
 	@Override
 	public Map<String, String> run() {
-		Map<String, Header<?>> headers = subsystem.getArchive().getSubsystemManifest().getHeaders();
+		Map<String, Header<?>> headers = subsystem.getSubsystemManifest().getHeaders();
 		Map<String, String> result = new HashMap<String, String>(headers.size());
 		for (Entry<String, Header<?>> entry: headers.entrySet()) {
 			Header<?> value = entry.getValue();

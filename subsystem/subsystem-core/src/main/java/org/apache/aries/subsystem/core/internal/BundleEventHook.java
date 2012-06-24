@@ -42,7 +42,7 @@ public class BundleEventHook implements EventHook {
 		if (subsystems.isEmpty())
 			throw new IllegalStateException("Orphaned bundle revision detected: " + originRevision);
 		for (AriesSubsystem s : subsystems)
-			s.installResource(bundleRevision);
+			Utils.installResource(bundleRevision, s);
 	}
 	
 	private void handleExplicitlyInstalledBundleRegionDigraph(Bundle origin, BundleRevision bundleRevision) {
@@ -53,7 +53,7 @@ public class BundleEventHook implements EventHook {
 			for (AriesSubsystem s : Activator.getInstance().getSubsystems().getSubsystems()) {
 				if ((s.isApplication() || s.isComposite())
 						&& region.equals(s.getRegion())) {
-					s.installResource(bundleRevision);
+					Utils.installResource(bundleRevision, s);
 					return;
 				}
 			}

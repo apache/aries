@@ -27,11 +27,13 @@ public class ProvisionResourceHeader extends AbstractHeader {
 		private final Version deployedVersion;
 		private final String name;
 		private final String namespace;
+		private final long resourceId;
 		
-		public ProvisionedResource(String name, Version deployedVersion, String namespace) {
+		public ProvisionedResource(String name, Version deployedVersion, String namespace, long resourceId) {
 			this.name = name;
 			this.deployedVersion = deployedVersion;
 			this.namespace = namespace;
+			this.resourceId = resourceId;
 		}
 		
 		public Version getDeployedVersion() {
@@ -44,6 +46,10 @@ public class ProvisionResourceHeader extends AbstractHeader {
 		
 		public String getNamespace() {
 			return namespace;
+		}
+		
+		public long getResourceId() {
+			return resourceId;
 		}
 	}
 	
@@ -70,11 +76,13 @@ public class ProvisionResourceHeader extends AbstractHeader {
 		for (Clause clause : clauses) {
 			DeployedVersionAttribute attribute = (DeployedVersionAttribute)clause.getAttribute(DeployedVersionAttribute.NAME);
 			TypeAttribute typeAttribute = (TypeAttribute)clause.getAttribute(TypeAttribute.NAME);
+			Attribute resourceId = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
 			provisionedResources.add(
 					new ProvisionedResource(
 							clause.getPath(),
 							attribute == null ? Version.emptyVersion : attribute.getDeployedVersion(),
-							typeAttribute == null ? TypeAttribute.DEFAULT_VALUE : typeAttribute.getType()));
+							typeAttribute == null ? TypeAttribute.DEFAULT_VALUE : typeAttribute.getType(),
+							resourceId == null ? -1 : Long.parseLong(String.valueOf(resourceId.getValue()))));
 		}
 	}
 	

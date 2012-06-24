@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,7 +134,11 @@ public class SubsystemManifest {
 	}
 	
 	public SubsystemManifest(File file) throws FileNotFoundException, IOException {
-		Manifest manifest = ManifestProcessor.parseManifest(new FileInputStream(file));
+		this(new FileInputStream(file));
+	}
+	
+	public SubsystemManifest(InputStream in) throws IOException {
+		Manifest manifest = ManifestProcessor.parseManifest(in);
 		Attributes attributes = manifest.getMainAttributes();
 		Map<String, Header<?>> headers = new HashMap<String, Header<?>>(attributes.size() + 4); // Plus the # of potentially derived headers.
 		for (Entry<Object, Object> entry : attributes.entrySet()) {

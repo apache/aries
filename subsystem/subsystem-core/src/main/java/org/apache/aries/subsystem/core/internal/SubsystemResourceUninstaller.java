@@ -25,6 +25,7 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 		removeReferences();
 		removeConstituents();
 		removeChildren();
+		removeSubsystem();
 	}
 	
 	private void removeChildren() {
@@ -54,31 +55,39 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 			removeReference((AriesSubsystem)subsystem, (AriesSubsystem)resource);
 	}
 	
+	private void removeSubsystem() {
+		Activator.getInstance().getSubsystems().removeSubsystem((AriesSubsystem)resource);
+	}
+	
 	private void uninstallSubsystem() {
-		AriesSubsystem subsystem = (AriesSubsystem)resource;
+		AriesSubsystem subsystem = (AriesSubsystem) resource;
 		if (subsystem.getState().equals(Subsystem.State.RESOLVED))
-				subsystem.setState(State.INSTALLED);
-			subsystem.setState(State.UNINSTALLING);
-			Throwable firstError = null;
-			for (Resource resource : Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem)) {
-				// Don't uninstall the region context bundle here.
-				if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
-					continue;
-				try {
-					ResourceUninstaller.newInstance(resource, subsystem).uninstall();
-				}
-				catch (Throwable t) {
-					logger.error("An error occurred while uninstalling resource " + resource + " of subsystem " + subsystem, t);
-					if (firstError == null)
-						firstError = t;
-				}
+			subsystem.setState(State.INSTALLED);
+		subsystem.setState(State.UNINSTALLING);
+		Throwable firstError = null;
+		for (Resource resource : Activator.getInstance().getSubsystems()
+				.getResourcesReferencedBy(subsystem)) {
+			// Don't uninstall the region context bundle here.
+			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(
+					RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+				continue;
+			try {
+				ResourceUninstaller.newInstance(resource, subsystem)
+						.uninstall();
+			} catch (Throwable t) {
+				logger.error("An error occurred while uninstalling resource "
+						+ resource + " of subsystem " + subsystem, t);
+				if (firstError == null)
+					firstError = t;
 			}
-			IOUtils.deleteRecursive(subsystem.getDirectory());
-			subsystem.setState(State.UNINSTALLED);
-			Activator.getInstance().getSubsystemServiceRegistrar().unregister(subsystem);
-			if (subsystem.isScoped())
-				RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
-			if (firstError != null)
-				throw new SubsystemException(firstError);
+		}
+		subsystem.setState(State.UNINSTALLED);
+		Activator.getInstance().getSubsystemServiceRegistrar()
+				.unregister(subsystem);
+		if (subsystem.isScoped())
+			RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
+		if (firstError != null)
+			throw new SubsystemException(firstError);
+		IOUtils.deleteRecursive(subsystem.getDirectory());
 	}
 }

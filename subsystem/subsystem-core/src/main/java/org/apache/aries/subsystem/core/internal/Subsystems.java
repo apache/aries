@@ -1,31 +1,36 @@
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
+import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.subsystem.Subsystem;
+import org.osgi.service.subsystem.SubsystemException;
 
 public class Subsystems {
-	private final SubsystemGraph graph;
+	private AriesSubsystem root;
+	private volatile SubsystemGraph graph;
+	
 	private final Map<Long, AriesSubsystem> idToSubsystem = new HashMap<Long, AriesSubsystem>();
 	private final Map<String, AriesSubsystem> locationToSubsystem = new HashMap<String, AriesSubsystem>();
 	private final ResourceReferences resourceReferences = new ResourceReferences();
-	private final AriesSubsystem root;
 	private final Map<AriesSubsystem, Set<Resource>> subsystemToConstituents = new HashMap<AriesSubsystem, Set<Resource>>();
-	
-	public Subsystems() throws Exception {
-		root = new AriesSubsystem();
-		graph = new SubsystemGraph(root);
-	}
 	
 	public void addChild(AriesSubsystem parent, AriesSubsystem child) {
 		graph.add(parent, child);
+		child.addedParent(parent);
 	}
 	
 	public void addConstituent(AriesSubsystem subsystem, Resource constituent) {
@@ -35,9 +40,9 @@ public class Subsystems {
 				constituents = new HashSet<Resource>();
 				subsystemToConstituents.put(subsystem, constituents);
 			}
-			if (!constituents.add(constituent))
-				throw new IllegalArgumentException("Constituent already exists");
+			constituents.add(constituent);
 		}
+		subsystem.addedContent(constituent);
 	}
 	
 	public void addReference(AriesSubsystem subsystem, Resource resource) {
@@ -62,7 +67,7 @@ public class Subsystems {
 			Collection<Resource> result = subsystemToConstituents.get(subsystem);
 			if (result == null)
 				return Collections.emptyList();
-			return Collections.unmodifiableCollection(result);
+			return Collections.unmodifiableCollection(new ArrayList<Resource>(result));
 		}
 	}
 	
@@ -74,7 +79,83 @@ public class Subsystems {
 		return resourceReferences.getResources(subsystem);
 	}
 	
-	public AriesSubsystem getRootSubsystem() {
+	public synchronized AriesSubsystem getRootSubsystem() {
+		if (root == null) {
+			File file = Activator.getInstance().getBundleContext().getDataFile("");
+			File[] fileArray = file.listFiles();
+			List<File> fileList = new ArrayList<File>(Arrays.asList(fileArray));
+			Collections.sort(fileList, new Comparator<File>() {
+				@Override
+				public int compare(File file1, File file2) {
+					String name1 = file1.getName();
+					String name2 = file2.getName();
+					return Long.valueOf(name1).compareTo(Long.valueOf(name2));
+				}
+			});
+			if (fileList.isEmpty()) {
+				SubsystemResource resource;
+				try {
+					resource = new SubsystemResource(file);
+				}
+				catch (SubsystemException e) {
+					throw e;
+				}
+				catch (Exception e) {
+					throw new SubsystemException(e);
+				}
+				Coordination coordination = Utils.createCoordination();
+				try {
+					root = (AriesSubsystem)ResourceInstaller.newInstance(coordination, resource, null, false).install();
+					// TODO Begin proof of concept.
+					// This is a proof of concept for initializing the relationships between the root subsystem and bundles
+					// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
+					// since this does not take into account the possibility of already existing bundles going away or new bundles
+					// being installed out of band while this initialization is taking place. Need a bundle event hook for that.
+					BundleContext context = Activator.getInstance().getBundleContext().getBundle(0).getBundleContext();
+					for (long id : root.getRegion().getBundleIds()) {
+						BundleRevision br = context.getBundle(id).adapt(BundleRevision.class);
+						ResourceInstaller.newInstance(coordination, br, root, false).install();
+					}
+					// TODO End proof of concept.
+				} catch (Exception e) {
+					coordination.fail(e);
+				} finally {
+					coordination.end();
+				}
+				// TODO This initialization is a bit brittle. The root subsystem
+				// must be gotten before anything else will be able to use the
+				// graph. At the very least, throw IllegalStateException where
+				// appropriate.
+				graph = new SubsystemGraph(root);
+			}
+			else {
+				Coordination coordination = Utils.createCoordination();
+				Collection<AriesSubsystem> subsystems = new ArrayList<AriesSubsystem>(fileList.size());
+				try {
+					for (File f : fileList) {
+						AriesSubsystem s = new AriesSubsystem(f);
+						subsystems.add(s);
+						addSubsystem(s);
+					}
+					root = getSubsystemById(0);
+					graph = new SubsystemGraph(root);
+					for (AriesSubsystem s : subsystems) {
+						Collection<Subsystem> parents = s.getParents();
+						if (parents == null || parents.isEmpty()) {
+							ResourceInstaller.newInstance(coordination, s, null, false).install();
+						}
+						else {
+							for (Subsystem parent : s.getParents())
+								ResourceInstaller.newInstance(coordination, s, (AriesSubsystem)parent, false).install();
+						}	
+					}
+				} catch (Exception e) {
+					coordination.fail(e);
+				} finally {
+					coordination.end();
+				}
+			}
+		}
 		return root;
 	}
 	
@@ -98,7 +179,7 @@ public class Subsystems {
 		ArrayList<AriesSubsystem> result = new ArrayList<AriesSubsystem>();
 		synchronized (subsystemToConstituents) {
 			for (AriesSubsystem subsystem : subsystemToConstituents.keySet())
-				if (subsystem.contains(constituent))
+				if (getConstituents(subsystem).contains(constituent))
 					result.add(subsystem);
 		}
 		result.trimToSize();
@@ -120,9 +201,9 @@ public class Subsystems {
 	public void removeConstituent(AriesSubsystem subsystem, Resource constituent) {
 		synchronized (subsystemToConstituents) {
 			Set<Resource> constituents = subsystemToConstituents.get(subsystem);
-			if (!constituents.remove(constituent))
-				throw new IllegalArgumentException("Constituent does not exist");
+			constituents.remove(constituent);
 		}
+		subsystem.removedContent(constituent);
 	}
 	
 	public void removeReference(AriesSubsystem subsystem, Resource resource) {
@@ -140,27 +221,21 @@ public class Subsystems {
 	
 	private void addIdToSubsystem(AriesSubsystem subsystem) {
 		long id = subsystem.getSubsystemId();
-		if (idToSubsystem.containsKey(id))
-			throw new IllegalArgumentException("Subsystem ID already exists: " + id);
 		idToSubsystem.put(id, subsystem);
 	}
 	
 	private void addLocationToSubsystem(AriesSubsystem subsystem) {
 		String location = subsystem.getLocation();
-		if (locationToSubsystem.containsKey(location))
-			throw new IllegalArgumentException("Subsystem location already exists: " + location);
 		locationToSubsystem.put(location, subsystem);
 	}
 	
 	private void removeIdToSubsystem(AriesSubsystem subsystem) {
 		long id = subsystem.getSubsystemId();
-		if (idToSubsystem.remove(id) == null)
-			throw new IllegalArgumentException("Subsystem ID does not exist: " + id);
+		idToSubsystem.remove(id);
 	}
 	
 	private void removeLocationToSubsystem(AriesSubsystem subsystem) {
 		String location = subsystem.getLocation();
-		if (locationToSubsystem.remove(location) == null)
-			throw new IllegalArgumentException("Subsystem location does not exist: " + location);
+		locationToSubsystem.remove(location);
 	}
 }

@@ -128,10 +128,7 @@ public class FeatureTest extends SubsystemTest {
 		}
 	}
 	
-	/*
-	 * Persistence needs to be refactored based on directory structure changes.
-	 */
-	//@Test
+	@Test
 	public void testPersistence() throws Exception {
 		Subsystem feature3Before = installSubsystemFromFile("feature3.esa");
 		Subsystem feature3After = null;
