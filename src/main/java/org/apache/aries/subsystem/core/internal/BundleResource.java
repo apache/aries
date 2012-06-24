@@ -142,4 +142,9 @@ public class BundleResource implements Resource, RepositoryContent {
 		}
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+        return content.toExternalForm();
+    }
 }

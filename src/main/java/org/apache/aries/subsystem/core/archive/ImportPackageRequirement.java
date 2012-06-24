@@ -13,10 +13,14 @@ public class ImportPackageRequirement extends AbstractRequirement {
 	public static final String DIRECTIVE_FILTER = PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE;
 	public static final String NAMESPACE = PackageNamespace.PACKAGE_NAMESPACE;
 	
-	private final Map<String, String> directives = new HashMap<String, String>(1);
+	private final Map<String, String> directives;
 	private final Resource resource;
 	
 	public ImportPackageRequirement(ImportPackageHeader.Clause clause, Resource resource) {
+		Collection<Directive> clauseDirectives = clause.getDirectives();
+		directives = new HashMap<String, String>(clauseDirectives.size() + 1);
+		for (Directive directive : clauseDirectives)
+			directives.put(directive.getName(), directive.getValue());
 		Collection<String> packageNames = clause.getPackageNames();
 		if (packageNames.isEmpty() || packageNames.size() > 1)
 			throw new IllegalArgumentException("Only one package name per requirement allowed");
