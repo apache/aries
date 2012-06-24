@@ -16,38 +16,143 @@ package org.apache.aries.subsystem.core.archive;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.aries.subsystem.core.internal.ResourceHelper;
+import org.apache.aries.subsystem.core.internal.Utils;
 import org.osgi.framework.Version;
 import org.osgi.resource.Resource;
+import org.osgi.service.subsystem.SubsystemConstants;
 
-public class DeployedContentHeader extends AbstractHeader {
-	public static class DeployedContent {
-		private final Version deployedVersion;
-		private final String name;
-		private final String namespace;
+public class DeployedContentHeader implements Header<DeployedContentHeader.Clause> {
+	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+		public static final String ATTRIBUTE_DEPLOYEDVERSION = DeployedVersionAttribute.NAME;
+		public static final String ATTRIBUTE_RESOURCEID = "resourceId";
+		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
+		public static final String DIRECTIVE_STARTORDER = StartOrderDirective.NAME;
 		
-		public DeployedContent(String name, Version deployedVersion, String namespace) {
-			this.name = name;
-			this.deployedVersion = deployedVersion;
-			this.namespace = namespace;
+		private static final Pattern PATTERN_SYMBOLICNAME = Pattern.compile('(' + Grammar.SYMBOLICNAME + ")(?=;|\\z)");
+		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
+		
+		private static void fillInDefaults(Map<String, Parameter> parameters) {
+			Parameter parameter = parameters.get(ATTRIBUTE_TYPE);
+			if (parameter == null)
+				parameters.put(ATTRIBUTE_TYPE, TypeAttribute.DEFAULT);
+		}
+		
+		private final String path;
+		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		
+		public Clause(String clause) {
+			Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clause);
+			if (!matcher.find())
+				throw new IllegalArgumentException("Missing symbolic name path: " + clause);
+			path = matcher.group();
+			matcher.usePattern(PATTERN_PARAMETER);
+			while (matcher.find()) {
+				Parameter parameter = ParameterFactory.create(matcher.group());
+				parameters.put(parameter.getName(), parameter);
+			}
+			fillInDefaults(parameters);
+		}
+		
+		public Clause(Resource resource) {
+			this(appendResource(resource, new StringBuilder()).toString());
+		}
+		
+		public boolean contains(Resource resource) {
+			return getSymbolicName().equals(
+					ResourceHelper.getSymbolicNameAttribute(resource))
+					&& getDeployedVersion().equals(
+							ResourceHelper.getVersionAttribute(resource))
+					&& getType().equals(
+							ResourceHelper.getTypeAttribute(resource));
+		}
+		
+		@Override
+		public Attribute getAttribute(String name) {
+			Parameter result = parameters.get(name);
+			if (result instanceof Attribute)
+				return (Attribute)result;
+			return null;
+		}
+
+		@Override
+		public Collection<Attribute> getAttributes() {
+			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
+			for (Parameter parameter : parameters.values())
+				if (parameter instanceof Attribute)
+					attributes.add((Attribute)parameter);
+			attributes.trimToSize();
+			return attributes;
 		}
 		
 		public Version getDeployedVersion() {
-			return deployedVersion;
+			return ((DeployedVersionAttribute)getAttribute(ATTRIBUTE_DEPLOYEDVERSION)).getVersion();
+		}
+
+		@Override
+		public Directive getDirective(String name) {
+			Parameter result = parameters.get(name);
+			if (result instanceof Directive)
+				return (Directive)result;
+			return null;
+		}
+
+		@Override
+		public Collection<Directive> getDirectives() {
+			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
+			for (Parameter parameter : parameters.values())
+				if (parameter instanceof Directive)
+					directives.add((Directive)parameter);
+			directives.trimToSize();
+			return directives;
+		}
+
+		@Override
+		public Parameter getParameter(String name) {
+			return parameters.get(name);
+		}
+
+		@Override
+		public Collection<Parameter> getParameters() {
+			return Collections.unmodifiableCollection(parameters.values());
+		}
+
+		@Override
+		public String getPath() {
+			return path;
 		}
 		
-		public String getName() {
-			return name;
+		public String getSymbolicName() {
+			return path;
 		}
 		
-		public String getNamespace() {
-			return namespace;
+		public int getStartOrder() {
+			return ((StartOrderDirective)getAttribute(DIRECTIVE_STARTORDER)).getStartOrder();
+		}
+		
+		public String getType() {
+			return ((TypeAttribute)getAttribute(ATTRIBUTE_TYPE)).getType();
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder()
+					.append(getPath());
+			for (Parameter parameter : getParameters()) {
+				builder.append(';').append(parameter);
+			}
+			return builder.toString();
 		}
 	}
 	
-	// TODO Needs to be added to SubsystemConstants.
-	public static final String NAME = "Deployed-Content";
+	public static final String NAME = SubsystemConstants.DEPLOYED_CONTENT;
 	
 	public static DeployedContentHeader newInstance(Collection<Resource> resources) {
 		StringBuilder builder = new StringBuilder();
@@ -61,23 +166,105 @@ public class DeployedContentHeader extends AbstractHeader {
 		return new DeployedContentHeader(builder.toString());
 	}
 	
-	private final List<DeployedContent> deployedContents;
+	private static StringBuilder appendResource(Resource resource, StringBuilder builder) {
+		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
+		Version version = ResourceHelper.getVersionAttribute(resource);
+		String type = ResourceHelper.getTypeAttribute(resource);
+		builder.append(symbolicName)
+			.append(';')
+			.append(Clause.ATTRIBUTE_DEPLOYEDVERSION)
+			.append('=')
+			.append(version.toString())
+			.append(';')
+			.append(Clause.ATTRIBUTE_TYPE)
+			.append('=')
+			.append(type)
+			.append(';')
+			.append(Clause.ATTRIBUTE_RESOURCEID)
+			.append('=')
+			.append(Utils.getId(resource));
+		return builder;
+	}
+	
+	private static Collection<Clause> processHeader(String value) {
+		int numOfChars = value.length();
+		StringBuilder builder = new StringBuilder(numOfChars);
+		int numOfQuotes = 0;
+		Set<Clause> clauses = new HashSet<Clause>();
+		for (char c : value.toCharArray()) {
+			numOfChars--;
+			if (c == ',') {
+				if (numOfQuotes % 2 == 0) {
+					clauses.add(new Clause(builder.toString()));
+					builder = new StringBuilder(numOfChars);
+				}
+				else
+					builder.append(c);
+			}
+			else if (c == '"')
+				numOfQuotes++;
+			else
+				builder.append(c);
+		}
+		clauses.add(new Clause(builder.toString()));
+		return clauses;
+	}
+	
+	private final Set<Clause> clauses;
+	
+	public DeployedContentHeader(Collection<Clause> clauses) {
+		if (clauses.isEmpty())
+			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
+		this.clauses = new HashSet<Clause>(clauses);
+	}
 	
 	public DeployedContentHeader(String value) {
-		super(NAME, value);
-		deployedContents = new ArrayList<DeployedContent>(clauses.size());
+		this(processHeader(value));
+	}
+	
+	public boolean contains(Resource resource) {
+		for (Clause clause : getClauses())
+			if (clause.contains(resource))
+				return true;
+		return false;
+	}
+	
+	public Clause getClause(Resource resource) {
+		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
+		Version version = ResourceHelper.getVersionAttribute(resource);
+		String type = ResourceHelper.getTypeAttribute(resource);
 		for (Clause clause : clauses) {
-			DeployedVersionAttribute attribute = (DeployedVersionAttribute)clause.getAttribute(DeployedVersionAttribute.NAME);
-			TypeAttribute typeAttribute = (TypeAttribute)clause.getAttribute(TypeAttribute.NAME);
-			deployedContents.add(
-					new DeployedContent(
-							clause.getPath(),
-							attribute == null ? Version.emptyVersion : attribute.getDeployedVersion(),
-							typeAttribute == null ? TypeAttribute.DEFAULT_VALUE : typeAttribute.getType()));
+			if (symbolicName.equals(clause.getPath())
+					&& clause.getDeployedVersion().equals(version)
+					&& type.equals(clause.getType()))
+				return clause;
 		}
+		return null;
+	}
+	
+	@Override
+	public Collection<DeployedContentHeader.Clause> getClauses() {
+		return Collections.unmodifiableSet(clauses);
 	}
 
-	public List<DeployedContent> getDeployedContents() {
-		return Collections.unmodifiableList(deployedContents);
+	@Override
+	public String getName() {
+		return NAME;
+	}
+
+	@Override
+	public String getValue() {
+		return toString();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (Clause clause : getClauses()) {
+			builder.append(clause).append(',');
+		}
+		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
+		builder.deleteCharAt(builder.length() - 1);
+		return builder.toString();
 	}
 }

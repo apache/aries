@@ -53,7 +53,7 @@ public abstract class ResourceUninstaller {
 	protected boolean isTransitive() {
 		if (subsystem == null)
 			return false;
-		ProvisionResourceHeader header = subsystem.getArchive().getDeploymentManifest().getProvisionResourceHeader();
+		ProvisionResourceHeader header = subsystem.getDeploymentManifest().getProvisionResourceHeader();
 		if (header == null)
 			return false;
 		return header.contains(resource);

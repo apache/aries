@@ -43,7 +43,7 @@ public class SubsystemServiceRegistrar {
 	
 	public synchronized void register(AriesSubsystem child, AriesSubsystem parent) {
 		if (map.containsKey(child))
-			throw new IllegalStateException("Subsystem '" + child + "' already has service registration '" + map.get(child) + "'");
+			return;
 		Dictionary<String, Object> properties = properties(child, parent);
 		ServiceRegistration<Subsystem> registration = context.registerService(Subsystem.class, child, properties);
 		map.put(child, registration);

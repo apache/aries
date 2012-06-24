@@ -1,14 +1,19 @@
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import org.apache.aries.util.io.IOUtils;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Participant;
+import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class InstallAction implements PrivilegedAction<AriesSubsystem> {
@@ -28,6 +33,8 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 		this.content = content;
 		this.parent = parent;
 		this.context = context;
+		if (coordination == null)
+			coordination = Utils.createCoordination(parent);
 		this.coordination = coordination;
 		this.embedded = embedded;
 	}
@@ -35,23 +42,9 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 	@Override
 	public AriesSubsystem run() {
 		AriesSubsystem result = null;
-		Coordination coordination = this.coordination;
-		if (coordination == null)
-			coordination = Activator.getInstance().getCoordinator().create(parent.getSymbolicName() + '-' + parent.getSubsystemId(), 0);
 		try {
 			TargetRegion region = new TargetRegion(parent);
-			final SubsystemResource ssr = new SubsystemResource(location, content, parent);
-			coordination.addParticipant(new Participant() {
-				@Override
-				public void ended(Coordination c) throws Exception {
-					// Nothing
-				}
-
-				@Override
-				public void failed(Coordination c) throws Exception {
-					IOUtils.deleteRecursive(ssr.getDirectory());
-				}
-			});
+			SubsystemResource ssr = createSubsystemResource(location, content, parent);
 			result = Activator.getInstance().getSubsystems().getSubsystemByLocation(location);
 			if (result != null) {
 				checkLifecyclePermission(result);
@@ -61,8 +54,7 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 						&& result.getVersion().equals(ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion())
 						&& result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType())))
 					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
-				parent.installResource(result);
-				return result;
+				return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent, false).install();
 			}
 			result = (AriesSubsystem)region.find(
 					ssr.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName(), 
@@ -71,12 +63,11 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 				checkLifecyclePermission(result);
 				if (!result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType()))
 					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
-				parent.installResource(result);
-				return result;
+				return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent, false).install();
 			}
-			result = new AriesSubsystem(ssr, parent);
+			result = createSubsystem(ssr);
 			checkLifecyclePermission(result);
-			parent.installResource(result, coordination, false);
+			return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent, false).install();
 		}
 		catch (Throwable t) {
 			coordination.fail(t);
@@ -108,5 +99,38 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 			}
 		},
 		context);
+	}
+	
+	private AriesSubsystem createSubsystem(SubsystemResource resource) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
+		final AriesSubsystem result = new AriesSubsystem(resource);
+		coordination.addParticipant(new Participant() {
+			@Override
+			public void ended(Coordination c) throws Exception {
+				// Nothing
+			}
+
+			@Override
+			public void failed(Coordination c) throws Exception {
+				IOUtils.deleteRecursive(result.getDirectory());
+			}
+		});
+		return result;
+		
+	}
+	
+	private SubsystemResource createSubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException {
+		final SubsystemResource result = new SubsystemResource(location, content, parent);
+//		coordination.addParticipant(new Participant() {
+//			@Override
+//			public void ended(Coordination c) throws Exception {
+//				// Nothing
+//			}
+//
+//			@Override
+//			public void failed(Coordination c) throws Exception {
+//				IOUtils.deleteRecursive(result.getDirectory());
+//			}
+//		});
+		return result;
 	}
 }
