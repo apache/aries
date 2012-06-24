@@ -21,11 +21,11 @@ public class RegionContextBundleHelper {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		String location = subsystem.getLocation() + '/' + subsystem.getSubsystemId();
 		Bundle b = subsystem.getRegion().getBundle(symbolicName, VERSION);
-		if (b != null)
-			return;
-		ThreadLocalSubsystem.set(subsystem);
-		b = subsystem.getRegion().installBundleAtLocation(location, createRegionContextBundle(symbolicName));
-		subsystem.installResource(b.adapt(BundleRevision.class));
+		if (b == null) {
+			ThreadLocalSubsystem.set(subsystem);
+			b = subsystem.getRegion().installBundleAtLocation(location, createRegionContextBundle(symbolicName));
+		}
+		Utils.installResource(b.adapt(BundleRevision.class), subsystem);
 		// The region context bundle must be started persistently.
 		b.start();
 	}

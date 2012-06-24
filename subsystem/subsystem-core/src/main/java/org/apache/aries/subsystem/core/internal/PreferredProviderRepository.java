@@ -89,6 +89,6 @@ public class PreferredProviderRepository implements Repository {
 	}
 	
 	private boolean isValid(Capability capability) {
-		return resource.getParent().getConstituents().contains(capability.getResource());
+		return resource.getParents().iterator().next().getConstituents().contains(capability.getResource());
 	}
 }

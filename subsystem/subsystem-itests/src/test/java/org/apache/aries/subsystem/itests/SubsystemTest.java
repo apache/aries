@@ -304,6 +304,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertEvent(Subsystem subsystem, Subsystem.State state, SubsystemEventHandler.ServiceEventInfo event, int type) {
 		// TODO Could accept a ServiceRegistration as an argument and verify it against the one in the event.
+		assertNotNull("No event", event);
 		assertEquals("Wrong ID", subsystem.getSubsystemId(), event.getId());
 		assertEquals("Wrong symbolic name", subsystem.getSymbolicName(), event.getSymbolicName());
 		assertEquals("Wrong version", subsystem.getVersion(), event.getVersion());

@@ -1,7 +1,6 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -22,6 +21,7 @@ import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemVersionHeader;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
@@ -37,7 +37,7 @@ import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemConstants;
-import org.osgi.service.subsystem.SubsystemException;
+import org.osgi.service.subsystem.Subsystem.State;
 
 public class RawSubsystemResource implements Resource {
 	private static final Pattern PATTERN = Pattern.compile("([^@]+)(?:@(.+))?.esa");
@@ -78,8 +78,6 @@ public class RawSubsystemResource implements Resource {
 	
 	private final List<Capability> capabilities;
 	private final DeploymentManifest deploymentManifest;
-	private final File directory;
-	private final long id;
 	private final Repository localRepository;
 	private final Location location;
 	private final List<Requirement> requirements;
@@ -90,19 +88,7 @@ public class RawSubsystemResource implements Resource {
 		this.location = new Location(location);
 		if (content == null)
 			content = this.location.open();
-		id = SubsystemIdentifier.getNextId();
-		directory = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(id));
-		if (!directory.mkdir())
-			throw new SubsystemException("Unable to make directory " + directory.getAbsolutePath());
-		File file = new File(directory, Long.toString(id) + ".ssa");
-		FileOutputStream fos = new FileOutputStream(file);
-		try {
-			IOUtils.copy(content, fos);
-		}
-		finally {
-			IOUtils.close(fos);
-		}
-		IDirectory idir = FileSystem.getFSRoot(file);
+		IDirectory idir = FileSystem.getFSRoot(content);
 		try {
 			resources = computeResources(idir);
 			localRepository = computeLocalRepository();
@@ -116,6 +102,20 @@ public class RawSubsystemResource implements Resource {
 		finally {
 			IOUtils.close(idir.toCloseable());
 		}
+	}
+	
+	public RawSubsystemResource(File file) throws IOException, URISyntaxException, ResolutionException {
+		this(FileSystem.getFSRoot(file));
+	}
+	
+	public RawSubsystemResource(IDirectory idir) throws IOException, URISyntaxException, ResolutionException {
+		resources = Collections.emptyList();
+		localRepository = computeLocalRepository();
+		subsystemManifest = initializeSubsystemManifest(idir);
+		requirements = subsystemManifest.toRequirements(this);
+		capabilities = subsystemManifest.toCapabilities(this);
+		deploymentManifest = initializeDeploymentManifest(idir);
+		location = new Location(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue());
 	}
 
 	@Override
@@ -132,14 +132,6 @@ public class RawSubsystemResource implements Resource {
 	
 	public DeploymentManifest getDeploymentManifest() {
 		return deploymentManifest;
-	}
-	
-	public File getDirectory() {
-		return directory;
-	}
-	
-	public long getId() {
-		return id;
 	}
 	
 	public Repository getLocalRepository() {
@@ -288,7 +280,7 @@ public class RawSubsystemResource implements Resource {
 		return new DependencyCalculator(resources).calculateDependencies();
 	}
 	
-	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, UnsupportedOperationException, ResolutionException {
+	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
 		List<IFile> files = directory.listFiles();
 		if (files.isEmpty())
 			return Collections.emptyList();
@@ -341,6 +333,39 @@ public class RawSubsystemResource implements Resource {
 		if (header.getVersion().equals(Version.emptyVersion) && location.getVersion() != null)
 			header = new SubsystemVersionHeader(location.getVersion());
 		return header;
+	}
+	
+	private DeploymentManifest initializeDeploymentManifest(IDirectory idir)
+			throws IOException {
+		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(idir,
+				"OSGI-INF/DEPLOYMENT.MF");
+		if (manifest != null)
+			return new DeploymentManifest(manifest);
+		else
+			return new DeploymentManifest.Builder()
+					.manifest(getSubsystemManifest())
+					.location(AriesSubsystem.ROOT_LOCATION).autostart(true).id(0)
+					.lastId(SubsystemIdentifier.getLastId())
+					.region(AriesSubsystem.ROOT_REGION).state(State.INSTALLING)
+					.build();
+	}
+	
+	private SubsystemManifest initializeSubsystemManifest(IDirectory idir)
+			throws IOException {
+		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(idir,
+				"OSGI-INF/SUBSYSTEM.MF");
+		if (manifest != null)
+			return new SubsystemManifest(manifest);
+		else
+			return new SubsystemManifest.Builder()
+					.symbolicName(AriesSubsystem.ROOT_SYMBOLIC_NAME)
+					.version(AriesSubsystem.ROOT_VERSION)
+					.type(SubsystemTypeHeader.TYPE_APPLICATION
+							+ ';'
+							+ SubsystemTypeHeader.DIRECTIVE_PROVISION_POLICY
+							+ ":="
+							+ SubsystemTypeHeader.PROVISION_POLICY_ACCEPT_DEPENDENCIES)
+					.build();
 	}
 	
 	private boolean isComposite(SubsystemManifest manifest) {

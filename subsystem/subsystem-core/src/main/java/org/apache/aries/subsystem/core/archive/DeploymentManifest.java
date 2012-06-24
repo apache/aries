@@ -2,12 +2,16 @@ package org.apache.aries.subsystem.core.archive;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
@@ -15,7 +19,9 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
+import org.osgi.resource.Resource;
 import org.osgi.service.resolver.ResolutionException;
+import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class DeploymentManifest {
@@ -26,15 +32,106 @@ public class DeploymentManifest {
 			return new DeploymentManifest(headers);
 		}
 		
+		public Builder autostart(boolean value) {
+			header(new GenericHeader(ARIESSUBSYSTEM_AUTOSTART, Boolean.toString(value)));
+			return this;
+		}
+		
+		public Builder content(Resource resource) {
+			DeployedContentHeader header = (DeployedContentHeader)headers.get(DeploymentManifest.DEPLOYED_CONTENT);
+			if (header == null) {
+				header(DeployedContentHeader.newInstance(Collections.singletonList(resource)));
+				return this;
+			}
+			DeployedContentHeader.Clause clause = header.getClause(resource);
+			if (clause == null) {
+				clause = new DeployedContentHeader.Clause(resource);
+				List<DeployedContentHeader.Clause> clauses = new ArrayList<DeployedContentHeader.Clause>(header.getClauses().size() + 1);
+				clauses.addAll(header.getClauses());
+				clauses.add(clause);
+				header(new DeployedContentHeader(clauses));
+				return this;
+			}
+			
+			Collection<DeployedContentHeader.Clause> clauses = new ArrayList<DeployedContentHeader.Clause>(header.getClauses());
+			for (Iterator<DeployedContentHeader.Clause> i = clauses.iterator(); i.hasNext();)
+				if (clause.equals(i.next())) {
+					i.remove();
+					break;
+				}
+			clauses.add(new DeployedContentHeader.Clause(resource));
+			header(new DeployedContentHeader(clauses));
+			return this;
+//			Attribute resourceId = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
+//			if (resourceId == null)
+//				clause = new DeployedContentHeader.Clause(resource);
+//			List<DeployedContentHeader.Clause> clauses = new ArrayList<DeployedContentHeader.Clause>(header.getClauses().size() + 1);
+//			clauses.addAll(header.getClauses());
+//			clauses.add(clause);
+//			header(new DeployedContentHeader(clauses));
+//			return this;
+		}
+		
 		public Builder header(Header<?> value) {
 			if (value != null)
 				headers.put(value.getName(), value);
 			return this;
 		}
 		
+		public Builder id(long value) {
+			header(new GenericHeader(ARIESSUBSYSTEM_ID, Long.toString(value)));
+			return this;
+		}
+		
+		public Builder lastId(long value) {
+			header(new GenericHeader(ARIESSUBSYSTEM_LASTID, Long.toString(value)));
+			return this;
+		}
+		
+		public Builder location(String value) {
+			if (value != null)
+				header(new GenericHeader(ARIESSUBSYSTEM_LOCATION, value));
+			return this;
+		}
+		
+		public Builder manifest(DeploymentManifest value) {
+			if (value != null)
+				for (Entry<String, Header<?>> entry : value.getHeaders().entrySet())
+					header(entry.getValue());
+			return this;
+		}
+		
 		public Builder manifest(SubsystemManifest value) {
-			for (Entry<String, Header<?>> entry : value.getHeaders().entrySet())
-				header(entry.getValue());
+			if (value != null)
+				for (Entry<String, Header<?>> entry : value.getHeaders().entrySet())
+					header(entry.getValue());
+			return this;
+		}
+		
+		public Builder parent(long value) {
+			Header<?> parents = headers.get(ARIESSUBSYSTEM_PARENTS);
+			if (parents == null)
+				header(new GenericHeader(ARIESSUBSYSTEM_PARENTS, Long.toString(value)));
+			else
+				header(new GenericHeader(ARIESSUBSYSTEM_PARENTS, parents.getValue() + ',' + Long.toString(value)));
+			return this;
+		}
+		
+		public Builder region(String value) {
+			if (value != null)
+				header(new GenericHeader(ARIESSUBSYSTEM_REGION, value));
+			return this;
+		}
+		
+		public Builder region(org.eclipse.equinox.region.Region value) {
+			if (value != null)
+				region(value.getName());
+			return this;
+		}
+		
+		public Builder state(Subsystem.State value) {
+			if (value != null)
+				header(new GenericHeader(ARIESSUBSYSTEM_STATE, value.toString()));
 			return this;
 		}
 	}
@@ -56,6 +153,9 @@ public class DeploymentManifest {
 	public static final String ARIESSUBSYSTEM_ID = "AriesSubsystem-Id";
 	public static final String ARIESSUBSYSTEM_LASTID = "AriesSubsystem-LastId";
 	public static final String ARIESSUBSYSTEM_LOCATION = "AriesSubsystem-Location";
+	public static final String ARIESSUBSYSTEM_PARENTS = "AriesSubsystem-Parents";
+	public static final String ARIESSUBSYSTEM_REGION = "AriesSubsystem-Region";
+	public static final String ARIESSUBSYSTEM_STATE = "AriesSubsystem-State";
 	
 	private final Map<String, Header<?>> headers;
 	
@@ -69,8 +169,12 @@ public class DeploymentManifest {
 		}
 	}
 	
-	public DeploymentManifest(File file) throws FileNotFoundException, IOException {
-		Manifest manifest = ManifestProcessor.parseManifest(new FileInputStream(file));
+	public DeploymentManifest(File file) throws IOException {
+		this(new FileInputStream(file));
+	}
+	
+	public DeploymentManifest(InputStream in) throws IOException {
+		Manifest manifest = ManifestProcessor.parseManifest(in);
 		Attributes attributes = manifest.getMainAttributes();
 		Map<String, Header<?>> headers = new HashMap<String, Header<?>>(attributes.size() + 4); // Plus the # of potentially derived headers.
 		for (Entry<Object, Object> entry : attributes.entrySet()) {

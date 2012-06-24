@@ -151,14 +151,11 @@ public class RequireBundleHeader implements RequirementHeader<RequireBundleHeade
 	}
 	
 	public static final String NAME = Constants.REQUIRE_BUNDLE;
-
-	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.BUNDLE_DESCRIPTION + ")(?=,|\\z)");
 	
 	private static Collection<Clause> processHeader(String header) {
-		Matcher matcher = PATTERN.matcher(header);
 		Set<Clause> clauses = new HashSet<Clause>();
-		while (matcher.find())
-			clauses.add(new Clause(matcher.group()));
+		for (String clause : new ClauseTokenizer(header).getClauses())
+			clauses.add(new Clause(clause));
 		return clauses;
 	}
 	

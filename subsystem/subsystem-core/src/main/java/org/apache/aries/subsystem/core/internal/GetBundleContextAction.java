@@ -18,7 +18,7 @@ public class GetBundleContextAction implements PrivilegedAction<BundleContext> {
 		if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(
 				subsystem.getState()))
 			return null;
-		AriesSubsystem subsystem = this.subsystem.findScopedSubsystemInRegion();
+		AriesSubsystem subsystem = Utils.findScopedSubsystemInRegion(this.subsystem);
 		return subsystem.getRegion().getBundle(
 				RegionContextBundleHelper.SYMBOLICNAME_PREFIX
 						+ subsystem.getSubsystemId(),

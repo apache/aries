@@ -47,7 +47,7 @@ public class SubsystemResolverHook implements ResolverHook {
 		Collection<BundleCapability> preferredProviders = new ArrayList<BundleCapability>(candidates.size());
 		for (BundleCapability candidate : candidates)
 			for (AriesSubsystem subsystem : requirers) {
-				PreferredProviderHeader header = subsystem.getArchive().getSubsystemManifest().getPreferredProviderHeader();
+				PreferredProviderHeader header = subsystem.getSubsystemManifest().getPreferredProviderHeader();
 				if (header != null && (header.contains(candidate.getResource()) || isResourceConstituentOfPreferredSubsystem(candidate.getResource(), subsystem)))
 					preferredProviders.add(candidate);
 			}
@@ -89,7 +89,7 @@ public class SubsystemResolverHook implements ResolverHook {
 	private boolean isResourceConstituentOfPreferredSubsystem(Resource resource, AriesSubsystem preferer) {
 		Collection<AriesSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource);
 		for (AriesSubsystem subsystem : subsystems)
-			if (preferer.getArchive().getSubsystemManifest().getPreferredProviderHeader().contains(subsystem))
+			if (preferer.getSubsystemManifest().getPreferredProviderHeader().contains(subsystem))
 				return true;
 		return false;
 	}

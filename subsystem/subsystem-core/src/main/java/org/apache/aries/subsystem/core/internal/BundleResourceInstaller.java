@@ -14,7 +14,7 @@ public class BundleResourceInstaller extends ResourceInstaller {
 		super(coordination, resource, subsystem, transitive);
 	}
 	
-	public void install() {
+	public Resource install() {
 		BundleRevision revision;
 		if (resource instanceof BundleRevision)
 			revision = (BundleRevision)resource;
@@ -24,6 +24,7 @@ public class BundleResourceInstaller extends ResourceInstaller {
 		}
 		addConstituent(revision);
 		addReference(revision);
+		return revision;
 	}
 	
 	private BundleRevision installBundle() {
