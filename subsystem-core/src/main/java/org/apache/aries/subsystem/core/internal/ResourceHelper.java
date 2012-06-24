@@ -13,9 +13,6 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -91,8 +88,8 @@ public class ResourceHelper {
 	}
 	
 	public static boolean matches(Requirement requirement, Capability capability) {
-		if (logger.isDebugEnabled())
-			logger.debug(LOG_ENTRY, "matches", new Object[]{requirement, capability});
+//		if (logger.isDebugEnabled())
+//			logger.debug(LOG_ENTRY, "matches", new Object[]{requirement, capability});
 		boolean result = false;
 		if (requirement == null && capability == null)
 			result = true;
@@ -116,7 +113,7 @@ public class ResourceHelper {
 			}
 		}
 		// TODO Check directives.
-		logger.debug(LOG_EXIT, "matches", result);
+//		logger.debug(LOG_EXIT, "matches", result);
 		return result;
 	}
 }
