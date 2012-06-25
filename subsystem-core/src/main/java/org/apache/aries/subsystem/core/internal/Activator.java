@@ -202,7 +202,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	
 	private boolean isActive() {
 		synchronized (Activator.class) {
-			return instance != null;
+			return instance != null && subsystems != null;
 		}
 	}
 	
