@@ -60,7 +60,16 @@ public class AbstractProxyTest extends AbstractIntegrationTest {
   public static class TestDelegate extends AbstractList<String> implements Callable<String> {
     
     private final String message;
-    
+ 
+    /**
+     * On HotSpot VMs newer than 1.6 u33, we can only generate subclass proxies for classes
+     * with a no-args constructor.
+     */
+    protected TestDelegate() {
+        super();
+        this.message = null;
+      }
+
     public TestDelegate(String message) {
       super();
       this.message = message;
