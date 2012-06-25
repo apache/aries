@@ -18,8 +18,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.BundleSymbolicNameHeader;
@@ -52,19 +50,7 @@ public class BundleResource implements Resource, RepositoryContent {
 	
 	private BundleResource(URL content) throws IOException {
 		this.content = content;
-		JarInputStream jis = new JarInputStream(content.openStream());
-		try {
-			Manifest manifest = jis.getManifest();
-			if (manifest == null)
-				throw new IllegalArgumentException("The jar file contained no manifest");
-			this.manifest = new BundleManifest(manifest);
-		}
-		finally {
-			try {
-				jis.close();
-			}
-			catch (IOException e) {}
-		}
+		manifest = new BundleManifest(org.apache.aries.util.manifest.BundleManifest.fromBundle(content.openStream()).getRawManifest());
 		ExportPackageHeader eph = (ExportPackageHeader)manifest.getHeader(ExportPackageHeader.NAME);
 		if (eph != null)
 			capabilities.addAll(eph.toCapabilities(this));
