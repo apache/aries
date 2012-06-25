@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 
+import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.ProxyUtils;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -142,20 +143,32 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
           Type.VOID_TYPE, NO_ARGS));
     }
     else {
-        try {
-            //if the superclass has a no-arg constructor that we can call, we need to call it
-            // otherwise invoke the java.lang.Object no args constructor.  However, that will fail 
-            // on the most recent versions of the JDK (1.6.0_u34 and 1.7.0_u5 and newer).  For the
-            // newer JDK's, there is NOTHING we can do and the proxy will fail.
+         try {
+            // if the superclass has a no-arg constructor that we can call,
+            // we need to call it
+            // otherwise invoke the java.lang.Object no args constructor.
+            // on the most recent versions of the JDK (1.6.0_u34 and
+            // 1.7.0_u5 and newer). For the
+            // newer JDK's, there is NOTHING we can do and the proxy will
+            // fail.
             Constructor<?> cons = superclassClass.getDeclaredConstructor();
             if (!Modifier.isPrivate(cons.getModifiers())) {
-                methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>", Type.VOID_TYPE, NO_ARGS));
+               // This should work ...
+               methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>", Type.VOID_TYPE, NO_ARGS));
             } else {
-                methodAdapter.invokeConstructor(OBJECT_TYPE, new Method("<init>", Type.VOID_TYPE, NO_ARGS));
+               // We have a private constructor, so this may work, but not on
+               // recent HotSpot VMs
+               LOGGER.debug(NLS.MESSAGES.getMessage("no.nonprivate.constructor", superclassClass.getName()));
+               methodAdapter.invokeConstructor(OBJECT_TYPE, new Method("<init>", Type.VOID_TYPE, NO_ARGS));
             }
-        } catch (Exception e) {
+
+         } catch (NoSuchMethodException e) {
+            // There's no no-args constructor, so may work, but not on recent
+            // HotSpot VMs
+            LOGGER.debug(NLS.MESSAGES.getMessage("no.noargs.constructor", superclassClass.getName()));
             methodAdapter.invokeConstructor(OBJECT_TYPE, new Method("<init>", Type.VOID_TYPE, NO_ARGS));
-        }
+         }
+       
     }
     // call from the constructor to setInvocationHandler
     Method setter = new Method("setInvocationHandler", Type.VOID_TYPE, new Type[] { IH_TYPE });
