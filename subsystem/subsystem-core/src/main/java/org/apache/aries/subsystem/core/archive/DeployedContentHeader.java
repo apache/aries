@@ -187,26 +187,10 @@ public class DeployedContentHeader implements Header<DeployedContentHeader.Claus
 	}
 	
 	private static Collection<Clause> processHeader(String value) {
-		int numOfChars = value.length();
-		StringBuilder builder = new StringBuilder(numOfChars);
-		int numOfQuotes = 0;
-		Set<Clause> clauses = new HashSet<Clause>();
-		for (char c : value.toCharArray()) {
-			numOfChars--;
-			if (c == ',') {
-				if (numOfQuotes % 2 == 0) {
-					clauses.add(new Clause(builder.toString()));
-					builder = new StringBuilder(numOfChars);
-				}
-				else
-					builder.append(c);
-			}
-			else if (c == '"')
-				numOfQuotes++;
-			else
-				builder.append(c);
-		}
-		clauses.add(new Clause(builder.toString()));
+		Collection<String> clauseStrs = new ClauseTokenizer(value).getClauses();
+		Set<Clause> clauses = new HashSet<Clause>(clauseStrs.size());
+		for (String clause : new ClauseTokenizer(value).getClauses())
+			clauses.add(new Clause(clause));
 		return clauses;
 	}
 	
