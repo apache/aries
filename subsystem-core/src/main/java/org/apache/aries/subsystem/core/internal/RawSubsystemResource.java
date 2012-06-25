@@ -269,7 +269,7 @@ public class RawSubsystemResource implements Resource {
 		LocalRepository localRepo = new LocalRepository(resources);
 		RepositoryServiceRepository serviceRepo = new RepositoryServiceRepository(Activator.getInstance().getBundleContext());
 		CompositeRepository compositeRepo = new CompositeRepository(localRepo, serviceRepo);
-		List<Requirement> requirements = header.toRequirements();
+		List<Requirement> requirements = header.toRequirements(this);
 		List<Resource> resources = new ArrayList<Resource>(requirements.size());
 		for (Requirement requirement : requirements) {
 			Collection<Capability> capabilities = compositeRepo.findProviders(requirement);
@@ -299,7 +299,7 @@ public class RawSubsystemResource implements Resource {
 	private SubsystemContentHeader computeSubsystemContentHeader(SubsystemManifest manifest) {
 		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
 		if (header == null && !resources.isEmpty())
-			header = new SubsystemContentHeader(resources);
+			header = SubsystemContentHeader.newInstance(resources);
 		return header;
 	}
 	

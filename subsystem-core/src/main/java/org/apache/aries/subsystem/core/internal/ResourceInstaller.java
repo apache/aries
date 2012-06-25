@@ -30,18 +30,28 @@ public abstract class ResourceInstaller {
 		this.resource = resource;
 		this.subsystem = subsystem;
 		if (transitive) {
+			// The resource is a dependency and not content.
 			if (Utils.isInstallableResource(resource))
+				// If the dependency needs to be installed, it must go into the
+				// first subsystem in the parent chain that accepts
+				// dependencies.
 				provisionTo = Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(subsystem);
 			else
+				// If the dependency has already been installed, it does not
+				// need to be provisioned.
 				provisionTo = null;
 		}
 		else
+			// The resource is content and must go into the subsystem declaring
+			// it as such.
 			provisionTo = subsystem;
 	}
 	
 	public abstract Resource install() throws Exception;
 	
 	protected void addConstituent(final Resource resource) {
+		// provisionTo will be null when the resource is an already installed
+		// dependency.
 		if (provisionTo == null)
 			return;
 		Activator.getInstance().getSubsystems().addConstituent(provisionTo, resource);
@@ -59,6 +69,7 @@ public abstract class ResourceInstaller {
 	}
 	
 	protected void addReference(final Resource resource) {
+		// subsystem will be null when a persisted subsystem is being installed
 		if (subsystem == null)
 			return;
 		Activator.getInstance().getSubsystems().addReference(subsystem, resource);
