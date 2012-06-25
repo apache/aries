@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -174,6 +175,10 @@ public class ProxySubclassGenerator
     } catch (IllegalAccessException iae) {
       LOGGER.debug(Constants.LOG_EXCEPTION, iae);
       throw new ProxyClassInstantiationException(classToProxy, iae);
+    } catch (VerifyError ve) {
+        LOGGER.info(NLS.MESSAGES.getMessage("no.nonprivate.noargs.constructor", classToProxy));
+        LOGGER.debug(Constants.LOG_EXCEPTION, ve);
+        throw new ProxyClassInstantiationException(classToProxy, ve);
     }
 
     LOGGER.debug(Constants.LOG_EXIT, "newProxySubclassInstance", proxySubclassInstance);
