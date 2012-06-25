@@ -73,16 +73,18 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 			coordination.fail(t);
 		}
 		finally {
-			try {
-				coordination.end();
-			}
-			catch (CoordinationException e) {
-				Throwable t = e.getCause();
-				if (t instanceof SubsystemException)
-					throw (SubsystemException)t;
-				if (t instanceof SecurityException)
-					throw (SecurityException)t;
-				throw new SubsystemException(t);
+			if (!embedded) {
+				try {
+					coordination.end();
+				}
+				catch (CoordinationException e) {
+					Throwable t = e.getCause();
+					if (t instanceof SubsystemException)
+						throw (SubsystemException)t;
+					if (t instanceof SecurityException)
+						throw (SecurityException)t;
+					throw new SubsystemException(t);
+				}
 			}
 		}
 		return result;

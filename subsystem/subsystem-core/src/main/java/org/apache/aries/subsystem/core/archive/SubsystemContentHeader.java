@@ -16,166 +16,381 @@ package org.apache.aries.subsystem.core.archive;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
-import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
-import org.osgi.framework.namespace.IdentityNamespace;
-import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class SubsystemContentHeader extends AbstractHeader {
-	public static class Content {
-		private final boolean mandatory;
-		private final String name;
-		private final int startOrder;
-		private final String type;
-		private final VersionRange versionRange;
+public class SubsystemContentHeader implements RequirementHeader<SubsystemContentHeader.Clause> {
+	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+		public static final String ATTRIBUTE_VERSION = VersionRangeAttribute.NAME;
+		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
+		public static final String DIRECTIVE_RESOLUTION = ResolutionDirective.NAME;
+		public static final String DIRECTIVE_STARTORDER = StartOrderDirective.NAME;
 		
-		public Content(boolean mandatory, String name, String type, VersionRange versionRange, int startOrder) {
-			this.mandatory = mandatory;
-			this.name = name;
-			this.type = type;
-			this.versionRange = versionRange;
-			this.startOrder = startOrder;
+		private static final Pattern PATTERN_SYMBOLICNAME = Pattern.compile('(' + Grammar.SYMBOLICNAME + ")(?=;|\\z)");
+		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
+		
+		private static void fillInDefaults(Map<String, Parameter> parameters) {
+			Parameter parameter = parameters.get(ATTRIBUTE_TYPE);
+			if (parameter == null)
+				parameters.put(ATTRIBUTE_TYPE, TypeAttribute.DEFAULT);
+			parameter = parameters.get(ATTRIBUTE_VERSION);
+			if (parameter == null)
+				parameters.put(ATTRIBUTE_VERSION, VersionRangeAttribute.DEFAULT);
+			parameter = parameters.get(DIRECTIVE_RESOLUTION);
+			if (parameter == null)
+				parameters.put(DIRECTIVE_RESOLUTION, ResolutionDirective.MANDATORY);
+			parameter = parameters.get(DIRECTIVE_STARTORDER);
+			if (parameter == null)
+				// This is an implementation specific start-order directive
+				// value. The specification states there is no default value.
+				parameters.put(DIRECTIVE_STARTORDER, new StartOrderDirective("0"));
 		}
 		
-		public String getName() {
-			return name;
+		private final String path;
+		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		
+		public Clause(String clause) {
+			Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clause);
+			if (!matcher.find())
+				throw new IllegalArgumentException("Missing symbolic name path: " + clause);
+			path = matcher.group();
+			matcher.usePattern(PATTERN_PARAMETER);
+			while (matcher.find()) {
+				Parameter parameter = ParameterFactory.create(matcher.group());
+				if (parameter instanceof VersionAttribute)
+					parameter = new VersionRangeAttribute(new VersionRange(String.valueOf(parameter.getValue())));
+				parameters.put(parameter.getName(), parameter);
+			}
+			fillInDefaults(parameters);
+		}
+		
+		public Clause(Resource resource) {
+			this(appendResource(resource, new StringBuilder()).toString());
+		}
+		
+		public boolean contains(Resource resource) {
+			return getSymbolicName().equals(
+					ResourceHelper.getSymbolicNameAttribute(resource))
+					&& getVersionRange().includes(
+							ResourceHelper.getVersionAttribute(resource))
+					&& getType().equals(
+							ResourceHelper.getTypeAttribute(resource));
+		}
+		
+		@Override
+		public Attribute getAttribute(String name) {
+			Parameter result = parameters.get(name);
+			if (result instanceof Attribute)
+				return (Attribute)result;
+			return null;
+		}
+
+		@Override
+		public Collection<Attribute> getAttributes() {
+			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
+			for (Parameter parameter : parameters.values())
+				if (parameter instanceof Attribute)
+					attributes.add((Attribute)parameter);
+			attributes.trimToSize();
+			return attributes;
+		}
+
+		@Override
+		public Directive getDirective(String name) {
+			Parameter result = parameters.get(name);
+			if (result instanceof Directive)
+				return (Directive)result;
+			return null;
+		}
+
+		@Override
+		public Collection<Directive> getDirectives() {
+			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
+			for (Parameter parameter : parameters.values())
+				if (parameter instanceof Directive)
+					directives.add((Directive)parameter);
+			directives.trimToSize();
+			return directives;
+		}
+
+		@Override
+		public Parameter getParameter(String name) {
+			return parameters.get(name);
+		}
+
+		@Override
+		public Collection<Parameter> getParameters() {
+			return Collections.unmodifiableCollection(parameters.values());
+		}
+
+		@Override
+		public String getPath() {
+			return path;
+		}
+		
+		public String getSymbolicName() {
+			return path;
 		}
 		
 		public int getStartOrder() {
-			return startOrder;
+			return ((StartOrderDirective)getDirective(DIRECTIVE_STARTORDER)).getStartOrder();
 		}
 		
 		public String getType() {
-			return type;
+			return ((TypeAttribute)getAttribute(ATTRIBUTE_TYPE)).getType();
 		}
 		
 		public VersionRange getVersionRange() {
-			return versionRange;
+			return ((VersionRangeAttribute)getAttribute(ATTRIBUTE_VERSION)).getVersionRange();
 		}
 		
 		public boolean isMandatory() {
-			return mandatory;
+			return ((ResolutionDirective)getDirective(DIRECTIVE_RESOLUTION)).isMandatory();
 		}
 		
-		public Requirement toRequirement() {
-			return new OsgiIdentityRequirement(name, versionRange, type, false);
+		public OsgiIdentityRequirement toRequirement(Resource resource) {
+			return new OsgiIdentityRequirement(getSymbolicName(), getVersionRange(), getType(), false);
 		}
 		
+		@Override
 		public String toString() {
-			return new StringBuilder(getName())
-				.append(';')
-				.append(VersionAttribute.NAME)
-				.append('=')
-				.append(getVersionRange())
-				.append(';')
-				.append(TypeAttribute.NAME)
-				.append("=")
-				.append(getType())
-				.append(';')
-				.append(ResolutionDirective.NAME)
-				.append(":=")
-				.append(isMandatory())
-				.append(';')
-				.append(StartOrderDirective.NAME)
-				.append(":=")
-				.append(getStartOrder())
-				.toString();
+			StringBuilder builder = new StringBuilder()
+					.append(getPath());
+			for (Parameter parameter : getParameters()) {
+				builder.append(';').append(parameter);
+			}
+			return builder.toString();
 		}
 	}
+	
+//	public static class Content {
+//		private final boolean mandatory;
+//		private final String name;
+//		private final int startOrder;
+//		private final String type;
+//		private final VersionRange versionRange;
+//		
+//		public Content(boolean mandatory, String name, String type, VersionRange versionRange, int startOrder) {
+//			this.mandatory = mandatory;
+//			this.name = name;
+//			this.type = type;
+//			this.versionRange = versionRange;
+//			this.startOrder = startOrder;
+//		}
+//		
+//		public String getName() {
+//			return name;
+//		}
+//		
+//		public int getStartOrder() {
+//			return startOrder;
+//		}
+//		
+//		public String getType() {
+//			return type;
+//		}
+//		
+//		public VersionRange getVersionRange() {
+//			return versionRange;
+//		}
+//		
+//		public boolean isMandatory() {
+//			return mandatory;
+//		}
+//		
+//		public Requirement toRequirement() {
+//			return new OsgiIdentityRequirement(name, versionRange, type, false);
+//		}
+//		
+//		public String toString() {
+//			return new StringBuilder(getName())
+//				.append(';')
+//				.append(VersionAttribute.NAME)
+//				.append('=')
+//				.append(getVersionRange())
+//				.append(';')
+//				.append(TypeAttribute.NAME)
+//				.append("=")
+//				.append(getType())
+//				.append(';')
+//				.append(ResolutionDirective.NAME)
+//				.append(":=")
+//				.append(isMandatory())
+//				.append(';')
+//				.append(StartOrderDirective.NAME)
+//				.append(":=")
+//				.append(getStartOrder())
+//				.toString();
+//		}
+//	}
 	
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_CONTENT;
 	
-	private static String processResources(Collection<Resource> resources) {
-		if (resources.isEmpty())
-			throw new IllegalArgumentException("At least one resource must be specified");
-		StringBuilder sb = new StringBuilder();
+	public static SubsystemContentHeader newInstance(Collection<Resource> resources) {
+		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
-			Capability c = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0);
-			Map<String, Object> a = c.getAttributes();
-			String s = (String)a.get(IdentityNamespace.IDENTITY_NAMESPACE);
-			Version v = (Version)a.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
-			String t = (String)a.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
-			sb.append(s).append(';')
-				.append(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE).append('=').append(v).append(';')
-				.append(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE).append('=').append(t).append(',');
+			appendResource(resource, builder);
+			builder.append(',');
 		}
 		// Remove the trailing comma.
-		sb.deleteCharAt(sb.length() - 1);
-		return sb.toString();
+		// TODO Intentionally letting the exception propagate since there must be at least one resource.
+		builder.deleteCharAt(builder.length() - 1);
+		return new SubsystemContentHeader(builder.toString());
 	}
 	
-	private final List<Content> contents;
-	
-	public SubsystemContentHeader(String value) {
-		super(NAME, value);
-		contents = new ArrayList<Content>(clauses.size());
-		for (Clause clause : clauses) {
-			boolean mandatory = true;
-			Directive directive = clause.getDirective(ResolutionDirective.NAME);
-			if (directive != null)
-				mandatory = ((ResolutionDirective)directive).isMandatory();
-			String name = clause.getPath();
-			// TODO Assumes all resources are bundles.
-			String type = TypeAttribute.DEFAULT_VALUE;
-			Attribute attribute = clause.getAttribute(TypeAttribute.NAME);
-			if (attribute != null)
-				type = ((TypeAttribute)attribute).getType();
-			VersionRange versionRange = new VersionRange(Version.emptyVersion.toString());
-			attribute = clause.getAttribute(Constants.VERSION_ATTRIBUTE);
-			if (attribute != null) {
-				versionRange = new VersionRange(String.valueOf(attribute.getValue()));
-			}
-			int startOrder = -1;
-			directive = clause.getDirective(StartOrderDirective.NAME);
-			if (directive != null)
-				startOrder = ((StartOrderDirective)directive).getStartOrder();
-			contents.add(new Content(mandatory, name, type, versionRange, startOrder));
-		}
-	}
-	
-	public SubsystemContentHeader(Collection<Resource> resources) {
-		this(processResources(resources));
-	}
-	
-	public boolean contains(Resource resource) {
-		return getContent(resource) != null;
-	}
-	
-	public Content getContent(Resource resource) {
+	private static StringBuilder appendResource(Resource resource, StringBuilder builder) {
 		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
 		Version version = ResourceHelper.getVersionAttribute(resource);
 		String type = ResourceHelper.getTypeAttribute(resource);
-		for (Content content : contents) {
-			if (symbolicName.equals(content.getName())
-					&& content.getVersionRange().includes(version)
-					&& type.equals(content.getType()))
-				return content;
+		builder.append(symbolicName)
+			.append(';')
+			.append(Clause.ATTRIBUTE_VERSION)
+			.append('=')
+			.append(version.toString())
+			.append(';')
+			.append(Clause.ATTRIBUTE_TYPE)
+			.append('=')
+			.append(type);
+		return builder;
+	}
+	
+	private static Collection<Clause> processHeader(String value) {
+		Collection<String> clauseStrs = new ClauseTokenizer(value).getClauses();
+		Set<Clause> clauses = new HashSet<Clause>(clauseStrs.size());
+		for (String clause : new ClauseTokenizer(value).getClauses())
+			clauses.add(new Clause(clause));
+		return clauses;
+	}
+	
+//	private static String processResources(Collection<Resource> resources) {
+//		if (resources.isEmpty())
+//			throw new IllegalArgumentException("At least one resource must be specified");
+//		StringBuilder sb = new StringBuilder();
+//		for (Resource resource : resources) {
+//			Capability c = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0);
+//			Map<String, Object> a = c.getAttributes();
+//			String s = (String)a.get(IdentityNamespace.IDENTITY_NAMESPACE);
+//			Version v = (Version)a.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
+//			String t = (String)a.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
+//			sb.append(s).append(';')
+//				.append(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE).append('=').append(v).append(';')
+//				.append(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE).append('=').append(t).append(',');
+//		}
+//		// Remove the trailing comma.
+//		sb.deleteCharAt(sb.length() - 1);
+//		return sb.toString();
+//	}
+	
+	private final Set<Clause> clauses;
+	
+	public SubsystemContentHeader(Collection<Clause> clauses) {
+		if (clauses.isEmpty())
+			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
+		this.clauses = new HashSet<Clause>(clauses);
+	}
+	
+	public SubsystemContentHeader(String value) {
+		this(processHeader(value));
+	}
+	
+//	public SubsystemContentHeader(Collection<Resource> resources) {
+//		this(processResources(resources));
+//	}
+	
+	public boolean contains(Resource resource) {
+		return getClause(resource) != null;
+	}
+	
+	public Clause getClause(Resource resource) {
+		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
+		Version version = ResourceHelper.getVersionAttribute(resource);
+		String type = ResourceHelper.getTypeAttribute(resource);
+		for (Clause clause : clauses) {
+			if (symbolicName.equals(clause.getPath())
+					&& clause.getVersionRange().includes(version)
+					&& type.equals(clause.getType()))
+				return clause;
 		}
 		return null;
 	}
-
-	public Collection<Content> getContents() {
-		return Collections.unmodifiableCollection(contents);
+	
+	@Override
+	public Collection<SubsystemContentHeader.Clause> getClauses() {
+		return Collections.unmodifiableSet(clauses);
 	}
+	
+//	public Content getContent(Resource resource) {
+//		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
+//		Version version = ResourceHelper.getVersionAttribute(resource);
+//		String type = ResourceHelper.getTypeAttribute(resource);
+//		for (Content content : contents) {
+//			if (symbolicName.equals(content.getName())
+//					&& content.getVersionRange().includes(version)
+//					&& type.equals(content.getType()))
+//				return content;
+//		}
+//		return null;
+//	}
+//
+//	public Collection<Content> getContents() {
+//		return Collections.unmodifiableCollection(contents);
+//	}
 	
 	public boolean isMandatory(Resource resource) {
-		Content content = getContent(resource);
-		return content == null ? false : content.isMandatory();
+		Clause clause = getClause(resource);
+		if (clause == null)
+			return false;
+		return clause.isMandatory();
+//		Content content = getContent(resource);
+//		return content == null ? false : content.isMandatory();
 	}
 	
-	public List<Requirement> toRequirements() {
-		ArrayList<Requirement> result = new ArrayList<Requirement>(contents.size());
-		for (Content content : contents)
-			result.add(content.toRequirement());
-		return result;
+//	public List<Requirement> toRequirements() {
+//		ArrayList<Requirement> result = new ArrayList<Requirement>(contents.size());
+//		for (Content content : contents)
+//			result.add(content.toRequirement());
+//		return result;
+//	}
+
+	@Override
+	public String getName() {
+		return NAME;
+	}
+
+	@Override
+	public String getValue() {
+		return toString();
+	}
+
+	@Override
+	public List<Requirement> toRequirements(Resource resource) {
+		List<Requirement> requirements = new ArrayList<Requirement>(clauses.size());
+		for (Clause clause : clauses)
+			requirements.add(clause.toRequirement(resource));
+		return requirements;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (Clause clause : getClauses()) {
+			builder.append(clause).append(',');
+		}
+		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
+		builder.deleteCharAt(builder.length() - 1);
+		return builder.toString();
 	}
 }

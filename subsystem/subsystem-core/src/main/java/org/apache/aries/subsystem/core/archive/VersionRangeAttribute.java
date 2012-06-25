@@ -18,6 +18,8 @@ import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
 
 public class VersionRangeAttribute extends AbstractAttribute {
+	public static final String NAME = Constants.VERSION_ATTRIBUTE;
+	
 	public static final VersionRangeAttribute DEFAULT = new VersionRangeAttribute();
 	
 	private final VersionRange range;
