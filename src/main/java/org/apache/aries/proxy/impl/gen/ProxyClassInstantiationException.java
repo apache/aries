@@ -25,9 +25,9 @@ public class ProxyClassInstantiationException extends UnableToProxyException
   /**
    * 
    */
-  private static final long serialVersionUID = -2303296601108980837L;
+  private static final long serialVersionUID = -2303296601108980838L;
 
-  public ProxyClassInstantiationException(Class<?> clazz, Exception e)
+  public ProxyClassInstantiationException(Class<?> clazz, Throwable e)
   {
     super(clazz, e);
   }
