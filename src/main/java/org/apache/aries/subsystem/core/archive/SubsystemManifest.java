@@ -38,7 +38,7 @@ public class SubsystemManifest {
 		}
 		
 		public Builder content(Collection<Resource> value) {
-			return value == null || value.isEmpty() ? this : content(new SubsystemContentHeader(value));
+			return value == null || value.isEmpty() ? this : content(SubsystemContentHeader.newInstance(value));
 		}
 		
 		public Builder content(SubsystemContentHeader value) {
@@ -170,7 +170,7 @@ public class SubsystemManifest {
 		}
 		header = headers.get(SUBSYSTEM_CONTENT);
 		if (header == null && content != null && !content.isEmpty()) {
-			headers.put(SubsystemContentHeader.NAME, new SubsystemContentHeader(content));
+			headers.put(SubsystemContentHeader.NAME, SubsystemContentHeader.newInstance(content));
 		}
 		fillInDefaults(headers);
 		this.headers = Collections.unmodifiableMap(headers);

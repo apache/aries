@@ -19,9 +19,9 @@ public class StartResourceComparator implements Comparator<Resource> {
 	}
 	
 	private Integer getStartOrder(Resource r) {
-		SubsystemContentHeader.Content content = header.getContent(r);
-		if (content == null)
+		SubsystemContentHeader.Clause clause = header.getClause(r);
+		if (clause == null)
 			return 0;
-		return content.getStartOrder();
+		return clause.getStartOrder();
 	}
 }

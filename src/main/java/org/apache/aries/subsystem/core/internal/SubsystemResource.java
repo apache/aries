@@ -294,13 +294,13 @@ public class SubsystemResource implements Resource {
 		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		if (contentHeader == null)
 			return;
-		for (SubsystemContentHeader.Content content : contentHeader.getContents()) {
+		for (SubsystemContentHeader.Clause clause : contentHeader.getClauses()) {
 			OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
-					content.getName(), content.getVersionRange(),
-					content.getType(), false);
+					clause.getSymbolicName(), clause.getVersionRange(),
+					clause.getType(), false);
 			Resource resource = findContent(requirement);
 			if (resource == null) {
-				if (content.isMandatory())
+				if (clause.isMandatory())
 					throw new SubsystemException("Resource does not exist: "+ requirement);
 				continue;
 			}
