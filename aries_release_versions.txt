@@ -52,7 +52,7 @@ org.apache.aries.blueprint.testquiescebundle,0.3.2
 ModuleEnd
 #
 Module: jmx 
-org.apache.aries.jmx.api,0.3
+org.apache.aries.jmx.api,1.0.0
 org.apache.aries.jmx.blueprint.api,0.3
 org.apache.aries.jmx.blueprint,0.3
 org.apache.aries.jmx.blueprint.core,0.3
@@ -63,7 +63,7 @@ org.apache.aries.jmx.whiteboard,0.3
 ModuleEnd
 #
 Module: jndi 
-org.apache.aries.jndi.api,0.3
+org.apache.aries.jndi.api,1.0.0
 org.apache.aries.jndi,0.3.1
 org.apache.aries.jndi.core,0.3.1
 org.apache.aries.jndi.legacy.support,0.3.1
@@ -75,7 +75,7 @@ org.apache.aries.jndi.url.itest.web,0.3.1
 ModuleEnd
 #
 Module: jpa 
-org.apache.aries.jpa.api,0.3
+org.apache.aries.jpa.api,1.0.0
 org.apache.aries.jpa.blueprint.aries,0.3
 org.apache.aries.jpa.blueprint.itest.bundle,0.3
 org.apache.aries.jpa.container,0.3
@@ -92,13 +92,13 @@ org.apache.aries.proxy.itests,0.4
 ModuleEnd
 #
 Module: quiesce 
-org.apache.aries.quiesce.api,0.3
+org.apache.aries.quiesce.api,1.0.0
 org.apache.aries.quiesce.manager,0.3.1
 org.apache.aries.quiesce.manager.itest,0.3.1
 ModuleEnd
 #
 Module: testsupport 
-org.apache.aries.testsupport.unit,0.4
+org.apache.aries.testsupport.unit,1.0.0
 ModuleEnd
 #
 Module: transaction 
