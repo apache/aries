@@ -2,14 +2,15 @@ package org.apache.aries.subsystem.core.internal;
 
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ResourceUninstaller {
-	public static ResourceUninstaller newInstance(Resource resource) {
-		return newInstance(resource, null);
-	}
+	private static final Logger logger = LoggerFactory.getLogger(ResourceUninstaller.class);
 	
 	public static ResourceUninstaller newInstance(Resource resource, AriesSubsystem subsystem) {
 		String type = ResourceHelper.getTypeAttribute(resource);
@@ -36,6 +37,10 @@ public abstract class ResourceUninstaller {
 	protected final AriesSubsystem subsystem;
 	
 	public ResourceUninstaller(Resource resource, AriesSubsystem subsystem) {
+		if (resource == null)
+			throw new NullPointerException("Missing required parameter: resource");
+		if (subsystem == null)
+			throw new NullPointerException("Missing required parameter: subsystem");
 		this.resource = resource;
 		this.subsystem = subsystem;
 		if (isTransitive())
@@ -46,13 +51,24 @@ public abstract class ResourceUninstaller {
 	
 	public abstract void uninstall();
 	
-	protected boolean isImplicit() {
-		return subsystem != null;
+	protected boolean isExplicit() {
+		// The operation is explicit if it was requested by a user, in which
+		// case the resource and subsystem are the same.
+		if (resource.equals(subsystem))
+			return true;
+		// The operation is explicit if it was requested by a scoped subsystem
+		// on a resource within the same region.
+		if (subsystem.isScoped()) {
+			if (Utils.isBundle(resource))
+				return subsystem.getRegion().contains(((BundleRevision)resource).getBundle());
+			// TODO This is insufficient. The unscoped subsystem could be a
+			// dependency in another region, which would make it implicit.
+			return !((AriesSubsystem)resource).isScoped();
+		}
+		return false;
 	}
 	
 	protected boolean isTransitive() {
-		if (subsystem == null)
-			return false;
 		ProvisionResourceHeader header = subsystem.getDeploymentManifest().getProvisionResourceHeader();
 		if (header == null)
 			return false;
@@ -60,7 +76,14 @@ public abstract class ResourceUninstaller {
 	}
 	
 	protected boolean isResourceUninstallable() {
-		return Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource).size() <= 1;
+		int referenceCount = Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource).size();
+		if (referenceCount == 0)
+			return true;
+		if (isExplicit()) {
+			logger.error("Explicitly uninstalling resource still has dependencies: {}", resource);
+			return true;
+		}
+		return false;
 	}
 	
 	protected void removeConstituent() {

@@ -36,8 +36,8 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.ResolutionException;
-import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.Subsystem.State;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 public class RawSubsystemResource implements Resource {
 	private static final Pattern PATTERN = Pattern.compile("([^@]+)(?:@(.+))?.esa");
@@ -117,6 +117,16 @@ public class RawSubsystemResource implements Resource {
 		deploymentManifest = initializeDeploymentManifest(idir);
 		location = new Location(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue());
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof RawSubsystemResource))
+			return false;
+		RawSubsystemResource that = (RawSubsystemResource)o;
+		return getLocation().equals(that.getLocation());
+	}
 
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
@@ -160,6 +170,13 @@ public class RawSubsystemResource implements Resource {
 	
 	public SubsystemManifest getSubsystemManifest() {
 		return subsystemManifest;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + getLocation().hashCode();
+		return result;
 	}
 	
 	private void addHeader(SubsystemManifest.Builder builder, Header<?> header) {

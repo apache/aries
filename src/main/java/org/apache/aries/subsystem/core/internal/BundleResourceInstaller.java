@@ -10,8 +10,8 @@ import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class BundleResourceInstaller extends ResourceInstaller {
-	public BundleResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem, boolean transitive) {
-		super(coordination, resource, subsystem, transitive);
+	public BundleResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem) {
+		super(coordination, resource, subsystem);
 	}
 	
 	public Resource install() {
