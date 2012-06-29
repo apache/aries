@@ -43,24 +43,21 @@ public class StopAction extends AbstractAction {
 			subsystem.stop();
 		}
 		subsystem.setState(State.STOPPING);
-		// For non-root subsystems, stop any remaining constituents.
-		if (!subsystem.isRoot()){
-			List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem));
-			SubsystemContentHeader header = subsystem.getSubsystemManifest().getSubsystemContentHeader();
-			if (header != null) {
-				Collections.sort(resources, new StartResourceComparator(subsystem.getSubsystemManifest().getSubsystemContentHeader()));
-				Collections.reverse(resources);
-			}
-			for (Resource resource : resources) {
-				// Don't stop the region context bundle.
-				if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
-					continue;
-				try {
-					stopResource(resource);
-				} 
-				catch (Exception e) {
-					logger.error("An error occurred while stopping resource " + resource + " of subsystem " + subsystem, e);
-				}
+		List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem));
+		SubsystemContentHeader header = subsystem.getSubsystemManifest().getSubsystemContentHeader();
+		if (header != null) {
+			Collections.sort(resources, new StartResourceComparator(subsystem.getSubsystemManifest().getSubsystemContentHeader()));
+			Collections.reverse(resources);
+		}
+		for (Resource resource : resources) {
+			// Don't stop the region context bundle.
+			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+				continue;
+			try {
+				stopResource(resource);
+			} 
+			catch (Exception e) {
+				logger.error("An error occurred while stopping resource " + resource + " of subsystem " + subsystem, e);
 			}
 		}
 		// TODO Can we automatically assume it actually is resolved?
@@ -83,6 +80,8 @@ public class StopAction extends AbstractAction {
 	}
 	
 	private void stopBundleResource(Resource resource) throws BundleException {
+		if (subsystem.isRoot())
+			return;
 		((BundleRevision)resource).getBundle().stop();
 	}
 	

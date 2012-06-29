@@ -14,6 +14,7 @@
 package org.apache.aries.subsystem.core.archive;
 
 import org.osgi.framework.Version;
+import org.osgi.framework.VersionRange;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class DeployedVersionAttribute extends AbstractAttribute {
@@ -24,6 +25,12 @@ public class DeployedVersionAttribute extends AbstractAttribute {
 	public DeployedVersionAttribute(String value) {
 		super(NAME, value);
 		deployedVersion = Version.parseVersion(value);
+	}
+	
+	@Override
+	public StringBuilder appendToFilter(StringBuilder builder) {
+		VersionRange versionRange = new VersionRange(VersionRange.LEFT_CLOSED, getVersion(), getVersion(), VersionRange.RIGHT_CLOSED);
+		return builder.append(versionRange.toFilterString(VersionRangeAttribute.NAME));
 	}
 
 	public Version getDeployedVersion() {
