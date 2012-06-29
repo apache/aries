@@ -8,6 +8,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
 public class BasicRequirement extends AbstractRequirement {
@@ -15,6 +16,13 @@ public class BasicRequirement extends AbstractRequirement {
 	private final Map<String, String> directives;
 	private final String namespace;
 	private final Resource resource;
+	
+	public BasicRequirement(Requirement requirement, Resource resource) {
+		attributes = requirement.getAttributes();
+		directives = requirement.getDirectives();
+		namespace = requirement.getNamespace();
+		this.resource = resource;
+	}
 	
 	public BasicRequirement(String namespace, String filter) throws InvalidSyntaxException {
 		this(namespace, FrameworkUtil.createFilter(filter));

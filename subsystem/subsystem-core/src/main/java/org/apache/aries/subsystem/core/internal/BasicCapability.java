@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
 
 public class BasicCapability extends AbstractCapability {
@@ -11,6 +12,10 @@ public class BasicCapability extends AbstractCapability {
 	private final Map<String, String> directives;
 	private final Resource resource;
 	private final String namespace;
+	
+	public BasicCapability(Capability capability, Resource resource) {
+		this(capability.getNamespace(), capability.getAttributes(), capability.getDirectives(), resource);
+	}
 	
 	public BasicCapability(String namespace, Map<String, Object> attributes, Map<String, String> directives, Resource resource) {
 		if (namespace == null)

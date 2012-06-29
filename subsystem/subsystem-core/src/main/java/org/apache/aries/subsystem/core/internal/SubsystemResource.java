@@ -93,10 +93,29 @@ public class SubsystemResource implements Resource {
 		computeContentResources(deploymentManifest);
 		computeDependencies(deploymentManifest);
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof SubsystemResource))
+			return false;
+		SubsystemResource that = (SubsystemResource)o;
+		return getLocation().equals(that.getLocation());
+	}
 
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		return resource.getCapabilities(namespace);
+		if (isScoped())
+			return resource.getCapabilities(namespace);
+		else {
+			ArrayList<Capability> result = new ArrayList<Capability>();
+			result.addAll(resource.getCapabilities(namespace));
+			for (Resource r : getContentResources())
+				result.addAll(r.getCapabilities(namespace));
+			result.trimToSize();
+			return result;
+		}
 	}
 	
 	public DeploymentManifest getDeploymentManifest() {
@@ -159,7 +178,16 @@ public class SubsystemResource implements Resource {
 
 	@Override
 	public List<Requirement> getRequirements(String namespace) {
-		return resource.getRequirements(namespace);
+		if (isScoped())
+			return resource.getRequirements(namespace);
+		else {
+			ArrayList<Requirement> result = new ArrayList<Requirement>();
+			result.addAll(resource.getRequirements(namespace));
+			for (Resource r : getContentResources())
+				result.addAll(r.getRequirements(namespace));
+			result.trimToSize();
+			return result;
+		}
 	}
 	
 	public Collection<Resource> getResources() {
@@ -176,6 +204,13 @@ public class SubsystemResource implements Resource {
 	
 	public SubsystemManifest getSubsystemManifest() {
 		return resource.getSubsystemManifest();
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + getLocation().hashCode();
+		return result;
 	}
 	
 	private void addContentResource(Resource resource) {
@@ -280,14 +315,6 @@ public class SubsystemResource implements Resource {
 				addContentResource(resource);
 			}
 		}
-//		if (parent == null) {
-//			if (deploymentManifest == null)
-//				return;
-//			computeContentResourcesFromDeploymentManifest();
-//		}
-//		else {
-//			computeContentResourcesFromSubsystemManifest();
-//		}
 	}
 	
 	private void computeContentResources(SubsystemManifest manifest) {
@@ -322,31 +349,6 @@ public class SubsystemResource implements Resource {
 				addDependency(resource);
 			}
 		}	
-//		if (parent == null) {
-//			if (deploymentManifest == null)
-//				return;
-//			ProvisionResourceHeader header = deploymentManifest.getProvisionResourceHeader();
-//			if (header == null)
-//				return;
-//			for (ProvisionResourceHeader.ProvisionedResource provisionedResource : header.getProvisionedResources()) {
-//				Resource resource = findDependency(provisionedResource);
-//				if (resource == null)
-//					throw new SubsystemException("Resource does not exist: " + provisionedResource);
-//				addContentResource(resource);
-//			}
-//		}
-//		else {
-//			SubsystemContentHeader contentHeader = resource.getSubsystemManifest().getSubsystemContentHeader();
-//			try {
-//				Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
-//				for (Resource resource : resolution.keySet())
-//					if (!contentHeader.contains(resource))
-//						addDependency(resource);
-//			}
-//			catch (ResolutionException e) {
-//				throw new SubsystemException(e);
-//			}
-//		}
 	}
 	
 	private void computeDependencies(SubsystemManifest manifest) {

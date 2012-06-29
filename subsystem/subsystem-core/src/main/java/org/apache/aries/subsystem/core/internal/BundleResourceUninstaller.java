@@ -12,12 +12,12 @@ public class BundleResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	public void uninstall() {
+		removeReference();
+		removeConstituent();
 		if (!isResourceUninstallable())
 			return;
 		if (isBundleUninstallable())
 			uninstallBundle();
-		removeReference();
-		removeConstituent();
 	}
 	
 	private Bundle getBundle() {

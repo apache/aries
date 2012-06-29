@@ -1,5 +1,7 @@
 package org.apache.aries.subsystem.core.internal;
 
+import org.apache.aries.subsystem.core.archive.DeploymentManifest;
+import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
@@ -8,14 +10,14 @@ import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public abstract class ResourceInstaller {
-	public static ResourceInstaller newInstance(Coordination coordination, Resource resource, AriesSubsystem subsystem, boolean transitive) {
+	public static ResourceInstaller newInstance(Coordination coordination, Resource resource, AriesSubsystem subsystem) {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
-			return new SubsystemResourceInstaller(coordination, resource, subsystem, transitive);
+			return new SubsystemResourceInstaller(coordination, resource, subsystem);
 		else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type))
-			return new BundleResourceInstaller(coordination, resource, subsystem, transitive);
+			return new BundleResourceInstaller(coordination, resource, subsystem);
 		else
 			throw new SubsystemException("No installer exists for resource type: " + type);
 	}
@@ -25,11 +27,11 @@ public abstract class ResourceInstaller {
 	protected final Resource resource;
 	protected final AriesSubsystem subsystem;
 	
-	public ResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem, boolean transitive) {
+	public ResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem) {
 		this.coordination = coordination;
 		this.resource = resource;
 		this.subsystem = subsystem;
-		if (transitive) {
+		if (isTransitive()) {
 			// The resource is a dependency and not content.
 			if (Utils.isInstallableResource(resource))
 				// If the dependency needs to be installed, it must go into the
@@ -69,7 +71,8 @@ public abstract class ResourceInstaller {
 	}
 	
 	protected void addReference(final Resource resource) {
-		// subsystem will be null when a persisted subsystem is being installed
+		// subsystem will be null when the root or a persisted subsystem is
+		// being installed
 		if (subsystem == null)
 			return;
 		Activator.getInstance().getSubsystems().addReference(subsystem, resource);
@@ -88,5 +91,17 @@ public abstract class ResourceInstaller {
 	
 	protected String getLocation() {
 		return provisionTo.getSubsystemId() + "@" + provisionTo.getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
+	}
+	
+	protected boolean isTransitive() {
+		if (subsystem == null)
+			return false;
+		DeploymentManifest manifest = subsystem.getDeploymentManifest();
+		if (manifest == null)
+			return false;
+		ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
+		if (header == null)
+			return false;
+		return header.contains(resource);
 	}
 }
