@@ -20,16 +20,16 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	public void uninstall() {
+		removeReferences();
 		if (isResourceUninstallable())
 			uninstallSubsystem();
-		removeReferences();
 		removeConstituents();
 		removeChildren();
 		removeSubsystem();
 	}
 	
 	private void removeChildren() {
-		if (isImplicit()) {
+		if (!isExplicit()) {
 			removeChild((AriesSubsystem)subsystem, (AriesSubsystem)resource);
 			return;
 		}
@@ -38,7 +38,7 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	private void removeConstituents() {
-		if (isImplicit()) {
+		if (!isExplicit()) {
 			removeConstituent();
 			return;
 		}
@@ -47,7 +47,7 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	private void removeReferences() {
-		if (isImplicit()) {
+		if (!isExplicit()) {
 			removeReference();
 			return;
 		}
@@ -86,8 +86,8 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 				.unregister(subsystem);
 		if (subsystem.isScoped())
 			RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
+		IOUtils.deleteRecursive(subsystem.getDirectory());
 		if (firstError != null)
 			throw new SubsystemException(firstError);
-		IOUtils.deleteRecursive(subsystem.getDirectory());
 	}
 }

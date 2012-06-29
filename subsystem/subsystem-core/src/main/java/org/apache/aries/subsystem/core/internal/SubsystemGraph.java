@@ -35,7 +35,9 @@ public class SubsystemGraph {
 		
 		@Override
 		public int hashCode() {
-			return s.getLocation().hashCode();
+			int result = 17;
+			result = 31 * result + s.getLocation().hashCode();
+			return result;
 		}
 		
 		@Override

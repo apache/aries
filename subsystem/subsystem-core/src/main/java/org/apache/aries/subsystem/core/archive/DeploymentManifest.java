@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.aries.subsystem.core.internal.AriesSubsystem;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Resource;
@@ -108,12 +109,17 @@ public class DeploymentManifest {
 			return this;
 		}
 		
-		public Builder parent(long value) {
-			Header<?> parents = headers.get(ARIESSUBSYSTEM_PARENTS);
-			if (parents == null)
-				header(new GenericHeader(ARIESSUBSYSTEM_PARENTS, Long.toString(value)));
-			else
-				header(new GenericHeader(ARIESSUBSYSTEM_PARENTS, parents.getValue() + ',' + Long.toString(value)));
+		public Builder parent(AriesSubsystem value, boolean referenceCount) {
+			AriesSubsystemParentsHeader.Clause clause = new AriesSubsystemParentsHeader.Clause(value, referenceCount);
+			AriesSubsystemParentsHeader header = (AriesSubsystemParentsHeader)headers.get(ARIESSUBSYSTEM_PARENTS);
+			if (header == null)
+				header(new AriesSubsystemParentsHeader(Collections.singleton(clause)));
+			else {
+				Collection<AriesSubsystemParentsHeader.Clause> clauses = new ArrayList<AriesSubsystemParentsHeader.Clause>(header.getClauses().size() + 1);
+				clauses.addAll(header.getClauses());
+				clauses.add(clause);
+				header(new AriesSubsystemParentsHeader(clauses));
+			}
 			return this;
 		}
 		
@@ -224,6 +230,10 @@ public class DeploymentManifest {
 	
 	public Map<String, Header<?>> getHeaders() {
 		return headers;
+	}
+	
+	public AriesSubsystemParentsHeader getAriesSubsystemParentsHeader() {
+		return (AriesSubsystemParentsHeader)getHeaders().get(ARIESSUBSYSTEM_PARENTS);
 	}
 	
 	public ImportPackageHeader getImportPackageHeader() {

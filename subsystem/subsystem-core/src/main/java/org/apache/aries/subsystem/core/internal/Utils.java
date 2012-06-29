@@ -1,10 +1,12 @@
 package org.apache.aries.subsystem.core.internal;
 
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.subsystem.Subsystem;
+import org.osgi.service.subsystem.SubsystemConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public class Utils {
 	public static void installResource(Resource resource, AriesSubsystem subsystem) {
 		Coordination coordination = Utils.createCoordination(subsystem);
 		try {
-			ResourceInstaller.newInstance(coordination, resource, subsystem, false).install();
+			ResourceInstaller.newInstance(coordination, resource, subsystem).install();
 		}
 		catch (Throwable t) {
 			coordination.fail(t);
@@ -71,11 +73,24 @@ public class Utils {
 		return subsystem.getSubsystemManifest().getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies();
 	}
 	
+	public static boolean isBundle(Resource resource) {
+		String type = ResourceHelper.getTypeAttribute(resource);
+		return IdentityNamespace.TYPE_BUNDLE.equals(type) ||
+				IdentityNamespace.TYPE_FRAGMENT.equals(type);
+	}
+	
 	public static boolean isInstallableResource(Resource resource) {
 		return !isSharedResource(resource);
 	}
 	
 	public static boolean isSharedResource(Resource resource) {
 		return resource instanceof AriesSubsystem || resource instanceof BundleRevision;
+	}
+	
+	public static boolean isSubsystem(Resource resource) {
+		String type = ResourceHelper.getTypeAttribute(resource);
+		return SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type) ||
+				SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type) ||
+				SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type);
 	}
 }

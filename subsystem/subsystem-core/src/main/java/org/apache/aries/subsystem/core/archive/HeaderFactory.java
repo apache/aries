@@ -111,6 +111,8 @@ public class HeaderFactory {
 			return new BundleVersionHeader(value);
 		if (PreferredProviderHeader.NAME.equals(name))
 			return new PreferredProviderHeader(value);
+		if (AriesSubsystemParentsHeader.NAME.equals(name))
+			return new AriesSubsystemParentsHeader(value);
 		return new GenericHeader(name, value);
 			
 	}

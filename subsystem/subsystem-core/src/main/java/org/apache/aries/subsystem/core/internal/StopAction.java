@@ -3,6 +3,7 @@ package org.apache.aries.subsystem.core.internal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
@@ -32,15 +33,14 @@ public class StopAction extends AbstractAction {
 	public Object run() {
 		checkRoot();
 		subsystem.setAutostart(false);
-		if (subsystem.getState() == State.UNINSTALLING || subsystem.getState() == State.UNINSTALLED) {
-			throw new SubsystemException("Cannot stop from state " + subsystem.getState());
-		}
-		else if (subsystem.getState() == State.STARTING) {
+		State state = subsystem.getState();
+		if (EnumSet.of(State.INSTALLED, State.RESOLVED).contains(state))
+			return null;
+		else if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLING, State.UNINSTALLED).contains(state))
+			throw new IllegalStateException("Cannot stop from state " + state);
+		else if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
 			waitForStateChange();
 			subsystem.stop();
-		}
-		else if (subsystem.getState() != State.ACTIVE) {
-			return null;
 		}
 		subsystem.setState(State.STOPPING);
 		// For non-root subsystems, stop any remaining constituents.
@@ -87,7 +87,7 @@ public class StopAction extends AbstractAction {
 	}
 	
 	private void stopResource(Resource resource) throws BundleException, IOException {
-		if (Utils.getActiveUseCount(resource) >= 1)
+		if (Utils.getActiveUseCount(resource) > 0)
 			return;
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)

@@ -89,6 +89,10 @@ public class PreferredProviderRepository implements Repository {
 	}
 	
 	private boolean isValid(Capability capability) {
-		return resource.getParents().iterator().next().getConstituents().contains(capability.getResource());
+		for (AriesSubsystem parent : resource.getParents())
+			for (Resource constituent : parent.getConstituents())
+				if (ResourceHelper.areEqual(constituent, capability.getResource()))
+					return true;
+		return false;
 	}
 }

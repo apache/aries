@@ -54,7 +54,7 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 						&& result.getVersion().equals(ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion())
 						&& result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType())))
 					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
-				return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent, false).install();
+				return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent).install();
 			}
 			result = (AriesSubsystem)region.find(
 					ssr.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName(), 
@@ -63,11 +63,11 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 				checkLifecyclePermission(result);
 				if (!result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType()))
 					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
-				return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent, false).install();
+				return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent).install();
 			}
 			result = createSubsystem(ssr);
 			checkLifecyclePermission(result);
-			return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent, false).install();
+			return (AriesSubsystem)ResourceInstaller.newInstance(coordination, result, parent).install();
 		}
 		catch (Throwable t) {
 			coordination.fail(t);
