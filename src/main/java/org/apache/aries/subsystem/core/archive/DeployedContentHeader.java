@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -26,10 +27,11 @@ import java.util.regex.Pattern;
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.Utils;
 import org.osgi.framework.Version;
+import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class DeployedContentHeader implements Header<DeployedContentHeader.Clause> {
+public class DeployedContentHeader implements RequirementHeader<DeployedContentHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String ATTRIBUTE_DEPLOYEDVERSION = DeployedVersionAttribute.NAME;
 		public static final String ATTRIBUTE_RESOURCEID = "resourceId";
@@ -141,6 +143,10 @@ public class DeployedContentHeader implements Header<DeployedContentHeader.Claus
 			return ((TypeAttribute)getAttribute(ATTRIBUTE_TYPE)).getType();
 		}
 		
+		public DeployedContentRequirement toRequirement(Resource resource) {
+			return new DeployedContentRequirement(this, resource);
+		}
+		
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -239,6 +245,14 @@ public class DeployedContentHeader implements Header<DeployedContentHeader.Claus
 	@Override
 	public String getValue() {
 		return toString();
+	}
+	
+	@Override
+	public List<Requirement> toRequirements(Resource resource) {
+		List<Requirement> requirements = new ArrayList<Requirement>(clauses.size());
+		for (Clause clause : clauses)
+			requirements.add(clause.toRequirement(resource));
+		return requirements;
 	}
 	
 	@Override
