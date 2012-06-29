@@ -85,7 +85,7 @@
         <ariesJmxWhiteboardVersion>1.0.0-SNAPSHOT</ariesJmxWhiteboardVersion>
 
         <!-- Aries Jndi Versions -->
-        <ariesJndiApiVersion>1.0.0-SNAPSHOT</ariesJndiApiVersion>
+        <ariesJndiApiVersion>1.0.0</ariesJndiApiVersion>
         <ariesJndiVersion>1.0.0-SNAPSHOT</ariesJndiVersion>
         <ariesJndiCoreVersion>1.0.0-SNAPSHOT</ariesJndiCoreVersion>
         <ariesJndiLegacySupportVersion>1.0.0-SNAPSHOT</ariesJndiLegacySupportVersion>
@@ -93,7 +93,7 @@
         <ariesJndiUrlVersion>1.0.0-SNAPSHOT</ariesJndiUrlVersion>
 
         <!-- Aries Jpa Versions -->
-        <ariesJpaApiVersion>1.0.0-SNAPSHOT</ariesJpaApiVersion>
+        <ariesJpaApiVersion>1.0.0</ariesJpaApiVersion>
         <ariesJpaBlueprintAriesVersion>1.0.0-SNAPSHOT</ariesJpaBlueprintAriesVersion>
         <ariesJpaContainerVersion>1.0.0-SNAPSHOT</ariesJpaContainerVersion>
         <ariesJpaContainerContextVersion>1.0.0-SNAPSHOT</ariesJpaContainerContextVersion>
@@ -104,12 +104,12 @@
         <ariesProxyImplVersion>1.0.0-SNAPSHOT</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
-        <ariesQuiesceApiVersion>1.0.0-SNAPSHOT</ariesQuiesceApiVersion>
+        <ariesQuiesceApiVersion>1.0.0</ariesQuiesceApiVersion>
         <ariesQuiesceManagerVersion>1.0.0-SNAPSHOT</ariesQuiesceManagerVersion>
         
 
         <!-- Aries Testsupport Versions -->
-        <ariesTestsupportUnitVersion>1.0.0-SNAPSHOT</ariesTestsupportUnitVersion>
+        <ariesTestsupportUnitVersion>1.0.0</ariesTestsupportUnitVersion>
 
         <!-- Aries Transaction Versions -->
         <ariesTransactionBlueprintVersion>1.0.0-SNAPSHOT</ariesTransactionBlueprintVersion>
@@ -442,7 +442,7 @@
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>org.apache.aries.jmx.api</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
