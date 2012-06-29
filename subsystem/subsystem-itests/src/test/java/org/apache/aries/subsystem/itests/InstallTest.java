@@ -35,7 +35,7 @@ import org.osgi.service.subsystem.Subsystem;
 
 @RunWith(JUnit4TestRunner.class)
 public class InstallTest extends SubsystemTest {
-	private static void createApplication(String name, String[] content) throws Exception {
+	static void createApplication(String name, String[] content) throws Exception {
 		ZipFixture feature = ArchiveFixture
 				.newZip()
 				.binary("OSGI-INF/SUBSYSTEM.MF",
