@@ -322,9 +322,7 @@ public class SubsystemResource implements Resource {
 		if (contentHeader == null)
 			return;
 		for (SubsystemContentHeader.Clause clause : contentHeader.getClauses()) {
-			OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
-					clause.getSymbolicName(), clause.getVersionRange(),
-					clause.getType(), false);
+			Requirement requirement = clause.toRequirement(this);
 			Resource resource = findContent(requirement);
 			if (resource == null) {
 				if (clause.isMandatory())
@@ -471,7 +469,7 @@ public class SubsystemResource implements Resource {
 		};
 	}
 	
-	private Resource findContent(OsgiIdentityRequirement requirement) {
+	private Resource findContent(Requirement requirement) {
 		Map<Requirement, Collection<Capability>> map;
 		// TODO System repository for scoped subsystems should be searched in
 		// the case of a persisted subsystem.
@@ -510,10 +508,7 @@ public class SubsystemResource implements Resource {
 			else
 				return Activator.getInstance().getSubsystems().getSubsystemById(resourceId);
 		}
-		OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
-				clause.getPath(), clause.getDeployedVersion(),
-				clause.getType(), false);
-		return findContent(requirement);
+		return findContent(clause.toRequirement(this));
 	}
 	
 	private Resource findDependency(ProvisionResourceHeader.ProvisionedResource provisionedResource) {
