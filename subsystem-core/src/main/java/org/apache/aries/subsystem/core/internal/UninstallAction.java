@@ -13,11 +13,9 @@ public class UninstallAction extends AbstractAction {
 	public Object run() {
 		checkRoot();
 		State state = subsystem.getState();
-		// UNINSTALLING is included here because the transition to UNINSTALLED
-		// is guaranteed, so there's no point in waiting.
-		if (EnumSet.of(State.UNINSTALLING, State.UNINSTALLED).contains(state))
+		if (EnumSet.of(State.UNINSTALLED).contains(state))
 			return null;
-		else if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
+		else if (EnumSet.of(State.INSTALL_FAILED, State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING, State.UNINSTALLING).contains(state)) {
 			waitForStateChange();
 			subsystem.uninstall();
 		}
@@ -26,7 +24,7 @@ public class UninstallAction extends AbstractAction {
 			subsystem.uninstall();
 		}
 		else
-			ResourceUninstaller.newInstance(subsystem).uninstall();
+			ResourceUninstaller.newInstance(subsystem, subsystem).uninstall();
 		return null;
 	}
 }
