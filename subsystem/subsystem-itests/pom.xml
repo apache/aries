@@ -242,6 +242,14 @@
             <artifactId>pax-url-mvn</artifactId>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.itest.interfaces</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        
     </dependencies>
     <build>
         <plugins>
@@ -359,6 +367,31 @@
 						</configuration>
 						<phase>process-test-classes</phase>
 					</execution>
+					
+					<!-- New pom for hello tests, part 1 -->
+					
+					<execution>
+						<id>hello-impl</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestFile>src/test/bundles/helloImpl/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/itests/hello/impl/**</include>
+							</includes>
+							<outputDirectory>src/test/resources/hello</outputDirectory>
+							<finalName>helloImpl</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					
+					<!-- End of new pom for hello tests, part 1 -->
+					
+					
 				</executions>
 			</plugin>
 			<plugin>
@@ -402,6 +435,24 @@
 							</sources>
 						</configuration>
 					</execution>
+					
+					<!-- New pom for hello tests, part 2 -->
+						
+					<execution>
+						<id>add-source-helloImpl</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/helloImpl</source>
+							</sources>
+						</configuration>
+					</execution>
+					
+					<!-- End of new pom for hello tests, part 2 -->
+					
 				</executions>
 			</plugin>
             <plugin>
