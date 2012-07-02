@@ -313,6 +313,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @SuppressWarnings("unchecked")
     public void removedBundle(Bundle bundle, BundleEvent event, Object registrations) {
+        activator.unregisterProviderBundle(bundle);
+
         if (registrations == null)
             return;
 
