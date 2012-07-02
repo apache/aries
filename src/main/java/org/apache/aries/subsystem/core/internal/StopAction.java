@@ -21,18 +21,15 @@ import org.slf4j.LoggerFactory;
 public class StopAction extends AbstractAction {
 	private static final Logger logger = LoggerFactory.getLogger(StopAction.class);
 	
-	public StopAction(AriesSubsystem subsystem) {
-		super(subsystem);
-	}
-	
-	public StopAction(AriesSubsystem subsystem, boolean disableRootCheck) {
-		super(subsystem, disableRootCheck);
+	public StopAction(AriesSubsystem subsystem, boolean disableRootCheck, boolean explicit) {
+		super(subsystem, disableRootCheck, explicit);
 	}
 	
 	@Override
 	public Object run() {
 		checkRoot();
-		subsystem.setAutostart(false);
+		if (explicit)
+			subsystem.setAutostart(false);
 		State state = subsystem.getState();
 		if (EnumSet.of(State.INSTALLED, State.RESOLVED).contains(state))
 			return null;
@@ -40,7 +37,7 @@ public class StopAction extends AbstractAction {
 			throw new IllegalStateException("Cannot stop from state " + state);
 		else if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
 			waitForStateChange();
-			subsystem.stop();
+			return new StopAction(subsystem, disableRootCheck, explicit).run();
 		}
 		subsystem.setState(State.STOPPING);
 		List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem));
@@ -102,6 +99,6 @@ public class StopAction extends AbstractAction {
 	}
 	
 	private void stopSubsystemResource(Resource resource) throws IOException {
-		((AriesSubsystem)resource).stop();
+		new StopAction((AriesSubsystem)resource, !((AriesSubsystem)resource).isRoot(), false).run();
 	}
 }

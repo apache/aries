@@ -41,6 +41,13 @@ public class SubsystemServiceRegistrar {
 		registration.setProperties(properties);
 	}
 	
+	public synchronized Subsystem getSubsystemService(AriesSubsystem subsystem) {
+		ServiceRegistration<Subsystem> registration = map.get(subsystem);
+		if (registration == null)
+			return null;
+		return Activator.getInstance().getBundleContext().getService(registration.getReference());
+	}
+	
 	public synchronized void register(AriesSubsystem child, AriesSubsystem parent) {
 		if (map.containsKey(child))
 			return;
@@ -94,7 +101,7 @@ public class SubsystemServiceRegistrar {
 		result.put(SubsystemConstants.SUBSYSTEM_VERSION_PROPERTY, subsystem.getVersion());
 		result.put(SubsystemConstants.SUBSYSTEM_TYPE_PROPERTY, subsystem.getType());
 		result.put(SubsystemConstants.SUBSYSTEM_STATE_PROPERTY, subsystem.getState());
-		result.put(Constants.SubsystemServicePropertyRegions, Collections.singleton(subsystem.getRegion().getName()));
+		result.put(Constants.SubsystemServicePropertyRegions, Collections.singleton(subsystem.getRegionName()));
 		return result;
 	}
 	

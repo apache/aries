@@ -66,11 +66,11 @@ public class SubsystemResource implements Resource {
 	private final Collection<Resource> sharedContent = new HashSet<Resource>();
 	private final Collection<Resource> sharedDependencies = new HashSet<Resource>();
 	
-	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException {
+	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException, UnsupportedOperationException, BundleException, InvalidSyntaxException {
 		this(new RawSubsystemResource(location, content), parent);
 	}
 	
-	public SubsystemResource(RawSubsystemResource resource, AriesSubsystem parent) throws IOException {
+	public SubsystemResource(RawSubsystemResource resource, AriesSubsystem parent) throws IOException, BundleException, InvalidSyntaxException, URISyntaxException {
 		this.parent = parent;
 		this.resource = resource;
 		id = SubsystemIdentifier.getNextId();
@@ -80,11 +80,11 @@ public class SubsystemResource implements Resource {
 		deploymentManifest = computeDeploymentManifest();
 	}
 	
-	public SubsystemResource(File file) throws IOException, URISyntaxException, ResolutionException {
+	public SubsystemResource(File file) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
 		this(FileSystem.getFSRoot(file));
 	}
 	
-	public SubsystemResource(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
+	public SubsystemResource(IDirectory directory) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
 		parent = null;
 		resource = new RawSubsystemResource(directory);
 		preferredProviderRepository = null;
@@ -163,12 +163,13 @@ public class SubsystemResource implements Resource {
 			coordination.addParticipant(new Participant() {
 				@Override
 				public void ended(Coordination arg0) throws Exception {
-//					region.getRegionDigraph().removeRegion(region);
+					// Nothing.
 				}
 
 				@Override
 				public void failed(Coordination arg0) throws Exception {
-					region.getRegionDigraph().removeRegion(region);
+					if (isScoped())
+						region.getRegionDigraph().removeRegion(region);
 				}
 			});
 			setImportIsolationPolicy();
@@ -227,6 +228,8 @@ public class SubsystemResource implements Resource {
 	}
 	
 	private boolean addDependencies(Repository repository, Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+		if (repository == null)
+			return false;
 		Map<Requirement, Collection<Capability>> m = repository.findProviders(Collections.singleton(requirement));
 		if (m.containsKey(requirement)) {
 			Collection<Capability> cc = m.get(requirement);
@@ -301,7 +304,7 @@ public class SubsystemResource implements Resource {
 		}
 	}
 	
-	private void computeContentResources(DeploymentManifest manifest) {
+	private void computeContentResources(DeploymentManifest manifest) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (manifest == null)
 			computeContentResources(getSubsystemManifest());
 		else {
@@ -317,7 +320,7 @@ public class SubsystemResource implements Resource {
 		}
 	}
 	
-	private void computeContentResources(SubsystemManifest manifest) {
+	private void computeContentResources(SubsystemManifest manifest) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		if (contentHeader == null)
 			return;
@@ -469,7 +472,7 @@ public class SubsystemResource implements Resource {
 		};
 	}
 	
-	private Resource findContent(Requirement requirement) {
+	private Resource findContent(Requirement requirement) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Map<Requirement, Collection<Capability>> map;
 		// TODO System repository for scoped subsystems should be searched in
 		// the case of a persisted subsystem.
@@ -478,10 +481,17 @@ public class SubsystemResource implements Resource {
 			if (map.containsKey(requirement)) {
 				Collection<Capability> capabilities = map.get(requirement);
 				for (Capability capability : capabilities) {
-					Collection<AriesSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource());
-					if (!subsystems.isEmpty())
-						if (subsystems.iterator().next().getRegion().equals(parent.getRegion()))
-							return capability.getResource();
+					Resource provider = capability.getResource();
+					if (provider instanceof BundleRevision) {
+						if (getRegion().contains(((BundleRevision)provider).getBundle())) {
+							return provider;
+						}
+					}
+					else if (provider instanceof AriesSubsystem) {
+						if (getRegion().equals(((AriesSubsystem)provider).getRegion())) {
+							return provider;
+						}
+					}
 				}
 			}
 		}
@@ -497,7 +507,7 @@ public class SubsystemResource implements Resource {
 		return null;
 	}
 	
-	private Resource findContent(DeployedContentHeader.Clause clause) {
+	private Resource findContent(DeployedContentHeader.Clause clause) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Attribute attribute = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
 		long resourceId = attribute == null ? -1 : Long.parseLong(String.valueOf(attribute.getValue()));
 		if (resourceId != -1) {

@@ -5,12 +5,13 @@ import java.util.EnumSet;
 import org.osgi.service.subsystem.Subsystem.State;
 
 public class UninstallAction extends AbstractAction {
-	public UninstallAction(AriesSubsystem subsystem) {
-		super(subsystem);
+	public UninstallAction(AriesSubsystem subsystem, boolean disableRootCheck, boolean explicit) {
+		super(subsystem, disableRootCheck, explicit);
 	}
 	
 	@Override
 	public Object run() {
+		checkValid();
 		checkRoot();
 		State state = subsystem.getState();
 		if (EnumSet.of(State.UNINSTALLED).contains(state))
@@ -20,7 +21,7 @@ public class UninstallAction extends AbstractAction {
 			subsystem.uninstall();
 		}
 		else if (state.equals(State.ACTIVE)) {
-			subsystem.stop();
+			new StopAction(subsystem, disableRootCheck, explicit).run();
 			subsystem.uninstall();
 		}
 		else

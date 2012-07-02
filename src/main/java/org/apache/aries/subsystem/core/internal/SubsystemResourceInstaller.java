@@ -17,14 +17,16 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	}
 	
 	public Resource install() throws Exception {
+		AriesSubsystem result;
 		if (resource instanceof RepositoryContent)
-			return installRepositoryContent((RepositoryContent)resource);
+			result = installRepositoryContent((RepositoryContent)resource);
 		else if (resource instanceof AriesSubsystem)
-			return installAriesSubsystem((AriesSubsystem)resource);
+			result = installAriesSubsystem((AriesSubsystem)resource);
 		else if (resource instanceof RawSubsystemResource)
-			return installRawSubsystemResource((RawSubsystemResource)resource);
+			result = installRawSubsystemResource((RawSubsystemResource)resource);
 		else
-			return installSubsystemResource((SubsystemResource)resource);
+			result = installSubsystemResource((SubsystemResource)resource);
+		return result;
 	}
 	
 	private void addChild(final AriesSubsystem child) {
@@ -59,7 +61,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		});
 	}
 	
-	private Resource installAriesSubsystem(AriesSubsystem subsystem) throws Exception {
+	private AriesSubsystem installAriesSubsystem(AriesSubsystem subsystem) throws Exception {
 		addChild(subsystem);
 		addConstituent(subsystem);
 		if (!isTransitive())
@@ -93,95 +95,19 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		return subsystem;
 	}
 	
-	private Resource installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
+	private AriesSubsystem installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
 		SubsystemResource subsystemResource = new SubsystemResource(resource, provisionTo);
 		return installSubsystemResource(subsystemResource);
 	}
 	
-	private Resource installRepositoryContent(RepositoryContent resource) throws Exception {
+	private AriesSubsystem installRepositoryContent(RepositoryContent resource) throws Exception {
 		RawSubsystemResource rawSubsystemResource = new RawSubsystemResource(getLocation(), resource.getContent());
 		return installRawSubsystemResource(rawSubsystemResource);
-//		return AccessController.doPrivileged(new InstallAction(getLocation(), resource.getContent(), provisionTo, null, coordination, true));
 	}
 	
-	private Resource installSubsystemResource(SubsystemResource resource) throws Exception {
+	private AriesSubsystem installSubsystemResource(SubsystemResource resource) throws Exception {
 		AriesSubsystem subsystem = new AriesSubsystem(resource);
 		installAriesSubsystem(subsystem);
-		if (subsystem.isAutostart())
-			subsystem.start();
 		return subsystem;
 	}
-	
-//	private void setImportIsolationPolicy(AriesSubsystem subsystem) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
-//		if (subsystem.isRoot() || !subsystem.isScoped())
-//			return;
-//		Region region = subsystem.getRegion();
-//		Region from = region;
-//		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
-//		Region to = ((AriesSubsystem)subsystem.getParents().iterator().next()).getRegion();
-//		addSubsystemServiceImportToSharingPolicy(builder, to, subsystem);
-//		// TODO Is this check really necessary? Looks like it was done at the beginning of this method.
-//		if (subsystem.isScoped()) {
-//			// Both applications and composites have Import-Package headers that require processing.
-//			// In the case of applications, the header is generated.
-//			Header<?> header = subsystem.getSubsystemManifest().getImportPackageHeader();
-//			setImportIsolationPolicy(builder, (ImportPackageHeader)header, subsystem);
-//			// Both applications and composites have Require-Capability headers that require processing.
-//			// In the case of applications, the header is generated.
-//			header = subsystem.getSubsystemManifest().getRequireCapabilityHeader();
-//			setImportIsolationPolicy(builder, (RequireCapabilityHeader)header, subsystem);
-//			// Both applications and composites have Subsystem-ImportService headers that require processing.
-//			// In the case of applications, the header is generated.
-//			header = subsystem.getSubsystemManifest().getSubsystemImportServiceHeader();
-//			setImportIsolationPolicy(builder, (SubsystemImportServiceHeader)header, subsystem);
-//			header = subsystem.getSubsystemManifest().getRequireBundleHeader();
-//			setImportIsolationPolicy(builder, (RequireBundleHeader)header, subsystem);
-//		}
-//		RegionFilter regionFilter = builder.build();
-//		from.connectRegion(to, regionFilter);
-//	}
-//	
-//	private void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		if (header == null)
-//			return;
-//		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
-//		for (ImportPackageHeader.Clause clause : header.getClauses()) {
-//			ImportPackageRequirement requirement = new ImportPackageRequirement(clause, subsystem);
-//			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
-//			builder.allow(policy, filter);
-//		}
-//	}
-//	
-//	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireBundleHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		if (header == null)
-//			return;
-//		for (RequireBundleHeader.Clause clause : header.getClauses()) {
-//			RequireBundleRequirement requirement = new RequireBundleRequirement(clause, subsystem);
-//			String policy = RegionFilter.VISIBLE_REQUIRE_NAMESPACE;
-//			String filter = requirement.getDirectives().get(RequireBundleRequirement.DIRECTIVE_FILTER);
-//			builder.allow(policy, filter);
-//		}
-//	}
-//	
-//	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireCapabilityHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		if (header == null)
-//			return;
-//		for (RequireCapabilityHeader.Clause clause : header.getClauses()) {
-//			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause, subsystem);
-//			String policy = requirement.getNamespace();
-//			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
-//			builder.allow(policy, filter);
-//		}
-//	}
-//	
-//	private void setImportIsolationPolicy(RegionFilterBuilder builder, SubsystemImportServiceHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		if (header == null)
-//			return;
-//		for (SubsystemImportServiceHeader.Clause clause : header.getClauses()) {
-//			SubsystemImportServiceRequirement requirement = new SubsystemImportServiceRequirement(clause, subsystem);
-//			String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
-//			String filter = requirement.getDirectives().get(SubsystemImportServiceRequirement.DIRECTIVE_FILTER);
-//			builder.allow(policy, filter);
-//		}
-//	}
 }

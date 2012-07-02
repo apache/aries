@@ -245,7 +245,7 @@ public class SubsystemManifest {
 	public List<Requirement> toRequirements(Resource resource) {
 		ArrayList<Requirement> requirements = new ArrayList<Requirement>();
 		for (Header<?> header : headers.values())
-			if (header instanceof RequirementHeader)
+			if (header instanceof RequirementHeader && !((header instanceof SubsystemContentHeader) || (header instanceof PreferredProviderHeader)))
 				requirements.addAll(((RequirementHeader<?>)header).toRequirements(resource));
 		requirements.trimToSize();
 		return requirements;
