@@ -68,8 +68,6 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc,
             String signature, String[] exceptions) {
-        System.out.println("@@@ " + access + ": " + name + "#" + desc + "#" + signature + "~" + Arrays.toString(exceptions));
-
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         return new TCCLSetterMethodVisitor(mv, access, name, desc);
     }
@@ -77,12 +75,9 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     @Override
     public void visitEnd() {
         if (!woven) {
-            System.out.println("+++ not woven: " + targetClass);
             // if this class wasn't woven, then don't add the synthesized method either.
             super.visitEnd();
             return;
-        } else {
-            System.out.println("+++ woven: " + targetClass);
         }
 
         // Add generated static method
@@ -170,12 +165,8 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
          */
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-            System.out.println("### " + opcode + ": " + owner + "#" + name + "#" + desc);
-
             WeavingData wd = findWeavingData(owner, name, desc);
             if (opcode == INVOKESTATIC && wd != null) {
-                System.out.println("+++ Gotcha!");
-
                 additionalImportRequired = true;
                 woven = true;
 
