@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
 public class StartAction extends AbstractAction {
 	private static final Logger logger = LoggerFactory.getLogger(AriesSubsystem.class);
 	
-	public StartAction(AriesSubsystem subsystem) {
-		super(subsystem);
+	public StartAction(AriesSubsystem subsystem, boolean explicit) {
+		super(subsystem, false, explicit);
 	}
 	
 	@Override
@@ -50,15 +50,15 @@ public class StartAction extends AbstractAction {
 			throw new SubsystemException("Cannot stop from state " + state);
 		if (state == State.INSTALLING || state == State.RESOLVING || state == State.STOPPING) {
 			waitForStateChange();
-			subsystem.start();
-			return null;
+			return new StartAction(subsystem, explicit).run();
 		}
 		// TODO Should we wait on STARTING to see if the outcome is ACTIVE?
 		if (state == State.STARTING || state == State.ACTIVE)
 			return null;
 		resolve(subsystem);
+		if (explicit)
+			subsystem.setAutostart(true);
 		subsystem.setState(State.STARTING);
-		subsystem.setAutostart(true);
 		// TODO Need to hold a lock here to guarantee that another start
 		// operation can't occur when the state goes to RESOLVED.
 		// Start the subsystem.
@@ -68,10 +68,11 @@ public class StartAction extends AbstractAction {
 		try {
 			List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem));
 			SubsystemContentHeader header = subsystem.getSubsystemManifest().getSubsystemContentHeader();
-			if (header != null && !subsystem.isRoot())
+			if (header != null)
 				Collections.sort(resources, new StartResourceComparator(header));
-			for (Resource resource : resources)
-				startResource(resource, coordination);
+			if (!subsystem.isRoot())
+				for (Resource resource : resources)
+					startResource(resource, coordination);
 			subsystem.setState(State.ACTIVE);
 		} catch (Throwable t) {
 			coordination.fail(t);
@@ -134,22 +135,17 @@ public class StartAction extends AbstractAction {
 	}
 	
 	private void setExportIsolationPolicy(AriesSubsystem subsystem) throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
-		if (subsystem.isRoot())
-			// Nothing to do if this is the root subsystem.
-			return;
-		if (!subsystem.isScoped())
-			// Features share the same isolation as that of their scoped parent.
+		if (!subsystem.isComposite())
 			return;
 		Region from = ((AriesSubsystem)subsystem.getParents().iterator().next()).getRegion();
 		Region to = subsystem.getRegion();
 		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
-		if (subsystem.isComposite()) {
-			setExportIsolationPolicy(builder, subsystem.getDeploymentManifest().getExportPackageHeader(), subsystem);
-			setExportIsolationPolicy(builder, subsystem.getDeploymentManifest().getProvideCapabilityHeader(), subsystem);
-			setExportIsolationPolicy(builder, subsystem.getDeploymentManifest().getSubsystemExportServiceHeader(), subsystem);
-			// TODO Implement export isolation policy for composites.
-		}
+		setExportIsolationPolicy(builder, subsystem.getDeploymentManifest().getExportPackageHeader(), subsystem);
+		setExportIsolationPolicy(builder, subsystem.getDeploymentManifest().getProvideCapabilityHeader(), subsystem);
+		setExportIsolationPolicy(builder, subsystem.getDeploymentManifest().getSubsystemExportServiceHeader(), subsystem);
 		RegionFilter regionFilter = builder.build();
+		if (regionFilter.getSharingPolicy().isEmpty())
+			return;
 		if (logger.isDebugEnabled())
 			logger.debug("Establishing region connection: from=" + from
 					+ ", to=" + to + ", filter=" + regionFilter);
@@ -235,7 +231,7 @@ public class StartAction extends AbstractAction {
 
 	private void startSubsystemResource(Resource resource, Coordination coordination) throws IOException {
 		final AriesSubsystem subsystem = (AriesSubsystem)resource;
-		subsystem.start();
+		new StartAction(subsystem, false).run();
 		if (coordination == null)
 			return;
 		coordination.addParticipant(new Participant() {
@@ -244,7 +240,7 @@ public class StartAction extends AbstractAction {
 			}
 	
 			public void failed(Coordination coordination) throws Exception {
-				subsystem.stop();
+				new StopAction(subsystem, !subsystem.isRoot(), false).run();
 			}
 		});
 	}

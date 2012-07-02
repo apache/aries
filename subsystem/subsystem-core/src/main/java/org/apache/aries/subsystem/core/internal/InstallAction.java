@@ -7,12 +7,10 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.apache.aries.util.io.IOUtils;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemException;
 
@@ -105,34 +103,12 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 	
 	private AriesSubsystem createSubsystem(SubsystemResource resource) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
 		final AriesSubsystem result = new AriesSubsystem(resource);
-		coordination.addParticipant(new Participant() {
-			@Override
-			public void ended(Coordination c) throws Exception {
-				// Nothing
-			}
-
-			@Override
-			public void failed(Coordination c) throws Exception {
-				IOUtils.deleteRecursive(result.getDirectory());
-			}
-		});
 		return result;
 		
 	}
 	
-	private SubsystemResource createSubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException {
+	private SubsystemResource createSubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException, UnsupportedOperationException, BundleException, InvalidSyntaxException {
 		final SubsystemResource result = new SubsystemResource(location, content, parent);
-//		coordination.addParticipant(new Participant() {
-//			@Override
-//			public void ended(Coordination c) throws Exception {
-//				// Nothing
-//			}
-//
-//			@Override
-//			public void failed(Coordination c) throws Exception {
-//				IOUtils.deleteRecursive(result.getDirectory());
-//			}
-//		});
 		return result;
 	}
 }

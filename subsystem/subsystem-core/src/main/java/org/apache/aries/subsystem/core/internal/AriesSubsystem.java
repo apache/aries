@@ -28,10 +28,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Participant;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -54,8 +55,22 @@ public class AriesSubsystem implements Resource, Subsystem {
 	
 	public AriesSubsystem(SubsystemResource resource) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
 		this.resource = resource;
-		File file = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(resource.getId()));
+		final File file = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(resource.getId()));
 		file.mkdirs();
+		Coordination coordination = Activator.getInstance().getCoordinator().peek();
+		if (coordination != null) {
+			coordination.addParticipant(new Participant() {
+				@Override
+				public void ended(Coordination c) throws Exception {
+					// Nothing
+				}
+
+				@Override
+				public void failed(Coordination c) throws Exception {
+					IOUtils.deleteRecursive(file);
+				}
+			});
+		}
 		directory = FileSystem.getFSRoot(file);
 		setSubsystemManifest(resource.getSubsystemManifest());
 		SubsystemManifestValidator.validate(this, getSubsystemManifest());
@@ -100,13 +115,16 @@ public class AriesSubsystem implements Resource, Subsystem {
 			for (Iterator<Capability> i = result.iterator(); i.hasNext();)
 				if (!i.next().getNamespace().equals(namespace))
 					i.remove();
-		if (isScoped() || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
-			return result;
-		SubsystemContentHeader header = subsystemManifest.getSubsystemContentHeader();
-		for (Resource constituent : getConstituents())
-			if (header.contains(constituent))
-				for (Capability capability : constituent.getCapabilities(namespace))
-					result.add(new BasicCapability(capability, this));
+		// TODO Somehow, exposing the capabilities of content resources of a
+		// feature is causing an infinite regression of feature2 installations
+		// in FeatureTest.testSharedContent() under certain conditions.
+//		if (isScoped() || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
+//			return result;
+//		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
+//		for (Resource constituent : getConstituents())
+//			if (header.contains(constituent))
+//				for (Capability capability : constituent.getCapabilities(namespace))
+//					result.add(new BasicCapability(capability, this));
 		return result;
 	}
 
@@ -120,7 +138,7 @@ public class AriesSubsystem implements Resource, Subsystem {
 					i.remove();
 		if (isScoped())
 			return result;
-		SubsystemContentHeader header = subsystemManifest.getSubsystemContentHeader();
+		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
 		for (Resource constituent : getConstituents())
 			if (header.contains(constituent))
 				for (Requirement requirement : constituent.getRequirements(namespace))
@@ -163,7 +181,7 @@ public class AriesSubsystem implements Resource, Subsystem {
 
 	@Override
 	public Collection<Subsystem> getParents() {
-		AriesSubsystemParentsHeader header = deploymentManifest.getAriesSubsystemParentsHeader();
+		AriesSubsystemParentsHeader header = getDeploymentManifest().getAriesSubsystemParentsHeader();
 		if (header == null)
 			return Collections.emptyList();
 		Collection<Subsystem> result = new ArrayList<Subsystem>(header.getClauses().size());
@@ -225,19 +243,19 @@ public class AriesSubsystem implements Resource, Subsystem {
 	@Override
 	public void start() {
 		SecurityManager.checkExecutePermission(this);
-		AccessController.doPrivileged(new StartAction(this));
+		AccessController.doPrivileged(new StartAction(this, true));
 	}
 
 	@Override
 	public void stop() {
 		SecurityManager.checkExecutePermission(this);
-		AccessController.doPrivileged(new StopAction(this));
+		AccessController.doPrivileged(new StopAction(this, !isRoot(), true));
 	}
 
 	@Override
 	public void uninstall() {
 		SecurityManager.checkLifecyclePermission(this);
-		AccessController.doPrivileged(new UninstallAction(this));
+		AccessController.doPrivileged(new UninstallAction(this, false, true));
 	}
 	
 	/* END Subsystem interface methods. */
@@ -282,9 +300,15 @@ public class AriesSubsystem implements Resource, Subsystem {
 	}
 	
 	org.eclipse.equinox.region.Region getRegion() {
+		return Activator.getInstance().getRegionDigraph().getRegion(getRegionName());
+	}
+	
+	String getRegionName() {
 		DeploymentManifest manifest = getDeploymentManifest();
 		Header<?> header = manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_REGION);
-		return Activator.getInstance().getRegionDigraph().getRegion(header.getValue());
+		if (header == null)
+			return null;
+		return header.getValue();
 	}
 	
 	synchronized SubsystemResource getResource() {

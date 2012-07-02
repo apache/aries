@@ -21,11 +21,15 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	
 	public void uninstall() {
 		removeReferences();
-		if (isResourceUninstallable())
-			uninstallSubsystem();
-		removeConstituents();
-		removeChildren();
-		removeSubsystem();
+		try {
+			if (isResourceUninstallable())
+				uninstallSubsystem();
+		}
+		finally {
+			removeConstituents();
+			removeChildren();
+			removeSubsystem();
+		}
 	}
 	
 	private void removeChildren() {
@@ -61,33 +65,38 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	
 	private void uninstallSubsystem() {
 		AriesSubsystem subsystem = (AriesSubsystem) resource;
-		if (subsystem.getState().equals(Subsystem.State.RESOLVED))
-			subsystem.setState(State.INSTALLED);
-		subsystem.setState(State.UNINSTALLING);
-		Throwable firstError = null;
-		for (Resource resource : Activator.getInstance().getSubsystems()
-				.getResourcesReferencedBy(subsystem)) {
-			// Don't uninstall the region context bundle here.
-			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(
-					RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
-				continue;
-			try {
-				ResourceUninstaller.newInstance(resource, subsystem)
-						.uninstall();
-			} catch (Throwable t) {
-				logger.error("An error occurred while uninstalling resource "
-						+ resource + " of subsystem " + subsystem, t);
-				if (firstError == null)
-					firstError = t;
+		try {
+			if (subsystem.getState().equals(Subsystem.State.RESOLVED))
+				subsystem.setState(State.INSTALLED);
+			subsystem.setState(State.UNINSTALLING);
+			Throwable firstError = null;
+			for (Resource resource : Activator.getInstance().getSubsystems()
+					.getResourcesReferencedBy(subsystem)) {
+				// Don't uninstall the region context bundle here.
+				if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(
+						RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+					continue;
+				try {
+					ResourceUninstaller.newInstance(resource, subsystem)
+							.uninstall();
+				} catch (Throwable t) {
+					logger.error("An error occurred while uninstalling resource "
+							+ resource + " of subsystem " + subsystem, t);
+					if (firstError == null)
+						firstError = t;
+				}
 			}
+			subsystem.setState(State.UNINSTALLED);
+			Activator.getInstance().getSubsystemServiceRegistrar()
+					.unregister(subsystem);
+			if (subsystem.isScoped())
+				RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
+			if (firstError != null)
+				throw new SubsystemException(firstError);
 		}
-		subsystem.setState(State.UNINSTALLED);
-		Activator.getInstance().getSubsystemServiceRegistrar()
-				.unregister(subsystem);
-		if (subsystem.isScoped())
-			RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
-		IOUtils.deleteRecursive(subsystem.getDirectory());
-		if (firstError != null)
-			throw new SubsystemException(firstError);
+		finally {
+			// Let's be sure to always clean up the directory.
+			IOUtils.deleteRecursive(subsystem.getDirectory());
+		}
 	}
 }

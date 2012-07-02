@@ -63,14 +63,6 @@ public class DeploymentManifest {
 			clauses.add(new DeployedContentHeader.Clause(resource));
 			header(new DeployedContentHeader(clauses));
 			return this;
-//			Attribute resourceId = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
-//			if (resourceId == null)
-//				clause = new DeployedContentHeader.Clause(resource);
-//			List<DeployedContentHeader.Clause> clauses = new ArrayList<DeployedContentHeader.Clause>(header.getClauses().size() + 1);
-//			clauses.addAll(header.getClauses());
-//			clauses.add(clause);
-//			header(new DeployedContentHeader(clauses));
-//			return this;
 		}
 		
 		public Builder header(Header<?> value) {

@@ -37,8 +37,14 @@ public class VersionRangeAttribute extends AbstractAttribute {
 		this.range = range;
 	}
 	
+	@Override
 	public StringBuilder appendToFilter(StringBuilder builder) {
 		return builder.append(range.toFilterString(Constants.VERSION_ATTRIBUTE));
+	}
+	
+	@Override
+	public Object getValue() {
+		return new StringBuilder().append('"').append(range.toString()).append('"').toString();
 	}
 
 	public VersionRange getVersionRange() {
