@@ -90,6 +90,10 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         // Call removedBundle();
         customizer.removedBundle(implBundle, null, registrations);
+
+        Collection<Bundle> bundles2 = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
+        assertEquals(0, bundles2.size());
+
         // sreg.unregister() should have been called.
         EasyMock.verify(sreg);
     }
