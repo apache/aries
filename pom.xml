@@ -31,30 +31,18 @@
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>spifly</artifactId>
     <name>Apache Aries SPI Fly</name>
-    <version>0.4-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
         SPI support for OSGi
     </description>
     
-    <properties>
-      <asm.version>3.2</asm.version>
-    </properties>
-
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly</developerConnection>
         <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly</url>
     </scm>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <modules>
         <module>spi-fly-core</module>
