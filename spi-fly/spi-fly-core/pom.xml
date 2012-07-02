@@ -21,12 +21,14 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.spifly</groupId>
-        <artifactId>spifly</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java6-parent</artifactId>
+        <version>1.0.0</version>
     </parent>
 
+    <groupId>org.apache.aries.spifly</groupId>
     <artifactId>org.apache.aries.spifly.core</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Apache Aries SPI Fly Core</name>
     <description>
@@ -51,7 +53,13 @@ JRE through META-INF/services resources).
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version> <!-- TODO move to 1.0.0 when available in maven -->
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
