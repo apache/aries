@@ -23,8 +23,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
@@ -160,6 +162,17 @@ public abstract class BaseActivator implements BundleActivator {
         map.put(bundle.getBundleId(), new Pair<Bundle, Map<String, Object>>(bundle, customAttributes));
     }
 
+    public void unregisterProviderBundle(Bundle bundle) {
+        for (Map<Long, Pair<Bundle, Map<String, Object>>> value : registeredProviders.values()) {
+            for(Iterator<Entry<Long, Pair<Bundle, Map<String, Object>>>> it = value.entrySet().iterator(); it.hasNext(); ) {
+                Entry<Long, Pair<Bundle, Map<String, Object>>> entry = it.next();
+                if (entry.getValue().getLeft().equals(bundle)) {
+                    it.remove();
+                }
+            }
+        }
+    }
+
     public Collection<Bundle> findProviderBundles(String name) {
         SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.get(name);
         if (map == null)
@@ -185,7 +198,6 @@ public abstract class BaseActivator implements BundleActivator {
         return data.getRight();
     }
 
-    // TODO unRegisterProviderBundle();
     public void registerConsumerBundle(Bundle consumerBundle,
             Set<ConsumerRestriction> restrictions, List<BundleDescriptor> allowedBundles) {
         consumerRestrictions.putIfAbsent(consumerBundle, new HashMap<ConsumerRestriction, List<BundleDescriptor>>());
