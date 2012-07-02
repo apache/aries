@@ -146,8 +146,11 @@ public class Subsystems {
 						AriesSubsystemParentsHeader header = s.getDeploymentManifest().getAriesSubsystemParentsHeader();
 						if (header == null)
 							continue;
-						for (AriesSubsystemParentsHeader.Clause clause : header.getClauses())
-							ResourceInstaller.newInstance(coordination, s, getSubsystemById(clause.getId())).install();	
+						for (AriesSubsystemParentsHeader.Clause clause : header.getClauses()) {
+							ResourceInstaller.newInstance(coordination, s, getSubsystemById(clause.getId())).install();
+							if (s.isAutostart())
+								new StartAction(s, false).run();
+						}
 					}
 				} catch (Exception e) {
 					coordination.fail(e);

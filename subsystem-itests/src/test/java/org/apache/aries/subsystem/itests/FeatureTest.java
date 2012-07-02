@@ -156,7 +156,6 @@ public class FeatureTest extends SubsystemTest {
 		finally {
 			try {
 				if (feature3After != null) {
-					stopSubsystem(feature3After);
 					uninstallSubsystem(feature3After);
 				}
 			}

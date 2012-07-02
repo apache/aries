@@ -208,7 +208,7 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 	private static Collection<Clause> processHeader(String value) {
 		Collection<String> clauseStrs = new ClauseTokenizer(value).getClauses();
 		Set<Clause> clauses = new HashSet<Clause>(clauseStrs.size());
-		for (String clause : new ClauseTokenizer(value).getClauses())
+		for (String clause : clauseStrs)
 			clauses.add(new Clause(clause));
 		return clauses;
 	}

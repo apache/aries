@@ -15,21 +15,25 @@ public class ClauseTokenizer {
 			numOfChars--;
 			if (c == ',') {
 				if (numOfQuotes % 2 == 0) {
-					clauses.add(builder.toString());
+					addClause(builder.toString().trim());
 					builder = new StringBuilder(numOfChars);
+					continue;
 				}
-				else
-					builder.append(c);
 			}
 			else if (c == '"')
 				numOfQuotes++;
-			else
-				builder.append(c);
+			builder.append(c);
 		}
-		clauses.add(builder.toString());
+		addClause(builder.toString().trim());
 	}
 	
 	public Collection<String> getClauses() {
 		return Collections.unmodifiableCollection(clauses);
+	}
+	
+	private void addClause(String clause) {
+		if (clause.isEmpty())
+			return;
+		clauses.add(clause);
 	}
 }

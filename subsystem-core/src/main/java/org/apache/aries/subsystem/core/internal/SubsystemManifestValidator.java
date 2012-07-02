@@ -14,7 +14,7 @@ public class SubsystemManifestValidator {
 			if (header == null)
 				return;
 			for (SubsystemContentHeader.Clause clause : header.getClauses()) {
-				if (clause.getVersionRange().isExact())
+				if (!clause.getVersionRange().isExact())
 					throw new SubsystemException("Composite subsystem using version range for content: " + clause);
 			}
 		}

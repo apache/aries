@@ -153,8 +153,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private void deactivate() {
 		if (!isActive())
 			return;
-		new StopAction(subsystems.getRootSubsystem(), true).run();
-//		subsystems.getRootSubsystem().stop();
+		new StopAction(subsystems.getRootSubsystem(), true, false).run();
 		for (ServiceRegistration<?> registration : registrations) {
 			try {
 				registration.unregister();
