@@ -34,7 +34,7 @@ public class Subsystems {
 		child.addedParent(parent, referenceCount);
 	}
 	
-	public void addConstituent(AriesSubsystem subsystem, Resource constituent) {
+	public void addConstituent(AriesSubsystem subsystem, Resource constituent, boolean isContent) {
 		synchronized (subsystemToConstituents) {
 			Set<Resource> constituents = subsystemToConstituents.get(subsystem);
 			if (constituents == null) {
@@ -43,7 +43,8 @@ public class Subsystems {
 			}
 			constituents.add(constituent);
 		}
-		subsystem.addedContent(constituent);
+		if (isContent)
+			subsystem.addedContent(constituent);
 	}
 	
 	public void addReference(AriesSubsystem subsystem, Resource resource) {
@@ -112,7 +113,7 @@ public class Subsystems {
 					// graph. At the very least, throw IllegalStateException where
 					// appropriate.
 					graph = new SubsystemGraph(root);
-					ResourceInstaller.newInstance(coordination, root, null).install();
+					ResourceInstaller.newInstance(coordination, root, root).install();
 					// TODO Begin proof of concept.
 					// This is a proof of concept for initializing the relationships between the root subsystem and bundles
 					// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
@@ -141,7 +142,7 @@ public class Subsystems {
 					}
 					root = getSubsystemById(0);
 					graph = new SubsystemGraph(root);
-					ResourceInstaller.newInstance(coordination, root, null).install();
+					ResourceInstaller.newInstance(coordination, root, root).install();
 					for (AriesSubsystem s : subsystems) {
 						AriesSubsystemParentsHeader header = s.getDeploymentManifest().getAriesSubsystemParentsHeader();
 						if (header == null)
