@@ -343,10 +343,10 @@ public class SubsystemResource implements Resource {
 			ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
 			if (header == null)
 				return;
-			for (ProvisionResourceHeader.ProvisionedResource provisionedResource : header.getProvisionedResources()) {
-				Resource resource = findDependency(provisionedResource);
+			for (ProvisionResourceHeader.Clause clause : header.getClauses()) {
+				Resource resource = findDependency(clause);
 				if (resource == null)
-					throw new SubsystemException("Resource does not exist: " + provisionedResource);
+					throw new SubsystemException("Resource does not exist: " + clause);
 				addDependency(resource);
 			}
 		}	
@@ -521,18 +521,19 @@ public class SubsystemResource implements Resource {
 		return findContent(clause.toRequirement(this));
 	}
 	
-	private Resource findDependency(ProvisionResourceHeader.ProvisionedResource provisionedResource) {
-		long resourceId = provisionedResource.getResourceId();
+	private Resource findDependency(ProvisionResourceHeader.Clause clause) {
+		Attribute attribute = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
+		long resourceId = attribute == null ? -1 : Long.parseLong(String.valueOf(attribute.getValue()));
 		if (resourceId != -1) {
-			String type = provisionedResource.getNamespace();
+			String type = clause.getType();
 			if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type))
 				return Activator.getInstance().getBundleContext().getBundle(0).getBundleContext().getBundle(resourceId).adapt(BundleRevision.class);
 			else
 				return Activator.getInstance().getSubsystems().getSubsystemById(resourceId);
 		}
 		OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
-				provisionedResource.getName(), provisionedResource.getDeployedVersion(),
-				provisionedResource.getNamespace(), false);
+				clause.getPath(), clause.getDeployedVersion(),
+				clause.getType(), true);
 		List<Capability> capabilities = createResolveContext().findProviders(requirement);
 		if (capabilities.isEmpty())
 			return null;

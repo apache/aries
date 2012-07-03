@@ -28,6 +28,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -118,13 +119,13 @@ public class AriesSubsystem implements Resource, Subsystem {
 		// TODO Somehow, exposing the capabilities of content resources of a
 		// feature is causing an infinite regression of feature2 installations
 		// in FeatureTest.testSharedContent() under certain conditions.
-//		if (isScoped() || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
-//			return result;
-//		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
-//		for (Resource constituent : getConstituents())
-//			if (header.contains(constituent))
-//				for (Capability capability : constituent.getCapabilities(namespace))
-//					result.add(new BasicCapability(capability, this));
+		if (isScoped() || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
+			return result;
+		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
+		for (Resource constituent : getConstituents())
+			if (header.contains(constituent))
+				for (Capability capability : constituent.getCapabilities(namespace))
+					result.add(new BasicCapability(capability, this));
 		return result;
 	}
 
