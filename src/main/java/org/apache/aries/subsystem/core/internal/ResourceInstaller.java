@@ -1,5 +1,6 @@
 package org.apache.aries.subsystem.core.internal;
 
+import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -31,32 +32,23 @@ public abstract class ResourceInstaller {
 		this.coordination = coordination;
 		this.resource = resource;
 		this.subsystem = subsystem;
-		if (isTransitive()) {
-			// The resource is a dependency and not content.
+		if (isDependency()) {
 			if (Utils.isInstallableResource(resource))
-				// If the dependency needs to be installed, it must go into the
-				// first subsystem in the parent chain that accepts
-				// dependencies.
 				provisionTo = Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(subsystem);
 			else
-				// If the dependency has already been installed, it does not
-				// need to be provisioned.
 				provisionTo = null;
 		}
 		else
-			// The resource is content and must go into the subsystem declaring
-			// it as such.
 			provisionTo = subsystem;
 	}
 	
 	public abstract Resource install() throws Exception;
 	
 	protected void addConstituent(final Resource resource) {
-		// provisionTo will be null when the resource is an already installed
-		// dependency.
-		if (provisionTo == null)
+		// Don't let a resource become a constituent of itself.
+		if (resource.equals(provisionTo))
 			return;
-		Activator.getInstance().getSubsystems().addConstituent(provisionTo, resource);
+		Activator.getInstance().getSubsystems().addConstituent(provisionTo, resource, isContent());
 		coordination.addParticipant(new Participant() {
 			@Override
 			public void ended(Coordination arg0) throws Exception {
@@ -71,9 +63,8 @@ public abstract class ResourceInstaller {
 	}
 	
 	protected void addReference(final Resource resource) {
-		// subsystem will be null when the root or a persisted subsystem is
-		// being installed
-		if (subsystem == null)
+		// Don't let a resource reference itself.
+		if (resource.equals(subsystem))
 			return;
 		Activator.getInstance().getSubsystems().addReference(subsystem, resource);
 		coordination.addParticipant(new Participant() {
@@ -93,9 +84,15 @@ public abstract class ResourceInstaller {
 		return provisionTo.getSubsystemId() + "@" + provisionTo.getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
 	}
 	
-	protected boolean isTransitive() {
-		if (subsystem == null)
-			return false;
+	protected boolean isContent() {
+		DeploymentManifest manifest = subsystem.getDeploymentManifest();
+		DeployedContentHeader header = manifest.getDeployedContentHeader();
+		if (header == null)
+			return !isDependency();
+		return header.contains(resource) || !isDependency();
+	}
+	
+	protected boolean isDependency() {
 		DeploymentManifest manifest = subsystem.getDeploymentManifest();
 		if (manifest == null)
 			return false;
