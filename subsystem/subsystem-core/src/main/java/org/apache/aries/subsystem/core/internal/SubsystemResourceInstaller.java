@@ -30,9 +30,14 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	}
 	
 	private void addChild(final AriesSubsystem child) {
-		if (provisionTo == null || subsystem == null)
+		// provisionTo will be null if the resource is an already installed
+		// dependency.
+		if (provisionTo == null)
 			return;
-		Activator.getInstance().getSubsystems().addChild(subsystem, child, true);
+		// Don't let a resource become a child of itself.
+		if (resource.equals(provisionTo))
+			return;
+		Activator.getInstance().getSubsystems().addChild(provisionTo, child, !isDependency());
 		coordination.addParticipant(new Participant() {
 			@Override
 			public void ended(Coordination arg0) throws Exception {
@@ -41,7 +46,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 
 			@Override
 			public void failed(Coordination arg0) throws Exception {
-				Activator.getInstance().getSubsystems().removeChild(subsystem, child);
+				Activator.getInstance().getSubsystems().removeChild(provisionTo, child);
 			}
 		});
 	}
@@ -64,7 +69,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	private AriesSubsystem installAriesSubsystem(AriesSubsystem subsystem) throws Exception {
 		addChild(subsystem);
 		addConstituent(subsystem);
-		if (!isTransitive())
+		if (!isDependency())
 			addReference(subsystem);
 		// TODO Is this check really necessary?
 		if (!State.INSTALLING.equals(subsystem.getState()))
@@ -73,24 +78,29 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		if (subsystem.isScoped())
 			RegionContextBundleHelper.installRegionContextBundle(subsystem);
 		Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
-		if (!subsystem.isRoot()) {
-			Comparator<Resource> comparator = new InstallResourceComparator();
-			// Install dependencies first...
-			List<Resource> dependencies = new ArrayList<Resource>(subsystem.getResource().getInstallableDependencies());
-			Collections.sort(dependencies, comparator);
-			for (Resource dependency : dependencies)
+		Comparator<Resource> comparator = new InstallResourceComparator();
+		// Install dependencies first...
+		List<Resource> dependencies = new ArrayList<Resource>(subsystem.getResource().getInstallableDependencies());
+		Collections.sort(dependencies, comparator);
+		for (Resource dependency : dependencies)
+			ResourceInstaller.newInstance(coordination, dependency, subsystem).install();
+		for (Resource dependency : subsystem.getResource().getSharedDependencies()) {
+			// TODO This needs some more thought. The following check
+			// protects against a child subsystem that has its parent as a
+			// dependency. Are there other places of concern as well? Is it
+			// only the current parent that is of concern or should all
+			// parents be checked?
+			if (!dependency.equals(this.subsystem))
 				ResourceInstaller.newInstance(coordination, dependency, subsystem).install();
-			for (Resource dependency : subsystem.getResource().getSharedDependencies())
-				ResourceInstaller.newInstance(coordination, dependency, subsystem).install();
-			// ...followed by content.
-			List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
-			Collections.sort(installableContent, comparator);
-			for (Resource content : installableContent)
-				ResourceInstaller.newInstance(coordination, content, subsystem).install();
-			// Simulate installation of shared content so that necessary relationships are established.
-			for (Resource content : subsystem.getResource().getSharedContent())
-				ResourceInstaller.newInstance(coordination, content, subsystem).install();
 		}
+		// ...followed by content.
+		List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
+		Collections.sort(installableContent, comparator);
+		for (Resource content : installableContent)
+			ResourceInstaller.newInstance(coordination, content, subsystem).install();
+		// Simulate installation of shared content so that necessary relationships are established.
+		for (Resource content : subsystem.getResource().getSharedContent())
+			ResourceInstaller.newInstance(coordination, content, subsystem).install();
 		subsystem.setState(State.INSTALLED);
 		return subsystem;
 	}

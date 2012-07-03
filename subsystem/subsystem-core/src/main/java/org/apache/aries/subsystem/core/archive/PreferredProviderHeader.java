@@ -44,6 +44,8 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 			matcher.usePattern(PATTERN_PARAMETER);
 			while (matcher.find()) {
 				Parameter parameter = ParameterFactory.create(matcher.group());
+				if (parameter instanceof VersionAttribute)
+					parameter = new VersionRangeAttribute(new VersionRange(String.valueOf(parameter.getValue())));
 				parameters.put(parameter.getName(), parameter);
 			}
 			fillInDefaults(parameters);
