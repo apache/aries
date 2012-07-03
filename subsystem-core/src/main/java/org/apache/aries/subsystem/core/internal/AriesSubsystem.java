@@ -177,6 +177,7 @@ public class AriesSubsystem implements Resource, Subsystem {
 
 	@Override
 	public String getLocation() {
+		SecurityManager.checkMetadataPermission(this);
 		return getDeploymentManifestHeaderValue(DeploymentManifest.ARIESSUBSYSTEM_LOCATION);
 	}
 
