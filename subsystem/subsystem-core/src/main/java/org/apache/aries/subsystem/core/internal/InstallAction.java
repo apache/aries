@@ -31,14 +31,17 @@ public class InstallAction implements PrivilegedAction<AriesSubsystem> {
 		this.content = content;
 		this.parent = parent;
 		this.context = context;
-		if (coordination == null)
-			coordination = Utils.createCoordination(parent);
 		this.coordination = coordination;
 		this.embedded = embedded;
 	}
 	
 	@Override
 	public AriesSubsystem run() {
+		// Initialization of a null coordination must be privileged and,
+		// therefore, occur in the run() method rather than in the constructor.
+		Coordination coordination = this.coordination;
+		if (coordination == null)
+			coordination = Utils.createCoordination(parent);
 		AriesSubsystem result = null;
 		try {
 			TargetRegion region = new TargetRegion(parent);
