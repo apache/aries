@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -38,7 +37,7 @@ import org.objectweb.asm.commons.Method;
  * This class implements an ASM ClassVisitor which puts the appropriate ThreadContextClassloader
  * calls around applicable method invocations. It does the actual bytecode weaving.
  */
-public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opcodes {
+public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
     private static final Type CLASSLOADER_TYPE = Type.getType(ClassLoader.class);
 
     private static final String GENERATED_METHOD_NAME = "$$FCCL$$";
@@ -60,7 +59,7 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
     private boolean woven = false;
 
     public TCCLSetterVisitor(ClassVisitor cv, String className, Set<WeavingData> weavingData) {
-        super(cv);
+        super(Opcodes.ASM4, cv);
         this.targetClass = Type.getType("L" + className.replace('.', '/') + ";");
         this.weavingData = weavingData;
     }
@@ -135,12 +134,11 @@ public class TCCLSetterVisitor extends ClassAdapter implements ClassVisitor, Opc
         return name.toString();
     }
 
-    private class TCCLSetterMethodVisitor extends GeneratorAdapter implements MethodVisitor
-    {
+    private class TCCLSetterMethodVisitor extends GeneratorAdapter {
         Type lastLDCType;
 
         public TCCLSetterMethodVisitor(MethodVisitor mv, int access, String name, String descriptor) {
-            super(mv, access, name, descriptor);
+            super(Opcodes.ASM4, mv, access, name, descriptor);
         }
 
         /**
