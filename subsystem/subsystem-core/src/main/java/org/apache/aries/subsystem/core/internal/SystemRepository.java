@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.internal;
 
 import java.util.Collection;
@@ -33,12 +46,19 @@ public class SystemRepository implements Repository {
 	}
 	
 	private void findProviders(Requirement requirement, Collection<Capability> capabilities, AriesSubsystem subsystem) {
+		// Need to examine capabilities offered by the subsystem itself.
+		// For example, the requirement might be an osgi.identity
+		// requirement for a preferred provider that's a subsystem.
+		for (Capability capability : subsystem.getCapabilities(requirement.getNamespace()))
+			if (ResourceHelper.matches(requirement, capability))
+				capabilities.add(capability);
 		for (Resource constituent : subsystem.getConstituents()) {
 			if (constituent instanceof AriesSubsystem)
 				findProviders(requirement, capabilities, (AriesSubsystem)constituent);
-			for (Capability capability : constituent.getCapabilities(requirement.getNamespace()))
-				if (ResourceHelper.matches(requirement, capability))
-					capabilities.add(capability);
+			else
+				for (Capability capability : constituent.getCapabilities(requirement.getNamespace()))
+					if (ResourceHelper.matches(requirement, capability))
+						capabilities.add(capability);
 		}
 	}
 }

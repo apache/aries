@@ -21,20 +21,22 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.spifly</groupId>
-        <artifactId>spifly</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java6-parent</artifactId>
+        <version>1.0.0</version>
     </parent>
 
+    <groupId>org.apache.aries.spifly</groupId>
     <artifactId>org.apache.aries.spifly.weaver</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Apache Aries SPI Fly Weaver</name>
 
     <dependencies>
         <dependency>
-            <groupId>asm</groupId>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
-            <version>${asm.version}</version>
+            <version>4.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -42,6 +44,12 @@
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

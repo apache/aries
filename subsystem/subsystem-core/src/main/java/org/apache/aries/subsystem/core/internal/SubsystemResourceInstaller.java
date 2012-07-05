@@ -1,6 +1,18 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.internal;
 
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,25 +25,32 @@ import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.Subsystem.State;
 
 public class SubsystemResourceInstaller extends ResourceInstaller {
-	public SubsystemResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem, boolean transitive) {
-		super(coordination, resource, subsystem, transitive);
+	public SubsystemResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem) {
+		super(coordination, resource, subsystem);
 	}
 	
 	public Resource install() throws Exception {
+		AriesSubsystem result;
 		if (resource instanceof RepositoryContent)
-			return installRepositoryContent((RepositoryContent)resource);
+			result = installRepositoryContent((RepositoryContent)resource);
 		else if (resource instanceof AriesSubsystem)
-			return installAriesSubsystem((AriesSubsystem)resource);
+			result = installAriesSubsystem((AriesSubsystem)resource);
 		else if (resource instanceof RawSubsystemResource)
-			return installRawSubsystemResource((RawSubsystemResource)resource);
+			result = installRawSubsystemResource((RawSubsystemResource)resource);
 		else
-			return installSubsystemResource((SubsystemResource)resource);
+			result = installSubsystemResource((SubsystemResource)resource);
+		return result;
 	}
 	
 	private void addChild(final AriesSubsystem child) {
-		if (provisionTo == null || subsystem == null)
+		// provisionTo will be null if the resource is an already installed
+		// dependency.
+		if (provisionTo == null)
 			return;
-		Activator.getInstance().getSubsystems().addChild(subsystem, child);
+		// Don't let a resource become a child of itself.
+		if (resource.equals(provisionTo))
+			return;
+		Activator.getInstance().getSubsystems().addChild(provisionTo, child, !isDependency());
 		coordination.addParticipant(new Participant() {
 			@Override
 			public void ended(Coordination arg0) throws Exception {
@@ -40,7 +59,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 
 			@Override
 			public void failed(Coordination arg0) throws Exception {
-				Activator.getInstance().getSubsystems().removeChild(subsystem, child);
+				Activator.getInstance().getSubsystems().removeChild(provisionTo, child);
 			}
 		});
 	}
@@ -60,36 +79,11 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		});
 	}
 	
-//	private void addSubsystemServiceImportToSharingPolicy(
-//			RegionFilterBuilder builder, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		builder.allow(
-//				RegionFilter.VISIBLE_SERVICE_NAMESPACE,
-//				new StringBuilder("(&(")
-//						.append(org.osgi.framework.Constants.OBJECTCLASS)
-//						.append('=').append(Subsystem.class.getName())
-//						.append(")(")
-//						.append(Constants.SubsystemServicePropertyRegions)
-//						.append('=').append(subsystem.getRegion().getName())
-//						.append("))").toString());
-//	}
-	
-//	private void addSubsystemServiceImportToSharingPolicy(RegionFilterBuilder builder, Region to, AriesSubsystem subsystem)
-//			throws InvalidSyntaxException, BundleException {
-//		if (to.getName().equals(AriesSubsystem.ROOT_REGION))
-//			addSubsystemServiceImportToSharingPolicy(builder, subsystem);
-//		else {
-//			to = Activator.getInstance().getSubsystems().getRootSubsystem().getRegion();
-//			builder = to.getRegionDigraph().createRegionFilterBuilder();
-//			addSubsystemServiceImportToSharingPolicy(builder, subsystem);
-//			RegionFilter regionFilter = builder.build();
-//			subsystem.getRegion().connectRegion(to, regionFilter);
-//		}
-//	}
-	
-	private Resource installAriesSubsystem(AriesSubsystem subsystem) throws Exception {
+	private AriesSubsystem installAriesSubsystem(AriesSubsystem subsystem) throws Exception {
 		addChild(subsystem);
 		addConstituent(subsystem);
-		addReference(subsystem);
+		if (!isDependency())
+			addReference(subsystem);
 		// TODO Is this check really necessary?
 		if (!State.INSTALLING.equals(subsystem.getState()))
 			return subsystem;
@@ -97,120 +91,46 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		if (subsystem.isScoped())
 			RegionContextBundleHelper.installRegionContextBundle(subsystem);
 		Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
-		// Set up the sharing policy before installing the resources so that the
-		// environment can filter out capabilities from dependencies being
-		// provisioned to regions that are out of scope. This doesn't hurt
-		// anything since the resources are disabled from resolving anyway.
-//		setImportIsolationPolicy(subsystem);
-		if (!subsystem.isRoot()) {
-			Comparator<Resource> comparator = new InstallResourceComparator();
-			// Install dependencies first...
-			List<Resource> dependencies = new ArrayList<Resource>(subsystem.getResource().getInstallableDependencies());
-			Collections.sort(dependencies, comparator);
-			for (Resource dependency : dependencies)
-				ResourceInstaller.newInstance(coordination, dependency, subsystem, true).install();
-			for (Resource dependency : subsystem.getResource().getSharedDependencies())
-				ResourceInstaller.newInstance(coordination, dependency, subsystem, true).install();
-			// ...followed by content.
-			List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
-			Collections.sort(installableContent, comparator);
-			for (Resource content : installableContent)
-				ResourceInstaller.newInstance(coordination, content, subsystem, false).install();
-			// Simulate installation of shared content so that necessary relationships are established.
-			for (Resource content : subsystem.getResource().getSharedContent())
-				ResourceInstaller.newInstance(coordination, content, subsystem, false).install();
+		Comparator<Resource> comparator = new InstallResourceComparator();
+		// Install dependencies first...
+		List<Resource> dependencies = new ArrayList<Resource>(subsystem.getResource().getInstallableDependencies());
+		Collections.sort(dependencies, comparator);
+		for (Resource dependency : dependencies)
+			ResourceInstaller.newInstance(coordination, dependency, subsystem).install();
+		for (Resource dependency : subsystem.getResource().getSharedDependencies()) {
+			// TODO This needs some more thought. The following check
+			// protects against a child subsystem that has its parent as a
+			// dependency. Are there other places of concern as well? Is it
+			// only the current parent that is of concern or should all
+			// parents be checked?
+			if (!dependency.equals(this.subsystem))
+				ResourceInstaller.newInstance(coordination, dependency, subsystem).install();
 		}
+		// ...followed by content.
+		List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
+		Collections.sort(installableContent, comparator);
+		for (Resource content : installableContent)
+			ResourceInstaller.newInstance(coordination, content, subsystem).install();
+		// Simulate installation of shared content so that necessary relationships are established.
+		for (Resource content : subsystem.getResource().getSharedContent())
+			ResourceInstaller.newInstance(coordination, content, subsystem).install();
 		subsystem.setState(State.INSTALLED);
 		return subsystem;
 	}
 	
-	private Resource installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
+	private AriesSubsystem installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
 		SubsystemResource subsystemResource = new SubsystemResource(resource, provisionTo);
 		return installSubsystemResource(subsystemResource);
 	}
 	
-	private Resource installRepositoryContent(RepositoryContent resource) {
-		return AccessController.doPrivileged(new InstallAction(getLocation(), resource.getContent(), provisionTo, null, coordination, true));
+	private AriesSubsystem installRepositoryContent(RepositoryContent resource) throws Exception {
+		RawSubsystemResource rawSubsystemResource = new RawSubsystemResource(getLocation(), resource.getContent());
+		return installRawSubsystemResource(rawSubsystemResource);
 	}
 	
-	private Resource installSubsystemResource(SubsystemResource resource) throws Exception {
+	private AriesSubsystem installSubsystemResource(SubsystemResource resource) throws Exception {
 		AriesSubsystem subsystem = new AriesSubsystem(resource);
 		installAriesSubsystem(subsystem);
-		if (subsystem.isAutostart())
-			subsystem.start();
 		return subsystem;
 	}
-	
-//	private void setImportIsolationPolicy(AriesSubsystem subsystem) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
-//		if (subsystem.isRoot() || !subsystem.isScoped())
-//			return;
-//		Region region = subsystem.getRegion();
-//		Region from = region;
-//		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
-//		Region to = ((AriesSubsystem)subsystem.getParents().iterator().next()).getRegion();
-//		addSubsystemServiceImportToSharingPolicy(builder, to, subsystem);
-//		// TODO Is this check really necessary? Looks like it was done at the beginning of this method.
-//		if (subsystem.isScoped()) {
-//			// Both applications and composites have Import-Package headers that require processing.
-//			// In the case of applications, the header is generated.
-//			Header<?> header = subsystem.getSubsystemManifest().getImportPackageHeader();
-//			setImportIsolationPolicy(builder, (ImportPackageHeader)header, subsystem);
-//			// Both applications and composites have Require-Capability headers that require processing.
-//			// In the case of applications, the header is generated.
-//			header = subsystem.getSubsystemManifest().getRequireCapabilityHeader();
-//			setImportIsolationPolicy(builder, (RequireCapabilityHeader)header, subsystem);
-//			// Both applications and composites have Subsystem-ImportService headers that require processing.
-//			// In the case of applications, the header is generated.
-//			header = subsystem.getSubsystemManifest().getSubsystemImportServiceHeader();
-//			setImportIsolationPolicy(builder, (SubsystemImportServiceHeader)header, subsystem);
-//			header = subsystem.getSubsystemManifest().getRequireBundleHeader();
-//			setImportIsolationPolicy(builder, (RequireBundleHeader)header, subsystem);
-//		}
-//		RegionFilter regionFilter = builder.build();
-//		from.connectRegion(to, regionFilter);
-//	}
-//	
-//	private void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		if (header == null)
-//			return;
-//		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
-//		for (ImportPackageHeader.Clause clause : header.getClauses()) {
-//			ImportPackageRequirement requirement = new ImportPackageRequirement(clause, subsystem);
-//			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
-//			builder.allow(policy, filter);
-//		}
-//	}
-//	
-//	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireBundleHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		if (header == null)
-//			return;
-//		for (RequireBundleHeader.Clause clause : header.getClauses()) {
-//			RequireBundleRequirement requirement = new RequireBundleRequirement(clause, subsystem);
-//			String policy = RegionFilter.VISIBLE_REQUIRE_NAMESPACE;
-//			String filter = requirement.getDirectives().get(RequireBundleRequirement.DIRECTIVE_FILTER);
-//			builder.allow(policy, filter);
-//		}
-//	}
-//	
-//	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireCapabilityHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		if (header == null)
-//			return;
-//		for (RequireCapabilityHeader.Clause clause : header.getClauses()) {
-//			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause, subsystem);
-//			String policy = requirement.getNamespace();
-//			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
-//			builder.allow(policy, filter);
-//		}
-//	}
-//	
-//	private void setImportIsolationPolicy(RegionFilterBuilder builder, SubsystemImportServiceHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
-//		if (header == null)
-//			return;
-//		for (SubsystemImportServiceHeader.Clause clause : header.getClauses()) {
-//			SubsystemImportServiceRequirement requirement = new SubsystemImportServiceRequirement(clause, subsystem);
-//			String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
-//			String filter = requirement.getDirectives().get(SubsystemImportServiceRequirement.DIRECTIVE_FILTER);
-//			builder.allow(policy, filter);
-//		}
-//	}
 }

@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.internal;
 
 import org.apache.aries.util.io.IOUtils;
@@ -20,16 +33,20 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	public void uninstall() {
-		if (isResourceUninstallable())
-			uninstallSubsystem();
 		removeReferences();
-		removeConstituents();
-		removeChildren();
-		removeSubsystem();
+		try {
+			if (isResourceUninstallable())
+				uninstallSubsystem();
+		}
+		finally {
+			removeConstituents();
+			removeChildren();
+			removeSubsystem();
+		}
 	}
 	
 	private void removeChildren() {
-		if (isImplicit()) {
+		if (!isExplicit()) {
 			removeChild((AriesSubsystem)subsystem, (AriesSubsystem)resource);
 			return;
 		}
@@ -38,7 +55,7 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	private void removeConstituents() {
-		if (isImplicit()) {
+		if (!isExplicit()) {
 			removeConstituent();
 			return;
 		}
@@ -47,7 +64,7 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	private void removeReferences() {
-		if (isImplicit()) {
+		if (!isExplicit()) {
 			removeReference();
 			return;
 		}
@@ -61,33 +78,38 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	
 	private void uninstallSubsystem() {
 		AriesSubsystem subsystem = (AriesSubsystem) resource;
-		if (subsystem.getState().equals(Subsystem.State.RESOLVED))
-			subsystem.setState(State.INSTALLED);
-		subsystem.setState(State.UNINSTALLING);
-		Throwable firstError = null;
-		for (Resource resource : Activator.getInstance().getSubsystems()
-				.getResourcesReferencedBy(subsystem)) {
-			// Don't uninstall the region context bundle here.
-			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(
-					RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
-				continue;
-			try {
-				ResourceUninstaller.newInstance(resource, subsystem)
-						.uninstall();
-			} catch (Throwable t) {
-				logger.error("An error occurred while uninstalling resource "
-						+ resource + " of subsystem " + subsystem, t);
-				if (firstError == null)
-					firstError = t;
+		try {
+			if (subsystem.getState().equals(Subsystem.State.RESOLVED))
+				subsystem.setState(State.INSTALLED);
+			subsystem.setState(State.UNINSTALLING);
+			Throwable firstError = null;
+			for (Resource resource : Activator.getInstance().getSubsystems()
+					.getResourcesReferencedBy(subsystem)) {
+				// Don't uninstall the region context bundle here.
+				if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(
+						RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+					continue;
+				try {
+					ResourceUninstaller.newInstance(resource, subsystem)
+							.uninstall();
+				} catch (Throwable t) {
+					logger.error("An error occurred while uninstalling resource "
+							+ resource + " of subsystem " + subsystem, t);
+					if (firstError == null)
+						firstError = t;
+				}
 			}
+			subsystem.setState(State.UNINSTALLED);
+			Activator.getInstance().getSubsystemServiceRegistrar()
+					.unregister(subsystem);
+			if (subsystem.isScoped())
+				RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
+			if (firstError != null)
+				throw new SubsystemException(firstError);
 		}
-		subsystem.setState(State.UNINSTALLED);
-		Activator.getInstance().getSubsystemServiceRegistrar()
-				.unregister(subsystem);
-		if (subsystem.isScoped())
-			RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
-		if (firstError != null)
-			throw new SubsystemException(firstError);
-		IOUtils.deleteRecursive(subsystem.getDirectory());
+		finally {
+			// Let's be sure to always clean up the directory.
+			IOUtils.deleteRecursive(subsystem.getDirectory());
+		}
 	}
 }

@@ -93,7 +93,6 @@
         </dependency>
     </dependencies>
 
-
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-parent-1.0.0/java5-parent/org.apache.aries.util-r42</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-parent-1.0.0/java5-parent/org.apache.aries.util-r42</developerConnection>

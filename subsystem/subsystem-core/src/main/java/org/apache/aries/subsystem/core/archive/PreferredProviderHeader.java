@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
@@ -44,6 +57,8 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 			matcher.usePattern(PATTERN_PARAMETER);
 			while (matcher.find()) {
 				Parameter parameter = ParameterFactory.create(matcher.group());
+				if (parameter instanceof VersionAttribute)
+					parameter = new VersionRangeAttribute(new VersionRange(String.valueOf(parameter.getValue())));
 				parameters.put(parameter.getName(), parameter);
 			}
 			fillInDefaults(parameters);

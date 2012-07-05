@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
@@ -161,8 +160,8 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 			return ((ResolutionDirective)getDirective(DIRECTIVE_RESOLUTION)).isMandatory();
 		}
 		
-		public OsgiIdentityRequirement toRequirement(Resource resource) {
-			return new OsgiIdentityRequirement(getSymbolicName(), getVersionRange(), getType(), false);
+		public SubsystemContentRequirement toRequirement(Resource resource) {
+			return new SubsystemContentRequirement(this, resource);
 		}
 		
 		@Override
@@ -175,67 +174,6 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 			return builder.toString();
 		}
 	}
-	
-//	public static class Content {
-//		private final boolean mandatory;
-//		private final String name;
-//		private final int startOrder;
-//		private final String type;
-//		private final VersionRange versionRange;
-//		
-//		public Content(boolean mandatory, String name, String type, VersionRange versionRange, int startOrder) {
-//			this.mandatory = mandatory;
-//			this.name = name;
-//			this.type = type;
-//			this.versionRange = versionRange;
-//			this.startOrder = startOrder;
-//		}
-//		
-//		public String getName() {
-//			return name;
-//		}
-//		
-//		public int getStartOrder() {
-//			return startOrder;
-//		}
-//		
-//		public String getType() {
-//			return type;
-//		}
-//		
-//		public VersionRange getVersionRange() {
-//			return versionRange;
-//		}
-//		
-//		public boolean isMandatory() {
-//			return mandatory;
-//		}
-//		
-//		public Requirement toRequirement() {
-//			return new OsgiIdentityRequirement(name, versionRange, type, false);
-//		}
-//		
-//		public String toString() {
-//			return new StringBuilder(getName())
-//				.append(';')
-//				.append(VersionAttribute.NAME)
-//				.append('=')
-//				.append(getVersionRange())
-//				.append(';')
-//				.append(TypeAttribute.NAME)
-//				.append("=")
-//				.append(getType())
-//				.append(';')
-//				.append(ResolutionDirective.NAME)
-//				.append(":=")
-//				.append(isMandatory())
-//				.append(';')
-//				.append(StartOrderDirective.NAME)
-//				.append(":=")
-//				.append(getStartOrder())
-//				.toString();
-//		}
-//	}
 	
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_CONTENT;
 	
@@ -270,29 +208,10 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 	private static Collection<Clause> processHeader(String value) {
 		Collection<String> clauseStrs = new ClauseTokenizer(value).getClauses();
 		Set<Clause> clauses = new HashSet<Clause>(clauseStrs.size());
-		for (String clause : new ClauseTokenizer(value).getClauses())
+		for (String clause : clauseStrs)
 			clauses.add(new Clause(clause));
 		return clauses;
 	}
-	
-//	private static String processResources(Collection<Resource> resources) {
-//		if (resources.isEmpty())
-//			throw new IllegalArgumentException("At least one resource must be specified");
-//		StringBuilder sb = new StringBuilder();
-//		for (Resource resource : resources) {
-//			Capability c = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0);
-//			Map<String, Object> a = c.getAttributes();
-//			String s = (String)a.get(IdentityNamespace.IDENTITY_NAMESPACE);
-//			Version v = (Version)a.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
-//			String t = (String)a.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
-//			sb.append(s).append(';')
-//				.append(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE).append('=').append(v).append(';')
-//				.append(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE).append('=').append(t).append(',');
-//		}
-//		// Remove the trailing comma.
-//		sb.deleteCharAt(sb.length() - 1);
-//		return sb.toString();
-//	}
 	
 	private final Set<Clause> clauses;
 	
@@ -305,10 +224,6 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 	public SubsystemContentHeader(String value) {
 		this(processHeader(value));
 	}
-	
-//	public SubsystemContentHeader(Collection<Resource> resources) {
-//		this(processResources(resources));
-//	}
 	
 	public boolean contains(Resource resource) {
 		return getClause(resource) != null;
@@ -332,38 +247,12 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 		return Collections.unmodifiableSet(clauses);
 	}
 	
-//	public Content getContent(Resource resource) {
-//		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
-//		Version version = ResourceHelper.getVersionAttribute(resource);
-//		String type = ResourceHelper.getTypeAttribute(resource);
-//		for (Content content : contents) {
-//			if (symbolicName.equals(content.getName())
-//					&& content.getVersionRange().includes(version)
-//					&& type.equals(content.getType()))
-//				return content;
-//		}
-//		return null;
-//	}
-//
-//	public Collection<Content> getContents() {
-//		return Collections.unmodifiableCollection(contents);
-//	}
-	
 	public boolean isMandatory(Resource resource) {
 		Clause clause = getClause(resource);
 		if (clause == null)
 			return false;
 		return clause.isMandatory();
-//		Content content = getContent(resource);
-//		return content == null ? false : content.isMandatory();
 	}
-	
-//	public List<Requirement> toRequirements() {
-//		ArrayList<Requirement> result = new ArrayList<Requirement>(contents.size());
-//		for (Content content : contents)
-//			result.add(content.toRequirement());
-//		return result;
-//	}
 
 	@Override
 	public String getName() {

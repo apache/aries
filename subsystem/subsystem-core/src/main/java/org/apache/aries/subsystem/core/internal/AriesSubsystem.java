@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.File;
@@ -15,9 +28,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.aries.subsystem.core.archive.AriesSubsystemParentsHeader;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.Header;
+import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
@@ -30,6 +45,8 @@ import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Participant;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -52,13 +69,22 @@ public class AriesSubsystem implements Resource, Subsystem {
 	
 	public AriesSubsystem(SubsystemResource resource) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
 		this.resource = resource;
-//		long id;
-//		if (resource.getParents().isEmpty())
-//			id = 0;
-//		else
-//			id = SubsystemIdentifier.getNextId();
-		File file = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(resource.getId()));
+		final File file = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(resource.getId()));
 		file.mkdirs();
+		Coordination coordination = Activator.getInstance().getCoordinator().peek();
+		if (coordination != null) {
+			coordination.addParticipant(new Participant() {
+				@Override
+				public void ended(Coordination c) throws Exception {
+					// Nothing
+				}
+
+				@Override
+				public void failed(Coordination c) throws Exception {
+					IOUtils.deleteRecursive(file);
+				}
+			});
+		}
 		directory = FileSystem.getFSRoot(file);
 		setSubsystemManifest(resource.getSubsystemManifest());
 		SubsystemManifestValidator.validate(this, getSubsystemManifest());
@@ -86,34 +112,58 @@ public class AriesSubsystem implements Resource, Subsystem {
 	/* BEGIN Resource interface methods. */
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof AriesSubsystem))
+			return false;
+		AriesSubsystem that = (AriesSubsystem)o;
+		return getLocation().equals(that.getLocation());
+	}
+	
+	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace)) {
-			Capability capability = new OsgiIdentityCapability(this, getSymbolicName(), getVersion(), getType());
-			return Collections.singletonList(capability);
-		}
 		SubsystemManifest manifest = getSubsystemManifest();
-		if (namespace == null) {
-			Capability capability = new OsgiIdentityCapability(this, getSymbolicName(), getVersion(), getType());
-			List<Capability> result = manifest.toCapabilities(this);
-			result.add(capability);
-			return result;
-		}
 		List<Capability> result = manifest.toCapabilities(this);
-		for (Iterator<Capability> i = result.iterator(); i.hasNext();)
-			if (!i.next().getNamespace().equals(namespace))
-				i.remove();
+		if (namespace != null)
+			for (Iterator<Capability> i = result.iterator(); i.hasNext();)
+				if (!i.next().getNamespace().equals(namespace))
+					i.remove();
+		// TODO Somehow, exposing the capabilities of content resources of a
+		// feature is causing an infinite regression of feature2 installations
+		// in FeatureTest.testSharedContent() under certain conditions.
+		if (isScoped() || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
+			return result;
+		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
+		for (Resource constituent : getConstituents())
+			if (header.contains(constituent))
+				for (Capability capability : constituent.getCapabilities(namespace))
+					result.add(new BasicCapability(capability, this));
 		return result;
 	}
 
 	@Override
 	public List<Requirement> getRequirements(String namespace) {
 		SubsystemManifest manifest = getSubsystemManifest();
-		if (namespace == null)
-			return manifest.toRequirements(this);
 		List<Requirement> result = manifest.toRequirements(this);
-		for (Iterator<Requirement> i = result.iterator(); i.hasNext();)
-			if (!i.next().getNamespace().equals(namespace))
-				i.remove();
+		if (namespace != null)
+			for (Iterator<Requirement> i = result.iterator(); i.hasNext();)
+				if (!i.next().getNamespace().equals(namespace))
+					i.remove();
+		if (isScoped())
+			return result;
+		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
+		for (Resource constituent : getConstituents())
+			if (header.contains(constituent))
+				for (Requirement requirement : constituent.getRequirements(namespace))
+					result.add(new BasicRequirement(requirement, this));
+		return result;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + getLocation().hashCode();
 		return result;
 	}
 	
@@ -140,18 +190,22 @@ public class AriesSubsystem implements Resource, Subsystem {
 
 	@Override
 	public String getLocation() {
+		SecurityManager.checkMetadataPermission(this);
 		return getDeploymentManifestHeaderValue(DeploymentManifest.ARIESSUBSYSTEM_LOCATION);
 	}
 
 	@Override
 	public Collection<Subsystem> getParents() {
-		Header<?> header = deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_PARENTS);
+		AriesSubsystemParentsHeader header = getDeploymentManifest().getAriesSubsystemParentsHeader();
 		if (header == null)
 			return Collections.emptyList();
-		String[] parents = header.getValue().split(",");
-		Collection<Subsystem> result = new ArrayList<Subsystem>(parents.length);
-		for (String parent : parents)
-			result.add(Activator.getInstance().getSubsystems().getSubsystemById(Long.valueOf(parent)));
+		Collection<Subsystem> result = new ArrayList<Subsystem>(header.getClauses().size());
+		for (AriesSubsystemParentsHeader.Clause clause : header.getClauses()) {
+			AriesSubsystem subsystem = Activator.getInstance().getSubsystems().getSubsystemById(clause.getId());
+			if (subsystem == null)
+				continue;
+			result.add(subsystem);
+		}
 		return result;
 	}
 
@@ -204,19 +258,19 @@ public class AriesSubsystem implements Resource, Subsystem {
 	@Override
 	public void start() {
 		SecurityManager.checkExecutePermission(this);
-		AccessController.doPrivileged(new StartAction(this));
+		AccessController.doPrivileged(new StartAction(this, true));
 	}
 
 	@Override
 	public void stop() {
 		SecurityManager.checkExecutePermission(this);
-		AccessController.doPrivileged(new StopAction(this));
+		AccessController.doPrivileged(new StopAction(this, !isRoot(), true));
 	}
 
 	@Override
 	public void uninstall() {
 		SecurityManager.checkLifecyclePermission(this);
-		AccessController.doPrivileged(new UninstallAction(this));
+		AccessController.doPrivileged(new UninstallAction(this, false, true));
 	}
 	
 	/* END Subsystem interface methods. */
@@ -230,10 +284,10 @@ public class AriesSubsystem implements Resource, Subsystem {
 		}
 	}
 	
-	void addedParent(AriesSubsystem subsystem) {
+	void addedParent(AriesSubsystem subsystem, boolean referenceCount) {
 		try {
 			setDeploymentManifest(new DeploymentManifest.Builder()
-					.manifest(getDeploymentManifest()).parent(subsystem.getSubsystemId()).build());
+					.manifest(getDeploymentManifest()).parent(subsystem, referenceCount).build());
 		} catch (Exception e) {
 			throw new SubsystemException(e);
 		}
@@ -261,9 +315,15 @@ public class AriesSubsystem implements Resource, Subsystem {
 	}
 	
 	org.eclipse.equinox.region.Region getRegion() {
+		return Activator.getInstance().getRegionDigraph().getRegion(getRegionName());
+	}
+	
+	String getRegionName() {
 		DeploymentManifest manifest = getDeploymentManifest();
 		Header<?> header = manifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_REGION);
-		return Activator.getInstance().getRegionDigraph().getRegion(header.getValue());
+		if (header == null)
+			return null;
+		return header.getValue();
 	}
 	
 	synchronized SubsystemResource getResource() {
@@ -397,29 +457,6 @@ public class AriesSubsystem implements Resource, Subsystem {
 		}
 	}
 	
-//	private org.eclipse.equinox.region.Region createRegion(SubsystemResource resource, long id) throws BundleException {
-//		if (!isScoped())
-//			return resource.getParents().iterator().next().getRegion();
-//		Activator activator = Activator.getInstance();
-//		RegionDigraph digraph = activator.getRegionDigraph();
-//		if (resource.getParents().isEmpty())
-//			return digraph.getRegion(ROOT_REGION);
-//		String name = resource.getSubsystemManifest()
-//				.getSubsystemSymbolicNameHeader().getSymbolicName()
-//				+ ';'
-//				+ resource.getSubsystemManifest().getSubsystemVersionHeader()
-//						.getVersion()
-//				+ ';'
-//				+ resource.getSubsystemManifest().getSubsystemTypeHeader()
-//						.getType() + ';' + Long.toString(id);
-//		org.eclipse.equinox.region.Region region = digraph.getRegion(name);
-//		// TODO New regions need to be cleaned up if this subsystem fails to
-//		// install, but there's no access to the coordination here.
-//		if (region == null)
-//			return digraph.createRegion(name);
-//		return region;
-//	}
-	
 	private String getDeploymentManifestHeaderValue(String name) {
 		DeploymentManifest manifest = getDeploymentManifest();
 		if (manifest == null)
@@ -429,13 +466,4 @@ public class AriesSubsystem implements Resource, Subsystem {
 			return null;
 		return header.getValue();
 	}
-	
-//	private Manifest getManifest(String name) {
-//		try {
-//			return ManifestProcessor.obtainManifestFromAppDir(directory, name);
-//		}
-//		catch (IOException e) {
-//			throw new SubsystemException(e);
-//		}
-//	}
 }

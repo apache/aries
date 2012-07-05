@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.archive;
 
 import java.io.File;
@@ -17,6 +30,7 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.aries.subsystem.core.internal.AriesSubsystem;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Resource;
@@ -62,14 +76,6 @@ public class DeploymentManifest {
 			clauses.add(new DeployedContentHeader.Clause(resource));
 			header(new DeployedContentHeader(clauses));
 			return this;
-//			Attribute resourceId = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
-//			if (resourceId == null)
-//				clause = new DeployedContentHeader.Clause(resource);
-//			List<DeployedContentHeader.Clause> clauses = new ArrayList<DeployedContentHeader.Clause>(header.getClauses().size() + 1);
-//			clauses.addAll(header.getClauses());
-//			clauses.add(clause);
-//			header(new DeployedContentHeader(clauses));
-//			return this;
 		}
 		
 		public Builder header(Header<?> value) {
@@ -108,12 +114,17 @@ public class DeploymentManifest {
 			return this;
 		}
 		
-		public Builder parent(long value) {
-			Header<?> parents = headers.get(ARIESSUBSYSTEM_PARENTS);
-			if (parents == null)
-				header(new GenericHeader(ARIESSUBSYSTEM_PARENTS, Long.toString(value)));
-			else
-				header(new GenericHeader(ARIESSUBSYSTEM_PARENTS, parents.getValue() + ',' + Long.toString(value)));
+		public Builder parent(AriesSubsystem value, boolean referenceCount) {
+			AriesSubsystemParentsHeader.Clause clause = new AriesSubsystemParentsHeader.Clause(value, referenceCount);
+			AriesSubsystemParentsHeader header = (AriesSubsystemParentsHeader)headers.get(ARIESSUBSYSTEM_PARENTS);
+			if (header == null)
+				header(new AriesSubsystemParentsHeader(Collections.singleton(clause)));
+			else {
+				Collection<AriesSubsystemParentsHeader.Clause> clauses = new ArrayList<AriesSubsystemParentsHeader.Clause>(header.getClauses().size() + 1);
+				clauses.addAll(header.getClauses());
+				clauses.add(clause);
+				header(new AriesSubsystemParentsHeader(clauses));
+			}
 			return this;
 		}
 		
@@ -224,6 +235,10 @@ public class DeploymentManifest {
 	
 	public Map<String, Header<?>> getHeaders() {
 		return headers;
+	}
+	
+	public AriesSubsystemParentsHeader getAriesSubsystemParentsHeader() {
+		return (AriesSubsystemParentsHeader)getHeaders().get(ARIESSUBSYSTEM_PARENTS);
 	}
 	
 	public ImportPackageHeader getImportPackageHeader() {

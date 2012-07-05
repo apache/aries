@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.File;
@@ -66,11 +79,11 @@ public class SubsystemResource implements Resource {
 	private final Collection<Resource> sharedContent = new HashSet<Resource>();
 	private final Collection<Resource> sharedDependencies = new HashSet<Resource>();
 	
-	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException {
+	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException, UnsupportedOperationException, BundleException, InvalidSyntaxException {
 		this(new RawSubsystemResource(location, content), parent);
 	}
 	
-	public SubsystemResource(RawSubsystemResource resource, AriesSubsystem parent) throws IOException {
+	public SubsystemResource(RawSubsystemResource resource, AriesSubsystem parent) throws IOException, BundleException, InvalidSyntaxException, URISyntaxException {
 		this.parent = parent;
 		this.resource = resource;
 		id = SubsystemIdentifier.getNextId();
@@ -80,11 +93,11 @@ public class SubsystemResource implements Resource {
 		deploymentManifest = computeDeploymentManifest();
 	}
 	
-	public SubsystemResource(File file) throws IOException, URISyntaxException, ResolutionException {
+	public SubsystemResource(File file) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
 		this(FileSystem.getFSRoot(file));
 	}
 	
-	public SubsystemResource(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
+	public SubsystemResource(IDirectory directory) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
 		parent = null;
 		resource = new RawSubsystemResource(directory);
 		preferredProviderRepository = null;
@@ -93,10 +106,29 @@ public class SubsystemResource implements Resource {
 		computeContentResources(deploymentManifest);
 		computeDependencies(deploymentManifest);
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof SubsystemResource))
+			return false;
+		SubsystemResource that = (SubsystemResource)o;
+		return getLocation().equals(that.getLocation());
+	}
 
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
-		return resource.getCapabilities(namespace);
+		if (isScoped())
+			return resource.getCapabilities(namespace);
+		else {
+			ArrayList<Capability> result = new ArrayList<Capability>();
+			result.addAll(resource.getCapabilities(namespace));
+			for (Resource r : getContentResources())
+				result.addAll(r.getCapabilities(namespace));
+			result.trimToSize();
+			return result;
+		}
 	}
 	
 	public DeploymentManifest getDeploymentManifest() {
@@ -144,12 +176,13 @@ public class SubsystemResource implements Resource {
 			coordination.addParticipant(new Participant() {
 				@Override
 				public void ended(Coordination arg0) throws Exception {
-//					region.getRegionDigraph().removeRegion(region);
+					// Nothing.
 				}
 
 				@Override
 				public void failed(Coordination arg0) throws Exception {
-					region.getRegionDigraph().removeRegion(region);
+					if (isScoped())
+						region.getRegionDigraph().removeRegion(region);
 				}
 			});
 			setImportIsolationPolicy();
@@ -159,7 +192,16 @@ public class SubsystemResource implements Resource {
 
 	@Override
 	public List<Requirement> getRequirements(String namespace) {
-		return resource.getRequirements(namespace);
+		if (isScoped())
+			return resource.getRequirements(namespace);
+		else {
+			ArrayList<Requirement> result = new ArrayList<Requirement>();
+			result.addAll(resource.getRequirements(namespace));
+			for (Resource r : getContentResources())
+				result.addAll(r.getRequirements(namespace));
+			result.trimToSize();
+			return result;
+		}
 	}
 	
 	public Collection<Resource> getResources() {
@@ -178,6 +220,13 @@ public class SubsystemResource implements Resource {
 		return resource.getSubsystemManifest();
 	}
 	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + getLocation().hashCode();
+		return result;
+	}
+	
 	private void addContentResource(Resource resource) {
 		if (resource == null)
 			return;
@@ -192,6 +241,8 @@ public class SubsystemResource implements Resource {
 	}
 	
 	private boolean addDependencies(Repository repository, Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+		if (repository == null)
+			return false;
 		Map<Requirement, Collection<Capability>> m = repository.findProviders(Collections.singleton(requirement));
 		if (m.containsKey(requirement)) {
 			Collection<Capability> cc = m.get(requirement);
@@ -266,7 +317,7 @@ public class SubsystemResource implements Resource {
 		}
 	}
 	
-	private void computeContentResources(DeploymentManifest manifest) {
+	private void computeContentResources(DeploymentManifest manifest) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (manifest == null)
 			computeContentResources(getSubsystemManifest());
 		else {
@@ -280,24 +331,14 @@ public class SubsystemResource implements Resource {
 				addContentResource(resource);
 			}
 		}
-//		if (parent == null) {
-//			if (deploymentManifest == null)
-//				return;
-//			computeContentResourcesFromDeploymentManifest();
-//		}
-//		else {
-//			computeContentResourcesFromSubsystemManifest();
-//		}
 	}
 	
-	private void computeContentResources(SubsystemManifest manifest) {
+	private void computeContentResources(SubsystemManifest manifest) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		if (contentHeader == null)
 			return;
 		for (SubsystemContentHeader.Clause clause : contentHeader.getClauses()) {
-			OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
-					clause.getSymbolicName(), clause.getVersionRange(),
-					clause.getType(), false);
+			Requirement requirement = clause.toRequirement(this);
 			Resource resource = findContent(requirement);
 			if (resource == null) {
 				if (clause.isMandatory())
@@ -315,38 +356,13 @@ public class SubsystemResource implements Resource {
 			ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
 			if (header == null)
 				return;
-			for (ProvisionResourceHeader.ProvisionedResource provisionedResource : header.getProvisionedResources()) {
-				Resource resource = findDependency(provisionedResource);
+			for (ProvisionResourceHeader.Clause clause : header.getClauses()) {
+				Resource resource = findDependency(clause);
 				if (resource == null)
-					throw new SubsystemException("Resource does not exist: " + provisionedResource);
+					throw new SubsystemException("Resource does not exist: " + clause);
 				addDependency(resource);
 			}
 		}	
-//		if (parent == null) {
-//			if (deploymentManifest == null)
-//				return;
-//			ProvisionResourceHeader header = deploymentManifest.getProvisionResourceHeader();
-//			if (header == null)
-//				return;
-//			for (ProvisionResourceHeader.ProvisionedResource provisionedResource : header.getProvisionedResources()) {
-//				Resource resource = findDependency(provisionedResource);
-//				if (resource == null)
-//					throw new SubsystemException("Resource does not exist: " + provisionedResource);
-//				addContentResource(resource);
-//			}
-//		}
-//		else {
-//			SubsystemContentHeader contentHeader = resource.getSubsystemManifest().getSubsystemContentHeader();
-//			try {
-//				Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
-//				for (Resource resource : resolution.keySet())
-//					if (!contentHeader.contains(resource))
-//						addDependency(resource);
-//			}
-//			catch (ResolutionException e) {
-//				throw new SubsystemException(e);
-//			}
-//		}
 	}
 	
 	private void computeDependencies(SubsystemManifest manifest) {
@@ -469,7 +485,7 @@ public class SubsystemResource implements Resource {
 		};
 	}
 	
-	private Resource findContent(OsgiIdentityRequirement requirement) {
+	private Resource findContent(Requirement requirement) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Map<Requirement, Collection<Capability>> map;
 		// TODO System repository for scoped subsystems should be searched in
 		// the case of a persisted subsystem.
@@ -478,10 +494,17 @@ public class SubsystemResource implements Resource {
 			if (map.containsKey(requirement)) {
 				Collection<Capability> capabilities = map.get(requirement);
 				for (Capability capability : capabilities) {
-					Collection<AriesSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource());
-					if (!subsystems.isEmpty())
-						if (subsystems.iterator().next().getRegion().equals(parent.getRegion()))
-							return capability.getResource();
+					Resource provider = capability.getResource();
+					if (provider instanceof BundleRevision) {
+						if (getRegion().contains(((BundleRevision)provider).getBundle())) {
+							return provider;
+						}
+					}
+					else if (provider instanceof AriesSubsystem) {
+						if (getRegion().equals(((AriesSubsystem)provider).getRegion())) {
+							return provider;
+						}
+					}
 				}
 			}
 		}
@@ -497,7 +520,7 @@ public class SubsystemResource implements Resource {
 		return null;
 	}
 	
-	private Resource findContent(DeployedContentHeader.Clause clause) {
+	private Resource findContent(DeployedContentHeader.Clause clause) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Attribute attribute = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
 		long resourceId = attribute == null ? -1 : Long.parseLong(String.valueOf(attribute.getValue()));
 		if (resourceId != -1) {
@@ -508,24 +531,22 @@ public class SubsystemResource implements Resource {
 			else
 				return Activator.getInstance().getSubsystems().getSubsystemById(resourceId);
 		}
-		OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
-				clause.getPath(), clause.getDeployedVersion(),
-				clause.getType(), false);
-		return findContent(requirement);
+		return findContent(clause.toRequirement(this));
 	}
 	
-	private Resource findDependency(ProvisionResourceHeader.ProvisionedResource provisionedResource) {
-		long resourceId = provisionedResource.getResourceId();
+	private Resource findDependency(ProvisionResourceHeader.Clause clause) {
+		Attribute attribute = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
+		long resourceId = attribute == null ? -1 : Long.parseLong(String.valueOf(attribute.getValue()));
 		if (resourceId != -1) {
-			String type = provisionedResource.getNamespace();
+			String type = clause.getType();
 			if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type))
 				return Activator.getInstance().getBundleContext().getBundle(0).getBundleContext().getBundle(resourceId).adapt(BundleRevision.class);
 			else
 				return Activator.getInstance().getSubsystems().getSubsystemById(resourceId);
 		}
 		OsgiIdentityRequirement requirement = new OsgiIdentityRequirement(
-				provisionedResource.getName(), provisionedResource.getDeployedVersion(),
-				provisionedResource.getNamespace(), false);
+				clause.getPath(), clause.getDeployedVersion(),
+				clause.getType(), true);
 		List<Capability> capabilities = createResolveContext().findProviders(requirement);
 		if (capabilities.isEmpty())
 			return null;

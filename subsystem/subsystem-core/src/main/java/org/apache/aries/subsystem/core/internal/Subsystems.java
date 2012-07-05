@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.File;
@@ -12,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.subsystem.core.archive.AriesSubsystemParentsHeader;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
@@ -28,12 +42,12 @@ public class Subsystems {
 	private final ResourceReferences resourceReferences = new ResourceReferences();
 	private final Map<AriesSubsystem, Set<Resource>> subsystemToConstituents = new HashMap<AriesSubsystem, Set<Resource>>();
 	
-	public void addChild(AriesSubsystem parent, AriesSubsystem child) {
+	public void addChild(AriesSubsystem parent, AriesSubsystem child, boolean referenceCount) {
 		graph.add(parent, child);
-		child.addedParent(parent);
+		child.addedParent(parent, referenceCount);
 	}
 	
-	public void addConstituent(AriesSubsystem subsystem, Resource constituent) {
+	public void addConstituent(AriesSubsystem subsystem, Resource constituent, boolean isContent) {
 		synchronized (subsystemToConstituents) {
 			Set<Resource> constituents = subsystemToConstituents.get(subsystem);
 			if (constituents == null) {
@@ -42,7 +56,8 @@ public class Subsystems {
 			}
 			constituents.add(constituent);
 		}
-		subsystem.addedContent(constituent);
+		if (isContent)
+			subsystem.addedContent(constituent);
 	}
 	
 	public void addReference(AriesSubsystem subsystem, Resource resource) {
@@ -105,7 +120,13 @@ public class Subsystems {
 				}
 				Coordination coordination = Utils.createCoordination();
 				try {
-					root = (AriesSubsystem)ResourceInstaller.newInstance(coordination, resource, null, false).install();
+					root = new AriesSubsystem(resource);
+					// TODO This initialization is a bit brittle. The root subsystem
+					// must be gotten before anything else will be able to use the
+					// graph. At the very least, throw IllegalStateException where
+					// appropriate.
+					graph = new SubsystemGraph(root);
+					ResourceInstaller.newInstance(coordination, root, root).install();
 					// TODO Begin proof of concept.
 					// This is a proof of concept for initializing the relationships between the root subsystem and bundles
 					// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
@@ -114,7 +135,7 @@ public class Subsystems {
 					BundleContext context = Activator.getInstance().getBundleContext().getBundle(0).getBundleContext();
 					for (long id : root.getRegion().getBundleIds()) {
 						BundleRevision br = context.getBundle(id).adapt(BundleRevision.class);
-						ResourceInstaller.newInstance(coordination, br, root, false).install();
+						ResourceInstaller.newInstance(coordination, br, root).install();
 					}
 					// TODO End proof of concept.
 				} catch (Exception e) {
@@ -122,11 +143,6 @@ public class Subsystems {
 				} finally {
 					coordination.end();
 				}
-				// TODO This initialization is a bit brittle. The root subsystem
-				// must be gotten before anything else will be able to use the
-				// graph. At the very least, throw IllegalStateException where
-				// appropriate.
-				graph = new SubsystemGraph(root);
 			}
 			else {
 				Coordination coordination = Utils.createCoordination();
@@ -139,15 +155,16 @@ public class Subsystems {
 					}
 					root = getSubsystemById(0);
 					graph = new SubsystemGraph(root);
+					ResourceInstaller.newInstance(coordination, root, root).install();
 					for (AriesSubsystem s : subsystems) {
-						Collection<Subsystem> parents = s.getParents();
-						if (parents == null || parents.isEmpty()) {
-							ResourceInstaller.newInstance(coordination, s, null, false).install();
+						AriesSubsystemParentsHeader header = s.getDeploymentManifest().getAriesSubsystemParentsHeader();
+						if (header == null)
+							continue;
+						for (AriesSubsystemParentsHeader.Clause clause : header.getClauses()) {
+							ResourceInstaller.newInstance(coordination, s, getSubsystemById(clause.getId())).install();
+							if (s.isAutostart())
+								new StartAction(s, false).run();
 						}
-						else {
-							for (Subsystem parent : s.getParents())
-								ResourceInstaller.newInstance(coordination, s, (AriesSubsystem)parent, false).install();
-						}	
 					}
 				} catch (Exception e) {
 					coordination.fail(e);
