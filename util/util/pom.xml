@@ -117,6 +117,7 @@
               <goal>jar</goal>
             </goals>
             <configuration>
+		<excludePackageNames>*.impl:*.internal</excludePackageNames>
               <!-- switch on dependency-driven aggregation -->
               <includeDependencySources>true</includeDependencySources>
               
