@@ -13,6 +13,8 @@ import org.apache.aries.subsystem.itests.SubsystemTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleWire;
@@ -49,6 +51,7 @@ import org.osgi.service.subsystem.Subsystem;
 	  - Bundle E
  */
 
+@RunWith(JUnit4TestRunner.class)
 public abstract class SubsystemDependencyTestBase extends SubsystemTest 
 {
 	protected static String BUNDLE_A = "sdt_bundle.a.jar";
@@ -59,22 +62,25 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	protected static String BUNDLE_F = "sdt_bundle.f.jar";
 	protected static String BUNDLE_G = "sdt_bundle.g.jar";
 
-	@BeforeClass
-	public static void createStaticResources() throws Exception
-	{ 
-		createBundleA();
-		createBundleB();
-		createBundleC();
-		createBundleD();
-		createBundleE();
-		createBundleF();
-		createBundleG();
-	}
-	
+	private static boolean _staticResourcesCreated = false;
 	@Before
 	public void setUp() throws Exception
 	{
 		super.setUp();
+		
+		// We'd like to do this in an @BeforeClass method, but files written in @BeforeClass
+		// go into the project's target/ directory whereas those written in @Before go into 
+		// paxexam's temp directory, which is where they're needed. 
+		if (!_staticResourcesCreated) { 
+			createBundleA();
+			createBundleB();
+			createBundleC();
+			createBundleD();
+			createBundleE();
+			createBundleF();
+			createBundleG();
+			_staticResourcesCreated = true;
+		}
 	}
 	
 	@After

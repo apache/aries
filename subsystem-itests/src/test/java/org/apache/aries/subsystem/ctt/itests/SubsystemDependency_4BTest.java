@@ -8,10 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.subsystem.Subsystem;
@@ -28,22 +25,21 @@ import org.osgi.service.subsystem.SubsystemConstants;
      - Verify the wiring of C, D and E wire to A->x, A, B->y respectively
  */
 
-@RunWith(JUnit4TestRunner.class)
 public class SubsystemDependency_4BTest extends SubsystemDependencyTestBase 
 {
 
-	protected static String APPLICATION_B="sdt_application.a.esa";
+	protected static String APPLICATION_B="sdt_application.b.esa";
 	
-	@BeforeClass
-	public static void createTestApp() throws Exception
-	{ 
-		createTestApplicationB();
-	}
+	private static boolean appCreated = false;
 	
 	@Before
 	public void setUp() throws Exception
 	{ 
 		super.setUp();
+		if (!appCreated) { 
+			createTestApplicationB();
+			appCreated = true;
+		}
 		registerRepositoryR2();
 	}
 	

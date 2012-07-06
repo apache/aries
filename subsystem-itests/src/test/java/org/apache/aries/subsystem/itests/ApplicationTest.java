@@ -21,7 +21,6 @@ package org.apache.aries.subsystem.itests;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,9 +31,6 @@ import java.util.jar.Manifest;
 import org.apache.aries.subsystem.itests.util.TestCapability;
 import org.apache.aries.subsystem.itests.util.TestRepository;
 import org.apache.aries.subsystem.itests.util.TestRepositoryContent;
-import org.apache.aries.subsystem.itests.util.Utils;
-import org.apache.aries.unittest.fixture.ArchiveFixture;
-import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -131,31 +127,6 @@ public class ApplicationTest extends SubsystemTest {
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_B);
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_C);
 		createManifest(APPLICATION_B + ".mf", attributes);
-	}
-	
-	private static void createApplication(String name, String[] content) throws Exception {
-		ZipFixture feature = ArchiveFixture
-				.newZip()
-				.binary("OSGI-INF/SUBSYSTEM.MF",
-						ApplicationTest.class.getClassLoader().getResourceAsStream(
-								name + "/OSGI-INF/SUBSYSTEM.MF"));
-		for (String s : content) {
-			try {
-				feature.binary(s,
-						ApplicationTest.class.getClassLoader().getResourceAsStream(
-								name + '/' + s));
-			}
-			catch (Exception e) {
-				feature.binary(s, new FileInputStream(new File(s)));
-			}
-		}
-		feature.end();
-		FileOutputStream fos = new FileOutputStream(name + ".esa");
-		try {
-			feature.writeOut(fos);
-		} finally {
-			Utils.closeQuietly(fos);
-		}
 	}
 	
 	@Before

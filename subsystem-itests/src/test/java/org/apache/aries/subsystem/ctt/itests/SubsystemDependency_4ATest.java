@@ -1,23 +1,14 @@
 package org.apache.aries.subsystem.ctt.itests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.osgi.framework.namespace.BundleNamespace.BUNDLE_NAMESPACE;
-import static org.osgi.framework.namespace.PackageNamespace.PACKAGE_NAMESPACE;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.wiring.BundleWire;
-import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
@@ -37,22 +28,19 @@ A) Test a transitively closed subsystem deploys no transitive resources
  
 */
 
-
-@RunWith(JUnit4TestRunner.class)
 public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase 
 {
 	protected static String APPLICATION_A="sdt_application.a.esa";
-
-	@BeforeClass
-	public static void createTestApplication() throws Exception
-	{ 
-		createTestApplicationA();
-	}
+	private static boolean _testAppCreated = false;
 	
 	@Before
 	public void setUp() throws Exception
 	{
 		super.setUp();
+		if (!_testAppCreated) { 
+			createTestApplicationA();
+			_testAppCreated = true;
+		}
 		registerRepositoryR1();
 	}
 	

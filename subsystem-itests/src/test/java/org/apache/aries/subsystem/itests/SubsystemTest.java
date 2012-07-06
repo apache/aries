@@ -197,7 +197,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
-//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 				equinox().version("3.8.0-SNAPSHOT"));
 		options = updateOptions(options);
@@ -488,7 +488,8 @@ public abstract class SubsystemTest extends IntegrationTest {
 		createBundle(headers);
 	}
 	
-	protected static void createBundle(Map<String, String> headers) throws IOException {
+	protected static void createBundle(Map<String, String> headers) throws IOException 
+	{
 		String symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
 		JarFixture bundle = ArchiveFixture.newJar();
 		ManifestFixture manifest = bundle.manifest();
@@ -742,7 +743,8 @@ public abstract class SubsystemTest extends IntegrationTest {
 		}
 	}
 	
-	protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException {
+	protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException 
+	{
 		write(new File(file), fixture);
 	}
 	
@@ -754,5 +756,31 @@ public abstract class SubsystemTest extends IntegrationTest {
     	finally {
     		fos.close();
     	}
+	}
+	
+	static void createApplication(String name, String[] content) throws Exception 
+	{
+		ZipFixture feature = ArchiveFixture
+				.newZip()
+				.binary("OSGI-INF/SUBSYSTEM.MF",
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								name + "/OSGI-INF/SUBSYSTEM.MF"));
+		for (String s : content) {
+			try {
+				feature.binary(s,
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								name + '/' + s));
+			}
+			catch (Exception e) {
+				feature.binary(s, new FileInputStream(new File(s)));
+			}
+		}
+		feature.end();
+		FileOutputStream fos = new FileOutputStream(name + ".esa");
+		try {
+			feature.writeOut(fos);
+		} finally {
+			Utils.closeQuietly(fos);
+		}
 	}
 }
