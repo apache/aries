@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: dynamic-import package test bundle
+Bundle-SymbolicName: org.apache.aries.subsystem.itests.dynamicImport
+Bundle-Version: 1.0.0
+Import-Package: org.apache.aries.subsystem.itests.hello.api
+Bundle-Activator: org.apache.aries.subsystem.itests.dynamicImport.Activator
+Provide-Capability: osgi.ee;osgi.ee=JavaSE;version=1.5
+DynamicImport-Package: org.osgi.framework
+
