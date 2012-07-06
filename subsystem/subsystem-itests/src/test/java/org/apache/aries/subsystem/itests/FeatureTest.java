@@ -18,17 +18,11 @@
  */
 package org.apache.aries.subsystem.itests;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.Collection;
 
 import junit.framework.AssertionFailedError;
 
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
-import org.apache.aries.subsystem.itests.util.Utils;
-import org.apache.aries.unittest.fixture.ArchiveFixture;
-import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,30 +36,6 @@ import org.osgi.service.subsystem.Subsystem;
 
 @RunWith(JUnit4TestRunner.class)
 public class FeatureTest extends SubsystemTest {
-	private static void createApplication(String name, String[] content) throws Exception {
-		ZipFixture feature = ArchiveFixture
-				.newZip()
-				.binary("OSGI-INF/SUBSYSTEM.MF",
-						FeatureTest.class.getClassLoader().getResourceAsStream(
-								name + "/OSGI-INF/SUBSYSTEM.MF"));
-		for (String s : content) {
-			try {
-				feature.binary(s,
-						FeatureTest.class.getClassLoader().getResourceAsStream(
-								name + '/' + s));
-			}
-			catch (Exception e) {
-				feature.binary(s, new FileInputStream(new File(s)));
-			}
-		}
-		feature.end();
-		FileOutputStream fos = new FileOutputStream(name + ".esa");
-		try {
-			feature.writeOut(fos);
-		} finally {
-			Utils.closeQuietly(fos);
-		}
-	}
 	
 	@Before
 	public static void createApplications() throws Exception {

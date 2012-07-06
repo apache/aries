@@ -14,12 +14,17 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.subsystem.Subsystem;
 
 @RunWith(JUnit4TestRunner.class)
-public class HelloWorldTest extends InstallTest {
+public class HelloWorldTest extends SubsystemTest 
+{
+	private static boolean _testAppCreated = false;
 	
 	@Before
 	public void installTestApp() throws Exception 
 	{
-		createApplication("hello", new String[]{"helloImpl.jar"});
+		if (!_testAppCreated) { 
+			createApplication("hello", new String[]{"helloImpl.jar"});
+			_testAppCreated = true;
+		}
 	}
 
 	@Test
