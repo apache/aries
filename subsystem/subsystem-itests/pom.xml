@@ -368,7 +368,7 @@
 						<phase>process-test-classes</phase>
 					</execution>
 					
-					<!-- New pom for hello tests, part 1 -->
+					<!-- New pom for hello + related tests, part 1 -->
 					
 					<execution>
 						<id>hello-impl</id>
@@ -385,6 +385,25 @@
 							</includes>
 							<outputDirectory>src/test/resources/hello</outputDirectory>
 							<finalName>helloImpl</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
+					
+					<execution>
+						<id>dynamic-import-impl</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestFile>src/test/bundles/dynamicImport/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+							<includes>
+								<include>org/apache/aries/subsystem/itests/dynamicImport/**</include>
+							</includes>
+							<outputDirectory>src/test/resources/dynamicImport</outputDirectory>
+							<finalName>dynamicImport</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
 					</execution>
@@ -447,6 +466,19 @@
 						<configuration>
 							<sources>
 								<source>src/test/bundles/helloImpl</source>
+							</sources>
+						</configuration>
+					</execution>
+					
+					<execution>
+						<id>add-source-dynamicImport</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/dynamicImport</source>
 							</sources>
 						</configuration>
 					</execution>
