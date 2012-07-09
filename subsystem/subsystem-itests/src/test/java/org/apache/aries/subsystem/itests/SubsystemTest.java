@@ -189,7 +189,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.region").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-				mavenBundle("org.apache.aries", "org.apache.aries.util").version("0.5-SNAPSHOT"),
+				mavenBundle("org.apache.aries", "org.apache.aries.util").version("1.0.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
 				mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
 				mavenBundle("org.apache.felix", "org.apache.felix.resolver"),
@@ -197,7 +197,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
-//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 				equinox().version("3.8.0-SNAPSHOT"));
 		options = updateOptions(options);
