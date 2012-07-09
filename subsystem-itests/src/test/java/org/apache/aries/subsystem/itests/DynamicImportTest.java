@@ -38,9 +38,9 @@ public class DynamicImportTest extends SubsystemTest
 
 	/*
 	 * Install an .esa containing a bundle with a BundleActivator, and a 
-	 * DynamicImport-Package on org.osgi.framework. This app should fail to 
-	 * start unless we do something to stop the SubsystemResolverHook 
-	 * from preventing this package from wiring. 
+	 * DynamicImport-Package on org.apache.aries.subsystem.itests.hello.api.
+	 * This app should fail to start because we've not yet intervened to permit 
+	 * this dynamic package wiring requirement from being met. 
 	 */
 	@Test
 	public void verifyThatDynamicImportNeedsHandling() throws Exception
@@ -61,23 +61,6 @@ public class DynamicImportTest extends SubsystemTest
 			assertTrue("BundleException expected", cause instanceof BundleException);
 		}
 	}
-/*	
-	@Test
-	public void testHello() throws Exception 
-	{
-		Subsystem subsystem = installSubsystemFromFile("hello.esa");
-		try {
-			subsystem.start();
-			BundleContext bc = subsystem.getBundleContext();
-			Hello h = getOsgiService(bc, Hello.class, null, DEFAULT_TIMEOUT);
-			String message = h.saySomething();
-			assertEquals ("Wrong message back", "something", message);
-			subsystem.stop();
-		}
-		finally {
-			uninstallSubsystemSilently(subsystem);
-		}
-	} */
 	
 	protected static Option[] updateOptions(Option[] options) 
 	{
