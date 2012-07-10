@@ -83,13 +83,6 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 		}
 	}
 	
-	@After
-	public void tearDown() 
-	{ 
-		super.tearDown();
-	}
-	
-	
 	private static void createBundleA() throws Exception
 	{ 
 		Map<String, String> headers = new HashMap<String, String>();
@@ -102,7 +95,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	{
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.PROVIDE_CAPABILITY, "y;bug=true"); // TODO: see comment below about bug=true
+		headers.put(Constants.PROVIDE_CAPABILITY, "y;y=randomNamespace"); // TODO: see comment below about bug=true
 		createBundle(BUNDLE_B, headers);
 	}
 	
@@ -126,7 +119,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	{
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.REQUIRE_CAPABILITY, "y;filter:=\"(bug=true)\"");
+		headers.put(Constants.REQUIRE_CAPABILITY, "y");
 		// TODO:
 		/*
 		 * According to the OSGi Core Release 5 spec section 3.3.6 page 35, 
@@ -156,7 +149,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	{
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.PROVIDE_CAPABILITY, "y;bug=true");      // TODO: see comment above about bug=true
+		headers.put(Constants.PROVIDE_CAPABILITY, "y;y=randomNamespace");      // TODO: see comment above about bug=true
 		createBundle(BUNDLE_G, headers);
 	}
 	

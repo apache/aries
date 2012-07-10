@@ -221,7 +221,8 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertSubsystemNotNull(getRootSubsystem());
 	}
 	
-	public void tearDown() {
+	public void tearDown() throws Exception 
+	{
 		bundleContext.removeServiceListener(subsystemEvents);
 		for (ServiceRegistration<?> registration : serviceRegistrations)
 			Utils.unregisterQuietly(registration);

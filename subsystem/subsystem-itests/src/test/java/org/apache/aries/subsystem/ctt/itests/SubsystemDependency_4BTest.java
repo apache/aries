@@ -58,6 +58,7 @@ public class SubsystemDependency_4BTest extends SubsystemDependencyTestBase
 		}
 		assertTrue ("Bundle A should have been provisioned to the root region", bundleNames.contains(BUNDLE_A));
 		assertTrue ("Bundle B should have been provisioned to the root region", bundleNames.contains(BUNDLE_B));
+		stopSubsystem(s);
 	}
 	
 	@Test
