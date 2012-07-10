@@ -58,7 +58,7 @@ public abstract class IntegrationTest {
     }
     
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         for (ServiceTracker st : srs.values()) {
             if (st != null) {
                 st.close();
