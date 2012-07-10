@@ -51,32 +51,18 @@ public class SubsystemDependency_4CTest extends SubsystemDependencyTestBase
 	// doing this within @Before doesn't work :(
 	private void startSubsystems() throws Exception
 	{ 
-		System.out.println ("into verifyCinS1WiresToAxInS2");
-		
 		s1 = installSubsystemFromFile(SUBSYSTEM_S1);
 		startSubsystem(s1);
-		
-		System.out.println ("s1 started");
-		
 		s2 = installSubsystemFromFile(s1, SUBSYSTEM_S2);
 		startSubsystem(s2);
-		
-		System.out.println ("s2 started");
 	}
 	
 	private void stopSubsystems() throws Exception
 	{
 		stopSubsystem(s2);
-		System.out.println ("s2 stopped");
-		
 		stopSubsystem(s1);
-		System.out.println ("s1 stopped");
-		
 		uninstallSubsystem(s2);
-		System.out.println ("s2 uninstalled");
-		
 		uninstallSubsystem(s1);
-		System.out.println ("s1 uninstalled");
 	}
 	
 	// Using the subsystem S1, install a composite S2 that 
