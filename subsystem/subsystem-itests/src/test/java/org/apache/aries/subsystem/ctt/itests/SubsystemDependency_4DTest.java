@@ -1,6 +1,5 @@
 package org.apache.aries.subsystem.ctt.itests;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -9,6 +8,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
@@ -47,17 +47,11 @@ public class SubsystemDependency_4DTest extends SubsystemDependencyTestBase
 	public void verifyBundesFandGinstalledIntoRootSubsystem() throws Exception
 	{
 		startSubsystem();
-		Bundle[] rootBundles = bundleContext.getBundles();
-		boolean bundleFinstalled = false;
-		boolean bundleGinstalled = false;
-		for (Bundle b : rootBundles) { 
-			if (b.getSymbolicName().equals(BUNDLE_F)) bundleFinstalled = true;
-			if (b.getSymbolicName().equals(BUNDLE_G)) bundleGinstalled = true;
-		}
-		assertTrue ("Bundle F not found in root subsystem", bundleFinstalled);
-		assertTrue ("Bundle G not found in root subsystem", bundleGinstalled);
+		verifyBundlesInstalled (bundleContext, "Root", BUNDLE_F, BUNDLE_G);
 		stopSubsystem();
 	}
+	
+
 	
 	// - Verify the wiring of C and E wire to F->x and G->y respectively
 	@Test

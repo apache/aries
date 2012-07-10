@@ -2,6 +2,7 @@ package org.apache.aries.subsystem.ctt.itests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.osgi.framework.namespace.BundleNamespace.BUNDLE_NAMESPACE;
 import static org.osgi.framework.namespace.PackageNamespace.PACKAGE_NAMESPACE;
 
@@ -16,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
@@ -242,4 +244,24 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 		assertEquals ("Wrong bundle provider", expectedProvidingBundleName, providingBundle);
 	}
 
+	/**
+	 * Verify that bundles with names bundleNames are installed into the subsystem with subsystemName
+	 * and bundle context bc
+	 * @param bc
+	 * @param subsystemName
+	 * @param bundleNames
+	 */
+	protected void verifyBundlesInstalled (BundleContext bc, String subsystemName, String ... bundleNames)
+	{
+		for (String bundleName: bundleNames) {
+			boolean bundleFound = false;
+			inner: for (Bundle b: bc.getBundles()) { 
+				if (b.getSymbolicName().equals(bundleName)) { 
+					bundleFound = true;
+					break inner;
+				}
+			}
+			assertTrue ("Bundle " + bundleName + " not found in " + subsystemName + "subsystem", bundleFound);
+		}
+	}
 }
