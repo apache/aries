@@ -167,6 +167,15 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 				BUNDLE_C, BUNDLE_D, BUNDLE_E);
 	}
 	
+	/**
+	 *  - Verify that bundles C, D and E in subsystem s wire to A->x, A, B->y respectively
+	 */
+	protected void checkBundlesCDandEWiredToAandB (Subsystem s) 
+	{
+		verifySinglePackageWiring (s, BUNDLE_C, "x", BUNDLE_A);
+		verifyRequireBundleWiring (s, BUNDLE_D, BUNDLE_A);
+		verifyCapabilityWiring (s, BUNDLE_E, "y", BUNDLE_B);
+	}
 
 	/**
 	 * Check that wiredBundleName in subsystem s is wired to a single package, 
@@ -261,7 +270,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 					break inner;
 				}
 			}
-			assertTrue ("Bundle " + bundleName + " not found in " + subsystemName + "subsystem", bundleFound);
+			assertTrue ("Bundle " + bundleName + " not found in subsystem " + subsystemName, bundleFound);
 		}
 	}
 }
