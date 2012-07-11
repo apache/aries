@@ -99,7 +99,7 @@ public class SubsystemDependency_4BTest extends SubsystemDependencyTestBase
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, appContent);
 		attributes.put(Constants.IMPORT_PACKAGE, "x");
 		attributes.put(Constants.REQUIRE_BUNDLE, BUNDLE_A);
-		attributes.put(Constants.REQUIRE_CAPABILITY, "y;filter:=\"(bug=true)\"");
+		attributes.put(Constants.REQUIRE_CAPABILITY, "y");
 		createManifest(APPLICATION_B + ".mf", attributes);
 		createSubsystem(APPLICATION_B);
 	}
