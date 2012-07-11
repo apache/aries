@@ -1,19 +1,20 @@
 package org.apache.aries.subsystem.ctt.itests;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
+import static org.osgi.service.subsystem.SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
 import static org.osgi.service.subsystem.SubsystemConstants.SUBSYSTEM_TYPE;
 import static org.osgi.service.subsystem.SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
 import static org.osgi.service.subsystem.SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE;
 import static org.osgi.service.subsystem.SubsystemConstants.SUBSYSTEM_TYPE_FEATURE;
-import static org.osgi.service.subsystem.SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Constants;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
@@ -33,56 +34,10 @@ import org.osgi.service.subsystem.SubsystemConstants;
        b. - same as 4E1a except S2 is a content resource of S1
           - There are 6 combinations to test
             - app_app, app_comp, app_feat, comp_app, comp_comp, comp_feat
-    2. A non-Root subsystem has acceptDependencies policy
-       a. - Register repository R2
-          - Using the Root subsystem, install a composite subsystem S1 with 
-            - no content bundles 
-            - acceptTransitive policy
-            - no sharing policy
-          - Using the subsystem S1, install an application S2 with
-            - content bundles C, D and E
-            - note sharing policy gets computed
-          - Verify that bundles A and B got installed into the S1 Subsystem
-          - Verify the wiring of C, D and E wire to A->x, A, B->y respectively
-          - Repeat test with S2 as a composite that imports package x, requires bundle A and required capability y
-          - Repeat test with S2 as a feature
-       b. - same as 4E2a except S2 is a content resource of S1
-          - There are 6 combinations to test
-            - app_app, app_comp, app_feat, comp_app, comp_comp, comp_feat
-    3. Invalid sharing policy prevents dependency installation
-       a. - Register repository R2
-          - Using the Root subsystem, install a composite subsystem S1 with 
-            - no content bundles 
-            - NO acceptDependency policy
-            - no sharing policy
-          - Using the subsystem S1, install an application S2 with
-            - content bundles C, D and E
-            - note the sharing policy gets computed
-          - Verify the installation of S2 fails because there is no valid place to install the 
-            required transitive resources A and B that allow S2 constituents to have access.
-          - Verify resources A and B are not installed in the Root subsystem.
-          - Repeat test with S2 as a composite that imports package x, requires bundle A and requires capability y.
-          - Repeat test with S2 as a feature
-       c. - same as 4E3a except S1 is a composite that has S2 in its Subsystem-Content; S1 fails to install
+    
  */
-public class SubsystemDependency_4ETest extends SubsystemDependencyTestBase 
+public class SubsystemDependency_4E1Test extends SubsystemDependencyTestBase 
 {
-	/*
-	1. Root is the only acceptDependencies policy
-    a. - Register repository R2
-       - Using the Root subsystem, install a composite subsystem S1 with 
-         - no content bundles 
-         - imports package x, requires bundle A and requires capability y
-       - Using the subsystem S1, install an application S2 with
-         - content bundles C, D and E
-       - Verify that bundles A and B got installed into the Root Subsystem
-       - Verify the wiring of C, D and E wire to A->x, A, B->y respectively
-       - Repeat test with S2 as a composite that imports package x, requires bundle A and required capability y
-       - Repeat test with S2 as a feature
-    b. - same as 4E1a except S2 is a content resource of S1
-       - There are 6 combinations to test
-         - app_app, app_comp, app_feat, comp_app, comp_comp, comp_feat
-	*/
 	private static final String SUBSYSTEM_4E_S1_COMP = "sdt_composite4e_s1.esa";
 	private static final String SUBSYSTEM_4E_S2_APP = "sdt_application4e_s2.esa";
 	private static final String SUBSYSTEM_4E_S2_COMP = "sdt_composite4e_s2.esa";
@@ -146,13 +101,7 @@ public class SubsystemDependency_4ETest extends SubsystemDependencyTestBase
 		startSubsystem(s1);
 		Subsystem s2 = installSubsystemFromFile(s1, SUBSYSTEM_4E_S2_COMP);
 		startSubsystem(s2);
-		
-		// - Verify the wiring of C, D and E wire to A->x, A, B->y respectively
-		/*verifySinglePackageWiring (s2, BUNDLE_C, "x", BUNDLE_A);
-		verifyRequireBundleWiring (s2, BUNDLE_D, BUNDLE_A);
-		verifyCapabilityWiring (s2, BUNDLE_E, "y", BUNDLE_B);*/
-		runChecks(s2);
-		
+		checkBundlesCDandEWiredToAandB(s2);
 		stop(s1, s2);
 	}
 	
@@ -164,7 +113,7 @@ public class SubsystemDependency_4ETest extends SubsystemDependencyTestBase
 		startSubsystem(s1);
 		Subsystem s2 = installSubsystemFromFile(s1, SUBSYSTEM_4E_S2_FEATURE);
 		startSubsystem(s2);
-		runChecks (s2);
+		checkBundlesCDandEWiredToAandB (s2);
 		stop(s1, s2);
 	}
 	
@@ -223,52 +172,40 @@ public class SubsystemDependency_4ETest extends SubsystemDependencyTestBase
 		Collection<Subsystem> children = s.getChildren();  
 		// we only expect one child
 		Subsystem child = children.iterator().next();
-		runChecks (child);
+		checkBundlesCDandEWiredToAandB (child);
 		
 		stopSubsystem(s);
 		uninstallSubsystem(s);
 	}
 	
-	
-	private void runChecks (Subsystem child) 
-	{
-		// - Verify the wiring of C, D and E wire to A->x, A, B->y respectively
-		verifySinglePackageWiring (child, BUNDLE_C, "x", BUNDLE_A);
-		verifyRequireBundleWiring (child, BUNDLE_D, BUNDLE_A);
-		verifyCapabilityWiring (child, BUNDLE_E, "y", BUNDLE_B);
-	}
-	
-
 	/*
 	 * Create a nested parent/child subsystem with symbolicName, where parent is of type and child is the 
 	 * previously-created childSubsystem
 	 */
 	private void createCombinedSubsystem (String symbolicName, String parentType, String childSubsystem, String childSubsystemType) throws Exception
 	{
-		Map<String, String> attributes = new HashMap<String, String>();
-		attributes.put(SUBSYSTEM_SYMBOLICNAME, symbolicName);
-		attributes.put(SubsystemConstants.SUBSYSTEM_VERSION, "1.0.0");
-		attributes.put(SUBSYSTEM_TYPE, parentType);
-		
-		if (parentType == SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE) { 
-			attributes.put(Constants.IMPORT_PACKAGE, "x");
-			attributes.put(Constants.REQUIRE_BUNDLE, BUNDLE_A);
-			attributes.put(Constants.REQUIRE_CAPABILITY, "y");
+		File f = new File (symbolicName);
+		if (!f.exists()) { 
+			Map<String, String> attributes = new HashMap<String, String>();
+			attributes.put(SUBSYSTEM_SYMBOLICNAME, symbolicName);
+			attributes.put(SubsystemConstants.SUBSYSTEM_VERSION, "1.0.0");
+			attributes.put(SUBSYSTEM_TYPE, parentType);
+			if (parentType == SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE) { 
+				attributes.put(Constants.IMPORT_PACKAGE, "x");
+				attributes.put(Constants.REQUIRE_BUNDLE, BUNDLE_A);
+				attributes.put(Constants.REQUIRE_CAPABILITY, "y");
+			}
+			StringBuffer subsystemContent = new StringBuffer();
+			subsystemContent.append (childSubsystem + ";" + Constants.VERSION_ATTRIBUTE 
+					+ "=\"[1.0.0,1.0.0]\";");
+			// I'm not sure that this is the best "type" attribute to use, but it will do. 
+			subsystemContent.append(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE + "=");
+			subsystemContent.append(childSubsystemType);
+			attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, subsystemContent.toString());
+			createManifest(symbolicName + ".mf", attributes);
+			createSubsystem(symbolicName, childSubsystem);
 		}
-		
-		StringBuffer subsystemContent = new StringBuffer();
-		subsystemContent.append (childSubsystem + ";" + Constants.VERSION_ATTRIBUTE 
-				+ "=\"[1.0.0,1.0.0]\";");
-		// TODO: possible spec bug - subsystem-content needs a ;type= attribute
-		// but there's no constant for TYPE_ATTRIBUTE ...?
-		subsystemContent.append("type=");
-		subsystemContent.append(childSubsystemType);
-		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, subsystemContent.toString());
-		
-		createManifest(symbolicName + ".mf", attributes);
-		createSubsystem(symbolicName, childSubsystem);
 	}
-
 	
 	private void stop(Subsystem s1, Subsystem s2) throws Exception
 	{
@@ -343,7 +280,4 @@ public class SubsystemDependency_4ETest extends SubsystemDependencyTestBase
 		createManifest(SUBSYSTEM_4E_S2_COMP + ".mf", attributes);
 		createSubsystem(SUBSYSTEM_4E_S2_COMP);
 	}
-
-
-	
 }
