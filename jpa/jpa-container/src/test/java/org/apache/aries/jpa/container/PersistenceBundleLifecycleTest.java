@@ -406,6 +406,7 @@ public class PersistenceBundleLifecycleTest
     //Now try Resolving
     Skeleton.getSkeleton(persistenceBundle).setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.RESOLVED);
     mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.RESOLVED, persistenceBundle), o);
+    testSuccessfulCreationEvent(ref, extenderContext, 1);
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     
     
@@ -487,6 +488,7 @@ public class PersistenceBundleLifecycleTest
     mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.RESOLVED, persistenceBundle), getTrackedObject());
     
     //We will have created the EMF a total of 2 times
+    testSuccessfulCreationEvent(ref, extenderContext, 2);
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
   }
   
