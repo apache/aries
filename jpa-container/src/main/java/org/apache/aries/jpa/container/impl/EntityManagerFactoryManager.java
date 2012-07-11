@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -171,11 +171,11 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
         //If we are Resolved as a result of having stopped
         //and missed the STOPPING event we need to unregister
         unregisterEntityManagerFactories();
+      //Create the EMF objects if necessary
+        createEntityManagerFactories();
         break;
         //Starting and active both require EMFs to be registered
       case Bundle.STARTING :
-        //Create the EMF objects if necessary
-        createEntityManagerFactories();
       case Bundle.ACTIVE :
         if(tracker == null) {
           tracker = new ServiceTracker(bundle.getBundleContext(), 
