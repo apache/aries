@@ -37,7 +37,7 @@ blueprint-parser,0.4
 org.apache.aries.blueprint.annotation.api,0.3.2
 org.apache.aries.blueprint.annotation.impl,0.3.2
 org.apache.aries.blueprint.annotation.itests,0.3.2
-org.apache.aries.blueprint.api,0.3
+org.apache.aries.blueprint.api,1.0.0
 org.apache.aries.blueprint,0.4
 org.apache.aries.blueprint.cm,0.3.2
 org.apache.aries.blueprint.core,0.4
@@ -112,7 +112,7 @@ org.apache.aries.transaction.wrappers,0.3
 ModuleEnd
 #
 Module: util 
-org.apache.aries.util,0.4
+org.apache.aries.util,1.0.0
 ModuleEnd
 #
 Module: web 
