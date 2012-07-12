@@ -79,19 +79,20 @@ public class DynamicImportTest extends SubsystemTest
 		Dictionary<String, String> props = new Hashtable<String, String>();
 		props.put("osgi.woven.packages", "some.woven.package, org.apache.aries.subsystem.itests.hello.api");
 		ServiceRegistration<?> sr = bundleContext.registerService(WeavingHook.class, new TokenWeaver(), props);
+		try { 
+			Subsystem subsystem = installSubsystemFromFile ("dynamicImport.esa");
+			startSubsystem(subsystem);
 		
-		Subsystem subsystem = installSubsystemFromFile ("dynamicImport.esa");
-		startSubsystem(subsystem);
+			BundleContext bc = subsystem.getBundleContext();
+			Hello h = getOsgiService(bc, Hello.class, null, DEFAULT_TIMEOUT);
+			String message = h.saySomething();
+			assertEquals ("Wrong message back", "Hello, this is something", message); // DynamicImportHelloImpl.java
 		
-		BundleContext bc = subsystem.getBundleContext();
-		Hello h = getOsgiService(bc, Hello.class, null, DEFAULT_TIMEOUT);
-		String message = h.saySomething();
-		assertEquals ("Wrong message back", "Hello, this is something", message); // DynamicImportHelloImpl.java
-		
-		stopSubsystem(subsystem);
-		uninstallSubsystem(subsystem);
-		sr.unregister();
-		
+			stopSubsystem(subsystem);
+			uninstallSubsystem(subsystem);
+		} finally { 
+			sr.unregister();
+		}
 	}
 	
 	@Configuration
