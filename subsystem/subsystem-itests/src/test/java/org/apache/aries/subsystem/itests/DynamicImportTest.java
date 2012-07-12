@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -62,12 +63,12 @@ public class DynamicImportTest extends SubsystemTest
 		}
 	}
 	
-	protected static Option[] updateOptions(Option[] options) 
+	@Configuration
+	public static Option[] extraConfig() 
 	{
-		Option[] helloOptions = options(
+		return options(
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.itest.interfaces")
-//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777")
 		);
-		return combine(helloOptions, options);
 	}
 }
