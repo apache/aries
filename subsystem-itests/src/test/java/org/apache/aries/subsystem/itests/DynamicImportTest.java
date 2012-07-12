@@ -1,10 +1,14 @@
 package org.apache.aries.subsystem.itests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.OptionUtils.combine;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import org.apache.aries.subsystem.itests.hello.api.Hello;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +16,11 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.hooks.weaving.WeavingHook;
+import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemException;
 
@@ -46,9 +54,6 @@ public class DynamicImportTest extends SubsystemTest
 	@Test
 	public void verifyThatDynamicImportNeedsHandling() throws Exception
 	{
-		
-		System.out.println ("Into verifyThatDynamicImportNeedsHandling");
-		
 		Subsystem subsystem = installSubsystemFromFile ("dynamicImport.esa");
 		try { 
 			startSubsystem(subsystem);
@@ -63,8 +68,34 @@ public class DynamicImportTest extends SubsystemTest
 		}
 	}
 	
+	class TokenWeaver implements WeavingHook {
+		@Override
+		public void weave(WovenClass arg0) {} 
+	}
+	
+	@Test
+	public void testFirstPassWeavingApproach() throws Exception
+	{
+		Dictionary<String, String> props = new Hashtable<String, String>();
+		props.put("osgi.woven.packages", "some.woven.package, org.apache.aries.subsystem.itests.hello.api");
+		ServiceRegistration<?> sr = bundleContext.registerService(WeavingHook.class, new TokenWeaver(), props);
+		
+		Subsystem subsystem = installSubsystemFromFile ("dynamicImport.esa");
+		startSubsystem(subsystem);
+		
+		BundleContext bc = subsystem.getBundleContext();
+		Hello h = getOsgiService(bc, Hello.class, null, DEFAULT_TIMEOUT);
+		String message = h.saySomething();
+		assertEquals ("Wrong message back", "Hello, this is something", message); // DynamicImportHelloImpl.java
+		
+		stopSubsystem(subsystem);
+		uninstallSubsystem(subsystem);
+		sr.unregister();
+		
+	}
+	
 	@Configuration
-	public static Option[] extraConfig() 
+	public static Option[] extraBundles() 
 	{
 		return options(
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.itest.interfaces")
