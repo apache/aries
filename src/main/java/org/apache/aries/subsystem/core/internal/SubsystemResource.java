@@ -41,12 +41,16 @@ import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.eclipse.equinox.region.RegionFilter;
 import org.eclipse.equinox.region.RegionFilterBuilder;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;
@@ -653,6 +657,31 @@ public class SubsystemResource implements Resource {
 			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
 			builder.allow(policy, filter);
 		}
+		
+		// work around https://www.osgi.org/bugzilla/show_bug.cgi?id=144 
+		// In the first instance, what if the various weaving services were to have a property, 
+		// osgi.woven.packages, that was a comma separated list of packages that might be woven 
+		// by that hook. 
+		Collection<String> wovenPackages = getWovenPackages();
+		for (String pkg : wovenPackages) { 
+			builder.allow(policy, "(osgi.wiring.package=" + pkg + ")");
+		}
+	}
+	
+	// First pass at this: really just a sketch. 
+	private Collection<String> getWovenPackages() throws InvalidSyntaxException
+	{
+		// Find all weaving services in our region
+		BundleContext bc = Activator.getInstance().getBundleContext();
+		Collection<ServiceReference<WeavingHook>> weavers = bc.getServiceReferences(WeavingHook.class, null);
+		Collection<String> wovenPackages = new ArrayList<String>();
+		for (ServiceReference<WeavingHook> sr : weavers) { 
+			String someWovenPackages = (String) sr.getProperty("osgi.woven.packages");
+			if (someWovenPackages != null) { 
+				wovenPackages.addAll(ManifestHeaderProcessor.split(someWovenPackages, ","));
+			}
+		}
+		return wovenPackages;
 	}
 	
 	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireBundleHeader header) throws InvalidSyntaxException {
