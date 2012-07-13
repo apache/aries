@@ -41,7 +41,7 @@
     </scm>
 
     <properties>
-        <blueprint.api.version>1.0.0-SNAPSHOT</blueprint.api.version>
+        <blueprint.api.version>1.0.0</blueprint.api.version>
     </properties>
 
     <profiles>
