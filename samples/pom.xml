@@ -70,7 +70,7 @@
         <!-- Aries Blueprint Versions -->
         <ariesBlueprintAnnotationApiVersion>1.0.0-SNAPSHOT</ariesBlueprintAnnotationApiVersion>
         <ariesBlueprintAnnotationImplVersion>1.0.0-SNAPSHOT</ariesBlueprintAnnotationImplVersion>
-        <ariesBlueprintApiVersion>1.0.0-SNAPSHOT</ariesBlueprintApiVersion>
+        <ariesBlueprintApiVersion>1.0.0</ariesBlueprintApiVersion>
         <ariesBlueprintVersion>1.0.0-SNAPSHOT</ariesBlueprintVersion>
         <ariesBlueprintCmVersion>1.0.0-SNAPSHOT</ariesBlueprintCmVersion>
         <ariesBlueprintCoreVersion>1.0.0-SNAPSHOT</ariesBlueprintCoreVersion>
@@ -118,7 +118,7 @@
         <ariesTransactionWrappersVersion>1.0.0-SNAPSHOT</ariesTransactionWrappersVersion>
 
         <!-- Aries Util Versions -->
-        <ariesUtilVersion>1.0.0-SNAPSHOT</ariesUtilVersion>
+        <ariesUtilVersion>1.0.0</ariesUtilVersion>
 
         <!-- Aries Web Versions -->
         <ariesWebVersion>1.0.0-SNAPSHOT</ariesWebVersion>
