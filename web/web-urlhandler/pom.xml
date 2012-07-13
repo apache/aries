@@ -32,9 +32,9 @@
     <name>Apache Aries Web Url handler</name>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/web/web-url-handler</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/web/web-url-handler</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/web/web-url-handler</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/web/web-urlhandler</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/web/web-urlhandler</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/web/web-urlhandler</url>
      </scm>
 
 	<properties>
