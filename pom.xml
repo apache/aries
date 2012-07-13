@@ -59,7 +59,7 @@
         </aries.osgi.export.service>
 
         <blueprint.annotation.api.version>1.0.0-SNAPSHOT</blueprint.annotation.api.version>
-        <util.version>1.0.0-SNAPSHOT</util.version>
+        <util.version>1.0.0</util.version>
     </properties>
 
     <profiles>
