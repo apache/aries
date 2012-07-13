@@ -34,9 +34,9 @@
     <version>1.0.0-SNAPSHOT</version>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/manager</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/manager</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/manager</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-manager</url>
      </scm>
     <properties>
         <aries.osgi.export>
