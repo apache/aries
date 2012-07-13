@@ -31,10 +31,10 @@
     <name>Apache Aries Transaction Blueprint</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/blueprint</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/blueprint
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-blueprint</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-blueprint
         </developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/transaction/blueprint</url>
+        <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-blueprint</url>
     </scm>
 
     <properties>

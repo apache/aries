@@ -31,9 +31,9 @@
   <version>1.0.0-SNAPSHOT</version>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/itests</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/itests</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/itests</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-itests</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-itests</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-itests</url>
      </scm>
 
   <dependencies>
