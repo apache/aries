@@ -29,9 +29,9 @@
 	<packaging>bundle</packaging>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/testds</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/testds</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/testds</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-testds</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-testds</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-testds</url>
      </scm>
 
      <properties>
