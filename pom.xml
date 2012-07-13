@@ -32,9 +32,9 @@
   <name>Apache Aries Transaction Test Bundle</name>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/testbundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/testbundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/testbundle</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-testbundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-testbundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-testbundle</url>
      </scm>
 
   <properties>
