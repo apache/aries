@@ -31,13 +31,13 @@
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
     <name>Apache Aries JNDI Test Bundle for Aries jndi-url iTests</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.url.itest.web-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.url.itest.web-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jndi.url.itest.web-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest-web</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url-itest-web</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-url-itest-web</url>
      </scm>
 
      <properties>
