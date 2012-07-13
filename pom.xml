@@ -32,9 +32,9 @@
   <packaging>bundle</packaging>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/wrappers</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/wrappers</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/wrappers</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-wrappers</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-wrappers</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-wrappers</url>
      </scm>
 
   <properties>
