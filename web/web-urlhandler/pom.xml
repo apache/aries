@@ -28,13 +28,13 @@
     <groupId>org.apache.aries.web</groupId>
     <artifactId>org.apache.aries.web.urlhandler</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>Apache Aries Web Url handler</name>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.web.urlhandler-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.web.urlhandler-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.web.urlhandler-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/web/web-urlhandler</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/web/web-urlhandler</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/web/web-urlhandler</url>
      </scm>
 
 	<properties>
