@@ -22,11 +22,16 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 
 import junit.framework.Assert;
 
@@ -317,9 +322,42 @@ public class WiringTest extends AbstractBlueprintTest {
         Object obj12 = repository.create("multipleFactoryTypedNull");
         testMultiple(obj12, "hello-boolean", -1, null);
 
-        // TODO: check the below tests when the incoherence between TCK / spec is solved
-//        Object obj13 = graph.create("mapConstruction");
-//        Object obj14 = graph.create("propsConstruction");
+        Object obj13 = repository.create("mapConstruction");
+        Map<String, String> constructionMap = new HashMap<String, String>();
+        constructionMap.put("a", "b");
+        testMultiple(obj13, constructionMap);
+        Object obj14 = repository.create("propsConstruction");
+        Properties constructionProperties = new Properties();
+        constructionProperties.put("a", "b");
+        testMultiple(obj14,  constructionProperties);
+
+        Object obja = repository.create("mapConstructionWithDefaultType");
+        Map<String, Date> mapa = new HashMap<String, Date>();
+        // Months are 0-indexed
+        Calendar calendar = new GregorianCalendar(2012, 0, 6);
+        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        mapa.put("date", new Date(calendar.getTimeInMillis()));
+        testMultiple(obja, mapa);
+
+        Object objc = repository.create("mapConstructionWithTypedEntries");
+        Map mapc = new HashMap();
+        mapc.put("boolean", Boolean.TRUE);
+        mapc.put("double", 1.23);
+        mapc.put("date", new Date(calendar.getTimeInMillis()));
+        testMultiple(objc, mapc);
+
+        Object objb = repository.create("mapConstructionWithNonDefaultTypedEntries");
+        Map mapb = new HashMap();
+        mapb.put("boolean", Boolean.TRUE);
+        mapb.put("double", 3.45);
+        mapb.put("otherdouble", 10.2);
+        testMultiple(objb, mapb);
+  
+        Object objd = repository.create("mapConstructionWithNonDefaultTypedKeys");
+        Map mapd = new HashMap();
+        mapd.put(Boolean.TRUE, "boolean");
+        mapd.put(42.42, "double");
+        testMultiple(objd, mapd);
 
         BeanF obj15 = (BeanF) repository.create("booleanWrapped");
         assertNotNull(obj15.getWrapped());
@@ -348,6 +386,18 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(stringValue, ((Multiple)obj).getString());
         assertEquals(integerValue, ((Multiple)obj).getInteger());        
     }
+
+    private void testMultiple(Object obj, Map map) {
+       assertNotNull(obj);
+       assertTrue(obj instanceof Multiple);
+       assertEquals(map, ((Multiple)obj).getMap());
+   }
+
+    private void testMultiple(Object obj, Properties map) {
+       assertNotNull(obj);
+       assertTrue(obj instanceof Multiple);
+       assertEquals(map, ((Multiple)obj).getProperties());
+   }
 
     public void testGenerics() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");

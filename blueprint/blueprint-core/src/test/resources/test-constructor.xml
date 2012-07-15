@@ -95,12 +95,72 @@
         </argument>
     </bean>
 
+    <bean id="mapConstructionWithDefaultType" class="org.apache.aries.blueprint.pojos.Multiple">
+        <argument>
+            <map value-type="java.util.Date">
+                <entry key="date" value="Jan 6, 2012 GMT"/>
+            </map>
+        </argument>
+    </bean>
+
+
+    <bean id="mapConstructionWithTypedEntries" class="org.apache.aries.blueprint.pojos.Multiple">
+	<argument>
+		<map>
+			<entry key="boolean">
+				<value type="java.lang.Boolean">true</value>
+			</entry>
+			<entry key="double">
+				<value type="java.lang.Double">1.23</value>
+			</entry>
+                <entry key="date">
+                    <value type="java.util.Date">Jan 6, 2012 GMT</value>
+                </entry>
+		</map>
+	</argument>
+    </bean>
+
+   <!--  The value-type is only a default, not an absolute, so we should be able to declare a value-type
+   and then have other types inside the map. -->
+   <bean id="mapConstructionWithNonDefaultTypedEntries" class="org.apache.aries.blueprint.pojos.Multiple">
+	<argument>
+         <map value-type="java.lang.Double">
+                <entry key="double" value="3.45">
+                </entry>
+               <entry key="otherdouble">
+                    <value type="java.lang.Double">10.2</value>
+                </entry>
+                <entry key="boolean">
+                    <value type="java.lang.Boolean">true</value>
+                </entry>
+            </map>
+	</argument>
+    </bean>
+
+   <bean id="mapConstructionWithNonDefaultTypedKeys" class="org.apache.aries.blueprint.pojos.Multiple">
+	<argument>
+         <map key-type="java.lang.Double">
+               <entry>
+                    <key><value type="java.lang.Double">42.42</value></key>
+                    <value type="java.lang.String">double</value>
+                </entry>
+                <entry>
+                    <key><value type="java.lang.Boolean">true</value></key>
+                    <value type="java.lang.String">boolean</value>
+                </entry>
+            </map>
+	</argument>
+    </bean>
+            
     <bean id="propsConstruction" class="org.apache.aries.blueprint.pojos.Multiple">
         <argument>
             <props>
                 <prop key="a" value="b"/>
             </props>
-        </argument>
+            </argument>
+            <argument>
+                <value>disambiguating extra argument</value>
+            </argument>
     </bean>
 
     <bean id="booleanPrim" class="org.apache.aries.blueprint.pojos.BeanF">
