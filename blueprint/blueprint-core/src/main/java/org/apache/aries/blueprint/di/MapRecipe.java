@@ -98,12 +98,16 @@ public class MapRecipe extends AbstractRecipe {
             throw new ComponentDefinitionException("Specified map type does not implement the Map interface: " + mapType.getName());
         }
 
-        ReifiedType convertKeyType = getType(keyType);
-        ReifiedType convertValueType = getType(valueType);
+        ReifiedType defaultConvertKeyType = getType(keyType);
+        ReifiedType defaultConvertValueType = getType(valueType);
+                
         // add map entries
         try {
             for (Recipe[] entry : entries) {
+                ReifiedType convertKeyType = workOutConversionType(entry[0], defaultConvertKeyType);
                 Object key = convert(entry[0].create(), convertKeyType);
+                // Each entry may have its own types
+                ReifiedType convertValueType = workOutConversionType(entry[1], defaultConvertValueType);
                 Object value = entry[1] != null ? convert(entry[1].create(), convertValueType) : null;
                 instance.put(key, value);
             }
@@ -112,6 +116,16 @@ public class MapRecipe extends AbstractRecipe {
         }
         return instance;
     }
+
+   protected ReifiedType workOutConversionType(Recipe entry, ReifiedType defaultType) {
+       if (entry instanceof ValueRecipe)
+       {
+          return getType(((ValueRecipe) entry).getValueType());
+       } else 
+       {
+          return defaultType;
+       }
+   }
 
     public void put(Recipe key, Recipe value) {
         if (key == null) throw new NullPointerException("key is null");

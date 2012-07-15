@@ -36,7 +36,7 @@ public class Multiple {
         this.map = map;
     }
 
-    public Multiple(Properties props) {
+    public Multiple(Properties props, String disambiguator) {
         this.properties = props;
     }
 
