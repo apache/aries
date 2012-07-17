@@ -49,7 +49,7 @@
         <ariesEbaMavenPluginVersion>1.0.0-SNAPSHOT</ariesEbaMavenPluginVersion>
 
         <!-- Aries Application Versions -->
-        <ariesApplicationApiVersion>1.0.0-SNAPSHOT</ariesApplicationApiVersion>
+        <ariesApplicationApiVersion>1.0.0</ariesApplicationApiVersion>
         <ariesApplicationVersion>1.0.0-SNAPSHOT</ariesApplicationVersion>
         <ariesApplicationConvertersVersion>1.0.0-SNAPSHOT</ariesApplicationConvertersVersion>
         <ariesApplicationDefaultLocalPlatformVersion>1.0.0-SNAPSHOT</ariesApplicationDefaultLocalPlatformVersion>
@@ -68,7 +68,7 @@
         <ariesApplicationUtilsVersion>1.0.0-SNAPSHOT</ariesApplicationUtilsVersion>
 
         <!-- Aries Blueprint Versions -->
-        <ariesBlueprintAnnotationApiVersion>1.0.0-SNAPSHOT</ariesBlueprintAnnotationApiVersion>
+        <ariesBlueprintAnnotationApiVersion>1.0.0</ariesBlueprintAnnotationApiVersion>
         <ariesBlueprintAnnotationImplVersion>1.0.0-SNAPSHOT</ariesBlueprintAnnotationImplVersion>
         <ariesBlueprintApiVersion>1.0.0</ariesBlueprintApiVersion>
         <ariesBlueprintVersion>1.0.0-SNAPSHOT</ariesBlueprintVersion>
@@ -77,19 +77,19 @@
 
         <!-- Aries Jmx Versions -->
         <ariesJmxiApiVersion>0.3.1-SNAPSHOT</ariesJmxiApiVersion>
-        <ariesJmxBlueprintApiVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintApiVersion>
+        <ariesJmxBlueprintApiVersion>1.0.0</ariesJmxBlueprintApiVersion>
         <ariesJmxBlueprintVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintVersion>
         <ariesJmxBlueprintCoreVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintCoreVersion>
         <ariesJmxVersion>1.0.0-SNAPSHOT</ariesJmxVersion>
-        <ariesJmxCoreVersion>1.0.0-SNAPSHOT</ariesJmxCoreVersion>
+        <ariesJmxCoreVersion>1.0.0</ariesJmxCoreVersion>
         <ariesJmxWhiteboardVersion>1.0.0-SNAPSHOT</ariesJmxWhiteboardVersion>
 
         <!-- Aries Jndi Versions -->
         <ariesJndiApiVersion>1.0.0</ariesJndiApiVersion>
         <ariesJndiVersion>1.0.0-SNAPSHOT</ariesJndiVersion>
-        <ariesJndiCoreVersion>1.0.0-SNAPSHOT</ariesJndiCoreVersion>
-        <ariesJndiLegacySupportVersion>1.0.0-SNAPSHOT</ariesJndiLegacySupportVersion>
-        <ariesJndiRmiVersion>1.0.0-SNAPSHOT</ariesJndiRmiVersion>
+        <ariesJndiCoreVersion>1.0.0</ariesJndiCoreVersion>
+        <ariesJndiLegacySupportVersion>1.0.0</ariesJndiLegacySupportVersion>
+        <ariesJndiRmiVersion>1.0.0</ariesJndiRmiVersion>
         <ariesJndiUrlVersion>1.0.0-SNAPSHOT</ariesJndiUrlVersion>
 
         <!-- Aries Jpa Versions -->
@@ -99,13 +99,13 @@
         <ariesJpaContainerContextVersion>1.0.0-SNAPSHOT</ariesJpaContainerContextVersion>
         
         <!-- Aries Proxy Versions -->
-        <ariesProxyApiVersion>1.0.0-SNAPSHOT</ariesProxyApiVersion>
+        <ariesProxyApiVersion>1.0.0</ariesProxyApiVersion>
         <ariesProxyVersion>1.0.0-SNAPSHOT</ariesProxyVersion>
         <ariesProxyImplVersion>1.0.0-SNAPSHOT</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
         <ariesQuiesceApiVersion>1.0.0</ariesQuiesceApiVersion>
-        <ariesQuiesceManagerVersion>1.0.0-SNAPSHOT</ariesQuiesceManagerVersion>
+        <ariesQuiesceManagerVersion>1.0.0</ariesQuiesceManagerVersion>
         
 
         <!-- Aries Testsupport Versions -->
@@ -113,15 +113,15 @@
 
         <!-- Aries Transaction Versions -->
         <ariesTransactionBlueprintVersion>1.0.0-SNAPSHOT</ariesTransactionBlueprintVersion>
-        <ariesTransactionManagerVersion>1.0.0-SNAPSHOT</ariesTransactionManagerVersion>
-        <ariesTransactionTestdsVersion>1.0.0-SNAPSHOT</ariesTransactionTestdsVersion>
+        <ariesTransactionManagerVersion>1.0.0</ariesTransactionManagerVersion>
+        <ariesTransactionTestdsVersion>1.0.0</ariesTransactionTestdsVersion>
         <ariesTransactionWrappersVersion>1.0.0-SNAPSHOT</ariesTransactionWrappersVersion>
 
         <!-- Aries Util Versions -->
         <ariesUtilVersion>1.0.0</ariesUtilVersion>
 
         <!-- Aries Web Versions -->
-        <ariesWebVersion>1.0.0-SNAPSHOT</ariesWebVersion>
+        <ariesWebVersion>1.0.0</ariesWebVersion>
 
 
 
