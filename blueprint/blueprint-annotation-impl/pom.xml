@@ -58,7 +58,7 @@
             org.apache.aries.blueprint.annotation.AnnotationScannerService
         </aries.osgi.export.service>
 
-        <blueprint.annotation.api.version>1.0.0-SNAPSHOT</blueprint.annotation.api.version>
+        <blueprint.annotation.api.version>1.0.0</blueprint.annotation.api.version>
         <util.version>1.0.0</util.version>
     </properties>
 

@@ -87,10 +87,10 @@
             org/apache/aries/blueprint/blueprint.xsd=${project.build.directory}/sources/org/osgi/service/blueprint/blueprint.xsd
         </aries.osgi.include.resource>
 
-        <blueprint.annotation.api.version>1.0.0-SNAPSHOT</blueprint.annotation.api.version>
+        <blueprint.annotation.api.version>1.0.0</blueprint.annotation.api.version>
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.parser.version>1.0.0-SNAPSHOT</blueprint.parser.version>
-        <proxy.api.version>1.0.0-SNAPSHOT</proxy.api.version>
+        <blueprint.parser.version>1.0.0</blueprint.parser.version>
+        <proxy.api.version>1.0.0</proxy.api.version>
         <proxy.impl.version>1.0.0-SNAPSHOT</proxy.impl.version>
         <quiesce.api.version>1.0.0</quiesce.api.version>
         <util.version>1.0.0</util.version>
