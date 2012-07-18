@@ -36,6 +36,10 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class SchemaLocatingHandler extends DefaultHandler
 {
+  /**
+  * URI for the JPA persistence namespace 
+  */
+  private static final String PERSISTENCE_NS_URI = "http://java.sun.com/xml/ns/persistence";
   
   /**
    * A static cache of schemas in use in the runtime
@@ -49,8 +53,8 @@ public class SchemaLocatingHandler extends DefaultHandler
     
     Schema s = null;
     String version = null;
-    if("persistence".equals(name)) {
-      version = attributes.getValue(uri, "version");
+    if(PERSISTENCE_NS_URI.equals(uri) && "persistence".equals(localName) ) {
+      version = attributes.getValue("version");
        s = validate(version);
     }
     throw new EarlyParserReturn(s, version);
