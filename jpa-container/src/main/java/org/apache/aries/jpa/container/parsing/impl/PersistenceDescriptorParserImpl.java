@@ -47,6 +47,7 @@ public class PersistenceDescriptorParserImpl implements PersistenceDescriptorPar
   public Collection<? extends ParsedPersistenceUnit> parse(Bundle b, PersistenceDescriptor descriptor) throws PersistenceDescriptorParserException {
     Collection<ParsedPersistenceUnit> persistenceUnits = new ArrayList<ParsedPersistenceUnit>();
     SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+    parserFactory.setNamespaceAware(true);
     RememberingInputStream is = null;
     boolean schemaFound = false;
     try {

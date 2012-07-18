@@ -308,7 +308,45 @@ public class PersistenceXMLParsingTest
         is.close();
     }
   }
-
+  
+  @Test
+  public void elementsPrefixedWithPersistenceNameSpaceShouldBeAccepted() throws Exception{
+	  InputStream is = null;
+	    try {
+	      String location = "file26/META-INF/persistence.xml"; 
+	      is = getClass().getClassLoader().getResourceAsStream(location);
+	      PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
+	      
+	      Bundle b = Skeleton.newMock(Bundle.class);
+	      
+	      Collection<? extends ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+	      assertEquals("An incorrect number of persistence units has been returned.", 1, parsedUnits.size());
+	     
+	    } finally {
+	      if(is != null)
+	        is.close();
+	    }
+  }
+  
+  @Test(expected=PersistenceDescriptorParserException.class)
+  public void elementsPrefixedWithWrongNameSpaceShouldBeRejected() throws Exception{
+	  InputStream is = null;
+	    try {
+	      String location = "file27/META-INF/persistence.xml"; 
+	      is = getClass().getClassLoader().getResourceAsStream(location);
+	      PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
+	      
+	      Bundle b = Skeleton.newMock(Bundle.class);
+	      
+	      Collection<? extends ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+	      fail("should throw");
+	     
+	    } finally {
+	      if(is != null)
+	        is.close();
+	    }
+  }
+  
   private void checkParsedUnit(Bundle b, ParsedPersistenceUnit unit, String number) {
     assertEquals("The schema version was incorrect", "1.0",
         unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.SCHEMA_VERSION));
