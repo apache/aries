@@ -33,9 +33,9 @@
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-bundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-bundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-bundle</url>
      </scm>
     <properties>
         <aries.osgi.activator>
