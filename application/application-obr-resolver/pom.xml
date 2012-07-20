@@ -25,16 +25,16 @@
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.resolver.obr</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Apache Aries Application OBR Resolver</name>
     <description>
       Implementation of the AriesApplicationResolver using OBR
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.resolver.obr-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.resolver.obr-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.resolver.obr-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-obr-reolver</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-obr-reolver</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-obr-reolver</url>
      </scm>
 
     <properties>
