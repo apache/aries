@@ -63,7 +63,7 @@ under the License.
             <plugin>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>eba-maven-plugin</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${ariesEbaMavenPluginVersion}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <generateManifest>true</generateManifest>
