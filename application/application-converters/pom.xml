@@ -27,13 +27,13 @@
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.converters</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>Apache Aries Application Converters</name>
      
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.converters-1.0.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.converters-1.0.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.converters-1.0.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-converters</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-converters</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/application-converters</url>
     </scm>
 
 
