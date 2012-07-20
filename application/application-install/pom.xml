@@ -31,15 +31,15 @@
     <artifactId>org.apache.aries.application.install</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Installer</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>
         A very basic application installer
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-install</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-install</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-install</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.install-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.install-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.install-1.0.0</url>
      </scm>
     
     <properties>
