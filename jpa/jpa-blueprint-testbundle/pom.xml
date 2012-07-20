@@ -32,9 +32,9 @@
     <name>Test Bundle for Aries JPA Blueprint iTests</name>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jap/jpa-blueprint-testbundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jap/jpa-blueprint-testbundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jap/jpa-blueprint-testbundle</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-blueprint-testbundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-blueprint-testbundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-blueprint-testbundle</url>
      </scm>
 
     <properties>
