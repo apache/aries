@@ -58,14 +58,14 @@
         <ariesApplicationItestInterfaceVersion>1.0.0-SNAPSHOT</ariesApplicationItestInterfaceVersion>
         <ariesApplicationManagementVersion>1.0.0-SNAPSHOT</ariesApplicationManagementVersion>
         <ariesApplicationModellerVersion>1.0.0-SNAPSHOT</ariesApplicationModellerVersion>
-        <ariesApplicationNoopResolverVersion>1.0.0-SNAPSHOT</ariesApplicationNoopResolverVersion>
+        <ariesApplicationNoopResolverVersion>1.0.0</ariesApplicationNoopResolverVersion>
         <ariesApplicationObrResolverVersion>1.0.0-SNAPSHOT</ariesApplicationObrResolverVersion>
         <ariesApplicationRuntimeVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeVersion>
         <ariesApplicationRuntimeFrameworkVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkVersion>
         <ariesApplicationRuntimeFrameworkManagementVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkManagementVersion>
         <ariesApplicationRuntimeIsolatedVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeIsolatedVersion>
         <ariesApplicationRuntimeRepositoryVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeRepositoryVersion>
-        <ariesApplicationUtilsVersion>1.0.0-SNAPSHOT</ariesApplicationUtilsVersion>
+        <ariesApplicationUtilsVersion>1.0.0</ariesApplicationUtilsVersion>
 
         <!-- Aries Blueprint Versions -->
         <ariesBlueprintAnnotationApiVersion>1.0.0</ariesBlueprintAnnotationApiVersion>
@@ -101,7 +101,7 @@
         <!-- Aries Proxy Versions -->
         <ariesProxyApiVersion>1.0.0</ariesProxyApiVersion>
         <ariesProxyVersion>1.0.0-SNAPSHOT</ariesProxyVersion>
-        <ariesProxyImplVersion>1.0.0-SNAPSHOT</ariesProxyImplVersion>
+        <ariesProxyImplVersion>1.0.0</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
         <ariesQuiesceApiVersion>1.0.0</ariesQuiesceApiVersion>
