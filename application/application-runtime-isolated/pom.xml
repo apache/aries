@@ -30,15 +30,15 @@
     <artifactId>org.apache.aries.application.runtime.isolated</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Isolated Application Runtime</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <description>
         An isolated application runtime implementation
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.runtime.isolated-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.runtime.isolated-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.runtime.isolated-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-runtime-isolated</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-runtime-isolated</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-runtime-isolated</url>
      </scm>
 
     <properties>
