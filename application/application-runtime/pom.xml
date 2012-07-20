@@ -30,15 +30,15 @@
     <artifactId>org.apache.aries.application.runtime</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Runtime</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>
         A very basic runtime implementation
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-runtime</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-runtime</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-runtime</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.runtime-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.runtime-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.runtime-1.0.0</url>
      </scm>
 
 
