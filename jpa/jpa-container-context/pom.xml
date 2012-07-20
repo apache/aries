@@ -27,14 +27,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.container.context</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>Aries JPA Container Managed Contexts</name>
     <packaging>bundle</packaging>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa.container.context-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa.container.context-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jpa.container.context-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-context</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-context</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-container-context</url>
      </scm>
 
     <properties>
