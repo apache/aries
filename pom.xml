@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.container</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Aries JPA Container</name>
     
      <scm>
