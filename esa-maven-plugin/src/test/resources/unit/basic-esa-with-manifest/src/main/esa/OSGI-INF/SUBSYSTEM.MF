@@ -1,0 +1,9 @@
+Subsystem-ManifestVersion: 1
+Subsystem-Name: Bank Account
+Subsystem-SymbolicName: com.mybank.account.app
+Subsystem-Version: 1.0
+Subsystem-Content:
+	com.mybank.account.bankWeb; version=1.0.0,
+	com.mybank.account.bankAccount; version=1.0.0,
+	com.mybank.account.common; version=1.0.0,
+	com.mybank.account.utility; version=1.0.0
