@@ -29,15 +29,15 @@
     <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application itests sample application interface</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>
       Interface class(es) for aplication runtime itests.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-itest-interface</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-itest-interface</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-itest-interface</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.runtime.itest.interfaces-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.runtime.itest.interfaces-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.runtime.itest.interfaces-1.0.0</url>
      </scm>
 
 	<properties>
