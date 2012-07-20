@@ -27,14 +27,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>bundle</packaging>
     <name>Test Bundle for Aries JPA Container iTests</name>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-testbundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-testbundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-container-testbundle</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa.container.itest.bundle-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa.container.itest.bundle-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jpa.container.itest.bundle-1.0.0</url>
      </scm>
 
     <properties>
