@@ -30,15 +30,15 @@
     <artifactId>org.apache.aries.application.runtime.framework</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Bundle Framework provider</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>
         An equinox based bundle framework runtime implementation
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-runtime-framework</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-runtime-framework</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-runtime-framework</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.runtime.framework-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.runtime.framework-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.runtime.framework-1.0.0</url>
      </scm>
 
     <properties>
