@@ -22,18 +22,18 @@ org.apache.aries.application.management,0.3
 org.apache.aries.application.modeller,0.3
 org.apache.aries.application.noop.platform.repo,0.3
 org.apache.aries.application.noop.postresolve.process,0.3
-org.apache.aries.application.resolver.noop,0.3
+org.apache.aries.application.resolver.noop,1.0.0
 org.apache.aries.application.resolver.obr,0.3
 org.apache.aries.application.runtime,0.3
 org.apache.aries.application.runtime.framework,0.3
 org.apache.aries.application.runtime.framework.management,0.3
 org.apache.aries.application.runtime.isolated,0.3
 org.apache.aries.application.runtime.repository,0.3
-org.apache.aries.application.utils,0.3
+org.apache.aries.application.utils,1.0.0
 ModuleEnd
 #
 Module: blueprint 
-blueprint-parser,0.4
+blueprint-parser,1.0.0
 org.apache.aries.blueprint.annotation.api,1.0.0
 org.apache.aries.blueprint.annotation.impl,0.3.2
 org.apache.aries.blueprint.annotation.itests,0.3.2
@@ -87,7 +87,7 @@ ModuleEnd
 Module: proxy 
 org.apache.aries.proxy.api,1.0.0
 org.apache.aries.proxy,0.4
-org.apache.aries.proxy.impl,0.4
+org.apache.aries.proxy.impl,1.0.0
 org.apache.aries.proxy.itests,0.4
 ModuleEnd
 #
