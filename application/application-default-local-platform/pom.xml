@@ -27,16 +27,16 @@
     <artifactId>org.apache.aries.application.default.local.platform</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Default local platform</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <description>
       Implementation of the default local Platform Repository
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-default-local-platform</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-default-local-platform</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-default-local-platform</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.default.local.platform-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.default.local.platform-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.default.local.platform-1.0.0</url>
      </scm>
     <properties>
         <aries.osgi.export.pkg>
