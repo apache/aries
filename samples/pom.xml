@@ -76,13 +76,13 @@
         <ariesBlueprintCoreVersion>1.0.0-SNAPSHOT</ariesBlueprintCoreVersion>
 
         <!-- Aries Jmx Versions -->
-        <ariesJmxiApiVersion>0.3.1-SNAPSHOT</ariesJmxiApiVersion>
+        <ariesJmxiApiVersion>1.0.0</ariesJmxiApiVersion>
         <ariesJmxBlueprintApiVersion>1.0.0</ariesJmxBlueprintApiVersion>
         <ariesJmxBlueprintVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintVersion>
-        <ariesJmxBlueprintCoreVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintCoreVersion>
+        <ariesJmxBlueprintCoreVersion>1.0.0</ariesJmxBlueprintCoreVersion>
         <ariesJmxVersion>1.0.0-SNAPSHOT</ariesJmxVersion>
         <ariesJmxCoreVersion>1.0.0</ariesJmxCoreVersion>
-        <ariesJmxWhiteboardVersion>1.0.0-SNAPSHOT</ariesJmxWhiteboardVersion>
+        <ariesJmxWhiteboardVersion>1.0.0</ariesJmxWhiteboardVersion>
 
         <!-- Aries Jndi Versions -->
         <ariesJndiApiVersion>1.0.0</ariesJndiApiVersion>
