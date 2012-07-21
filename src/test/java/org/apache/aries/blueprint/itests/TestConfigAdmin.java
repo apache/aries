@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -145,21 +146,29 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
 
     @Test
     public void testManagedServiceFactory() throws Exception {
+
         ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory", null);
         Hashtable<String,String> props = new Hashtable<String,String>();
         props.put("a", "5");
         props.put("currency", "PLN");
         cf.update(props);
-
+        
         Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
         assertNotNull(bundle);
         bundle.start();
-
+        
         BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
         assertNotNull(blueprintContainer);
+        
+        // Make sure only one service is registered
+        // Ask the service registry, not the container, since the container might have got it wrong :)
+        ServiceReference[] refs = context().getAllServiceReferences(Foo.class.getName(), "(service.pid=blueprint-sample-managed-service-factory.*)");
+        
+        assertNotNull("No services were registered for the managed service factory", refs);
+        assertEquals("Multiple services were registered for the same pid.", 1, refs.length);
+        
 
-        Thread.sleep(5000);
     }
 
     @org.ops4j.pax.exam.junit.Configuration
