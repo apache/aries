@@ -76,8 +76,8 @@ public class CmManagedServiceFactory {
     private final Object lock = new Object();
 
     private ServiceRegistration registration;
-    private Map<String, ServiceRegistration> pids = new ConcurrentHashMap<String, ServiceRegistration>();
-    private Map<ServiceRegistration, Object> services = new ConcurrentHashMap<ServiceRegistration, Object>();
+    private final Map<String, ServiceRegistration> pids = new ConcurrentHashMap<String, ServiceRegistration>();
+    private final Map<ServiceRegistration, Object> services = new ConcurrentHashMap<ServiceRegistration, Object>();
 
     public void init() throws Exception {
         LOGGER.debug("Initializing CmManagedServiceFactory for factoryPid={}", factoryPid);
@@ -170,33 +170,46 @@ public class CmManagedServiceFactory {
     }
     
     protected void updated(String pid, Dictionary props) {
-        LOGGER.debug("Updated configuration {} with props {}", pid, props);
-        ServiceRegistration reg = pids.get(pid);
-        if (reg == null) {      
+      LOGGER.debug("Updated configuration {} with props {}", pid, props);
+
+      Hashtable regProps = null;
+      Object component = null;
+
+      // This method might be multithreaded, so synchronize checking and
+      // creating the service
+      final ServiceRegistration existingReg;
+      synchronized (pids) {
+         existingReg = pids.get(pid);
+         if (existingReg == null) {
             updateComponentProperties(props);
 
-            Object component = blueprintContainer.getComponentInstance(managedComponentName);
-            
-            //  TODO: call listeners, etc...
-                    
-            Hashtable regProps = getRegistrationProperties(pid);            
+            component = blueprintContainer.getComponentInstance(managedComponentName);
+
+            // TODO: call listeners, etc...
+
+            regProps = getRegistrationProperties(pid);
             CmProperties cm = findServiceProcessor();
             if (cm != null) {
-                if ("".equals(cm.getPersistentId())) {
-                    JavaUtils.copy(regProps, props);
-                }
-                cm.updateProperties(new PropertiesUpdater(pid), regProps);
+               if ("".equals(cm.getPersistentId())) {
+                  JavaUtils.copy(regProps, props);
+               }
+               cm.updateProperties(new PropertiesUpdater(pid), regProps);
             }
-            
+
             Set<String> classes = getClasses(component);
             String[] classArray = classes.toArray(new String[classes.size()]);
-            reg = blueprintContainer.getBundleContext().registerService(classArray, component, regProps);
+            ServiceRegistration reg = blueprintContainer.getBundleContext().registerService(classArray, component, regProps);
 
-            LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object [] { component, classes, regProps });
-            
+            LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object[] { component, classes, regProps });
+
             services.put(reg, component);
             pids.put(pid, reg);
-            
+         }
+        } // end of synchronization
+        
+        // If we just registered a service, do the slower stuff outside the synchronized block
+        if (existingReg == null)
+        {
             if (listeners != null) {
                 for (ServiceListener listener : listeners) {
                     listener.register(component, regProps);
@@ -207,7 +220,7 @@ public class CmManagedServiceFactory {
             
             CmProperties cm = findServiceProcessor();
             if (cm != null && "".equals(cm.getPersistentId())) {
-                Dictionary regProps = getRegistrationProperties(pid);    
+                regProps = getRegistrationProperties(pid);    
                 JavaUtils.copy(regProps, props);
                 cm.updated(regProps);
             }
