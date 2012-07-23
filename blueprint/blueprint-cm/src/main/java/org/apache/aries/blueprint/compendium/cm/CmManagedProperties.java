@@ -150,17 +150,12 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
 
     public void updated(final Dictionary props) {
         LOGGER.debug("Configuration updated for bean={} / pid={}", beanName, persistentId);
-        // Run in a separate thread to avoid re-entrance
-        new Thread() {
-            public void run() {
-                synchronized (lock) {
-                    properties = props;
-                    for (Object bean : beans) {
-                        inject(bean, false);
-                    }
-                }
+        synchronized (lock) {
+            properties = props;
+            for (Object bean : beans) {
+                inject(bean, false);
             }
-        }.start();
+        }
     }
 
     public Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {

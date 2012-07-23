@@ -18,12 +18,11 @@
  */
 package org.apache.aries.blueprint.compendium.cm;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
@@ -69,17 +68,20 @@ public class ManagedObjectManager {
     private static class ConfigurationWatcher implements ManagedService {
 
         private ServiceRegistration registration;
-        private List<ManagedObject> list = Collections.synchronizedList(new ArrayList<ManagedObject>());
+        private List<ManagedObject> list = new CopyOnWriteArrayList<ManagedObject>();
         
         public ConfigurationWatcher() {
         }
         
-        public void updated(Dictionary props) throws ConfigurationException {
-            synchronized (list) {
-                for (ManagedObject cm : list) {
-                    cm.updated(props);
+        public void updated(final Dictionary props) throws ConfigurationException {
+            // Run in a separate thread to avoid re-entrance
+            new Thread() {
+                public void run() {
+                    for (ManagedObject cm : list) {
+                        cm.updated(props);
+                    }
                 }
-            }
+            }.start();
         }
         
         private void setRegistration(ServiceRegistration registration) {
