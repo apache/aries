@@ -80,6 +80,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
     public static final String BLUEPRINT_CM_NAMESPACE_1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0";
     public static final String BLUEPRINT_CM_NAMESPACE_1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0";
+    public static final String BLUEPRINT_CM_NAMESPACE_1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0";
@@ -147,7 +148,9 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public URL getSchemaLocation(String namespace) {
-        if (BLUEPRINT_CM_NAMESPACE_1_1.equals(namespace)) {
+        if (BLUEPRINT_CM_NAMESPACE_1_2.equals(namespace)) {
+            return getClass().getResource("blueprint-cm-1.2.0.xsd");
+        } else if (BLUEPRINT_CM_NAMESPACE_1_1.equals(namespace)) {
             return getClass().getResource("blueprint-cm-1.1.0.xsd");
         } else if (BLUEPRINT_CM_NAMESPACE_1_0.equals(namespace)) {
             return getClass().getResource("blueprint-cm-1.0.0.xsd");
@@ -173,6 +176,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
             return parsePropertyPlaceholder(context, element);
         } else if (nodeNameEquals(element, MANAGED_SERVICE_FACTORY_ELEMENT)) {
             return parseManagedServiceFactory(context, element);
+        } else if (nodeNameEquals(element, CM_PROPERTIES_ELEMENT)) {
+            return parseCmProperties(context, element);
         } else {
             throw new ComponentDefinitionException("Unsupported element: " + element.getNodeName());
         }
@@ -193,6 +198,35 @@ public class CmNamespaceHandler implements NamespaceHandler {
         } else {
             throw new ComponentDefinitionException("Illegal use of blueprint cm namespace");
         }
+    }
+
+    private ComponentMetadata parseCmProperties(ParserContext context, Element element) {
+        String id = getId(context, element);
+
+        MutableBeanMetadata factoryMetadata = context.createMetadata(MutableBeanMetadata.class);
+        generateIdIfNeeded(context, factoryMetadata);
+        factoryMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
+        factoryMetadata.setRuntimeClass(CmProperties.class);
+        factoryMetadata.setInitMethod("init");
+        factoryMetadata.setDestroyMethod("destroy");
+        factoryMetadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
+        factoryMetadata.addProperty("configAdmin", createConfigurationAdminRef(context));
+        factoryMetadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
+        String persistentId = element.getAttribute(PERSISTENT_ID_ATTRIBUTE);
+        factoryMetadata.addProperty("persistentId", createValue(context, persistentId));
+        context.getComponentDefinitionRegistry().registerComponentDefinition(factoryMetadata);
+
+        MutableBeanMetadata propertiesMetadata = context.createMetadata(MutableBeanMetadata.class);
+        propertiesMetadata.setId(id);
+        propertiesMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
+        propertiesMetadata.setRuntimeClass(Properties.class);
+        propertiesMetadata.setFactoryComponent(createRef(context, factoryMetadata.getId()));
+        propertiesMetadata.setFactoryComponent(factoryMetadata);
+        propertiesMetadata.setFactoryMethod("getProperties");
+        // Work around ARIES-877
+        propertiesMetadata.setDependsOn(Arrays.asList(factoryMetadata.getId()));
+
+        return propertiesMetadata;
     }
 
     private ComponentMetadata parsePropertyPlaceholder(ParserContext context, Element element) {
@@ -557,7 +591,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
     public static boolean isCmNamespace(String uri) {
         return BLUEPRINT_CM_NAMESPACE_1_0.equals(uri)
-                || BLUEPRINT_CM_NAMESPACE_1_1.equals(uri);
+                || BLUEPRINT_CM_NAMESPACE_1_1.equals(uri)
+                || BLUEPRINT_CM_NAMESPACE_1_2.equals(uri);
     }
 
     public static boolean isExtNamespace(String uri) {

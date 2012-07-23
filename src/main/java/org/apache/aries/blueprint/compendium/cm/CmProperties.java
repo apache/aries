@@ -49,7 +49,7 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
 
     private final Object lock = new Object();
     private final Set<ServicePropertiesUpdater> services = new HashSet<ServicePropertiesUpdater>();
-    private Dictionary<String,Object> properties;
+    private final Properties properties = new Properties();
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
         return blueprintContainer;
@@ -104,7 +104,11 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
     }
     
     public void init() throws Exception {
-        LOGGER.debug("Initializing CmProperties for service={} / pid={}", serviceId, persistentId);
+        if (serviceId != null) {
+            LOGGER.debug("Initializing CmProperties for service={} / pid={}", serviceId, persistentId);
+        } else {
+            LOGGER.debug("Initializing CmProperties for pid={}", persistentId);
+        }
         
         Properties props = new Properties();
         props.put(Constants.SERVICE_PID, persistentId);
@@ -116,7 +120,8 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
             managedObjectManager.register(this, props);
             Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
             if (config != null) {
-                properties = config.getProperties();
+                properties.clear();
+                JavaUtils.copy(properties, config.getProperties());
             }
         }
     }
@@ -125,11 +130,22 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
         managedObjectManager.unregister(this);
     }
 
+    public Properties getProperties() {
+        return properties;
+    }
+
     public void updated(Dictionary props) {
-        LOGGER.debug("Service properties updated for service={} / pid={}, {}", new Object[] {serviceId, persistentId, props});
+        if (serviceId != null) {
+            LOGGER.debug("Service properties updated for service={} / pid={}, {}", new Object[] {serviceId, persistentId, props});
+        } else {
+            LOGGER.debug("Service properties updated for pid={}, {}", new Object[] {persistentId, props});
+        }
         
         synchronized (lock) {
-            this.properties = props;
+            properties.clear();
+            if (props != null) {
+                JavaUtils.copy(properties, props);
+            }
             if (update) {
                 for (ServicePropertiesUpdater service : services) {
                     service.updateProperties(props);
@@ -139,7 +155,7 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
     }
 
     public void updateProperties(ServicePropertiesUpdater service, Dictionary props) {
-        if (!this.serviceId.equals(service.getId())) {
+        if (this.serviceId == null || !this.serviceId.equals(service.getId())) {
             return;
         }
                 
