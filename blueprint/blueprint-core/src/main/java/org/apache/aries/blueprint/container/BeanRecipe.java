@@ -227,6 +227,9 @@ public class BeanRecipe extends AbstractRecipe {
                 recipes.add(recipe);
             }
         }
+        if (factory != null) {
+            recipes.add(factory);
+        }
         recipes.addAll(getConstructorDependencies());
         return recipes; 
     }
