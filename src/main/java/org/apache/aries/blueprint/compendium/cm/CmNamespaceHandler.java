@@ -24,19 +24,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
-
-import org.apache.aries.blueprint.ext.PlaceholdersUtils;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
+import org.apache.aries.blueprint.ext.PlaceholdersUtils;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutableCollectionMetadata;
 import org.apache.aries.blueprint.mutable.MutableComponentMetadata;
@@ -46,7 +40,6 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
 import org.apache.aries.blueprint.utils.ServiceListener;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -63,6 +56,12 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Namespace handler for the Config Admin service.
@@ -240,8 +239,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_CM_NAMESPACE_1_0.equals(e.getNamespaceURI())
-                        || BLUEPRINT_CM_NAMESPACE_1_1.equals(e.getNamespaceURI())) {
+                if (isCmNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
                         if (defaultsRef != null) {
                             throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
@@ -249,9 +247,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
                         Metadata props = parseDefaultProperties(context, metadata, e);
                         metadata.addProperty("defaultProperties", props);
                     }
-                } else if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e.getNamespaceURI())
-                    || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e.getNamespaceURI())
-                    || BLUEPRINT_EXT_NAMESPACE_V1_2.equals(e.getNamespaceURI())) {
+                } else if (isExtNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, LOCATION_ELEMENT)) {
                         locations.add(getTextValue(e));
                     }
@@ -299,8 +295,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_CM_NAMESPACE_1_0.equals(e.getNamespaceURI())
-                        || BLUEPRINT_CM_NAMESPACE_1_1.equals(e.getNamespaceURI())) {
+                if (isCmNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
                         BeanProperty prop = context.parseElement(BeanProperty.class, enclosingComponent, e);
                         props.addEntry(createValue(context, prop.getName(), String.class.getName()), prop.getValue());
@@ -364,12 +359,20 @@ public class CmNamespaceHandler implements NamespaceHandler {
                         MapMetadata map = context.parseElement(MapMetadata.class,
                             factoryMetadata, e);
                         factoryMetadata.addProperty("serviceProperties", map);
+                        NodeList enl = e.getChildNodes();
+                        for (int j = 0; j < enl.getLength(); j++) {
+                            Node enode = enl.item(j);
+                            if (enode instanceof Element) {
+                                if (isCmNamespace(enode.getNamespaceURI()) && nodeNameEquals(enode, CM_PROPERTIES_ELEMENT)) {
+                                    decorateCmProperties(context, (Element) enode, factoryMetadata);
+                                }
+                            }
+                        }
                     } else if (nodeNameEquals(e, REGISTRATION_LISTENER_ELEMENT)) {
                         listeners.add(context.parseElement(RegistrationListener.class,
                             factoryMetadata, e));
                     }
-                } else if (BLUEPRINT_CM_NAMESPACE_1_0.equals(e.getNamespaceURI())
-                        || BLUEPRINT_CM_NAMESPACE_1_1.equals(e.getNamespaceURI())) {
+                } else if (isCmNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, MANAGED_COMPONENT_ELEMENT)) {
                         MutableBeanMetadata managedComponent = context.parseElement(MutableBeanMetadata.class, null, e);
                         generateIdIfNeeded(context, managedComponent);
@@ -482,7 +485,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
     
     private MutableReferenceMetadata createConfigurationAdminRef(ParserContext context) {
-        return createServiceRef(context, ConfigurationAdmin.class, "(objectClass=" + ConfigurationAdmin.class.getName() + ")");
+        return createServiceRef(context, ConfigurationAdmin.class, null);
     }
     
     private static ValueMetadata createValue(ParserContext context, String value) {
@@ -550,6 +553,17 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
     public static boolean isBlueprintNamespace(String ns) {
         return BLUEPRINT_NAMESPACE.equals(ns);
+    }
+
+    public static boolean isCmNamespace(String uri) {
+        return BLUEPRINT_CM_NAMESPACE_1_0.equals(uri)
+                || BLUEPRINT_CM_NAMESPACE_1_1.equals(uri);
+    }
+
+    public static boolean isExtNamespace(String uri) {
+        return BLUEPRINT_EXT_NAMESPACE_V1_0.equals(uri)
+                || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(uri)
+                || BLUEPRINT_EXT_NAMESPACE_V1_2.equals(uri);
     }
 
     public String getId(ParserContext context, Element element) {
