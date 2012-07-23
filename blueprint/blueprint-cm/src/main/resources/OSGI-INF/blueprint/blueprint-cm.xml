@@ -25,6 +25,7 @@
                 <array>
                     <value>http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0</value>
                     <value>http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0</value>
+                    <value>http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0</value>
                 </array>
             </entry>
         </service-properties>
