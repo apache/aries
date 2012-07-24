@@ -128,6 +128,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     }
 
     private void getRegistrationProperties(Dictionary properties, boolean update) {
+        String pid = (String) properties.get(Constants.SERVICE_PID);
         CmProperties cm = findServiceProcessor();
         if (cm == null) {
             while (!properties.isEmpty()) {
@@ -153,6 +154,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
             }
         }
         properties.put(Constants.SERVICE_RANKING, ranking);
+        properties.put(Constants.SERVICE_PID, pid);
     }
 
     private void updateComponentProperties(Dictionary props) {
