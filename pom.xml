@@ -66,8 +66,8 @@
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.annotation.api.version>1.0.0-SNAPSHOT</blueprint.annotation.api.version>
-                <util.version>1.0.0-SNAPSHOT</util.version>
+                <blueprint.annotation.api.version>1.0.1-SNAPSHOT</blueprint.annotation.api.version>
+                <util.version>1.0.1-SNAPSHOT</util.version>
             </properties>
         </profile>
     </profiles>
