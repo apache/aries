@@ -350,8 +350,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         factoryMetadata.setRuntimeClass(CmManagedServiceFactory.class);
         factoryMetadata.setInitMethod("init");
         factoryMetadata.setDestroyMethod("destroy");
-        factoryMetadata.addProperty("configAdmin", createConfigurationAdminRef(context));
-        factoryMetadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
+        factoryMetadata.addArgument(createRef(context, "blueprintContainer"), null, 0);
         factoryMetadata.addProperty("factoryPid", createValue(context, element.getAttribute(FACTORY_PID_ATTRIBUTE)));
         String autoExport = element.hasAttribute(AUTO_EXPORT_ATTRIBUTE) ? element.getAttribute(AUTO_EXPORT_ATTRIBUTE) : AUTO_EXPORT_DEFAULT;
         if (AUTO_EXPORT_DISABLED.equals(autoExport)) {

@@ -27,23 +27,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.blueprint.BeanProcessor;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ServiceProcessor;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ServiceListener;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,30 +49,27 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
-public class CmManagedServiceFactory {
-
-    static final int CONFIGURATION_ADMIN_OBJECT_DELETED = 1;
-
-    static final int BUNDLE_STOPPING = 2;
+public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmManagedServiceFactory.class);
-    
+
     private ExtendedBlueprintContainer blueprintContainer;
-    private ConfigurationAdmin configAdmin;
     private String id;
     private String factoryPid;
     private List<String> interfaces;
     private int autoExport;
     private int ranking;
-    private Map serviceProperties;
+    private Map<Object,Object> serviceProperties;
     private String managedComponentName;
     private String componentDestroyMethod;
     private List<ServiceListener> listeners;
-    private final Object lock = new Object();
 
     private ServiceRegistration registration;
-    private final Map<String, ServiceRegistration> pids = new ConcurrentHashMap<String, ServiceRegistration>();
-    private final Map<ServiceRegistration, Object> services = new ConcurrentHashMap<ServiceRegistration, Object>();
+
+    public CmManagedServiceFactory(ExtendedBlueprintContainer blueprintContainer) {
+        super(blueprintContainer.getBundleContext(), null);
+        this.blueprintContainer = blueprintContainer;
+    }
 
     public void init() throws Exception {
         LOGGER.debug("Initializing CmManagedServiceFactory for factoryPid={}", factoryPid);
@@ -86,61 +78,27 @@ public class CmManagedServiceFactory {
         Bundle bundle = blueprintContainer.getBundleContext().getBundle();
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
-        
-        synchronized(lock) {
-            registration = blueprintContainer.getBundleContext().registerService(ManagedServiceFactory.class.getName(), new ConfigurationWatcher(), props);
-        
-            String filter = '(' + ConfigurationAdmin.SERVICE_FACTORYPID + '=' + this.factoryPid + ')';
-            Configuration[] configs = configAdmin.listConfigurations(filter);
-            if (configs != null) {
-                for (Configuration config : configs) {
-                    updated(config.getPid(), config.getProperties());
-                }
-            }
-        }
+
+        registration = blueprintContainer.getBundleContext().registerService(ManagedServiceFactory.class.getName(), this, props);
     }
 
     public void destroy() {
         AriesFrameworkUtil.safeUnregisterService(registration);
-        for (Map.Entry<ServiceRegistration, Object> entry : services.entrySet()) {
-            destroy(entry.getValue(), entry.getKey(), BUNDLE_STOPPING);
-        }
-        services.clear();
-        pids.clear();
+        super.destroy();
     }
 
-    private void destroy(Object component, ServiceRegistration registration, int code) {
-        if (listeners != null) {
-            ServiceReference ref = registration.getReference();
-            for (ServiceListener listener : listeners) {
-                Hashtable props = JavaUtils.getProperties(ref);
-                listener.unregister(component, props);
-            }
-        }
-        destroyComponent(component, code);
-        AriesFrameworkUtil.safeUnregisterService(registration);
-    }
-    
     public Map<ServiceRegistration, Object> getServiceMap() {
-        return Collections.unmodifiableMap(services);
-    }
-
-    public void setBlueprintContainer(ExtendedBlueprintContainer blueprintContainer) {
-        this.blueprintContainer = blueprintContainer;
-    }
-
-    public void setConfigAdmin(ConfigurationAdmin configAdmin) {
-        this.configAdmin = configAdmin;
+        return Collections.unmodifiableMap(getServices());
     }
 
     public void setListeners(List<ServiceListener> listeners) {
         this.listeners = listeners;
     }
-    
+
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public void setFactoryPid(String factoryPid) {
         this.factoryPid = factoryPid;
     }
@@ -160,7 +118,7 @@ public class CmManagedServiceFactory {
     public void setServiceProperties(Map serviceProperties) {
         this.serviceProperties = serviceProperties;
     }
-    
+
     public void setManagedComponentName(String managedComponentName) {
         this.managedComponentName = managedComponentName;
     }
@@ -168,82 +126,42 @@ public class CmManagedServiceFactory {
     public void setComponentDestroyMethod(String componentDestroyMethod) {
         this.componentDestroyMethod = componentDestroyMethod;
     }
-    
-    protected void updated(String pid, Dictionary props) {
-      LOGGER.debug("Updated configuration {} with props {}", pid, props);
 
-      Hashtable regProps = null;
-      Object component = null;
-
-      // This method might be multithreaded, so synchronize checking and
-      // creating the service
-      final ServiceRegistration existingReg;
-      synchronized (pids) {
-         existingReg = pids.get(pid);
-         if (existingReg == null) {
-            updateComponentProperties(props);
-
-            component = blueprintContainer.getComponentInstance(managedComponentName);
-
-            // TODO: call listeners, etc...
-
-            regProps = getRegistrationProperties(pid);
-            CmProperties cm = findServiceProcessor();
-            if (cm != null) {
-               if ("".equals(cm.getPersistentId())) {
-                  JavaUtils.copy(regProps, props);
-               }
-               cm.updateProperties(new PropertiesUpdater(pid), regProps);
+    private void getRegistrationProperties(Dictionary properties, boolean update) {
+        CmProperties cm = findServiceProcessor();
+        if (cm == null) {
+            while (!properties.isEmpty()) {
+                properties.remove(properties.keys().nextElement());
             }
-
-            Set<String> classes = getClasses(component);
-            String[] classArray = classes.toArray(new String[classes.size()]);
-            ServiceRegistration reg = blueprintContainer.getBundleContext().registerService(classArray, component, regProps);
-
-            LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object[] { component, classes, regProps });
-
-            services.put(reg, component);
-            pids.put(pid, reg);
-         }
-        } // end of synchronization
-        
-        // If we just registered a service, do the slower stuff outside the synchronized block
-        if (existingReg == null)
-        {
-            if (listeners != null) {
-                for (ServiceListener listener : listeners) {
-                    listener.register(component, regProps);
+        } else  {
+            if (!cm.getUpdate()) {
+                if (update) {
+                    while (!properties.isEmpty()) {
+                        properties.remove(properties.keys().nextElement());
+                    }
+                    for (Map.Entry entry : cm.getProperties().entrySet()) {
+                        properties.put(entry.getKey(), entry.getValue());
+                    }
+                } else {
+                    cm.updated(properties);
                 }
             }
-        } else {
-            updateComponentProperties(props);
-            
-            CmProperties cm = findServiceProcessor();
-            if (cm != null && "".equals(cm.getPersistentId())) {
-                regProps = getRegistrationProperties(pid);    
-                JavaUtils.copy(regProps, props);
-                cm.updated(regProps);
+        }
+        if (serviceProperties != null) {
+            for (Map.Entry entry : serviceProperties.entrySet()) {
+                properties.put(entry.getKey(), entry.getValue());
             }
         }
+        properties.put(Constants.SERVICE_RANKING, ranking);
     }
 
-    private Hashtable getRegistrationProperties(String pid) {
-        Hashtable regProps = new Hashtable();
-        if (serviceProperties != null) {
-            regProps.putAll(serviceProperties);
-        }
-        regProps.put(Constants.SERVICE_PID, pid);
-        regProps.put(Constants.SERVICE_RANKING, ranking);
-        return regProps;
-    }
-    
     private void updateComponentProperties(Dictionary props) {
         CmManagedProperties cm = findBeanProcessor();
         if (cm != null) {
             cm.updated(props);
         }
     }
-    
+
     private CmManagedProperties findBeanProcessor() {
         for (BeanProcessor beanProcessor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             if (beanProcessor instanceof CmManagedProperties) {
@@ -255,7 +173,7 @@ public class CmManagedServiceFactory {
         }
         return null;
     }
-        
+
     private CmProperties findServiceProcessor() {
         for (ServiceProcessor processor : blueprintContainer.getProcessors(ServiceProcessor.class)) {
             if (processor instanceof CmProperties) {
@@ -267,20 +185,9 @@ public class CmManagedServiceFactory {
         }
         return null;
     }
-        
-    private void destroyComponent(Object instance, int reason) {
-        Method method = findDestroyMethod(instance.getClass());
-        if (method != null) {
-            try {
-                method.invoke(instance, new Object [] { reason });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    
+
     private Method findDestroyMethod(Class clazz) {
-        Method method = null;        
+        Method method = null;
         if (componentDestroyMethod != null && componentDestroyMethod.length() > 0) {
             List<Method> methods = ReflectionUtils.findCompatibleMethods(clazz, componentDestroyMethod, new Class [] { int.class });
             if (methods != null && !methods.isEmpty()) {
@@ -289,17 +196,52 @@ public class CmManagedServiceFactory {
         }
         return method;
     }
-    
-    protected void deleted(String pid) {
-        LOGGER.debug("Deleted configuration {}", pid);
-        ServiceRegistration reg = pids.remove(pid);
-        if (reg != null) {
-            Object component = services.remove(reg);
-            destroy(component, reg, CONFIGURATION_ADMIN_OBJECT_DELETED);
+
+    protected Object doCreate(Dictionary properties) throws Exception {
+        updateComponentProperties(copy(properties));
+        Object component = blueprintContainer.getComponentInstance(managedComponentName);
+        getRegistrationProperties(properties, false);
+        return component;
+    }
+
+    protected Object doUpdate(Object service, Dictionary properties) throws Exception {
+        updateComponentProperties(copy(properties));
+        getRegistrationProperties(properties, true);
+        return service;
+    }
+
+    protected void doDestroy(Object service, Dictionary properties, int code) throws Exception {
+        Method method = findDestroyMethod(service.getClass());
+        if (method != null) {
+            try {
+                method.invoke(service, new Object [] { code });
+            } catch (Exception e) {
+                LOGGER.info("Error destroying component", e);
+            }
         }
     }
 
-    private Set<String> getClasses(Object service) {
+    protected void postRegister(Object service, Dictionary properties, ServiceRegistration registration) {
+        if (listeners != null && !listeners.isEmpty()) {
+            Hashtable props = new Hashtable();
+            JavaUtils.copy(properties, props);
+            for (ServiceListener listener : listeners) {
+                listener.register(service, props);
+            }
+        }
+    }
+
+    protected void preUnregister(Object service, Dictionary properties, ServiceRegistration registration) {
+        if (listeners != null && !listeners.isEmpty()) {
+            Hashtable props = new Hashtable();
+            JavaUtils.copy(properties, props);
+            for (ServiceListener listener : listeners) {
+                listener.unregister(service, props);
+            }
+        }
+    }
+
+    protected String[] getExposedClasses(Object service) {
         Class serviceClass = service.getClass();
         Set<String> classes;
         switch (autoExport) {
@@ -317,47 +259,13 @@ public class CmManagedServiceFactory {
                 classes = new HashSet<String>(interfaces);
                 break;
         }
-        return classes;
-    }
-    
-    private class ConfigurationWatcher implements ManagedServiceFactory {
-
-        public String getName() {
-            return null;
-        }
-
-        public void updated(String pid, Dictionary props) throws ConfigurationException {
-            CmManagedServiceFactory.this.updated(pid, props);
-        }
-
-        public void deleted(String pid) {
-            CmManagedServiceFactory.this.deleted(pid);
-        }
+        return classes.toArray(new String[classes.size()]);
     }
 
-    private class PropertiesUpdater implements ServiceProcessor.ServicePropertiesUpdater {
-
-        private String pid;
-        
-        public PropertiesUpdater(String pid) {
-            this.pid = pid;
-        }
-        
-        public String getId() {
-            return id;
-        }
-
-        public void updateProperties(Dictionary properties) {
-            ServiceRegistration reg = pids.get(pid);
-            if (reg != null) {
-                ServiceReference ref = reg.getReference();
-                if (ref != null) {
-                    Hashtable table = JavaUtils.getProperties(ref);
-                    JavaUtils.copy(table, properties);
-                    reg.setProperties(table);
-                }
-            }
-        }
+    private Hashtable copy(Dictionary source) {
+        Hashtable ht = new Hashtable();
+        JavaUtils.copy(ht, source);
+        return ht;
     }
-   
+
 }
