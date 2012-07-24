@@ -163,10 +163,11 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
         assertNotNull(blueprintContainer);
 
-//        Thread.sleep(100);
-
         // Make sure only one service is registered
         // Ask the service registry, not the container, since the container might have got it wrong :)
+        Foo foo = context().getService(Foo.class, "(service.pid=blueprint-sample-managed-service-factory.*)");
+        assertNotNull(foo);
+
         ServiceReference[] refs = context().getAllServiceReferences(Foo.class.getName(), "(service.pid=blueprint-sample-managed-service-factory.*)");
         
         assertNotNull("No services were registered for the managed service factory", refs);
