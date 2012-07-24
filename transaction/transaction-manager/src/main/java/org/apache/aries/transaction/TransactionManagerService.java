@@ -26,9 +26,6 @@ import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAException;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ConfigurationException;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
@@ -47,6 +44,7 @@ public class TransactionManagerService {
 
     public static final String TRANSACTION_TIMEOUT = "aries.transaction.timeout";
     public static final String RECOVERABLE = "aries.transaction.recoverable";
+    public static final String TMID = "aries.transaction.tmid";
     public static final String HOWL_BUFFER_CLASS_NAME = "aries.transaction.howl.bufferClassName";
     public static final String HOWL_BUFFER_SIZE = "aries.transaction.howl.bufferSize";
     public static final String HOWL_CHECKSUM_ENABLED = "aries.transaction.howl.checksumEnabled";
@@ -83,8 +81,10 @@ public class TransactionManagerService {
         if (transactionTimeout <= 0) {
             throw new ConfigurationException(TRANSACTION_TIMEOUT, NLS.MESSAGES.getMessage("tx.timeout.greaterthan.zero"));
         }
+
+        final String tmid = getString(TMID, pid);
         // the max length of the factory should be 64
-        XidFactory xidFactory = new XidFactoryImpl(pid.substring(0, Math.min(pid.length(), 64)).getBytes());
+        XidFactory xidFactory = new XidFactoryImpl(tmid.substring(0, Math.min(tmid.length(), 64)).getBytes());
         // Transaction log
         if (getBool(RECOVERABLE, DEFAULT_RECOVERABLE)) {
             String bufferClassName = getString(HOWL_BUFFER_CLASS_NAME, "org.objectweb.howl.log.BlockLogBuffer");
@@ -126,7 +126,7 @@ public class TransactionManagerService {
                                              maxLogFiles,
                                              minBuffers,
                                              threadsWaitingForceThreshold,
-                                             xidFactory != null ? xidFactory : new XidFactoryImpl(),
+                                             xidFactory,
                                              null);
                 ((HOWLLog) transactionLog).doStart();
             } catch (Exception e) {
