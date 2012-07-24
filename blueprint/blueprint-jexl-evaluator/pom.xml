@@ -53,14 +53,14 @@
             org.apache.aries.blueprint.jexl.evaluator
         </aries.osgi.private.pkg>
 
-        <blueprint.core.version>0.4</blueprint.core.version>
+        <blueprint.core.version>1.0.0</blueprint.core.version>
     </properties>
 
     <profiles>
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.core.version>0.4.1-SNAPSHOT</blueprint.core.version>
+                <blueprint.core.version>1.0.1-SNAPSHOT</blueprint.core.version>
             </properties>
         </profile>
     </profiles>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${blueprint.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
