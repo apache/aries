@@ -62,7 +62,7 @@
             <id>dev</id>
             <properties>
                 <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
-                <blueprint.core.version>1.0.0-SNAPSHOT</blueprint.core.version>
+                <blueprint.core.version>1.0.1-SNAPSHOT</blueprint.core.version>
                 <blueprint.parser.version>1.0.1-SNAPSHOT</blueprint.parser.version>
             </properties>
         </profile>
