@@ -27,7 +27,6 @@ import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAException;
 
 import org.apache.aries.util.AriesFrameworkUtil;
-import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
@@ -57,6 +56,7 @@ public class TransactionManagerService {
     public static final String HOWL_MIN_BUFFERS = "aries.transaction.howl.minBuffers";
     public static final String HOWL_THREADS_WAITING_FORCE_THRESHOLD = "aries.transaction.howl.threadsWaitingForceThreshold";
     public static final String HOWL_LOG_FILE_DIR = "aries.transaction.howl.logFileDir";
+    public static final String HOWL_FLUSH_PARTIAL_BUFFERS = "aries.transaction.flushPartialBuffers";
 
     public static final int DEFAULT_TRANSACTION_TIMEOUT = 600; // 600 seconds -> 10 minutes
     public static final boolean DEFAULT_RECOVERABLE = false;   // not recoverable by default
@@ -87,7 +87,7 @@ public class TransactionManagerService {
         // Transaction log
         if (getBool(RECOVERABLE, DEFAULT_RECOVERABLE)) {
             String bufferClassName = getString(HOWL_BUFFER_CLASS_NAME, "org.objectweb.howl.log.BlockLogBuffer");
-            int bufferSizeKBytes = getInt(HOWL_BUFFER_SIZE, 32);
+            int bufferSizeKBytes = getInt(HOWL_BUFFER_SIZE, 4);
             if (bufferSizeKBytes < 1 || bufferSizeKBytes > 32) {
                 throw new ConfigurationException(HOWL_BUFFER_SIZE, NLS.MESSAGES.getMessage("buffer.size.between.one.and.thirtytwo"));
             }
@@ -107,6 +107,7 @@ public class TransactionManagerService {
                 throw new ConfigurationException(HOWL_MAX_BUFFERS, NLS.MESSAGES.getMessage("max.buffers.greaterthan.min.buffers"));
             }
             int threadsWaitingForceThreshold = getInt(HOWL_THREADS_WAITING_FORCE_THRESHOLD, -1);
+            boolean flushPartialBuffers = getBool(HOWL_FLUSH_PARTIAL_BUFFERS, true);
             String logFileDir = getString(HOWL_LOG_FILE_DIR, null);
             if (logFileDir == null || logFileDir.length() == 0 || !new File(logFileDir).isAbsolute()) {
                 throw new ConfigurationException(HOWL_LOG_FILE_DIR, NLS.MESSAGES.getMessage("log.file.dir"));
@@ -125,6 +126,7 @@ public class TransactionManagerService {
                                              maxLogFiles,
                                              minBuffers,
                                              threadsWaitingForceThreshold,
+                                             flushPartialBuffers,
                                              xidFactory,
                                              null);
                 ((HOWLLog) transactionLog).doStart();
