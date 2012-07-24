@@ -56,6 +56,7 @@ public class ManagedServiceFactoryTest extends BaseTest {
         assertNull(sr.getProperty("b"));
 
         props = new Hashtable<String,String>();
+        props.put("a", "5");
         props.put("b", "foo");
         cf.update(props);
         Thread.sleep(500);
@@ -89,6 +90,7 @@ public class ManagedServiceFactoryTest extends BaseTest {
         assertNull(sr.getProperty("b"));
 
         props = new Hashtable<String,String>();
+        props.put("a", "5");
         props.put("b", "foo");
         cf.update(props);
 
@@ -122,6 +124,7 @@ public class ManagedServiceFactoryTest extends BaseTest {
         assertNull(sr.getProperty("b"));
 
         props = new Hashtable<String,String>();
+        props.put("a", "5");
         props.put("b", "foo");
         cf.update(props);
 
