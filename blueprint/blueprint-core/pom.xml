@@ -100,11 +100,11 @@
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.annotation.api.version>1.0.0-SNAPSHOT</blueprint.annotation.api.version>
+                <blueprint.annotation.api.version>1.0.1-SNAPSHOT</blueprint.annotation.api.version>
                 <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
                 <blueprint.parser.version>1.0.1-SNAPSHOT</blueprint.parser.version>
                 <proxy.api.version>1.0.1-SNAPSHOT</proxy.api.version>
-                <proxy.impl.version>1.0.0-SNAPSHOT</proxy.impl.version>
+                <proxy.impl.version>1.0.1-SNAPSHOT</proxy.impl.version>
                 <quiesce.api.version>1.0.1-SNAPSHOT</quiesce.api.version>
                 <util.version>1.0.1-SNAPSHOT</util.version>
             </properties>

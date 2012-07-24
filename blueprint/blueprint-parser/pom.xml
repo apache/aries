@@ -48,7 +48,7 @@
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.api.version>1.0.0-SNAPSHOT</blueprint.api.version>
+                <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
             </properties>
         </profile>
     </profiles>
