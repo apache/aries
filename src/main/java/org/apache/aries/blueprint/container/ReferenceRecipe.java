@@ -19,8 +19,6 @@
 package org.apache.aries.blueprint.container;
 
 import java.lang.ref.WeakReference;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,14 +27,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
-import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
+import org.apache.aries.blueprint.di.Recipe;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintEvent;
-import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
@@ -160,16 +158,16 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         synchronized (monitor) {
             ServiceReference oldReference = trackedServiceReference;
             trackedServiceReference = ref;
-            trackedService = null;
             voidProxiedChildren();
             bind(trackedServiceReference, proxy);
-            if (oldReference != null) {
+            if (oldReference != null && trackedService != null) {
               try {
                 getBundleContextForServiceLookup().ungetService(oldReference);
               } catch (IllegalStateException ise) {
                 // In case the service no longer exists lets just cope and ignore.
               }
             }
+            trackedService = null;
             monitor.notifyAll();
         }
     }
@@ -181,12 +179,14 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 unbind(trackedServiceReference, proxy);
                 ServiceReference oldReference = trackedServiceReference;
                 trackedServiceReference = null;
-                trackedService = null;
                 voidProxiedChildren();
-                try {
-                  getBundleContextForServiceLookup().ungetService(oldReference);
-                } catch (IllegalStateException ise) {
-                  // In case the service no longer exists lets just cope and ignore.
+                if(trackedService != null){
+                  try {
+                    getBundleContextForServiceLookup().ungetService(oldReference);
+                  } catch (IllegalStateException ise) {
+                    // In case the service no longer exists lets just cope and ignore.
+                  }
+                  trackedService = null;
                 }
                 monitor.notifyAll();
             }
