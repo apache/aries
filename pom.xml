@@ -51,20 +51,20 @@
         <!-- Aries Application Versions -->
         <ariesApplicationApiVersion>1.0.0</ariesApplicationApiVersion>
         <ariesApplicationVersion>1.0.0-SNAPSHOT</ariesApplicationVersion>
-        <ariesApplicationConvertersVersion>1.0.0-SNAPSHOT</ariesApplicationConvertersVersion>
-        <ariesApplicationDefaultLocalPlatformVersion>1.0.0-SNAPSHOT</ariesApplicationDefaultLocalPlatformVersion>
+        <ariesApplicationConvertersVersion>1.0.0</ariesApplicationConvertersVersion>
+        <ariesApplicationDefaultLocalPlatformVersion>1.0.0</ariesApplicationDefaultLocalPlatformVersion>
         <ariesApplicationDeploymentManagementVersion>1.0.0-SNAPSHOT</ariesApplicationDeploymentManagementVersion>
         <ariesApplicationInstallVersion>1.0.0-SNAPSHOT</ariesApplicationInstallVersion>
-        <ariesApplicationItestInterfaceVersion>1.0.0-SNAPSHOT</ariesApplicationItestInterfaceVersion>
+        <ariesApplicationItestInterfaceVersion>1.0.0</ariesApplicationItestInterfaceVersion>
         <ariesApplicationManagementVersion>1.0.0-SNAPSHOT</ariesApplicationManagementVersion>
         <ariesApplicationModellerVersion>1.0.0-SNAPSHOT</ariesApplicationModellerVersion>
         <ariesApplicationNoopResolverVersion>1.0.0</ariesApplicationNoopResolverVersion>
-        <ariesApplicationObrResolverVersion>1.0.0-SNAPSHOT</ariesApplicationObrResolverVersion>
-        <ariesApplicationRuntimeVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeVersion>
-        <ariesApplicationRuntimeFrameworkVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkVersion>
+        <ariesApplicationObrResolverVersion>1.0.0</ariesApplicationObrResolverVersion>
+        <ariesApplicationRuntimeVersion>1.0.0</ariesApplicationRuntimeVersion>
+        <ariesApplicationRuntimeFrameworkVersion>1.0.0</ariesApplicationRuntimeFrameworkVersion>
         <ariesApplicationRuntimeFrameworkManagementVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkManagementVersion>
-        <ariesApplicationRuntimeIsolatedVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeIsolatedVersion>
-        <ariesApplicationRuntimeRepositoryVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeRepositoryVersion>
+        <ariesApplicationRuntimeIsolatedVersion>1.0.0</ariesApplicationRuntimeIsolatedVersion>
+        <ariesApplicationRuntimeRepositoryVersion>1.0.0</ariesApplicationRuntimeRepositoryVersion>
         <ariesApplicationUtilsVersion>1.0.0</ariesApplicationUtilsVersion>
 
         <!-- Aries Blueprint Versions -->
@@ -73,7 +73,7 @@
         <ariesBlueprintApiVersion>1.0.0</ariesBlueprintApiVersion>
         <ariesBlueprintVersion>1.0.0-SNAPSHOT</ariesBlueprintVersion>
         <ariesBlueprintCmVersion>1.0.0-SNAPSHOT</ariesBlueprintCmVersion>
-        <ariesBlueprintCoreVersion>1.0.0-SNAPSHOT</ariesBlueprintCoreVersion>
+        <ariesBlueprintCoreVersion>1.0.0</ariesBlueprintCoreVersion>
 
         <!-- Aries Jmx Versions -->
         <ariesJmxiApiVersion>1.0.0</ariesJmxiApiVersion>
