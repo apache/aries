@@ -21,35 +21,35 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Hashtable;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
-import java.math.BigInteger;
-import java.math.BigDecimal;
 
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.container.BeanRecipe.UnwrapperedBeanHolder;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
+import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
-import org.osgi.service.blueprint.container.ReifiedType;
-import org.osgi.service.blueprint.container.Converter;
 
 /**
  * Implementation of the Converter.
@@ -424,9 +424,30 @@ public class AggregateConverter implements Converter {
     }
 
     public static boolean isAssignable(Object source, ReifiedType target) {
-        return source == null
-                || (target.size() == 0
-                    && unwrap(target.getRawClass()).isAssignableFrom(unwrap(source.getClass())));
+        if (source == null) {
+            return true;
+        }
+        if (target.size() == 0) {
+            return unwrap(target.getRawClass()).isAssignableFrom(unwrap(source.getClass()));
+        } else {
+            return isTypeAssignable(new GenericType(source.getClass()), target);
+        }
+    }
+
+    public static boolean isTypeAssignable(ReifiedType from, ReifiedType to) {
+        if (from.equals(to)) {
+            return true;
+        }
+        Type t = from.getRawClass().getGenericSuperclass();
+        if (t != null && isTypeAssignable(new GenericType(t), to)) {
+            return true;
+        }
+        for (Type ti : from.getRawClass().getGenericInterfaces()) {
+            if (ti != null && isTypeAssignable(new GenericType(ti), to)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Class unwrap(Class c) {
