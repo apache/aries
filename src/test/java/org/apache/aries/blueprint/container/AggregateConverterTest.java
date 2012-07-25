@@ -22,7 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -188,6 +190,40 @@ public class AggregateConverterTest extends TestCase {
         result = s.convert(new Object(), NullMarker.class);
         assertNull(result);
     }
+
+    public void testGenericAssignable() throws Exception {
+        AggregateConverter s = new AggregateConverter(new TestBlueprintContainer(null));
+
+        assertNotNull(s.convert(new RegionIterable(), new GenericType(Iterable.class, new GenericType(Region.class))));
+
+        try {
+            s.convert(new ArrayList<Region>(), new GenericType(Iterable.class, new GenericType(Region.class)));
+            fail("Conversion should have thrown an exception");
+        } catch (Exception e) {
+            // Ignore
+        }
+
+    }
+
+    public void testGenericCollection() throws Exception {
+        AggregateConverter s = new AggregateConverter(new TestBlueprintContainer(null));
+
+        try {
+            s.convert(new ArrayList(), new GenericType(Iterable.class, new GenericType(Region.class)));
+            fail("Conversion should have thrown an exception");
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        try {
+            s.convert(Arrays.asList(0l), new GenericType(Iterable.class, new GenericType(Region.class)));
+            fail("Conversion should have thrown an exception");
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        assertNotNull(s.convert(Arrays.asList(new EuRegion() {}), new GenericType(List.class, new GenericType(Region.class))));
+    }
     
     private interface Region {} 
     
@@ -229,6 +265,12 @@ public class AggregateConverterTest extends TestCase {
             return toType.getRawClass().isAssignableFrom(NullMarker.class);
         }
         public Object convert(Object source, ReifiedType toType) throws Exception {
+            return null;
+        }
+    }
+
+    private static class RegionIterable implements Iterable<Region> {
+        public Iterator<Region> iterator() {
             return null;
         }
     }
