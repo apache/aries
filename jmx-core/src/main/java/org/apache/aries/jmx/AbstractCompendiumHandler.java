@@ -17,7 +17,6 @@
 package org.apache.aries.jmx;
 
 import java.util.concurrent.ExecutorService;
-
 import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.agent.JMXAgentContext;
@@ -77,8 +76,7 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
         //API stipulates versions for compendium services with static ObjectName
         //This shouldn't happen but added as a consistency check
         if (trackedId != null) {
-            String serviceDescription = (String) ((reference.getProperty(Constants.SERVICE_DESCRIPTION) != null) ?
-                    reference.getProperty(Constants.SERVICE_DESCRIPTION) : reference.getProperty(Constants.OBJECTCLASS));
+            String serviceDescription = getServiceDescription(reference);
             logger.log(LogService.LOG_WARNING, "Detected secondary ServiceReference for [" + serviceDescription
                     + "] with " + Constants.SERVICE_ID + " [" + serviceId + "] Only 1 instance will be JMX managed");
         } else {
@@ -106,8 +104,7 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
         Logger logger = agentContext.getLogger();
         Long serviceID = (Long) reference.getProperty(Constants.SERVICE_ID);
         if (trackedId != null && !trackedId.equals(serviceID)) {
-            String serviceDescription = (String) ((reference.getProperty(Constants.SERVICE_DESCRIPTION) != null) ? 
-                    reference.getProperty(Constants.SERVICE_DESCRIPTION) : reference.getProperty(Constants.OBJECTCLASS));
+            String serviceDescription = getServiceDescription(reference);
             logger.log(LogService.LOG_WARNING, "ServiceReference for [" + serviceDescription + "] with "
                     + Constants.SERVICE_ID + " [" + serviceID + "] is not currently JMX managed");
         } else {
@@ -122,6 +119,26 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
             trackedId = null;
             context.ungetService(reference);
         }
+    }
+
+    private String getServiceDescription(ServiceReference reference) {
+        String serviceDescription = (String) reference.getProperty(Constants.SERVICE_DESCRIPTION);
+        if (serviceDescription == null) {
+            Object obj = reference.getProperty(Constants.OBJECTCLASS);
+            if (obj instanceof String) {
+                StringBuilder sb = new StringBuilder();
+                for (String s : (String[]) obj) {
+                    if (sb.length() > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(s);
+                }
+                serviceDescription = sb.toString();
+            } else {
+                serviceDescription = obj.toString();
+            }
+        }
+        return serviceDescription;
     }
 
     /**
