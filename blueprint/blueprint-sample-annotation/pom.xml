@@ -26,16 +26,16 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.sample-annotation</artifactId>
     <name>Apache Aries Blueprint Sample for Testing Annotation</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>
         Example blueprint application, mostly used for annotation tests.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.sample-annotation-1.0.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.sample-annotation-1.0.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.sample-annotation-1.0.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-annotation</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-annotation</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample-annotation</url>
     </scm>
 
     <properties>
