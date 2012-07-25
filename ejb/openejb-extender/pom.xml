@@ -29,12 +29,12 @@
     <artifactId>org.apache.aries.ejb.openejb.extender</artifactId>
     <packaging>bundle</packaging>
     <name>Aries OpenEJB Runtime Extender</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.ejb.openejb.extender-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.ejb.openejb.extender-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.ejb.openejb.extender-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/ejb/openejb-extender</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/ejb/openejb-extender</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/ejb/openejb-extender</url>
      </scm>
 
     <properties>
