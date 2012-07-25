@@ -29,15 +29,15 @@
     <artifactId>org.apache.aries.jndi.url</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI URL Handler</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <description>
       This bundle contains the JNDI URL handler for OSGi
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.url-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.url-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jndi.url-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-url</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-url</url>
      </scm>
 
     <properties>
