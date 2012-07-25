@@ -146,6 +146,7 @@ public class BlueprintContainerImpl
     private ScheduledFuture timeoutFuture;
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private final AtomicBoolean running = new AtomicBoolean();
+    private Thread runningThread;
     private List<ServiceRecipe> services;
     private AccessControlContext accessControlContext;
     private final IdSpace tempRecipeIdSpace = new IdSpace();
@@ -237,11 +238,15 @@ public class BlueprintContainerImpl
         scheduled.set(false);
         synchronized (scheduled) {
             synchronized (running) {
+                runningThread = Thread.currentThread();
                 running.set(true);
-                try {
-                    doRun();
-                } finally {
+            }
+            try {
+                doRun();
+            } finally {
+                synchronized (running) {
                     running.set(false);
+                    runningThread = null;
                     running.notifyAll();
                 }
             }
@@ -823,18 +828,20 @@ public class BlueprintContainerImpl
         unregisterServices();
 
         synchronized (running) {
-            if (handlerSet != null) {
-                handlerSet.removeListener(this);
-                handlerSet.destroy();
-            }
-            
             while (running.get()) {
+                if (runningThread != null) {
+                    runningThread.interrupt();
+                }
                 try {
                     running.wait();
                 } catch (InterruptedException e) {
                     // Ignore
                 }
             }
+        }
+        if (handlerSet != null) {
+            handlerSet.removeListener(this);
+            handlerSet.destroy();
         }
 
         destroyComponents();
