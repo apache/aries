@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.aries.blueprint.di.ExecutionContext;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -57,8 +58,24 @@ public class BeanRecipeTest {
 		public static String getObject() { return null; }
 		public static Object getBasic(int n) { return 1; }
 	}
-	
-	@Test
+
+    static public interface Example<A> {}
+    static public class ExampleImpl implements Example<String> {}
+    static public class ExampleService {
+        public ExampleService(Example<String> e) {}
+    }
+
+    @Test
+    public void parameterWithGenerics() throws Exception {
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null);
+        BeanRecipe recipe = new BeanRecipe("example", container, ExampleService.class, false);
+        recipe.setArguments(Arrays.<Object>asList(new ExampleImpl()));
+        recipe.setArgTypes(Arrays.<String>asList((String) null));
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        recipe.create();
+    }
+
+    @Test
 	public void parameterLessHiding() throws Exception {
 		Set<Method> methods = new HashSet<Method>(
 				Arrays.asList(
