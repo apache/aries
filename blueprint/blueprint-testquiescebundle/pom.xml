@@ -28,12 +28,12 @@
     <artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
     <name>Apache Aries Blueprint Test Quiesce Bundle</name>
     <packaging>bundle</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testquiescebundle</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testquiescebundle</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-testquiescebundle</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.testquiescebundle-1.0.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.testquiescebundle-1.0.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.testquiescebundle-1.0.0</url>
     </scm>
     <properties>
         <aries.osgi.activator>
