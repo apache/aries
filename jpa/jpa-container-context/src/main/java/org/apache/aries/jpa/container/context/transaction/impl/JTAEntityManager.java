@@ -94,7 +94,7 @@ public class JTAEntityManager implements EntityManager {
           
           synchronized (this) {
             if (detachedManager == null) {
-              detachedManager = temp;
+              detachedManager = new SynchronizedEntityManagerWrapper(temp);
               temp = null;
             }
           }
