@@ -44,11 +44,6 @@
             org.apache.aries.transaction.exception,
             org.apache.aries.transaction.annotations
         </aries.osgi.export.pkg>
-        <aries.osgi.import>
-            org.osgi.framework,
-            org.osgi.service.cm,
-            *
-        </aries.osgi.import>
         <aries.osgi.private.pkg>
             org.apache.aries.transaction,
             org.apache.aries.transaction.parsing
