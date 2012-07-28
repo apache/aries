@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.ejb.modeller</artifactId>
     <packaging>bundle</packaging>
     <name>Aries EJB Modelling Integration</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
      <scm>
          <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/ejb/ejb-modeller</connection>
