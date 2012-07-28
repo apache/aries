@@ -54,9 +54,6 @@
             !org.osgi.service.blueprint,
             org.osgi.service.blueprint.container,
             org.osgi.service.blueprint.reflect,
-            org.eclipse.osgi.internal.loader;resolution:=optional,
-            org.eclipse.osgi.framework.internal.core;resolution:=optional,
-            org.eclipse.osgi.framework.adaptor;resolution:=optional,
             org.osgi.service.event*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
             org.osgi.service.cm;version="[1.2,2)",
@@ -133,7 +130,7 @@
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.api</artifactId>
             <version>1.0.0</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
