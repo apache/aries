@@ -39,7 +39,7 @@
 
     <properties>
 		<aries.osgi.export>
-		  org.apache.aries.ejb.modelling;version="0.1.0"
+		  org.apache.aries.ejb.modelling
 		</aries.osgi.export>
         <aries.osgi.private.pkg>
           org.apache.aries.ejb.modelling.*
