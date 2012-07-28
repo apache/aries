@@ -49,12 +49,6 @@
         </aries.osgi.export.pkg>
         <aries.osgi.import>
             !org.apache.aries.jmx*,
-            javax.management,
-            javax.management.openmbean,
-            org.osgi.framework;version="1.5.0",
-            org.osgi.service.blueprint.container;version="1.0",
-            org.osgi.service.blueprint.reflect;version="1.0",
-            org.osgi.util.tracker;version="1.4",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
@@ -74,7 +68,7 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -84,6 +78,12 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+<!-- Include slf4j as a dependency so that the bundle plugin can pick up the package version. -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
