@@ -41,7 +41,6 @@
     <!-- VERSIONS - PLEASE NOTE 
          All version information for the samples is maintained in this pom. The versions are used by submodules automatically 
          AND are referred to in 'filtered-resources' for each project when building (eg) assemblies. 
-         At release time the Aries *-SNAPSHOT versions must be replaced with released versions of Aries components.
      -->
 
     <properties>
@@ -54,10 +53,10 @@
         <ariesApplicationConvertersVersion>1.0.0</ariesApplicationConvertersVersion>
         <ariesApplicationDefaultLocalPlatformVersion>1.0.0</ariesApplicationDefaultLocalPlatformVersion>
         <ariesApplicationDeploymentManagementVersion>1.0.0-SNAPSHOT</ariesApplicationDeploymentManagementVersion>
-        <ariesApplicationInstallVersion>1.0.0-SNAPSHOT</ariesApplicationInstallVersion>
+        <ariesApplicationInstallVersion>1.0.0</ariesApplicationInstallVersion>
         <ariesApplicationItestInterfaceVersion>1.0.0</ariesApplicationItestInterfaceVersion>
         <ariesApplicationManagementVersion>1.0.0-SNAPSHOT</ariesApplicationManagementVersion>
-        <ariesApplicationModellerVersion>1.0.0-SNAPSHOT</ariesApplicationModellerVersion>
+        <ariesApplicationModellerVersion>1.0.0</ariesApplicationModellerVersion>
         <ariesApplicationNoopResolverVersion>1.0.0</ariesApplicationNoopResolverVersion>
         <ariesApplicationObrResolverVersion>1.0.0</ariesApplicationObrResolverVersion>
         <ariesApplicationRuntimeVersion>1.0.0</ariesApplicationRuntimeVersion>
@@ -69,10 +68,10 @@
 
         <!-- Aries Blueprint Versions -->
         <ariesBlueprintAnnotationApiVersion>1.0.0</ariesBlueprintAnnotationApiVersion>
-        <ariesBlueprintAnnotationImplVersion>1.0.0-SNAPSHOT</ariesBlueprintAnnotationImplVersion>
+        <ariesBlueprintAnnotationImplVersion>1.0.0</ariesBlueprintAnnotationImplVersion>
         <ariesBlueprintApiVersion>1.0.0</ariesBlueprintApiVersion>
         <ariesBlueprintVersion>1.0.0-SNAPSHOT</ariesBlueprintVersion>
-        <ariesBlueprintCmVersion>1.0.0-SNAPSHOT</ariesBlueprintCmVersion>
+        <ariesBlueprintCmVersion>1.0.0</ariesBlueprintCmVersion>
         <ariesBlueprintCoreVersion>1.0.0</ariesBlueprintCoreVersion>
 
         <!-- Aries Jmx Versions -->
@@ -80,7 +79,7 @@
         <ariesJmxBlueprintApiVersion>1.0.0</ariesJmxBlueprintApiVersion>
         <ariesJmxBlueprintVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintVersion>
         <ariesJmxBlueprintCoreVersion>1.0.0</ariesJmxBlueprintCoreVersion>
-        <ariesJmxVersion>1.0.0-SNAPSHOT</ariesJmxVersion>
+        <ariesJmxVersion>1.0.0</ariesJmxVersion>
         <ariesJmxCoreVersion>1.0.0</ariesJmxCoreVersion>
         <ariesJmxWhiteboardVersion>1.0.0</ariesJmxWhiteboardVersion>
 
@@ -90,11 +89,11 @@
         <ariesJndiCoreVersion>1.0.0</ariesJndiCoreVersion>
         <ariesJndiLegacySupportVersion>1.0.0</ariesJndiLegacySupportVersion>
         <ariesJndiRmiVersion>1.0.0</ariesJndiRmiVersion>
-        <ariesJndiUrlVersion>1.0.0-SNAPSHOT</ariesJndiUrlVersion>
+        <ariesJndiUrlVersion>1.0.0</ariesJndiUrlVersion>
 
         <!-- Aries Jpa Versions -->
         <ariesJpaApiVersion>1.0.0</ariesJpaApiVersion>
-        <ariesJpaBlueprintAriesVersion>1.0.0-SNAPSHOT</ariesJpaBlueprintAriesVersion>
+        <ariesJpaBlueprintAriesVersion>1.0.0</ariesJpaBlueprintAriesVersion>
         <ariesJpaContainerVersion>1.0.0</ariesJpaContainerVersion>
         <ariesJpaContainerContextVersion>1.0.0</ariesJpaContainerContextVersion>
         
@@ -115,7 +114,7 @@
         <ariesTransactionBlueprintVersion>1.0.0-SNAPSHOT</ariesTransactionBlueprintVersion>
         <ariesTransactionManagerVersion>1.0.0</ariesTransactionManagerVersion>
         <ariesTransactionTestdsVersion>1.0.0</ariesTransactionTestdsVersion>
-        <ariesTransactionWrappersVersion>1.0.0-SNAPSHOT</ariesTransactionWrappersVersion>
+        <ariesTransactionWrappersVersion>1.0.0</ariesTransactionWrappersVersion>
 
         <!-- Aries Util Versions -->
         <ariesUtilVersion>1.0.0</ariesUtilVersion>
