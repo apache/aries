@@ -110,7 +110,8 @@ public class SubsystemDependency_4CTest extends SubsystemDependencyTestBase
 		"org.eclipse.equinox.coordinator", "org.eclipse.equinox.event", 
 		"org.apache.aries.subsystem.api", "org.apache.aries.subsystem.core", 
 		"com.springsource.org.junit", "org.ops4j.pax.exam.rbc", 
-		"org.osgi.service.subsystem.region.context.0", "pax-exam-probe"});
+		"org.osgi.service.subsystem.region.context.0", "pax-exam-probe",
+		"wrap_mvn_org.ops4j.pax.exam_pax-exam-junit_1.2.3", "org.apache.aries.subsystem.itest.interfaces"});
 	
 	private static final Collection<String> _expectedS1RegionBundles = Arrays.asList(new String[] { 
 			BUNDLE_A, BUNDLE_B, "org.osgi.service.subsystem.region.context.1"});
