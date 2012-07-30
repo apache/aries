@@ -82,6 +82,7 @@ public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase
      * org.ops4j.pax.exam
      * org.ops4j.pax.exam.junit.extender
      * org.ops4j.pax.exam.junit.extender.impl
+     * wrap_mvn_org.ops4j.pax.exam_pax-exam-junit
      * org.ops4j.pax.logging.pax-logging-api
      * org.ops4j.pax.logging.pax-logging-service
      * org.ops4j.pax.url.mvn
@@ -97,6 +98,7 @@ public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase
      * org.eclipse.equinox.event
      * org.apache.aries.subsystem.api
      * org.apache.aries.subsystem.core
+     * org.apache.aries.subsystem.itest.interfaces
      * com.springsource.org.junit
      * org.ops4j.pax.exam.rbc
      * org.osgi.service.subsystem.region.context.0
@@ -107,7 +109,7 @@ public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase
 	public void verifyNoUnexpectedBundlesProvisioned() 
 	{ 
 		Bundle[] bundles = bundleContext.getBundles();
-		assertEquals ("Wrong number of bundles in the Root subsystem", 23, bundles.length);
+		assertEquals ("Wrong number of bundles in the Root subsystem", 25, bundles.length);
 		for (Bundle b: bundles) {
 			assertTrue ("Bundle F should not have been provisioned!", !b.getSymbolicName().equals(BUNDLE_F));
 			assertTrue ("Bundle G should not have been provisioned!", !b.getSymbolicName().equals(BUNDLE_G));
