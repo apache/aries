@@ -284,15 +284,20 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	 * @param rootBundlesAfter Bundles after [x]
 	 */
 	protected void checkNoNewBundles(String failText, Bundle[] rootBundlesBefore, Bundle[] rootBundlesAfter) {
-		if (rootBundlesBefore.length != rootBundlesAfter.length) { 
-			Set<String> bundlesBefore = new HashSet<String>();
-			for (Bundle b : rootBundlesBefore) { 
-				bundlesBefore.add(b.getSymbolicName() + "_" + b.getVersion().toString());
-			}
-			Set<String> bundlesAfter = new HashSet<String>();
-			for (Bundle b : rootBundlesAfter) { 
-				bundlesAfter.add(b.getSymbolicName() + "_" + b.getVersion().toString());
-			}
+		Set<String> bundlesBefore = new HashSet<String>();
+		for (Bundle b : rootBundlesBefore) { 
+			bundlesBefore.add(b.getSymbolicName() + "_" + b.getVersion().toString());
+		}
+		
+		Set<String> bundlesAfter = new HashSet<String>();
+		for (Bundle b : rootBundlesAfter) { 
+			bundlesAfter.add(b.getSymbolicName() + "_" + b.getVersion().toString());
+		}
+		
+		boolean unchanged = bundlesBefore.containsAll(bundlesAfter) && 
+			bundlesAfter.containsAll(bundlesBefore);
+		
+		if (!unchanged) { 
 			bundlesAfter.removeAll(bundlesBefore);
 			fail ("Extra bundles provisioned in " + failText + " : " + bundlesAfter);
 		}
