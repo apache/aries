@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.transaction.jdbc;
+package org.apache.aries.transaction.jdbc.internal;
 
 import org.apache.aries.util.nls.MessageUtil;
 
 public class NLS
 {
-  public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(NLS.class, "org.apache.aries.transaction.jdbc.jdbcWrappers");
+  public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(NLS.class, "org.apache.aries.transaction.jdbc.internal.jdbcWrappers");
 }
