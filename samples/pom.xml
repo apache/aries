@@ -111,7 +111,7 @@
         <ariesTestsupportUnitVersion>1.0.0</ariesTestsupportUnitVersion>
 
         <!-- Aries Transaction Versions -->
-        <ariesTransactionBlueprintVersion>1.0.0</ariesTransactionBlueprintVersion>
+        <ariesTransactionBlueprintVersion>1.0.0-SNAPSHOT</ariesTransactionBlueprintVersion>
         <ariesTransactionManagerVersion>1.0.0</ariesTransactionManagerVersion>
         <ariesTransactionTestdsVersion>1.0.0</ariesTransactionTestdsVersion>
         <ariesTransactionWrappersVersion>1.0.0</ariesTransactionWrappersVersion>
