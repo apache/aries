@@ -3,12 +3,15 @@ package org.apache.aries.subsystem.ctt.itests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.osgi.framework.namespace.BundleNamespace.BUNDLE_NAMESPACE;
 import static org.osgi.framework.namespace.PackageNamespace.PACKAGE_NAMESPACE;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.aries.subsystem.itests.SubsystemTest;
 import org.junit.After;
@@ -271,6 +274,27 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 				}
 			}
 			assertTrue ("Bundle " + bundleName + " not found in subsystem " + subsystemName, bundleFound);
+		}
+	}
+	
+	/**
+	 * Check that no new bundles have been provisioned by [x]
+	 * @param failText where the failure occurred
+	 * @param rootBundlesBefore Bundles before [x]
+	 * @param rootBundlesAfter Bundles after [x]
+	 */
+	protected void checkNoNewBundles(String failText, Bundle[] rootBundlesBefore, Bundle[] rootBundlesAfter) {
+		if (rootBundlesBefore.length != rootBundlesAfter.length) { 
+			Set<String> bundlesBefore = new HashSet<String>();
+			for (Bundle b : rootBundlesBefore) { 
+				bundlesBefore.add(b.getSymbolicName() + "_" + b.getVersion().toString());
+			}
+			Set<String> bundlesAfter = new HashSet<String>();
+			for (Bundle b : rootBundlesAfter) { 
+				bundlesAfter.add(b.getSymbolicName() + "_" + b.getVersion().toString());
+			}
+			bundlesAfter.removeAll(bundlesBefore);
+			fail ("Extra bundles provisioned in " + failText + " : " + bundlesAfter);
 		}
 	}
 }

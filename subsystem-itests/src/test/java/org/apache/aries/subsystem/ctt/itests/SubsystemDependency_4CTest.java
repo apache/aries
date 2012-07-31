@@ -94,50 +94,21 @@ public class SubsystemDependency_4CTest extends SubsystemDependencyTestBase
 		verifyCapabilityWiring (s2, BUNDLE_E, "y", BUNDLE_B);
 		stopSubsystems();
 	}
-	
-	/*
-	 *  Verify no new bundles are installed into the Root or S1 subsystems 
-	 */
-	
-	private static final Collection<String> _expectedRootRegionBundles = Arrays.asList(new String[]{ 
-		"org.eclipse.osgi", "org.ops4j.pax.exam", "org.ops4j.pax.exam.junit.extender", 
-		"org.ops4j.pax.exam.junit.extender.impl", "org.ops4j.pax.logging.pax-logging-api", 
-		"org.ops4j.pax.logging.pax-logging-service", "org.ops4j.pax.url.mvn", 
-		"org.eclipse.osgi.services", "org.eclipse.equinox.region", 
-		"org.apache.aries.testsupport.unit", "org.apache.aries.application.api", 
-		"org.apache.aries.util", "org.apache.aries.application.utils", 
-		"org.apache.felix.bundlerepository", "org.apache.felix.resolver", 
-		"org.eclipse.equinox.coordinator", "org.eclipse.equinox.event", 
-		"org.apache.aries.subsystem.api", "org.apache.aries.subsystem.core", 
-		"com.springsource.org.junit", "org.ops4j.pax.exam.rbc", 
-		"org.osgi.service.subsystem.region.context.0", "pax-exam-probe",
-		"wrap_mvn_org.ops4j.pax.exam_pax-exam-junit_1.2.3", "org.apache.aries.subsystem.itest.interfaces"});
-	
-	private static final Collection<String> _expectedS1RegionBundles = Arrays.asList(new String[] { 
-			BUNDLE_A, BUNDLE_B, "org.osgi.service.subsystem.region.context.1"});
 
 	@Test
 	public void verifyNoUnexpectedBundlesProvisioned() throws Exception 
 	{ 
-		startSubsystems();
-		checkSubsystemContents ("Root", bundleContext,_expectedRootRegionBundles);
-		BundleContext s1Context = s1.getBundleContext();
-		checkSubsystemContents ("S1", s1Context, _expectedS1RegionBundles);
+		Bundle[] rootBundlesBefore = bundleContext.getBundles();
+		s1 = installSubsystemFromFile(SUBSYSTEM_S1);
+		startSubsystem(s1);
+		Bundle[] s1BundlesBefore = bundleContext.getBundles();
+		s2 = installSubsystemFromFile(s1, SUBSYSTEM_S2);
+		startSubsystem(s2);
+		Bundle[] rootBundlesAfter = bundleContext.getBundles();
+		Bundle[] s1BundlesAfter = bundleContext.getBundles();
+		checkNoNewBundles ("rootBundles", rootBundlesBefore, rootBundlesAfter);
+		checkNoNewBundles ("s1Bundles", s1BundlesBefore, s1BundlesAfter);
 		stopSubsystems();
-	}
-	
-	private void checkSubsystemContents (String subsystemName, BundleContext subsystemContext, Collection<String> expectedBundleNames ) 
-	{ 
-		Bundle[] regionBundles = subsystemContext.getBundles();
-		if (expectedBundleNames.size() != regionBundles.length) { 
-			fail ("Wrong number of bundles in the " + subsystemName + " subsystem." 
-				+ " Expected " + expectedBundleNames.size() + " bundles: " + expectedBundleNames
-				+ " Found " + regionBundles.length + " bundles: " + Arrays.toString(regionBundles));
-		}
-		for (Bundle b: regionBundles) {
-			String bsn = b.getSymbolicName();
-			assertTrue ("Unexpected bundle found in " + subsystemName + " subsystem: " + bsn, expectedBundleNames.contains(bsn));
-		}
 	}
 	
 	/*

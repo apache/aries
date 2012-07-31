@@ -2,9 +2,12 @@ package org.apache.aries.subsystem.ctt.itests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +56,7 @@ public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase
 		verifySinglePackageWiring (s, BUNDLE_C, "x", BUNDLE_A);
  
 		stopSubsystem(s);
+		uninstallSubsystem(s);
 	}
 	
 	@Test
@@ -62,6 +66,7 @@ public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase
 		startSubsystem(s);
 		verifyRequireBundleWiring (s, BUNDLE_D, BUNDLE_A);
 		stopSubsystem(s);
+		uninstallSubsystem(s);
 	}
 	
 	@Test
@@ -71,51 +76,30 @@ public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase
 		startSubsystem(s);
 		verifyCapabilityWiring (s, BUNDLE_E, "y", BUNDLE_B);
 		stopSubsystem(s);
+		uninstallSubsystem(s);
 	}
 	
 	/*
 	 * Verify no new bundles are installed into the Root subsystem 
 	 * (particularly bundles F and G)
- 	 * 
- 	 * As of the time of writing, the Root subsystem should contain 23 bundles: 
- 	 * org.eclipse.osgi
-     * org.ops4j.pax.exam
-     * org.ops4j.pax.exam.junit.extender
-     * org.ops4j.pax.exam.junit.extender.impl
-     * wrap_mvn_org.ops4j.pax.exam_pax-exam-junit
-     * org.ops4j.pax.logging.pax-logging-api
-     * org.ops4j.pax.logging.pax-logging-service
-     * org.ops4j.pax.url.mvn
-     * org.eclipse.osgi.services
-     * org.eclipse.equinox.region
-     * org.apache.aries.testsupport.unit
-     * org.apache.aries.application.api
-     * org.apache.aries.util
-     * org.apache.aries.application.utils
-     * org.apache.felix.bundlerepository
-     * org.apache.felix.resolver
-     * org.eclipse.equinox.coordinator
-     * org.eclipse.equinox.event
-     * org.apache.aries.subsystem.api
-     * org.apache.aries.subsystem.core
-     * org.apache.aries.subsystem.itest.interfaces
-     * com.springsource.org.junit
-     * org.ops4j.pax.exam.rbc
-     * org.osgi.service.subsystem.region.context.0
-     * pax-exam-probe
      * 
 	 */
 	@Test
-	public void verifyNoUnexpectedBundlesProvisioned() 
+	public void verifyNoUnexpectedBundlesProvisioned() throws Exception
 	{ 
-		Bundle[] bundles = bundleContext.getBundles();
-		assertEquals ("Wrong number of bundles in the Root subsystem", 25, bundles.length);
-		for (Bundle b: bundles) {
+		Bundle[] rootBundlesBefore = bundleContext.getBundles();
+		Subsystem s = installSubsystemFromFile(APPLICATION_A);
+		startSubsystem(s);
+		Bundle[] rootBundlesAfter = bundleContext.getBundles();
+		for (Bundle b: rootBundlesAfter) {
 			assertTrue ("Bundle F should not have been provisioned!", !b.getSymbolicName().equals(BUNDLE_F));
 			assertTrue ("Bundle G should not have been provisioned!", !b.getSymbolicName().equals(BUNDLE_G));
 		}
+		checkNoNewBundles("SubsystemDependency_4ATest", rootBundlesBefore, rootBundlesAfter);
+		stopSubsystem(s);
+		uninstallSubsystem(s);
 	}
-
+	
 	private static void createTestApplicationA() throws Exception
 	{
 		Map<String, String> attributes = new HashMap<String, String>();
