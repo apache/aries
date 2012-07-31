@@ -37,6 +37,7 @@
         <module>transaction-manager</module>
         <module>transaction-blueprint</module>
         <module>transaction-wrappers</module>
+        <module>transaction-jms</module>
         <module>transaction-itests</module>
         <module>transaction-testbundle</module>
         <module>transaction-testds</module>
