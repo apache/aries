@@ -16,14 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.transaction.jdbc;
+package org.apache.aries.transaction.jdbc.internal;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -35,9 +37,11 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
 /**
  * This class allows JDBC XA data sources to participate in global transactions,
- * via the {@link ConnectionWrapper} that is returned. The only service provided
+ * via the {@link org.apache.aries.transaction.jdbc.internal.ConnectionWrapper} that is returned. The only service provided
  * is enlistment/delistment of the associated {@link XAResource} in transactions.
  * Important consideration such as connection pooling and error handling are
  * completely ignored.
@@ -135,7 +139,7 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
         }
         
     }
-    
+
     public PrintWriter getLogWriter() throws SQLException
     {
       return wrappedDS.getLogWriter();
@@ -146,11 +150,17 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
       return wrappedDS.getLoginTimeout();
     }
 
+    /**
+     * @org.apache.xbean.Property hidden=true
+     */
     public void setLogWriter(PrintWriter out) throws SQLException
     {
       wrappedDS.setLogWriter(out);
     }
 
+    /**
+     * @org.apache.xbean.Property hidden=true
+     */
     public void setLoginTimeout(int seconds) throws SQLException
     {
       wrappedDS.setLoginTimeout(seconds);
@@ -161,13 +171,32 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
         return new ConnectionWrapper(connection, enlisted);
     }
 
+    public XADataSource getDataSource()
+    {
+      return wrappedDS;
+    }
+
+    /**
+     * The XADataSource object to wrap.
+     *
+     * @org.apache.xbean.Property required=true
+     */
     public void setDataSource(XADataSource dsToWrap)
     {
       wrappedDS = dsToWrap;
     }
 
+    public TransactionManager getTransactionManager()
+    {
+      return tm;
+    }
 
-    public void setTxManager(TransactionManager txMgr)
+    /**
+     * The XA TransactionManager to use to enlist the JDBC connections into.
+     *
+     * @org.apache.xbean.Property required=true
+     */
+    public void setTransactionManager(TransactionManager txMgr)
     {
       tm = txMgr;
     }
@@ -199,5 +228,11 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
     public <T> T unwrap(Class<T> arg0) throws SQLException
     {
       return null;
+    }
+
+    @IgnoreJRERequirement
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException
+    {
+      throw new SQLFeatureNotSupportedException();
     }
 }
