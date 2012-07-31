@@ -58,7 +58,7 @@ public class EsaMojo
 
     private static final String[] DEFAULT_INCLUDES = {"**/**"};
 
-    /**
+    /*
      * Subsystem manifest headers
      */
     private static final String SUBSYSTEM_MANIFESTVERSION = "Subsystem-ManifestVersion";
@@ -192,6 +192,14 @@ public class EsaMojo
      */
     private String archiveContent;
 
+    /**
+     * Define the start order for content bundles.
+     *   none - no start orders are added
+     *   dependencies - start order based on pom dependency order
+     *
+     * @parameter expression="${startOrder}" default-value="none"
+     */
+    private String startOrder;
 
     private File buildDir;
 
@@ -403,23 +411,31 @@ public class EsaMojo
             Iterator<Artifact> iter = artifacts.iterator();
 
             FileUtils.fileAppend(fileName, SUBSYSTEM_CONTENT + ": ");
+            int order = 1;
             if (iter.hasNext()) {
-                Artifact artifact = iter.next();
-                FileUtils.fileAppend(fileName, maven2OsgiConverter
-                        .getBundleSymbolicName(artifact)
+                Artifact artifact = iter.next(); 
+                String entry = new String(
+                		maven2OsgiConverter.getBundleSymbolicName(artifact)
                         + ";version=\""
                         + Analyzer.cleanupVersion(artifact.getVersion())
-//                      + maven2OsgiConverter.getVersion(artifact.getVersion())
                         + "\"");
+                if ("dependencies".equals(startOrder)) {
+                	entry += ";start-order=\"" + order + "\"";                	
+                }
+                FileUtils.fileAppend(fileName, entry);
             }
             while (iter.hasNext()) {
                 Artifact artifact = iter.next();
-                FileUtils.fileAppend(fileName, ",\n "
+                order++;
+                String entry = new String(",\n "
                         + maven2OsgiConverter.getBundleSymbolicName(artifact)
                         + ";version=\""
                         + Analyzer.cleanupVersion(artifact.getVersion())
-//                      + maven2OsgiConverter.getVersion(artifact.getVersion())
                         + "\"");
+                if ("dependencies".equals(startOrder)) {
+                	entry += ";start-order=\"" + order + "\"";                	
+                }
+                FileUtils.fileAppend(fileName, entry);
             }
 
             FileUtils.fileAppend(fileName, "\n");
