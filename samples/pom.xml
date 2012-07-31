@@ -61,7 +61,7 @@
         <ariesApplicationObrResolverVersion>1.0.0</ariesApplicationObrResolverVersion>
         <ariesApplicationRuntimeVersion>1.0.0</ariesApplicationRuntimeVersion>
         <ariesApplicationRuntimeFrameworkVersion>1.0.0</ariesApplicationRuntimeFrameworkVersion>
-        <ariesApplicationRuntimeFrameworkManagementVersion>1.0.0-SNAPSHOT</ariesApplicationRuntimeFrameworkManagementVersion>
+        <ariesApplicationRuntimeFrameworkManagementVersion>1.0.0</ariesApplicationRuntimeFrameworkManagementVersion>
         <ariesApplicationRuntimeIsolatedVersion>1.0.0</ariesApplicationRuntimeIsolatedVersion>
         <ariesApplicationRuntimeRepositoryVersion>1.0.0</ariesApplicationRuntimeRepositoryVersion>
         <ariesApplicationUtilsVersion>1.0.0</ariesApplicationUtilsVersion>
@@ -111,7 +111,7 @@
         <ariesTestsupportUnitVersion>1.0.0</ariesTestsupportUnitVersion>
 
         <!-- Aries Transaction Versions -->
-        <ariesTransactionBlueprintVersion>1.0.0-SNAPSHOT</ariesTransactionBlueprintVersion>
+        <ariesTransactionBlueprintVersion>1.0.0</ariesTransactionBlueprintVersion>
         <ariesTransactionManagerVersion>1.0.0</ariesTransactionManagerVersion>
         <ariesTransactionTestdsVersion>1.0.0</ariesTransactionTestdsVersion>
         <ariesTransactionWrappersVersion>1.0.0</ariesTransactionWrappersVersion>
