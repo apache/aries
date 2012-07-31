@@ -132,8 +132,11 @@ public class DependencyCalculator {
 		}
 		
 		private void initializeAttributes() {
+			String filter = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
+			if (filter == null)
+				return;
 			Pattern pattern = Pattern.compile("\\(([^(=]+)=([^)]+)\\)");
-			Matcher matcher = pattern.matcher(requirement.getDirectives().get(Constants.FILTER_DIRECTIVE));
+			Matcher matcher = pattern.matcher(filter);
 			while (matcher.find())
 				attributes.put(matcher.group(1), matcher.group(2));
 		}
