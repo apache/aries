@@ -207,12 +207,33 @@ public class EsaMojoTest
         
         String line;
         while ((line = br.readLine()) != null) {
-            if (line.contains(new String(header))) {
+            if (line.contains(header)) {
                 assertEquals(exactEntry, line);
                 foundHeader = true;
             }
         }
         assertTrue("Found " + header + ":", foundHeader);
+        
+    }
+    
+    private void testForLine(ZipFile esa, String exactEntry) throws Exception {
+        
+        Enumeration entries = esa.getEntries();
+
+
+        // Test Use-Bundle & Subsytem-Type inclusion
+        ZipEntry entry = esa.getEntry("OSGI-INF/SUBSYSTEM.MF");
+        BufferedReader br = new BufferedReader(new InputStreamReader(esa.getInputStream(entry)));
+
+        Boolean foundEntry=false;
+        
+        String line;
+        while ((!foundEntry) && ((line = br.readLine()) != null)) {
+            if (line.equals(exactEntry)) {
+                foundEntry = true;
+            }
+        }
+        assertTrue("Found " + exactEntry + ":", foundEntry);
         
     }
 
@@ -268,6 +289,54 @@ public class EsaMojoTest
 
         // Test for the Subsystem-Type header
         testForHeader(esa, "Subsystem-Type", "Subsystem-Type: feature");
+    }
+
+    public void testSubsystemStartOrder()
+        throws Exception
+    {
+        File testPom = new File( getBasedir(),
+                                 "target/test-classes/unit/basic-esa-start-order/plugin-config.xml" );
+
+        EsaMojo mojo = ( EsaMojo ) lookupMojo( "esa", testPom );
+
+        assertNotNull( mojo );
+
+        String finalName = ( String ) getVariableValueFromObject( mojo, "finalName" );
+
+        String workDir = ( String ) getVariableValueFromObject( mojo, "workDirectory" );
+
+        String outputDir = ( String ) getVariableValueFromObject( mojo, "outputDirectory" );
+
+        mojo.execute();
+
+
+        //check the generated esa file
+        File esaFile = new File( outputDir, finalName + ".esa" );
+
+        assertTrue( esaFile.exists() );
+
+        //expected files/directories inside the esa file
+        List expectedFiles = new ArrayList();
+
+        expectedFiles.add( "OSGI-INF/SUBSYSTEM.MF" );
+        expectedFiles.add( "OSGI-INF/" );
+        expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
+        expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
+
+        ZipFile esa = new ZipFile( esaFile );
+        
+        Enumeration entries = esa.getEntries();
+
+        assertTrue( entries.hasMoreElements() );
+
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles,  0, missing);
+
+        // Test for the Use-Bundle header
+        testForHeader(esa, "Subsystem-Content", "Subsystem-Content: maven-artifact02-1.0-SNAPSHOT;version=\"1.0.0.SNAPSHOT\";start-order=\"1\",");
+ 
+        // Test for the Subsystem-Content header
+        testForLine(esa, " maven-artifact01-1.0-SNAPSHOT;version=\"1.0.0.SNAPSHOT\";start-order=\"2\"");
     }
 
 
