@@ -31,12 +31,8 @@ public class RequireCapabilityRequirement extends AbstractRequirement {
 	public RequireCapabilityRequirement(RequireCapabilityHeader.Clause clause, Resource resource) {
 		namespace = clause.getNamespace();
 		Directive filter = clause.getDirective(RequireCapabilityHeader.Clause.DIRECTIVE_FILTER);
-		// It is legal for requirements to have no filter directive, in which 
-		// case the requirement would match any capability from the same 
-		// namespace.
-		if (filter == null)
-			filter = new FilterDirective('(' + namespace + "=*)");
-		directives.put(DIRECTIVE_FILTER, filter.getValue());
+		if (filter != null)
+			directives.put(DIRECTIVE_FILTER, filter.getValue());
 		this.resource = resource;
 	}
 

@@ -26,6 +26,12 @@ import org.osgi.framework.Constants;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
+/*
+ * Generic requirements are not required to specify the filter directive, in
+ * which case it would match any capability from the same namespace.
+ * 
+ * Generic capabilities are not required to use the namespace as an attribute.
+ */
 @RunWith(JUnit4TestRunner.class)
 public class NoRequirementFilterTest extends SubsystemTest {
 	/*
@@ -40,7 +46,7 @@ public class NoRequirementFilterTest extends SubsystemTest {
 	private static final String BUNDLE_A = "bundle.a.jar";
 	/*
 	 * Bundle-SymbolicName: bundle.b.jar
-	 * Provide-Capability: y;y=foo
+	 * Provide-Capability: y
 	 */
 	private static final String BUNDLE_B = "bundle.b.jar";
 	
@@ -64,7 +70,7 @@ public class NoRequirementFilterTest extends SubsystemTest {
 	
 	private static void createBundleB() throws IOException {
 		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.PROVIDE_CAPABILITY, "y;y=foo");
+		headers.put(Constants.PROVIDE_CAPABILITY, "y");
 		createBundle(BUNDLE_B, headers);
 	}
 	
@@ -85,7 +91,7 @@ public class NoRequirementFilterTest extends SubsystemTest {
 	}
 	
 	@Test
-	public void testRequireCapability() throws Exception {
+	public void testNoFilterDirectiveWithNoNamespaceAttribute() throws Exception {
 		Bundle bundleB = installBundleFromFile(BUNDLE_B);
 		try {
 			Subsystem subsystem = installSubsystemFromFile(APPLICATION_A);
