@@ -53,6 +53,7 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
  */
 public class ReflectionUtils {
 
+    private static Map<Class<?>, WeakReference<Method[]>> publicMethods = Collections.synchronizedMap(new WeakHashMap<Class<?>, WeakReference<Method[]>>());
     private static Map<Class<?>, PropertyDescriptor[][]> beanInfos = Collections.synchronizedMap(new WeakHashMap<Class<?>, PropertyDescriptor[][]>());
 
     public static boolean hasDefaultConstructor(Class type) {
@@ -121,9 +122,15 @@ public class ReflectionUtils {
         return null;
     }
 
-    public static List<Method> getPublicMethods(Class clazz) {
-        ArrayList<Method> methods = new ArrayList<Method>();
-        doGetPublicMethods(clazz, methods);
+    public static Method[] getPublicMethods(Class clazz) {
+        WeakReference<Method[]> ref = publicMethods.get(clazz);
+        Method[] methods = ref != null ? ref.get() : null;
+        if (methods == null) {
+            ArrayList<Method> array = new ArrayList<Method>();
+            doGetPublicMethods(clazz, array);
+            methods = array.toArray(new Method[array.size()]);
+            publicMethods.put(clazz, new WeakReference<Method[]>(methods));
+        }
         return methods;
     }
 
