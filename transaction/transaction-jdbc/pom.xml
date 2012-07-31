@@ -26,15 +26,15 @@
         <relativePath />
     </parent>
   <groupId>org.apache.aries.transaction</groupId>
-  <artifactId>org.apache.aries.transaction.wrappers</artifactId>
+  <artifactId>org.apache.aries.transaction.jdbc</artifactId>
   <name>Apache Aries Transaction Enlisting JDBC Datasource</name>
   <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-wrappers</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-wrappers</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-wrappers</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jdbc</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jdbc</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-jdbc</url>
      </scm>
 
   <properties>
