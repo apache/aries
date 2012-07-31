@@ -18,8 +18,6 @@
  */
 package org.apache.aries.blueprint.container;
 
-import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,6 +54,9 @@ import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.apache.aries.blueprint.utils.ReflectionUtils.getPublicMethods;
+import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
 
 /**
  * A <code>Recipe</code> to create POJOs.
@@ -344,7 +345,7 @@ public class BeanRecipe extends AbstractRecipe {
     private Map<Method, List<Object>> findMatchingMethods(Class type, String name, boolean instance, List<Object> args, List<ReifiedType> types) {
         Map<Method, List<Object>> matches = new HashMap<Method, List<Object>>();
         // Get constructors
-        List<Method> methods = new ArrayList<Method>(Arrays.asList(type.getMethods()));
+        List<Method> methods = getPublicMethods(type);
         // Discard any signature with wrong cardinality
         for (Iterator<Method> it = methods.iterator(); it.hasNext();) {
             Method mth = it.next();

@@ -26,7 +26,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.aries.blueprint.di.ExecutionContext;
+import org.apache.aries.blueprint.di.PassThroughRecipe;
 import org.junit.Test;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+
 import static org.junit.Assert.*;
 
 public class BeanRecipeTest {
@@ -64,6 +67,56 @@ public class BeanRecipeTest {
     static public class ExampleService {
         public ExampleService(Example<String> e) {}
     }
+
+    static public interface A {
+        String getA();
+        void setA(String a);
+    }
+    static public interface B extends A {
+        String getB();
+        void setB(String b);
+        void init();
+    }
+    static public class C implements B {
+        String a = "a", b = "b", c = "c";
+        public String getA() {
+            return a;
+        }
+        public void setA(String a) {
+            this.a = a;
+        }
+        public String getB() {
+            return b;
+        }
+        public void setB(String b) {
+            this.b = b;
+        }
+        public String getC() {
+            return c;
+        }
+        public void setC(String c) {
+            this.c = c;
+        }
+        public void init() {
+        }
+    }
+    static public class Factory {
+        public B create() {
+            return new D();
+        }
+        private class D extends C {
+            String d = "d";
+            public String getD() {
+                return d;
+            }
+            public void setD(String d) {
+                this.d = d;
+            }
+            public void init() {
+            }
+        }
+    }
+
 
     @Test
     public void parameterWithGenerics() throws Exception {
@@ -139,8 +192,83 @@ public class BeanRecipeTest {
 		assertEquals(2, methods.size());
 		assertFalse(methods.contains(Middle.class.getMethod("getBasic", int.class)));
 	}
-	
-	private Set<Method> applyStaticHidingRules(Collection<Method> methods) {
+
+    @Test
+    public void protectedClassAccess() throws Exception {
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null);
+        BeanRecipe recipe = new BeanRecipe("a", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
+        recipe.setFactoryMethod("getA");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        assertNotNull(recipe.create());
+
+        recipe = new BeanRecipe("b", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
+        recipe.setFactoryMethod("getB");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        assertNotNull(recipe.create());
+
+        recipe = new BeanRecipe("c", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
+        recipe.setFactoryMethod("getC");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        assertNotNull(recipe.create());
+
+        recipe = new BeanRecipe("d", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
+        recipe.setFactoryMethod("getD");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        try {
+            assertNotNull(recipe.create());
+            fail("Should have thrown an exception");
+        } catch (ComponentDefinitionException e) {
+            // ok
+        }
+
+        recipe = new BeanRecipe("a", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
+        recipe.setFactoryMethod("create");
+        recipe.setProperty("a", "a");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        assertNotNull(recipe.create());
+
+        recipe = new BeanRecipe("b", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
+        recipe.setFactoryMethod("create");
+        recipe.setProperty("b", "b");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        assertNotNull(recipe.create());
+
+        recipe = new BeanRecipe("c", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
+        recipe.setFactoryMethod("create");
+        recipe.setProperty("c", "c");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        assertNotNull(recipe.create());
+
+        recipe = new BeanRecipe("d", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
+        recipe.setFactoryMethod("create");
+        recipe.setProperty("d", "d");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        try {
+            assertNotNull(recipe.create());
+            fail("Should have thrown an exception");
+        } catch (ComponentDefinitionException e) {
+            // ok
+        }
+
+        recipe = new BeanRecipe("a", container, null, false);
+        recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
+        recipe.setFactoryMethod("create");
+        recipe.setInitMethod("init");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        assertNotNull(recipe.create());
+
+    }
+
+
+    private Set<Method> applyStaticHidingRules(Collection<Method> methods) {
 		try {
 			Method m = BeanRecipe.class.getDeclaredMethod("applyStaticHidingRules", Collection.class);
 			m.setAccessible(true);
