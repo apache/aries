@@ -16,9 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.transaction.jdbc;
+package org.apache.aries.transaction.jdbc.internal;
 
-import org.apache.aries.util.AriesFrameworkUtil;
+import java.util.Hashtable;
+import javax.sql.DataSource;
+import javax.sql.XADataSource;
+import javax.transaction.TransactionManager;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -29,10 +33,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-import java.util.Hashtable;
-import javax.sql.DataSource;
-import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
 
 public class Activator implements BundleActivator, ServiceTrackerCustomizer, ServiceListener
 {
@@ -94,7 +94,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
     map.put(Constants.SERVICE_RANKING, ranking);
 
     XADatasourceEnlistingWrapper wrapper = new XADatasourceEnlistingWrapper();
-    wrapper.setTxManager(tm);
+    wrapper.setTransactionManager(tm);
     wrapper.setDataSource((XADataSource) ctx.getService(ref));
 
     ServiceRegistration reg = ctx.registerService(DataSource.class.getName(), wrapper, map); 
@@ -117,7 +117,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
 
   public void removedService(ServiceReference ref, Object service)
   {
-    AriesFrameworkUtil.safeUnregisterService((ServiceRegistration)service);
+    safeUnregisterService((ServiceRegistration)service);
   }
 
   public void serviceChanged(ServiceEvent event)
@@ -134,6 +134,17 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
       context.ungetService(ref);
       ref = null;
       tm = null;
+    }
+  }
+
+  static void safeUnregisterService(ServiceRegistration reg)
+  {
+    if(reg != null) {
+      try {
+        reg.unregister();
+      } catch (IllegalStateException e) {
+        //This can be safely ignored
+      }
     }
   }
 }

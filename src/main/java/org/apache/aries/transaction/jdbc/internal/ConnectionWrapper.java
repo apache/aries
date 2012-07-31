@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.transaction.jdbc;
+package org.apache.aries.transaction.jdbc.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,10 +37,10 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
-import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
-
+import java.util.concurrent.Executor;
 import javax.transaction.xa.XAResource;
 
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -373,7 +373,32 @@ public class ConnectionWrapper implements Connection {
     	
     }
 
-	private Method getMethod(String methodName, Class<?> ...paramTypes) {
+    public void setSchema(String schema) throws SQLException {
+        Method method= getMethod("setSchema", String.class);
+        invokeByReflection(method, schema);
+    }
+
+    public String getSchema() throws SQLException {
+        Method method= getMethod("getSchema");
+        return (String) invokeByReflection(method);
+    }
+
+    public void abort(Executor executor) throws SQLException {
+        Method method= getMethod("abort", Executor.class);
+        invokeByReflection(method, executor);
+    }
+
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+        Method method= getMethod("setNetworkTimeout", int.class);
+        invokeByReflection(method, executor, milliseconds);
+    }
+
+    public int getNetworkTimeout() throws SQLException {
+        Method method= getMethod("getNetworkTimeout");
+        return (Integer) invokeByReflection(method);
+    }
+
+    private Method getMethod(String methodName, Class<?> ...paramTypes) {
 		Method method = null;
 		try {
 			method = getClass().getMethod(methodName, paramTypes);

@@ -39,13 +39,17 @@
 
   <properties>
     <aries.osgi.export.pkg>
-      !org.apache.aries.transaction.jdbc
+      org.apache.aries.transaction.jdbc;-noimport:=true
     </aries.osgi.export.pkg>
+    <aries.osgi.import>
+      org.osgi.service.blueprint;resolution:=optional,
+      *
+    </aries.osgi.import>
     <aries.osgi.private.pkg>
-      org.apache.aries.transaction.jdbc
+      org.apache.aries.transaction.jdbc.internal
     </aries.osgi.private.pkg>
     <aries.osgi.activator>
-      org.apache.aries.transaction.jdbc.Activator
+      org.apache.aries.transaction.jdbc.internal.Activator
     </aries.osgi.activator>
   </properties>
 
@@ -58,7 +62,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>1.0.0</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -75,7 +79,19 @@
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+      <dependency>
+          <groupId>org.apache.aries.blueprint</groupId>
+          <artifactId>org.apache.aries.blueprint.core</artifactId>
+          <version>1.0.0</version>
+          <optional>true</optional>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.xbean</groupId>
+          <artifactId>xbean-blueprint</artifactId>
+          <version>3.7</version>
+          <optional>true</optional>
+      </dependency>
+      <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
@@ -87,5 +103,25 @@
             <optional>true</optional>
         </dependency>
   </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.xbean</groupId>
+                <artifactId>maven-xbean-plugin</artifactId>
+                <version>3.11</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>mapping</goal>
+                        </goals>
+                        <configuration>
+                            <namespace>http://aries.apache.org/xmlns/transaction-jdbc/1.0</namespace>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
