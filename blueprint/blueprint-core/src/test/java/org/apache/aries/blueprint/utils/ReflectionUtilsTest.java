@@ -52,7 +52,7 @@ public class ReflectionUtilsTest {
             },            
             ExtendedBlueprintContainer.class);
     
-    static class GetterOnly {
+    public static class GetterOnly {
         public String getValue() { return "test"; }
     }
     
@@ -109,7 +109,7 @@ public class ReflectionUtilsTest {
         assertEquals("test", sut[1].get(new GetterOnly(), mockBlueprint));
     }
     
-    static class SetterOnly {
+    public static class SetterOnly {
         private String f;
         
         public void setField(String val) { f = val; }
@@ -131,7 +131,7 @@ public class ReflectionUtilsTest {
         assertEquals("trial", so.retrieve());
     }
     
-    static class SetterAndGetter {
+    public static class SetterAndGetter {
         private String f;
         
         public void setField(String val) { f = val; }
@@ -198,7 +198,7 @@ public class ReflectionUtilsTest {
         assertEquals("predicament", sut[2].get(fap, mockBlueprint));
     }
     
-    static class OverloadedSetters {
+    public static class OverloadedSetters {
         public Object field;
         
         public void setField(String val) { field = val; }
@@ -229,7 +229,7 @@ public class ReflectionUtilsTest {
         sut[1].set(new OverloadedSetters(), new Inconvertible(), mockBlueprint);
     }
     
-    static class MultipleMatchesByConversion {
+    public static class MultipleMatchesByConversion {
         public void setField(String s) {}
         public void setField(List<String> list) {}
     }
@@ -240,8 +240,8 @@ public class ReflectionUtilsTest {
         
         sut[1].set(new MultipleMatchesByConversion(), new HashSet<String>(), mockBlueprint);
     }
-    
-    static class MultipleMatchesByType {
+
+    public static class MultipleMatchesByType {
         public void setField(List<String> list) {}
         public void setField(Queue<String> list) {}
         
@@ -265,8 +265,8 @@ public class ReflectionUtilsTest {
         sut[2].set(new MultipleMatchesByType(), new ArrayList<String>(), mockBlueprint);
         assertEquals(2, MultipleMatchesByType.field);
     }
-    
-    static class NullSetterDisambiguation {
+
+    public static class NullSetterDisambiguation {
         public static int field;
         
         public void setField(int i) { field = i; }
