@@ -40,9 +40,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.container.GenericType;
 import org.apache.aries.blueprint.di.ExecutionContext;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.framework.BundleReference;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
@@ -110,21 +110,73 @@ public class ReflectionUtils {
 
     public static Method getLifecycleMethod(Class clazz, String name) {
         if (name != null) {
-            try {
-                Method method = clazz.getMethod(name);
-                if (Void.TYPE.equals(method.getReturnType())) {
+            for (Method method : getPublicMethods(clazz)) {
+                if (method.getName().equals(name)
+                        && method.getParameterTypes().length == 0
+                        && Void.TYPE.equals(method.getReturnType())) {
                     return method;
                 }
-            } catch (NoSuchMethodException e) {
-                // fall thru
             }
         }
         return null;
     }
-    
+
+    public static List<Method> getPublicMethods(Class clazz) {
+        ArrayList<Method> methods = new ArrayList<Method>();
+        doGetPublicMethods(clazz, methods);
+        return methods;
+    }
+
+    private static void doGetPublicMethods(Class clazz, ArrayList<Method> methods) {
+        Class parent = clazz.getSuperclass();
+        if (parent != null) {
+            doGetPublicMethods(parent, methods);
+        }
+        for (Class interf : clazz.getInterfaces()) {
+            doGetPublicMethods(interf, methods);
+        }
+        if (Modifier.isPublic(clazz.getModifiers())) {
+            for (Method mth : clazz.getMethods()) {
+                removeByNameAndSignature(methods, mth);
+                methods.add(mth);
+            }
+        }
+    }
+
+    private static void removeByNameAndSignature(ArrayList<Method> methods, Method toRemove) {
+        for (int i = 0; i < methods.size(); i++) {
+            Method m = methods.get(i);
+            if (m != null &&
+                    m.getReturnType() == toRemove.getReturnType() &&
+                    m.getName() == toRemove.getName() &&
+                    arrayContentsEq(m.getParameterTypes(),
+                            toRemove.getParameterTypes())) {
+                methods.remove(i--);
+            }
+        }
+    }
+
+    private static boolean arrayContentsEq(Object[] a1, Object[] a2) {
+        if (a1 == null) {
+            return a2 == null || a2.length == 0;
+        }
+        if (a2 == null) {
+            return a1.length == 0;
+        }
+        if (a1.length != a2.length) {
+            return false;
+        }
+        for (int i = 0; i < a1.length; i++) {
+            if (a1[i] != a2[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static List<Method> findCompatibleMethods(Class clazz, String name, Class[] paramTypes) {
         List<Method> methods = new ArrayList<Method>();
-        for (Method method : clazz.getMethods()) {
+        for (Method method : getPublicMethods(clazz)) {
             Class[] methodParams = method.getParameterTypes();
             if (name.equals(method.getName()) && Void.TYPE.equals(method.getReturnType()) && methodParams.length == paramTypes.length && !method.isBridge()) {
                 boolean assignable = true;
@@ -154,7 +206,7 @@ public class ReflectionUtils {
             Map<String,List<Method>> setters = new HashMap<String, List<Method>>();
             Set<String> illegalProperties = new HashSet<String>();
             
-            for (Method method : clazz.getMethods()) {
+            for (Method method : getPublicMethods(clazz)) {
                 if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) continue;
                 
                 String name = method.getName();
@@ -519,7 +571,8 @@ public class ReflectionUtils {
                 
                 builder.append(wcl.get());
             }
-            
+
+            builder.append(")");
             return builder.toString();
         }
     }
