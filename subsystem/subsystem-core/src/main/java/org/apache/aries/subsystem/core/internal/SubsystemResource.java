@@ -702,7 +702,13 @@ public class SubsystemResource implements Resource {
 			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause, this);
 			String policy = requirement.getNamespace();
 			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
-			builder.allow(policy, filter);
+			if (filter == null)
+				// A null filter directive means the requirement matches any
+				// capability from the same namespace.
+				builder.allowAll(policy);
+			else
+				// Otherwise, the capabilities must be filtered accordingly.
+				builder.allow(policy, filter);
 		}
 	}
 	
