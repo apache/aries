@@ -414,13 +414,25 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
 
     protected synchronized void removeSchemasFor(NamespaceHandler handler) {
         List<Map<URI, NamespaceHandler>> keys = new ArrayList<Map<URI, NamespaceHandler>>();
-        for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
-            if (key.values().contains(handler)) {
-                keys.add(key);
+        lock.readLock().lock();
+        try {
+            for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
+                if (key.values().contains(handler)) {
+                    keys.add(key);
+                }
             }
+        } finally {
+            lock.readLock().unlock();
         }
-        for (Map<URI, NamespaceHandler> key : keys) {
-            schemas.remove(key);
+        if (!keys.isEmpty()) {
+            lock.writeLock().lock();
+            try {
+                for (Map<URI, NamespaceHandler> key : keys) {
+                    schemas.remove(key);
+                }
+            } finally {
+                lock.writeLock().unlock();
+            }
         }
     }
 
