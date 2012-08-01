@@ -16,7 +16,6 @@
  */
 package org.apache.aries.blueprint;
 
-
 /**
  * @deprecated - use org.apache.aries.blueprint.services.ExtendedBlueprintContainer
  *               Will be removed in a future version of Aries Blueprint
@@ -24,5 +23,4 @@ package org.apache.aries.blueprint;
 @Deprecated
 public interface ExtendedBlueprintContainer extends org.apache.aries.blueprint.services.ExtendedBlueprintContainer {
 
-            
 }
