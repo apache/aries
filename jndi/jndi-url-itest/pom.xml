@@ -214,7 +214,7 @@
 			<groupId>org.apache.aries.jndi</groupId>
 			<artifactId>org.apache.aries.jndi</artifactId>
             <scope>test</scope>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
 		</dependency>
 
         <dependency>

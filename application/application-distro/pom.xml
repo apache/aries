@@ -83,7 +83,7 @@
        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.deployment.management</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
