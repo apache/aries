@@ -874,6 +874,8 @@ public class BlueprintContainerImpl
     public void namespaceHandlerUnregistered(URI uri) {
         if (namespaces != null && namespaces.contains(uri)) {
             tidyupComponents();
+            this.componentDefinitionRegistry.reset();
+            this.repository = null;
             state = State.WaitForNamespaceHandlers;
             schedule();
         }
