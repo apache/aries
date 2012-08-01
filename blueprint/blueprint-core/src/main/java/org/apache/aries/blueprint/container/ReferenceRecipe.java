@@ -160,14 +160,16 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             trackedServiceReference = ref;
             voidProxiedChildren();
             bind(trackedServiceReference, proxy);
-            if (oldReference != null && trackedService != null) {
-              try {
-                getBundleContextForServiceLookup().ungetService(oldReference);
-              } catch (IllegalStateException ise) {
-                // In case the service no longer exists lets just cope and ignore.
+            if (ref != oldReference) {
+              if (oldReference != null && trackedService != null) {
+                try {
+                  blueprintContainer.getBundleContext().ungetService(oldReference);
+                } catch (IllegalStateException ise) {
+                  // In case the service no longer exists lets just cope and ignore.
+                }
               }
+              trackedService = null;
             }
-            trackedService = null;
             monitor.notifyAll();
         }
     }
