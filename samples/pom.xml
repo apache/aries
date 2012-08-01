@@ -52,7 +52,7 @@
         <ariesApplicationVersion>1.0.0-SNAPSHOT</ariesApplicationVersion>
         <ariesApplicationConvertersVersion>1.0.0</ariesApplicationConvertersVersion>
         <ariesApplicationDefaultLocalPlatformVersion>1.0.0</ariesApplicationDefaultLocalPlatformVersion>
-        <ariesApplicationDeploymentManagementVersion>1.0.0-SNAPSHOT</ariesApplicationDeploymentManagementVersion>
+        <ariesApplicationDeploymentManagementVersion>1.0.0</ariesApplicationDeploymentManagementVersion>
         <ariesApplicationInstallVersion>1.0.0</ariesApplicationInstallVersion>
         <ariesApplicationItestInterfaceVersion>1.0.0</ariesApplicationItestInterfaceVersion>
         <ariesApplicationManagementVersion>1.0.0-SNAPSHOT</ariesApplicationManagementVersion>
@@ -70,7 +70,7 @@
         <ariesBlueprintAnnotationApiVersion>1.0.0</ariesBlueprintAnnotationApiVersion>
         <ariesBlueprintAnnotationImplVersion>1.0.0</ariesBlueprintAnnotationImplVersion>
         <ariesBlueprintApiVersion>1.0.0</ariesBlueprintApiVersion>
-        <ariesBlueprintVersion>1.0.0-SNAPSHOT</ariesBlueprintVersion>
+        <ariesBlueprintVersion>1.0.0</ariesBlueprintVersion>
         <ariesBlueprintCmVersion>1.0.0</ariesBlueprintCmVersion>
         <ariesBlueprintCoreVersion>1.0.0</ariesBlueprintCoreVersion>
 
@@ -85,7 +85,7 @@
 
         <!-- Aries Jndi Versions -->
         <ariesJndiApiVersion>1.0.0</ariesJndiApiVersion>
-        <ariesJndiVersion>1.0.0-SNAPSHOT</ariesJndiVersion>
+        <ariesJndiVersion>1.0.0</ariesJndiVersion>
         <ariesJndiCoreVersion>1.0.0</ariesJndiCoreVersion>
         <ariesJndiLegacySupportVersion>1.0.0</ariesJndiLegacySupportVersion>
         <ariesJndiRmiVersion>1.0.0</ariesJndiRmiVersion>
@@ -111,7 +111,7 @@
         <ariesTestsupportUnitVersion>1.0.0</ariesTestsupportUnitVersion>
 
         <!-- Aries Transaction Versions -->
-        <ariesTransactionBlueprintVersion>1.0.0-SNAPSHOT</ariesTransactionBlueprintVersion>
+        <ariesTransactionBlueprintVersion>1.0.0</ariesTransactionBlueprintVersion>
         <ariesTransactionManagerVersion>1.0.0</ariesTransactionManagerVersion>
         <ariesTransactionTestdsVersion>1.0.0</ariesTransactionTestdsVersion>
         <ariesTransactionWrappersVersion>1.0.0</ariesTransactionWrappersVersion>
