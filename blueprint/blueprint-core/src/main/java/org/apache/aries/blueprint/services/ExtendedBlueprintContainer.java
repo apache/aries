@@ -19,6 +19,7 @@ package org.apache.aries.blueprint.services;
 import java.security.AccessControlContext;
 import java.util.Dictionary;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Processor;
@@ -80,5 +81,7 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
      */
     void injectBeanInstance(BeanMetadata bmd, Object o) 
         throws IllegalArgumentException, ComponentDefinitionException;
-        
+
+    ExecutorService getExecutors();
+
 }

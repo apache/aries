@@ -300,20 +300,24 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
     }
 
-    public void serviceChanged(ServiceEvent event) {
-        int eventType = event.getType();
-        ServiceReference ref = event.getServiceReference();
-        switch (eventType) {
-            case ServiceEvent.REGISTERED:
-                serviceAdded(ref);
-                break;
-            case ServiceEvent.MODIFIED:
-                serviceModified(ref);
-                break;
-            case ServiceEvent.UNREGISTERING:
-                serviceRemoved(ref);
-                break;
-        }
+    public void serviceChanged(final ServiceEvent event) {
+        blueprintContainer.getExecutors().submit(new Runnable() {
+            public void run() {
+                int eventType = event.getType();
+                ServiceReference ref = event.getServiceReference();
+                switch (eventType) {
+                    case ServiceEvent.REGISTERED:
+                        serviceAdded(ref);
+                        break;
+                    case ServiceEvent.MODIFIED:
+                        serviceModified(ref);
+                        break;
+                    case ServiceEvent.UNREGISTERING:
+                        serviceRemoved(ref);
+                        break;
+                }
+            }
+        });
     }
 
     private void serviceAdded(ServiceReference ref) {

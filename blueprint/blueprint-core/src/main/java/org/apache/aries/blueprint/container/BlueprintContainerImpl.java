@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +48,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.Processor;
 import org.apache.aries.blueprint.di.ExecutionContext;
@@ -55,14 +55,15 @@ import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
-import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
+import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.HeaderParser;
-import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
+import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
@@ -169,6 +170,10 @@ public class BlueprintContainerImpl
             this.accessControlContext = BlueprintDomainCombiner.createAccessControlContext(bundleContext);
         }
         this.proxyManager = proxyManager;
+    }
+
+    public ExecutorService getExecutors() {
+        return executors;
     }
 
     public Bundle getExtenderBundle() {
