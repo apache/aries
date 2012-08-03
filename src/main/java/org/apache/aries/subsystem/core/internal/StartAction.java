@@ -121,20 +121,26 @@ public class StartAction extends AbstractAction {
 			return;
 		subsystem.setState(State.RESOLVING);
 		try {
-			for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(subsystem))
-				resolve((AriesSubsystem)child);
-			// TODO I think this is insufficient. Do we need both
-			// pre-install and post-install environments for the Resolver?
-			Collection<Bundle> bundles = getBundles(subsystem);
-			if (!Activator.getInstance().getBundleContext().getBundle(0)
-					.adapt(FrameworkWiring.class).resolveBundles(bundles)) {
-				logger.error(
-						"Unable to resolve bundles for subsystem/version/id {}/{}/{}: {}",
-						new Object[] { subsystem.getSymbolicName(), subsystem.getVersion(),
-								subsystem.getSubsystemId(), bundles });
-				throw new SubsystemException("Framework could not resolve the bundles");
+			// The root subsystem should follow the same event pattern for
+			// state transitions as other subsystems. However, an unresolvable
+			// root subsystem should have no effect, so there's no point in
+			// actually doing the resolution work.
+			if (!subsystem.isRoot()) {
+				for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(subsystem))
+					resolve((AriesSubsystem)child);
+				// TODO I think this is insufficient. Do we need both
+				// pre-install and post-install environments for the Resolver?
+				Collection<Bundle> bundles = getBundles(subsystem);
+				if (!Activator.getInstance().getBundleContext().getBundle(0)
+						.adapt(FrameworkWiring.class).resolveBundles(bundles)) {
+					logger.error(
+							"Unable to resolve bundles for subsystem/version/id {}/{}/{}: {}",
+							new Object[] { subsystem.getSymbolicName(), subsystem.getVersion(),
+									subsystem.getSubsystemId(), bundles });
+					throw new SubsystemException("Framework could not resolve the bundles");
+				}
+				setExportIsolationPolicy(subsystem);
 			}
-			setExportIsolationPolicy(subsystem);
 			// TODO Could avoid calling setState (and notifyAll) here and
 			// avoid the need for a lock.
 			subsystem.setState(State.RESOLVED);
