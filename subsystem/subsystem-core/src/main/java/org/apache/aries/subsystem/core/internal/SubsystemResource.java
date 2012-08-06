@@ -257,6 +257,7 @@ public class SubsystemResource implements Resource {
 	}
 	
 	private boolean addDependenciesFromContentRepository(Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+		// TODO Why create this with each method call? What not cache it as an instance variable?
 		Repository repository = new ContentRepository(installableContent, sharedContent);
 		return addDependencies(repository, requirement, capabilities);
 	}
