@@ -178,14 +178,10 @@ public class ImportPackageHeader implements RequirementHeader<ImportPackageHeade
 	public static final String RESOLUTION_MANDATORY = PackageNamespace.RESOLUTION_MANDATORY;
 	public static final String RESOLUTION_OPTIONAL = PackageNamespace.RESOLUTION_OPTIONAL;
 	
-	private static final String REGEX = Grammar.IMPORT + "(?=,|\\z)";
-	private static final Pattern PATTERN = Pattern.compile(REGEX);
-	
 	private static Collection<Clause> processHeader(String header) {
-		Matcher matcher = PATTERN.matcher(header);
 		Set<Clause> clauses = new HashSet<Clause>();
-		while (matcher.find())
-			clauses.add(new Clause(matcher.group()));
+		for (String clause : new ClauseTokenizer(header).getClauses())
+			clauses.add(new Clause(clause));
 		return clauses;
 	}
 	
