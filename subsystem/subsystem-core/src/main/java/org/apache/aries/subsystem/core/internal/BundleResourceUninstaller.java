@@ -26,9 +26,20 @@ public class BundleResourceUninstaller extends ResourceUninstaller {
 	
 	public void uninstall() {
 		removeReference();
-		removeConstituent();
+		// Always remove the bundle as a constituent of the subsystem being
+		// acted upon. The bundle may or may not actually be a constituent.
+		// This covers the case of unscoped subsystems with shared content
+		// where the resource may not be uninstallable.
+		removeConstituent(subsystem, resource);
 		if (!isResourceUninstallable())
 			return;
+		// If the resource is uninstallable, remove it from the "provisioned to"
+		// subsystem in case it was a dependency. The "provisioned to" subsystem
+		// may be the same subsystem as the one being acted upon. This covers
+		// the case where a dependency of the subsystem being acted upon was 
+		// provisioned to another subsystem but is not content of the other
+		// subsystem.
+		removeConstituent(provisionTo, resource);
 		if (isBundleUninstallable())
 			uninstallBundle();
 	}
