@@ -27,16 +27,16 @@
     <artifactId>org.apache.aries.blueprint.compatibility</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Blueprint Compatiblity Fragment Bundle</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>
         This bundle contains extra classes and exports to allow Blueprint to be compatible
         with previous versions of Blueprint.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-compatibility</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-compatibility</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-compatibility</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.compatibility-1.0.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.compatibility-1.0.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.compatibility-1.0.0</url>
     </scm>
 
     <properties>
