@@ -29,15 +29,15 @@
     <artifactId>org.apache.aries.application.management</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Management</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>
       Implementation of the application management API
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-management</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-management</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-management</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.management-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.management-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.management-1.0.0</url>
      </scm>
 
     <properties>
