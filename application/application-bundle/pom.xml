@@ -29,16 +29,16 @@
     <artifactId>org.apache.aries.application</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Application Bundle</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <description>
       This bundle is a standalone bundle to support
       Aries applications.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-bundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-bundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-bundle</url>
      </scm>
 
     <properties>
