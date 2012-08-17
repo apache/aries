@@ -71,6 +71,8 @@ public class TestReferences extends AbstractIntegrationTest {
                 return "Hello " + msg + "!";
             }
         }, null);
+        waitForAsynchronousHandling();
+
         assertNotNull(listener.getA());
         assertNotNull(listener.getReference());
         assertEquals("Hello world!", a.hello("world"));
@@ -83,16 +85,21 @@ public class TestReferences extends AbstractIntegrationTest {
             }
         }, props);
 
+        waitForAsynchronousHandling();
+
         assertNotNull(listener.getA());
         assertNotNull(listener.getReference());
         assertEquals("Hello world!", a.hello("world"));
 
         reg1.unregister();
+        waitForAsynchronousHandling();
         assertNotNull(listener.getA());
         assertNotNull(listener.getReference());
         assertEquals("Good morning world!", a.hello("world"));
 
         reg2.unregister();
+        waitForAsynchronousHandling();
+
         assertNull(listener.getA());
         assertNull(listener.getReference());
         try {
@@ -121,6 +128,8 @@ public class TestReferences extends AbstractIntegrationTest {
                 return "Hello " + msg + "!";
             }
         }, null);
+    
+        waitForAsynchronousHandling();
         assertNotNull(listener.getA());
         assertNotNull(listener.getReference());
         assertEquals(1, refs.size());
@@ -138,13 +147,17 @@ public class TestReferences extends AbstractIntegrationTest {
       Runnable refRunnable = (Runnable) blueprintContainer.getComponentInstance("refWithDefault");
       DefaultRunnable defaultRunnable = (DefaultRunnable) blueprintContainer.getComponentInstance("defaultRunnable");
       refRunnable.run();
+      waitForAsynchronousHandling();
+      Thread.sleep(2000);
       
       assertEquals("The default runnable was not called", 1, defaultRunnable.getCount());
       
       Runnable mockService = Skeleton.newMock(Runnable.class);
       
       ServiceRegistration reg = bundleContext.registerService(Runnable.class.getName(), mockService, null);
-      
+      waitForAsynchronousHandling();
+      Thread.sleep(2000);
+
       refRunnable.run();
       
       assertEquals("The default runnable was called when a service was bound", 1, defaultRunnable.getCount());
@@ -152,7 +165,9 @@ public class TestReferences extends AbstractIntegrationTest {
       Skeleton.getSkeleton(mockService).assertCalled(new MethodCall(Runnable.class, "run"));
       
       reg.unregister();
-      
+      waitForAsynchronousHandling();
+      Thread.sleep(2000);
+
       refRunnable.run();
       
       assertEquals("The default runnable was not called", 2, defaultRunnable.getCount());
@@ -187,7 +202,13 @@ public class TestReferences extends AbstractIntegrationTest {
       return null;
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
+    private void waitForAsynchronousHandling() throws InterruptedException {
+      // Since service events are handled asynchronously in AbstractServiceReferenceRecipe, pause
+       Thread.sleep(200);
+      
+   }
+
+   @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
         return testOptions(
                 paxLogging("INFO"),
