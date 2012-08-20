@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.aries.subsystem.core.archive.AriesSubsystemParentsHeader;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
@@ -47,7 +46,7 @@ public class Subsystems {
 		child.addedParent(parent, referenceCount);
 	}
 	
-	public void addConstituent(AriesSubsystem subsystem, Resource constituent, boolean isContent) {
+	public void addConstituent(AriesSubsystem subsystem, Resource constituent, boolean referenced) {
 		synchronized (subsystemToConstituents) {
 			Set<Resource> constituents = subsystemToConstituents.get(subsystem);
 			if (constituents == null) {
@@ -56,8 +55,7 @@ public class Subsystems {
 			}
 			constituents.add(constituent);
 		}
-		if (isContent)
-			subsystem.addedContent(constituent);
+		subsystem.addedConstituent(constituent, referenced);
 	}
 	
 	public void addReference(AriesSubsystem subsystem, Resource resource) {
@@ -108,6 +106,7 @@ public class Subsystems {
 				}
 			});
 			if (fileList.isEmpty()) {
+				// There are no persisted subsystems, including root.
 				SubsystemResource resource;
 				try {
 					resource = new SubsystemResource(file);
@@ -145,6 +144,7 @@ public class Subsystems {
 				}
 			}
 			else {
+				// There are persisted subsystems.
 				Coordination coordination = Utils.createCoordination();
 				Collection<AriesSubsystem> subsystems = new ArrayList<AriesSubsystem>(fileList.size());
 				try {
@@ -156,16 +156,6 @@ public class Subsystems {
 					root = getSubsystemById(0);
 					graph = new SubsystemGraph(root);
 					ResourceInstaller.newInstance(coordination, root, root).install();
-					for (AriesSubsystem s : subsystems) {
-						AriesSubsystemParentsHeader header = s.getDeploymentManifest().getAriesSubsystemParentsHeader();
-						if (header == null)
-							continue;
-						for (AriesSubsystemParentsHeader.Clause clause : header.getClauses()) {
-							ResourceInstaller.newInstance(coordination, s, getSubsystemById(clause.getId())).install();
-							if (s.isAutostart())
-								new StartAction(s, false).run();
-						}
-					}
 				} catch (Exception e) {
 					coordination.fail(e);
 				} finally {

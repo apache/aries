@@ -65,6 +65,7 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.repository.RepositoryContent;
@@ -391,7 +392,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertServiceEventsResolve(Subsystem subsystem) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertServiceEventResolved(subsystem, ServiceEvent.MODIFIED);
 	}
 	
 	protected void assertServiceEventsStart(Subsystem subsystem) throws InterruptedException {
@@ -401,9 +402,13 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertServiceEventsStop(Subsystem subsystem) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
-		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+		assertServiceEventResolved(subsystem, ServiceEvent.MODIFIED);
 		// Don't forget about the unregistering event, which will have the same state as before.
-		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000), ServiceEvent.UNREGISTERING);
+		assertServiceEventResolved(subsystem, ServiceEvent.UNREGISTERING);
+	}
+	
+	protected void assertServiceEventResolved(Subsystem subsystem, int type) throws InterruptedException {
+		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000), type);
 	}
 	
 	protected void assertState(State expected, State actual) {
@@ -531,6 +536,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 		write(name, fixture);
 	}
 	
+	protected Subsystem findSubsystemService(long id) throws InvalidSyntaxException {
+		String filter = "(" + SubsystemConstants.SUBSYSTEM_ID_PROPERTY + "=" + id + ")";
+		return getOsgiService(Subsystem.class, filter, 5000);
+	}
+	
 	protected Bundle getBundle(Subsystem subsystem, String symbolicName) {
 		for (Bundle bundle : subsystem.getBundleContext().getBundles()) {
 			if (symbolicName.equals(bundle.getSymbolicName())) { 
@@ -555,6 +565,15 @@ public abstract class SubsystemTest extends IntegrationTest {
 			}
 		}
 		return null;
+	}
+	
+	protected Bundle getConstituentAsBundle(Subsystem subsystem, String symbolicName, Version version, String type) {
+		return getConstituentAsBundleRevision(subsystem, symbolicName, version, type).getBundle();
+	}
+	
+	protected BundleRevision getConstituentAsBundleRevision(Subsystem subsystem, String symbolicName, Version version, String type) {
+		Resource resource = getConstituent(subsystem, symbolicName, version, type);
+		return (BundleRevision)resource;
 	}
 	
 	protected Bundle getRegionContextBundle(Subsystem subsystem) {
@@ -660,6 +679,12 @@ public abstract class SubsystemTest extends IntegrationTest {
 		registerRepositoryService(resources);
 	}
 	
+	protected void restartSubsystemsImplBundle() throws BundleException {
+		Bundle b = getSubsystemCoreBundle();
+		b.stop();
+		b.start();
+	}
+	
 	protected void startBundle(Bundle bundle) throws BundleException {
 		startBundle(bundle, getRootSubsystem());
 	}
@@ -670,11 +695,24 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void startSubsystem(Subsystem subsystem) throws Exception {
+		startSubsystemFromInstalled(subsystem);
+	}
+	
+	protected void startSubsystemFromInstalled(Subsystem subsystem) throws InterruptedException {
 		assertState(State.INSTALLED, subsystem);
 		subsystemEvents.clear();
 		subsystem.start();
 		assertEvent(subsystem, State.RESOLVING, 5000);
 		assertEvent(subsystem, State.RESOLVED, 5000);
+		assertEvent(subsystem, State.STARTING, 5000);
+		assertEvent(subsystem, State.ACTIVE, 5000);
+		assertState(State.ACTIVE, subsystem);
+	}
+	
+	protected void startSubsystemFromResolved(Subsystem subsystem) throws InterruptedException {
+		assertState(State.RESOLVED, subsystem);
+		subsystemEvents.clear();
+		subsystem.start();
 		assertEvent(subsystem, State.STARTING, 5000);
 		assertEvent(subsystem, State.ACTIVE, 5000);
 		assertState(State.ACTIVE, subsystem);

@@ -13,6 +13,10 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import org.apache.aries.subsystem.core.archive.DeploymentManifest;
+import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
@@ -90,6 +94,33 @@ public class Utils {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		return IdentityNamespace.TYPE_BUNDLE.equals(type) ||
 				IdentityNamespace.TYPE_FRAGMENT.equals(type);
+	}
+	
+	/*
+	 * The Deployed-Content header in the deployment manifest is used to store
+	 * information about explicitly installed resources and provisioned
+	 * dependencies in addition to content for persistence purposes. This method
+	 * returns true only if the resource is "true" content of the subsystem and,
+	 * therefore, uses the Subsystem-Content header from the subsystem manifest.
+	 */
+	public static boolean isContent(AriesSubsystem subsystem, Resource resource) {
+		SubsystemManifest subsystemManifest = subsystem.getSubsystemManifest();
+		if (subsystemManifest == null)
+			return false;
+		SubsystemContentHeader subsystemContentHeader = subsystemManifest.getSubsystemContentHeader();
+		if (subsystemContentHeader == null)
+			return false;
+		return subsystemContentHeader.contains(resource);
+	}
+	
+	public static boolean isDependency(AriesSubsystem subsystem, Resource resource) {
+		DeploymentManifest manifest = subsystem.getDeploymentManifest();
+		if (manifest == null)
+			return false;
+		ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
+		if (header == null)
+			return false;
+		return header.contains(resource);
 	}
 	
 	public static boolean isInstallableResource(Resource resource) {
