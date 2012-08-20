@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 
@@ -54,14 +55,17 @@ public class RootSubsystemTest extends SubsystemTest {
 		core.uninstall();
 		core = installBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core");
 		core.start();
+		// There should be install events since the persisted root subsystem was
+		// deleted when the subsystems implementation bundle was uninstalled.
 		assertServiceEventsInstall(root);
 		assertServiceEventsResolve(root);
 		assertServiceEventsStart(root);
 		core.stop();
 		assertServiceEventsStop(root);
 		core.start();
-		assertServiceEventsInstall(root);
-		assertServiceEventsResolve(root);
+		// There should be no install events or RESOLVING event since there
+		// should be a persisted root subsystem already in the RESOLVED state.
+		assertServiceEventResolved(root, ServiceEvent.REGISTERED);
 		assertServiceEventsStart(root);
 	}
 	

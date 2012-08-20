@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -52,41 +53,58 @@ import org.slf4j.LoggerFactory;
 public class StartAction extends AbstractAction {
 	private static final Logger logger = LoggerFactory.getLogger(AriesSubsystem.class);
 	
-	public StartAction(AriesSubsystem subsystem, boolean explicit) {
-		super(subsystem, false, explicit);
+	private final AriesSubsystem instigator;
+	
+	public StartAction(AriesSubsystem instigator, AriesSubsystem requestor, AriesSubsystem target) {
+		super(requestor, target, false);
+		this.instigator = instigator;
 	}
 	
 	@Override
 	public Object run() {
-		State state = subsystem.getState();
-		if (state == State.UNINSTALLING || state == State.UNINSTALLED)
+		State state = target.getState();
+		// The following states are illegal.
+		if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED, State.UNINSTALLING).contains(state))
 			throw new SubsystemException("Cannot stop from state " + state);
-		if (state == State.INSTALLING || state == State.RESOLVING || state == State.STOPPING) {
+		// The following states must wait.
+		if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
 			waitForStateChange();
-			return new StartAction(subsystem, explicit).run();
+			return new StartAction(instigator, requestor, target).run();
 		}
-		// TODO Should we wait on STARTING to see if the outcome is ACTIVE?
-		if (state == State.STARTING || state == State.ACTIVE)
+		// The following states mean the requested state has already been attained.
+		if (State.ACTIVE.equals(state))
 			return null;
-		resolve(subsystem);
-		if (explicit)
-			subsystem.setAutostart(true);
-		subsystem.setState(State.STARTING);
+		// Always start if target is content of requestor.
+		if (!Utils.isContent(requestor, target)) {
+			// Aways start if target is a dependency of requestor.
+			if (!Utils.isDependency(requestor, target)) {
+				// Always start if instigator equals target (explicit start).
+				if (!instigator.equals(target)) {
+					// Don't start if instigator is root (restart) and target is not ready.
+					if (instigator.isRoot() && !target.isReadyToStart()) {
+						return null;
+					}
+				}
+			}
+		}
+		// Resolve if necessary.
+		if (State.INSTALLED.equals(state))
+			resolve(target);
+		target.setState(State.STARTING);
 		// TODO Need to hold a lock here to guarantee that another start
 		// operation can't occur when the state goes to RESOLVED.
 		// Start the subsystem.
 		Coordination coordination = Activator.getInstance()
 				.getCoordinator()
-				.create(subsystem.getSymbolicName() + '-' + subsystem.getSubsystemId(), 0);
+				.create(target.getSymbolicName() + '-' + target.getSubsystemId(), 0);
 		try {
-			List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem));
-			SubsystemContentHeader header = subsystem.getSubsystemManifest().getSubsystemContentHeader();
+			List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(target));
+			SubsystemContentHeader header = target.getSubsystemManifest().getSubsystemContentHeader();
 			if (header != null)
 				Collections.sort(resources, new StartResourceComparator(header));
-			if (!subsystem.isRoot())
-				for (Resource resource : resources)
-					startResource(resource, coordination);
-			subsystem.setState(State.ACTIVE);
+			for (Resource resource : resources)
+				startResource(resource, coordination);
+			target.setState(State.ACTIVE);
 		} catch (Throwable t) {
 			coordination.fail(t);
 			// TODO Need to reinstate complete isolation by disconnecting the
@@ -95,7 +113,7 @@ public class StartAction extends AbstractAction {
 			try {
 				coordination.end();
 			} catch (CoordinationException e) {
-				subsystem.setState(State.RESOLVED);
+				target.setState(State.RESOLVED);
 				Throwable t = e.getCause();
 				if (t instanceof SubsystemException)
 					throw (SubsystemException)t;
@@ -105,7 +123,7 @@ public class StartAction extends AbstractAction {
 		return null;
 	}
 	
-	private Collection<Bundle> getBundles(AriesSubsystem subsystem) {
+	private static Collection<Bundle> getBundles(AriesSubsystem subsystem) {
 		Collection<Resource> constituents = Activator.getInstance().getSubsystems().getConstituents(subsystem);
 		ArrayList<Bundle> result = new ArrayList<Bundle>(constituents.size());
 		for (Resource resource : constituents) {
@@ -116,10 +134,11 @@ public class StartAction extends AbstractAction {
 		return result;
 	}
 	
-	private void resolve(AriesSubsystem subsystem) {
-		if (subsystem.getState() != State.INSTALLED)
-			return;
-		subsystem.setState(State.RESOLVING);
+	private static void resolve(AriesSubsystem subsystem) {
+		// Don't propagate a RESOLVING event if this is a persisted subsystem
+		// that is already RESOLVED.
+		if (State.INSTALLED.equals(subsystem.getState()))
+			subsystem.setState(State.RESOLVING);
 		try {
 			// The root subsystem should follow the same event pattern for
 			// state transitions as other subsystems. However, an unresolvable
@@ -141,9 +160,10 @@ public class StartAction extends AbstractAction {
 				}
 				setExportIsolationPolicy(subsystem);
 			}
-			// TODO Could avoid calling setState (and notifyAll) here and
-			// avoid the need for a lock.
-			subsystem.setState(State.RESOLVED);
+			// No need to propagate a RESOLVED event if this is a persisted
+			// subsystem already in the RESOLVED state.
+			if (State.RESOLVING.equals(subsystem.getState()))
+				subsystem.setState(State.RESOLVED);
 		}
 		catch (Throwable t) {
 			subsystem.setState(State.INSTALLED);
@@ -153,7 +173,7 @@ public class StartAction extends AbstractAction {
 		}
 	}
 	
-	private void setExportIsolationPolicy(AriesSubsystem subsystem) throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
+	private static void setExportIsolationPolicy(AriesSubsystem subsystem) throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
 		if (!subsystem.isComposite())
 			return;
 		Region from = ((AriesSubsystem)subsystem.getParents().iterator().next()).getRegion();
@@ -171,7 +191,7 @@ public class StartAction extends AbstractAction {
 		from.connectRegion(to, regionFilter);
 	}
 	
-	private void setExportIsolationPolicy(RegionFilterBuilder builder, ExportPackageHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
+	private static void setExportIsolationPolicy(RegionFilterBuilder builder, ExportPackageHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
@@ -186,7 +206,7 @@ public class StartAction extends AbstractAction {
 		}
 	}
 	
-	private void setExportIsolationPolicy(RegionFilterBuilder builder, ProvideCapabilityHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
+	private static void setExportIsolationPolicy(RegionFilterBuilder builder, ProvideCapabilityHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		for (ProvideCapabilityHeader.Clause clause : header.getClauses()) {
@@ -202,7 +222,7 @@ public class StartAction extends AbstractAction {
 		}
 	}
 	
-	private void setExportIsolationPolicy(RegionFilterBuilder builder, SubsystemExportServiceHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
+	private static void setExportIsolationPolicy(RegionFilterBuilder builder, SubsystemExportServiceHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
@@ -250,7 +270,11 @@ public class StartAction extends AbstractAction {
 
 	private void startSubsystemResource(Resource resource, Coordination coordination) throws IOException {
 		final AriesSubsystem subsystem = (AriesSubsystem)resource;
-		new StartAction(subsystem, false).run();
+		// Subsystems that are content resources of another subsystem must have
+		// their autostart setting set to started.
+		if (Utils.isContent(this.target, subsystem))
+			subsystem.setAutostart(true);
+		new StartAction(instigator, target, subsystem).run();
 		if (coordination == null)
 			return;
 		coordination.addParticipant(new Participant() {
@@ -259,7 +283,7 @@ public class StartAction extends AbstractAction {
 			}
 	
 			public void failed(Coordination coordination) throws Exception {
-				new StopAction(subsystem, !subsystem.isRoot(), false).run();
+				new StopAction(target, subsystem, !subsystem.isRoot()).run();
 			}
 		});
 	}

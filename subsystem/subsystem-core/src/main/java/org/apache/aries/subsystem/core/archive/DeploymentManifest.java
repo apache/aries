@@ -51,15 +51,20 @@ public class DeploymentManifest {
 			return this;
 		}
 		
-		public Builder content(Resource resource) {
+//		public Builder content(Resource resource) {
+//			return content(resource, true);
+//		}
+		
+		public Builder content(Resource resource, boolean referenced) {
 			DeployedContentHeader header = (DeployedContentHeader)headers.get(DeploymentManifest.DEPLOYED_CONTENT);
 			if (header == null) {
-				header(DeployedContentHeader.newInstance(Collections.singletonList(resource)));
+				DeployedContentHeader.Clause clause = new DeployedContentHeader.Clause(resource, referenced);
+				header(new DeployedContentHeader(Collections.singleton(clause)));
 				return this;
 			}
 			DeployedContentHeader.Clause clause = header.getClause(resource);
 			if (clause == null) {
-				clause = new DeployedContentHeader.Clause(resource);
+				clause = new DeployedContentHeader.Clause(resource, referenced);
 				List<DeployedContentHeader.Clause> clauses = new ArrayList<DeployedContentHeader.Clause>(header.getClauses().size() + 1);
 				clauses.addAll(header.getClauses());
 				clauses.add(clause);
@@ -73,7 +78,7 @@ public class DeploymentManifest {
 					i.remove();
 					break;
 				}
-			clauses.add(new DeployedContentHeader.Clause(resource));
+			clauses.add(new DeployedContentHeader.Clause(resource, referenced));
 			header(new DeployedContentHeader(clauses));
 			return this;
 		}

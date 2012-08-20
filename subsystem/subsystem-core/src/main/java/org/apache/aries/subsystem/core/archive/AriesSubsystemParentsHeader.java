@@ -37,7 +37,6 @@ public class AriesSubsystemParentsHeader implements RequirementHeader<AriesSubsy
 		public static final String ATTRIBUTE_VERSION = VersionRangeAttribute.NAME;
 		public static final String ATTRIBUTE_RESOURCEID = "resourceId";
 		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
-		public static final String DIRECTIVE_REFERENCECOUNT = ReferenceCountDirective.NAME;
 		
 		private static final Pattern PATTERN_SYMBOLICNAME = Pattern.compile('(' + Grammar.SYMBOLICNAME + ")(?=;|\\z)");
 		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
@@ -152,10 +151,6 @@ public class AriesSubsystemParentsHeader implements RequirementHeader<AriesSubsy
 			return ((VersionAttribute)getAttribute(ATTRIBUTE_VERSION)).getVersion();
 		}
 		
-		public boolean isIncrementReferenceCount() {
-			return ((ReferenceCountDirective)getDirective(DIRECTIVE_REFERENCECOUNT)).isIncrement();
-		}
-		
 		public OsgiIdentityRequirement toRequirement(Resource resource) {
 			return new OsgiIdentityRequirement(getSymbolicName(), getVersion(), getType(), false);
 		}
@@ -189,11 +184,7 @@ public class AriesSubsystemParentsHeader implements RequirementHeader<AriesSubsy
 			.append(';')
 			.append(Clause.ATTRIBUTE_RESOURCEID)
 			.append('=')
-			.append(subsystem.getSubsystemId())
-			.append(';')
-			.append(Clause.DIRECTIVE_REFERENCECOUNT)
-			.append(":=")
-			.append(referenceCount);
+			.append(subsystem.getSubsystemId());
 		return builder;
 	}
 	
@@ -237,13 +228,6 @@ public class AriesSubsystemParentsHeader implements RequirementHeader<AriesSubsy
 	@Override
 	public Collection<AriesSubsystemParentsHeader.Clause> getClauses() {
 		return Collections.unmodifiableSet(clauses);
-	}
-	
-	public boolean isIncrementReferenceCount(AriesSubsystem subsystem) {
-		Clause clause = getClause(subsystem);
-		if (clause == null)
-			return false;
-		return clause.isIncrementReferenceCount();
 	}
 
 	@Override

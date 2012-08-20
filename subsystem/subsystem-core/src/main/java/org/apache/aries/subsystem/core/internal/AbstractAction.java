@@ -19,30 +19,30 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public abstract class AbstractAction implements PrivilegedAction<Object> {
 	protected final boolean disableRootCheck;
-	protected final boolean explicit;
-	protected final AriesSubsystem subsystem;
+	protected final AriesSubsystem requestor;
+	protected final AriesSubsystem target;
 	
-	public AbstractAction(AriesSubsystem subsystem, boolean disableRootCheck, boolean explicit) {
-		this.subsystem = subsystem;
+	public AbstractAction(AriesSubsystem requestor, AriesSubsystem target, boolean disableRootCheck) {
+		this.requestor = requestor;
+		this.target = target;
 		this.disableRootCheck = disableRootCheck;
-		this.explicit = explicit;
 	}
 	
 	protected void checkRoot() {
-		if (!disableRootCheck && subsystem.isRoot())
+		if (!disableRootCheck && target.isRoot())
 			throw new SubsystemException("This operation may not be performed on the root subsystem");
 	}
 	
 	protected void checkValid() {
-		AriesSubsystem s = (AriesSubsystem)Activator.getInstance().getSubsystemServiceRegistrar().getSubsystemService(subsystem);
-		if (s != subsystem)
+		AriesSubsystem s = (AriesSubsystem)Activator.getInstance().getSubsystemServiceRegistrar().getSubsystemService(target);
+		if (s != target)
 			throw new IllegalStateException("Detected stale subsystem instance: " + s);
 	}
 	
 	protected void waitForStateChange() {
-		synchronized (subsystem) {
+		synchronized (target) {
 			try {
-				subsystem.wait();
+				target.wait();
 			}
 			catch (InterruptedException e) {
 				throw new SubsystemException(e);

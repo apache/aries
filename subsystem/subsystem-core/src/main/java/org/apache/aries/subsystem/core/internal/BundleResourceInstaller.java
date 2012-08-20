@@ -35,8 +35,8 @@ public class BundleResourceInstaller extends ResourceInstaller {
 			ThreadLocalSubsystem.set(provisionTo);
 			revision = installBundle();
 		}
-		addConstituent(revision);
 		addReference(revision);
+		addConstituent(revision);
 		return revision;
 	}
 	
