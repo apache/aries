@@ -100,7 +100,7 @@ public abstract class ResourceUninstaller {
 	}
 	
 	protected void removeConstituent() {
-		removeConstituent(provisionTo, resource);
+		removeConstituent(subsystem, resource);
 	}
 	
 	protected void removeReference() {

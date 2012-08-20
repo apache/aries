@@ -15,7 +15,6 @@ package org.apache.aries.subsystem.core.internal;
 
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
-import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
@@ -59,9 +58,9 @@ public abstract class ResourceInstaller {
 	
 	protected void addConstituent(final Resource resource) {
 		// Don't let a resource become a constituent of itself.
-		if (resource.equals(provisionTo))
+		if (provisionTo == null || resource.equals(provisionTo))
 			return;
-		Activator.getInstance().getSubsystems().addConstituent(provisionTo, resource, isContent());
+		Activator.getInstance().getSubsystems().addConstituent(provisionTo, resource, isReferencedProvisionTo());
 		coordination.addParticipant(new Participant() {
 			@Override
 			public void ended(Coordination arg0) throws Exception {
@@ -79,7 +78,13 @@ public abstract class ResourceInstaller {
 		// Don't let a resource reference itself.
 		if (resource.equals(subsystem))
 			return;
-		Activator.getInstance().getSubsystems().addReference(subsystem, resource);
+		// The following check protects against resources posing as content
+		// during a restart since the Deployed-Content header is currently used
+		// to track all constituents for persistence purposes, which includes
+		// resources that were provisioned to the subsystem as dependencies of
+		// other resources.
+		if (isReferencedSubsystem())
+			Activator.getInstance().getSubsystems().addReference(subsystem, resource);
 		coordination.addParticipant(new Participant() {
 			@Override
 			public void ended(Coordination arg0) throws Exception {
@@ -98,20 +103,32 @@ public abstract class ResourceInstaller {
 	}
 	
 	protected boolean isContent() {
-		DeploymentManifest manifest = subsystem.getDeploymentManifest();
-		DeployedContentHeader header = manifest.getDeployedContentHeader();
-		if (header == null)
-			return !isDependency();
-		return header.contains(resource) || !isDependency();
+		return Utils.isContent(subsystem, resource);
 	}
 	
 	protected boolean isDependency() {
+		return Utils.isDependency(subsystem, resource);
+	}
+	
+	protected boolean isReferencedProvisionTo() {
 		DeploymentManifest manifest = subsystem.getDeploymentManifest();
-		if (manifest == null)
-			return false;
-		ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
-		if (header == null)
-			return false;
-		return header.contains(resource);
+		if (manifest != null) {
+			DeployedContentHeader header = manifest.getDeployedContentHeader();
+			if (header != null && header.contains(resource))
+				return subsystem.isReferenced(resource);
+		}
+		if (subsystem.equals(provisionTo))
+			return isReferencedSubsystem();
+		return false;
+	}
+	
+	protected boolean isReferencedSubsystem() {
+		DeploymentManifest manifest = subsystem.getDeploymentManifest();
+		if (manifest != null) {
+			DeployedContentHeader header = manifest.getDeployedContentHeader();
+			if (header != null && header.contains(resource))
+				return subsystem.isReferenced(resource);
+		}
+		return true;
 	}
 }

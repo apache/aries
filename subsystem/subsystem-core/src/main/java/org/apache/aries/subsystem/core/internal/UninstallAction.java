@@ -18,27 +18,27 @@ import java.util.EnumSet;
 import org.osgi.service.subsystem.Subsystem.State;
 
 public class UninstallAction extends AbstractAction {
-	public UninstallAction(AriesSubsystem subsystem, boolean disableRootCheck, boolean explicit) {
-		super(subsystem, disableRootCheck, explicit);
+	public UninstallAction(AriesSubsystem requestor, AriesSubsystem target, boolean disableRootCheck) {
+		super(requestor, target, disableRootCheck);
 	}
 	
 	@Override
 	public Object run() {
 		checkValid();
 		checkRoot();
-		State state = subsystem.getState();
+		State state = target.getState();
 		if (EnumSet.of(State.UNINSTALLED).contains(state))
 			return null;
 		else if (EnumSet.of(State.INSTALL_FAILED, State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING, State.UNINSTALLING).contains(state)) {
 			waitForStateChange();
-			subsystem.uninstall();
+			target.uninstall();
 		}
 		else if (state.equals(State.ACTIVE)) {
-			new StopAction(subsystem, disableRootCheck, explicit).run();
-			subsystem.uninstall();
+			new StopAction(requestor, target, disableRootCheck).run();
+			target.uninstall();
 		}
 		else
-			ResourceUninstaller.newInstance(subsystem, subsystem).uninstall();
+			ResourceUninstaller.newInstance(requestor, target).uninstall();
 		return null;
 	}
 }

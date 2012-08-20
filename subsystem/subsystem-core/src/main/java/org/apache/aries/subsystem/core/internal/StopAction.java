@@ -34,29 +34,27 @@ import org.slf4j.LoggerFactory;
 public class StopAction extends AbstractAction {
 	private static final Logger logger = LoggerFactory.getLogger(StopAction.class);
 	
-	public StopAction(AriesSubsystem subsystem, boolean disableRootCheck, boolean explicit) {
-		super(subsystem, disableRootCheck, explicit);
+	public StopAction(AriesSubsystem requestor, AriesSubsystem target, boolean disableRootCheck) {
+		super(requestor, target, disableRootCheck);
 	}
 	
 	@Override
 	public Object run() {
 		checkRoot();
-		if (explicit)
-			subsystem.setAutostart(false);
-		State state = subsystem.getState();
+		State state = target.getState();
 		if (EnumSet.of(State.INSTALLED, State.RESOLVED).contains(state))
 			return null;
 		else if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLING, State.UNINSTALLED).contains(state))
 			throw new IllegalStateException("Cannot stop from state " + state);
 		else if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
 			waitForStateChange();
-			return new StopAction(subsystem, disableRootCheck, explicit).run();
+			return new StopAction(requestor, target, disableRootCheck).run();
 		}
-		subsystem.setState(State.STOPPING);
-		List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem));
-		SubsystemContentHeader header = subsystem.getSubsystemManifest().getSubsystemContentHeader();
+		target.setState(State.STOPPING);
+		List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(target));
+		SubsystemContentHeader header = target.getSubsystemManifest().getSubsystemContentHeader();
 		if (header != null) {
-			Collections.sort(resources, new StartResourceComparator(subsystem.getSubsystemManifest().getSubsystemContentHeader()));
+			Collections.sort(resources, new StartResourceComparator(target.getSubsystemManifest().getSubsystemContentHeader()));
 			Collections.reverse(resources);
 		}
 		for (Resource resource : resources) {
@@ -67,19 +65,19 @@ public class StopAction extends AbstractAction {
 				stopResource(resource);
 			} 
 			catch (Exception e) {
-				logger.error("An error occurred while stopping resource " + resource + " of subsystem " + subsystem, e);
+				logger.error("An error occurred while stopping resource " + resource + " of subsystem " + target, e);
 			}
 		}
 		// TODO Can we automatically assume it actually is resolved?
-		subsystem.setState(State.RESOLVED);
+		target.setState(State.RESOLVED);
 		try {
-			subsystem.setDeploymentManifest(new DeploymentManifest(
-					subsystem.getDeploymentManifest(),
+			target.setDeploymentManifest(new DeploymentManifest(
+					target.getDeploymentManifest(),
 					null,
-					subsystem.isAutostart(),
-					subsystem.getSubsystemId(),
+					target.isAutostart(),
+					target.getSubsystemId(),
 					SubsystemIdentifier.getLastId(),
-					subsystem.getLocation(),
+					target.getLocation(),
 					false,
 					false));
 		}
@@ -90,7 +88,7 @@ public class StopAction extends AbstractAction {
 	}
 	
 	private void stopBundleResource(Resource resource) throws BundleException {
-		if (subsystem.isRoot())
+		if (target.isRoot())
 			return;
 		((BundleRevision)resource).getBundle().stop();
 	}
@@ -112,6 +110,6 @@ public class StopAction extends AbstractAction {
 	}
 	
 	private void stopSubsystemResource(Resource resource) throws IOException {
-		new StopAction((AriesSubsystem)resource, !((AriesSubsystem)resource).isRoot(), false).run();
+		new StopAction(target, (AriesSubsystem)resource, !((AriesSubsystem)resource).isRoot()).run();
 	}
 }

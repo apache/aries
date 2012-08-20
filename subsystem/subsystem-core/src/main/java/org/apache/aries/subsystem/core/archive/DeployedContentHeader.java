@@ -36,6 +36,7 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 		public static final String ATTRIBUTE_DEPLOYEDVERSION = DeployedVersionAttribute.NAME;
 		public static final String ATTRIBUTE_RESOURCEID = "resourceId";
 		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
+		public static final String DIRECTIVE_REFERENCE = ReferenceDirective.NAME;
 		public static final String DIRECTIVE_STARTORDER = StartOrderDirective.NAME;
 		
 		private static final Pattern PATTERN_SYMBOLICNAME = Pattern.compile('(' + Grammar.SYMBOLICNAME + ")(?=;|\\z)");
@@ -45,6 +46,9 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 			Parameter parameter = parameters.get(ATTRIBUTE_TYPE);
 			if (parameter == null)
 				parameters.put(ATTRIBUTE_TYPE, TypeAttribute.DEFAULT);
+			parameter = parameters.get(DIRECTIVE_REFERENCE);
+			if (parameter == null)
+				parameters.put(DIRECTIVE_REFERENCE, ReferenceDirective.TRUE);
 		}
 		
 		private final String path;
@@ -64,7 +68,11 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 		}
 		
 		public Clause(Resource resource) {
-			this(appendResource(resource, new StringBuilder()).toString());
+			this(resource, true);
+		}
+		
+		public Clause(Resource resource, boolean referenced) {
+			this(appendResource(resource, new StringBuilder(), referenced).toString());
 		}
 		
 		public boolean contains(Resource resource) {
@@ -143,6 +151,10 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 			return ((TypeAttribute)getAttribute(ATTRIBUTE_TYPE)).getType();
 		}
 		
+		public boolean isReferenced() {
+			return ((ReferenceDirective)getDirective(DIRECTIVE_REFERENCE)).isReferenced();
+		}
+		
 		public DeployedContentRequirement toRequirement(Resource resource) {
 			return new DeployedContentRequirement(this, resource);
 		}
@@ -163,7 +175,7 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 	public static DeployedContentHeader newInstance(Collection<Resource> resources) {
 		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
-			appendResource(resource, builder);
+			appendResource(resource, builder, true);
 			builder.append(',');
 		}
 		// Remove the trailing comma.
@@ -172,7 +184,7 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 		return new DeployedContentHeader(builder.toString());
 	}
 	
-	private static StringBuilder appendResource(Resource resource, StringBuilder builder) {
+	private static StringBuilder appendResource(Resource resource, StringBuilder builder, boolean referenced) {
 		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
 		Version version = ResourceHelper.getVersionAttribute(resource);
 		String type = ResourceHelper.getTypeAttribute(resource);
@@ -188,7 +200,11 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 			.append(';')
 			.append(Clause.ATTRIBUTE_RESOURCEID)
 			.append('=')
-			.append(Utils.getId(resource));
+			.append(Utils.getId(resource))
+			.append(';')
+			.append(Clause.DIRECTIVE_REFERENCE)
+			.append(":=")
+			.append(referenced);
 		return builder;
 	}
 	
@@ -245,6 +261,13 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 	@Override
 	public String getValue() {
 		return toString();
+	}
+	
+	public boolean isReferenced(Resource resource) {
+		DeployedContentHeader.Clause clause = getClause(resource);
+		if (clause == null)
+			return false;
+		return clause.isReferenced();
 	}
 	
 	@Override

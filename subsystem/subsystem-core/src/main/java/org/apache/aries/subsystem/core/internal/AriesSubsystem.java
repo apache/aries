@@ -22,6 +22,7 @@ import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -106,7 +107,7 @@ public class AriesSubsystem implements Resource, Subsystem {
 	
 	public AriesSubsystem(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
 		this.directory = directory;
-		setDeploymentManifest(new DeploymentManifest.Builder().manifest(getDeploymentManifest()).state(State.INSTALLING).build());
+		setDeploymentManifest(new DeploymentManifest.Builder().manifest(getDeploymentManifest()).build());
 	}
 	
 	/* BEGIN Resource interface methods. */
@@ -258,27 +259,29 @@ public class AriesSubsystem implements Resource, Subsystem {
 	@Override
 	public void start() {
 		SecurityManager.checkExecutePermission(this);
-		AccessController.doPrivileged(new StartAction(this, true));
+		setAutostart(true);
+		AccessController.doPrivileged(new StartAction(this, this, this));
 	}
 
 	@Override
 	public void stop() {
 		SecurityManager.checkExecutePermission(this);
-		AccessController.doPrivileged(new StopAction(this, !isRoot(), true));
+		setAutostart(false);
+		AccessController.doPrivileged(new StopAction(this, this, !isRoot()));
 	}
 
 	@Override
 	public void uninstall() {
 		SecurityManager.checkLifecyclePermission(this);
-		AccessController.doPrivileged(new UninstallAction(this, false, true));
+		AccessController.doPrivileged(new UninstallAction(this, this, false));
 	}
 	
 	/* END Subsystem interface methods. */
 	
-	void addedContent(Resource resource) {
+	void addedConstituent(Resource resource, boolean referenced) {
 		try {
 			setDeploymentManifest(new DeploymentManifest.Builder()
-					.manifest(getDeploymentManifest()).content(resource).build());
+					.manifest(getDeploymentManifest()).content(resource, referenced).build());
 		} catch (Exception e) {
 			throw new SubsystemException(e);
 		}
@@ -366,6 +369,25 @@ public class AriesSubsystem implements Resource, Subsystem {
 	
 	boolean isFeature() {
 		return getSubsystemManifest().getSubsystemTypeHeader().isFeature();
+	}
+	
+	boolean isReadyToStart() {
+		if (isRoot())
+			return true;
+		for (Subsystem parent : getParents())
+			if (EnumSet.of(State.STARTING, State.ACTIVE).contains(parent.getState()) && isAutostart())
+				return true;
+		return false;
+	}
+	
+	boolean isReferenced(Resource resource) {
+		// Everything is referenced for the root subsystem during initialization.
+		if (isRoot() && EnumSet.of(State.INSTALLING, State.INSTALLED).contains(getState()))
+			return true;
+		DeployedContentHeader header = getDeploymentManifest().getDeployedContentHeader();
+		if (header == null)
+			return false;
+		return header.isReferenced(resource);
 	}
 	
 	boolean isRoot() {
