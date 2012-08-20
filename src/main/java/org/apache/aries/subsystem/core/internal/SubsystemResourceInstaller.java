@@ -80,13 +80,14 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	}
 	
 	private AriesSubsystem installAriesSubsystem(AriesSubsystem subsystem) throws Exception {
+		// If the state is null, this is a brand new subsystem. If the state is
+		// not null, this is a persisted subsystem. For brand new subsystems,
+		// an INSTALLING event must be propagated.
+		if (subsystem.getState() == null)
+			subsystem.setState(State.INSTALLING);
 		addChild(subsystem);
+		addReference(subsystem);
 		addConstituent(subsystem);
-		if (!isDependency())
-			addReference(subsystem);
-		// TODO Is this check really necessary?
-		if (!State.INSTALLING.equals(subsystem.getState()))
-			return subsystem;
 		addSubsystem(subsystem);
 		if (subsystem.isScoped())
 			RegionContextBundleHelper.installRegionContextBundle(subsystem);
@@ -114,7 +115,10 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		// Simulate installation of shared content so that necessary relationships are established.
 		for (Resource content : subsystem.getResource().getSharedContent())
 			ResourceInstaller.newInstance(coordination, content, subsystem).install();
-		subsystem.setState(State.INSTALLED);
+		// Only brand new subsystems should have acquired the INSTALLING state,
+		// in which case an INSTALLED event must be propagated.
+		if (State.INSTALLING.equals(subsystem.getState()))
+			subsystem.setState(State.INSTALLED);
 		return subsystem;
 	}
 	

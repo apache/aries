@@ -27,6 +27,8 @@ public class DirectiveFactory {
 			return VisibilityDirective.getInstance(value);
 		if (ProvisionPolicyDirective.NAME.equals(name))
 			return ProvisionPolicyDirective.getInstance(value);
+		if (ReferenceDirective.NAME.equals(name))
+			return ReferenceDirective.getInstance(value);
 		return new GenericDirective(name, value);
 	}
 }
