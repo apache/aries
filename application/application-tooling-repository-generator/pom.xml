@@ -27,13 +27,13 @@
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.tooling.repository.generator</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Apache Aries repository generator tool</name>
 
     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-tooling-repository-generator</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-tooling-repository-generator</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-tooling-repository-generator</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.tooling.repository.generator-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.tooling.repository.generator-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.tooling.repository.generator-1.0.0</url>
      </scm>
     <properties>
         <aries.osgi.export.pkg>
