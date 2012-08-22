@@ -46,12 +46,7 @@
         <aries.osgi.private.pkg>
         	org.apache.aries.subsystem.core,
         	org.apache.aries.subsystem.core.archive,
-            org.apache.aries.subsystem.core.internal,
-            org.apache.aries.subsystem.core.obr,
-            org.apache.aries.subsystem.core.obr.felix,
-            org.apache.aries.subsystem.core.resource,
-            org.apache.felix.resolver,
-            org.apache.felix.resolver.impl
+            org.apache.aries.subsystem.core.internal
         </aries.osgi.private.pkg>
          <aries.osgi.import>
          	*
@@ -104,9 +99,15 @@
             </exclusions>
         </dependency>
     	<dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.8.0-SNAPSHOT</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
     	<dependency>
