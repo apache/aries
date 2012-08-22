@@ -186,7 +186,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				// Felix mvn url handler
 				mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 				// Bundles
-				mavenBundle("org.eclipse.osgi", "org.eclipse.osgi.services").version("3.8.0-SNAPSHOT"),
+				mavenBundle("org.osgi", "org.osgi.enterprise").version("5.0.0"),
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.region").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
