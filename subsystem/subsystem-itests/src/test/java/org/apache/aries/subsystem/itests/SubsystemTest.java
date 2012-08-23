@@ -190,7 +190,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.region").version("3.8.0-SNAPSHOT"),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-				mavenBundle("org.apache.aries", "org.apache.aries.util").version("1.0.0-SNAPSHOT"),
+				mavenBundle("org.apache.aries", "org.apache.aries.util").version("1.0.1-SNAPSHOT"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
 				mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
 				mavenBundle("org.apache.felix", "org.apache.felix.resolver"),

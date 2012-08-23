@@ -250,6 +250,31 @@
             <scope>test</scope>
         </dependency>
         
+        <dependency>
+			<groupId>org.apache.aries</groupId>
+			<artifactId>org.apache.aries.util</artifactId>
+            <version>1.0.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.blueprint</groupId>
+			<artifactId>org.apache.aries.blueprint</artifactId>
+            <version>1.0.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.proxy</groupId>
+			<artifactId>org.apache.aries.proxy</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>4.0</version>
+			<scope>test</scope>
+		</dependency>
+        
     </dependencies>
     <build>
         <plugins>
@@ -410,6 +435,25 @@
 					
 					<!-- End of new pom for hello tests, part 1 -->
 					
+					<execution>
+						<id>basic-blueprint-application</id>
+						<goals>
+						  <goal>jar</goal>
+						</goals>
+						<configuration>
+						  <archive>
+						    <manifestFile>src/test/bundles/blueprint/META-INF/MANIFEST.MF</manifestFile>
+						  </archive>
+						  <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+						  <includes>
+						    <include>org/apache/aries/subsystem/itests/blueprint/**</include>
+						    <include>OSGI-INF/blueprint/blueprint.xml</include>
+						  </includes>
+						  <outputDirectory>src/test/resources/blueprint</outputDirectory>
+						  <finalName>blueprint</finalName>
+						</configuration>
+						<phase>process-test-classes</phase>
+					</execution>
 					
 				</executions>
 			</plugin>
@@ -484,6 +528,19 @@
 					</execution>
 					
 					<!-- End of new pom for hello tests, part 2 -->
+					
+					<execution>
+						<id>add-source-blueprint</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/bundles/blueprint</source>
+							</sources>
+						</configuration>
+					</execution>
 					
 				</executions>
 			</plugin>
