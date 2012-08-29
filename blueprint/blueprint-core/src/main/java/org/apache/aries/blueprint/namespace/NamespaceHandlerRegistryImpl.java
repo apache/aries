@@ -44,8 +44,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -92,12 +90,9 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     private final ConcurrentHashMap<URI, CopyOnWriteArraySet<NamespaceHandler>> handlers =
                         new ConcurrentHashMap<URI, CopyOnWriteArraySet<NamespaceHandler>>();
 
-    // Access to the LRU schemas map is synchronized on the lock object
-    private final Map<Map<URI, NamespaceHandler>, Reference<Schema>> schemas =
+    // Access to the LRU schemas map is synchronized on itself
+    private final LRUMap<Map<URI, NamespaceHandler>, Reference<Schema>> schemas =
                         new LRUMap<Map<URI, NamespaceHandler>, Reference<Schema>>(10);
-
-    // Lock to protect access to the schema list
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     // Access to this factory is synchronized on itself
     private final SchemaFactory schemaFactory =
@@ -249,87 +244,67 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         // Find a schema that can handle all the requested namespaces
         // If it contains additional namespaces, it should not be a problem since
         // they won't be used at all
-        lock.readLock().lock();
-        try {
-            Schema schema = getExistingSchema(handlers);
-            if (schema != null) {
-                return schema;
-            }
-        } finally {
-            lock.readLock().unlock();
+        Schema schema = getExistingSchema(handlers);
+        if (schema == null) {
+            // Create schema
+            schema = createSchema(handlers, bundle, schemaMap);
+            cacheSchema(handlers, schema);
         }
-        // Create schema
-        lock.writeLock().lock();
-        try {
-            Schema schema = getExistingSchema(handlers);
-            if (schema == null) {
-                schema = createSchema(handlers, bundle, schemaMap);
-                cacheSchema(handlers, schema);
-            }
-            return schema;
-        } finally {
-            lock.writeLock().unlock();
-        }
+        return schema;
     }
 
     private Schema getExistingSchema(Map<URI, NamespaceHandler> handlers) {
-        for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
-            boolean found = true;
-            for (URI uri : handlers.keySet()) {
-                if (!handlers.get(uri).equals(key.get(uri))) {
-                    found = false;
-                    break;
+        synchronized (schemas) {
+            for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
+                boolean found = true;
+                for (URI uri : handlers.keySet()) {
+                    if (!handlers.get(uri).equals(key.get(uri))) {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found) {
+                    return schemas.get(key).get();
                 }
             }
-            if (found) {
-                return schemas.get(key).get();
-            }
+            return null;
         }
-        return null;
     }
 
     private void removeSchemasFor(NamespaceHandler handler) {
-        List<Map<URI, NamespaceHandler>> keys = new ArrayList<Map<URI, NamespaceHandler>>();
-        lock.readLock().lock();
-        try {
+        synchronized (schemas) {
+            List<Map<URI, NamespaceHandler>> keys = new ArrayList<Map<URI, NamespaceHandler>>();
             for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
                 if (key.values().contains(handler)) {
                     keys.add(key);
                 }
             }
-        } finally {
-            lock.readLock().unlock();
-        }
-        if (!keys.isEmpty()) {
-            lock.writeLock().lock();
-            try {
-                for (Map<URI, NamespaceHandler> key : keys) {
-                    schemas.remove(key);
-                }
-            } finally {
-                lock.writeLock().unlock();
+            for (Map<URI, NamespaceHandler> key : keys) {
+                schemas.remove(key);
             }
         }
     }
 
     private void cacheSchema(Map<URI, NamespaceHandler> handlers, Schema schema) {
-        // Remove schemas that are fully included
-        for (Iterator<Map<URI, NamespaceHandler>> iterator = schemas.keySet().iterator(); iterator.hasNext();) {
-            Map<URI, NamespaceHandler> key = iterator.next();
-            boolean found = true;
-            for (URI uri : key.keySet()) {
-                if (!key.get(uri).equals(handlers.get(uri))) {
-                    found = false;
+        synchronized (schemas) {
+            // Remove schemas that are fully included
+            for (Iterator<Map<URI, NamespaceHandler>> iterator = schemas.keySet().iterator(); iterator.hasNext();) {
+                Map<URI, NamespaceHandler> key = iterator.next();
+                boolean found = true;
+                for (URI uri : key.keySet()) {
+                    if (!key.get(uri).equals(handlers.get(uri))) {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found) {
+                    iterator.remove();
                     break;
                 }
             }
-            if (found) {
-                iterator.remove();
-                break;
-            }
+            // Add our new schema
+            schemas.put(handlers, new SoftReference<Schema>(schema));
         }
-        // Add our new schema
-        schemas.put(handlers, new SoftReference<Schema>(schema));
     }
 
     private Schema createSchema(Map<URI, NamespaceHandler> handlers,
