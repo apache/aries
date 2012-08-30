@@ -187,21 +187,21 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 				// Bundles
 				mavenBundle("org.osgi", "org.osgi.enterprise").version("5.0.0"),
-				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.region").version("3.8.0-SNAPSHOT"),
+				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-				mavenBundle("org.apache.aries", "org.apache.aries.util").version("1.0.1-SNAPSHOT"),
+				mavenBundle("org.apache.aries", "org.apache.aries.util").version("1.0.0"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
 				mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
 				mavenBundle("org.apache.felix", "org.apache.felix.resolver"),
-				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.coordinator").version("3.8.0-SNAPSHOT"),
-				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event").version("3.8.0-SNAPSHOT"),
+				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.coordinator").version("1.1.0.v20120522-1841"),
+				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.itest.interfaces"),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-				equinox().version("3.8.0-SNAPSHOT"));
+				equinox().version("3.8.0.V20120529-1548"));
 		options = updateOptions(options);
 		return options;
 	}

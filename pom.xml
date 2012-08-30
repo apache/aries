@@ -15,118 +15,24 @@
 		License.
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>1.0.0</version>
         <relativePath/>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.subsystem</groupId>
     <artifactId>subsystem</artifactId>
     <name>Apache Aries Subsystem</name>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
-
     <description>Subsystems support for Aries</description>
-
-    <!--
-        <scm>
-            <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem</connection>
-            <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem</developerConnection>
-            <url>http://svn.apache.org/viewvc/aries/trunk/subsystem</url>
-        </scm>
-
-        <dependencyManagement>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.aries.subsystem</groupId>
-                    <artifactId>org.apache.aries.subsystem.api</artifactId>
-                    <version>${version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.aries.subsystem</groupId>
-                    <artifactId>org.apache.aries.subsystem.core</artifactId>
-                    <version>${version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.aries.subsystem</groupId>
-                    <artifactId>org.apache.aries.subsystem.scope.api</artifactId>
-                    <version>${version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.aries.subsystem</groupId>
-                    <artifactId>org.apache.aries.subsystem.scope.impl</artifactId>
-                    <version>${version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.aries.testsupport</groupId>
-                    <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                    <version>${version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.aries.application</groupId>
-                    <artifactId>org.apache.aries.application.api</artifactId>
-                    <version>${version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.aries.application</groupId>
-                    <artifactId>org.apache.aries.application.utils</artifactId>
-                    <version>${version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.aries</groupId>
-                    <artifactId>org.apache.aries.util</artifactId>
-                    <version>${version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                    <version>4.2.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.utils</artifactId>
-                    <version>1.0.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.configadmin</artifactId>
-                    <version>1.2.4</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.apache.felix</groupId>
-                            <artifactId>org.osgi.compendium</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>org.apache.felix</groupId>
-                            <artifactId>org.osgi.core</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.osgi.service.obr</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.apache.felix</groupId>
-                            <artifactId>org.osgi.core</artifactId>
-                        </exclusion>
-                    </exclusions>
-                    <version>1.0.2</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.bundlerepository</artifactId>
-                    <version>1.6.4</version>
-                </dependency>
-
-
-            </dependencies>
-        </dependencyManagement>
-    -->
+	<scm>
+		<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem</developerConnection>
+		<url>http://svn.apache.org/viewvc/aries/trunk/subsystem</url>
+	</scm>
     <profiles>
         <profile>
             <id>default</id>
@@ -139,95 +45,6 @@
                 <module>subsystem-itests</module>
                 <module>subsystem-itests-api-bundle</module>
             </modules>
-
-        </profile>
-
-        <profile>
-            <id>fetch-external</id>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>ossrh</id>
-                    <name>Sonatype OSS Repository</name>
-                    <url>http://oss.sonatype.org/content/groups/public</url>
-                    <layout>default</layout>
-                </pluginRepository>
-            </pluginRepositories>
-
-
-            <build>
-                <plugins>
-
-                    <!-- EXTERNAL DEPENDENCY RESOLVER -->
-
-                    <plugin>
-                        <groupId>com.savage7.maven.plugins</groupId>
-                        <artifactId>maven-external-dependency-plugin</artifactId>
-                        <version>0.6-SNAPSHOT</version>
-                        <inherited>false</inherited>
-                        <configuration>
-                            <createChecksum>true</createChecksum>
-                            <skipChecksumVerification>false</skipChecksumVerification>
-                            <force>false</force>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.eclipse.equinox</groupId>
-                                    <artifactId>org.eclipse.equinox.coordinator</artifactId>
-                                    <version>3.8.0-SNAPSHOT</version>
-                                    <packaging>jar</packaging>
-                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M6-201203141800/org.eclipse.equinox.coordinator_1.1.0.v20120219-1616.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M6-201203141800/org.eclipse.equinox.coordinator_1.1.0.v20120219-1616.jar&amp;mirror_id=1</downloadUrl>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.eclipse.equinox</groupId>
-                                    <artifactId>org.eclipse.equinox.event</artifactId>
-                                    <version>3.8.0-SNAPSHOT</version>
-                                    <packaging>jar</packaging>
-                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M5-201201251800/org.eclipse.equinox.event_1.2.100.v20111010-1614.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M5-201201251800/org.eclipse.equinox.event_1.2.100.v20111010-1614.jar&amp;mirror_id=1</downloadUrl>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.eclipse.equinox</groupId>
-                                    <artifactId>org.eclipse.equinox.region</artifactId>
-                                    <version>3.8.0-SNAPSHOT</version>
-                                    <packaging>jar</packaging>
-                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M6-201203141800/org.eclipse.equinox.region_1.1.0.v20120227-1635.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M6-201203141800/org.eclipse.equinox.region_1.1.0.v20120227-1635.jar&amp;mirror_id=1</downloadUrl>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.eclipse</groupId>
-                                    <artifactId>org.eclipse.osgi</artifactId>
-                                    <version>3.8.0-SNAPSHOT</version>
-                                    <packaging>jar</packaging>
-                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M6-201203141800/org.eclipse.osgi_3.8.0.v20120312-2035.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M6-201203141800/org.eclipse.osgi_3.8.0.v20120312-2035.jar&amp;mirror_id=1</downloadUrl>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.eclipse.osgi</groupId>
-                                    <artifactId>org.eclipse.osgi.services</artifactId>
-                                    <version>3.8.0-SNAPSHOT</version>
-                                    <packaging>jar</packaging>
-                                    <downloadUrl>http://www.eclipse.org/downloads/download.php?file=/equinox/drops/S-3.8M5-201201251800/org.eclipse.osgi.services_3.3.0.v20111117-1210.jar&amp;url=http://download.eclipse.org/equinox/drops/S-3.8M5-201201251800/org.eclipse.osgi.services_3.3.0.v20111117-1210.jar&amp;mirror_id=1</downloadUrl>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>clean-external-dependencies</id>
-                                <phase>clean</phase>
-                                <goals>
-                                    <goal>clean-external</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>resolve-install-external-dependencies</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>resolve-external</goal>
-                                    <goal>install-external</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-           </build>
         </profile>
     </profiles>
-
-
 </project>
