@@ -49,13 +49,13 @@
 
         <!-- Aries Application Versions -->
         <ariesApplicationApiVersion>1.0.0</ariesApplicationApiVersion>
-        <ariesApplicationVersion>1.0.0-SNAPSHOT</ariesApplicationVersion>
+        <ariesApplicationVersion>1.0.0</ariesApplicationVersion>
         <ariesApplicationConvertersVersion>1.0.0</ariesApplicationConvertersVersion>
         <ariesApplicationDefaultLocalPlatformVersion>1.0.0</ariesApplicationDefaultLocalPlatformVersion>
         <ariesApplicationDeploymentManagementVersion>1.0.0</ariesApplicationDeploymentManagementVersion>
         <ariesApplicationInstallVersion>1.0.0</ariesApplicationInstallVersion>
         <ariesApplicationItestInterfaceVersion>1.0.0</ariesApplicationItestInterfaceVersion>
-        <ariesApplicationManagementVersion>1.0.0-SNAPSHOT</ariesApplicationManagementVersion>
+        <ariesApplicationManagementVersion>1.0.0</ariesApplicationManagementVersion>
         <ariesApplicationModellerVersion>1.0.0</ariesApplicationModellerVersion>
         <ariesApplicationNoopResolverVersion>1.0.0</ariesApplicationNoopResolverVersion>
         <ariesApplicationObrResolverVersion>1.0.0</ariesApplicationObrResolverVersion>
