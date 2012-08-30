@@ -53,6 +53,7 @@ import org.w3c.dom.Document;
 public class RepositoryGenerator {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RepositoryGenerator.class);
+    private static final String REPOSITORY_FILE = "repository-subsystems.xml";
 
     final private BundleContext context;
     private RepositoryAdmin repositoryAdmin;
@@ -83,7 +84,7 @@ public class RepositoryGenerator {
             }
             
             // if repository.xml already exists, no need to generate it
-            if (new File(obrPath + "repository.xml").exists()) {
+            if (new File(obrPath + REPOSITORY_FILE).exists()) {
                 registerOBR();
                 generated = true;
                 return;
@@ -110,7 +111,7 @@ public class RepositoryGenerator {
                 doc = RepositoryDescriptorGenerator.generateRepositoryDescriptor(
                         "Subsystem Repository description", infos);
                 FileOutputStream fout = new FileOutputStream(obrPath
-                        + "repository.xml");
+                        + REPOSITORY_FILE);
     
                 TransformerFactory.newInstance().newTransformer().transform(
                         new DOMSource(doc), new StreamResult(fout));
@@ -142,7 +143,7 @@ public class RepositoryGenerator {
     
             try {
                 this.repositoryAdmin.addRepository(new File(obrPath
-                        + "repository.xml").toURI().toURL());
+                        + REPOSITORY_FILE).toURI().toURL());
             } catch (Exception e) {
                 LOGGER.warn("Exception occurred when register obr", e);
                 e.printStackTrace();
