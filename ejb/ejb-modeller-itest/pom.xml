@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>application-modeller-standalone</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <type>bundle</type>
             <scope>test</scope>
         </dependency>
