@@ -77,7 +77,7 @@
         <!-- Aries Jmx Versions -->
         <ariesJmxiApiVersion>1.0.0</ariesJmxiApiVersion>
         <ariesJmxBlueprintApiVersion>1.0.0</ariesJmxBlueprintApiVersion>
-        <ariesJmxBlueprintVersion>1.0.0-SNAPSHOT</ariesJmxBlueprintVersion>
+        <ariesJmxBlueprintVersion>1.0.0</ariesJmxBlueprintVersion>
         <ariesJmxBlueprintCoreVersion>1.0.0</ariesJmxBlueprintCoreVersion>
         <ariesJmxVersion>1.0.0</ariesJmxVersion>
         <ariesJmxCoreVersion>1.0.0</ariesJmxCoreVersion>
