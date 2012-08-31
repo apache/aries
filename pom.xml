@@ -51,6 +51,7 @@
         <module>ejb</module>
         <module>jmx</module>
         <module>jpa</module>
+        <module>subsystem</module>
         <module>samples</module>
     </modules>
 
