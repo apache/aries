@@ -296,7 +296,7 @@
 								<exclude>**/*</exclude>
 							</excludes>
 							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<outputDirectory>src/test/resources/application1</outputDirectory>
+							<outputDirectory>${project.build.directory}/test-classes/application1</outputDirectory>
 							<finalName>tb1</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
@@ -314,7 +314,7 @@
 							<includes>
 								<include>org/apache/aries/subsystem/itests/tb1/**</include>
 							</includes>
-							<outputDirectory>src/test/resources/feature1</outputDirectory>
+							<outputDirectory>${project.build.directory}/test-classes/feature1</outputDirectory>
 							<finalName>tb1</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
@@ -333,7 +333,7 @@
 								<include>org/apache/aries/subsystem/itests/tb2/**</include>
 								<include>org/apache/aries/subsystem/itests/tb3/**</include>
 							</includes>
-							<outputDirectory>src/test/resources/feature2</outputDirectory>
+							<outputDirectory>${project.build.directory}/test-classes/feature2</outputDirectory>
 							<finalName>tb2</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
@@ -351,7 +351,7 @@
 							<includes>
 								<include>org/apache/aries/subsystem/itests/tb3/**</include>
 							</includes>
-							<outputDirectory>src/test/resources/feature1</outputDirectory>
+							<outputDirectory>${project.build.directory}/test-classes/feature1</outputDirectory>
 							<finalName>tb3</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
@@ -369,7 +369,7 @@
 							<includes>
 								<include>org/apache/aries/subsystem/itests/tb3/**</include>
 							</includes>
-							<outputDirectory>src/test/resources/feature2</outputDirectory>
+							<outputDirectory>${project.build.directory}/test-classes/feature2</outputDirectory>
 							<finalName>tb3</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
@@ -387,7 +387,7 @@
 							<includes>
 								<include>org/apache/aries/subsystem/itests/tb3/**</include>
 							</includes>
-							<outputDirectory>src/test/resources/feature3</outputDirectory>
+							<outputDirectory>${project.build.directory}/test-classes/feature3</outputDirectory>
 							<finalName>tb3</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
@@ -408,7 +408,7 @@
 							<includes>
 								<include>org/apache/aries/subsystem/itests/hello/impl/**</include>
 							</includes>
-							<outputDirectory>src/test/resources/hello</outputDirectory>
+							<outputDirectory>${project.build.directory}/test-classes/hello</outputDirectory>
 							<finalName>helloImpl</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
@@ -427,7 +427,7 @@
 							<includes>
 								<include>org/apache/aries/subsystem/itests/dynamicImport/**</include>
 							</includes>
-							<outputDirectory>src/test/resources/dynamicImport</outputDirectory>
+							<outputDirectory>${project.build.directory}/test-classes/dynamicImport</outputDirectory>
 							<finalName>dynamicImport</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
@@ -449,7 +449,7 @@
 						    <include>org/apache/aries/subsystem/itests/blueprint/**</include>
 						    <include>OSGI-INF/blueprint/blueprint.xml</include>
 						  </includes>
-						  <outputDirectory>src/test/resources/blueprint</outputDirectory>
+						  <outputDirectory>${project.build.directory}/test-classes/blueprint</outputDirectory>
 						  <finalName>blueprint</finalName>
 						</configuration>
 						<phase>process-test-classes</phase>
