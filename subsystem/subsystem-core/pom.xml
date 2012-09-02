@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
-        <version>0.4</version>
+        <version>1.0.0</version>
         <relativePath />
     </parent>
 
@@ -30,7 +30,7 @@
     <artifactId>org.apache.aries.subsystem.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystem Core</name>
-    <version>0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>Subsystems Core.</description>
 
      <scm>
@@ -57,7 +57,7 @@
     	<dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>

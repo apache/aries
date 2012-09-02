@@ -14,13 +14,13 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
-        <version>0.4</version>
+        <version>1.0.0</version>
         <relativePath />
     </parent>
 
     <groupId>org.apache.aries.subsystem</groupId>
     <artifactId>org.apache.aries.subsystem.itests</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Apache Aries Subsystem iTests</name>
     <description>
         Integration tests using the subsystem api, core for the implementation
@@ -73,7 +73,7 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <scope>test</scope>
-            <version>0.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -85,7 +85,7 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
             <scope>test</scope>
-            <version>0.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
 			<exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
@@ -246,7 +246,7 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.itest.interfaces</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         
