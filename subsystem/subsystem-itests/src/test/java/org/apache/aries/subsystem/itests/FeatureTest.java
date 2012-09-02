@@ -56,7 +56,7 @@ public class FeatureTest extends SubsystemTest {
 		try {
 			assertSymbolicName("org.apache.aries.subsystem.feature1", feature1);
 			assertVersion("1.0.0", feature1);
-			assertConstituents(5, feature1);
+			assertConstituents(3, feature1);
 			assertChildren(1, feature1);
 			feature2 = feature1.getChildren().iterator().next();
 			assertEvent(feature2, Subsystem.State.INSTALLING, 5000);
