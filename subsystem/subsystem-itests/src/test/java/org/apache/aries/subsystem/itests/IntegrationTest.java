@@ -119,6 +119,11 @@ public abstract class IntegrationTest {
         MavenArtifactProvisionOption mvnUrl = mavenBundleInTest(groupId, artifactId);
         return bundleContext.installBundle(mvnUrl.getURL());
     }
+    
+    protected Bundle installBundle(String groupId, String artifactId, String version) throws Exception {
+    	MavenArtifactProvisionOption mvnUrl = CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId).version(version);
+        return bundleContext.installBundle(mvnUrl.getURL());
+    }
 
     protected Bundle getInstalledBundle(String symbolicName) {
         for (Bundle b : bundleContext.getBundles()) {
