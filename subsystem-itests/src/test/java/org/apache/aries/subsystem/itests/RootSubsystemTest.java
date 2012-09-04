@@ -53,7 +53,7 @@ public class RootSubsystemTest extends SubsystemTest {
 		core.stop();
 		assertServiceEventsStop(root);
 		core.uninstall();
-		core = installBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core", "1.0.0-SNAPSHOT");
+		core = bundleContext.installBundle(core.getLocation());
 		core.start();
 		// There should be install events since the persisted root subsystem was
 		// deleted when the subsystems implementation bundle was uninstalled.
