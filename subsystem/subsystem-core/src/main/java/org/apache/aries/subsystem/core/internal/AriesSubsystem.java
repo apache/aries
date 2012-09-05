@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -259,14 +260,34 @@ public class AriesSubsystem implements Resource, Subsystem {
 	@Override
 	public void start() {
 		SecurityManager.checkExecutePermission(this);
-		setAutostart(true);
+		// Changing the autostart setting must be privileged because of file IO.
+		// It cannot be done within SartAction because we only want to change it
+		// on an explicit start operation but StartAction is also used for
+		// implicit operations.
+		AccessController.doPrivileged(new PrivilegedAction<Object>() {
+			@Override
+			public Object run() {
+				setAutostart(true);
+				return null;
+			}
+		});
 		AccessController.doPrivileged(new StartAction(this, this, this));
 	}
 
 	@Override
 	public void stop() {
 		SecurityManager.checkExecutePermission(this);
-		setAutostart(false);
+		// Changing the autostart setting must be privileged because of file IO.
+		// It cannot be done within StopAction because we only want to change it
+		// on an explicit stop operation but StopAction is also used for
+		// implicit operations.
+		AccessController.doPrivileged(new PrivilegedAction<Object>() {
+			@Override
+			public Object run() {
+				setAutostart(false);
+				return null;
+			}
+		});
 		AccessController.doPrivileged(new StopAction(this, this, !isRoot()));
 	}
 
