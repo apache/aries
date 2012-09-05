@@ -237,6 +237,8 @@ public class StartAction extends AbstractAction {
 	
 	private void startBundleResource(Resource resource, Coordination coordination) throws BundleException {
 		if (target.isRoot())
+			// Starting the root subsystem should not affect bundles within the
+			// root region.
 			return;
 		final Bundle bundle = ((BundleRevision)resource).getBundle();
 		if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0)
