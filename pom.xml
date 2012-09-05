@@ -27,7 +27,7 @@
 
     <groupId>org.apache.aries.proxy</groupId>
     <artifactId>org.apache.aries.proxy.itests</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     
     <name>Apache Aries Proxy iTests</name>
     <description>
@@ -35,9 +35,9 @@
     </description>
 
     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-itests</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-itests</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-itests</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy.itests-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy.itests-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.proxy.itests-1.0.0</url>
     </scm>
 
     <dependencies>
