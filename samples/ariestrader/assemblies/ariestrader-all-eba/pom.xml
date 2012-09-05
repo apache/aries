@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.aries.samples.ariestrader</groupId>
 		<artifactId>assemblies</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
     
     <groupId>org.apache.aries.samples.ariestrader</groupId>
@@ -30,7 +30,7 @@
     <packaging>eba</packaging>
     <name>AriesTrader :: Assemblies - EBA - ALL</name>
     <description>An EBA version of AriesTrader ALL</description>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
