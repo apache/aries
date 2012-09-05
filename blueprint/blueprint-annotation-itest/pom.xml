@@ -28,16 +28,16 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.annotation.itests</artifactId>
     <name>Apache Aries Blueprint Annotation iTests</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <description>
         Integration tests using the standalone blueprint-bundle for the implementation
         and blueprint-sample-annotation for the blueprint application to be tested.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.annotation.itests-1.0.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.annotation.itests-1.0.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.annotation.itests-1.0.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itest</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-annotation-itest</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-annotation-itest</url>
     </scm>
 
     <dependencies>
