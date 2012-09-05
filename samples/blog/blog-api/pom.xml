@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.aries.samples.blog</groupId>
         <artifactId>blog</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>org.apache.aries.samples.blog.api</artifactId>
