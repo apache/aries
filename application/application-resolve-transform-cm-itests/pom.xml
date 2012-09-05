@@ -25,13 +25,13 @@
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.resolve.transform.cm.itests</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Apache Aries Application Resolve CM Transform iTests</name>
     <description>Apache Aries Application Resolve CM Transformer iTests</description>
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-resolve-transform-cm-itests</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-resolve-transform-cm-itests</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-resolve-transform-cm-itests</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.resolve.transform.cm.itests-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.application.resolve.transform.cm.itests-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.application.resolve.transform.cm.itests-1.0.0</url>
      </scm>
     <properties>
         <aries.osgi.export.pkg>
