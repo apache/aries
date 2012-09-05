@@ -15,6 +15,10 @@ package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
@@ -26,7 +30,31 @@ import org.osgi.service.subsystem.Subsystem;
 
 @RunWith(JUnit4TestRunner.class)
 public class RootSubsystemTest extends SubsystemTest {
+	private static final String BUNDLE_A = "bundle.a";
+	
+	private static boolean createdTestFiles;
+	@Before
+	public static void createTestFiles() throws Exception {
+		if (createdTestFiles)
+			return;
+		createBundleA();
+		createdTestFiles = true;
+	}
+	
+	private static void createBundleA() throws IOException {
+		createBundle(BUNDLE_A);
+	}
+	
 	// TODO Test root subsystem headers.
+	
+	@Test
+	public void testDoNotStartExtraneousRootRegionBundles() throws Exception {
+		bundleContext.installBundle(new File(BUNDLE_A).toURI().toURL().toString());
+		getSubsystemCoreBundle().stop();
+		getSubsystemCoreBundle().start();
+		Bundle bundleA = findBundleBySymbolicName(BUNDLE_A);
+		assertEquals("Extraneous root region bundle should not be started", Bundle.INSTALLED, bundleA.getState());
+	}
 	
 	@Test
 	public void testId() {
