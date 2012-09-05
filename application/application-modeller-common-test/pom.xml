@@ -29,15 +29,15 @@
     <artifactId>application-modeller-common-test</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Application Modelling tests</name>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <description>
       Modelling utilities for working with Aries Applications (distribution for offline use).
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/application-modeller-common-test-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/application-modeller-common-test-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/application-modeller-common-test-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-modeller-common-test</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-modeller-common-test</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-modeller-common-test</url>
      </scm>
 
     <dependencies>
