@@ -26,7 +26,7 @@ under the License.
     <parent>
         <groupId>org.apache.aries.samples.twitter</groupId>
         <artifactId>twitter</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.samples.twitter.eba</artifactId>

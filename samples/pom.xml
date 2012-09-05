@@ -27,15 +27,15 @@
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>org.apache.aries.samples</groupId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <artifactId>samples</artifactId>
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
   
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/samples-1.0.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/samples-1.0.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/samples-1.0.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/samples</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/samples</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/samples</url>
     </scm>
 
     <!-- VERSIONS - PLEASE NOTE 
