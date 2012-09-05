@@ -20,22 +20,26 @@ package org.apache.aries.samples.blueprint.helloworld.itests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.ops4j.pax.exam.CoreOptions.bootDelegationPackages;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
+import org.osgi.service.blueprint.container.BlueprintContainer;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
+
 @RunWith(JUnit4TestRunner.class)
 public class HelloworldSampleTest extends AbstractIntegrationTest {
 
     @Test
-    public void test() throws Exception {
+    public void testBundlesStart() throws Exception {
 
         /* Check that the HelloWorld Sample bundles are present an started */
         Bundle bapi = getInstalledBundle("org.apache.aries.samples.blueprint.helloworld.api");
@@ -46,12 +50,91 @@ public class HelloworldSampleTest extends AbstractIntegrationTest {
 
         Bundle bcli = getInstalledBundle("org.apache.aries.samples.blueprint.helloworld.client");
         assertNotNull(bcli);
-        failInBundleNotActiveInFiveSeconds(bapi);
+        failInBundleNotActiveInFiveSeconds(bcli);
 
         Bundle bser = getInstalledBundle("org.apache.aries.samples.blueprint.helloworld.server");
         assertNotNull(bser);
-        failInBundleNotActiveInFiveSeconds(bapi);
+        failInBundleNotActiveInFiveSeconds(bser);
     }
+    
+    @Test
+    public void testClientBlueprintContainerOnlyStartsWhenServiceStarted() throws Exception
+    {
+       // Stop everything before we start
+       Bundle bcli = getInstalledBundle("org.apache.aries.samples.blueprint.helloworld.client");
+       assertNotNull(bcli);
+       bcli.stop();
+
+       Bundle bser = getInstalledBundle("org.apache.aries.samples.blueprint.helloworld.server");
+       assertNotNull(bser);
+       bser.stop();
+
+       // Wait for everything to shut down 
+       Thread.sleep(1000);
+       
+       // When everything is stopped, there should be no blueprint container for either the client or the server 
+       
+       assertClientBlueprintContainerNull();
+       assertServerBlueprintContainerNull();
+
+       // If we start the client first, it shouldn't have a blueprint container
+       bcli.start();
+
+       // Wait for everything to get started 
+       Thread.sleep(1000);
+       assertClientBlueprintContainerNull();
+       
+       // Then when we start the server both it and the client should have blueprint containers
+       bser.start();
+       // Wait for everything to get started 
+       Thread.sleep(1000);
+       assertClientBlueprintContainerNotNull();
+       assertServerBlueprintContainerNotNull();
+
+    }
+    
+    private BlueprintContainer getBlueprintContainer(String bundleName)
+    {       
+       BlueprintContainer container = null;
+       try {
+       container = getOsgiService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + bundleName + ")", 500);
+       } catch (RuntimeException e)
+       {
+          // Just return null if we couldn't get the container
+       }
+       return container;
+    }
+    
+    private BlueprintContainer getClientBlueprintContainer()
+    {
+       return getBlueprintContainer("org.apache.aries.samples.blueprint.helloworld.client");
+    }
+  
+    private BlueprintContainer getServerBlueprintContainer()
+    {
+       return getBlueprintContainer("org.apache.aries.samples.blueprint.helloworld.server");
+    }
+    
+    private void assertClientBlueprintContainerNotNull()
+    {
+       assertNotNull("There was no blueprint container for the client bundle.", getClientBlueprintContainer());
+    }
+
+    private void assertClientBlueprintContainerNull()
+    {
+       assertNull("There was a blueprint container for the client bundle when we didn't expect one.", getClientBlueprintContainer());
+    }
+
+    private void assertServerBlueprintContainerNotNull()
+    {
+       assertNotNull("There was no blueprint container for the server bundle.", getServerBlueprintContainer());
+    }
+
+    private void assertServerBlueprintContainerNull()
+    {
+       assertNull("There was a blueprint container for the server bundle when we didn't expect one.", getServerBlueprintContainer());
+    }
+
 
     private void failInBundleNotActiveInFiveSeconds(Bundle bapi)
     {
