@@ -28,12 +28,12 @@
   <groupId>org.apache.aries.transaction</groupId>
   <artifactId>org.apache.aries.transaction.itests</artifactId>
   <name>Apache Aries Transaction Integration Tests</name>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.transaction.itests-1.0.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.transaction.itests-1.0.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.transaction.itests-1.0.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-itests</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-itests</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-itests</url>
      </scm>
 
   <dependencies>
