@@ -70,7 +70,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private volatile RegionDigraph regionDigraph;
 	private volatile Resolver resolver;
 	private ServiceTracker<?,?> serviceTracker;
-	private volatile Subsystems subsystems;
+	// @GuardedBy("this")
+	private Subsystems subsystems;
 	
 	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
 	private final Collection<Repository> repositories = Collections.synchronizedSet(new HashSet<Repository>());
@@ -95,7 +96,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		return resolver;
 	}
 	
-	public Subsystems getSubsystems() {
+	/* Synchronization was introduced here to prevent conflicts between the
+	 * BundleEventHook and the activation process. The activation process
+	 * must complete the initialization of the root subsystem in order to
+	 * fully initialize the Subsystems object.
+	 */
+	public synchronized Subsystems getSubsystems() {
 		return subsystems;
 	}
 	
@@ -107,7 +113,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	}
 	
 	public Repository getSystemRepository() {
-		return new SystemRepository(subsystems.getRootSubsystem());
+		return new SystemRepository(getSubsystems().getRootSubsystem());
 	}
 
 	@Override
@@ -201,7 +207,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	
 	private boolean isActive() {
 		synchronized (Activator.class) {
-			return instance != null && subsystems != null;
+			return instance != null && getSubsystems() != null;
 		}
 	}
 	
