@@ -1,0 +1,5 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: foo
+Export-EJB: 
+Import-Package: javax.ejb, javax.transaction, javax.naming, org.osgi.framework
+
