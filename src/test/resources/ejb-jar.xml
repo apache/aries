@@ -22,9 +22,9 @@
 <enterprise-beans>
 	<session>
 		<ejb-name>XML</ejb-name>
-		<business-local>local.Iface</business-local>
-		<business-remote>remote.Iface</business-remote>
-		<ejb-class>test.xml</ejb-class>
+		<business-local>beans.xml.LocalIface</business-local>
+		<business-remote>beans.xml.RemoteIface</business-remote>
+		<ejb-class>beans.xml.XMLBean</ejb-class>
 		<session-type>Singleton</session-type>
 	</session>
 </enterprise-beans>

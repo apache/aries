@@ -26,14 +26,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.ejb</groupId>
-    <artifactId>org.apache.aries.ejb.modeller.itest</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
-    <name>Aries EJB Modelling iTests</name>
+    <artifactId>org.apache.aries.ejb.openejb.extender.itest</artifactId>
+    <version>1.0.0</version>
+    <name>Aries EJB Extender iTests</name>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/ejb/ejb-modeller-itest</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/ejb/ejb-modeller-itest</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/ejb/ejb-modeller-itest</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.ejb.openejb.extender.itest-1.0.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.ejb.openejb.extender.itest-1.0.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.ejb.openejb.extender.itest-1.0.0</url>
      </scm>
 
     <properties>
@@ -51,6 +51,12 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>3.7.0.v20110613</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -97,7 +103,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-           <groupId>org.ow2.asm</groupId>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
             <version>4.0</version>
             <scope>test</scope>
@@ -105,6 +111,12 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
+            <artifactId>org.apache.aries.transaction.manager</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
@@ -121,39 +133,29 @@
           <scope>test</scope>
         </dependency>        
         <dependency>
-        	<groupId>org.apache.aries.application</groupId>
-        	<artifactId>org.apache.aries.application.api</artifactId>
-        	<version>1.0.0</version>
-        	<type>bundle</type>
-        	<scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries.application</groupId>
-        	<artifactId>org.apache.aries.application.modeller</artifactId>
-        	<version>1.0.0</version>
-        	<type>bundle</type>
-        	<scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>application-modeller-standalone</artifactId>
-            <version>1.0.0</version>
-            <type>bundle</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.aries.application</groupId>
-        	<artifactId>org.apache.aries.application.utils</artifactId>
-        	<version>1.0.0</version>
-        	<type>bundle</type>
-        	<scope>test</scope>
-        </dependency>
-        <dependency>
         	<groupId>org.apache.aries.ejb</groupId>
-        	<artifactId>org.apache.aries.ejb.modeller</artifactId>
+        	<artifactId>org.apache.aries.ejb.openejb.extender</artifactId>
         	<version>1.0.0</version>
         	<type>bundle</type>
         	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.jpa</groupId>
+        	<artifactId>org.apache.aries.jpa.api</artifactId>
+        	<version>1.0.0</version>
+        	<type>bundle</type>
+        	<scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.jpa</groupId>
+        	<artifactId>org.apache.aries.jpa.container</artifactId>
+        	<version>1.0.0</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.jpa</groupId>
+        	<artifactId>org.apache.aries.jpa.container.context</artifactId>
+        	<version>1.0.0</version>
         </dependency>
         <dependency>
     		<groupId>org.apache.openejb</groupId>
@@ -311,6 +313,11 @@
 		    <version>1.1</version>
 		</dependency>
 		<dependency>
+    		<groupId>org.apache.geronimo.specs</groupId>
+    		<artifactId>geronimo-jms_1.1_spec</artifactId>
+    		<version>1.1.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.servicemix.bundles</groupId>
 			<artifactId>org.apache.servicemix.bundles.wsdl4j-1.6.1</artifactId>
 			<version>4.0-m1</version>
@@ -435,6 +442,29 @@
 			<artifactId>hsqldb</artifactId>
 			<version>2.2.4</version>
 		</dependency>
+		<dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>2.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.serp</artifactId>
+            <version>1.13.1_2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>1.5.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.5.3.0_1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -21,4 +21,7 @@ import javax.ejb.Stateless;
 @Stateless(name="Annotated")
 public class StatelessSessionBean {
 
+  public String getStatelessString() {
+    return "A Stateless Call";
+  }
 }

@@ -1,5 +1,6 @@
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: foo
-Bundle-ClassPath: yes
-Export-EJB: 
+Bundle-ClassPath: yes/
+Export-EJB:  
+Import-Package: javax.ejb
 
