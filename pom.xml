@@ -52,6 +52,7 @@
         <module>jmx</module>
         <module>jpa</module>
         <module>subsystem</module>
+        <module>spi-fly</module>
         <module>samples</module>
     </modules>
 
