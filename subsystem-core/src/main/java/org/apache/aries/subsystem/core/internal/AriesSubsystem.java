@@ -358,6 +358,20 @@ public class AriesSubsystem implements Resource, Subsystem {
 			catch (Exception e) {
 				throw new SubsystemException(e);
 			}
+			Collection<DeployedContentHeader.Clause> missingResources = resource.getMissingResources();
+			if (!missingResources.isEmpty()) {
+				if (isRoot())
+					// We don't care if the root subsystem has missing resources
+					// because they are either (1) extraneous bundles outside of
+					// the subsystems API or (2) provisioned dependencies of
+					// other subsystems. Those that fall in the latter category
+					// will be detected by the dependent subsystems.
+					removedContent(missingResources);
+				else
+					// If a non-root subsystem has missing dependencies, let's
+					// fail fast for now.
+					throw new SubsystemException("Missing resources: " + missingResources);
+			}
 		}
 		return resource;
 	}
@@ -427,9 +441,17 @@ public class AriesSubsystem implements Resource, Subsystem {
 		DeployedContentHeader.Clause clause = header.getClause(resource);
 		if (clause == null)
 			return;
+		removedContent(Collections.singleton(clause));
+	}
+	
+	void removedContent(Collection<DeployedContentHeader.Clause> content) {
+		DeploymentManifest manifest = getDeploymentManifest();
+		DeployedContentHeader header = manifest.getDeployedContentHeader();
+		if (header == null)
+			return;
 		Collection<DeployedContentHeader.Clause> clauses = new ArrayList<DeployedContentHeader.Clause>(header.getClauses());
 		for (Iterator<DeployedContentHeader.Clause> i = clauses.iterator(); i.hasNext();)
-			if (clause.equals(i.next())) {
+			if (content.contains(i.next())) {
 				i.remove();
 				break;
 			}

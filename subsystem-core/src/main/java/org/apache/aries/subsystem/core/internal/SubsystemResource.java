@@ -46,6 +46,7 @@ import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.eclipse.equinox.region.RegionFilter;
 import org.eclipse.equinox.region.RegionFilterBuilder;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -76,6 +77,7 @@ public class SubsystemResource implements Resource {
 	private final Collection<Resource> installableContent = new HashSet<Resource>();
 	private final Collection<Resource> installableDependencies = new HashSet<Resource>();
 	private final Collection<Resource> mandatoryResources = new HashSet<Resource>();
+	private final Collection<DeployedContentHeader.Clause> missingResources = new HashSet<DeployedContentHeader.Clause>();
 	private final Collection<Resource> optionalResources = new HashSet<Resource>();
 	private final AriesSubsystem parent;
 	private final Repository preferredProviderRepository;
@@ -157,6 +159,10 @@ public class SubsystemResource implements Resource {
 	
 	public String getLocation() {
 		return resource.getLocation().getValue();
+	}
+	
+	public Collection<DeployedContentHeader.Clause> getMissingResources() {
+		return missingResources;
 	}
 	
 	public Collection<AriesSubsystem> getParents() {
@@ -290,6 +296,10 @@ public class SubsystemResource implements Resource {
 			sharedDependencies.add(resource);
 	}
 	
+	private void addMissingResource(DeployedContentHeader.Clause resource) {
+		missingResources.add(resource);
+	}
+	
 	private void addValidCapabilities(Collection<Capability> from, Collection<Capability> to) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		for (Capability c : from)
 			if (isValid(c))
@@ -332,8 +342,9 @@ public class SubsystemResource implements Resource {
 			for (DeployedContentHeader.Clause clause : header.getClauses()) {
 				Resource resource = findContent(clause);
 				if (resource == null)
-					throw new SubsystemException("Resource does not exist: " + clause);
-				addContentResource(resource);
+					addMissingResource(clause);
+				else
+					addContentResource(resource);
 			}
 		}
 	}
@@ -531,7 +542,10 @@ public class SubsystemResource implements Resource {
 		if (resourceId != -1) {
 			String type = clause.getType();
 			if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
-				return Activator.getInstance().getBundleContext().getBundle(0).getBundleContext().getBundle(resourceId).adapt(BundleRevision.class);
+				Bundle resource = Activator.getInstance().getBundleContext().getBundle(0).getBundleContext().getBundle(resourceId);
+				if (resource == null)
+					return null;
+				return resource.adapt(BundleRevision.class);
 			}
 			else
 				return Activator.getInstance().getSubsystems().getSubsystemById(resourceId);
