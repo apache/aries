@@ -14,6 +14,7 @@
 package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,6 +101,34 @@ public class RootSubsystemTest extends SubsystemTest {
 	@Test
 	public void testSymbolicName() {
 		assertEquals("Wrong root symbolic name", getRootSubsystem().getSymbolicName(), "org.osgi.service.subsystem.root");
+	}
+	
+	@Test
+	public void testUninstallRootRegionBundleWithNoBundleEventHook() throws Exception {
+		// Install an extraneous bundle into the root region. The bundle will
+		// be recorded in the root subsystem's persistent memory.
+		Bundle bundleA = bundleContext.installBundle(new File(BUNDLE_A).toURI().toURL().toString());
+		try {
+			Bundle core = getSubsystemCoreBundle();
+			// Stop the subsystems bundle in order to unregister the bundle
+			// event hook.
+			core.stop();
+			// Uninstall the bundle so it won't be there on restart.
+			bundleA.uninstall();
+			try {
+				// Start the subsystems bundle and ensure the root subsystem
+				// recovers from the uninstalled bundle being in persistent
+				// memory.
+				core.start();
+			}
+			catch (BundleException e) {
+				fail("Could not start subsystems bundle after uninstalling a root region bundle with no bundle event hook registered");
+			}
+		}
+		finally {
+			if (Bundle.UNINSTALLED != bundleA.getState())
+				bundleA.uninstall();
+		}
 	}
 	
 	@Test

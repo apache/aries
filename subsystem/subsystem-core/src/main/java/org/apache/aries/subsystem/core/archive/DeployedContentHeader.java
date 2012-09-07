@@ -85,6 +85,27 @@ public class DeployedContentHeader implements RequirementHeader<DeployedContentH
 		}
 		
 		@Override
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof Clause))
+				return false;
+			Clause that = (Clause)o;
+			return getSymbolicName().equals(that.getSymbolicName())
+					&& getDeployedVersion().equals(that.getDeployedVersion())
+					&& getType().equals(that.getType());
+		}
+		
+		@Override
+		public int hashCode() {
+			int result = 17;
+			result = 31 * result + getSymbolicName().hashCode();
+			result = 31 * result + getDeployedVersion().hashCode();
+			result = 31 * result + getType().hashCode();
+			return result;
+		}
+		
+		@Override
 		public Attribute getAttribute(String name) {
 			Parameter result = parameters.get(name);
 			if (result instanceof Attribute)
