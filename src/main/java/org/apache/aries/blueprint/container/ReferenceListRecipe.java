@@ -205,11 +205,11 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
         }
 
         public synchronized Object call() throws Exception {
-            if (reference == null) {
-                throw new ServiceUnavailableException("Service is unavailable", getOsgiFilter());
+            if (service == null && reference != null) {
+                service = getServiceSecurely(reference);
             }
             if (service == null) {
-                service = getServiceSecurely(reference);
+                throw new ServiceUnavailableException("Service is unavailable", getOsgiFilter());
             }
             return service;
         }
