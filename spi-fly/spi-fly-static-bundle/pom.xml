@@ -49,6 +49,12 @@
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>        
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>        
     </dependencies>
 
     <build>
@@ -69,6 +75,7 @@
                             org.apache.aries.spifly.staticbundle
                         </Private-Package>
                         <Bundle-Activator>org.apache.aries.spifly.staticbundle.StaticWeavingActivator</Bundle-Activator>
+                        <Provide-Capability>osgi.extender;osgi.extender=osgi.serviceloader.registrar</Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
