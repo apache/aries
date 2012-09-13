@@ -46,5 +46,7 @@
         <module>spi-fly-example-client1-jar</module>
         <module>spi-fly-example-client1-bundle</module>
         <module>spi-fly-example-client2-bundle</module>
+        <module>spi-fly-example-resource-provider-bundle</module>
+        <module>spi-fly-example-resource-client-bundle</module>
     </modules>
 </project>
