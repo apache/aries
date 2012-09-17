@@ -41,8 +41,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.spifly.BaseActivator;
+import org.apache.aries.spifly.SpiFlyConstants;
 import org.apache.aries.spifly.Streams;
-import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.After;

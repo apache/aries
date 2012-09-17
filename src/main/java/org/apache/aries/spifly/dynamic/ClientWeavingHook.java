@@ -59,9 +59,11 @@ public class ClientWeavingHook implements WeavingHook {
                 wovenClass.getBundleWiring().getClassLoader());
 	        TCCLSetterVisitor tsv = new TCCLSetterVisitor(cw, wovenClass.getClassName(), wd);
 	        cr.accept(tsv, ClassReader.SKIP_FRAMES);
-	        wovenClass.setBytes(cw.toByteArray());
-	        if (tsv.additionalImportRequired())
-	            wovenClass.getDynamicImports().add(addedImport);
+	        if (tsv.isWoven()) {
+    	        wovenClass.setBytes(cw.toByteArray());
+    	        if (tsv.additionalImportRequired())
+    	            wovenClass.getDynamicImports().add(addedImport);
+	        }
 	    }
 	}
 }
