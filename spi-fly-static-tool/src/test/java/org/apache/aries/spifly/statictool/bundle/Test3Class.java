@@ -18,9 +18,13 @@
  */
 package org.apache.aries.spifly.statictool.bundle;
 
+import java.util.ServiceLoader;
 
-public class TestClass {
-    public void doit() {
-        Test2Class.getTCCL();
+public class Test3Class {
+    public void doitToo() {
+        ServiceLoader<String> sl = ServiceLoader.load(String.class);
+        for (String s : sl) {
+            System.out.println("***: " + s);
+        }
     }
 }
