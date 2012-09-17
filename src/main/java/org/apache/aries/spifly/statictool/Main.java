@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -40,6 +41,7 @@ import org.apache.aries.spifly.Streams;
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
 import org.apache.aries.spifly.weaver.TCCLSetterVisitor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Constants;
@@ -79,18 +81,33 @@ public class Main {
         File jarFile = new File(jarPath);
         File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());
         Manifest manifest = unJar(jarFile, tempDir);
-        String consumerHeader = manifest.getMainAttributes().getValue(SpiFlyConstants.SPI_CONSUMER_HEADER);
-//        if (consumerHeader == null) {
-//            String reqCap = manifest.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY);
-//            sdasda
-//        }
+        String consumerHeaderVal = manifest.getMainAttributes().getValue(SpiFlyConstants.SPI_CONSUMER_HEADER);
+        String consumerHeaderKey = null;
+        if (consumerHeaderVal != null) {
+            consumerHeaderKey = SpiFlyConstants.SPI_CONSUMER_HEADER;
+        } else {
+            consumerHeaderVal = manifest.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY);
+            if (consumerHeaderVal != null) {
+                consumerHeaderKey = SpiFlyConstants.REQUIRE_CAPABILITY;
+            }
+        }
 
-        if (consumerHeader != null) {
+        if (consumerHeaderVal != null) {
             String bcp = manifest.getMainAttributes().getValue(Constants.BUNDLE_CLASSPATH);
-            weaveDir(tempDir, consumerHeader, bcp);
+            weaveDir(tempDir, consumerHeaderKey, consumerHeaderVal, bcp);
 
-            manifest.getMainAttributes().remove(new Attributes.Name(SpiFlyConstants.SPI_CONSUMER_HEADER));
-            manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeader);
+            if (SpiFlyConstants.SPI_CONSUMER_HEADER.equals(consumerHeaderKey)) {
+                manifest.getMainAttributes().remove(new Attributes.Name(SpiFlyConstants.SPI_CONSUMER_HEADER));
+            } else {
+                // It's SpiFlyConstants.REQUIRE_CAPABILITY
+
+                // Take out the processor requirement, this probably needs to be improved a little bit
+                String newConsumerHeaderVal = consumerHeaderVal.replaceAll(
+                        "osgi[.]extender;\\s*filter[:][=][\"]?[(]osgi[.]extender[=]osgi[.]serviceloader[.]processor[)][\"]?", "");
+                manifest.getMainAttributes().putValue(SpiFlyConstants.REQUIRE_CAPABILITY, newConsumerHeaderVal);
+            }
+            manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeaderVal);
+
             // TODO if new packages needed then...
             extendImportPackage(manifest);
 
@@ -100,6 +117,29 @@ public class Main {
             System.out.println("[SPI Fly Static Tool] This file is not marked as an SPI Consumer.");
         }
         delTree(tempDir);
+    }
+
+    private static String serializeRequirement(GenericMetadata req) {
+        StringBuilder serialized = new StringBuilder();
+
+        serialized.append(req.getNamespace());
+        serialized.append(';');
+        for (Map.Entry<String, Object> attr : req.getAttributes().entrySet()) {
+            serialized.append(attr.getKey());
+            serialized.append('=');
+            serialized.append(attr.getValue());
+            serialized.append(';');
+        }
+
+        for (Map.Entry<String, String> dir : req.getDirectives().entrySet()) {
+            serialized.append(dir.getKey());
+            serialized.append(":=");
+            serialized.append(dir.getValue());
+            serialized.append(';');
+        }
+        serialized.deleteCharAt(serialized.length() -1);
+        serialized.append(',');
+        return serialized.toString();
     }
 
     private static void extendImportPackage(Manifest manifest) throws IOException {
@@ -147,9 +187,8 @@ public class Main {
         return new File(s);
     }
 
-    private static void weaveDir(File dir, String consumerHeader, String bundleClassPath) throws Exception {
-        // TODO support Require-Capability in addition to SPI-Consumer
-        Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(SpiFlyConstants.SPI_CONSUMER_HEADER, consumerHeader);
+    private static void weaveDir(File dir, String consumerHeaderKey, String consumerHeaderValue, String bundleClassPath) throws Exception {
+        Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(consumerHeaderKey, consumerHeaderValue);
 
         String dirName = dir.getAbsolutePath();
 
@@ -193,17 +232,17 @@ public class Main {
             for (String entry : bundleClassPath.split(",")) {
                 File jarFile = new File(dir, entry.trim());
                 if (jarFile.isFile()) {
-                    weaveBCPJar(jarFile, consumerHeader);
+                    weaveBCPJar(jarFile, consumerHeaderKey, consumerHeaderValue);
                 }
             }
         }
     }
 
-    private static void weaveBCPJar(File jarFile, String consumerHeader) throws Exception {
+    private static void weaveBCPJar(File jarFile, String consumerHeaderKey, String consumerHeaderVal) throws Exception {
         File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());
         try {
             Manifest manifest = unJar(jarFile, tempDir);
-            weaveDir(tempDir, consumerHeader, null);
+            weaveDir(tempDir, consumerHeaderKey, consumerHeaderVal, null);
             if (!jarFile.delete()) {
                 throw new IOException("Could not replace file: " + jarFile);
             }
