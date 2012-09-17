@@ -35,10 +35,10 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import org.apache.aries.spifly.ConsumerHeaderProcessor;
+import org.apache.aries.spifly.SpiFlyConstants;
 import org.apache.aries.spifly.Streams;
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
-import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.spifly.weaver.TCCLSetterVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
