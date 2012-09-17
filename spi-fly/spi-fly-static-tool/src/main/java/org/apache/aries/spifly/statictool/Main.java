@@ -41,7 +41,6 @@ import org.apache.aries.spifly.WeavingData;
 import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.spifly.weaver.TCCLSetterVisitor;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -81,6 +80,11 @@ public class Main {
         File tempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + jarFile.getName() + "_" + System.currentTimeMillis());
         Manifest manifest = unJar(jarFile, tempDir);
         String consumerHeader = manifest.getMainAttributes().getValue(SpiFlyConstants.SPI_CONSUMER_HEADER);
+//        if (consumerHeader == null) {
+//            String reqCap = manifest.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY);
+//            sdasda
+//        }
+
         if (consumerHeader != null) {
             String bcp = manifest.getMainAttributes().getValue(Constants.BUNDLE_CLASSPATH);
             weaveDir(tempDir, consumerHeader, bcp);
@@ -107,8 +111,12 @@ public class Main {
         Version maxVersion = new Version(osgiVersion.getMajor(), osgiVersion.getMinor() + 1, 0);
 
         String ip = manifest.getMainAttributes().getValue(IMPORT_PACKAGE);
+        if (ip == null)
+            ip = "";
+
         StringBuilder sb = new StringBuilder(ip);
-        sb.append(",");
+        if (ip.length() > 0)
+            sb.append(",");
         sb.append(Util.class.getPackage().getName());
         sb.append(";version=\"[");
         sb.append(minVersion);
@@ -140,6 +148,9 @@ public class Main {
     }
 
     private static void weaveDir(File dir, String consumerHeader, String bundleClassPath) throws Exception {
+        // TODO support Require-Capability in addition to SPI-Consumer
+        Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(SpiFlyConstants.SPI_CONSUMER_HEADER, consumerHeader);
+
         String dirName = dir.getAbsolutePath();
 
         DirTree dt = new DirTree(dir);
@@ -153,16 +164,19 @@ public class Main {
             className = className.substring(0, className.length() - ".class".length());
             className = className.replace(File.separator, ".");
 
-            // TODO support Require-Capability in addition to SPI-Consumer
-            Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(SpiFlyConstants.SPI_CONSUMER_HEADER, consumerHeader);
             InputStream is = new FileInputStream(f);
             byte[] b;
             try {
                 ClassReader cr = new ClassReader(is);
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-                ClassVisitor cv = new TCCLSetterVisitor(cw, className, wd);
+                TCCLSetterVisitor cv = new TCCLSetterVisitor(cw, className, wd);
                 cr.accept(cv, ClassReader.SKIP_FRAMES);
-                b = cw.toByteArray();
+                if (cv.isWoven()) {
+                    b = cw.toByteArray();
+                } else {
+                    // if not woven, store the original bytes
+                    b = Streams.suck(new FileInputStream(f));
+                }
             } finally {
                 is.close();
             }
