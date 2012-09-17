@@ -29,8 +29,8 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.apache.aries.spifly.SpiFlyConstants;
 import org.apache.aries.spifly.Streams;
-import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.spifly.statictool.bundle.Test2Class;
 import org.apache.aries.spifly.statictool.bundle.TestClass;
 import org.junit.Assert;
