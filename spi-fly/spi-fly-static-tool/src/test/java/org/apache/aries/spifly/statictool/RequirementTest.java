@@ -36,7 +36,7 @@ import org.apache.aries.spifly.statictool.bundle.TestClass;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ConsumerTest {
+public class RequirementTest {
     @Test
     public void testConsumerBundle() throws Exception {
         String testClassFileName = TestClass.class.getName().replace('.', '/') + ".class";
@@ -56,7 +56,10 @@ public class ConsumerTest {
             mainAttributes.putValue("Bundle-ManifestVersion", "2.0");
             mainAttributes.putValue("Bundle-SymbolicName", "testbundle");
             mainAttributes.putValue("Foo", "Bar Bar");
-            mainAttributes.putValue(SpiFlyConstants.SPI_CONSUMER_HEADER, Test2Class.class.getName() + "#getTCCL()");
+            mainAttributes.putValue("Import-Package", "org.foo.bar");
+            mainAttributes.putValue(SpiFlyConstants.REQUIRE_CAPABILITY,
+                    "osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple," +
+                    "osgi.extender; filter:=\"(osgi.extender=osgi.serviceloader.processor)\"");
 
             JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), mf);
             jos.putNextEntry(new ZipEntry(testClassFileName));
@@ -71,7 +74,6 @@ public class ConsumerTest {
 
             expectedFile = new File(jarFile.getParent(), jarFile.getName().replaceAll("[.]jar", "_spifly.jar"));
             Assert.assertTrue("A processed separate bundle should have been created", expectedFile.exists());
-
             // Check manifest in generated bundle.
             JarFile transformedJarFile = new JarFile(expectedFile);
             Manifest expectedMF = transformedJarFile.getManifest();
@@ -79,21 +81,25 @@ public class ConsumerTest {
             Assert.assertEquals("2.0", expectedMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
             Assert.assertEquals("testbundle", expectedMF.getMainAttributes().getValue("Bundle-SymbolicName"));
             Assert.assertEquals("Bar Bar", expectedMF.getMainAttributes().getValue("Foo"));
-            Assert.assertEquals("org.apache.aries.spifly;version=\"[1.0.0,1.1.0)\"", expectedMF.getMainAttributes().getValue("Import-Package"));
-            Assert.assertNull(expectedMF.getMainAttributes().get(SpiFlyConstants.SPI_CONSUMER_HEADER));
+            Assert.assertEquals("osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple,",
+                    expectedMF.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY));
+            String importPackage = expectedMF.getMainAttributes().getValue("Import-Package");
+            Assert.assertTrue(
+                "org.foo.bar,org.apache.aries.spifly;version=\"[1.0.0,1.1.0)\"".equals(importPackage) ||
+                "org.apache.aries.spifly;version=\"[1.0.0,1.1.0)\",org.foo.bar".equals(importPackage));
 
             JarFile initialJarFile = new JarFile(jarFile);
             byte[] orgBytes = Streams.suck(initialJarFile.getInputStream(new ZipEntry(testClassFileName)));
-            byte[] transBytes = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(testClassFileName)));
-            Assert.assertFalse("The transformed class should be different", Arrays.equals(orgBytes, transBytes));
+            byte[] nonTransBytes = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(testClassFileName)));
+            Assert.assertArrayEquals(orgBytes, nonTransBytes);
 
             byte[] orgBytes2 = Streams.suck(initialJarFile.getInputStream(new ZipEntry(test2ClassFileName)));
             byte[] nonTransBytes2 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test2ClassFileName)));
             Assert.assertArrayEquals(orgBytes2, nonTransBytes2);
 
             byte[] orgBytes3 = Streams.suck(initialJarFile.getInputStream(new ZipEntry(test3ClassFileName)));
-            byte[] nonTransBytes3 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test3ClassFileName)));
-            Assert.assertArrayEquals(orgBytes3, nonTransBytes3);
+            byte[] transBytes3 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test3ClassFileName)));
+            Assert.assertFalse("The transformed class should be different", Arrays.equals(orgBytes3, transBytes3));
 
             initialJarFile.close();
             transformedJarFile.close();
