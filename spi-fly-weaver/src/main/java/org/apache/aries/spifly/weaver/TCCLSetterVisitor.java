@@ -64,6 +64,10 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
         this.weavingData = weavingData;
     }
 
+    public boolean isWoven() {
+        return woven;
+    }
+
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc,
             String signature, String[] exceptions) {
