@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
 import org.osgi.framework.Bundle;
