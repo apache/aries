@@ -19,7 +19,7 @@
 package org.apache.aries.spifly.staticbundle;
 
 import org.apache.aries.spifly.BaseActivator;
-import org.apache.aries.spifly.api.SpiFlyConstants;
+import org.apache.aries.spifly.SpiFlyConstants;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
