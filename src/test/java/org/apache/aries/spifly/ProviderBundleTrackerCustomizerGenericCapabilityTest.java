@@ -38,7 +38,6 @@ import java.util.Set;
 
 import org.apache.aries.mytest.MySPI;
 import org.apache.aries.mytest.MySPI2;
-import org.apache.aries.spifly.api.SpiFlyConstants;
 import org.apache.aries.spifly.impl4.MySPIImpl4a;
 import org.apache.aries.spifly.impl4.MySPIImpl4b;
 import org.apache.aries.spifly.impl4.MySPIImpl4c;

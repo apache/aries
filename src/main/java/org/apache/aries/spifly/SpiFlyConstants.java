@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.spifly.api;
+package org.apache.aries.spifly;
 
 public interface SpiFlyConstants {
     // Not taken from OSGi Constants because this code needs to compile with the 4.2 OSGi classes.
