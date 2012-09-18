@@ -31,6 +31,10 @@ import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
 import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.ICloseableDirectory;
+import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.io.IOUtils;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -43,6 +47,12 @@ public class BundleResource implements Resource, RepositoryContent {
 		return result;
 	}
 	
+	private static BundleManifest computeManifest(IDirectory directory) {
+		return new BundleManifest(org.apache.aries.util.manifest.BundleManifest
+				.fromBundle(directory)
+				.getRawManifest());
+	}
+	
 	private final List<Capability> capabilities = new ArrayList<Capability>();
 	private final URL content;
 	private final BundleManifest manifest;
@@ -50,57 +60,35 @@ public class BundleResource implements Resource, RepositoryContent {
 	
 	private BundleResource(URL content) throws IOException {
 		this.content = content;
-		manifest = new BundleManifest(org.apache.aries.util.manifest.BundleManifest.fromBundle(content.openStream()).getRawManifest());
-		ExportPackageHeader eph = (ExportPackageHeader)manifest.getHeader(ExportPackageHeader.NAME);
-		if (eph != null)
-			capabilities.addAll(eph.toCapabilities(this));
-		ImportPackageHeader iph = (ImportPackageHeader)manifest.getHeader(ImportPackageHeader.NAME);
-		if (iph != null)
-			requirements.addAll(iph.toRequirements(this));
-		RequireCapabilityHeader rch = (RequireCapabilityHeader)manifest.getHeader(RequireCapabilityHeader.NAME);
-		if (rch != null)
-			for (RequireCapabilityHeader.Clause clause : rch.getClauses())
-				requirements.add(new RequireCapabilityRequirement(clause, this));
-		RequireBundleHeader rbh = (RequireBundleHeader)manifest.getHeader(RequireBundleHeader.NAME);
-		if (rbh != null)
-			for (RequireBundleHeader.Clause clause : rbh.getClauses())
-				requirements.add(new RequireBundleRequirement(clause, this));
-		// TODO The osgi.wiring.bundle capability should not be provided for fragments. Nor should the host capability.
-		BundleSymbolicNameHeader bsnh = (BundleSymbolicNameHeader)manifest.getHeader(BundleSymbolicNameHeader.NAME);
-		BundleVersionHeader bvh = (BundleVersionHeader)manifest.getHeader(BundleVersionHeader.NAME);
-		capabilities.add(new ProvideBundleCapability(bsnh, bvh, this));
-		ProvideCapabilityHeader pch = (ProvideCapabilityHeader)manifest.getHeader(ProvideCapabilityHeader.NAME);
-		if (pch != null) {
-			for (ProvideCapabilityHeader.Clause clause : pch.getClauses()) {
-				capabilities.add(new ProvideCapabilityCapability(clause, this));
+		InputStream is = content.openStream();
+		try {
+			ICloseableDirectory directory = FileSystem.getFSRoot(is);
+			try {
+				manifest = computeManifest(directory);
+				computeRequirements(directory);
+				computeCapabilities();
+			}
+			finally {
+				IOUtils.close(directory);
 			}
 		}
-		// TODO Bundle-RequiredExecutionEnvironment
+		finally {
+			// Although FileSystem.getFSRoot ultimately tries to close the
+			// provided input stream, it is possible an exception will be thrown
+			// before that happens.
+			IOUtils.close(is);
+		}
 	}
 	
 	private BundleResource(String content) throws IOException {
-		/*
-		 * TODO
-		 * Capabilities
-		 * 		Export-Package
-		 * 		Provide-Capability
-		 * 		BSN + Version (host)
-		 * 		osgi.identity
-		 * Requirements
-		 * 		Import-Package
-		 * 		Require-Bundle
-		 * 		Require-Capability
-		 * 		Fragment-Host
-		 */
 		this(new URL(content));
 	}
 
 	public List<Capability> getCapabilities(String namespace) {
 		ArrayList<Capability> result = new ArrayList<Capability>(capabilities.size());
-		for (Capability capability : capabilities) {
+		for (Capability capability : capabilities)
 			if (namespace == null || namespace.equals(capability.getNamespace()))
 				result.add(capability);
-		}
 		return result;
 	}
 	
@@ -115,17 +103,10 @@ public class BundleResource implements Resource, RepositoryContent {
 	}
 
 	public List<Requirement> getRequirements(String namespace) {
-		/* Requirements
-		 * 		Import-Package
-		 * 		Require-Bundle
-		 * 		Require-Capability
-		 * 		Fragment-Host
-		 */
 		ArrayList<Requirement> result = new ArrayList<Requirement>();
-		for (Requirement requirement : requirements) {
+		for (Requirement requirement : requirements)
 			if (namespace == null || namespace.equals(requirement.getNamespace()))
 				result.add(requirement);
-		}
 		return result;
 	}
 	
@@ -133,4 +114,57 @@ public class BundleResource implements Resource, RepositoryContent {
 	public String toString() {
         return content.toExternalForm();
     }
+	
+	private void computeCapabilities() {
+		computeExportPackageCapabilities();
+		computeProvideBundleCapability();
+		computeProvideCapabilityCapabilities();
+	}
+	
+	private void computeExportPackageCapabilities() {
+		ExportPackageHeader eph = (ExportPackageHeader)manifest.getHeader(ExportPackageHeader.NAME);
+		if (eph != null)
+			capabilities.addAll(eph.toCapabilities(this));
+	}
+	
+	private void computeImportPackageRequirements() {
+		ImportPackageHeader iph = (ImportPackageHeader)manifest.getHeader(ImportPackageHeader.NAME);
+		if (iph != null)
+			requirements.addAll(iph.toRequirements(this));
+	}
+	
+	private void computeProvideBundleCapability() {
+		// TODO The osgi.wiring.bundle capability should not be provided for fragments. Nor should the host capability.
+		BundleSymbolicNameHeader bsnh = (BundleSymbolicNameHeader)manifest.getHeader(BundleSymbolicNameHeader.NAME);
+		BundleVersionHeader bvh = (BundleVersionHeader)manifest.getHeader(BundleVersionHeader.NAME);
+		capabilities.add(new ProvideBundleCapability(bsnh, bvh, this));
+	}
+	
+	private void computeProvideCapabilityCapabilities() {
+		ProvideCapabilityHeader pch = (ProvideCapabilityHeader)manifest.getHeader(ProvideCapabilityHeader.NAME);
+		if (pch != null)
+			for (ProvideCapabilityHeader.Clause clause : pch.getClauses())
+				capabilities.add(new ProvideCapabilityCapability(clause, this));
+	}
+	
+	private void computeRequireBundleRequirements() {
+		RequireBundleHeader rbh = (RequireBundleHeader)manifest.getHeader(RequireBundleHeader.NAME);
+		if (rbh != null)
+			for (RequireBundleHeader.Clause clause : rbh.getClauses())
+				requirements.add(new RequireBundleRequirement(clause, this));
+	}
+	
+	private void computeRequireCapabilityRequirements() {
+		RequireCapabilityHeader rch = (RequireCapabilityHeader)manifest.getHeader(RequireCapabilityHeader.NAME);
+		if (rch != null)
+			for (RequireCapabilityHeader.Clause clause : rch.getClauses())
+				requirements.add(new RequireCapabilityRequirement(clause, this));
+	}
+	
+	private void computeRequirements(IDirectory directory) {
+		computeImportPackageRequirements();
+		computeRequireCapabilityRequirements();
+		computeRequireBundleRequirements();
+		// TODO Bundle-RequiredExecutionEnvironment
+	}
 }
