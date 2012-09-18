@@ -31,6 +31,7 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -47,7 +48,12 @@ public class BundleInfoImpl implements BundleInfo {
         	File jarFile = new File(pathToJar);
             this.path = jarFile.toURI().toURL().toString();
             JarFile f = new JarFile(new File(pathToJar));
-            manifest = f.getManifest();
+            try {
+            	manifest = f.getManifest();
+            }
+            finally {
+            	IOUtils.close(f);
+            }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

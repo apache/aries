@@ -178,6 +178,7 @@ public class ApplicationTest extends SubsystemTest {
     @Test
     public void testRequireBundle() throws Exception {
     	File file = new File(BUNDLE_B);
+    	// The following input stream is closed by the bundle context.
     	Bundle b = getRootSubsystem().getBundleContext().installBundle(file.toURI().toString(), new FileInputStream(file));
     	try {
 	    	Subsystem application = installSubsystemFromFile(APPLICATION_B);
@@ -197,6 +198,7 @@ public class ApplicationTest extends SubsystemTest {
     @Test
     public void testRequireCapability() throws Exception {
     	File file = new File(BUNDLE_B);
+    	// The following input stream is closed by the bundle context.
     	Bundle b = getRootSubsystem().getBundleContext().installBundle(file.toURI().toString(), new FileInputStream(file));
     	try {
 	    	Subsystem application = installSubsystemFromFile(APPLICATION_A);
