@@ -44,15 +44,12 @@ import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.internal.BundleResource;
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.SubsystemIdentifier;
-import org.apache.aries.subsystem.itests.obr.felix.RepositoryAdminRepository;
-import org.apache.aries.subsystem.itests.util.RepositoryGenerator;
 import org.apache.aries.subsystem.itests.util.TestRepository;
 import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ManifestFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
-import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
@@ -181,8 +178,6 @@ public abstract class SubsystemTest extends IntegrationTest {
 				// Log
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-				// Felix Config Admin
-//				mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
 				// Felix mvn url handler
 				mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 				// Bundles
@@ -192,7 +187,6 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
 				mavenBundle("org.apache.aries", "org.apache.aries.util").version("1.0.0"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-				mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
 				mavenBundle("org.apache.felix", "org.apache.felix.resolver"),
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.coordinator").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
@@ -212,8 +206,6 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	public void setUp() throws Exception {
 		super.setUp();
-		new RepositoryGenerator(bundleContext).generateOBR();
-		serviceRegistrations.add(bundleContext.registerService(Repository.class, new RepositoryAdminRepository(getOsgiService(RepositoryAdmin.class)), null));
 		try {
 			bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
 		}
@@ -527,9 +519,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected static void createSubsystem(String name, String...contents) throws IOException {
+		// The following input stream is closed by ArchiveFixture.copy.
 		ZipFixture fixture = ArchiveFixture.newZip().binary("OSGI-INF/SUBSYSTEM.MF", new FileInputStream(name + ".mf"));
 		if (contents != null) {
 			for (String content : contents) {
+				// The following input stream is closed by ArchiveFixture.copy.
 				fixture.binary(content, new FileInputStream(content));
 			}
 		}
@@ -609,6 +603,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected Bundle installBundleFromFile(File file, BundleContext bundleContext) throws FileNotFoundException, BundleException {
+		// The following input stream is closed by the bundle context.
 		return bundleContext.installBundle(file.toURI().toString(), new FileInputStream(file));
 	}
 	
@@ -637,6 +632,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected Subsystem installSubsystem(Subsystem parent, String location) throws Exception {
+		// The following input stream is closed by Subsystem.install.
 		return installSubsystem(parent, location, new URL(location).openStream());
 	}
 	
@@ -803,15 +799,18 @@ public abstract class SubsystemTest extends IntegrationTest {
 		ZipFixture feature = ArchiveFixture
 				.newZip()
 				.binary("OSGI-INF/SUBSYSTEM.MF",
+						// The following input stream is closed by ArchiveFixture.copy.
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
 								name + "/OSGI-INF/SUBSYSTEM.MF"));
 		for (String s : content) {
 			try {
 				feature.binary(s,
+						// The following input stream is closed by ArchiveFixture.copy.
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
 								name + '/' + s));
 			}
 			catch (Exception e) {
+				// The following input stream is closed by ArchiveFixture.copy.
 				feature.binary(s, new FileInputStream(new File(s)));
 			}
 		}

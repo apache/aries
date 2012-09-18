@@ -13,6 +13,9 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.InputStream;
+
+import org.apache.aries.util.io.IOUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.wiring.BundleRevision;
@@ -42,11 +45,19 @@ public class BundleResourceInstaller extends ResourceInstaller {
 	
 	private BundleRevision installBundle() {
 		final Bundle bundle;
+		InputStream is = ((RepositoryContent)resource).getContent();
 		try {
-			bundle = provisionTo.getRegion().installBundle(getLocation(), ((RepositoryContent)resource).getContent());
+			bundle = provisionTo.getRegion().installBundle(getLocation(), is);
 		}
 		catch (BundleException e) {
 			throw new SubsystemException(e);
+		}
+		finally {
+			// Although Region.installBundle ultimately calls BundleContext.install,
+			// which closes the input stream, an exception may occur before this
+			// happens. Also, the Region API does not guarantee the stream will
+			// be closed.
+			IOUtils.close(is);
 		}
 		coordination.addParticipant(new Participant() {
 			public void ended(Coordination coordination) throws Exception {
