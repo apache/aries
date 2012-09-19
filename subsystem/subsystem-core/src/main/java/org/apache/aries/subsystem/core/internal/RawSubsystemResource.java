@@ -99,9 +99,11 @@ public class RawSubsystemResource implements Resource {
 	
 	public RawSubsystemResource(String location, InputStream content) throws URISyntaxException, IOException, UnsupportedOperationException, ResolutionException {
 		this.location = new Location(location);
+		IDirectory idir;
 		if (content == null)
-			content = this.location.open();
-		IDirectory idir = FileSystem.getFSRoot(content);
+			idir = this.location.open();
+		else
+			idir = FileSystem.getFSRoot(content);
 		try {
 			resources = computeResources(idir);
 			localRepository = computeLocalRepository();

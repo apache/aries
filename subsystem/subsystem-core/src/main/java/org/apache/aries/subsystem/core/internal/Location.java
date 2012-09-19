@@ -13,12 +13,14 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.IDirectory;
 import org.osgi.framework.Version;
 
 public class Location {
@@ -45,7 +47,10 @@ public class Location {
 		return uri == null ? null : uri.getVersion();
 	}
 	
-	public InputStream open() throws IOException {
-		return uri == null ? new URL(value).openStream() : uri.getURL().openStream();
+	public IDirectory open() throws IOException, URISyntaxException {
+		URL url = uri == null ? new URL(value) : uri.getURL();
+		if ("file".equals(url.getProtocol()))
+			return FileSystem.getFSRoot(new File(url.toURI()));
+		return FileSystem.getFSRoot(url.openStream());
 	}
 }
