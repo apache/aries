@@ -224,6 +224,12 @@ public abstract class SubsystemTest extends IntegrationTest {
 		super.tearDown();
 	}
 	
+	protected void assertEmptySubsystem(Subsystem subsystem) {
+    	assertSymbolicName("org.apache.aries.subsystem.itests.subsystem.empty", subsystem);
+    	assertVersion("0", subsystem);
+    	assertType(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION, subsystem);
+    }
+	
 	protected void assertBundleState(int state, String symbolicName, Subsystem subsystem) {
     	Bundle bundle = getBundle(subsystem, symbolicName);
     	assertBundleState(bundle, state);

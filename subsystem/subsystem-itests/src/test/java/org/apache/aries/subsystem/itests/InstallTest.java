@@ -19,7 +19,13 @@
 package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
+import java.io.File;
+
+import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,14 +34,23 @@ import org.osgi.service.subsystem.Subsystem;
 
 @RunWith(JUnit4TestRunner.class)
 public class InstallTest extends SubsystemTest {
-	
 	@Before
 	public static void createApplications() throws Exception {
 		if (createdApplications) {
 			return;
 		}
+		createApplication("emptySubsystem", new String[0]);
 		createApplication("feature3", new String[]{"tb3.jar"});
 		createdApplications = true;
+	}
+	
+	public void setUp() throws Exception {
+		super.setUp();
+		File userDir = new File(System.getProperty("user.dir"));
+    	IDirectory idir = FileSystem.getFSRoot(userDir);
+    	File emptySubsystem = new File(userDir, "emptySubsystem");
+    	emptySubsystem.mkdir();
+    	IOUtils.unpackZip(idir.getFile("emptySubsystem.esa"), emptySubsystem);
 	}
 
 	@Test
@@ -49,4 +64,27 @@ public class InstallTest extends SubsystemTest {
 			uninstallSubsystemSilently(subsystem1);
 		}
 	}
+	
+	/*
+     * Install a subsystem using a location string and a null input stream. The
+     * location string is a file URL pointing to a directory.
+     */
+    @Test
+    public void testLocationAsDirectoryUrl() throws Exception {
+    	File file = new File("emptySubsystem");
+    	try {
+    		Subsystem subsystem = installSubsystem(getRootSubsystem(), file.toURI().toString(), null);
+    		try {
+    			assertEmptySubsystem(subsystem);
+    		}
+    		finally {
+    			uninstallSubsystemSilently(subsystem);
+    		}
+    		
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    		fail("Subsystem installation using directory URL as location failed");
+    	}
+    }
 }
