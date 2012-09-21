@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
-            <artifactId>org.apache.aries.spifly.core</artifactId>
+            <artifactId>org.apache.aries.spifly.core-internal</artifactId>
             <version>${project.version}</version>
         </dependency>
         
