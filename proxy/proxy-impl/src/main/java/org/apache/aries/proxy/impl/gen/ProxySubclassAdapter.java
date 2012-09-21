@@ -131,57 +131,88 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
     staticAdapter = new GeneratorAdapter(ACC_STATIC,
         new Method("<clinit>", Type.VOID_TYPE, NO_ARGS), null, null, cv);
 
-    // add a constructor method that takes an invocation handler as an
-    // argument
-    Method m = new Method("<init>", Type.VOID_TYPE, new Type[] { IH_TYPE });
+    // add a zero args constructor method
+    Method m = new Method("<init>", Type.VOID_TYPE, NO_ARGS);
     GeneratorAdapter methodAdapter = new GeneratorAdapter(ACC_PUBLIC, m, null, null, cv);
     // loadthis
     methodAdapter.loadThis();
-    // if we have java.* as a supertype call that zero args constructor
-    if (superclassBinaryName.startsWith("java.") || superclassBinaryName.startsWith("javax.")) {
-      methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>",
-          Type.VOID_TYPE, NO_ARGS));
+    // List the constructors in the superclass.
+    Constructor<?>[] constructors = superclassClass.getDeclaredConstructors();
+    // Check that we've got at least one constructor, and get the 1st one in the list.
+    if (constructors.length > 0) {
+      // We now need to construct the proxy class as though it is going to invoke the superclasses constructor.
+      // We do this because we can no longer call the java.lang.Object() zero arg constructor as the JVM now throws a VerifyError.
+      // So what we do is build up the calling of the superclasses constructor using nulls and default values. This means that the 
+      // class bytes can be verified by the JVM, and then in the ProxySubclassGenerator, we load the class without invoking the 
+      // constructor. 
+      Method constructor = Method.getMethod(constructors[0].toGenericString());
+      
+      Type[] argTypes = constructor.getArgumentTypes();
+      if (argTypes.length == 0) {
+        methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>", Type.VOID_TYPE, NO_ARGS));
+      } else {
+        for (Type type : argTypes) {
+          switch (type.getSort())
+          {
+            case Type.ARRAY:
+              // We need to process any array or multidimentional arrays.
+              String elementDesc = type.getElementType().getDescriptor();
+              String typeDesc = type.getDescriptor();
+              
+              // Iterate over the number of arrays and load 0 for each one. Keep a count of the number of 
+              // arrays as we will need to run different code fo multi dimentional arrays.
+              int index = 0;
+              while (! elementDesc.equals(typeDesc)) {
+                typeDesc = typeDesc.substring(1);
+                methodAdapter.visitInsn(Opcodes.ICONST_0);
+                index++;
+              }
+              // If we're just a single array, then call the newArray method, otherwise use the MultiANewArray instruction.
+              if (index == 1) {
+                methodAdapter.newArray(type.getElementType());
+              } else {
+                methodAdapter.visitMultiANewArrayInsn(type.getDescriptor(), index);
+              }
+              break;
+            case Type.BOOLEAN:
+              methodAdapter.push(true);
+              break;
+            case Type.BYTE:
+              methodAdapter.push(Type.VOID_TYPE);
+              break;
+            case Type.CHAR:
+              methodAdapter.push(Type.VOID_TYPE);
+              break;
+            case Type.DOUBLE:
+              methodAdapter.push(0.0);
+              break;
+            case Type.FLOAT:
+              methodAdapter.push(0.0f);
+              break;
+            case Type.INT:
+              methodAdapter.push(0);
+              break;
+            case Type.LONG:
+              methodAdapter.push(0l);
+              break;
+            case Type.SHORT:
+              methodAdapter.push(0);
+              break;
+            default:
+            case Type.OBJECT:
+              methodAdapter.visitInsn(Opcodes.ACONST_NULL);
+              break;
+          }
+        }
+        
+        methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>", Type.VOID_TYPE, argTypes));
+      }
     }
-    else {
-         try {
-            // if the superclass has a no-arg constructor that we can call,
-            // we need to call it
-            // otherwise invoke the java.lang.Object no args constructor.
-            // on the most recent versions of the JDK (1.6.0_u34 and
-            // 1.7.0_u5 and newer). For the
-            // newer JDK's, there is NOTHING we can do and the proxy will
-            // fail.
-            Constructor<?> cons = superclassClass.getDeclaredConstructor();
-            if (!Modifier.isPrivate(cons.getModifiers())) {
-               // This should work ...
-               methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>", Type.VOID_TYPE, NO_ARGS));
-            } else {
-               // We have a private constructor, so this may work, but not on
-               // recent HotSpot VMs
-               LOGGER.debug(NLS.MESSAGES.getMessage("no.nonprivate.constructor", superclassClass.getName()));
-               methodAdapter.invokeConstructor(OBJECT_TYPE, new Method("<init>", Type.VOID_TYPE, NO_ARGS));
-            }
-
-         } catch (NoSuchMethodException e) {
-            // There's no no-args constructor, so may work, but not on recent
-            // HotSpot VMs
-            LOGGER.debug(NLS.MESSAGES.getMessage("no.noargs.constructor", superclassClass.getName()));
-            methodAdapter.invokeConstructor(OBJECT_TYPE, new Method("<init>", Type.VOID_TYPE, NO_ARGS));
-         }
-       
-    }
-    // call from the constructor to setInvocationHandler
-    Method setter = new Method("setInvocationHandler", Type.VOID_TYPE, new Type[] { IH_TYPE });
-    // load this
-    methodAdapter.loadThis();
-    // load the supplied invocation handler arg
-    methodAdapter.loadArgs();
-    // invoke the setter method
-    methodAdapter.invokeVirtual(newClassType, setter);
     methodAdapter.returnValue();
     methodAdapter.endMethod();
 
     // add a method for getting the invocation handler
+    Method setter = new Method("setInvocationHandler", Type.VOID_TYPE, new Type[] { IH_TYPE });
     m = new Method("getInvocationHandler", IH_TYPE, NO_ARGS);
     methodAdapter = new GeneratorAdapter(ACC_PUBLIC | ACC_FINAL, m, null, null, cv);
     // load this to get the field
