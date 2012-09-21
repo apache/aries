@@ -53,6 +53,7 @@
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
             org.objectweb.asm*;resolution:=optional,
+            sun.reflect*;resolution:=optional,
             org.osgi.framework;version="[1.5,2)",
             org.osgi.framework.hooks.weaving;resolution:=optional,
             org.osgi.framework.wiring;resolution:=optional,
