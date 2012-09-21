@@ -164,7 +164,6 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
    * Test a private constructor
    */
   @Test
-  @org.junit.Ignore("Fails on JDK's 1.6.0_u33 and newer as you cannot call a private constructor from subclass")
   public void testPrivateConstructor() throws Exception
   {
     Object o = ProxySubclassGenerator.newProxySubclassInstance(
@@ -280,7 +279,10 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
       if(proxyClass.equals(ProxyTestClassChildOfAbstract.class))
         return proxyClass.newInstance();
       
-      return proxyClass.getConstructor(InvocationHandler.class).newInstance(ih);
+      Object proxyInstance = proxyClass.getConstructor().newInstance();
+      Method setIH = proxyInstance.getClass().getMethod("setInvocationHandler", InvocationHandler.class);
+      setIH.invoke(proxyInstance, ih);
+      return proxyInstance;
     } catch (Exception e) {
       return null;
     }

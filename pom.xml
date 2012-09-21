@@ -56,6 +56,7 @@
             org.apache.aries.proxy.weavinghook;resolution:=optional;provide:=true,
             org.apache.aries.proxy*;provide:=true,
             org.objectweb.asm*;resolution:=optional,
+            sun.reflect*;resolution:=optional,
             org.osgi.framework;version="[1.5,2)",
             org.osgi.framework.hooks.weaving;resolution:=optional,
             org.osgi.framework.wiring;resolution:=optional,
@@ -140,6 +141,48 @@
            </execution>
          </executions>
        </plugin>
+
+       <plugin>
+	       <groupId>org.apache.maven.plugins</groupId>
+	       <artifactId>maven-enforcer-plugin</artifactId>
+	       <executions>
+	           <execution>
+	               <phase>validate</phase>
+	               <goals>
+	                   <goal>enforce</goal>
+	               </goals>
+	               <configuration>
+	                   <rules>
+	                       <requireJavaVersion>
+	                           <version>[1.5,)</version>
+	                       </requireJavaVersion>
+	                   </rules>
+	               </configuration>
+	           </execution>
+	           <execution>
+	             <id>check-java15</id>
+	             <phase>test</phase>
+	             <goals>
+	               <goal>enforce</goal>
+	             </goals>
+	             <configuration>
+	               <rules>
+	                 <checkSignatureRule implementation="org.codehaus.mojo.animal_sniffer.enforcer.CheckSignatureRule">
+	                   <ignoreDependencies>true</ignoreDependencies>
+	                   <ignores>
+	    			  <ignore>sun.reflect.*</ignore>
+	  				</ignores>
+	                   <signature>
+	                     <groupId>org.codehaus.mojo.signature</groupId>
+	                     <artifactId>java15</artifactId>
+	                     <version>1.0</version>
+	                   </signature>
+	                 </checkSignatureRule>
+	               </rules>
+	             </configuration>
+	           </execution>
+	       </executions>
+	   </plugin>
      </plugins>
     </build>
 

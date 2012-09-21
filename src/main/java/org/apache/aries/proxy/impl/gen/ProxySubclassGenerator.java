@@ -44,6 +44,8 @@ import org.objectweb.asm.ClassWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sun.reflect.ReflectionFactory;
+
 public class ProxySubclassGenerator
 {
 
@@ -158,10 +160,18 @@ public class ProxySubclassGenerator
     try {
       Class<?> generatedProxySubclass = getProxySubclass(classToProxy);
       LOGGER.debug("Getting the proxy subclass constructor");
-      Constructor<?> subclassConstructor = generatedProxySubclass
-          .getConstructor(new Class[] { InvocationHandler.class });
-      LOGGER.debug("Invoking the proxy subclass constructor");
-      proxySubclassInstance = subclassConstructor.newInstance(ih);
+      // Because the newer JVMs throw a VerifyError if a class attempts to in a constructor other than their superclasses constructor,
+      // and because we can't know what objects/values we need to pass into the class being proxied constructor, 
+      // we instantiate the proxy class using the ReflectionFactory.newConstructorForSerialization() method which allows us to instantiate the 
+      // proxy class without calling the proxy class' constructor. It is in fact using the java.lang.Object constructor so is in effect 
+      // doing what we were doing before.
+      ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
+      Constructor<?> constr = Object.class.getConstructor();
+      Constructor<?> subclassConstructor = factory.newConstructorForSerialization(generatedProxySubclass, constr);
+      proxySubclassInstance = subclassConstructor.newInstance();
+      
+      Method setIHMethod = proxySubclassInstance.getClass().getMethod("setInvocationHandler", InvocationHandler.class);
+      setIHMethod.invoke(proxySubclassInstance, ih);
       LOGGER.debug("Invoked proxy subclass constructor");
     } catch (NoSuchMethodException nsme) {
       LOGGER.debug(Constants.LOG_EXCEPTION, nsme);
