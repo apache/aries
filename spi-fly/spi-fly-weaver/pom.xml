@@ -27,10 +27,10 @@
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
-    <artifactId>org.apache.aries.spifly.weaver</artifactId>
+    <artifactId>org.apache.aries.spifly.weaver-internal</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Apache Aries SPI Fly Weaver</name>
+    <name>Apache Aries SPI Fly Weaver (internal module)</name>
 
     <dependencies>
         <dependency>
@@ -42,7 +42,7 @@
 
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
-            <artifactId>org.apache.aries.spifly.core</artifactId>
+            <artifactId>org.apache.aries.spifly.core-internal</artifactId>
             <version>${project.version}</version>
         </dependency>
 
