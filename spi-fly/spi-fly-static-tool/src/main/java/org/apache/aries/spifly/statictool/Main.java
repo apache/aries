@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Map;
+import java.net.URLClassLoader;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -41,7 +41,6 @@ import org.apache.aries.spifly.Streams;
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
 import org.apache.aries.spifly.weaver.TCCLSetterVisitor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Constants;
@@ -119,29 +118,6 @@ public class Main {
         delTree(tempDir);
     }
 
-    private static String serializeRequirement(GenericMetadata req) {
-        StringBuilder serialized = new StringBuilder();
-
-        serialized.append(req.getNamespace());
-        serialized.append(';');
-        for (Map.Entry<String, Object> attr : req.getAttributes().entrySet()) {
-            serialized.append(attr.getKey());
-            serialized.append('=');
-            serialized.append(attr.getValue());
-            serialized.append(';');
-        }
-
-        for (Map.Entry<String, String> dir : req.getDirectives().entrySet()) {
-            serialized.append(dir.getKey());
-            serialized.append(":=");
-            serialized.append(dir.getValue());
-            serialized.append(';');
-        }
-        serialized.deleteCharAt(serialized.length() -1);
-        serialized.append(',');
-        return serialized.toString();
-    }
-
     private static void extendImportPackage(Manifest manifest) throws IOException {
         String utilPkgVersion = getPackageVersion(Util.class);
 
@@ -190,6 +166,7 @@ public class Main {
     private static void weaveDir(File dir, String consumerHeaderKey, String consumerHeaderValue, String bundleClassPath) throws Exception {
         Set<WeavingData> wd = ConsumerHeaderProcessor.processHeader(consumerHeaderKey, consumerHeaderValue);
 
+        URLClassLoader cl = new URLClassLoader(new URL [] {dir.toURI().toURL()}, Main.class.getClassLoader());
         String dirName = dir.getAbsolutePath();
 
         DirTree dt = new DirTree(dir);
@@ -207,7 +184,7 @@ public class Main {
             byte[] b;
             try {
                 ClassReader cr = new ClassReader(is);
-                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+                ClassWriter cw = new StaticToolClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES, cl);
                 TCCLSetterVisitor cv = new TCCLSetterVisitor(cw, className, wd);
                 cr.accept(cv, ClassReader.SKIP_FRAMES);
                 if (cv.isWoven()) {
