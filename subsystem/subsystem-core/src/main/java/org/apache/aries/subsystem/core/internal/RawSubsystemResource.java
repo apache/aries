@@ -26,12 +26,14 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.Header;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
@@ -44,6 +46,7 @@ import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.BundleNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
+import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -97,7 +100,7 @@ public class RawSubsystemResource implements Resource {
 	private final Collection<Resource> resources;
 	private final SubsystemManifest subsystemManifest;
 	
-	public RawSubsystemResource(String location, InputStream content) throws URISyntaxException, IOException, UnsupportedOperationException, ResolutionException {
+	public RawSubsystemResource(String location, InputStream content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
 		this.location = new Location(location);
 		IDirectory idir;
 		if (content == null)
@@ -213,10 +216,11 @@ public class RawSubsystemResource implements Resource {
 	}
 	
 	private void addSubsystemContentHeader(SubsystemManifest.Builder builder, SubsystemManifest manifest) {
-		SubsystemContentHeader header = computeSubsystemContentHeader(manifest);
-		if (header == null)
-			return;
-		addHeader(builder, header);
+		addHeader(builder, computeSubsystemContentHeader(manifest));
+	}
+	
+	private void addSubsystemImportServiceHeader(SubsystemManifest.Builder builder) {
+		addHeader(builder, computeSubsystemImportServiceHeader());
 	}
 	
 	private void addSubsystemSymbolicNameHeader(SubsystemManifest.Builder builder, SubsystemManifest manifest) {
@@ -312,7 +316,7 @@ public class RawSubsystemResource implements Resource {
 		return new DependencyCalculator(resources).calculateDependencies();
 	}
 	
-	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
+	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, ResolutionException, ModellerException {
 		List<IFile> files = directory.listFiles();
 		if (files.isEmpty())
 			return Collections.emptyList();
@@ -320,7 +324,7 @@ public class RawSubsystemResource implements Resource {
 		for (IFile file : directory.listFiles()) {
 			String name = file.getName();
 			if (name.endsWith(".jar"))
-				result.add(BundleResource.newInstance(file.toURL()));
+				result.add(new BundleResource(file.toURL()));
 			else if (name.endsWith(".esa"))
 				result.add(new RawSubsystemResource(convertFileToLocation(file), file.open()));
 		}
@@ -335,6 +339,21 @@ public class RawSubsystemResource implements Resource {
 		return header;
 	}
 	
+	private SubsystemImportServiceHeader computeSubsystemImportServiceHeader() {
+		if (requirements.isEmpty())
+			return null;
+		ArrayList<SubsystemImportServiceHeader.Clause> clauses = new ArrayList<SubsystemImportServiceHeader.Clause>(requirements.size());
+		for (Requirement requirement : requirements) {
+			if (!ServiceNamespace.SERVICE_NAMESPACE.equals(requirement.getNamespace()))
+				continue;
+			clauses.add(new SubsystemImportServiceHeader.Clause(requirement));
+		}
+		if (clauses.isEmpty())
+			return null;
+		clauses.trimToSize();
+		return new SubsystemImportServiceHeader(clauses);
+	}
+	
 	private SubsystemManifest computeSubsystemManifestAfterRequirements(SubsystemManifest manifest) {
 		if (isComposite(manifest))
 			return manifest;
@@ -342,6 +361,7 @@ public class RawSubsystemResource implements Resource {
 		addImportPackageHeader(builder);
 		addRequireBundleHeader(builder);
 		addRequireCapabilityHeader(builder);
+		addSubsystemImportServiceHeader(builder);
 		return builder.build();
 	}
 	

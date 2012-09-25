@@ -25,6 +25,47 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
 public class BasicRequirement extends AbstractRequirement {
+	public static class Builder {
+		private final Map<String, Object> attributes = new HashMap<String, Object>();
+		private final Map<String, String> directives = new HashMap<String, String>();
+		private Resource resource;
+		private String namespace;
+		
+		public Builder attribute(String key, Object value) {
+			attributes.put(key, value);
+			return this;
+		}
+		
+		public Builder attributes(Map<String, Object> values) {
+			attributes.putAll(values);
+			return this;
+		}
+		
+		public BasicRequirement build() {
+			return new BasicRequirement(namespace, attributes, directives, resource);
+		}
+		
+		public Builder directive(String key, String value) {
+			directives.put(key, value);
+			return this;
+		}
+		
+		public Builder directives(Map<String, String> values) {
+			directives.putAll(values);
+			return this;
+		}
+		
+		public Builder namespace(String value) {
+			namespace = value;
+			return this;
+		}
+		
+		public Builder resource(Resource value) {
+			resource = value;
+			return this;
+		}
+	}
+	
 	private final Map<String, Object> attributes;
 	private final Map<String, String> directives;
 	private final String namespace;
@@ -50,6 +91,23 @@ public class BasicRequirement extends AbstractRequirement {
 		this.directives = Collections.unmodifiableMap(directives);
 		this.namespace = namespace;
 		resource = null;
+	}
+	
+	private BasicRequirement(String namespace, Map<String, Object> attributes, Map<String, String> directives, Resource resource) {
+		if (namespace == null)
+			throw new NullPointerException();
+		this.namespace = namespace;
+		if (attributes == null)
+			this.attributes = Collections.emptyMap();
+		else
+			this.attributes = Collections.unmodifiableMap(new HashMap<String, Object>(attributes));
+		if (directives == null)
+			this.directives = Collections.emptyMap();
+		else
+			this.directives = Collections.unmodifiableMap(new HashMap<String, String>(directives));
+		if (resource == null)
+			throw new NullPointerException();
+		this.resource = resource;
 	}
 
 	@Override

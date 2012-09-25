@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.Bundle;
@@ -97,7 +98,7 @@ public class BundleEventHook implements EventHook {
 		BundleRevision revision = bundleToRevision.remove(bundle);
 		if (ThreadLocalSubsystem.get() != null)
 			return;
-		for (AriesSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsByConstituent(revision))
+		for (AriesSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsByConstituent(new BundleConstituent(null, revision)))
 			ResourceUninstaller.newInstance(revision, subsystem).uninstall();
 	}
 }

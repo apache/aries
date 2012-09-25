@@ -20,11 +20,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
+import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
@@ -60,6 +62,12 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 				parameters.put(parameter.getName(), parameter);
 			}
 			fillInDefaults(parameters);
+		}
+		
+		public Clause(Requirement requirement) {
+			path = requirement.getNamespace();
+			for (Entry<String, String> directive : requirement.getDirectives().entrySet())
+				parameters.put(directive.getKey(), DirectiveFactory.createDirective(directive.getKey(), directive.getValue()));
 		}
 		
 		@Override
@@ -103,10 +111,6 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 			directives.trimToSize();
 			return directives;
 		}
-		
-		public String getObjectClass() {
-			return path;
-		}
 
 		@Override
 		public Parameter getParameter(String name) {
@@ -143,14 +147,24 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 	// TODO Subsystem-ImportService currently does not have its own grammar, but it's similar to Require-Capability.
 	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.REQUIREMENT + ")(?=,|\\z)");
 	
-	private final Set<Clause> clauses = new HashSet<Clause>();
-	
-	public SubsystemImportServiceHeader(String value) {
-		Matcher matcher = PATTERN.matcher(value);
+	private static Collection<Clause> processHeader(String header) {
+		Matcher matcher = PATTERN.matcher(header);
+		Set<Clause> clauses = new HashSet<Clause>();
 		while (matcher.find())
 			clauses.add(new Clause(matcher.group()));
+		return clauses;
+	}
+	
+	private final Set<Clause> clauses;
+	
+	public SubsystemImportServiceHeader(String value) {
+		this(processHeader(value));
+	}
+	
+	public SubsystemImportServiceHeader(Collection<Clause> clauses) {
 		if (clauses.isEmpty())
 			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
+		this.clauses = new HashSet<Clause>(clauses);
 	}
 	
 	@Override
