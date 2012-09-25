@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.internal.AbstractRequirement;
-import org.osgi.framework.Constants;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Resource;
 
@@ -32,14 +31,10 @@ public class SubsystemImportServiceRequirement extends AbstractRequirement {
 	
 	public SubsystemImportServiceRequirement(
 			SubsystemImportServiceHeader.Clause clause, Resource resource) {
-		StringBuilder builder = new StringBuilder("(&(")
-				.append(Constants.OBJECTCLASS).append('=')
-				.append(clause.getObjectClass()).append(')');
 		Directive filter = clause
 				.getDirective(SubsystemImportServiceHeader.Clause.DIRECTIVE_FILTER);
 		if (filter != null)
-			builder.append(filter.getValue());
-		directives.put(DIRECTIVE_FILTER, builder.append(')').toString());
+			directives.put(DIRECTIVE_FILTER, filter.getValue());
 		this.resource = resource;
 	}
 

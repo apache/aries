@@ -21,6 +21,47 @@ import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
 
 public class BasicCapability extends AbstractCapability {
+	public static class Builder {
+		private final Map<String, Object> attributes = new HashMap<String, Object>();
+		private final Map<String, String> directives = new HashMap<String, String>();
+		private Resource resource;
+		private String namespace;
+		
+		public Builder attribute(String key, Object value) {
+			attributes.put(key, value);
+			return this;
+		}
+		
+		public Builder attributes(Map<String, Object> values) {
+			attributes.putAll(values);
+			return this;
+		}
+		
+		public BasicCapability build() {
+			return new BasicCapability(namespace, attributes, directives, resource);
+		}
+		
+		public Builder directive(String key, String value) {
+			directives.put(key, value);
+			return this;
+		}
+		
+		public Builder directives(Map<String, String> values) {
+			directives.putAll(values);
+			return this;
+		}
+		
+		public Builder namespace(String value) {
+			namespace = value;
+			return this;
+		}
+		
+		public Builder resource(Resource value) {
+			resource = value;
+			return this;
+		}
+	}
+	
 	private final Map<String, Object> attributes;
 	private final Map<String, String> directives;
 	private final Resource resource;

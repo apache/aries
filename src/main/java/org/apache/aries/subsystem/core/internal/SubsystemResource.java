@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.subsystem.core.archive.Attribute;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
@@ -36,6 +37,7 @@ import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemExportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
@@ -72,6 +74,7 @@ import org.osgi.service.subsystem.SubsystemException;
 public class SubsystemResource implements Resource {
 	private Region region;
 	
+	private final List<Capability> capabilities;
 	private final DeploymentManifest deploymentManifest;
 	private final long id;
 	private final Collection<Resource> installableContent = new HashSet<Resource>();
@@ -85,7 +88,7 @@ public class SubsystemResource implements Resource {
 	private final Collection<Resource> sharedContent = new HashSet<Resource>();
 	private final Collection<Resource> sharedDependencies = new HashSet<Resource>();
 	
-	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException, UnsupportedOperationException, BundleException, InvalidSyntaxException {
+	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException, ModellerException {
 		this(new RawSubsystemResource(location, content), parent);
 	}
 	
@@ -95,6 +98,7 @@ public class SubsystemResource implements Resource {
 		id = SubsystemIdentifier.getNextId();
 		preferredProviderRepository = new PreferredProviderRepository(this);
 		computeContentResources(resource.getDeploymentManifest());
+		capabilities = computeCapabilities();
 		computeDependencies(resource.getDeploymentManifest());
 		deploymentManifest = computeDeploymentManifest();
 	}
@@ -110,6 +114,7 @@ public class SubsystemResource implements Resource {
 		deploymentManifest = resource.getDeploymentManifest();
 		id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
 		computeContentResources(deploymentManifest);
+		capabilities = computeCapabilities();
 		computeDependencies(deploymentManifest);
 	}
 	
@@ -125,16 +130,35 @@ public class SubsystemResource implements Resource {
 
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
+		return Collections.unmodifiableList(capabilities);
+	}
+	
+	private List<Capability> computeCapabilities() throws InvalidSyntaxException {
+		List<Capability> capabilities = new ArrayList<Capability>();
 		if (isScoped())
-			return resource.getCapabilities(namespace);
-		else {
-			ArrayList<Capability> result = new ArrayList<Capability>();
-			result.addAll(resource.getCapabilities(namespace));
-			for (Resource r : getContentResources())
-				result.addAll(r.getCapabilities(namespace));
-			result.trimToSize();
-			return result;
-		}
+			computeScopedCapabilities(capabilities);
+		else
+			computeUnscopedCapabilities(capabilities);
+		return capabilities;
+	}
+	
+	private void computeUnscopedCapabilities(List<Capability> capabilities) {
+		capabilities.addAll(resource.getCapabilities(null));
+		for (Resource r : getContentResources())
+			capabilities.addAll(r.getCapabilities(null));
+	}
+	
+	private void computeScopedCapabilities(List<Capability> capabilities) throws InvalidSyntaxException {
+		capabilities.addAll(resource.getCapabilities(null));
+		computeOsgiServiceCapabilities(capabilities);
+	}
+	
+	public void computeOsgiServiceCapabilities(List<Capability> capabilities) throws InvalidSyntaxException {
+		SubsystemExportServiceHeader header = getSubsystemManifest().getSubsystemExportServiceHeader();
+		if (header == null)
+			return;
+		for (Resource resource : getContentResources())
+			capabilities.addAll(header.toCapabilities(resource));
 	}
 	
 	public DeploymentManifest getDeploymentManifest() {
@@ -170,10 +194,10 @@ public class SubsystemResource implements Resource {
 			Header<?> header = getDeploymentManifest().getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_PARENTS);
 			if (header == null)
 				return Collections.emptyList();
-			String[] parents = header.getValue().split(",");
-			Collection<AriesSubsystem> result = new ArrayList<AriesSubsystem>(parents.length);
-			for (String parent : parents)
-				result.add(Activator.getInstance().getSubsystems().getSubsystemById(Long.valueOf(parent)));
+			String[] parentIds = header.getValue().split(",");
+			Collection<AriesSubsystem> result = new ArrayList<AriesSubsystem>(parentIds.length);
+			for (String parentId : parentIds)
+				result.add(Activator.getInstance().getSubsystems().getSubsystemById(Long.valueOf(parentId)));
 			return result;
 		}
 		return Collections.singleton(parent);
