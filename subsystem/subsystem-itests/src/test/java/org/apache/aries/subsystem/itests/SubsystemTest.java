@@ -181,18 +181,21 @@ public abstract class SubsystemTest extends IntegrationTest {
 				// Felix mvn url handler
 				mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 				// Bundles
-				mavenBundle("org.osgi", "org.osgi.enterprise").version("5.0.0"),
-				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
+				mavenBundle("org.apache.aries",             "org.apache.aries.util").version("1.0.0"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-				mavenBundle("org.apache.aries", "org.apache.aries.util").version("1.0.0"),
+				mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").version("1.0.0"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-				mavenBundle("org.apache.felix", "org.apache.felix.resolver"),
-				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.coordinator").version("1.1.0.v20120522-1841"),
-				mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
-				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
-				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
-				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.itest.interfaces"),
+				mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").version("1.0.0"),
+				mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").version("1.0.1-SNAPSHOT"),
+				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.api"),
+				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.core"),
+				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.itest.interfaces"),
+				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
+				mavenBundle("org.apache.felix",             "org.apache.felix.resolver"),
+				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.coordinator").version("1.1.0.v20120522-1841"),
+				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
+				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
+				mavenBundle("org.osgi",                     "org.osgi.enterprise").version("5.0.0"),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 				equinox().version("3.8.0.V20120529-1548"));
@@ -266,9 +269,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertConstituent(subsystem, symbolicName, Version.emptyVersion, type);
 	}
 	
-	protected void assertConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
+	protected Resource assertConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
 		Resource constituent = getConstituent(subsystem, symbolicName, version, type);
 		assertNotNull("Constituent not found: " + symbolicName + ';' + version + ';' + type, constituent);
+		return constituent;
 	}
 	
 	protected void assertConstituents(int size, Subsystem subsystem) {
@@ -314,8 +318,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEquals("Wrong event type", type, event.getEventType());
 	}
 	
-	protected void assertHeaderExists(Subsystem subsystem, String name) {
-		assertNotNull("Missing header: " + name, subsystem.getSubsystemHeaders(null).get(name));
+	protected String assertHeaderExists(Subsystem subsystem, String name) {
+		String header = subsystem.getSubsystemHeaders(null).get(name);
+		assertNotNull("Missing header: " + name, header);
+		return header;
 	}
 	
 	protected void assertId(Subsystem subsystem) {
@@ -509,7 +515,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected RepositoryContent createBundleRepositoryContent(File file) throws Exception {
-		return BundleResource.newInstance(file.toURI().toURL());
+		return new BundleResource(file.toURI().toURL());
 	}
 	
 	protected static void createManifest(String name, Map<String, String> headers) throws IOException {

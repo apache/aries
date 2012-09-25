@@ -25,10 +25,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.namespace.service.ServiceNamespace;
+import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class SubsystemExportServiceHeader implements CapabilityHeader<SubsystemExportServiceHeader.Clause> {
+public class SubsystemExportServiceHeader implements Header<SubsystemExportServiceHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
 		
@@ -116,8 +121,17 @@ public class SubsystemExportServiceHeader implements CapabilityHeader<SubsystemE
 			return path;
 		}
 		
-		public SubsystemExportServiceCapability toCapability(Resource resource) {
-			return new SubsystemExportServiceCapability(this, resource);
+		public List<Capability> toCapabilities(Resource resource) throws InvalidSyntaxException {
+			List<Capability> capabilities = resource.getCapabilities(ServiceNamespace.SERVICE_NAMESPACE);
+			if (capabilities.isEmpty())
+				return capabilities;
+			Filter filter = computeFilter();
+			ArrayList<Capability> result = new ArrayList<Capability>(capabilities.size());
+			for (Capability capability : capabilities)
+				if (filter.matches(capability.getAttributes()))
+					result.add(capability);
+			result.trimToSize();
+			return result;
 		}
 		
 		@Override
@@ -128,6 +142,23 @@ public class SubsystemExportServiceHeader implements CapabilityHeader<SubsystemE
 				builder.append(';').append(parameter);
 			}
 			return builder.toString();
+		}
+		
+		private Filter computeFilter() throws InvalidSyntaxException {
+			return FrameworkUtil.createFilter(computeFilterString());
+		}
+		
+		private String computeFilterString() {
+			Directive directive = getDirective(DIRECTIVE_FILTER);
+			return new StringBuilder()
+					.append("(&(")
+					.append(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE)
+					.append('=')
+					.append(path)
+					.append(')')
+					.append(directive == null ? "" : directive.getValue())
+					.append(')')
+					.toString();
 		}
 	}
 	
@@ -160,11 +191,10 @@ public class SubsystemExportServiceHeader implements CapabilityHeader<SubsystemE
 		return toString();
 	}
 	
-	@Override
-	public List<SubsystemExportServiceCapability> toCapabilities(Resource resource) {
-		List<SubsystemExportServiceCapability> result = new ArrayList<SubsystemExportServiceCapability>();
+	public List<Capability> toCapabilities(Resource resource) throws InvalidSyntaxException {
+		List<Capability> result = new ArrayList<Capability>();
 		for (Clause clause : clauses)
-			result.add(clause.toCapability(resource));
+			result.addAll(clause.toCapabilities(resource));
 		return result;
 	}
 	
