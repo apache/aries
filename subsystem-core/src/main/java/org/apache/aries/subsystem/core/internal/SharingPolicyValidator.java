@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraphVisitor;
 import org.eclipse.equinox.region.RegionFilter;
+import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 
 public class SharingPolicyValidator {
@@ -64,7 +65,13 @@ public class SharingPolicyValidator {
 	}
 	
 	public boolean isValid(Capability capability) {
-		Visitor visitor = new Visitor(capability.getNamespace(), capability.getAttributes());
+		// The osgi.service namespace must be translated into the
+		// org.eclipse.equinox.allow.service namespace in order to validate
+		// service sharing policies.
+		Visitor visitor = new Visitor(
+				ServiceNamespace.SERVICE_NAMESPACE.equals(capability
+						.getNamespace()) ? RegionFilter.VISIBLE_SERVICE_NAMESPACE
+						: capability.getNamespace(), capability.getAttributes());
 		to.visitSubgraph(visitor);
 		return visitor.contains(from);
 	}

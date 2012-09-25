@@ -22,6 +22,7 @@ import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 
+import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -66,6 +67,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	
 	private BundleContext bundleContext;
 	private volatile Coordinator coordinator;
+	private volatile ModelledResourceManager modelledResourceManager;
 	private volatile SubsystemServiceRegistrar registrar;
 	private volatile RegionDigraph regionDigraph;
 	private volatile Resolver resolver;
@@ -82,6 +84,10 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	
 	public Coordinator getCoordinator() {
 		return coordinator;
+	}
+	
+	public ModelledResourceManager getModelledResourceManager() {
+		return modelledResourceManager;
 	}
 	
 	public RegionDigraph getRegionDigraph() {
@@ -196,13 +202,16 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(Resolver.class.getName()).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
-				.append(Repository.class.getName()).append("))").toString();
+				.append(Repository.class.getName()).append(")(")
+				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
+				.append(ModelledResourceManager.class.getName()).append("))").toString();
 	}
 	
 	private boolean hasRequiredServices() {
 		return coordinator != null &&
 				regionDigraph != null &&
-				resolver != null;
+				resolver != null &&
+				modelledResourceManager != null;
 	}
 	
 	private boolean isActive() {
@@ -240,6 +249,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				activate();
 			}
 		}
+		else if (service instanceof ModelledResourceManager) {
+			if (modelledResourceManager == null) {
+				modelledResourceManager = (ModelledResourceManager)service;
+				activate();
+			}
+		}
 		else
 			repositories.add((Repository)service);
 		return service;
@@ -274,6 +289,14 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				if (resolver == null)
 					deactivate();
 				this.resolver = resolver;
+			}
+		}
+		else if (service instanceof ModelledResourceManager) {
+			if (service.equals(modelledResourceManager)) {
+				ModelledResourceManager modelledResourceManager = (ModelledResourceManager)findAlternateServiceFor(this.modelledResourceManager);
+				if (resolver == null)
+					deactivate();
+				this.modelledResourceManager = modelledResourceManager;
 			}
 		}
 		else

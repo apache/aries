@@ -13,6 +13,7 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.wiring.BundleRevision;
@@ -30,7 +31,7 @@ public class BundleResourceUninstaller extends ResourceUninstaller {
 		// acted upon. The bundle may or may not actually be a constituent.
 		// This covers the case of unscoped subsystems with shared content
 		// where the resource may not be uninstallable.
-		removeConstituent(subsystem, resource);
+		removeConstituent(subsystem, new BundleConstituent(null, (BundleRevision)resource));
 		if (!isResourceUninstallable())
 			return;
 		// If the resource is uninstallable, remove it from the "provisioned to"
@@ -39,7 +40,7 @@ public class BundleResourceUninstaller extends ResourceUninstaller {
 		// the case where a dependency of the subsystem being acted upon was 
 		// provisioned to another subsystem but is not content of the other
 		// subsystem.
-		removeConstituent(provisionTo, resource);
+		removeConstituent(provisionTo, new BundleConstituent(null, (BundleRevision)resource));
 		if (isBundleUninstallable())
 			uninstallBundle();
 	}
