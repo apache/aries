@@ -24,15 +24,15 @@ import org.osgi.resource.Resource;
 public class RequireCapabilityRequirement extends AbstractRequirement {
 	public static final String DIRECTIVE_FILTER = Namespace.REQUIREMENT_FILTER_DIRECTIVE;
 	
-	private final Map<String, String> directives = new HashMap<String, String>(1);
+	private final Map<String, String> directives;
 	private final String namespace;
 	private final Resource resource;
 	
 	public RequireCapabilityRequirement(RequireCapabilityHeader.Clause clause, Resource resource) {
 		namespace = clause.getNamespace();
-		Directive filter = clause.getDirective(RequireCapabilityHeader.Clause.DIRECTIVE_FILTER);
-		if (filter != null)
-			directives.put(DIRECTIVE_FILTER, filter.getValue());
+		directives = new HashMap<String, String>(clause.getDirectives().size());
+		for (Directive directive : clause.getDirectives())
+			directives.put(directive.getName(), directive.getValue());
 		this.resource = resource;
 	}
 

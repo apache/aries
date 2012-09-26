@@ -25,11 +25,14 @@ public class RequireBundleRequirement extends AbstractRequirement {
 	public static final String DIRECTIVE_FILTER = BundleNamespace.REQUIREMENT_FILTER_DIRECTIVE;
 	public static final String NAMESPACE = BundleNamespace.BUNDLE_NAMESPACE;
 	
-	private final Map<String, String> directives = new HashMap<String, String>(1);
+	private final Map<String, String> directives;
 	private final Resource resource;
 	
 	public RequireBundleRequirement(
 			RequireBundleHeader.Clause clause, Resource resource) {
+		directives = new HashMap<String, String>(clause.getDirectives().size() + 1);
+		for (Directive directive : clause.getDirectives())
+			directives.put(directive.getName(), directive.getValue());
 		StringBuilder builder = new StringBuilder("(&(")
 				.append(NAMESPACE).append('=')
 				.append(clause.getSymbolicName()).append(')');
