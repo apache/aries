@@ -13,6 +13,8 @@
  */
 package org.apache.aries.subsystem.itests;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +37,8 @@ public class OptionalDependenciesTest extends SubsystemTest {
 	/*
 	 * Bundle-SymbolicName: bundle.a.jar
 	 * Import-Package: x;resolution:=optional
+	 * Require-Bundle: x;resolution:=optional
+	 * Require-Capability: x;resolution:=optional
 	 */
 	private static final String BUNDLE_A = "bundle.a.jar";
 	
@@ -53,6 +57,8 @@ public class OptionalDependenciesTest extends SubsystemTest {
 	private static void createBundleA() throws IOException {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put(Constants.IMPORT_PACKAGE, "x;resolution:=optional");
+		headers.put(Constants.REQUIRE_BUNDLE, "x;resolution:=optional");
+		headers.put(Constants.REQUIRE_CAPABILITY, "x;resolution:=optional");
 		createBundle(BUNDLE_A, headers);
 	}
 	
@@ -66,20 +72,26 @@ public class OptionalDependenciesTest extends SubsystemTest {
 		createdTestFiles = true;
 	}
 	
-	public void setUp() throws Exception {
-		super.setUp();
-		registerRepositoryService(BUNDLE_A);
-	}
-	
 	@Test
 	public void testOptionalImportPackage() throws Exception {
-		Subsystem subsystem = installSubsystemFromFile(APPLICATION_A);
 		try {
-			startSubsystem(subsystem);
-			stopSubsystem(subsystem);
+			Subsystem subsystem = installSubsystemFromFile(APPLICATION_A);
+			try {
+				try {
+					startSubsystem(subsystem);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					fail("Missing optional requirements must not cause subsystem start failure");
+				}
+			}
+			finally {
+				stopAndUninstallSubsystemSilently(subsystem);
+			}
 		}
-		finally {
-			uninstallSubsystemSilently(subsystem);
+		catch (Exception e) {
+			e.printStackTrace();
+			fail("Missing optional requirements must not cause subsystem installation failure");
 		}
 	}
 }
