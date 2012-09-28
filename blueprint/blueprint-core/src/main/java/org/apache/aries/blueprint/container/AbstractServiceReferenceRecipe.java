@@ -323,6 +323,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private void serviceAdded(ServiceReference ref) {
         LOGGER.debug("Tracking reference {} for OSGi service {}", ref, getOsgiFilter());
         synchronized (references) {
+            if (references.contains(ref)) {
+                return;
+            }
             references.add(ref);
         }
         track(ref);
