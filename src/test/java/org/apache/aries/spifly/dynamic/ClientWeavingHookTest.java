@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.aries.spifly.BaseActivator;
 import org.apache.aries.spifly.SpiFlyConstants;
 import org.apache.aries.spifly.Streams;
@@ -58,6 +60,8 @@ import org.osgi.framework.wiring.BundleWiring;
 
 public class ClientWeavingHookTest {
     DynamicWeavingActivator activator;
+
+    private static final String thisJVMsDBF = DocumentBuilderFactory.newInstance().getClass().getName();
 
     @Before
     public void setUp() {
@@ -428,8 +432,8 @@ public class ClientWeavingHookTest {
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
         testConsumerBundleWeaving(consumerBundle1, wh, "impl4", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
-        testConsumerBundleWeaving(consumerBundle2, wh, "olleh", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-        testConsumerBundleWeaving(consumerBundle3, wh, "", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+        testConsumerBundleWeaving(consumerBundle2, wh, "olleh", thisJVMsDBF);
+        testConsumerBundleWeaving(consumerBundle3, wh, "", thisJVMsDBF);
     }
 
     private void testConsumerBundleWeaving(Bundle consumerBundle, WeavingHook wh, String testClientResult, String jaxpClientResult) throws Exception {
@@ -473,7 +477,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", result.getName());
+        Assert.assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
     }
 
     // If there is an alternate implementation it should always be favoured over the JRE one
@@ -522,7 +526,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl", result.getName());
+        Assert.assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
     }
 
     @Test
