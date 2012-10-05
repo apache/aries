@@ -388,7 +388,11 @@ public class IsolatedCfgAdminRuntimeTest extends AbstractIntegrationTest {
                 //vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"), 
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
+    /*
+     * Commented out to avoid an NPE due to a ConcurrentModificationException in
+     * the Aries build. See https://issues.apache.org/jira/browse/ARIES-931.
+     */
+    //@org.ops4j.pax.exam.junit.Configuration
     public static Option[] equinox35Options() throws Exception
     {
   	  return testOptions(
@@ -397,13 +401,27 @@ public class IsolatedCfgAdminRuntimeTest extends AbstractIntegrationTest {
   	          );
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
+    /*
+     * Commented out to avoid an NPE due to a ConcurrentModificationException in
+     * the Aries build. See https://issues.apache.org/jira/browse/ARIES-931.
+     */
+    //@org.ops4j.pax.exam.junit.Configuration
     public static Option[] equinox37Options() throws Exception
     {
   	  return testOptions(
   			  generalConfiguration(),
   			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
   	          equinox().version("3.7.0.v20110613")
+  	          );
+    }
+    
+    @org.ops4j.pax.exam.junit.Configuration
+    public static Option[] equinox38Options() throws Exception
+    {
+  	  return testOptions(
+  			  generalConfiguration(),
+  			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
+  	          equinox().version("3.8.0.V20120529-1548")
   	          );
     }
 

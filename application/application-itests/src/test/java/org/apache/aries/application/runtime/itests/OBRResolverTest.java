@@ -348,7 +348,11 @@ public class OBRResolverTest extends AbstractIntegrationTest
         );
   }
   
-  @org.ops4j.pax.exam.junit.Configuration
+  /*
+   * Commented out to avoid an NPE due to a ConcurrentModificationException in
+   * the Aries build. See https://issues.apache.org/jira/browse/ARIES-931.
+   */
+  //@org.ops4j.pax.exam.junit.Configuration
   public static Option[] equinox35Options()
   {
 	  return testOptions(
@@ -357,13 +361,27 @@ public class OBRResolverTest extends AbstractIntegrationTest
 	          );
   }
 
-  @org.ops4j.pax.exam.junit.Configuration
+  /*
+   * Commented out to avoid an NPE due to a ConcurrentModificationException in
+   * the Aries build. See https://issues.apache.org/jira/browse/ARIES-931.
+   */
+  //@org.ops4j.pax.exam.junit.Configuration
   public static Option[] equinox37Options()
   {
 	  return testOptions(
 			  generalConfiguration(),
 			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
 	          equinox().version("3.7.0.v20110613")
+	          );
+  }
+  
+  @org.ops4j.pax.exam.junit.Configuration
+  public static Option[] equinox38Options()
+  {
+	  return testOptions(
+			  generalConfiguration(),
+			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
+	          equinox().version("3.8.0.V20120529-1548")
 	          );
   }
 
