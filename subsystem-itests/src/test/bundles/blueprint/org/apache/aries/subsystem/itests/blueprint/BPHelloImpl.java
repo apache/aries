@@ -24,6 +24,17 @@ public class BPHelloImpl implements Hello
 		_message = msg;
 	}
 	
+	private String _initMessage;
+	public void setInitMessage(String initMsg) 
+	{
+		_initMessage = initMsg;
+	}
+	
+	public void init() 
+	{ 
+		System.out.println(_initMessage);
+	}
+	
 	@Override
 	public String saySomething() 
 	{
