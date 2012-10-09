@@ -181,7 +181,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				// Felix mvn url handler
 				mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 				// Bundles
-				mavenBundle("org.apache.aries",             "org.apache.aries.util").version("1.0.0"),
+				mavenBundle("org.apache.aries",             "org.apache.aries.util"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").version("1.0.0"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
@@ -196,7 +196,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.osgi",                     "org.osgi.enterprise").version("5.0.0"),
-//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+        //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 				equinox().version("3.8.0.V20120529-1548"));
 		options = updateOptions(options);
