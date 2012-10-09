@@ -308,6 +308,7 @@
 		        		<executions>
 		         	 		<execution>
 		            			<id>generate-config</id>
+		            			<phase>process-test-resources</phase>
 		            			<goals>
 		              				<goal>generate-config</goal>
 		            			</goals>
@@ -337,6 +338,7 @@
 		        		<executions>
 		         	 		<execution>
 		            			<id>generate-config</id>
+		            			<phase>process-test-resources</phase>
 		            			<goals>
 		              				<goal>generate-config</goal>
 		            			</goals>
@@ -366,6 +368,7 @@
 		        		<executions>
 		         	 		<execution>
 		            			<id>generate-config</id>
+		            			<phase>process-test-resources</phase>
 		            			<goals>
 		              				<goal>generate-config</goal>
 		            			</goals>
