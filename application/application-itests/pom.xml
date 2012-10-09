@@ -253,29 +253,6 @@
                 </executions>
             </plugin>
             <plugin>
-		    	<groupId>org.ops4j.pax.exam</groupId>
-		        <artifactId>maven-paxexam-plugin</artifactId>
-		        <version>1.2.3</version>
-		        <executions>
-		        	<execution>
-		            	<id>generate-config</id>
-		            	<goals>
-		              		<goal>generate-config</goal>
-		            	</goals>
-		          	</execution>
-		        </executions>
-		        <configuration>
-		          	<options>
-		            	<platform>equinox</platform>
-		            	<!-- Uncomment the desired version. Only one may be
-		            		 uncommented at a time. -->
-		            	<version>3.8.0.V20120529-1548</version>
-		            	<!-- <version>3.7.0.v20110613</version> -->
-		            	<!-- <version>3.5.0</version> -->
-		          	</options>
-		    	</configuration>
-		    </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -290,6 +267,26 @@
                     </includes>
                 </configuration>
             </plugin>
+            <plugin>
+		    	<groupId>org.ops4j.pax.exam</groupId>
+		        <artifactId>maven-paxexam-plugin</artifactId>
+		        <version>1.2.3</version>
+		        <executions>
+		        	<execution>
+		            	<id>generate-config</id>
+		            	<phase>process-test-resources</phase>
+		            	<goals>
+		              		<goal>generate-config</goal>
+		            	</goals>
+		          	</execution>
+		        </executions>
+		        <configuration>
+		        	<options>
+		            	<platform>equinox</platform>
+		            	<version>3.8.0.V20120529-1548</version>
+		          	</options>
+		        </configuration>
+			</plugin>
         </plugins>
     </build>
 
@@ -316,6 +313,66 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>equinox35</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+            	<plugins>
+		            <plugin>
+		        		<groupId>org.ops4j.pax.exam</groupId>
+		        		<artifactId>maven-paxexam-plugin</artifactId>
+		        		<version>1.2.3</version>
+		        		<executions>
+		         	 		<execution>
+		            			<id>generate-config</id>
+		            			<phase>process-test-resources</phase>
+		            			<goals>
+		              				<goal>generate-config</goal>
+		            			</goals>
+		          			</execution>
+		        		</executions>
+		        		<configuration>
+		          			<options>
+		            			<platform>equinox</platform>
+		            			<version>3.5.0</version>
+		          			</options>
+		        		</configuration>
+		      		</plugin>
+	      		</plugins>
+      		</build>
+        </profile>
+        <profile>
+            <id>equinox37</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+            	<plugins>
+		            <plugin>
+		        		<groupId>org.ops4j.pax.exam</groupId>
+		        		<artifactId>maven-paxexam-plugin</artifactId>
+		        		<version>1.2.3</version>
+		        		<executions>
+		         	 		<execution>
+		            			<id>generate-config</id>
+		            			<phase>process-test-resources</phase>
+		            			<goals>
+		              				<goal>generate-config</goal>
+		            			</goals>
+		          			</execution>
+		        		</executions>
+		        		<configuration>
+		          			<options>
+		            			<platform>equinox</platform>
+		            			<version>3.7.0.v20110613</version>
+		          			</options>
+		        		</configuration>
+		      		</plugin>
+	      		</plugins>
+      		</build>
         </profile>
     </profiles>
 </project>
