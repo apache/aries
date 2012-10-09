@@ -20,7 +20,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.service.subsystem.Subsystem;
@@ -28,7 +28,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
 
 import aQute.lib.osgi.Constants;
 
-@RunWith(JUnit4TestRunner.class)
+@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class AutostartTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa

@@ -30,14 +30,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
-@RunWith(JUnit4TestRunner.class)
+@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class ServiceDependencyTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
