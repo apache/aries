@@ -14,11 +14,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.subsystem.itests.SubsystemTest;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -56,7 +54,7 @@ import org.osgi.service.subsystem.Subsystem;
 	  - Bundle E
  */
 
-@RunWith(JUnit4TestRunner.class)
+@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public abstract class SubsystemDependencyTestBase extends SubsystemTest 
 {
 	protected static String BUNDLE_A = "sdt_bundle.a.jar";
