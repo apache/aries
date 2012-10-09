@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>

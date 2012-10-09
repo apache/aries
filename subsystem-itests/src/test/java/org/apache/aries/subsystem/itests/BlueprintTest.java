@@ -1,14 +1,7 @@
 package org.apache.aries.subsystem.itests;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.OptionUtils.combine;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 import org.apache.aries.subsystem.itests.hello.api.Hello;
 import org.junit.Before;
@@ -17,14 +10,8 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.hooks.weaving.WeavingHook;
-import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.service.subsystem.Subsystem;
-import org.osgi.service.subsystem.SubsystemException;
 
 /*
  * iTest for blueprint with subsystems
@@ -65,7 +52,6 @@ public class BlueprintTest extends SubsystemTest
 	{
 		return options(
 				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.itest.interfaces"),
-				mavenBundle("org.apache.aries", "org.apache.aries.util"),
 		        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
 		        mavenBundle("org.ow2.asm", "asm-all"),
 		        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy")

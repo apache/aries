@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 
 import org.apache.aries.application.modelling.ModelledResourceManager;
+import org.apache.aries.util.filesystem.IDirectoryFinder;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -77,6 +78,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	
 	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
 	private final Collection<Repository> repositories = Collections.synchronizedSet(new HashSet<Repository>());
+	private final Collection<IDirectoryFinder> finders = Collections.synchronizedSet(new HashSet<IDirectoryFinder>());
 	
 	public BundleContext getBundleContext() {
 		return bundleContext;
@@ -96,6 +98,10 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	
 	public Collection<Repository> getRepositories() {
 		return Collections.unmodifiableCollection(repositories);
+	}
+	
+	public Collection<IDirectoryFinder> getIDirectoryFinders() {
+		return Collections.unmodifiableCollection(finders);
 	}
 	
 	public Resolver getResolver() {
@@ -202,9 +208,11 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(Resolver.class.getName()).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
-				.append(Repository.class.getName()).append(")(")
+        .append(Repository.class.getName()).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
-				.append(ModelledResourceManager.class.getName()).append("))").toString();
+        .append(ModelledResourceManager.class.getName()).append(")(")
+        .append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
+        .append(IDirectoryFinder.class.getName()).append("))").toString();
 	}
 	
 	private boolean hasRequiredServices() {
@@ -255,6 +263,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				activate();
 			}
 		}
+    else if (service instanceof IDirectoryFinder)
+      finders.add((IDirectoryFinder)service);
 		else
 			repositories.add((Repository)service);
 		return service;
@@ -299,6 +309,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				this.modelledResourceManager = modelledResourceManager;
 			}
 		}
+    else if (service instanceof IDirectoryFinder)
+      finders.remove(service);
 		else
 			repositories.remove(service);
 	}
