@@ -569,6 +569,7 @@
                         <id>generate-config</id>
                         <goals>
                             <goal>generate-depends-file</goal>
+                            <goal>generate-config</goal>
                         </goals>
                         <configuration>
                             <outputFile>${project.build.directory}/test-classes/META-INF/maven/dependencies.properties</outputFile>

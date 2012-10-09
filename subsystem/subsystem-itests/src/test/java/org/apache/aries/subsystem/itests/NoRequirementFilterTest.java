@@ -20,7 +20,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.subsystem.Subsystem;
@@ -32,7 +32,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
  * 
  * Generic capabilities are not required to use the namespace as an attribute.
  */
-@RunWith(JUnit4TestRunner.class)
+@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class NoRequirementFilterTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa

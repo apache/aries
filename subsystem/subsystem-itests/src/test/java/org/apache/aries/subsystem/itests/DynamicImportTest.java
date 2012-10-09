@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -30,7 +30,7 @@ import org.osgi.service.subsystem.SubsystemException;
  * _Hopefully_ if this works, then packages added by WeavingProxy services
  * will also work. If not, we'll need extra tests :-/ 
  */
-@RunWith(JUnit4TestRunner.class)
+@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class DynamicImportTest extends SubsystemTest 
 {
 	private static boolean _testAppCreated = false;
