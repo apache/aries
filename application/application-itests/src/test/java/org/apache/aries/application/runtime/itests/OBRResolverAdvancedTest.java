@@ -23,7 +23,6 @@ import static org.apache.aries.itest.ExtraOptions.mavenBundle;
 import static org.apache.aries.itest.ExtraOptions.paxLogging;
 import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -67,7 +66,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.w3c.dom.Document;
@@ -75,7 +74,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@RunWith(JUnit4TestRunner.class)
+@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class OBRResolverAdvancedTest extends AbstractIntegrationTest 
 {
   public static final String CORE_BUNDLE_BY_VALUE = "core.bundle.by.value";
@@ -563,40 +562,12 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         );
   }
   
-  /*
-   * Commented out to avoid an NPE due to a ConcurrentModificationException in
-   * the Aries build. See https://issues.apache.org/jira/browse/ARIES-931.
-   */
-  //@org.ops4j.pax.exam.junit.Configuration
-  public static Option[] equinox35Options()
-  {
-	  return testOptions(
-			  generalConfiguration(),
-	          equinox().version("3.5.0")
-	          );
-  }
-
-  /*
-   * Commented out to avoid an NPE due to a ConcurrentModificationException in
-   * the Aries build. See https://issues.apache.org/jira/browse/ARIES-931.
-   */
-  //@org.ops4j.pax.exam.junit.Configuration
-  public static Option[] equinox37Options()
-  {
-	  return testOptions(
-			  generalConfiguration(),
-			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
-	          equinox().version("3.7.0.v20110613")
-	          );
-  }
-  
   @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] equinox38Options()
+  public static Option[] configuration()
   {
 	  return testOptions(
 			  generalConfiguration(),
-			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
-	          equinox().version("3.8.0.V20120529-1548")
+			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties")        
 	          );
   }
 
