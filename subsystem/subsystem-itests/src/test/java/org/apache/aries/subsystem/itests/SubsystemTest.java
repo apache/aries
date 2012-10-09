@@ -183,10 +183,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 				// Bundles
 				mavenBundle("org.apache.aries",             "org.apache.aries.util"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-				mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").version("1.0.0"),
+				mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-				mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").version("1.0.0"),
-				mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").version("1.0.1-SNAPSHOT"),
+				mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint"),
+				mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy"),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.api"),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.core"),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.itest.interfaces"),
