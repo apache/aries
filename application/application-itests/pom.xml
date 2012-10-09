@@ -314,6 +314,7 @@
 		        		</executions>
 		        		<configuration>
 		          			<options>
+		          				<outputFile>${project.build.directory}/test-classes/META-INF/maven/paxexam-config.args</outputFile>
 		            			<platform>equinox</platform>
 		            			<version>3.5.0</version>
 		          			</options>
@@ -341,6 +342,7 @@
 		          			</execution>
 		        		</executions>
 		        		<configuration>
+		        			<outputFile>${project.build.directory}/test-classes/META-INF/maven/paxexam-config.args</outputFile>
 		          			<options>
 		            			<platform>equinox</platform>
 		            			<version>3.7.0.v20110613</version>
@@ -369,6 +371,7 @@
 		          			</execution>
 		        		</executions>
 		        		<configuration>
+		        			<outputFile>${project.build.directory}/test-classes/META-INF/maven/paxexam-config.args</outputFile>
 		          			<options>
 		            			<platform>equinox</platform>
 		            			<version>3.8.0.V20120529-1548</version>
