@@ -18,14 +18,15 @@
  */
 package org.apache.aries.application.runtime.itests;
 
+import static org.apache.aries.itest.ExtraOptions.flatOptions;
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.paxLogging;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.repository;
-
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,13 +52,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.framework.CompositeBundle;
 
-@RunWith(JUnit4TestRunner.class)
+@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   
   /* Use @Before not @BeforeClass so as to ensure that these resources
@@ -346,40 +347,12 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
           );
   }
   
-  /*
-   * Commented out to avoid an NPE due to a ConcurrentModificationException in
-   * the Aries build. See https://issues.apache.org/jira/browse/ARIES-931.
-   */
-  //@org.ops4j.pax.exam.junit.Configuration
-  public static Option[] equinox35Options()
-  {
-	  return testOptions(
-			  generalConfiguration(),
-	          equinox().version("3.5.0")
-	          );
-  }
-
-  /*
-   * Commented out to avoid an NPE due to a ConcurrentModificationException in
-   * the Aries build. See https://issues.apache.org/jira/browse/ARIES-931.
-   */
-  //@org.ops4j.pax.exam.junit.Configuration
-  public static Option[] equinox37Options()
-  {
-	  return testOptions(
-			  generalConfiguration(),
-			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
-	          equinox().version("3.7.0.v20110613")
-	          );
-  }
-  
   @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] equinox38Options()
+  public static Option[] configuration()
   {
 	  return testOptions(
 			  generalConfiguration(),
-			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
-	          equinox().version("3.8.0.V20120529-1548")
+			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties")        
 	          );
   }
 
