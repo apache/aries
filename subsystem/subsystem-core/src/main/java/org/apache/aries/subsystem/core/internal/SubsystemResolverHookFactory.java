@@ -20,7 +20,14 @@ import org.osgi.framework.hooks.resolver.ResolverHookFactory;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class SubsystemResolverHookFactory implements ResolverHookFactory {
+	private final Subsystems subsystems;
+	public SubsystemResolverHookFactory(Subsystems subsystems) {
+		if (subsystems == null)
+			throw new NullPointerException("Missing required parameter: subsystems");
+		this.subsystems = subsystems;
+	}
+	
 	public ResolverHook begin(Collection<BundleRevision> triggers) {
-		return new SubsystemResolverHook();
+		return new SubsystemResolverHook(subsystems);
 	}
 }
