@@ -12,26 +12,27 @@ public class LocationTest {
 	@Test
 	public void testAnyLocationString() {
 		String locationStr = "anyLocation";
+		Location location = null;
 		try {
-			Location location = new Location(locationStr);
-			assertNull("Wrong symbolic name", location.getSymbolicName());
-			assertEquals("Wrong value", locationStr, location.getValue());
-			assertNull("Wrong version", location.getVersion());
-			try {
-				location.open();
-				fail("Opening a location that does not represent a URL should fail");
-			}
-			catch (MalformedURLException e) {
-				// Okay
-			}
-			catch (Throwable t) {
-				t.printStackTrace();
-				fail("Wrong exception");
-			}
+			location = new Location(locationStr);
 		}
 		catch (Throwable t) {
 			t.printStackTrace();
 			fail("Any location string must be supported");
+		}
+		assertNull("Wrong symbolic name", location.getSymbolicName());
+		assertEquals("Wrong value", locationStr, location.getValue());
+		assertNull("Wrong version", location.getVersion());
+		try {
+			location.open();
+			fail("Opening a location that does not represent a URL should fail");
+		}
+		catch (MalformedURLException e) {
+			// Okay
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+			fail("Wrong exception");
 		}
 	}
 }
