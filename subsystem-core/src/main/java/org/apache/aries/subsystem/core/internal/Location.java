@@ -31,7 +31,7 @@ import org.osgi.framework.Version;
 
 public class Location {
   enum LocationType {
-    SUBSYSTEM("subsystem", "subsystem"), IDIRFINDER(IDIR_SCHEME, IDIR_SCHEME), URL("url", null);
+    SUBSYSTEM("subsystem", "subsystem"), IDIRFINDER(IDIR_SCHEME, IDIR_SCHEME), URL("url", null), UNKNOWN("unknown", null);
     final String toString;
     final String scheme;
     LocationType(String toString, String scheme) {this.toString = toString; this.scheme = scheme;}
@@ -70,7 +70,10 @@ public class Location {
         uri = locationUri;
       }
     } else {
-      throw new IllegalArgumentException(location + " is not an absolute uri");
+    	type = LocationType.UNKNOWN;
+    	url = null;
+    	uri = null;
+    	subsystemUri = null;
     }
   }
     
@@ -96,6 +99,11 @@ public class Location {
           return FileSystem.getFSRoot(new File(uri));
         else
           return FileSystem.getFSRoot(url.openStream());
+      case UNKNOWN:
+    	  // Only try to create a URL with the location value here. If the
+    	  // location was just a string and an InputStream was provided, this
+    	  // method will never be called.
+    	  return FileSystem.getFSRoot(new URL(value).openStream());
       default : // should never get here as switch should cover all types
         throw new UnsupportedOperationException("cannot open location of type " + type); 
     }

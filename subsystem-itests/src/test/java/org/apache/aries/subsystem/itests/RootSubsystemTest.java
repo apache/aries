@@ -79,6 +79,11 @@ public class RootSubsystemTest extends SubsystemTest {
 	public void testServiceEvents() throws Exception {
 		Subsystem root = getRootSubsystem();
 		Bundle core = getSubsystemCoreBundle();
+		// TODO Temporary(?) workaround to allow time for any tardy service
+		// events to arrive so they can be cleared. So far, this sleep has only
+		// been necessary on the IBM 6.0 64-bit JDK.
+		Thread.sleep(1000);
+		subsystemEvents.clear();
 		core.stop();
 		assertServiceEventsStop(root);
 		core.uninstall();

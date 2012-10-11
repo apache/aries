@@ -153,8 +153,6 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 			instance = Activator.this;
 		}
 		registerBundleEventHook();
-		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(), null));
-		registrar = new SubsystemServiceRegistrar(bundleContext);
 		try {
 			subsystems = new Subsystems();
 		}
@@ -164,6 +162,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		catch (Exception e) {
 			throw new SubsystemException(e);
 		}
+		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(subsystems), null));
+		registrar = new SubsystemServiceRegistrar(bundleContext);
 		AriesSubsystem root = subsystems.getRootSubsystem();
 		root.start();
 	}
@@ -263,8 +263,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				activate();
 			}
 		}
-    else if (service instanceof IDirectoryFinder)
-      finders.add((IDirectoryFinder)service);
+		else if (service instanceof IDirectoryFinder)
+			finders.add((IDirectoryFinder)service);
 		else
 			repositories.add((Repository)service);
 		return service;
@@ -304,13 +304,13 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		else if (service instanceof ModelledResourceManager) {
 			if (service.equals(modelledResourceManager)) {
 				ModelledResourceManager modelledResourceManager = (ModelledResourceManager)findAlternateServiceFor(this.modelledResourceManager);
-				if (resolver == null)
+				if (modelledResourceManager == null)
 					deactivate();
 				this.modelledResourceManager = modelledResourceManager;
 			}
 		}
-    else if (service instanceof IDirectoryFinder)
-      finders.remove(service);
+		else if (service instanceof IDirectoryFinder)
+			finders.remove(service);
 		else
 			repositories.remove(service);
 	}
