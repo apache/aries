@@ -43,6 +43,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
@@ -61,7 +62,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         this.spiBundle = spiBundle;
     }
 
-    public List<ServiceRegistration> addingBundle(Bundle bundle, BundleEvent event) {
+    public List<ServiceRegistration> addingBundle(final Bundle bundle, BundleEvent event) {
         log(LogService.LOG_INFO, "Bundle Considered for SPI providers: "
                 + bundle.getSymbolicName());
 
@@ -131,7 +132,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
         }
 
-        List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
+        final List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
         for (URL serviceFileURL : serviceFileURLs) {
             log(LogService.LOG_INFO, "Found SPI resource: " + serviceFileURL);
 
@@ -155,13 +156,14 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         if (serviceFile.length() > idx) {
                             registrationClassName = serviceFile.substring(idx + 1);
                         }
+
                         if (providedServices.size() > 0 && !providedServices.contains(registrationClassName))
                             continue;
 
-                        Class<?> cls = bundle.loadClass(className);
+                        final Class<?> cls = bundle.loadClass(className);
                         log(LogService.LOG_INFO, "Loaded SPI provider: " + cls);
 
-                        Hashtable<String, Object> properties;
+                        final Hashtable<String, Object> properties;
                         if (fromSPIProviderHeader)
                             properties = new Hashtable<String, Object>();
                         else
@@ -170,10 +172,27 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         if (properties != null) {
                             properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
                             properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, cls.getName());
-                            ServiceRegistration reg = bundle.getBundleContext().registerService(
-                                registrationClassName, new ProviderServiceFactory(cls), properties);
-                            registrations.add(reg);
-                            log(LogService.LOG_INFO, "Registered service: " + reg);
+
+                            ServiceRegistration reg = null;
+                            SecurityManager sm = System.getSecurityManager();
+                            if (sm != null) {
+                                if (bundle.hasPermission(new ServicePermission(registrationClassName, ServicePermission.REGISTER))) {
+                                    System.err.println("*** Found security manager and bundle has permission to register: " + bundle);
+                                    reg = bundle.getBundleContext().registerService(
+                                            registrationClassName, new ProviderServiceFactory(cls), properties);
+                                } else {
+                                    System.err.println("*** Found security manager and bundle has NO permission to register: " + bundle);
+                                    log(LogService.LOG_INFO, "Bundle " + bundle + " does not have the permission to register services of type: " + registrationClassName);
+                                }
+                            } else {
+                                reg = bundle.getBundleContext().registerService(
+                                        registrationClassName, new ProviderServiceFactory(cls), properties);
+                            }
+
+                            if (reg != null) {
+                                registrations.add(reg);
+                                log(LogService.LOG_INFO, "Registered service: " + reg);
+                            }
                         }
 
                         activator.registerProviderBundle(registrationClassName, bundle, customAttributes);
