@@ -21,6 +21,7 @@ package org.apache.aries.spifly;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -35,6 +36,7 @@ import java.util.jar.JarInputStream;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServicePermission;
 import org.osgi.service.log.LogService;
 
 /**
@@ -80,7 +82,18 @@ public class Util {
         if (ServiceLoader.class.getName().equals(className) && "load".equals(methodName)) {
             requestedClass = clsArg.getName();
             args = new HashMap<Pair<Integer,String>, String>();
-            args.put(new Pair<Integer, String>(0, Class.class.getName()), clsArg.getName());
+            args.put(new Pair<Integer, String>(0, Class.class.getName()), requestedClass);
+
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null) {
+                try {
+                    sm.checkPermission(new ServicePermission(requestedClass, ServicePermission.GET));
+                } catch (AccessControlException ace) {
+                    // access denied
+                    activator.log(LogService.LOG_INFO, "No permission to obtain service of type: " + requestedClass);
+                    return null;
+                }
+            }
         } else {
             requestedClass = className;
             args = null; // only supported on ServiceLoader.load() at the moment
