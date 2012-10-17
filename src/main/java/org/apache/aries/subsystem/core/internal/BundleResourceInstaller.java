@@ -22,6 +22,7 @@ import org.apache.aries.util.io.IOUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
+import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
@@ -186,6 +187,13 @@ public class BundleResourceInstaller extends ResourceInstaller {
 				provisionTo.getRegion().removeBundle(bundle);
 			}
 		});
+		// Set the start level of all bundles managed (i.e. installed) by the
+		// subsystems implementation to 1 in case the framework's default bundle
+		// start level has been changed. Otherwise, start failures will occur
+		// if a subsystem is started at a lower start level than the default.
+		// Setting the start level does no harm since all managed bundles are 
+		// started transiently anyway.
+		bundle.adapt(BundleStartLevel.class).setStartLevel(1);
 		return bundle.adapt(BundleRevision.class);
 	}
 }
