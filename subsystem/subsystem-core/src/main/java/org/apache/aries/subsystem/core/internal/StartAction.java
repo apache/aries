@@ -240,6 +240,9 @@ public class StartAction extends AbstractAction {
 			// Starting the root subsystem should not affect bundles within the
 			// root region.
 			return;
+		if (Utils.isRegionContextBundle(resource))
+			// The region context bundle was persistently started elsewhere.
+			return;
 		final Bundle bundle = ((BundleRevision)resource).getBundle();
 		if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0)
 			return;
