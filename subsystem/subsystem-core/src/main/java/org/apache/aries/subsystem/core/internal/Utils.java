@@ -127,6 +127,11 @@ public class Utils {
 		return !isSharedResource(resource);
 	}
 	
+	public static boolean isRegionContextBundle(Resource resource) {
+		return ResourceHelper.getSymbolicNameAttribute(resource).startsWith(
+				RegionContextBundleHelper.SYMBOLICNAME_PREFIX);
+	}
+	
 	public static boolean isSharedResource(Resource resource) {
 		return resource instanceof AriesSubsystem || resource instanceof BundleRevision;
 	}

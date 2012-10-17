@@ -59,7 +59,7 @@ public class StopAction extends AbstractAction {
 		}
 		for (Resource resource : resources) {
 			// Don't stop the region context bundle.
-			if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+			if (Utils.isRegionContextBundle(resource))
 				continue;
 			try {
 				stopResource(resource);

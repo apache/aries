@@ -86,8 +86,7 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 			for (Resource resource : Activator.getInstance().getSubsystems()
 					.getResourcesReferencedBy(subsystem)) {
 				// Don't uninstall the region context bundle here.
-				if (ResourceHelper.getSymbolicNameAttribute(resource).startsWith(
-						RegionContextBundleHelper.SYMBOLICNAME_PREFIX))
+				if (Utils.isRegionContextBundle(resource))
 					continue;
 				try {
 					ResourceUninstaller.newInstance(resource, subsystem)
