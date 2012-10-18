@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.AccessControlException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -48,13 +50,25 @@ public class Util {
 
     // Provided as static method to make it easier to call from ASM-modified code
     public static void storeContextClassloader() {
-        storedClassLoaders.set(Thread.currentThread().getContextClassLoader());
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            @Override
+            public Void run() {
+                storedClassLoaders.set(Thread.currentThread().getContextClassLoader());
+                return null;
+            }
+        });
     }
 
     // Provided as static method to make it easier to call from ASM-modified code
     public static void restoreContextClassloader() {
-        Thread.currentThread().setContextClassLoader(storedClassLoaders.get());
-        storedClassLoaders.set(null);
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            @Override
+            public Void run() {
+                Thread.currentThread().setContextClassLoader(storedClassLoaders.get());
+                storedClassLoaders.set(null);
+                return null;
+            }
+        });
     }
 
     public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
@@ -65,10 +79,16 @@ public class Util {
 
         BundleReference br = ((BundleReference) bundleLoader);
 
-        ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
+        final ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
             BaseActivator.activator.log(LogService.LOG_INFO, "Temporarily setting Thread Context Classloader to: " + cl);
-            Thread.currentThread().setContextClassLoader(cl);
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                @Override
+                public Void run() {
+                    Thread.currentThread().setContextClassLoader(cl);
+                    return null;
+                }
+            });
         } else {
             BaseActivator.activator.log(LogService.LOG_WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
         }
@@ -127,8 +147,17 @@ public class Util {
         }
     }
 
+    private static ClassLoader getBundleClassLoader(final Bundle b) {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return getBundleClassLoaderPrivileged(b);
+            }
+        });
+    }
+
     @SuppressWarnings("unchecked")
-    private static ClassLoader getBundleClassLoader(Bundle b) {
+    private static ClassLoader getBundleClassLoaderPrivileged(Bundle b) {
         // In 4.3 this can be done much easier by using the BundleWiring, but we want this code to
         // be 4.2 compliant.
         // Here we're just finding any class in the bundle, load that and then use its classloader.

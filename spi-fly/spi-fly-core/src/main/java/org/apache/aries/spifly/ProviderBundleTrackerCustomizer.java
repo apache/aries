@@ -177,11 +177,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                             SecurityManager sm = System.getSecurityManager();
                             if (sm != null) {
                                 if (bundle.hasPermission(new ServicePermission(registrationClassName, ServicePermission.REGISTER))) {
-                                    System.err.println("*** Found security manager and bundle has permission to register: " + bundle);
                                     reg = bundle.getBundleContext().registerService(
                                             registrationClassName, new ProviderServiceFactory(cls), properties);
                                 } else {
-                                    System.err.println("*** Found security manager and bundle has NO permission to register: " + bundle);
                                     log(LogService.LOG_INFO, "Bundle " + bundle + " does not have the permission to register services of type: " + registrationClassName);
                                 }
                             } else {
