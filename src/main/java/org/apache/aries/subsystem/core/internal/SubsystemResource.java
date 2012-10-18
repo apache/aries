@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -471,6 +472,19 @@ public class SubsystemResource implements Resource {
 	
 	private ResolveContext createResolveContext() {
 		return new ResolveContext() {
+			private final Map<Resource, Wiring> wirings = computeWirings();
+			
+			private Map<Resource, Wiring> computeWirings() {
+				Map<Resource, Wiring> wirings = new HashMap<Resource, Wiring>();
+				for (AriesSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystems())
+					for (Resource constituent : subsystem.getConstituents())
+						if (constituent instanceof BundleRevision) {
+							BundleRevision revision = (BundleRevision)constituent;
+							wirings.put(revision, revision.getWiring());
+						}
+				return Collections.unmodifiableMap(wirings);
+			}
+			
 			@Override
 			public List<Capability> findProviders(Requirement requirement) {
 				List<Capability> result = new ArrayList<Capability>();
@@ -519,8 +533,8 @@ public class SubsystemResource implements Resource {
 			}
 
 			@Override
-			public Map<Resource, Wiring> getWirings() {
-				return Collections.emptyMap();
+			public synchronized Map<Resource, Wiring> getWirings() {
+				return wirings;
 			}
 		};
 	}
