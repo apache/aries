@@ -79,7 +79,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
                         // new TimeoutOption( 0 ),
 
                         PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-                        CoreOptions.equinox().version("3.7.0.v20110613"),
+                        CoreOptions.equinox().version("3.8.0.V20120529-1548"),
                         paxLogging("INFO"),
 
                         mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),

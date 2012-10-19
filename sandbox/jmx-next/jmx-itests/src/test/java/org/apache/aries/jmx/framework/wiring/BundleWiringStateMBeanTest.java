@@ -25,6 +25,7 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
 import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,7 +64,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
             // new TimeoutOption( 0 ),
 
             PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-            CoreOptions.equinox().version("3.7.0.v20110613"),
+            CoreOptions.equinox().version("3.8.0.V20120529-1548"),
             paxLogging("INFO"),
 
             mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
@@ -404,7 +405,11 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
         Map<String, Object> aMap = new HashMap<String, Object>();
         for (CompositeData jmxAttr : (Collection<CompositeData>) jmxAttributes.values()) {
             PropertyData<Object> pd = PropertyData.from(jmxAttr);
-            aMap.put(pd.getKey(), pd.getValue());
+            Object val = pd.getValue();
+            if (val instanceof Object[]) {
+                val = Arrays.asList((Object [])val);
+            }
+            aMap.put(pd.getKey(), val);
         }
         return aMap;
     }
