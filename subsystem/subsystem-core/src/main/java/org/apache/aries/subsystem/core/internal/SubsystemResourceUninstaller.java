@@ -99,10 +99,12 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 				}
 			}
 			subsystem.setState(State.UNINSTALLED);
-			Activator.getInstance().getSubsystemServiceRegistrar()
-					.unregister(subsystem);
-			if (subsystem.isScoped())
+			Activator activator = Activator.getInstance();
+			activator.getSubsystemServiceRegistrar().unregister(subsystem);
+			if (subsystem.isScoped()) {
 				RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
+				activator.getRegionDigraph().removeRegion(subsystem.getRegion());
+			}
 			if (firstError != null)
 				throw new SubsystemException(firstError);
 		}

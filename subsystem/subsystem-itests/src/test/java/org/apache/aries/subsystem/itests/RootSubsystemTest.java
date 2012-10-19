@@ -19,6 +19,9 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.equinox.region.Region;
+import org.eclipse.equinox.region.RegionDigraph;
+import org.eclipse.equinox.region.RegionFilter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -139,5 +142,46 @@ public class RootSubsystemTest extends SubsystemTest {
 	@Test
 	public void testVersion() {
 		assertEquals("Wrong root version", getRootSubsystem().getVersion(), Version.parseVersion("1.0.0"));
+	}
+	
+	/*
+	 * The root subsystem should be associated with the region in which the
+	 * subsystems implementation bundle is installed.
+	 */
+	@Test
+	public void testRegion() throws Exception {
+		RegionDigraph digraph = getOsgiService(RegionDigraph.class);
+		Bundle core = getSubsystemCoreBundle();
+		Region kernel = digraph.getRegion(core);
+		Subsystem root = getRootSubsystem();
+		Bundle rootRegionContext = root.getBundleContext().getBundle();
+		// Get the region containing the subsystem's region context bundle, 
+		// which is the same thing as getting the region with which the 
+		// subsystem is associated.
+		Region region = digraph.getRegion(root.getBundleContext().getBundle());
+		assertEquals("Wrong region", kernel, region);
+		// Uninstall the core bundle to remove the persisted root subsystem.
+		core.uninstall();
+		// Clean up the lingering region context bundle.
+		rootRegionContext.uninstall();
+		// Create a new region and install the core bundle into it.
+		Region user = digraph.createRegion("user");
+		// Allow everything from the kernel region into the user region so the 
+		// core bundle will resolve.
+		user.connectRegion(
+				kernel, 
+				digraph.createRegionFilterBuilder().allowAll(RegionFilter.VISIBLE_ALL_NAMESPACE).build());
+		// Allow everything from the user region into the kernel region so the
+		// root subsystem service can be found.
+		kernel.connectRegion(
+				user, 
+				digraph.createRegionFilterBuilder().allowAll(RegionFilter.VISIBLE_ALL_NAMESPACE).build());
+		core = user.installBundle(normalizeBundleLocation(core.getLocation()));
+		user = digraph.getRegion(core);
+		core.start();
+		root = getRootSubsystem();
+		region = digraph.getRegion(root.getBundleContext().getBundle());
+		// The root subsystem should now be in the new region.
+		assertEquals("Wrong region", user, region);
 	}
 }

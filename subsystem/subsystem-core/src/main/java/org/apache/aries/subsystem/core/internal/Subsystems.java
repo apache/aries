@@ -208,7 +208,11 @@ public class Subsystems {
 	public void removeConstituent(AriesSubsystem subsystem, Resource constituent) {
 		synchronized (subsystemToConstituents) {
 			Set<Resource> constituents = subsystemToConstituents.get(subsystem);
-			constituents.remove(constituent);
+			if (constituents != null) {
+				constituents.remove(constituent);
+				if (constituents.isEmpty())
+					subsystemToConstituents.remove(subsystem);
+			}
 		}
 		subsystem.removedContent(constituent);
 	}
