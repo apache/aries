@@ -453,7 +453,9 @@ public class SubsystemResource implements Resource {
 		Activator activator = Activator.getInstance();
 		RegionDigraph digraph = activator.getRegionDigraph();
 		if (getParents().isEmpty())
-			return digraph.getRegion(AriesSubsystem.ROOT_REGION);
+			// This is the root subsystem. Associate it with the region in which
+			// the subsystems implementation bundle was installed.
+			return digraph.getRegion(activator.getBundleContext().getBundle());
 		String name = getSubsystemManifest()
 				.getSubsystemSymbolicNameHeader().getSymbolicName()
 				+ ';'
