@@ -50,6 +50,8 @@ import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ManifestFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
+import org.eclipse.equinox.region.Region;
+import org.eclipse.equinox.region.RegionDigraph;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
@@ -196,7 +198,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.osgi",                     "org.osgi.enterprise").version("5.0.0"),
-        //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 				equinox().version("3.8.0.V20120529-1548"));
 		options = updateOptions(options);
@@ -763,9 +765,13 @@ public abstract class SubsystemTest extends IntegrationTest {
 		subsystemEvents.clear();
 		Collection<Subsystem> parents = subsystem.getParents();
 		Bundle b = null;
+		Region region = null;
+		RegionDigraph digraph = getOsgiService(RegionDigraph.class);
 		if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
-				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE))
+				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)) {
 			b = getRegionContextBundle(subsystem);
+			region = digraph.getRegion(b);
+		}
 		State state = subsystem.getState();
 		subsystem.uninstall();
 		if (!EnumSet.of(State.INSTALL_FAILED, State.INSTALLED, State.INSTALLING).contains(state))
@@ -776,8 +782,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 		for (Subsystem parent : parents)
 			assertNotChild(parent, subsystem);
 //		assertNotDirectory(subsystem);
-		if (b != null)
+		if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
+				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)) {
 			assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
+			assertNull("Region not removed", digraph.getRegion(region.getName()));
+		}
 	}
 	
 	protected void uninstallSubsystemSilently(Subsystem subsystem) {
@@ -833,5 +842,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 		} finally {
 			Utils.closeQuietly(fos);
 		}
+	}
+	
+	protected static String normalizeBundleLocation(String location) {
+		if (location.startsWith("initial@"))
+			return location.substring(8);
+		return location;
 	}
 }
