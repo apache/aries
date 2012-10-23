@@ -398,7 +398,7 @@ public class RawSubsystemResource implements Resource {
 					.manifest(getSubsystemManifest())
 					.location(AriesSubsystem.ROOT_LOCATION).autostart(true).id(0)
 					.lastId(SubsystemIdentifier.getLastId())
-					.region(AriesSubsystem.ROOT_REGION).state(State.INSTALLING)
+					.state(State.INSTALLING)
 					.build();
 	}
 	
