@@ -18,6 +18,8 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
@@ -28,13 +30,24 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 @RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class RootSubsystemTest extends SubsystemTest {
-	private static final String BUNDLE_A = "bundle.a";
+	/*
+	 * Subsystem-SymbolicName: application.a.esa
+	 * Subsystem-Content: bundle.a.jar
+	 */
+	private static final String APPLICATION_A = "application.a.esa";
+	/*
+	 * Bundle-SymbolicName: bundle.a.jar
+	 * Import-Package: org.osgi.framework
+	 */
+	private static final String BUNDLE_A = "bundle.a.jar";
 	
 	private static boolean createdTestFiles;
 	@Before
@@ -42,11 +55,25 @@ public class RootSubsystemTest extends SubsystemTest {
 		if (createdTestFiles)
 			return;
 		createBundleA();
+		createApplicationA();
 		createdTestFiles = true;
 	}
 	
+	private static void createApplicationA() throws IOException {
+		createApplicationAManifest();
+		createSubsystem(APPLICATION_A, BUNDLE_A);
+	}
+	
+	private static void createApplicationAManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_A);
+		createManifest(APPLICATION_A + ".mf", attributes);
+	}
+	
 	private static void createBundleA() throws IOException {
-		createBundle(BUNDLE_A);
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(Constants.IMPORT_PACKAGE, "org.osgi.framework");
+		createBundle(BUNDLE_A, headers);
 	}
 	
 	// TODO Test root subsystem headers.
@@ -183,5 +210,17 @@ public class RootSubsystemTest extends SubsystemTest {
 		region = digraph.getRegion(root.getBundleContext().getBundle());
 		// The root subsystem should now be in the new region.
 		assertEquals("Wrong region", user, region);
+		// Extra test. Install application A into the root region (user) and 
+		// make sure it resolves. Although the system bundle is in the kernel 
+		// region and not a constituent of the root subsystem, the capability 
+		// should still be found and used.
+		try {
+			Subsystem applicationA = installSubsystemFromFile(root, APPLICATION_A);
+			uninstallSubsystemSilently(applicationA);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			fail("Subsystem should have installed");
+		}
 	}
 }

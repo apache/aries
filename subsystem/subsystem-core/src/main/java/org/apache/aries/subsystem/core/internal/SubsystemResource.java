@@ -42,6 +42,7 @@ import org.apache.aries.subsystem.core.archive.SubsystemExportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceRequirement;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
+import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
@@ -57,6 +58,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -346,10 +348,11 @@ public class SubsystemResource implements Resource {
 	
 	private void addSubsystemServiceImportToSharingPolicy(RegionFilterBuilder builder, Region to)
 			throws InvalidSyntaxException, BundleException, IOException, URISyntaxException {
-		if (to.getName().equals(AriesSubsystem.ROOT_REGION))
+		Region root = Activator.getInstance().getSubsystems().getRootSubsystem().getRegion();
+		if (to.getName().equals(root.getName()))
 			addSubsystemServiceImportToSharingPolicy(builder);
 		else {
-			to = Activator.getInstance().getSubsystems().getRootSubsystem().getRegion();
+			to = root;
 			builder = to.getRegionDigraph().createRegionFilterBuilder();
 			addSubsystemServiceImportToSharingPolicy(builder);
 			RegionFilter regionFilter = builder.build();
@@ -480,11 +483,19 @@ public class SubsystemResource implements Resource {
 				Map<Resource, Wiring> wirings = new HashMap<Resource, Wiring>();
 				for (AriesSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystems())
 					for (Resource constituent : subsystem.getConstituents())
-						if (constituent instanceof BundleRevision) {
-							BundleRevision revision = (BundleRevision)constituent;
-							wirings.put(revision, revision.getWiring());
-						}
+						addWiring(constituent, wirings);
 				return Collections.unmodifiableMap(wirings);
+			}
+			
+			private void addWiring(Resource resource, Map<Resource, Wiring> wirings) {
+				if (resource instanceof BundleConstituent) {
+					BundleConstituent bc = (BundleConstituent)resource;
+					wirings.put(bc.getBundle().adapt(BundleRevision.class), bc.getWiring());
+				}
+				else if (resource instanceof BundleRevision) {
+					BundleRevision br = (BundleRevision)resource;
+					wirings.put(br, br.getWiring());
+				}
 			}
 			
 			@Override
@@ -662,15 +673,26 @@ public class SubsystemResource implements Resource {
 	private boolean isValid(Capability capability) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace()))
 			return true;
+		Resource resource = capability.getResource();
 		Region region;
-		if (isInstallable(capability.getResource())) {
-			if (isContent(capability.getResource()))
+		if (isInstallable(resource)) {
+			if (isContent(resource))
 				region = getRegion();
 			else
 				region = Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(parent).getRegion();
 		}
-		else
-			region = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource()).iterator().next().getRegion();
+		else {
+			// This is an already installed resource from the system repository.
+			if (Utils.isBundle(resource))
+				// If it's a bundle, use region digraph to get the region in order
+				// to account for bundles in isolated regions outside of the
+				// subsystems API.
+				region = Activator.getInstance().getRegionDigraph().getRegion(((BundleRevision)resource).getBundle());
+			else
+				// If it's anything else, get the region from one of the
+				// subsystems referencing it.
+				region = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource()).iterator().next().getRegion();
+		}
 		return new SharingPolicyValidator(region, getRegion()).isValid(capability);
 	}
 	

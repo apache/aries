@@ -55,7 +55,6 @@ import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class AriesSubsystem implements Resource, Subsystem {
-	public static final String ROOT_REGION = "org.eclipse.equinox.region.kernel";
 	public static final String ROOT_SYMBOLIC_NAME = "org.osgi.service.subsystem.root";
 	public static final Version ROOT_VERSION = Version.parseVersion("1.0.0");
 	public static final String ROOT_LOCATION = "subsystem://?"
