@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
@@ -131,11 +132,9 @@ public class Subsystems {
 					// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
 					// since this does not take into account the possibility of already existing bundles going away or new bundles
 					// being installed out of band while this initialization is taking place. Need a bundle event hook for that.
-					BundleContext context = Activator.getInstance().getBundleContext().getBundle(0).getBundleContext();
-					for (long id : root.getRegion().getBundleIds()) {
-						BundleRevision br = context.getBundle(id).adapt(BundleRevision.class);
-						ResourceInstaller.newInstance(coordination, br, root).install();
-					}
+					BundleContext context = Activator.getInstance().getBundleContext().getBundle(org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION).getBundleContext();
+					for (Bundle b : context.getBundles())
+						ResourceInstaller.newInstance(coordination, b.adapt(BundleRevision.class), root).install();
 					// TODO End proof of concept.
 				} catch (Exception e) {
 					coordination.fail(e);
