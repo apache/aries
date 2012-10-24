@@ -1,0 +1,1 @@
+Subsystem-SymbolicName: org.apache.aries.subsystem.itests.application.dir

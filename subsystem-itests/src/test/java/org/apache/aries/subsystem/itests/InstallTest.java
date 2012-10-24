@@ -23,7 +23,11 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
+import org.apache.aries.subsystem.itests.util.Utils;
+import org.apache.aries.unittest.fixture.ArchiveFixture;
+import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.io.IOUtils;
@@ -43,7 +47,26 @@ public class InstallTest extends SubsystemTest {
 		if (createdApplications) {
 			return;
 		}
-		createApplication("emptySubsystem", new String[0]);
+		
+		ZipFixture feature = ArchiveFixture
+				.newZip()
+				.binary("OSGI-INF/SUBSYSTEM.MF",
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/OSGI-INF/SUBSYSTEM.MF"))
+				.binary("applicationDir.esa/OSGI-INF/SUBSYSTEM.MF",
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/applicationDir/OSGI-INF/SUBSYSTEM.MF"))
+				.binary("applicationDir.esa/featureDir.esa/OSGI-INF/SUBSYSTEM.MF",
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/applicationDir/featureDir/OSGI-INF/SUBSYSTEM.MF"));
+		feature.end();
+		FileOutputStream fos = new FileOutputStream("compositeDir" + ".esa");
+		try {
+			feature.writeOut(fos);
+		} finally {
+			Utils.closeQuietly(fos);
+		}
+		
 		createApplication("feature3", new String[]{"tb3.jar"});
 		createApplication("feature2", new String[]{"tb3.jar", "tb2.jar"});
 		createdApplications = true;
@@ -53,9 +76,9 @@ public class InstallTest extends SubsystemTest {
 		super.setUp();
 		File userDir = new File(System.getProperty("user.dir"));
     	IDirectory idir = FileSystem.getFSRoot(userDir);
-    	File emptySubsystem = new File(userDir, "emptySubsystem");
-    	emptySubsystem.mkdir();
-    	IOUtils.unpackZip(idir.getFile("emptySubsystem.esa"), emptySubsystem);
+    	File compositeDir = new File(userDir, "compositeDir");
+    	compositeDir.mkdir();
+    	IOUtils.unpackZip(idir.getFile("compositeDir.esa"), compositeDir);
 	}
 
 	@Test
@@ -76,11 +99,20 @@ public class InstallTest extends SubsystemTest {
      */
     @Test
     public void testLocationAsDirectoryUrl() throws Exception {
-    	File file = new File("emptySubsystem");
+    	File file = new File("compositeDir");
     	try {
     		Subsystem subsystem = installSubsystem(getRootSubsystem(), file.toURI().toString(), null);
     		try {
-    			assertEmptySubsystem(subsystem);
+    			assertSymbolicName("org.apache.aries.subsystem.itests.composite.dir", subsystem);
+    			assertChildren(1, subsystem);
+    			Subsystem child = subsystem.getChildren().iterator().next();
+    			assertSymbolicName(
+    					"org.apache.aries.subsystem.itests.application.dir",
+    					child);
+    			assertChildren(1, child);
+    			assertSymbolicName(
+    					"org.apache.aries.subsystem.itests.feature.dir",
+    					child.getChildren().iterator().next());
     		}
     		finally {
     			uninstallSubsystemSilently(subsystem);
