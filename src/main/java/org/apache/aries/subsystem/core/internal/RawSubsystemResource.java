@@ -56,7 +56,7 @@ import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class RawSubsystemResource implements Resource {
-	private static final Pattern PATTERN = Pattern.compile("([^@]+)(?:@(.+))?.esa");
+	private static final Pattern PATTERN = Pattern.compile("([^@/\\\\]+)(?:@(.+))?.esa");
 	
 	private static SubsystemManifest computeExistingSubsystemManifest(IDirectory directory) throws IOException {
 		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/SUBSYSTEM.MF");
@@ -101,24 +101,25 @@ public class RawSubsystemResource implements Resource {
 	private final SubsystemManifest subsystemManifest;
 	
 	public RawSubsystemResource(String location, InputStream content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
+		this(location, content == null ? null : FileSystem.getFSRoot(content));
+	}
+	
+	public RawSubsystemResource(String location, IDirectory content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
 		this.location = new Location(location);
-		IDirectory idir;
 		if (content == null)
-			idir = this.location.open();
-		else
-			idir = FileSystem.getFSRoot(content);
+			content = this.location.open();
 		try {
-			resources = computeResources(idir);
+			resources = computeResources(content);
 			localRepository = computeLocalRepository();
-			SubsystemManifest manifest = computeSubsystemManifest(idir);
+			SubsystemManifest manifest = computeSubsystemManifest(content);
 			manifest = computeSubsystemManifestBeforeRequirements(manifest);
 			requirements = computeRequirements(manifest);
 			subsystemManifest = computeSubsystemManifestAfterRequirements(manifest);
 			capabilities = computeCapabilities();
-			deploymentManifest = computeDeploymentManifest(idir);
+			deploymentManifest = computeDeploymentManifest(content);
 		}
 		finally {
-			IOUtils.close(idir.toCloseable());
+			IOUtils.close(content.toCloseable());
 		}
 	}
 	
@@ -323,10 +324,16 @@ public class RawSubsystemResource implements Resource {
 		ArrayList<Resource> result = new ArrayList<Resource>(files.size());
 		for (IFile file : directory.listFiles()) {
 			String name = file.getName();
-			if (name.endsWith(".jar"))
-				result.add(new BundleResource(file.toURL()));
-			else if (name.endsWith(".esa"))
-				result.add(new RawSubsystemResource(convertFileToLocation(file), file.open()));
+			if (file.isFile()) {
+				if (name.endsWith(".jar"))
+					result.add(new BundleResource(file.toURL()));
+				else if (name.endsWith(".esa"))
+					result.add(new RawSubsystemResource(convertFileToLocation(file), file.open()));
+			}
+			else {
+				if (name.endsWith(".esa"))
+					result.add(new RawSubsystemResource(convertFileToLocation(file), file.convert()));
+			}
 		}
 		result.trimToSize();
 		return result;
