@@ -475,6 +475,7 @@ public class BlueprintContainerImpl
     }
 
     private void processProcessors() throws Exception {
+        boolean changed = false;
         // Instanciate ComponentDefinitionRegistryProcessor and BeanProcessor
         for (BeanMetadata bean : getMetadata(BeanMetadata.class)) {
             if (bean instanceof ExtendedBeanMetadata && !((ExtendedBeanMetadata) bean).isProcessor()) {
@@ -495,12 +496,16 @@ public class BlueprintContainerImpl
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
                 Object obj = repository.create(bean.getId(), ProxyUtils.asList(ComponentDefinitionRegistryProcessor.class));
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
+                changed = true;
             } else if (Processor.class.isAssignableFrom(clazz)) {
                 Object obj = repository.create(bean.getId(), ProxyUtils.asList(Processor.class));
                 this.processors.add((Processor) obj);
+                changed = true;
             } else {
                 continue;
             }
+        }
+        if (changed) {
             // Update repository with recipes processed by the processors
             untrackServiceReferences();
             Repository tmpRepo = new RecipeBuilder(this, tempRecipeIdSpace).createRepository();
@@ -527,7 +532,6 @@ public class BlueprintContainerImpl
                     LOGGER.debug("Recipe {} is already instantiated and cannot be updated", new Object[] { name });
                 }
             }
-            
             getSatisfiableDependenciesMap(true);
             trackServiceReferences();
         }

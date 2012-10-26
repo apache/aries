@@ -87,7 +87,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private final AtomicBoolean satisfied = new AtomicBoolean();
     private SatisfactionListener satisfactionListener;
 
-	private final AccessControlContext accessControlContext;
+    private final AccessControlContext accessControlContext;
 
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
@@ -111,7 +111,6 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         {
         	accessControlContext = null;
         }
-
     }
 
 
@@ -120,6 +119,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return listenersRecipe;
     }
 
+    static boolean waited = false;
     public void start(SatisfactionListener listener) {
         if (listener == null) throw new NullPointerException("satisfactionListener is null");
         if (started.compareAndSet(false, true)) {
@@ -158,6 +158,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 }
                 satisfied.set(false);
             }
+            satisfactionListener = null;
         }
     }
 
@@ -301,10 +302,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     public void serviceChanged(final ServiceEvent event) {
+        final int eventType = event.getType();
+        final ServiceReference ref = event.getServiceReference();
         blueprintContainer.getExecutors().submit(new Runnable() {
             public void run() {
-                int eventType = event.getType();
-                ServiceReference ref = event.getServiceReference();
                 switch (eventType) {
                     case ServiceEvent.REGISTERED:
                         serviceAdded(ref);
@@ -322,33 +323,43 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     private void serviceAdded(ServiceReference ref) {
         LOGGER.debug("Tracking reference {} for OSGi service {}", ref, getOsgiFilter());
-        synchronized (references) {
-            if (references.contains(ref)) {
-                return;
+        if (isStarted()) {
+            synchronized (references) {
+                if (references.contains(ref)) {
+                    return;
+                }
+                references.add(ref);
             }
-            references.add(ref);
+            track(ref);
+            setSatisfied(true);
         }
-        track(ref);
-        setSatisfied(true);
     }
 
     private void serviceModified(ServiceReference ref) {
         // ref must be in references and must be satisfied
-        track(ref);
+        if (isStarted()) {
+            synchronized (references) {
+                if (references.contains(ref)) {
+                    track(ref);
+                }
+            }
+        }
     }
 
     private void serviceRemoved(ServiceReference ref) {
-        LOGGER.debug("Untracking reference {} for OSGi service {}", ref, getOsgiFilter());
-        boolean removed;
-        boolean satisfied;
-        synchronized (references) {
-            removed = references.remove(ref);
-            satisfied = optional || !references.isEmpty();
+        if (isStarted()) {
+            LOGGER.debug("Untracking reference {} for OSGi service {}", ref, getOsgiFilter());
+            boolean removed;
+            boolean satisfied;
+            synchronized (references) {
+                removed = references.remove(ref);
+                satisfied = optional || !references.isEmpty();
+            }
+            if (removed) {
+                untrack(ref);
+            }
+            setSatisfied(satisfied);
         }
-        if (removed) {
-            untrack(ref);
-        }
-        setSatisfied(satisfied);
     }
     
     protected Class getInterfaceClass() {
