@@ -39,6 +39,10 @@
         <aries.osgi.activator>
             org.apache.aries.blueprint.testquiescebundle.Activator
         </aries.osgi.activator>
+        <aries.osgi.import.pkg>
+            org.osgi.framework,
+            org.osgi.service.blueprint
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg />
         <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
     </properties>

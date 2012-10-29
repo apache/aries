@@ -46,6 +46,9 @@
             !org.osgi.service.blueprint,
             org.osgi.service.blueprint.*
         </aries.osgi.export.pkg>
+        <aries.osgi.import.pkg>
+            org.osgi.framework
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg />
     </properties>
 
