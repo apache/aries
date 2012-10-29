@@ -51,7 +51,6 @@
         -->
         <aries.osgi.import>
             !org.apache.aries.blueprint*,
-            !org.osgi.service.blueprint,
             org.osgi.service.blueprint.container,
             org.osgi.service.blueprint.reflect,
             org.osgi.service.event*;resolution:=optional,
@@ -64,9 +63,9 @@
         </aries.osgi.import>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
-            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable,org.apache.aries.blueprint.compendium.cm";version="1.0.1",
-            org.osgi.service.blueprint.container,
-            org.osgi.service.blueprint.reflect,
+            org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable,org.apache.aries.blueprint.compendium.cm";version="1.0.1";-split-package:=merge-first,
+            org.osgi.service.blueprint.container;-split-package:=merge-first,
+            org.osgi.service.blueprint.reflect;-split-package:=merge-first,
             !org.apache.aries.blueprint.annotation*,
             org.apache.aries.blueprint,
             org.apache.aries.blueprint.services,
@@ -84,11 +83,10 @@
             org.apache.aries.blueprint.namespace,
             org.apache.aries.blueprint.proxy,
             org.apache.aries.blueprint.utils.*,
-            org.apache.aries.blueprint.container,
             org.apache.aries.blueprint.di,
             org.apache.aries.blueprint.reflect,
             org.apache.aries.blueprint.compendium.cm,
-            OSGI-INF*
+            OSGI-INF*;-split-package:=merge-first
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
             org.apache.aries.blueprint.ParserService
