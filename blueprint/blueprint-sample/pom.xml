@@ -45,6 +45,11 @@
         <aries.osgi.activator>
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
+        <aries.osgi.import.pkg>
+            org.osgi.framework,
+            org.osgi.service.blueprint,
+            org.osgi.service.blueprint.container
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg />
     </properties>
 

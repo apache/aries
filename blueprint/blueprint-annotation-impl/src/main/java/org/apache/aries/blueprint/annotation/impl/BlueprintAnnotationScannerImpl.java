@@ -146,7 +146,7 @@ public class BlueprintAnnotationScannerImpl implements
                 e.printStackTrace();
             }
             try {
-                return file.toURL();
+                return file.toURI().toURL();
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

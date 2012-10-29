@@ -56,7 +56,6 @@
             org.osgi.service.blueprint;version=1.0.0
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-            !org.osgi.service.blueprint,
             !org.apache.aries.blueprint*,
             org.apache.aries.quiesce.manager;provide:=true;resolution:=optional,
             org.apache.aries.quiesce.participant;provide:=true;resolution:=optional,
