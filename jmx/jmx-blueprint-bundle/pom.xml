@@ -32,11 +32,11 @@
        This bundle contains the standalone implementation of the along with the API.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-bundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-bundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-blueprint-bundle</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-blueprint-bundle</url>
+    </scm>
 
     <properties>
         <aries.osgi.activator>
@@ -47,10 +47,16 @@
             org.apache.aries.jmx.blueprint;
             org.apache.aries.jmx.blueprint.codec
         </aries.osgi.export.pkg>
-        <aries.osgi.import>
-            !org.apache.aries.jmx*,
-            *
-        </aries.osgi.import>
+        <aries.osgi.import.pkg>
+            javax.management,
+            javax.management.openmbean,
+            org.apache.aries.util,
+            org.osgi.framework,
+            org.osgi.service.blueprint.container,
+            org.osgi.service.blueprint.reflect,
+            org.osgi.util.tracker,
+            org.slf4j;resolution:=optional
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.jmx.blueprint.impl*
         </aries.osgi.private.pkg>

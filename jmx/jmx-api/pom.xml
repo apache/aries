@@ -32,14 +32,14 @@
         This bundle contains the JMX 1.0.0 API
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-api</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-api</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-api</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-api</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-api</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-api</url>
+    </scm>
+
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
-
         <aries.osgi.export.pkg>
             org.osgi.jmx;uses:="javax.management.openmbean",
             org.osgi.jmx.framework;uses:="org.osgi.jmx,javax.management.openmbean",
@@ -48,6 +48,9 @@
             org.osgi.jmx.service.provisioning;uses:="javax.management.openmbean",
             org.osgi.jmx.service.useradmin;uses:="org.osgi.jmx,javax.management.openmbean"
         </aries.osgi.export.pkg>
+        <aries.osgi.import.pkg>
+            javax.management.openmbean
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg />
     </properties>
 
