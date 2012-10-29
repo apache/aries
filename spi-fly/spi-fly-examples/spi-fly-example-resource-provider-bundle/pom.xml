@@ -35,6 +35,12 @@
         A Bundle providing a resource that another bundle attempts to obtain via the TCCL
     </description>
 
+    <properties>
+        <aries.osgi.export.pkg />
+        <aries.osgi.private.pkg />
+        <aries.osgi.import.pkg />
+    </properties>
+
     <build>
         <plugins>
             <plugin>
