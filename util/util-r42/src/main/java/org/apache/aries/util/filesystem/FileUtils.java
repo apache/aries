@@ -25,10 +25,11 @@ import java.util.List;
 import org.apache.aries.util.manifest.BundleManifest;
 
 public class FileUtils {
+
   /**
    * Check whether a file is a bundle.
    * @param file the file path
-   * @return
+   * @return true if the file is a bundle, false else
    */
   public static boolean isBundle(File file) {
     BundleManifest bm = BundleManifest.fromBundle(file);
@@ -36,9 +37,9 @@ public class FileUtils {
   }
 
   /**
-   * Get a list of urls for the bundles under the parent url
-   * @param sourceDir The parent url
-   * @return
+   * Get a list of URLs for the bundles under the parent URL
+   * @param sourceDir The parent URL
+   * @return the list of URLs for the bundles
    * @throws IOException
    */
   public static  List<URI> getBundlesRecursive(URI sourceDir) throws IOException {

@@ -68,9 +68,6 @@ public class ManifestHeaderProcessor
 
   /**
    * A simple class to associate two types.
-   *
-   * @param <N> The type for the 'Name'
-   * @param <V> The type for the 'Value'
    */
   public static class NameValuePair {
     private String name;
@@ -132,9 +129,6 @@ public class ManifestHeaderProcessor
   /**
    * Intended to provide a standard way to add Name/Value's to
    * aggregations of Name/Value's.
-   *
-   * @param <N> Type of 'Name'
-   * @param <V> Type of 'Value'
    */
   public static interface NameValueCollection {
     /**
@@ -147,9 +141,6 @@ public class ManifestHeaderProcessor
 
   /**
    * Map of Name -> Value.
-   *
-   * @param <N> Type of 'Name'
-   * @param <V> Type of 'Value'
    */
   public static class NameValueMap extends HashMap<String, Map<String,String>> implements NameValueCollection, Map<String, Map<String,String>>{
 	private static final long serialVersionUID = -6446338858542599141L;
@@ -175,9 +166,6 @@ public class ManifestHeaderProcessor
 
   /**
    * List of Name/Value
-   *
-   * @param <N> Type of 'Name'
-   * @param <V> Type of 'Value'
    */
   public static class NameValueList extends ArrayList<NameValuePair> implements NameValueCollection, List<NameValuePair> {
 	private static final long serialVersionUID = 1808636823825029983L;
@@ -349,7 +337,7 @@ public class ManifestHeaderProcessor
    * <p>
    * Result is returned as a list, as export does allow duplicate package exports.
    *
-   * @param list The data to parse.
+   * @param s The data to parse.
    * @return List of NameValuePairs, where each Name in the list is an exported package,
    *         with its associated Value being a NameValueMap of any attributes declared.
    */

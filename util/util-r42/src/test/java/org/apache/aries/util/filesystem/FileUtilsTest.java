@@ -22,16 +22,15 @@ package org.apache.aries.util.filesystem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringBufferInputStream;
 import java.net.URI;
 import java.util.List;
 
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
-import org.apache.aries.util.filesystem.FileUtils;
 import org.apache.aries.util.io.IOUtils;
 import org.junit.Test;
 import org.osgi.framework.Constants;
@@ -92,12 +91,12 @@ public class FileUtilsTest
       fout.close();
     }
 
-    IOUtils.writeOut(tmpDir, "simple.jar", new StringBufferInputStream("abc"));
-    IOUtils.writeOut(tmpDir, "simple.war", new StringBufferInputStream("sss"));
-    IOUtils.writeOut(tmpDir, "simple.txt", new StringBufferInputStream("abc"));
-    IOUtils.writeOut(tmpDir, "some/relative/directory/complex.jar", new StringBufferInputStream("def"));
-    IOUtils.writeOut(tmpDir, "some/relative/directory/aa/complex2.war", new StringBufferInputStream("ghi"));
-    IOUtils.writeOut(tmpDir, "simple", new StringBufferInputStream("abc"));
+    IOUtils.writeOut(tmpDir, "simple.jar", new ByteArrayInputStream("abc".getBytes()));
+    IOUtils.writeOut(tmpDir, "simple.war", new ByteArrayInputStream("sss".getBytes()));
+    IOUtils.writeOut(tmpDir, "simple.txt", new ByteArrayInputStream("abc".getBytes()));
+    IOUtils.writeOut(tmpDir, "some/relative/directory/complex.jar", new ByteArrayInputStream("def".getBytes()));
+    IOUtils.writeOut(tmpDir, "some/relative/directory/aa/complex2.war", new ByteArrayInputStream("ghi".getBytes()));
+    IOUtils.writeOut(tmpDir, "simple", new ByteArrayInputStream("abc".getBytes()));
 
     List<URI> jarFiles = FileUtils.getBundlesRecursive(tmpDir.toURI());
     assertEquals("There should be 4 entries.", 4, jarFiles.size());
