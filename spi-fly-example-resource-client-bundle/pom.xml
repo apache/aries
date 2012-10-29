@@ -43,6 +43,10 @@
         </dependency>        
     </dependencies>
 
+    <properties>
+        <aries.osgi.export.pkg />
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -55,7 +59,7 @@
                         </Import-Package>
                         <Export-Package/>
                         <Private-Package>
-org.apache.aries.spifly.example.resource.client
+                            org.apache.aries.spifly.example.resource.client
                         </Private-Package>
                         <Bundle-Activator>org.apache.aries.spifly.example.resource.client.Activator</Bundle-Activator>
                         <SPI-Consumer>org.apache.aries.spifly.example.resource.client.Foo#doit()</SPI-Consumer>

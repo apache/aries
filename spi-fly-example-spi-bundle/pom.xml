@@ -35,6 +35,10 @@
         This is the API implemented by example SPI providers and used by the example SPI client 
     </description>
 
+    <properties>
+        <aries.osgi.private.pkg />
+    </properties>
+
     <build>
         <plugins>
             <plugin>

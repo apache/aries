@@ -50,6 +50,11 @@
         </dependency>                
     </dependencies>
 
+    <properties>
+        <aries.osgi.export.pkg />
+        <aries.osgi.private.pkg />
+    </properties>
+
     <build>
         <plugins>
             <plugin>

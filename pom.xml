@@ -26,6 +26,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>1.0.0</version>
+        <relativePath>../../parent/default-parent/java6-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.spifly.examples</groupId>
