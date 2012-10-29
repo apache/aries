@@ -66,8 +66,13 @@
         <aries.osgi.activator>
             org.apache.aries.jmx.whiteboard.Activator
         </aries.osgi.activator>
-        <aries.osgi.export.pkg>
-        </aries.osgi.export.pkg>
+        <aries.osgi.export.pkg />
+        <aries.osgi.import.pkg>
+            javax.management,
+            org.osgi.framework,
+            org.osgi.util.tracker,
+            org.slf4j;resolution:=optional
+        </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.jmx.whiteboard,
             org.apache.aries.jmx.util.shared
