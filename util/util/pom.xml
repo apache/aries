@@ -39,17 +39,9 @@
         <!-- Export package versions are maintained in packageinfo files -->
 
         <aries.osgi.export.pkg>
-            org.apache.aries.util;
-            org.apache.aries.util.log;
-            org.apache.aries.util.tracker;
-            org.apache.aries.util.nls;
-            org.apache.aries.util.io;
-            org.apache.aries.util.service.registry;
-            org.apache.aries.util.manifest;
-            org.apache.aries.util.filesystem;
+            org.apache.aries.util*;-split-package:=merge-first
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
-            !org.apache.aries.util*,
             org.osgi.framework.hooks.bundle;resolution:=optional,
             org.osgi.framework.launch;resolution:=optional,
             org.osgi.framework.wiring.*;resolution:=optional,
@@ -61,9 +53,9 @@
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
-            org.apache.aries.util.internal,
-            org.apache.aries.util.filesystem.impl,
-            org.apache.aries.util.tracker.hook
+            org.apache.aries.util.internal;-split-package:=merge-first,
+            org.apache.aries.util.filesystem.impl;-split-package:=merge-first,
+            org.apache.aries.util.tracker.hook;-split-package:=merge-first
         </aries.osgi.private.pkg>
     </properties>
 

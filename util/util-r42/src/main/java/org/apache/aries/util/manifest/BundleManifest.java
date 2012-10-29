@@ -47,8 +47,8 @@ public class BundleManifest
    * Read a manifest from a jar input stream. This will find the manifest even if it is NOT
    * the first file in the archive.
    *
-   * @param is
-   * @return
+   * @param is the jar input stream
+   * @return the bundle manifest
    */
   public static BundleManifest fromBundle(InputStream is) {
     JarInputStream jarIs = null;
@@ -78,8 +78,8 @@ public class BundleManifest
   /**
    * Retrieve a BundleManifest from the given jar file
    *
-   * @param f
-   * @return
+   * @param f the bundle jar file
+   * @return the bundle manifest
    */
   public static BundleManifest fromBundle(IFile f) {
     InputStream is = null;
@@ -105,8 +105,8 @@ public class BundleManifest
   /**
    * Retrieve a bundle manifest from the given jar file, which can be exploded or compressed
    *
-   * @param f
-   * @return
+   * @param f the bundle jar file
+   * @return the bundle manifest
    */
   public static BundleManifest fromBundle(File f) {
     if (f.isDirectory()) {

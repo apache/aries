@@ -27,17 +27,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringBufferInputStream;
 import java.util.zip.ZipFile;
 
-import org.apache.aries.util.filesystem.FileSystem;
-import org.apache.aries.util.filesystem.IDirectory;
-import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -85,9 +82,9 @@ public class IOUtilsTest
     File tmpDir = new File("ioUtilsTest/tmp");
     tmpDir.mkdir();
     
-    IOUtils.writeOut(tmpDir, "simple.txt", new StringBufferInputStream("abc"));
-    IOUtils.writeOut(tmpDir, "some/relative/directory/complex.txt", new StringBufferInputStream("def"));
-    IOUtils.writeOut(tmpDir, "some/relative/directory/complex2.txt", new StringBufferInputStream("ghi"));
+    IOUtils.writeOut(tmpDir, "simple.txt", new ByteArrayInputStream( "abc".getBytes()));
+    IOUtils.writeOut(tmpDir, "some/relative/directory/complex.txt", new ByteArrayInputStream( "def".getBytes()));
+    IOUtils.writeOut(tmpDir, "some/relative/directory/complex2.txt", new ByteArrayInputStream( "ghi".getBytes()));
     
     File simple = new File("ioUtilsTest/tmp/simple.txt");
     assertTrue(simple.exists());
