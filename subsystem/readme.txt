@@ -25,12 +25,12 @@ mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").versio
 USING
 =====
 
-When installing subsystems from a directory structure, note that the names of nested directories representing child subsystems must end with ".esa". The root directory does not.
+When installing subsystems from a directory structure, note that the names of nested directories representing child subsystems must end with ".esa", and those representing bundles must end with ".jar".
 
 
 KNOWN ISSUES
 ============
 
 (1)
-Does not currently support service dependencies provided by child subsystems. This will fail with a resolution exception because, during installation of the parent along with its child, the child has not reached the state where service capabilities have been computed before they are needed.
+Does not currently support service dependencies provided by child subsystems to the parent. This will fail with a resolution exception because, during installation of the parent along with its child, the child has not reached the state where service capabilities have been computed before they are needed.
 
