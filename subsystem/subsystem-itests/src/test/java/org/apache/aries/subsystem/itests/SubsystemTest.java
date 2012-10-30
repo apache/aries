@@ -50,6 +50,7 @@ import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ManifestFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
+import org.apache.aries.util.filesystem.FileSystem;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.ops4j.pax.exam.Option;
@@ -257,6 +258,16 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertChildren(Subsystem parent, Collection<Subsystem> children) {
 		assertTrue("Parent did not contain all children", parent.getChildren().containsAll(children));
+	}
+	
+	protected void assertClassLoadable(String clazz, Bundle bundle) {
+		try {
+			bundle.loadClass(clazz);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			fail("Class " + clazz + " from bundle " + bundle + " should be loadable");
+		}
 	}
 	
 	protected void assertConstituent(Subsystem subsystem, String symbolicName) {
@@ -517,7 +528,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected RepositoryContent createBundleRepositoryContent(File file) throws Exception {
-		return new BundleResource(file.toURI().toURL());
+		return new BundleResource(FileSystem.getFSRoot(file));
 	}
 	
 	protected static void createManifest(String name, Map<String, String> headers) throws IOException {

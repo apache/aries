@@ -59,6 +59,10 @@ public abstract class Manifest {
 	public Collection<Header> getHeaders() {
 		return Collections.unmodifiableCollection(headers.values());
 	}
+	
+	public java.util.jar.Manifest getManifest() {
+		return manifest;
+	}
 
 	public Header getManifestVersion() {
 		return getHeader(Attributes.Name.MANIFEST_VERSION.toString());
