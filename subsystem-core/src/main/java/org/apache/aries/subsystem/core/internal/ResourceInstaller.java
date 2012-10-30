@@ -99,7 +99,7 @@ public abstract class ResourceInstaller {
 	}
 	
 	protected String getLocation() {
-		return provisionTo.getSubsystemId() + "@" + provisionTo.getSymbolicName() + "@" + ResourceHelper.getSymbolicNameAttribute(resource);
+		return provisionTo.getLocation() + "!/" + ResourceHelper.getLocation(resource);
 	}
 	
 	protected boolean isContent() {

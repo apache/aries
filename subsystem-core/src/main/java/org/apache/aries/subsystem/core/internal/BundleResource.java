@@ -13,13 +13,17 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
@@ -38,9 +42,8 @@ import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
 import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
-import org.apache.aries.util.filesystem.FileSystem;
-import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
@@ -58,38 +61,19 @@ public class BundleResource implements Resource, RepositoryContent {
 	}
 	
 	private final List<Capability> capabilities = new ArrayList<Capability>();
-	private final URL content;
+	private final IFile content;
 	private final BundleManifest manifest;
 	private final List<Requirement> requirements = new ArrayList<Requirement>();
 	
-	public BundleResource(URL content) throws IOException, ModellerException {
+	public BundleResource(IFile content) throws ModellerException {
 		this.content = content;
-		InputStream is = content.openStream();
-		try {
-			ICloseableDirectory directory = FileSystem.getFSRoot(is);
-			try {
-				manifest = computeManifest(directory);
-				// TODO Could use ModelledResourceManager.getServiceElements
-				// instead. Only the service dependency info is being used
-				// right now.
-				ModelledResource resource = getModelledResourceManager().getModelledResource(directory);
-				computeRequirements(resource);
-				computeCapabilities(resource);
-			}
-			finally {
-				IOUtils.close(directory);
-			}
-		}
-		finally {
-			// Although FileSystem.getFSRoot ultimately tries to close the
-			// provided input stream, it is possible an exception will be thrown
-			// before that happens.
-			IOUtils.close(is);
-		}
-	}
-	
-	public BundleResource(String content) throws IOException, ModellerException {
-		this(new URL(content));
+		IDirectory dir = content.isDirectory() ? content.convert() : content.convertNested();
+		manifest = computeManifest(dir);
+		// TODO Could use ModelledResourceManager.getServiceElements instead. 
+		// Only the service dependency info is being used right now.
+		ModelledResource resource = getModelledResourceManager().getModelledResource(dir);
+		computeRequirements(resource);
+		computeCapabilities(resource);
 	}
 
 	public List<Capability> getCapabilities(String namespace) {
@@ -103,12 +87,33 @@ public class BundleResource implements Resource, RepositoryContent {
 		return Collections.unmodifiableList(result);
 	}
 	
+	public String getLocation() {
+		return getFileName(content);
+	}
+	
 	@Override
 	public InputStream getContent() {
 		try {
-			return content.openStream();
+			if (content.isFile())
+				return content.open();
+			try {
+				// Give the IDirectory a shot at opening in case it supports it.
+				return content.open();
+			}
+			catch (UnsupportedOperationException e) {
+				// As a last ditch effort, try to jar up the contents.
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				JarOutputStream out = new JarOutputStream(baos, manifest.getManifest());
+				try {
+					jar(out, "", content.convert());
+				}
+				finally {
+					IOUtils.close(out);
+				}
+				return new ByteArrayInputStream(baos.toByteArray());
+			}
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			throw new SubsystemException(e);
 		}
 	}
@@ -126,7 +131,7 @@ public class BundleResource implements Resource, RepositoryContent {
 	
 	@Override
 	public String toString() {
-        return content.toExternalForm();
+        return content.toString();
     }
 	
 	private void computeCapabilities(ModelledResource resource) {
@@ -223,7 +228,47 @@ public class BundleResource implements Resource, RepositoryContent {
 		// TODO Bundle-RequiredExecutionEnvironment
 	}
 	
+	private String getFileName(IFile file) {
+		String name = file.getName();
+		if ("".equals(name)) {
+			// The file is the root directory of an archive. Use the URL
+			// instead. Using the empty string will likely result in duplicate
+			// locations during installation.
+			try {
+				name = file.toURL().toString();
+			}
+			catch (MalformedURLException e) {
+				throw new SubsystemException(e);
+			}
+		}
+		int index = name.lastIndexOf('/');
+		if (index == -1 || index == name.length() - 1)
+			return name;
+		return name.substring(index + 1);
+	}
+
 	private ModelledResourceManager getModelledResourceManager() {
 		return Activator.getInstance().getModelledResourceManager();
+	}
+
+	private void jar(JarOutputStream out, String prefix, IDirectory directory) throws IOException {
+		List<IFile> files = directory.listFiles();
+		for (IFile f : files) {        
+			String fileName; 
+			if (f.isDirectory())
+				fileName = prefix + getFileName(f) + "/";
+			else
+				fileName = prefix + getFileName(f);
+			if ("META-INF/".equalsIgnoreCase(fileName) || "META-INF/MANIFEST.MF".equalsIgnoreCase(fileName))
+				continue;
+			JarEntry entry = new JarEntry(fileName);
+			entry.setSize(f.getSize());
+			entry.setTime(f.getLastModified());
+			out.putNextEntry(entry);
+			if (f.isDirectory()) 
+				jar(out, fileName, f.convert());
+			else
+				IOUtils.copy(f.open(), out);
+		}
 	}
 }

@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Version;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.service.subsystem.Subsystem;
@@ -47,18 +48,41 @@ public class InstallTest extends SubsystemTest {
 		if (createdApplications) {
 			return;
 		}
-		
 		ZipFixture feature = ArchiveFixture
 				.newZip()
 				.binary("OSGI-INF/SUBSYSTEM.MF",
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
 								"compositeDir" + "/OSGI-INF/SUBSYSTEM.MF"))
+				.binary("a.jar/META-INF/MANIFEST.MF", 
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/a.jar/META-INF/MANIFEST.MF"))
+				.binary("a.jar/a/A.class", 
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/a.jar/a/A.class"))
 				.binary("applicationDir.esa/OSGI-INF/SUBSYSTEM.MF",
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
 								"compositeDir" + "/applicationDir/OSGI-INF/SUBSYSTEM.MF"))
+				.binary("applicationDir.esa/b.jar/META-INF/MANIFEST.MF", 
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/applicationDir/b.jar/META-INF/MANIFEST.MF"))
+				.binary("applicationDir.esa/b.jar/b/B.class", 
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/applicationDir/b.jar/b/B.class"))
 				.binary("applicationDir.esa/featureDir.esa/OSGI-INF/SUBSYSTEM.MF",
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/applicationDir/featureDir/OSGI-INF/SUBSYSTEM.MF"));
+								"compositeDir" + "/applicationDir/featureDir/OSGI-INF/SUBSYSTEM.MF"))
+				.binary("applicationDir.esa/featureDir.esa/a.jar/META-INF/MANIFEST.MF", 
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/applicationDir/featureDir/a.jar/META-INF/MANIFEST.MF"))
+				.binary("applicationDir.esa/featureDir.esa/a.jar/a/A.class", 
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/applicationDir/featureDir/a.jar/a/A.class"))
+				.binary("applicationDir.esa/featureDir.esa/b.jar/META-INF/MANIFEST.MF", 
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/applicationDir/featureDir/b.jar/META-INF/MANIFEST.MF"))
+				.binary("applicationDir.esa/featureDir.esa/b.jar/b/B.class", 
+						SubsystemTest.class.getClassLoader().getResourceAsStream(
+								"compositeDir" + "/applicationDir/featureDir/b.jar/b/B.class"));
 		feature.end();
 		FileOutputStream fos = new FileOutputStream("compositeDir" + ".esa");
 		try {
@@ -66,7 +90,6 @@ public class InstallTest extends SubsystemTest {
 		} finally {
 			Utils.closeQuietly(fos);
 		}
-		
 		createApplication("feature3", new String[]{"tb3.jar"});
 		createApplication("feature2", new String[]{"tb3.jar", "tb2.jar"});
 		createdApplications = true;
@@ -95,7 +118,8 @@ public class InstallTest extends SubsystemTest {
 	
 	/*
      * Install a subsystem using a location string and a null input stream. The
-     * location string is a file URL pointing to a directory.
+     * location string is a file URL pointing to a subsystem directory 
+     * containing nested subsystem and bundle directories.
      */
     @Test
     public void testLocationAsDirectoryUrl() throws Exception {
@@ -103,16 +127,46 @@ public class InstallTest extends SubsystemTest {
     	try {
     		Subsystem subsystem = installSubsystem(getRootSubsystem(), file.toURI().toString(), null);
     		try {
-    			assertSymbolicName("org.apache.aries.subsystem.itests.composite.dir", subsystem);
+    			assertSymbolicName("org.apache.aries.subsystem.itests.composite.dir", subsystem); 
+    			assertConstituents(3, subsystem);
+    			assertConstituent(subsystem, "org.apache.aries.subsystem.itests.composite.dir.bundle.a");
+    			Bundle b = getConstituentAsBundle(
+    					subsystem, 
+    					"org.apache.aries.subsystem.itests.composite.dir.bundle.a", 
+    					null, null);
+    			assertLocation(subsystem.getLocation() + "!/" + "a.jar", b.getLocation());
+    			assertClassLoadable("a.A", b);
     			assertChildren(1, subsystem);
     			Subsystem child = subsystem.getChildren().iterator().next();
     			assertSymbolicName(
     					"org.apache.aries.subsystem.itests.application.dir",
     					child);
+    			assertConstituent(child, "org.apache.aries.subsystem.itests.composite.dir.bundle.b");
+    			b = getConstituentAsBundle(
+    					child, 
+    					"org.apache.aries.subsystem.itests.composite.dir.bundle.b", 
+    					null, null);
+    			assertLocation(child.getLocation() + "!/" + "b.jar", b.getLocation());
+    			assertClassLoadable("b.B", b);
     			assertChildren(1, child);
+    			child = child.getChildren().iterator().next();
     			assertSymbolicName(
     					"org.apache.aries.subsystem.itests.feature.dir",
-    					child.getChildren().iterator().next());
+    					child);
+    			assertConstituent(subsystem, "org.apache.aries.subsystem.itests.composite.dir.bundle.a");
+    			b = getConstituentAsBundle(
+    					child, 
+    					"org.apache.aries.subsystem.itests.composite.dir.bundle.a", 
+    					null, null);
+    			assertLocation(child.getLocation() + "!/" + "a.jar", b.getLocation());
+    			assertClassLoadable("a.A", b);
+    			assertConstituent(child, "org.apache.aries.subsystem.itests.composite.dir.bundle.b", Version.parseVersion("1"));
+    			b = getConstituentAsBundle(
+    					child, 
+    					"org.apache.aries.subsystem.itests.composite.dir.bundle.b", 
+    					Version.parseVersion("1"), null);
+    			assertLocation(child.getLocation() + "!/" + "b.jar", b.getLocation());
+    			assertClassLoadable("b.B", b);
     		}
     		finally {
     			uninstallSubsystemSilently(subsystem);

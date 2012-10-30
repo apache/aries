@@ -326,13 +326,15 @@ public class RawSubsystemResource implements Resource {
 			String name = file.getName();
 			if (file.isFile()) {
 				if (name.endsWith(".jar"))
-					result.add(new BundleResource(file.toURL()));
+					result.add(new BundleResource(file));
 				else if (name.endsWith(".esa"))
 					result.add(new RawSubsystemResource(convertFileToLocation(file), file.open()));
 			}
 			else {
 				if (name.endsWith(".esa"))
 					result.add(new RawSubsystemResource(convertFileToLocation(file), file.convert()));
+				else if (name.endsWith(".jar"))
+					result.add(new BundleResource(file));
 			}
 		}
 		result.trimToSize();
