@@ -166,7 +166,7 @@ public class BundleResourceInstaller extends ResourceInstaller {
 		final Bundle bundle;
 		InputStream is = ((RepositoryContent)resource).getContent();
 		try {
-			bundle = provisionTo.getRegion().installBundle(getLocation(), is);
+			bundle = provisionTo.getRegion().installBundleAtLocation(getLocation(), is);
 		}
 		catch (BundleException e) {
 			throw new SubsystemException(e);
