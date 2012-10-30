@@ -24,6 +24,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -61,6 +62,20 @@ public class ResourceHelper {
 		List<Capability> capabilities = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE);
 		Capability capability = capabilities.get(0);
 		return capability.getAttributes().get(name);
+	}
+	
+	public static String getLocation(Resource resource) {
+		if (resource instanceof BundleResource)
+			return ((BundleResource)resource).getLocation();
+		if (resource instanceof BundleRevision)
+			return ((BundleRevision)resource).getBundle().getLocation();
+		if (resource instanceof AriesSubsystem)
+			return ((AriesSubsystem)resource).getLocation();
+		if (resource instanceof SubsystemResource)
+			return ((SubsystemResource)resource).getLocation();
+		if (resource instanceof RawSubsystemResource)
+			return ((RawSubsystemResource)resource).getLocation().getValue();
+		return getSymbolicNameAttribute(resource) + '@' + getVersionAttribute(resource);
 	}
 	
 	public static Resource getResource(Requirement requirement, Repository repository) {

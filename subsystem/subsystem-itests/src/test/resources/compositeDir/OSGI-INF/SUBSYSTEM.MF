@@ -1,3 +1,5 @@
 Subsystem-SymbolicName: org.apache.aries.subsystem.itests.composite.dir
 Subsystem-Type: org.osgi.subsystem.composite
-Subsystem-Content: org.apache.aries.subsystem.itests.application.dir;version="[0,0]";type=osgi.subsystem.application
+Subsystem-Content: 
+ org.apache.aries.subsystem.itests.application.dir;version="[0,0]";type=osgi.subsystem.application,
+ org.apache.aries.subsystem.itests.composite.dir.bundle.a;version="[0,0]"
