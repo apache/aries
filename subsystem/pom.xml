@@ -44,6 +44,7 @@
                 <module>subsystem-core</module>
                 <module>subsystem-itests</module>
                 <module>subsystem-itests-api-bundle</module>
+		<module>subsystem-bundle</module>
             </modules>
         </profile>
     </profiles>
