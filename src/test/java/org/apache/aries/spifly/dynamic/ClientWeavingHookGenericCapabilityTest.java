@@ -35,9 +35,11 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.spifly.BaseActivator;
@@ -106,7 +108,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("olleh", result);
+        Assert.assertEquals(Collections.singleton("olleh"), result);
     }
 
 
@@ -246,16 +248,16 @@ public class ClientWeavingHookGenericCapabilityTest {
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
 
-        // Register in reverse order to make sure the order in which bundles are sorted is correct
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI files from impl1 and impl2 are visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All three services should be invoked in the correct order", "ollehHELLO5", result);
+        Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "HELLO", "5"));
+        Assert.assertEquals("All three services should be invoked", expected, result);
     }
 
     /* This is currently not supported in the generic model
@@ -383,7 +385,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("No providers should be selected for this one", "", result);
+        Assert.assertEquals("No providers should be selected for this one", Collections.emptySet(), result);
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
@@ -435,7 +437,8 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All providers should be selected for this one", "ollehHELLO5impl4", result);
+        Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "HELLO", "5", "impl4"));
+        Assert.assertEquals("All providers should be selected for this one", expected, result);
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
@@ -485,7 +488,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("No providers should be selected here", "", result);
+        Assert.assertEquals("No providers should be selected here", Collections.emptySet(), result);
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
@@ -532,7 +535,8 @@ public class ClientWeavingHookGenericCapabilityTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);
+        Set<String> expected = new HashSet<String>(Arrays.asList("HELLO", "5"));
+        Assert.assertEquals("Only the services from bundle impl2 should be selected", expected, result);
     }
 
     private Bundle mockSpiFlyBundle(Bundle ... bundles) throws Exception {
