@@ -18,18 +18,20 @@
  */
 package org.apache.aries.spifly.dynamic;
 
+import java.util.HashSet;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import org.apache.aries.mytest.MySPI;
 
 public class TestClient {
-    public String test(String input) {
-        StringBuilder sb = new StringBuilder();
-        
+    public Set<String> test(String input) {
+        Set<String> results = new HashSet<String>();
+
         ServiceLoader<MySPI> loader = ServiceLoader.load(MySPI.class);
         for (MySPI mySPI : loader) {
-            sb.append(mySPI.someMethod(input));
+            results.add(mySPI.someMethod(input));
         }
-        return sb.toString();
+        return results;
     }
 }
