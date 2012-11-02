@@ -34,9 +34,11 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -109,7 +111,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("olleh", result);
+        Assert.assertEquals(Collections.singleton("olleh"), result);
     }
 
     @Test
@@ -211,16 +213,16 @@ public class ClientWeavingHookTest {
         Bundle providerBundle1 = mockProviderBundle("impl1", 1);
         Bundle providerBundle2 = mockProviderBundle("impl2", 2);
 
-        // Register in reverse order to make sure the order in which bundles are sorted is correct
-        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, new HashMap<String, Object>());
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle2, new HashMap<String, Object>());
 
         // Invoke the woven class and check that it propertly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI files from impl1 and impl2 are visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All three services should be invoked in the correct order", "ollehHELLO5", result);
+        Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "HELLO", "5"));
+        Assert.assertEquals("All three services should be invoked", expected, result);
     }
 
     @Test
@@ -249,7 +251,8 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("Only the services from bundle impl2 should be selected", "HELLO5", result);
+        Set<String> expected = new HashSet<String>(Arrays.asList("HELLO", "5"));
+        Assert.assertEquals("Only the services from bundle impl2 should be selected", expected, result);
     }
 
     @Test
@@ -279,7 +282,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("Only the services from bundle impl2 should be selected", "Updated!hello!Updated", result);
+        Assert.assertEquals("Only the services from bundle impl2 should be selected", Collections.singleton("Updated!hello!Updated"), result);
     }
 
     @Test
@@ -312,7 +315,8 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All providers should be selected for this one", "ollehimpl4", result);
+        Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4"));
+        Assert.assertEquals("All providers should be selected for this one", expected, result);
     }
 
     @Test
@@ -345,7 +349,8 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All providers should be selected for this one", "ollehimpl4", result);
+        Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4"));
+        Assert.assertEquals("All providers should be selected for this one", expected, result);
     }
 
     @Test
@@ -380,7 +385,8 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("All providers should be selected for this one", "ollehHELLO5impl4", result);
+        Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4", "HELLO", "5"));
+        Assert.assertEquals("All providers should be selected for this one", expected, result);
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
@@ -431,12 +437,12 @@ public class ClientWeavingHookTest {
                 providerBundle1, providerBundle2, providerBundle3, providerBundle4);
         WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
 
-        testConsumerBundleWeaving(consumerBundle1, wh, "impl4", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
-        testConsumerBundleWeaving(consumerBundle2, wh, "olleh", thisJVMsDBF);
-        testConsumerBundleWeaving(consumerBundle3, wh, "", thisJVMsDBF);
+        testConsumerBundleWeaving(consumerBundle1, wh, Collections.singleton("impl4"), "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
+        testConsumerBundleWeaving(consumerBundle2, wh, Collections.singleton("olleh"), thisJVMsDBF);
+        testConsumerBundleWeaving(consumerBundle3, wh, Collections.<String>emptySet(), thisJVMsDBF);
     }
 
-    private void testConsumerBundleWeaving(Bundle consumerBundle, WeavingHook wh, String testClientResult, String jaxpClientResult) throws Exception {
+    private void testConsumerBundleWeaving(Bundle consumerBundle, WeavingHook wh, Set<String> testClientResult, String jaxpClientResult) throws Exception {
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
         WovenClass wc = new MyWovenClass(clsUrl, TestClient.class.getName(), consumerBundle);

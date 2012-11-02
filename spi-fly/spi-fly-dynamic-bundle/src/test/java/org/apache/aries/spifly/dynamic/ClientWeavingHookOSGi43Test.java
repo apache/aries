@@ -30,6 +30,7 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -105,7 +106,7 @@ public class ClientWeavingHookOSGi43Test  {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
-        Assert.assertEquals("olleh", result);
+        Assert.assertEquals(Collections.singleton("olleh"), result);
     }
 
     private Bundle mockSpiFlyBundle(String bsn, Version version, Bundle ... bundles) throws Exception {
