@@ -34,20 +34,20 @@ import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class Subsystems {
-	private AriesSubsystem root;
+	private BasicSubsystem root;
 	private volatile SubsystemGraph graph;
 	
-	private final Map<Long, AriesSubsystem> idToSubsystem = new HashMap<Long, AriesSubsystem>();
-	private final Map<String, AriesSubsystem> locationToSubsystem = new HashMap<String, AriesSubsystem>();
+	private final Map<Long, BasicSubsystem> idToSubsystem = new HashMap<Long, BasicSubsystem>();
+	private final Map<String, BasicSubsystem> locationToSubsystem = new HashMap<String, BasicSubsystem>();
 	private final ResourceReferences resourceReferences = new ResourceReferences();
-	private final Map<AriesSubsystem, Set<Resource>> subsystemToConstituents = new HashMap<AriesSubsystem, Set<Resource>>();
+	private final Map<BasicSubsystem, Set<Resource>> subsystemToConstituents = new HashMap<BasicSubsystem, Set<Resource>>();
 	
-	public void addChild(AriesSubsystem parent, AriesSubsystem child, boolean referenceCount) {
+	public void addChild(BasicSubsystem parent, BasicSubsystem child, boolean referenceCount) {
 		graph.add(parent, child);
 		child.addedParent(parent, referenceCount);
 	}
 	
-	public void addConstituent(AriesSubsystem subsystem, Resource constituent, boolean referenced) {
+	public void addConstituent(BasicSubsystem subsystem, Resource constituent, boolean referenced) {
 		synchronized (subsystemToConstituents) {
 			Set<Resource> constituents = subsystemToConstituents.get(subsystem);
 			if (constituents == null) {
@@ -59,11 +59,11 @@ public class Subsystems {
 		subsystem.addedConstituent(constituent, referenced);
 	}
 	
-	public void addReference(AriesSubsystem subsystem, Resource resource) {
+	public void addReference(BasicSubsystem subsystem, Resource resource) {
 		resourceReferences.addReference(subsystem, resource);
 	}
 	
-	public void addSubsystem(AriesSubsystem subsystem) {
+	public void addSubsystem(BasicSubsystem subsystem) {
 		synchronized (idToSubsystem) {
 			synchronized (locationToSubsystem) {
 				addIdToSubsystem(subsystem);
@@ -72,11 +72,11 @@ public class Subsystems {
 		}
 	}
 	
-	public Collection<Subsystem> getChildren(AriesSubsystem parent) {
+	public Collection<Subsystem> getChildren(BasicSubsystem parent) {
 		return graph.getChildren(parent);
 	}
 	
-	public Collection<Resource> getConstituents(AriesSubsystem subsystem) {
+	public Collection<Resource> getConstituents(BasicSubsystem subsystem) {
 		synchronized (subsystemToConstituents) {
 			Collection<Resource> result = subsystemToConstituents.get(subsystem);
 			if (result == null)
@@ -85,15 +85,15 @@ public class Subsystems {
 		}
 	}
 	
-	public Collection<Subsystem> getParents(AriesSubsystem child) {
+	public Collection<Subsystem> getParents(BasicSubsystem child) {
 		return graph.getParents(child);
 	}
 	
-	public Collection<Resource> getResourcesReferencedBy(AriesSubsystem subsystem) {
+	public Collection<Resource> getResourcesReferencedBy(BasicSubsystem subsystem) {
 		return resourceReferences.getResources(subsystem);
 	}
 	
-	public synchronized AriesSubsystem getRootSubsystem() {
+	public synchronized BasicSubsystem getRootSubsystem() {
 		if (root == null) {
 			File file = Activator.getInstance().getBundleContext().getDataFile("");
 			File[] fileArray = file.listFiles();
@@ -120,7 +120,7 @@ public class Subsystems {
 				}
 				Coordination coordination = Utils.createCoordination();
 				try {
-					root = new AriesSubsystem(resource);
+					root = new BasicSubsystem(resource);
 					// TODO This initialization is a bit brittle. The root subsystem
 					// must be gotten before anything else will be able to use the
 					// graph. At the very least, throw IllegalStateException where
@@ -145,10 +145,10 @@ public class Subsystems {
 			else {
 				// There are persisted subsystems.
 				Coordination coordination = Utils.createCoordination();
-				Collection<AriesSubsystem> subsystems = new ArrayList<AriesSubsystem>(fileList.size());
+				Collection<BasicSubsystem> subsystems = new ArrayList<BasicSubsystem>(fileList.size());
 				try {
 					for (File f : fileList) {
-						AriesSubsystem s = new AriesSubsystem(f);
+						BasicSubsystem s = new BasicSubsystem(f);
 						subsystems.add(s);
 						addSubsystem(s);
 					}
@@ -165,26 +165,26 @@ public class Subsystems {
 		return root;
 	}
 	
-	public AriesSubsystem getSubsystemById(long id) {
+	public BasicSubsystem getSubsystemById(long id) {
 		synchronized (idToSubsystem) {
 			return idToSubsystem.get(id);
 		}
 	}
 	
-	public AriesSubsystem getSubsystemByLocation(String location) {
+	public BasicSubsystem getSubsystemByLocation(String location) {
 		synchronized (locationToSubsystem) {
 			return locationToSubsystem.get(location);
 		}
 	}
 	
-	public Collection<AriesSubsystem> getSubsystems() {
-		return new ArrayList<AriesSubsystem>(idToSubsystem.values());
+	public Collection<BasicSubsystem> getSubsystems() {
+		return new ArrayList<BasicSubsystem>(idToSubsystem.values());
 	}
 	
-	public Collection<AriesSubsystem> getSubsystemsByConstituent(Resource constituent) {
-		ArrayList<AriesSubsystem> result = new ArrayList<AriesSubsystem>();
+	public Collection<BasicSubsystem> getSubsystemsByConstituent(Resource constituent) {
+		ArrayList<BasicSubsystem> result = new ArrayList<BasicSubsystem>();
 		synchronized (subsystemToConstituents) {
-			for (AriesSubsystem subsystem : subsystemToConstituents.keySet())
+			for (BasicSubsystem subsystem : subsystemToConstituents.keySet())
 				if (getConstituents(subsystem).contains(constituent))
 					result.add(subsystem);
 		}
@@ -192,19 +192,19 @@ public class Subsystems {
 		return result;
 	}
 	
-	public Collection<AriesSubsystem> getSubsystemsReferencing(Resource resource) {
+	public Collection<BasicSubsystem> getSubsystemsReferencing(Resource resource) {
 		return resourceReferences.getSubsystems(resource);
 	}
 	
-	public void removeChild(AriesSubsystem child) {
+	public void removeChild(BasicSubsystem child) {
 		graph.remove(child);
 	}
 	
-	public void removeChild(AriesSubsystem parent, AriesSubsystem child) {
+	public void removeChild(BasicSubsystem parent, BasicSubsystem child) {
 		graph.remove(parent, child);
 	}
 	
-	public void removeConstituent(AriesSubsystem subsystem, Resource constituent) {
+	public void removeConstituent(BasicSubsystem subsystem, Resource constituent) {
 		synchronized (subsystemToConstituents) {
 			Set<Resource> constituents = subsystemToConstituents.get(subsystem);
 			if (constituents != null) {
@@ -216,11 +216,11 @@ public class Subsystems {
 		subsystem.removedContent(constituent);
 	}
 	
-	public void removeReference(AriesSubsystem subsystem, Resource resource) {
+	public void removeReference(BasicSubsystem subsystem, Resource resource) {
 		resourceReferences.removeReference(subsystem, resource);
 	}
 	
-	public void removeSubsystem(AriesSubsystem subsystem) {
+	public void removeSubsystem(BasicSubsystem subsystem) {
 		synchronized (idToSubsystem) {
 			synchronized (locationToSubsystem) {
 				removeLocationToSubsystem(subsystem);
@@ -229,22 +229,22 @@ public class Subsystems {
 		}
 	}
 	
-	private void addIdToSubsystem(AriesSubsystem subsystem) {
+	private void addIdToSubsystem(BasicSubsystem subsystem) {
 		long id = subsystem.getSubsystemId();
 		idToSubsystem.put(id, subsystem);
 	}
 	
-	private void addLocationToSubsystem(AriesSubsystem subsystem) {
+	private void addLocationToSubsystem(BasicSubsystem subsystem) {
 		String location = subsystem.getLocation();
 		locationToSubsystem.put(location, subsystem);
 	}
 	
-	private void removeIdToSubsystem(AriesSubsystem subsystem) {
+	private void removeIdToSubsystem(BasicSubsystem subsystem) {
 		long id = subsystem.getSubsystemId();
 		idToSubsystem.remove(id);
 	}
 	
-	private void removeLocationToSubsystem(AriesSubsystem subsystem) {
+	private void removeLocationToSubsystem(BasicSubsystem subsystem) {
 		String location = subsystem.getLocation();
 		locationToSubsystem.remove(location);
 	}

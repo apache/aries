@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.core.archive.AriesSubsystemParentsHeader;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
@@ -39,11 +40,17 @@ import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.io.IOUtils;
+import org.eclipse.equinox.region.Region;
+import org.eclipse.equinox.region.RegionDigraph;
+import org.eclipse.equinox.region.RegionDigraph.FilteredRegion;
+import org.eclipse.equinox.region.RegionFilter;
+import org.eclipse.equinox.region.RegionFilterBuilder;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -54,7 +61,7 @@ import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
-public class AriesSubsystem implements Resource, Subsystem {
+public class BasicSubsystem implements Resource, AriesSubsystem {
 	public static final String ROOT_SYMBOLIC_NAME = "org.osgi.service.subsystem.root";
 	public static final Version ROOT_VERSION = Version.parseVersion("1.0.0");
 	public static final String ROOT_LOCATION = "subsystem://?"
@@ -68,7 +75,7 @@ public class AriesSubsystem implements Resource, Subsystem {
 	
 	private final IDirectory directory;
 	
-	public AriesSubsystem(SubsystemResource resource) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
+	public BasicSubsystem(SubsystemResource resource) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
 		this.resource = resource;
 		final File file = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(resource.getId()));
 		file.mkdirs();
@@ -101,11 +108,11 @@ public class AriesSubsystem implements Resource, Subsystem {
 				.build());
 	}
 	
-	public AriesSubsystem(File file) throws IOException, URISyntaxException, ResolutionException {
+	public BasicSubsystem(File file) throws IOException, URISyntaxException, ResolutionException {
 		this(FileSystem.getFSRoot(file));
 	}
 	
-	public AriesSubsystem(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
+	public BasicSubsystem(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
 		this.directory = directory;
 		setDeploymentManifest(new DeploymentManifest.Builder().manifest(getDeploymentManifest()).build());
 	}
@@ -116,9 +123,9 @@ public class AriesSubsystem implements Resource, Subsystem {
 	public boolean equals(Object o) {
 		if (o == this)
 			return true;
-		if (!(o instanceof AriesSubsystem))
+		if (!(o instanceof BasicSubsystem))
 			return false;
-		AriesSubsystem that = (AriesSubsystem)o;
+		BasicSubsystem that = (BasicSubsystem)o;
 		return getLocation().equals(that.getLocation());
 	}
 	
@@ -202,7 +209,7 @@ public class AriesSubsystem implements Resource, Subsystem {
 			return Collections.emptyList();
 		Collection<Subsystem> result = new ArrayList<Subsystem>(header.getClauses().size());
 		for (AriesSubsystemParentsHeader.Clause clause : header.getClauses()) {
-			AriesSubsystem subsystem = Activator.getInstance().getSubsystems().getSubsystemById(clause.getId());
+			BasicSubsystem subsystem = Activator.getInstance().getSubsystems().getSubsystemById(clause.getId());
 			if (subsystem == null)
 				continue;
 			result.add(subsystem);
@@ -241,14 +248,20 @@ public class AriesSubsystem implements Resource, Subsystem {
 	}
 
 	@Override
-	public Subsystem install(String location) {
-		return install(location, null);
+	public AriesSubsystem install(String location) {
+		return install(location, (InputStream)null);
 	}
 
 	@Override
-	public Subsystem install(String location, InputStream content) {
+	public AriesSubsystem install(String location, final InputStream content) {
 		try {
-			return AccessController.doPrivileged(new InstallAction(location, content, this, AccessController.getContext()));
+			return install(location, content == null ? null : 
+				AccessController.doPrivileged(new PrivilegedAction<IDirectory>() {
+					@Override
+					public IDirectory run() {
+						return FileSystem.getFSRoot(content);
+					}
+				}));
 		}
 		finally {
 			// This method must guarantee the content input stream was closed.
@@ -307,7 +320,7 @@ public class AriesSubsystem implements Resource, Subsystem {
 		}
 	}
 	
-	void addedParent(AriesSubsystem subsystem, boolean referenceCount) {
+	void addedParent(BasicSubsystem subsystem, boolean referenceCount) {
 		try {
 			setDeploymentManifest(new DeploymentManifest.Builder()
 					.manifest(getDeploymentManifest()).parent(subsystem, referenceCount).build());
@@ -529,5 +542,62 @@ public class AriesSubsystem implements Resource, Subsystem {
 		if (header == null)
 			return null;
 		return header.getValue();
+	}
+
+	@Override
+	public synchronized void addRequirements(Collection<Requirement> requirements) {
+		// The root subsystem has no requirements (there is no parent to import from).
+		if (isRoot())
+			throw new UnsupportedOperationException("The root subsystem does not accept additional requirements");
+		// Unscoped subsystems import everything.already.
+		if (!isScoped())
+			return;
+		Region currentRegion = getRegion();
+		RegionDigraph currentDigraph = currentRegion.getRegionDigraph();
+		RegionFilterBuilder filterBuilder = currentDigraph.createRegionFilterBuilder();
+		try {
+			// Copy the sharing policy of the current region.
+			for (FilteredRegion filteredRegion : currentRegion.getEdges()) {
+				Map<String, Collection<String>> sharingPolicy = filteredRegion.getFilter().getSharingPolicy();
+				for (Map.Entry<String, Collection<String>> entry : sharingPolicy.entrySet())
+					for (String filter : entry.getValue())
+						filterBuilder.allow(entry.getKey(), filter);
+			}
+			// Add the additional requirements to the sharing policy.
+			for (Requirement requirement : requirements) {
+				String namespace = requirement.getNamespace();
+				// The osgi.service namespace requires translation.
+				if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
+					namespace = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
+				String filter = requirement.getDirectives().get(IdentityNamespace.REQUIREMENT_FILTER_DIRECTIVE);
+				// A null filter means import everything from that namespace.
+				if (filter == null)
+					filterBuilder.allowAll(namespace);
+				else
+					filterBuilder.allow(namespace, filter);
+			}
+			// Update the region digraph. Lock on the class to prevent conflicts
+			// with other subsystems updating their own requirements.
+			// TODO This lock does not prevent conflicts with users outside of
+			// subsystems.
+			synchronized (BasicSubsystem.class) {
+				RegionDigraph copiedDigraph = currentDigraph.copy();
+				copiedDigraph.removeRegion(currentRegion);
+				Region fromRegion = copiedDigraph.createRegion(currentRegion.getName());
+				Region toRegion = ((BasicSubsystem)getParents().iterator().next()).getRegion();
+				copiedDigraph.connect(fromRegion, filterBuilder.build(), copiedDigraph.getRegion(toRegion.getName()));
+				// TODO Protect against the possibility of an already modified
+				// digraph with multiple attempts, if necessary?
+				currentDigraph.replace(copiedDigraph);
+			}
+		}
+		catch (Exception e) {
+			throw new SubsystemException(e);
+		}
+	}
+
+	@Override
+	public AriesSubsystem install(String location, IDirectory content) {
+		return AccessController.doPrivileged(new InstallAction(location, content, this, AccessController.getContext()));
 	}
 }

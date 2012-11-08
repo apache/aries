@@ -69,8 +69,8 @@ public class ResourceHelper {
 			return ((BundleResource)resource).getLocation();
 		if (resource instanceof BundleRevision)
 			return ((BundleRevision)resource).getBundle().getLocation();
-		if (resource instanceof AriesSubsystem)
-			return ((AriesSubsystem)resource).getLocation();
+		if (resource instanceof BasicSubsystem)
+			return ((BasicSubsystem)resource).getLocation();
 		if (resource instanceof SubsystemResource)
 			return ((SubsystemResource)resource).getLocation();
 		if (resource instanceof RawSubsystemResource)

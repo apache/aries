@@ -21,9 +21,9 @@ import java.util.Map.Entry;
 import org.apache.aries.subsystem.core.archive.Header;
 
 public class GetSubsystemHeadersAction implements PrivilegedAction<Map<String, String>> {
-	private final AriesSubsystem subsystem;
+	private final BasicSubsystem subsystem;
 	
-	public GetSubsystemHeadersAction(AriesSubsystem subsystem) {
+	public GetSubsystemHeadersAction(BasicSubsystem subsystem) {
 		this.subsystem = subsystem;
 	}
 	

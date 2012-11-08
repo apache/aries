@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.subsystem.core.internal.AriesSubsystem;
+import org.apache.aries.subsystem.core.internal.BasicSubsystem;
 import org.apache.aries.subsystem.core.internal.OsgiIdentityRequirement;
 import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
@@ -68,11 +68,11 @@ public class AriesSubsystemParentsHeader implements RequirementHeader<AriesSubsy
 			fillInDefaults(parameters);
 		}
 		
-		public Clause(AriesSubsystem subsystem, boolean referenceCount) {
+		public Clause(BasicSubsystem subsystem, boolean referenceCount) {
 			this(appendSubsystem(subsystem, new StringBuilder(), referenceCount).toString());
 		}
 		
-		public boolean contains(AriesSubsystem subsystem) {
+		public boolean contains(BasicSubsystem subsystem) {
 			return getSymbolicName().equals(
 					subsystem.getSymbolicName())
 					&& getVersion().equals(
@@ -168,7 +168,7 @@ public class AriesSubsystemParentsHeader implements RequirementHeader<AriesSubsy
 	
 	public static final String NAME = "AriesSubsystem-Parents";
 	
-	private static StringBuilder appendSubsystem(AriesSubsystem subsystem, StringBuilder builder, boolean referenceCount) {
+	private static StringBuilder appendSubsystem(BasicSubsystem subsystem, StringBuilder builder, boolean referenceCount) {
 		String symbolicName = subsystem.getSymbolicName();
 		Version version = subsystem.getVersion();
 		String type = subsystem.getType();
@@ -208,11 +208,11 @@ public class AriesSubsystemParentsHeader implements RequirementHeader<AriesSubsy
 		this(processHeader(value));
 	}
 	
-	public boolean contains(AriesSubsystem subsystem) {
+	public boolean contains(BasicSubsystem subsystem) {
 		return getClause(subsystem) != null;
 	}
 	
-	public Clause getClause(AriesSubsystem subsystem) {
+	public Clause getClause(BasicSubsystem subsystem) {
 		String symbolicName = subsystem.getSymbolicName();
 		Version version = subsystem.getVersion();
 		String type = subsystem.getType();

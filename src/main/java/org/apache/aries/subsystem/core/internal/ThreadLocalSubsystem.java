@@ -14,15 +14,15 @@
 package org.apache.aries.subsystem.core.internal;
 
 public class ThreadLocalSubsystem {
-	private static ThreadLocal<AriesSubsystem> subsystem = new ThreadLocal<AriesSubsystem>();
+	private static ThreadLocal<BasicSubsystem> subsystem = new ThreadLocal<BasicSubsystem>();
 	
-	public static AriesSubsystem get() {
-		AriesSubsystem result = (AriesSubsystem)subsystem.get();
+	public static BasicSubsystem get() {
+		BasicSubsystem result = (BasicSubsystem)subsystem.get();
 		subsystem.remove();
 		return result;
 	}
 	
-	public static void set(AriesSubsystem value) {
+	public static void set(BasicSubsystem value) {
 		subsystem.set(value);
 	}
 }
