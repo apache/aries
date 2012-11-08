@@ -23,7 +23,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public abstract class ResourceInstaller {
-	public static ResourceInstaller newInstance(Coordination coordination, Resource resource, AriesSubsystem subsystem) {
+	public static ResourceInstaller newInstance(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
@@ -36,11 +36,11 @@ public abstract class ResourceInstaller {
 	}
 	
 	protected final Coordination coordination;
-	protected final AriesSubsystem provisionTo;
+	protected final BasicSubsystem provisionTo;
 	protected final Resource resource;
-	protected final AriesSubsystem subsystem;
+	protected final BasicSubsystem subsystem;
 	
-	public ResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem) {
+	public ResourceInstaller(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
 		this.coordination = coordination;
 		this.resource = resource;
 		this.subsystem = subsystem;

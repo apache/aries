@@ -19,10 +19,10 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public abstract class AbstractAction implements PrivilegedAction<Object> {
 	protected final boolean disableRootCheck;
-	protected final AriesSubsystem requestor;
-	protected final AriesSubsystem target;
+	protected final BasicSubsystem requestor;
+	protected final BasicSubsystem target;
 	
-	public AbstractAction(AriesSubsystem requestor, AriesSubsystem target, boolean disableRootCheck) {
+	public AbstractAction(BasicSubsystem requestor, BasicSubsystem target, boolean disableRootCheck) {
 		this.requestor = requestor;
 		this.target = target;
 		this.disableRootCheck = disableRootCheck;
@@ -34,7 +34,7 @@ public abstract class AbstractAction implements PrivilegedAction<Object> {
 	}
 	
 	protected void checkValid() {
-		AriesSubsystem s = (AriesSubsystem)Activator.getInstance().getSubsystemServiceRegistrar().getSubsystemService(target);
+		BasicSubsystem s = (BasicSubsystem)Activator.getInstance().getSubsystemServiceRegistrar().getSubsystemService(target);
 		if (s != target)
 			throw new IllegalStateException("Detected stale subsystem instance: " + s);
 	}

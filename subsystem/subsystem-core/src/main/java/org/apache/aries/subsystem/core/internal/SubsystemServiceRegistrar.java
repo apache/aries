@@ -22,6 +22,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.aries.subsystem.AriesSubsystem;
 import org.eclipse.equinox.region.Region;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -30,7 +31,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemServiceRegistrar {
 	private final BundleContext context;
-	private final Map<Subsystem, ServiceRegistration<Subsystem>> map = new HashMap<Subsystem, ServiceRegistration<Subsystem>>();
+	private final Map<Subsystem, ServiceRegistration<?>> map = new HashMap<Subsystem, ServiceRegistration<?>>();
 	
 	public SubsystemServiceRegistrar(BundleContext context) {
 		if (context == null)
@@ -38,8 +39,8 @@ public class SubsystemServiceRegistrar {
 		this.context = context;
 	}
 	
-	public synchronized void addRegion(AriesSubsystem subsystem, Region region) {
-		ServiceRegistration<Subsystem> registration = map.get(subsystem);
+	public synchronized void addRegion(BasicSubsystem subsystem, Region region) {
+		ServiceRegistration<?> registration = map.get(subsystem);
 		if (registration == null)
 			throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
 		Collection<String> currentRegions = (Collection<String>)registration.getReference().getProperty(Constants.SubsystemServicePropertyRegions);
@@ -54,23 +55,25 @@ public class SubsystemServiceRegistrar {
 		registration.setProperties(properties);
 	}
 	
-	public synchronized Subsystem getSubsystemService(AriesSubsystem subsystem) {
-		ServiceRegistration<Subsystem> registration = map.get(subsystem);
+	public synchronized Subsystem getSubsystemService(BasicSubsystem subsystem) {
+		ServiceRegistration<?> registration = map.get(subsystem);
 		if (registration == null)
 			return null;
-		return Activator.getInstance().getBundleContext().getService(registration.getReference());
+		return (Subsystem)Activator.getInstance().getBundleContext().getService(registration.getReference());
 	}
 	
-	public synchronized void register(AriesSubsystem child, AriesSubsystem parent) {
+	public synchronized void register(BasicSubsystem child, BasicSubsystem parent) {
 		if (map.containsKey(child))
 			return;
 		Dictionary<String, Object> properties = properties(child, parent);
-		ServiceRegistration<Subsystem> registration = context.registerService(Subsystem.class, child, properties);
+		ServiceRegistration<?> registration = context.registerService(
+				new String[] {Subsystem.class.getName(), AriesSubsystem.class.getName()}, 
+				child, properties);
 		map.put(child, registration);
 	}
 	
-	public synchronized void removeRegion(AriesSubsystem subsystem, Region region) {
-		ServiceRegistration<Subsystem> registration = map.get(subsystem);
+	public synchronized void removeRegion(BasicSubsystem subsystem, Region region) {
+		ServiceRegistration<?> registration = map.get(subsystem);
 		if (registration == null)
 			return;
 		Collection<String> regions = (Collection<String>)registration.getReference().getProperty(Constants.SubsystemServicePropertyRegions);
@@ -85,29 +88,29 @@ public class SubsystemServiceRegistrar {
 	}
 	
 	public synchronized void unregister(Subsystem subsystem) {
-		ServiceRegistration<Subsystem> registration = map.remove(subsystem);
+		ServiceRegistration<?> registration = map.remove(subsystem);
 		if (registration == null)
 			throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
 		registration.unregister();
 	}
 	
 	public synchronized void unregisterAll() {
-		for (Iterator<ServiceRegistration<Subsystem>> i = map.values().iterator(); i.hasNext();) {
-			ServiceRegistration<Subsystem> registration = i.next();
+		for (Iterator<ServiceRegistration<?>> i = map.values().iterator(); i.hasNext();) {
+			ServiceRegistration<?> registration = i.next();
 			registration.unregister();
 			i.remove();
 		}
 	}
 	
-	public synchronized void update(AriesSubsystem subsystem) {
-		ServiceRegistration<Subsystem> registration = map.get(subsystem);
+	public synchronized void update(BasicSubsystem subsystem) {
+		ServiceRegistration<?> registration = map.get(subsystem);
 		if (registration == null)
 			throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
 		Dictionary<String, Object> properties = properties(subsystem, registration);
 		registration.setProperties(properties);
 	}
 	
-	private Dictionary<String, Object> properties(AriesSubsystem subsystem) {
+	private Dictionary<String, Object> properties(BasicSubsystem subsystem) {
 		Dictionary<String, Object> result = new Hashtable<String, Object>();
 		result.put(SubsystemConstants.SUBSYSTEM_ID_PROPERTY, subsystem.getSubsystemId());
 		result.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME_PROPERTY, subsystem.getSymbolicName());
@@ -118,7 +121,7 @@ public class SubsystemServiceRegistrar {
 		return result;
 	}
 	
-	private Dictionary<String, Object> properties(AriesSubsystem child, AriesSubsystem parent) {
+	private Dictionary<String, Object> properties(BasicSubsystem child, BasicSubsystem parent) {
 		Dictionary<String, Object> result = properties(child);
 		if (parent == null)
 			return result;
@@ -130,7 +133,7 @@ public class SubsystemServiceRegistrar {
 		return result;
 	}
 	
-	private Dictionary<String, Object> properties(AriesSubsystem subsystem, ServiceRegistration<Subsystem> registration) {
+	private Dictionary<String, Object> properties(BasicSubsystem subsystem, ServiceRegistration<?> registration) {
 		Dictionary<String, Object> result = properties(subsystem);
 		Collection<String> regions = (Collection<String>)registration.getReference().getProperty(Constants.SubsystemServicePropertyRegions);
 		if (regions == null)

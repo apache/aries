@@ -18,7 +18,7 @@ import java.util.EnumSet;
 import org.osgi.service.subsystem.Subsystem.State;
 
 public class UninstallAction extends AbstractAction {
-	public UninstallAction(AriesSubsystem requestor, AriesSubsystem target, boolean disableRootCheck) {
+	public UninstallAction(BasicSubsystem requestor, BasicSubsystem target, boolean disableRootCheck) {
 		super(requestor, target, disableRootCheck);
 	}
 	

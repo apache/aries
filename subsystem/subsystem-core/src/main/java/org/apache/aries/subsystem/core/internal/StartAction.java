@@ -51,11 +51,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StartAction extends AbstractAction {
-	private static final Logger logger = LoggerFactory.getLogger(AriesSubsystem.class);
+	private static final Logger logger = LoggerFactory.getLogger(BasicSubsystem.class);
 	
-	private final AriesSubsystem instigator;
+	private final BasicSubsystem instigator;
 	
-	public StartAction(AriesSubsystem instigator, AriesSubsystem requestor, AriesSubsystem target) {
+	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target) {
 		super(requestor, target, false);
 		this.instigator = instigator;
 	}
@@ -123,7 +123,7 @@ public class StartAction extends AbstractAction {
 		return null;
 	}
 	
-	private static Collection<Bundle> getBundles(AriesSubsystem subsystem) {
+	private static Collection<Bundle> getBundles(BasicSubsystem subsystem) {
 		Collection<Resource> constituents = Activator.getInstance().getSubsystems().getConstituents(subsystem);
 		ArrayList<Bundle> result = new ArrayList<Bundle>(constituents.size());
 		for (Resource resource : constituents) {
@@ -134,7 +134,7 @@ public class StartAction extends AbstractAction {
 		return result;
 	}
 	
-	private static void resolve(AriesSubsystem subsystem) {
+	private static void resolve(BasicSubsystem subsystem) {
 		// Don't propagate a RESOLVING event if this is a persisted subsystem
 		// that is already RESOLVED.
 		if (State.INSTALLED.equals(subsystem.getState()))
@@ -146,7 +146,7 @@ public class StartAction extends AbstractAction {
 			// actually doing the resolution work.
 			if (!subsystem.isRoot()) {
 				for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(subsystem))
-					resolve((AriesSubsystem)child);
+					resolve((BasicSubsystem)child);
 				// TODO I think this is insufficient. Do we need both
 				// pre-install and post-install environments for the Resolver?
 				Collection<Bundle> bundles = getBundles(subsystem);
@@ -173,10 +173,10 @@ public class StartAction extends AbstractAction {
 		}
 	}
 	
-	private static void setExportIsolationPolicy(AriesSubsystem subsystem) throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
+	private static void setExportIsolationPolicy(BasicSubsystem subsystem) throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
 		if (!subsystem.isComposite())
 			return;
-		Region from = ((AriesSubsystem)subsystem.getParents().iterator().next()).getRegion();
+		Region from = ((BasicSubsystem)subsystem.getParents().iterator().next()).getRegion();
 		Region to = subsystem.getRegion();
 		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
 		setExportIsolationPolicy(builder, subsystem.getDeploymentManifest().getExportPackageHeader(), subsystem);
@@ -191,7 +191,7 @@ public class StartAction extends AbstractAction {
 		from.connectRegion(to, regionFilter);
 	}
 	
-	private static void setExportIsolationPolicy(RegionFilterBuilder builder, ExportPackageHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
+	private static void setExportIsolationPolicy(RegionFilterBuilder builder, ExportPackageHeader header, BasicSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
@@ -206,7 +206,7 @@ public class StartAction extends AbstractAction {
 		}
 	}
 	
-	private static void setExportIsolationPolicy(RegionFilterBuilder builder, ProvideCapabilityHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
+	private static void setExportIsolationPolicy(RegionFilterBuilder builder, ProvideCapabilityHeader header, BasicSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		for (ProvideCapabilityHeader.Clause clause : header.getClauses()) {
@@ -222,7 +222,7 @@ public class StartAction extends AbstractAction {
 		}
 	}
 	
-	private static void setExportIsolationPolicy(RegionFilterBuilder builder, SubsystemExportServiceHeader header, AriesSubsystem subsystem) throws InvalidSyntaxException {
+	private static void setExportIsolationPolicy(RegionFilterBuilder builder, SubsystemExportServiceHeader header, BasicSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
 		String policy = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
@@ -276,7 +276,7 @@ public class StartAction extends AbstractAction {
 	}
 
 	private void startSubsystemResource(Resource resource, Coordination coordination) throws IOException {
-		final AriesSubsystem subsystem = (AriesSubsystem)resource;
+		final BasicSubsystem subsystem = (BasicSubsystem)resource;
 		// Subsystems that are content resources of another subsystem must have
 		// their autostart setting set to started.
 		if (Utils.isContent(this.target, subsystem))

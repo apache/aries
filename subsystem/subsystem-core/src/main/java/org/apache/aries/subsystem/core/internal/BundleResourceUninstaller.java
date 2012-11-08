@@ -21,7 +21,7 @@ import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class BundleResourceUninstaller extends ResourceUninstaller {
-	public BundleResourceUninstaller(Resource resource, AriesSubsystem subsystem) {
+	public BundleResourceUninstaller(Resource resource, BasicSubsystem subsystem) {
 		super(resource, subsystem);
 	}
 	

@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.aries.subsystem.core.internal.AriesSubsystem;
+import org.apache.aries.subsystem.core.internal.BasicSubsystem;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Resource;
@@ -119,7 +119,7 @@ public class DeploymentManifest {
 			return this;
 		}
 		
-		public Builder parent(AriesSubsystem value, boolean referenceCount) {
+		public Builder parent(BasicSubsystem value, boolean referenceCount) {
 			AriesSubsystemParentsHeader.Clause clause = new AriesSubsystemParentsHeader.Clause(value, referenceCount);
 			AriesSubsystemParentsHeader header = (AriesSubsystemParentsHeader)headers.get(ARIESSUBSYSTEM_PARENTS);
 			if (header == null)

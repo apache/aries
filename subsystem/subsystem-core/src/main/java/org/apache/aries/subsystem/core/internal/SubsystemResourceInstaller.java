@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.aries.util.filesystem.FileSystem;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
@@ -25,16 +26,16 @@ import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.Subsystem.State;
 
 public class SubsystemResourceInstaller extends ResourceInstaller {
-	public SubsystemResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem) {
+	public SubsystemResourceInstaller(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
 		super(coordination, resource, subsystem);
 	}
 	
 	public Resource install() throws Exception {
-		AriesSubsystem result;
+		BasicSubsystem result;
 		if (resource instanceof RepositoryContent)
 			result = installRepositoryContent((RepositoryContent)resource);
-		else if (resource instanceof AriesSubsystem)
-			result = installAriesSubsystem((AriesSubsystem)resource);
+		else if (resource instanceof BasicSubsystem)
+			result = installAriesSubsystem((BasicSubsystem)resource);
 		else if (resource instanceof RawSubsystemResource)
 			result = installRawSubsystemResource((RawSubsystemResource)resource);
 		else
@@ -42,7 +43,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		return result;
 	}
 	
-	private void addChild(final AriesSubsystem child) {
+	private void addChild(final BasicSubsystem child) {
 		// provisionTo will be null if the resource is an already installed
 		// dependency.
 		if (provisionTo == null)
@@ -64,7 +65,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		});
 	}
 	
-	private void addSubsystem(final AriesSubsystem subsystem) {
+	private void addSubsystem(final BasicSubsystem subsystem) {
 		Activator.getInstance().getSubsystems().addSubsystem(subsystem);
 		coordination.addParticipant(new Participant() {
 			@Override
@@ -79,7 +80,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		});
 	}
 	
-	private AriesSubsystem installAriesSubsystem(AriesSubsystem subsystem) throws Exception {
+	private BasicSubsystem installAriesSubsystem(BasicSubsystem subsystem) throws Exception {
 		// If the state is null, this is a brand new subsystem. If the state is
 		// not null, this is a persisted subsystem. For brand new subsystems,
 		// an INSTALLING event must be propagated.
@@ -122,18 +123,18 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		return subsystem;
 	}
 	
-	private AriesSubsystem installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
+	private BasicSubsystem installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
 		SubsystemResource subsystemResource = new SubsystemResource(resource, provisionTo);
 		return installSubsystemResource(subsystemResource);
 	}
 	
-	private AriesSubsystem installRepositoryContent(RepositoryContent resource) throws Exception {
-		RawSubsystemResource rawSubsystemResource = new RawSubsystemResource(getLocation(), resource.getContent());
+	private BasicSubsystem installRepositoryContent(RepositoryContent resource) throws Exception {
+		RawSubsystemResource rawSubsystemResource = new RawSubsystemResource(getLocation(), FileSystem.getFSRoot(resource.getContent()));
 		return installRawSubsystemResource(rawSubsystemResource);
 	}
 	
-	private AriesSubsystem installSubsystemResource(SubsystemResource resource) throws Exception {
-		AriesSubsystem subsystem = new AriesSubsystem(resource);
+	private BasicSubsystem installSubsystemResource(SubsystemResource resource) throws Exception {
+		BasicSubsystem subsystem = new BasicSubsystem(resource);
 		installAriesSubsystem(subsystem);
 		return subsystem;
 	}

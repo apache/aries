@@ -24,9 +24,9 @@ import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 
 public class SystemRepository implements Repository {
-	private final AriesSubsystem root;
+	private final BasicSubsystem root;
 	
-	public SystemRepository(AriesSubsystem root) {
+	public SystemRepository(BasicSubsystem root) {
 		this.root = root;
 	}
 
@@ -45,7 +45,7 @@ public class SystemRepository implements Repository {
 		return result;
 	}
 	
-	private void findProviders(Requirement requirement, Collection<Capability> capabilities, AriesSubsystem subsystem) {
+	private void findProviders(Requirement requirement, Collection<Capability> capabilities, BasicSubsystem subsystem) {
 		// Need to examine capabilities offered by the subsystem itself.
 		// For example, the requirement might be an osgi.identity
 		// requirement for a preferred provider that's a subsystem.
@@ -53,8 +53,8 @@ public class SystemRepository implements Repository {
 			if (ResourceHelper.matches(requirement, capability))
 				capabilities.add(capability);
 		for (Resource constituent : subsystem.getConstituents()) {
-			if (constituent instanceof AriesSubsystem)
-				findProviders(requirement, capabilities, (AriesSubsystem)constituent);
+			if (constituent instanceof BasicSubsystem)
+				findProviders(requirement, capabilities, (BasicSubsystem)constituent);
 			else
 				for (Capability capability : constituent.getCapabilities(requirement.getNamespace()))
 					if (ResourceHelper.matches(requirement, capability))

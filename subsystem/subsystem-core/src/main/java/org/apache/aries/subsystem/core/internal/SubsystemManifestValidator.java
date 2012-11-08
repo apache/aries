@@ -20,7 +20,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class SubsystemManifestValidator {
-	public static void validate(AriesSubsystem subsystem, SubsystemManifest manifest) {
+	public static void validate(BasicSubsystem subsystem, SubsystemManifest manifest) {
 		validatePreferredProviderHeader(manifest.getPreferredProviderHeader());
 		if (subsystem.isComposite()) {
 			SubsystemContentHeader header = manifest.getSubsystemContentHeader();
