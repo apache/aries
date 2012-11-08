@@ -52,10 +52,10 @@ public class BundleEventHook implements EventHook {
 		// The bundle needs to be associated with all subsystems that are 
 		// associated with the bundle whose context was used to install the 
 		// bundle.
-		Collection<AriesSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(originRevision);
+		Collection<BasicSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(originRevision);
 		if (subsystems.isEmpty())
 			throw new IllegalStateException("Orphaned bundle revision detected: " + originRevision);
-		for (AriesSubsystem s : subsystems)
+		for (BasicSubsystem s : subsystems)
 			Utils.installResource(bundleRevision, s);
 	}
 	
@@ -64,7 +64,7 @@ public class BundleEventHook implements EventHook {
 			// the region used to install the bundle.
 			RegionDigraph digraph = Activator.getInstance().getRegionDigraph();
 			Region region = digraph.getRegion(origin);
-			for (AriesSubsystem s : Activator.getInstance().getSubsystems().getSubsystems()) {
+			for (BasicSubsystem s : Activator.getInstance().getSubsystems().getSubsystems()) {
 				if ((s.isApplication() || s.isComposite())
 						&& region.equals(s.getRegion())) {
 					Utils.installResource(bundleRevision, s);
@@ -98,7 +98,7 @@ public class BundleEventHook implements EventHook {
 		BundleRevision revision = bundleToRevision.remove(bundle);
 		if (ThreadLocalSubsystem.get() != null)
 			return;
-		for (AriesSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsByConstituent(new BundleConstituent(null, revision)))
+		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsByConstituent(new BundleConstituent(null, revision)))
 			ResourceUninstaller.newInstance(revision, subsystem).uninstall();
 	}
 }

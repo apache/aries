@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class StopAction extends AbstractAction {
 	private static final Logger logger = LoggerFactory.getLogger(StopAction.class);
 	
-	public StopAction(AriesSubsystem requestor, AriesSubsystem target, boolean disableRootCheck) {
+	public StopAction(BasicSubsystem requestor, BasicSubsystem target, boolean disableRootCheck) {
 		super(requestor, target, disableRootCheck);
 	}
 	
@@ -110,6 +110,6 @@ public class StopAction extends AbstractAction {
 	}
 	
 	private void stopSubsystemResource(Resource resource) throws IOException {
-		new StopAction(target, (AriesSubsystem)resource, !((AriesSubsystem)resource).isRoot()).run();
+		new StopAction(target, (BasicSubsystem)resource, !((BasicSubsystem)resource).isRoot()).run();
 	}
 }

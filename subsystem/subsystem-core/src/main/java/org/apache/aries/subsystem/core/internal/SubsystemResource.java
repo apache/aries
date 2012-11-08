@@ -15,7 +15,6 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,17 +83,17 @@ public class SubsystemResource implements Resource {
 	private final Collection<Resource> mandatoryResources = new HashSet<Resource>();
 	private final Collection<DeployedContentHeader.Clause> missingResources = new HashSet<DeployedContentHeader.Clause>();
 	private final Collection<Resource> optionalResources = new HashSet<Resource>();
-	private final AriesSubsystem parent;
+	private final BasicSubsystem parent;
 	private final Repository preferredProviderRepository;
 	private final RawSubsystemResource resource;
 	private final Collection<Resource> sharedContent = new HashSet<Resource>();
 	private final Collection<Resource> sharedDependencies = new HashSet<Resource>();
 	
-	public SubsystemResource(String location, InputStream content, AriesSubsystem parent) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException, ModellerException {
+	public SubsystemResource(String location, IDirectory content, BasicSubsystem parent) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException, ModellerException {
 		this(new RawSubsystemResource(location, content), parent);
 	}
 	
-	public SubsystemResource(RawSubsystemResource resource, AriesSubsystem parent) throws IOException, BundleException, InvalidSyntaxException, URISyntaxException {
+	public SubsystemResource(RawSubsystemResource resource, BasicSubsystem parent) throws IOException, BundleException, InvalidSyntaxException, URISyntaxException {
 		this.parent = parent;
 		this.resource = resource;
 		id = SubsystemIdentifier.getNextId();
@@ -191,13 +190,13 @@ public class SubsystemResource implements Resource {
 		return missingResources;
 	}
 	
-	public Collection<AriesSubsystem> getParents() {
+	public Collection<BasicSubsystem> getParents() {
 		if (parent == null) {
 			Header<?> header = getDeploymentManifest().getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_PARENTS);
 			if (header == null)
 				return Collections.emptyList();
 			String[] parentIds = header.getValue().split(",");
-			Collection<AriesSubsystem> result = new ArrayList<AriesSubsystem>(parentIds.length);
+			Collection<BasicSubsystem> result = new ArrayList<BasicSubsystem>(parentIds.length);
 			for (String parentId : parentIds)
 				result.add(Activator.getInstance().getSubsystems().getSubsystemById(Long.valueOf(parentId)));
 			return result;
@@ -480,7 +479,7 @@ public class SubsystemResource implements Resource {
 			
 			private Map<Resource, Wiring> computeWirings() {
 				Map<Resource, Wiring> wirings = new HashMap<Resource, Wiring>();
-				for (AriesSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystems())
+				for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystems())
 					for (Resource constituent : subsystem.getConstituents())
 						addWiring(constituent, wirings);
 				return Collections.unmodifiableMap(wirings);
@@ -566,8 +565,8 @@ public class SubsystemResource implements Resource {
 							return provider;
 						}
 					}
-					else if (provider instanceof AriesSubsystem) {
-						if (getRegion().equals(((AriesSubsystem)provider).getRegion())) {
+					else if (provider instanceof BasicSubsystem) {
+						if (getRegion().equals(((BasicSubsystem)provider).getRegion())) {
 							return provider;
 						}
 					}
@@ -652,7 +651,7 @@ public class SubsystemResource implements Resource {
 	}
 	
 	private boolean isRoot() {
-		return AriesSubsystem.ROOT_LOCATION.equals(getLocation());
+		return BasicSubsystem.ROOT_LOCATION.equals(getLocation());
 	}
 	
 	private boolean isShared(Resource resource) {
@@ -701,7 +700,7 @@ public class SubsystemResource implements Resource {
 		Region region = getRegion();
 		Region from = region;
 		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
-		Region to = ((AriesSubsystem)getParents().iterator().next()).getRegion();
+		Region to = ((BasicSubsystem)getParents().iterator().next()).getRegion();
 		addSubsystemServiceImportToSharingPolicy(builder, to);
 		// TODO Is this check really necessary? Looks like it was done at the beginning of this method.
 		if (isScoped()) {

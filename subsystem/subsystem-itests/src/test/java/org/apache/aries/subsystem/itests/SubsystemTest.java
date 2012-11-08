@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.internal.BundleResource;
@@ -199,6 +200,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.osgi",                     "org.osgi.enterprise").version("5.0.0"),
+				mavenBundle("org.easymock",					"easymock").versionAsInProject(),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
 				equinox().version("3.8.0.V20120529-1548"));
@@ -599,6 +601,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		BundleContext bc = subsystem.getBundleContext();
 		assertNotNull("No region context bundle", bc);
 		return bc.getBundle();
+	}
+	
+	protected AriesSubsystem getRootAriesSubsystem() {
+		return getOsgiService(AriesSubsystem.class);
 	}
 	
 	protected Subsystem getRootSubsystem() {

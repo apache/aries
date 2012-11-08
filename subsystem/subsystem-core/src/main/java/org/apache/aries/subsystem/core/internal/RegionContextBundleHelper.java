@@ -30,7 +30,7 @@ public class RegionContextBundleHelper {
 	public static final String SYMBOLICNAME_PREFIX = Constants.RegionContextBundleSymbolicNamePrefix;
 	public static final Version VERSION = Version.parseVersion("1.0.0");
 	
-	public static void installRegionContextBundle(AriesSubsystem subsystem) throws BundleException, IOException {
+	public static void installRegionContextBundle(BasicSubsystem subsystem) throws BundleException, IOException {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		String location = subsystem.getLocation() + '/' + subsystem.getSubsystemId();
 		Bundle b = subsystem.getRegion().getBundle(symbolicName, VERSION);
@@ -43,7 +43,7 @@ public class RegionContextBundleHelper {
 		b.start();
 	}
 	
-	public static void uninstallRegionContextBundle(AriesSubsystem subsystem) {
+	public static void uninstallRegionContextBundle(BasicSubsystem subsystem) {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		Bundle bundle = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (bundle == null)

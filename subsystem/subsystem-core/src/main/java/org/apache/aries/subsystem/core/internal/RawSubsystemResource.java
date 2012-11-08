@@ -15,7 +15,6 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -99,10 +98,6 @@ public class RawSubsystemResource implements Resource {
 	private final List<Requirement> requirements;
 	private final Collection<Resource> resources;
 	private final SubsystemManifest subsystemManifest;
-	
-	public RawSubsystemResource(String location, InputStream content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
-		this(location, content == null ? null : FileSystem.getFSRoot(content));
-	}
 	
 	public RawSubsystemResource(String location, IDirectory content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
 		this.location = new Location(location);
@@ -328,7 +323,7 @@ public class RawSubsystemResource implements Resource {
 				if (name.endsWith(".jar"))
 					result.add(new BundleResource(file));
 				else if (name.endsWith(".esa"))
-					result.add(new RawSubsystemResource(convertFileToLocation(file), file.open()));
+					result.add(new RawSubsystemResource(convertFileToLocation(file), file.convertNested()));
 			}
 			else {
 				if (name.endsWith(".esa"))
@@ -405,7 +400,7 @@ public class RawSubsystemResource implements Resource {
 		else
 			return new DeploymentManifest.Builder()
 					.manifest(getSubsystemManifest())
-					.location(AriesSubsystem.ROOT_LOCATION).autostart(true).id(0)
+					.location(BasicSubsystem.ROOT_LOCATION).autostart(true).id(0)
 					.lastId(SubsystemIdentifier.getLastId())
 					.state(State.INSTALLING)
 					.build();
@@ -419,8 +414,8 @@ public class RawSubsystemResource implements Resource {
 			return new SubsystemManifest(manifest);
 		else
 			return new SubsystemManifest.Builder()
-					.symbolicName(AriesSubsystem.ROOT_SYMBOLIC_NAME)
-					.version(AriesSubsystem.ROOT_VERSION)
+					.symbolicName(BasicSubsystem.ROOT_SYMBOLIC_NAME)
+					.version(BasicSubsystem.ROOT_VERSION)
 					.type(SubsystemTypeHeader.TYPE_APPLICATION
 							+ ';'
 							+ SubsystemTypeHeader.DIRECTIVE_PROVISION_POLICY

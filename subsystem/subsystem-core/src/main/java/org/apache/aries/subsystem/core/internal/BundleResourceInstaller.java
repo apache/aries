@@ -145,7 +145,7 @@ public class BundleResourceInstaller extends ResourceInstaller {
 		}
 	}
 	
-	public BundleResourceInstaller(Coordination coordination, Resource resource, AriesSubsystem subsystem) {
+	public BundleResourceInstaller(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
 		super(coordination, resource, subsystem);
 	}
 	

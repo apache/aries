@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public abstract class ResourceUninstaller {
 	private static final Logger logger = LoggerFactory.getLogger(ResourceUninstaller.class);
 	
-	public static ResourceUninstaller newInstance(Resource resource, AriesSubsystem subsystem) {
+	public static ResourceUninstaller newInstance(Resource resource, BasicSubsystem subsystem) {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
@@ -37,19 +37,19 @@ public abstract class ResourceUninstaller {
 			throw new SubsystemException("No uninstaller exists for resource type: " + type);
 	}
 	
-	protected static void removeConstituent(AriesSubsystem subsystem, Resource resource) {
+	protected static void removeConstituent(BasicSubsystem subsystem, Resource resource) {
 		Activator.getInstance().getSubsystems().removeConstituent(subsystem, resource);
 	}
 	
-	protected static void removeReference(AriesSubsystem subsystem, Resource resource) {
+	protected static void removeReference(BasicSubsystem subsystem, Resource resource) {
 		Activator.getInstance().getSubsystems().removeReference(subsystem, resource);
 	}
 	
-	protected final AriesSubsystem provisionTo;
+	protected final BasicSubsystem provisionTo;
 	protected final Resource resource;
-	protected final AriesSubsystem subsystem;
+	protected final BasicSubsystem subsystem;
 	
-	public ResourceUninstaller(Resource resource, AriesSubsystem subsystem) {
+	public ResourceUninstaller(Resource resource, BasicSubsystem subsystem) {
 		if (resource == null)
 			throw new NullPointerException("Missing required parameter: resource");
 		if (subsystem == null)
@@ -76,7 +76,7 @@ public abstract class ResourceUninstaller {
 				return subsystem.getRegion().contains(((BundleRevision)resource).getBundle());
 			// TODO This is insufficient. The unscoped subsystem could be a
 			// dependency in another region, which would make it implicit.
-			return !((AriesSubsystem)resource).isScoped();
+			return !((BasicSubsystem)resource).isScoped();
 		}
 		return false;
 	}
