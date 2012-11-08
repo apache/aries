@@ -102,7 +102,7 @@ public class PreferredProviderRepository implements Repository {
 	}
 	
 	private boolean isValid(Capability capability) {
-		for (AriesSubsystem parent : resource.getParents())
+		for (BasicSubsystem parent : resource.getParents())
 			for (Resource constituent : parent.getConstituents())
 				if (ResourceHelper.areEqual(constituent, capability.getResource()))
 					return true;

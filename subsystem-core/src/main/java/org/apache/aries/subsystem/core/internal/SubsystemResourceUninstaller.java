@@ -22,13 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SubsystemResourceUninstaller extends ResourceUninstaller {
-	private static final Logger logger = LoggerFactory.getLogger(AriesSubsystem.class);
+	private static final Logger logger = LoggerFactory.getLogger(BasicSubsystem.class);
 	
-	private static void removeChild(AriesSubsystem parent, AriesSubsystem child) {
+	private static void removeChild(BasicSubsystem parent, BasicSubsystem child) {
 		Activator.getInstance().getSubsystems().removeChild(parent, child);
 	}
 	
-	public SubsystemResourceUninstaller(Resource resource, AriesSubsystem subsystem) {
+	public SubsystemResourceUninstaller(Resource resource, BasicSubsystem subsystem) {
 		super(resource, subsystem);
 	}
 	
@@ -47,11 +47,11 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	
 	private void removeChildren() {
 		if (!isExplicit()) {
-			removeChild((AriesSubsystem)subsystem, (AriesSubsystem)resource);
+			removeChild((BasicSubsystem)subsystem, (BasicSubsystem)resource);
 			return;
 		}
-		for (Subsystem subsystem : ((AriesSubsystem)resource).getParents())
-			removeChild((AriesSubsystem)subsystem, (AriesSubsystem)resource);
+		for (Subsystem subsystem : ((BasicSubsystem)resource).getParents())
+			removeChild((BasicSubsystem)subsystem, (BasicSubsystem)resource);
 	}
 	
 	private void removeConstituents() {
@@ -59,8 +59,8 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 			removeConstituent();
 			return;
 		}
-		for (Subsystem subsystem : ((AriesSubsystem)resource).getParents())
-			removeConstituent((AriesSubsystem)subsystem, (AriesSubsystem)resource);
+		for (Subsystem subsystem : ((BasicSubsystem)resource).getParents())
+			removeConstituent((BasicSubsystem)subsystem, (BasicSubsystem)resource);
 	}
 	
 	private void removeReferences() {
@@ -68,16 +68,16 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 			removeReference();
 			return;
 		}
-		for (Subsystem subsystem : ((AriesSubsystem)resource).getParents())
-			removeReference((AriesSubsystem)subsystem, (AriesSubsystem)resource);
+		for (Subsystem subsystem : ((BasicSubsystem)resource).getParents())
+			removeReference((BasicSubsystem)subsystem, (BasicSubsystem)resource);
 	}
 	
 	private void removeSubsystem() {
-		Activator.getInstance().getSubsystems().removeSubsystem((AriesSubsystem)resource);
+		Activator.getInstance().getSubsystems().removeSubsystem((BasicSubsystem)resource);
 	}
 	
 	private void uninstallSubsystem() {
-		AriesSubsystem subsystem = (AriesSubsystem) resource;
+		BasicSubsystem subsystem = (BasicSubsystem) resource;
 		try {
 			if (subsystem.getState().equals(Subsystem.State.RESOLVED))
 				subsystem.setState(State.INSTALLED);

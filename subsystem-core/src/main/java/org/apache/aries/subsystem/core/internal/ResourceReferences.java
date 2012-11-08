@@ -24,43 +24,43 @@ import java.util.Set;
 import org.osgi.resource.Resource;
 
 public class ResourceReferences {
-	private final Map<Resource, Set<AriesSubsystem>> resourceToSubsystems = new HashMap<Resource, Set<AriesSubsystem>>();
-	private final Map<AriesSubsystem, Set<Resource>> subsystemToResources = new HashMap<AriesSubsystem, Set<Resource>>();
+	private final Map<Resource, Set<BasicSubsystem>> resourceToSubsystems = new HashMap<Resource, Set<BasicSubsystem>>();
+	private final Map<BasicSubsystem, Set<Resource>> subsystemToResources = new HashMap<BasicSubsystem, Set<Resource>>();
 	
-	public synchronized void addReference(AriesSubsystem subsystem, Resource resource) {
+	public synchronized void addReference(BasicSubsystem subsystem, Resource resource) {
 		addSubsystemToResource(subsystem, resource);
 		addResourceToSubsystem(subsystem, resource);
 	}
 	
-	public synchronized Collection<Resource> getResources(AriesSubsystem subsystem) {
+	public synchronized Collection<Resource> getResources(BasicSubsystem subsystem) {
 		Collection<Resource> result = subsystemToResources.get(subsystem);
 		if (result == null)
 			result = Collections.emptyList();
 		return Collections.unmodifiableCollection(new ArrayList<Resource>(result));
 	}
 	
-	public synchronized Collection<AriesSubsystem> getSubsystems(Resource resource) {
-		Collection<AriesSubsystem> result = resourceToSubsystems.get(resource);
+	public synchronized Collection<BasicSubsystem> getSubsystems(Resource resource) {
+		Collection<BasicSubsystem> result = resourceToSubsystems.get(resource);
 		if (result == null)
 			result = Collections.emptyList();
-		return Collections.unmodifiableCollection(new ArrayList<AriesSubsystem>(result));
+		return Collections.unmodifiableCollection(new ArrayList<BasicSubsystem>(result));
 	}
 	
-	public synchronized void removeReference(AriesSubsystem subsystem, Resource resource) {
+	public synchronized void removeReference(BasicSubsystem subsystem, Resource resource) {
 		removeResourceToSubsystem(subsystem, resource);
 		removeSubsystemToResource(subsystem, resource);
 	}
 	
-	private void addResourceToSubsystem(AriesSubsystem subsystem, Resource resource) {
-		Set<AriesSubsystem> subsystems = resourceToSubsystems.get(resource);
+	private void addResourceToSubsystem(BasicSubsystem subsystem, Resource resource) {
+		Set<BasicSubsystem> subsystems = resourceToSubsystems.get(resource);
 		if (subsystems == null) {
-			subsystems = new HashSet<AriesSubsystem>();
+			subsystems = new HashSet<BasicSubsystem>();
 			resourceToSubsystems.put(resource, subsystems);
 		}
 		subsystems.add(subsystem);
 	}
 	
-	private void addSubsystemToResource(AriesSubsystem subsystem, Resource resource) {
+	private void addSubsystemToResource(BasicSubsystem subsystem, Resource resource) {
 		Set<Resource> resources = subsystemToResources.get(subsystem);
 		if (resources == null) {
 			resources = new HashSet<Resource>();
@@ -69,8 +69,8 @@ public class ResourceReferences {
 		resources.add(resource);
 	}
 	
-	private void removeResourceToSubsystem(AriesSubsystem subsystem, Resource resource) {
-		Set<AriesSubsystem> subsystems = resourceToSubsystems.get(resource);
+	private void removeResourceToSubsystem(BasicSubsystem subsystem, Resource resource) {
+		Set<BasicSubsystem> subsystems = resourceToSubsystems.get(resource);
 		if (subsystems == null)
 			return;
 		subsystems.remove(subsystem);
@@ -78,7 +78,7 @@ public class ResourceReferences {
 			resourceToSubsystems.remove(resource);
 	}
 	
-	private void removeSubsystemToResource(AriesSubsystem subsystem, Resource resource) {
+	private void removeSubsystemToResource(BasicSubsystem subsystem, Resource resource) {
 		Set<Resource> resources = subsystemToResources.get(subsystem);
 		if (resources == null)
 			return;

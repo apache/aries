@@ -164,7 +164,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(subsystems), null));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
-		AriesSubsystem root = subsystems.getRootSubsystem();
+		BasicSubsystem root = subsystems.getRootSubsystem();
 		root.start();
 	}
 	

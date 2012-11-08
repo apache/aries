@@ -31,44 +31,44 @@ public class Utils {
 	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 	
 	public static Coordination createCoordination() {
-		return Activator.getInstance().getCoordinator().begin(AriesSubsystem.ROOT_SYMBOLIC_NAME + "-0", 0);
+		return Activator.getInstance().getCoordinator().begin(BasicSubsystem.ROOT_SYMBOLIC_NAME + "-0", 0);
 	}
 	
-	public static Coordination createCoordination(AriesSubsystem subsystem) {
+	public static Coordination createCoordination(BasicSubsystem subsystem) {
 		return Activator.getInstance().getCoordinator().begin(subsystem.getSymbolicName() + '-' + subsystem.getSubsystemId(), 0);
 	}
 	
-	public static AriesSubsystem findFirstSubsystemAcceptingDependenciesStartingFrom(AriesSubsystem subsystem) {
+	public static BasicSubsystem findFirstSubsystemAcceptingDependenciesStartingFrom(BasicSubsystem subsystem) {
 		// The following loop is guaranteed to end once the root subsystem has
 		// been reached.
 		while (!isAcceptDependencies(subsystem))
-			subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
+			subsystem = (BasicSubsystem)subsystem.getParents().iterator().next();
 		return subsystem;
 	}
 	
-	public static AriesSubsystem findScopedSubsystemInRegion(AriesSubsystem subsystem) {
+	public static BasicSubsystem findScopedSubsystemInRegion(BasicSubsystem subsystem) {
 		while (!subsystem.isScoped())
-			subsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
+			subsystem = (BasicSubsystem)subsystem.getParents().iterator().next();
 		return subsystem;
 	}
 	
 	public static int getActiveUseCount(Resource resource) {
 		int result = 0;
-		for (AriesSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource))
+		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource))
 			if (Subsystem.State.ACTIVE.equals(subsystem.getState()))
 				result++;
 		return result;
 	}
 	
 	public static long getId(Resource resource) {
-		if (resource instanceof AriesSubsystem)
-			return ((AriesSubsystem)resource).getSubsystemId();
+		if (resource instanceof BasicSubsystem)
+			return ((BasicSubsystem)resource).getSubsystemId();
 		if (resource instanceof BundleRevision)
 			return ((BundleRevision)resource).getBundle().getBundleId();
 		return -1;
 	}
 	
-	public static void installResource(Resource resource, AriesSubsystem subsystem) {
+	public static void installResource(Resource resource, BasicSubsystem subsystem) {
 		Coordination coordination = Utils.createCoordination(subsystem);
 		try {
 			ResourceInstaller.newInstance(coordination, resource, subsystem).install();
@@ -86,7 +86,7 @@ public class Utils {
 		}
 	}
 	
-	public static boolean isAcceptDependencies(AriesSubsystem subsystem) {
+	public static boolean isAcceptDependencies(BasicSubsystem subsystem) {
 		return subsystem.getSubsystemManifest().getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies();
 	}
 	
@@ -103,7 +103,7 @@ public class Utils {
 	 * returns true only if the resource is "true" content of the subsystem and,
 	 * therefore, uses the Subsystem-Content header from the subsystem manifest.
 	 */
-	public static boolean isContent(AriesSubsystem subsystem, Resource resource) {
+	public static boolean isContent(BasicSubsystem subsystem, Resource resource) {
 		SubsystemManifest subsystemManifest = subsystem.getSubsystemManifest();
 		if (subsystemManifest == null)
 			return false;
@@ -113,7 +113,7 @@ public class Utils {
 		return subsystemContentHeader.contains(resource);
 	}
 	
-	public static boolean isDependency(AriesSubsystem subsystem, Resource resource) {
+	public static boolean isDependency(BasicSubsystem subsystem, Resource resource) {
 		DeploymentManifest manifest = subsystem.getDeploymentManifest();
 		if (manifest == null)
 			return false;
@@ -133,7 +133,7 @@ public class Utils {
 	}
 	
 	public static boolean isSharedResource(Resource resource) {
-		return resource instanceof AriesSubsystem || resource instanceof BundleRevision;
+		return resource instanceof BasicSubsystem || resource instanceof BundleRevision;
 	}
 	
 	public static boolean isSubsystem(Resource resource) {

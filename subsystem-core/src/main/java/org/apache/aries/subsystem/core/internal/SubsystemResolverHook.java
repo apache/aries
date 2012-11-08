@@ -47,14 +47,14 @@ public class SubsystemResolverHook implements ResolverHook {
 		// there is at least one preferred provider.
 		// (1) Find the subsystem(s) containing requirement.getResource() as a
 		// constituent.
-		Collection<AriesSubsystem> requirers = subsystems.getSubsystemsReferencing(requirement.getResource());
+		Collection<BasicSubsystem> requirers = subsystems.getSubsystemsReferencing(requirement.getResource());
 		// (2) For each candidate, ask each subsystem if the candidate or any of
 		// the candidate's containing subsystems is a preferred provider. If at
 		// least one preferred provider exists, filter out all other candidates
 		// that are not also preferred providers.
 		Collection<BundleCapability> preferredProviders = new ArrayList<BundleCapability>(candidates.size());
 		for (BundleCapability candidate : candidates)
-			for (AriesSubsystem subsystem : requirers) {
+			for (BasicSubsystem subsystem : requirers) {
 				PreferredProviderHeader header = subsystem.getSubsystemManifest().getPreferredProviderHeader();
 				if (header != null && (header.contains(candidate.getResource()) || isResourceConstituentOfPreferredSubsystem(candidate.getResource(), subsystem)))
 					preferredProviders.add(candidate);
@@ -70,8 +70,8 @@ public class SubsystemResolverHook implements ResolverHook {
 				if (revision.getSymbolicName().startsWith(Constants.RegionContextBundleSymbolicNamePrefix))
 					// Don't want to filter out the region context bundle.
 					continue;
-				Collection<AriesSubsystem> subsystems = this.subsystems.getSubsystemsReferencing(revision);
-				for (AriesSubsystem subsystem : subsystems) {
+				Collection<BasicSubsystem> subsystems = this.subsystems.getSubsystemsReferencing(revision);
+				for (BasicSubsystem subsystem : subsystems) {
 					if (subsystem.isFeature()) {
 						// Feature subsystems require no isolation.
 						continue;
@@ -94,9 +94,9 @@ public class SubsystemResolverHook implements ResolverHook {
 		// noop
 	}
 	
-	private boolean isResourceConstituentOfPreferredSubsystem(Resource resource, AriesSubsystem preferer) {
-		Collection<AriesSubsystem> subsystems = this.subsystems.getSubsystemsReferencing(resource);
-		for (AriesSubsystem subsystem : subsystems)
+	private boolean isResourceConstituentOfPreferredSubsystem(Resource resource, BasicSubsystem preferer) {
+		Collection<BasicSubsystem> subsystems = this.subsystems.getSubsystemsReferencing(resource);
+		for (BasicSubsystem subsystem : subsystems)
 			if (preferer.getSubsystemManifest().getPreferredProviderHeader().contains(subsystem))
 				return true;
 		return false;

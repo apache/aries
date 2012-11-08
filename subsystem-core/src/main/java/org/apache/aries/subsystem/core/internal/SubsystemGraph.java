@@ -63,11 +63,11 @@ public class SubsystemGraph {
 	}
 	private final Map<SubsystemWrapper, Collection<SubsystemWrapper>> adjacencyList = new HashMap<SubsystemWrapper, Collection<SubsystemWrapper>>();
 	
-	public SubsystemGraph(AriesSubsystem root) {
+	public SubsystemGraph(BasicSubsystem root) {
 		adjacencyList.put(new SubsystemWrapper(root), new HashSet<SubsystemWrapper>());
 	}
 	
-	public synchronized void add(AriesSubsystem parent, AriesSubsystem child) {
+	public synchronized void add(BasicSubsystem parent, BasicSubsystem child) {
 		SubsystemWrapper parentWrap = new SubsystemWrapper(parent);
 		SubsystemWrapper childWrap = new SubsystemWrapper(child);
 		if (containsAncestor(childWrap, parentWrap))
@@ -85,7 +85,7 @@ public class SubsystemGraph {
 		subsystems.add(childWrap);
 	}
 	
-	public synchronized Collection<Subsystem> getChildren(AriesSubsystem parent) {
+	public synchronized Collection<Subsystem> getChildren(BasicSubsystem parent) {
 		Collection<SubsystemWrapper> children = adjacencyList.get(new SubsystemWrapper(parent));
 		if (children == null || children.isEmpty())
 			return Collections.emptySet();
@@ -95,7 +95,7 @@ public class SubsystemGraph {
  		return Collections.unmodifiableCollection(result);
 	}
 	
-	public synchronized Collection<Subsystem> getParents(AriesSubsystem child) {
+	public synchronized Collection<Subsystem> getParents(BasicSubsystem child) {
 		Collection<SubsystemWrapper> parents = getParents(new SubsystemWrapper(child));
 		Collection<Subsystem> result = new ArrayList<Subsystem>(parents.size());
 		for (SubsystemWrapper parent : parents) {
@@ -104,7 +104,7 @@ public class SubsystemGraph {
 		return Collections.unmodifiableCollection(result);
 	}
 	
-	public synchronized void remove(AriesSubsystem child) {
+	public synchronized void remove(BasicSubsystem child) {
 		SubsystemWrapper subsystemWrap = new SubsystemWrapper(child);
 		Collection<SubsystemWrapper> parents = getParents(subsystemWrap);
 		for (SubsystemWrapper parent : parents)
@@ -112,7 +112,7 @@ public class SubsystemGraph {
 		adjacencyList.remove(subsystemWrap);
 	}
 	
-	public synchronized void remove(AriesSubsystem parent, AriesSubsystem child) {
+	public synchronized void remove(BasicSubsystem parent, BasicSubsystem child) {
 		SubsystemWrapper parentWrap = new SubsystemWrapper(parent);
 		SubsystemWrapper childWrap = new SubsystemWrapper(child);
 		adjacencyList.get(parentWrap).remove(childWrap);

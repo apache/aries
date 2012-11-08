@@ -22,11 +22,11 @@ import org.osgi.service.subsystem.Subsystem;
 public class TargetRegion {
 	Collection<Subsystem> region = new HashSet<Subsystem>();
 
-	public TargetRegion(AriesSubsystem subsystem) {
+	public TargetRegion(BasicSubsystem subsystem) {
 		// Find the scoped subsystem that controls the region.
-		AriesSubsystem controllingScopedSubsystem = subsystem;
+		BasicSubsystem controllingScopedSubsystem = subsystem;
 		while (controllingScopedSubsystem.isFeature())
-			controllingScopedSubsystem = (AriesSubsystem)subsystem.getParents().iterator().next();
+			controllingScopedSubsystem = (BasicSubsystem)subsystem.getParents().iterator().next();
 		// The scoped subsystem controlling the region is part of the region.
 		region.add(controllingScopedSubsystem);
 		// All children of the scoped subsystem are part of the region. If the
@@ -54,24 +54,24 @@ public class TargetRegion {
 		return null;
 	}
 	
-	private void addChildrenToRegion(AriesSubsystem controllingScopedSubsystem) {
+	private void addChildrenToRegion(BasicSubsystem controllingScopedSubsystem) {
 		for (Subsystem child : controllingScopedSubsystem.getChildren()) {
 			region.add(child);
 			// If the child is a feature, all of its children that are features
 			// must be added as well.
-			if (((AriesSubsystem)child).isFeature())
-				addFeatureDescendentsToRegion((AriesSubsystem)child);
+			if (((BasicSubsystem)child).isFeature())
+				addFeatureDescendentsToRegion((BasicSubsystem)child);
 		}
 	}
 	
-	private void addFeatureDescendentsToRegion(AriesSubsystem parent) {
+	private void addFeatureDescendentsToRegion(BasicSubsystem parent) {
 		for (Subsystem child : parent.getChildren())
 			// If the descendant is not a feature, skip it.
-			if (((AriesSubsystem)child).isFeature()) {
+			if (((BasicSubsystem)child).isFeature()) {
 				region.add(child);
 				// All descendants that are features and part of an unbroken
 				// line of features must be added.
-				addFeatureDescendentsToRegion((AriesSubsystem)child);
+				addFeatureDescendentsToRegion((BasicSubsystem)child);
 			}
 	}
 }

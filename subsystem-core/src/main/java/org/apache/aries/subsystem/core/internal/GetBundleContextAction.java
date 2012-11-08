@@ -20,9 +20,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.subsystem.Subsystem.State;
 
 public class GetBundleContextAction implements PrivilegedAction<BundleContext> {
-	private final AriesSubsystem subsystem;
+	private final BasicSubsystem subsystem;
 	
-	public GetBundleContextAction(AriesSubsystem subsystem) {
+	public GetBundleContextAction(BasicSubsystem subsystem) {
 		this.subsystem = subsystem;
 	}
 	
@@ -31,7 +31,7 @@ public class GetBundleContextAction implements PrivilegedAction<BundleContext> {
 		if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(
 				subsystem.getState()))
 			return null;
-		AriesSubsystem subsystem = Utils.findScopedSubsystemInRegion(this.subsystem);
+		BasicSubsystem subsystem = Utils.findScopedSubsystemInRegion(this.subsystem);
 		return subsystem.getRegion().getBundle(
 				RegionContextBundleHelper.SYMBOLICNAME_PREFIX
 						+ subsystem.getSubsystemId(),
