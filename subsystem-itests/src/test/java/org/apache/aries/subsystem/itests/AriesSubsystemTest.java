@@ -36,7 +36,7 @@ public class AriesSubsystemTest extends SubsystemTest {
 	private static final String APPLICATION_A = "application.a.esa";
 	/*
 	 * Bundle-SymbolicName: bundle.a.jar
-	 * Import-Package: org.osgi.framework
+	 * Import-Package: org.osgi.framework,org.osgi.resource
 	 */
 	private static final String BUNDLE_A = "bundle.a.jar";
 	/*
@@ -58,7 +58,7 @@ public class AriesSubsystemTest extends SubsystemTest {
 	
 	private static void createBundleA() throws IOException {
 		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, "org.osgi.framework");
+		headers.put(Constants.IMPORT_PACKAGE, "org.osgi.framework,org.osgi.resource");
 		createBundle(BUNDLE_A, headers);
 	}
 	
@@ -71,6 +71,7 @@ public class AriesSubsystemTest extends SubsystemTest {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, COMPOSITE_A);
 		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
+		attributes.put(Constants.IMPORT_PACKAGE, "org.osgi.resource");
 		createManifest(COMPOSITE_A + ".mf", attributes);
 	}
 	
