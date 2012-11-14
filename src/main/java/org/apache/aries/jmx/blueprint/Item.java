@@ -27,20 +27,19 @@ import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.OpenDataException;
 import javax.management.openmbean.OpenType;
-import javax.management.openmbean.SimpleType;
 import javax.management.openmbean.TabularType;
 
 /**
  * The item class enables the definition of open types in the appropriate interfaces.
- * 
+ *
  * This class contains a number of methods that make it possible to create open types for {@link CompositeType},
  * {@link TabularType}, and {@link ArrayType}. The normal creation throws a checked exception, making it impossible to
  * use them in a static initializer. They constructors are also not very suitable for static construction.
- * 
- * 
+ *
+ *
  * An Item instance describes an item in a Composite Type. It groups the triplet of name, description, and Open Type.
  * These Item instances allows the definitions of an item to stay together.
- * 
+ *
  * @Immutable
  */
 public class Item {
@@ -62,7 +61,7 @@ public class Item {
 
     /**
      * Create a triple of name, description, and type. This triplet is used in the creation of a Composite Type.
-     * 
+     *
      * @param name
      *            The name of the item.
      * @param description
@@ -80,7 +79,7 @@ public class Item {
 
     /**
      * Create a Tabular Type.
-     * 
+     *
      * @param name
      *            The name of the Tabular Type.
      * @param description
@@ -103,7 +102,7 @@ public class Item {
 
     /**
      * Create a Composite Type
-     * 
+     *
      * @param name
      *            The name of the Tabular Type.
      * @param description
@@ -120,7 +119,7 @@ public class Item {
 
     /**
      * Extend a Composite Type by adding new items. Items can override items in the parent type.
-     * 
+     *
      * @param parent
      *            The parent type, can be <code>null</code>
      * @param name
@@ -166,32 +165,32 @@ public class Item {
 
     /**
      * Return a new Array Type.
-     * 
+     *
      * @param dim
      *            The dimension
      * @param elementType
      *            The element type
      * @return A new Array Type
      */
-    public static ArrayType/*<?>*/ arrayType(int dim, OpenType/*<?>*/ elementType) {
+    public static <T> ArrayType<T> arrayType(int dim, OpenType<T> elementType) {
         try {
-            return new ArrayType(dim, elementType);
+            return new ArrayType<T>(dim, elementType);
         } catch (OpenDataException e) {
             throw new RuntimeException(e);
         }
-    }
-    
-    
+     }
+
+
     /**
      * Return a new primaArray Type.
-     * 
+     *
      * @param elementType
      *            The element type
      * @return A new Array Type
      */
     /*
      * For the compatibility  with java 5, we have to cancel this method temporarily.
-     * 
+     *
      * public static ArrayType<?> primitiveArrayType(SimpleType<?> elementType) {
         try {
             return new ArrayType(elementType, true);
