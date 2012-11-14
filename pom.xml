@@ -50,9 +50,7 @@
         <module>application</module>
         <module>subsystem</module>
         <module>ejb</module>
-        <!-- temporarily disable JMX while replacing the old JMX implementation with the new one
         <module>jmx</module>
-        -->
         <module>jpa</module>
         <module>spi-fly</module>
         <module>samples</module>
