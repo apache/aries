@@ -27,15 +27,15 @@
     <artifactId>org.apache.aries.jmx</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Bundle</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <description>
        This bundle contains the standalone implementation of the along with the API.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-bundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-bundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-bundle</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx</url>
      </scm>
     <properties>
         <aries.osgi.activator>
@@ -43,30 +43,31 @@
         </aries.osgi.activator>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export>
-            org.osgi.jmx;uses:="javax.management.openmbean",
-            org.osgi.jmx.framework;uses:="org.osgi.jmx,javax.management.openmbean",
-            org.osgi.jmx.service.cm;uses:="javax.management.openmbean",
-            org.osgi.jmx.service.permissionadmin;uses:="org.osgi.jmx",
-            org.osgi.jmx.service.provisioning;uses:="javax.management.openmbean",
-            org.osgi.jmx.service.useradmin;uses:="org.osgi.jmx,javax.management.openmbean",
+            org.osgi.jmx,
+            org.osgi.jmx.framework,
+            org.osgi.jmx.framework.wiring,
+            org.osgi.jmx.service.cm,
+            org.osgi.jmx.service.permissionadmin,
+            org.osgi.jmx.service.provisioning,
+            org.osgi.jmx.service.useradmin,
             org.apache.aries.jmx.codec
         </aries.osgi.export>
         <aries.osgi.import>
             !org.apache.aries.jmx*,
             !org.osgi.service.framework,
             !org.eclipse*,
-            org.osgi.framework;version="[1.5.0,2.0)",
+            org.osgi.framework;version="[1.7.0,2.0)",
             org.osgi.service.cm;version="[1.3.0,2.0)";resolution:="optional",
             org.osgi.service.permissionadmin;version="[1.2.0,2.0)";resolution:="optional",
             org.osgi.service.provisioning;version="[1.2.0,2.0)";resolution:="optional",
             org.osgi.service.useradmin;version="[1.1.0,2.0)";resolution:="optional",
             org.osgi.util.tracker,
-            org.osgi.jmx;version="[1.0.0,2.0)",
-            org.osgi.jmx.framework;version="[1.5.0,1.6.0)",
-            org.osgi.jmx.service.cm;version="[1.3.0,1.4.0)",
-            org.osgi.jmx.service.permissionadmin;version="[1.2.0,1.3.0)",
-            org.osgi.jmx.service.provisioning;version="[1.2.0,1.3.0)",
-            org.osgi.jmx.service.useradmin;version="[1.1.0,1.2.0)",
+            org.osgi.jmx;version="[1.1.0,2.0)",
+            org.osgi.jmx.framework;version="[1.7.0,2.0)",
+            org.osgi.jmx.service.cm;version="[1.3.0,2.0)",
+            org.osgi.jmx.service.permissionadmin;version="[1.2.0,2.0)",
+            org.osgi.jmx.service.provisioning;version="[1.2.0,2.0)",
+            org.osgi.jmx.service.useradmin;version="[1.1.0,2.0)",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
@@ -84,12 +85,12 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.api</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.core</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
