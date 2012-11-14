@@ -1,6 +1,6 @@
 /*
  * Copyright (c) OSGi Alliance (2009). All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,18 +29,18 @@ import javax.management.openmbean.TabularType;
 /**
  * The item class enables the definition of open types in the appropriate
  * interfaces.
- * 
+ *
  * This class contains a number of methods that make it possible to create open
  * types for {@link CompositeType}, {@link TabularType}, and {@link ArrayType}.
  * The normal creation throws a checked exception, making it impossible to use
  * them in a static initializer. They constructors are also not very suitable
  * for static construction.
- * 
- * 
+ *
+ *
  * An Item instance describes an item in a Composite Type. It groups the triplet
  * of name, description, and Open Type. These Item instances allows the
  * definitions of an item to stay together.
- * 
+ *
  * @version $Rev$
  * @Immutable
  */
@@ -64,7 +64,7 @@ public class Item {
 	/**
 	 * Create a triple of name, description, and type. This triplet is used in
 	 * the creation of a Composite Type.
-	 * 
+	 *
 	 * @param name
 	 *            The name of the item.
 	 * @param description
@@ -82,12 +82,12 @@ public class Item {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 
 	/**
 	 * Create a Tabular Type.
-	 * 
+	 *
 	 * @param name
 	 *            The name of the Tabular Type.
 	 * @param description
@@ -111,7 +111,7 @@ public class Item {
 
 	/**
 	 * Create a Composite Type
-	 * 
+	 *
 	 * @param name
 	 *            The name of the Tabular Type.
 	 * @param description
@@ -129,25 +129,25 @@ public class Item {
 
 	/**
 	 * Return a new Array Type.
-	 * 
+	 *
 	 * @param dim
 	 *            The dimension
 	 * @param elementType
 	 *            The element type
 	 * @return A new Array Type
 	 */
-	public static ArrayType arrayType(int dim, OpenType elementType) {
-		try {
-			return new ArrayType(dim, elementType);
-		} catch (OpenDataException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	public static <T> ArrayType<T> arrayType(int dim, OpenType<T> elementType) {
+	    try {
+	        return new ArrayType<T>(dim, elementType);
+	    } catch (OpenDataException e) {
+	        throw new RuntimeException(e);
+	    }
+	 }
 
 	/**
 	 * Extend a Composite Type by adding new items. Items can override items in
 	 * the parent type.
-	 * 
+	 *
 	 * @param parent
 	 *            The parent type, can be <code>null</code>
 	 * @param name

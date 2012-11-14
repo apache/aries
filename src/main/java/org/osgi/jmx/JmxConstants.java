@@ -1,6 +1,6 @@
 /*
  * Copyright (c) OSGi Alliance (2009). All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,11 +27,11 @@ import javax.management.openmbean.TabularType;
 
 /**
  * Constants for OSGi JMX Specification.
- * 
+ *
  * Additionally, this class contains a number of utility types that are used in
  * different places in the specification. These are {@link #LONG_ARRAY_TYPE},
  * {@link #STRING_ARRAY_TYPE}, and {@link #PROPERTIES_TYPE}.
- * 
+ *
  * @version $Rev$
  * @Immutable
  */
@@ -47,14 +47,14 @@ public class JmxConstants {
 	/**
 	 * The MBean Open type for an array of strings
 	 */
-	public static final ArrayType		STRING_ARRAY_TYPE	= Item
+	public static final ArrayType<String>		STRING_ARRAY_TYPE	= Item
 																	.arrayType(
 																			1,
 																			SimpleType.STRING);
 	/**
 	 * The MBean Open type for an array of longs
 	 */
-	public static final ArrayType		LONG_ARRAY_TYPE		= Item
+	public static final ArrayType<Long>		LONG_ARRAY_TYPE		= Item
 																	.arrayType(
 																			1,
 																			SimpleType.LONG);
@@ -62,7 +62,7 @@ public class JmxConstants {
 	/**
 	 * For an encoded array we need to start with ARRAY_OF. This must be
 	 * followed by one of the names in {@link #SCALAR}.
-	 * 
+	 *
 	 */
 	public final static String			ARRAY_OF			= "Array of ";
 
@@ -72,6 +72,11 @@ public class JmxConstants {
 	 */
 	public final static String			VECTOR_OF			= "Vector of ";
 
+    /**
+     * Value for {@link #PROPERTY_TYPE} <code>Type</code> value in the case of
+     * {@link org.osgi.framework.Version}
+     */
+    public static final String          VERSION             = "Version";
 	/**
 	 * Value for {@link #PROPERTY_TYPE} <code>Type</code> value in the case of
 	 * {@link java.lang.String}
@@ -242,7 +247,7 @@ public class JmxConstants {
 
 	/**
 	 * The key PROPERTY_TYPE.
-	 * 
+	 *
 	 * ### can we call this value PropertyType and service type ServiceType?
 	 */
 	public static final String			TYPE				= "Type";
@@ -250,11 +255,11 @@ public class JmxConstants {
 	/**
 	 * The type of the property. The key is {@link #TYPE} and the type is
 	 * {@link SimpleType#STRING}. This string must follow the following syntax:
-	 * 
+	 *
 	 * TYPE ::= ( 'Array of ' | 'Vector of ' )? {@link #SCALAR}
-	 * 
+	 *
 	 * ### why can't we just use the class name?
-	 * 
+	 *
 	 * ### why do we have to distinguish between primitives and wrappers?
 	 */
 	public static final Item			TYPE_ITEM			= new Item(

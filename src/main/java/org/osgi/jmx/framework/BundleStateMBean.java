@@ -1,6 +1,6 @@
 /*
  * Copyright (c) OSGi Alliance (2009, 2010). All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@ package org.osgi.jmx.framework;
 
 import java.io.IOException;
 
+import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.SimpleType;
 import javax.management.openmbean.TabularData;
@@ -30,8 +31,8 @@ import org.osgi.jmx.JmxConstants;
  * This MBean represents the Bundle state of the framework. This MBean also
  * emits events that clients can use to get notified of the changes in the
  * bundle state of the framework.
- * 
- * @version $Revision$
+ *
+ * @version $Id: f5d5197fdabb4e0c420bc47812d38fd14edb61d0 $
  * @ThreadSafe
  */
 public interface BundleStateMBean {
@@ -39,7 +40,7 @@ public interface BundleStateMBean {
 	 * The Object Name for a Bundle State MBean.
 	 */
 	String OBJECTNAME = JmxConstants.OSGI_CORE
-			+ ":type=bundleState,version=1.5";
+			+ ":type=bundleState,version=1.7";
 
 	/**
 	 * The key KEY, used in {@link #KEY_ITEM}.
@@ -197,10 +198,24 @@ public interface BundleStateMBean {
 	 */
 	Item LAST_MODIFIED_ITEM = new Item(LAST_MODIFIED,
 			"The last modification time of the bundle", SimpleType.LONG);
+
+	/**
+	 * The key ACTIVATION_POLICY_USED, used in {@link #ACTIVATION_POLICY_USED_ITEM}.
+	 */
+	String ACTIVATION_POLICY_USED = "ActivationPolicyUsed";
+
+	/**
+	 * The item containing the indication whether the bundle activation policy
+	 * must be used in {@link #BUNDLE_TYPE}. The key is {@link #ACTIVATION_POLICY_USED} and
+	 * the type is {@link SimpleType#BOOLEAN}.
+	 */
+	Item ACTIVATION_POLICY_USED_ITEM = new Item(ACTIVATION_POLICY_USED,
+	        "Whether the bundle activation policy must be used", SimpleType.BOOLEAN);
+
 	/**
 	 * The key PERSISTENTLY_STARTED, used in {@link #PERSISTENTLY_STARTED_ITEM}.
 	 */
-	String			PERSISTENTLY_STARTED		= "PersistentlyStarted";
+	String PERSISTENTLY_STARTED = "PersistentlyStarted";
 
 	/**
 	 * The item containing the indication of persistently started in
@@ -369,7 +384,7 @@ public interface BundleStateMBean {
 			EVENT,
 			"The type of the event: {INSTALLED=1, STARTED=2, STOPPED=4, UPDATED=8, UNINSTALLED=16}",
 			SimpleType.INTEGER);
-	
+
 	/**
 	 * The Composite Type that represents a bundle event.  This composite consists of:
 	 * <ul>
@@ -395,6 +410,7 @@ public interface BundleStateMBean {
 	 * <li>{@link #IMPORTED_PACKAGES}</li>
 	 * <li>{@link #LAST_MODIFIED}</li>
 	 * <li>{@link #LOCATION}</li>
+	 * <li>{@link #ACTIVATION_POLICY_USED}</li>
 	 * <li>{@link #PERSISTENTLY_STARTED}</li>
 	 * <li>{@link #REGISTERED_SERVICES}</li>
 	 * <li>{@link #REMOVAL_PENDING}</li>
@@ -413,7 +429,8 @@ public interface BundleStateMBean {
 			"This type encapsulates OSGi bundles", EXPORTED_PACKAGES_ITEM,
 			FRAGMENT_ITEM, FRAGMENTS_ITEM, HEADERS_ITEM, HOSTS_ITEM,
 			IDENTIFIER_ITEM, IMPORTED_PACKAGES_ITEM, LAST_MODIFIED_ITEM,
-			LOCATION_ITEM, PERSISTENTLY_STARTED_ITEM, REGISTERED_SERVICES_ITEM,
+			LOCATION_ITEM, ACTIVATION_POLICY_USED_ITEM,
+			PERSISTENTLY_STARTED_ITEM, REGISTERED_SERVICES_ITEM,
 			REMOVAL_PENDING_ITEM, REQUIRED_ITEM, REQUIRED_BUNDLES_ITEM,
 			REQUIRING_BUNDLES_ITEM, START_LEVEL_ITEM, STATE_ITEM,
 			SERVICES_IN_USE_ITEM, SYMBOLIC_NAME_ITEM, VERSION_ITEM);
@@ -426,9 +443,18 @@ public interface BundleStateMBean {
 																BUNDLE_TYPE,
 																IDENTIFIER);
 
+	/** New!!
+	 * @param id The Bundle ID
+	 * @return The Bundle Data
+	 * @throws IOException
+	 */
+	CompositeData getBundle(long id) throws IOException;
+
+	long[] getBundleIds() throws IOException;
+
 	/**
 	 * Answer the list of identifiers of the bundles this bundle depends upon
-	 * 
+	 *
 	 * @param bundleIdentifier
 	 *            the bundle identifier
 	 * @return the list of bundle identifiers
@@ -441,18 +467,20 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the bundle state of the system in tabular form.
-	 * 
+	 *
 	 * Each row of the returned table represents a single bundle. The Tabular
 	 * Data consists of Composite Data that is type by {@link #BUNDLES_TYPE}.
-	 * 
+	 *
 	 * @return the tabular representation of the bundle state
 	 * @throws IOException
 	 */
 	TabularData listBundles() throws IOException;
 
+	TabularData listBundles(String ... items) throws IOException;
+
 	/**
 	 * Answer the list of exported packages for this bundle.
-	 * 
+	 *
 	 * @param bundleId
 	 * @return the array of package names, combined with their version in the
 	 *         format &lt;packageName;version&gt;
@@ -466,7 +494,7 @@ public interface BundleStateMBean {
 	/**
 	 * Answer the list of the bundle ids of the fragments associated with this
 	 * bundle
-	 * 
+	 *
 	 * @param bundleId
 	 * @return the array of bundle identifiers
 	 * @throws IOException
@@ -479,7 +507,7 @@ public interface BundleStateMBean {
 	/**
 	 * Answer the headers for the bundle uniquely identified by the bundle id.
 	 * The Tabular Data is typed by the {@link #HEADERS_TYPE}.
-	 * 
+	 *
 	 * @param bundleId
 	 *            the unique identifier of the bundle
 	 * @return the table of associated header key and values
@@ -489,10 +517,13 @@ public interface BundleStateMBean {
 	 *             if the bundle indicated does not exist
 	 */
 	TabularData getHeaders(long bundleId) throws IOException;
+    TabularData getHeaders(long bundleId, String locale) throws IOException;
+    String getHeader(long bundleId, String key) throws IOException;
+    String getHeader(long bundleId, String key, String locale) throws IOException;
 
 	/**
 	 * Answer the list of bundle ids of the bundles which host a fragment
-	 * 
+	 *
 	 * @param fragment
 	 *            the bundle id of the fragment
 	 * @return the array of bundle identifiers
@@ -505,7 +536,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the array of the packages imported by this bundle
-	 * 
+	 *
 	 * @param bundleId
 	 *            the bundle identifier
 	 * @return the array of package names, combined with their version in the
@@ -519,7 +550,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the last modified time of a bundle
-	 * 
+	 *
 	 * @param bundleId
 	 *            the unique identifier of a bundle
 	 * @return the last modified time
@@ -533,7 +564,7 @@ public interface BundleStateMBean {
 	/**
 	 * Answer the list of service identifiers representing the services this
 	 * bundle exports
-	 * 
+	 *
 	 * @param bundleId
 	 *            the bundle identifier
 	 * @return the list of service identifiers
@@ -546,7 +577,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the list of identifiers of the bundles which require this bundle
-	 * 
+	 *
 	 * @param bundleIdentifier
 	 *            the bundle identifier
 	 * @return the list of bundle identifiers
@@ -560,7 +591,7 @@ public interface BundleStateMBean {
 	/**
 	 * Answer the list of service identifiers which refer to the the services
 	 * this bundle is using
-	 * 
+	 *
 	 * @param bundleIdentifier
 	 *            the bundle identifier
 	 * @return the list of service identifiers
@@ -573,7 +604,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the start level of the bundle
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return the start level
@@ -586,7 +617,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the symbolic name of the state of the bundle
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return the string name of the bundle state
@@ -599,7 +630,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the symbolic name of the bundle
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return the symbolic name
@@ -611,9 +642,24 @@ public interface BundleStateMBean {
 	String getSymbolicName(long bundleId) throws IOException;
 
 	/**
+	 * Answer whether the specified bundle's autostart setting indicates that
+	 * the activation policy declared in the bundle's manifest must be used.
+	 *
+	 * @param bundleId
+     *            the identifier of the bundle
+	 * @return true if the bundle's autostart setting indicates the activation policy
+	 * declared in the manifest must be used. false if the bundle must be eagerly activated.
+     * @throws IOException
+     *             if the operation fails
+     * @throws IllegalArgumentException
+     *             if the bundle indicated does not exist
+	 */
+	boolean isActivationPolicyUsed(long bundleId) throws IOException;
+
+	/**
 	 * Answer if the bundle is persistently started when its start level is
 	 * reached
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return true if the bundle is persistently started
@@ -626,7 +672,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer whether the bundle is a fragment or not
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return true if the bundle is a fragment
@@ -639,7 +685,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer true if the bundle is pending removal
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return true if the bundle is pending removal
@@ -652,7 +698,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer true if the bundle is required by another bundle
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return true if the bundle is required by another bundle
@@ -665,7 +711,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the location of the bundle.
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return The location string of this bundle
@@ -678,7 +724,7 @@ public interface BundleStateMBean {
 
 	/**
 	 * Answer the location of the bundle.
-	 * 
+	 *
 	 * @param bundleId
 	 *            the identifier of the bundle
 	 * @return The location string of this bundle
