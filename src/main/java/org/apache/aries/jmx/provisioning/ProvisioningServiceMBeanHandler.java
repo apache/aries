@@ -29,16 +29,16 @@ import org.osgi.service.log.LogService;
 /**
  * <p>
  * Implementation of <code>MBeanHandler</code> which manages the <code>ProvisioningServiceMBean</code> implementation
- * 
+ *
  * @see MBeanHandler
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class ProvisioningServiceMBeanHandler extends AbstractCompendiumHandler {
 
     /**
      * Constructs new ProvisioningServiceMBeanHandler instance
-     * 
+     *
      * @param agentContext
      *            JMXAgentContext instance
      */
@@ -65,9 +65,9 @@ public class ProvisioningServiceMBeanHandler extends AbstractCompendiumHandler {
     }
 
     /**
-     * @see org.apache.aries.jmx.MBeanHandler#getName()
+     * @see org.apache.aries.jmx.AbstractCompendiumHandler#getBaseName()
      */
-    public String getName() {
+    protected String getBaseName() {
         return ProvisioningServiceMBean.OBJECTNAME;
     }
 

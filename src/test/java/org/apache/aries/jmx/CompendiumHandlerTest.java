@@ -16,69 +16,80 @@
  */
 package org.apache.aries.jmx;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
 import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.junit.After;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
-
-import static org.mockito.Mockito.*;
 
 public class CompendiumHandlerTest {
 
     protected AbstractCompendiumHandler target;
-    
+
     @After
     public void tearDown(){
         target = null;
     }
-    
-    
+
+
     @Test
     public void testAddingServiceWillInitiateMBeanRegistration() throws Exception {
-        
+        Bundle mockSystemBundle = mock(Bundle.class);
+        when(mockSystemBundle.getSymbolicName()).thenReturn("the.sytem.bundle");
+
         Object service = new Object();
-        
+
         ServiceReference reference = mock(ServiceReference.class);
         BundleContext bundleContext = mock(BundleContext.class);
+        when(bundleContext.getProperty(Constants.FRAMEWORK_UUID)).thenReturn("some-uuid");
         when(bundleContext.getService(reference)).thenReturn(service);
-        
+        when(bundleContext.getBundle(0)).thenReturn(mockSystemBundle);
+
         Logger agentLogger = mock(Logger.class);
         JMXAgentContext agentContext = mock(JMXAgentContext.class);
         when(agentContext.getBundleContext()).thenReturn(bundleContext);
         when(agentContext.getLogger()).thenReturn(agentLogger);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         when(agentContext.getRegistrationExecutor()).thenReturn(executor);
-        
+
         AbstractCompendiumHandler concreteHandler = new CompendiumHandler(agentContext, "org.osgi.service.Xxx");
         target = spy(concreteHandler);
-        
+
         target.addingService(reference);
 
         executor.shutdown();
         executor.awaitTermination(2, TimeUnit.SECONDS);
-        
+
         //service only got once
         verify(bundleContext).getService(reference);
         //template method is invoked
         verify(target).constructInjectMBean(service);
         //registration is invoked on context
         verify(agentContext).registerMBean(target);
-        
+
     }
 
     @Test
     public void testRemovedServiceWillUnregisterMBean() throws Exception{
-        
+
         Object service = new Object();
         ServiceReference reference = mock(ServiceReference.class);
-        
+
         BundleContext bundleContext = mock(BundleContext.class);
         Logger agentLogger = mock(Logger.class);
         JMXAgentContext agentContext = mock(JMXAgentContext.class);
@@ -86,27 +97,27 @@ public class CompendiumHandlerTest {
         when(agentContext.getLogger()).thenReturn(agentLogger);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         when(agentContext.getRegistrationExecutor()).thenReturn(executor);
-        
+
         AbstractCompendiumHandler concreteHandler = new CompendiumHandler(agentContext, "org.osgi.service.Xxx");
         target = spy(concreteHandler);
-        
+
         String name = "osgi.compendium:service=xxx,version=1.0";
         doReturn(name).when(target).getName();
-        
+
         target.removedService(reference, service);
 
         executor.shutdown();
         executor.awaitTermination(2, TimeUnit.SECONDS);
-        
+
         //service unget
         verify(bundleContext).ungetService(reference);
         //unregister is invoked on context
         verify(agentContext).unregisterMBean(target);
-        
+
     }
 
-   
-    
+
+
     /*
      * Concrete implementation used for test
      */
@@ -119,14 +130,14 @@ public class CompendiumHandlerTest {
         protected CompendiumHandler(JMXAgentContext agentContext, String clazz) {
             super(agentContext, clazz);
         }
-        
+
         protected StandardMBean constructInjectMBean(Object targetService) {
             return null;
         }
 
-        public String getName() {
+        public String getBaseName() {
             return null;
         }
-        
+
     }
 }

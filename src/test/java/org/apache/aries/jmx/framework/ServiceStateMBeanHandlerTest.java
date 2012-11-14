@@ -16,32 +16,41 @@
  */
 package org.apache.aries.jmx.framework;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.apache.aries.jmx.Logger;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 /**
- * 
+ *
  *
  * @version $Rev$ $Date$
  */
 public class ServiceStateMBeanHandlerTest {
 
-   
+
     @Test
     public void testOpen() throws Exception {
-        
+
         BundleContext context = mock(BundleContext.class);
+        when(context.getProperty(Constants.FRAMEWORK_UUID)).thenReturn("some-uuid");
+
         Logger logger = mock(Logger.class);
-        
+
+        Bundle mockSystemBundle = mock(Bundle.class);
+        when(mockSystemBundle.getSymbolicName()).thenReturn("the.sytem.bundle");
+        when(context.getBundle(0)).thenReturn(mockSystemBundle);
+
         ServiceStateMBeanHandler handler = new ServiceStateMBeanHandler(context, logger);
         handler.open();
-        
+
         assertNotNull(handler.getMbean());
-        
+
     }
 
 }

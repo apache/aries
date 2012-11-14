@@ -21,10 +21,9 @@ import java.io.InputStream;
 
 import javax.management.openmbean.CompositeData;
 
-import org.junit.Assert;
-
 import org.apache.aries.jmx.codec.BatchActionResult;
 import org.apache.aries.jmx.codec.BatchInstallResult;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -39,8 +38,8 @@ import org.osgi.service.startlevel.StartLevel;
 
 /**
  * {@link FrameworkMBean} test case.
- * 
- * 
+ *
+ *
  * @version $Rev$ $Date$
  */
 public class FrameworkTest {
@@ -140,7 +139,7 @@ public class FrameworkTest {
         Assert.assertNotNull(batch2.getError());
         Assert.assertEquals("file:test.jar", batch2.getBundleInError());
         Assert.assertNotNull(batch2.getRemainingLocationItems());
-        Assert.assertEquals(0, batch2.getRemainingLocationItems().length); 
+        Assert.assertEquals(0, batch2.getRemainingLocationItems().length);
     }
 
     @Test
@@ -171,7 +170,7 @@ public class FrameworkTest {
         Assert.assertNotNull(batch2.getError());
         Assert.assertEquals("file:test.jar", batch2.getBundleInError());
         Assert.assertNotNull(batch2.getRemainingLocationItems());
-        Assert.assertEquals(0, batch2.getRemainingLocationItems().length);     
+        Assert.assertEquals(0, batch2.getRemainingLocationItems().length);
     }
 
     @Test
@@ -215,6 +214,7 @@ public class FrameworkTest {
     public void testResolveBundles() throws IOException {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(1)).thenReturn(bundle);
+//        Mockito.when(context.getBundles()).thenReturn(new Bundle [] { bundle });
 
         mbean.resolveBundles(new long[] { 1 });
         Mockito.verify(admin).resolveBundles(new Bundle[] { bundle });
@@ -300,7 +300,7 @@ public class FrameworkTest {
         } catch (IOException ioe) {
             // expected
         }
-        
+
         Mockito.when(context.getBundle(6)).thenReturn(null);
         try {
             mbean.startBundle(6);
@@ -338,7 +338,7 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
         mbean.stopBundle(5);
         Mockito.verify(bundle).stop();
-        
+
         Mockito.when(context.getBundle(5)).thenReturn(null);
         try {
             mbean.stopBundle(5);
@@ -346,7 +346,7 @@ public class FrameworkTest {
         } catch (IOException e) {
             //expected
         }
-       
+
     }
 
     @Test

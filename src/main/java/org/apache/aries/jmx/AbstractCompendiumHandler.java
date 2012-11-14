@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutorService;
 import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.agent.JMXAgentContext;
+import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
@@ -160,4 +161,16 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
      */
     protected abstract StandardMBean constructInjectMBean(Object targetService);
 
+    /**
+     * The base name of the MBean. Will be expanded with the framework name and the UUID.
+     * @return
+     */
+    protected abstract String getBaseName();
+
+    /**
+     * @see org.apache.aries.jmx.MBeanHandler#getName()
+     */
+    public String getName() {
+        return ObjectNameUtils.createFullObjectName(context, getBaseName());
+    }
 }

@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.jmx.framework;
+package org.apache.aries.jmx.framework.wiring;
 
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
@@ -22,74 +22,56 @@ import javax.management.StandardMBean;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.util.ObjectNameUtils;
+import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.jmx.framework.PackageStateMBean;
+import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
 import org.osgi.service.log.LogService;
-import org.osgi.service.packageadmin.PackageAdmin;
 
-/**
- * <p>
- * <tt>PackageStateMBeanHandler</tt> represents MBeanHandler which
- * holding information about {@link PackageStateMBean}.</p>
- *
- * @see MBeanHandler
- *
- * @version $Rev$ $Date$
- */
-public class PackageStateMBeanHandler implements MBeanHandler {
+public class BundleWiringStateMBeanHandler implements MBeanHandler {
+    private final String name;
+    private final BundleContext bundleContext;
+    private final Logger logger;
 
-    private String name;
     private StandardMBean mbean;
-    private BundleContext context;
-    private Logger logger;
+    private BundleWiringState revisionsStateMBean;
 
-    /**
-     * Constructs new PackageStateMBeanHandler.
-S     *
-     * @param context bundle context of JMX bundle.
-     * @param logger @see {@link Logger}.
-     */
-    public PackageStateMBeanHandler(BundleContext context, Logger logger) {
-        this.context = context;
-        this.name = ObjectNameUtils.createFullObjectName(context, PackageStateMBean.OBJECTNAME);
+    public BundleWiringStateMBeanHandler(BundleContext bundleContext, Logger logger) {
+        this.bundleContext = bundleContext;
         this.logger = logger;
+        this.name = ObjectNameUtils.createFullObjectName(bundleContext, BundleWiringStateMBean.OBJECTNAME);
     }
 
-    /**
+    /* (non-Javadoc)
+     * @see org.apache.aries.jmx.MBeanHandler#open()
+     */
+    public void open() {
+        revisionsStateMBean = new BundleWiringState(bundleContext, logger);
+        try {
+            mbean = new RegistrableStandardEmitterMBean(revisionsStateMBean, BundleWiringStateMBean.class);
+        } catch (NotCompliantMBeanException e) {
+            logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + BundleWiringStateMBean.class.getName(), e);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.aries.jmx.MBeanHandler#getMbean()
      */
     public StandardMBean getMbean() {
         return mbean;
     }
 
-    /**
-     * @see org.apache.aries.jmx.MBeanHandler#open()
-     */
-    public void open() {
-        ServiceReference adminRef = context.getServiceReference(PackageAdmin.class.getCanonicalName());
-        PackageAdmin packageAdmin = (PackageAdmin) context.getService(adminRef);
-        PackageStateMBean packageState = new PackageState(context, packageAdmin);
-        try {
-            mbean = new StandardMBean(packageState, PackageStateMBean.class);
-        } catch (NotCompliantMBeanException e) {
-            logger.log(LogService.LOG_ERROR, "Not compliant MBean", e);
-        }
-    }
 
-    /**
+    /* (non-Javadoc)
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
-        //not used
+        // not used
     }
 
-    /**
+    /* (non-Javadoc)
      * @see org.apache.aries.jmx.MBeanHandler#getName()
      */
     public String getName() {
         return name;
     }
-
-
 }

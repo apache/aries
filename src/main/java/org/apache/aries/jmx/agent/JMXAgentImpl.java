@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -38,6 +39,7 @@ import org.apache.aries.jmx.framework.BundleStateMBeanHandler;
 import org.apache.aries.jmx.framework.FrameworkMBeanHandler;
 import org.apache.aries.jmx.framework.PackageStateMBeanHandler;
 import org.apache.aries.jmx.framework.ServiceStateMBeanHandler;
+import org.apache.aries.jmx.framework.wiring.BundleWiringStateMBeanHandler;
 import org.apache.aries.jmx.permissionadmin.PermissionAdminMBeanHandler;
 import org.apache.aries.jmx.provisioning.ProvisioningServiceMBeanHandler;
 import org.apache.aries.jmx.useradmin.UserAdminMBeanHandler;
@@ -49,9 +51,9 @@ import org.osgi.util.tracker.ServiceTracker;
  * <p>
  * Represent agent for MBeanServers registered in ServiceRegistry. Providing registration and unregistration methods.
  * </p>
- * 
+ *
  * @see JMXAgent
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class JMXAgentImpl implements JMXAgent {
@@ -71,7 +73,7 @@ public class JMXAgentImpl implements JMXAgent {
 
     /**
      * Constructs new JMXAgent.
-     * 
+     *
      * @param logger @see org.apache.aries.jmx.Logger
      */
     public JMXAgentImpl(Logger logger) {
@@ -92,6 +94,9 @@ public class JMXAgentImpl implements JMXAgent {
         MBeanHandler bundleStateHandler = new BundleStateMBeanHandler(bc, logger);
         mbeansHandlers.put(bundleStateHandler, Boolean.FALSE);
         bundleStateHandler.open();
+        MBeanHandler revisionsStateHandler = new BundleWiringStateMBeanHandler(bc, logger);
+        mbeansHandlers.put(revisionsStateHandler, Boolean.FALSE);
+        revisionsStateHandler.open();
         MBeanHandler serviceStateHandler = new ServiceStateMBeanHandler(bc, logger);
         mbeansHandlers.put(serviceStateHandler, Boolean.FALSE);
         serviceStateHandler.open();
@@ -142,7 +147,6 @@ public class JMXAgentImpl implements JMXAgent {
                 }
             }
         }
-
     }
 
     /**
@@ -193,6 +197,7 @@ public class JMXAgentImpl implements JMXAgent {
                 logger.log(LogService.LOG_INFO, "Registering " + mbean.getMBeanInterface().getName()
                         + " to MBeanServer " + server + " with name " + name);
                 ((MBeanServer) server).registerMBean(mbean, new ObjectName(name));
+
                 mbeansHandlers.put(mBeanHandler, Boolean.TRUE);
             } catch (InstanceAlreadyExistsException e) {
                 logger.log(LogService.LOG_ERROR, "MBean is already registered", e);
@@ -292,7 +297,7 @@ public class JMXAgentImpl implements JMXAgent {
 
     /**
      * Gets all MBeanServers from MBeanServiceTracker.
-     * 
+     *
      * @return array of MBean servers.
      */
     private Object[] getMBeanServers() {

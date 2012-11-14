@@ -35,6 +35,7 @@ import static org.osgi.jmx.JmxConstants.VECTOR_OF;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -50,7 +51,7 @@ import org.osgi.jmx.JmxConstants;
  * <tt>PropertyData</tt> represents Property Type @see {@link JmxConstants#PROPERTY_TYPE}. It is a codec for the
  * <code>CompositeData</code> representing a Property with an associated Type and Value.
  * </p>
- * 
+ *
  * @version $Rev$ $Date$
  */
 public class PropertyData<T> {
@@ -59,27 +60,27 @@ public class PropertyData<T> {
      * @see JmxConstants#KEY_ITEM
      */
     private String key;
-    
+
     /**
      * @see JmxConstants#SCALAR
      */
     private T value;
-    
+
     /**
      * @see JmxConstants#VALUE_ITEM
      */
     private String encodedValue;
-    
+
     /**
      * @see JmxConstants#TYPE_ITEM
      */
     private String encodedType;
-    
+
     private PropertyData() {
         super();
     }
-    
-    
+
+
     @SuppressWarnings("unchecked")
     private PropertyData(String key, T value, String preservedBaseType) throws IllegalArgumentException {
         if (key == null) {
@@ -106,16 +107,16 @@ public class PropertyData<T> {
             }
             this.encodedValue = builder.toString();
         } else if (type.equals(Vector.class)) {
-            Vector vector = (Vector) value;
+            Vector<?> vector = (Vector<?>) value;
             Class<? extends Object> componentType = Object.class;
             if (vector.size() > 0) {
                 componentType = vector.firstElement().getClass();
             }
             this.encodedType = VECTOR_OF + componentType.getSimpleName();
             StringBuilder builder = new StringBuilder();
-            Vector valueVector = (Vector) value;
+            Vector<?> valueVector = (Vector<?>) value;
             boolean useDelimiter = false;
-            for (Object val: valueVector) {
+            for (Object val : valueVector) {
                 if (useDelimiter) {
                     builder.append(",");
                 } else {
@@ -124,12 +125,31 @@ public class PropertyData<T> {
                 builder.append(val);
             }
             this.encodedValue = builder.toString();
+        } else if (List.class.isAssignableFrom(type)) {
+            // Lists are encoded as Arrays...
+            List<?> list = (List<?>) value;
+            Class<?> componentType = Object.class;
+            if (list.size() > 0)
+                componentType = list.get(0).getClass();
+
+            this.encodedType = ARRAY_OF + componentType.getSimpleName();
+            StringBuilder builder = new StringBuilder();
+            boolean useDelimiter = false;
+            for (Object o : list) {
+                if (useDelimiter) {
+                    builder.append(",");
+                } else {
+                    useDelimiter = true;
+                }
+                builder.append(o);
+            }
+            this.encodedValue = builder.toString();
         } else {
             this.encodedType = (preservedBaseType == null) ? type.getSimpleName() : preservedBaseType;
             this.encodedValue = value.toString();
         }
     }
-    
+
     /**
      * Static factory method for <code>PropertyData</code> instance parameterized by value's type
      * @param <T>
@@ -141,10 +161,10 @@ public class PropertyData<T> {
     public static <T> PropertyData<T> newInstance(String key, T value) throws IllegalArgumentException {
         return new PropertyData<T>(key, value, null);
     }
-    
+
     /**
      * Static factory method for <code>PropertyData</code> instance which preserves encoded type
-     * information for primitive int type 
+     * information for primitive int type
      * @param key
      * @param value
      * @return
@@ -153,10 +173,10 @@ public class PropertyData<T> {
     public static PropertyData<Integer> newInstance(String key, int value) throws IllegalArgumentException {
         return new PropertyData<Integer>(key, value, P_INT);
     }
-    
+
     /**
      * Static factory method for <code>PropertyData</code> instance which preserves encoded type
-     * information for primitive long type 
+     * information for primitive long type
      * @param key
      * @param value
      * @return
@@ -165,10 +185,10 @@ public class PropertyData<T> {
     public static PropertyData<Long> newInstance(String key, long value) throws IllegalArgumentException {
         return new PropertyData<Long>(key, value, P_LONG);
     }
-  
+
     /**
      * Static factory method for <code>PropertyData</code> instance which preserves encoded type
-     * information for primitive float type 
+     * information for primitive float type
      * @param key
      * @param value
      * @return
@@ -177,10 +197,10 @@ public class PropertyData<T> {
     public static PropertyData<Float> newInstance(String key, float value) throws IllegalArgumentException {
         return new PropertyData<Float>(key, value, P_FLOAT);
     }
-    
+
     /**
      * Static factory method for <code>PropertyData</code> instance which preserves encoded type
-     * information for primitive double type 
+     * information for primitive double type
      * @param key
      * @param value
      * @return
@@ -189,10 +209,10 @@ public class PropertyData<T> {
     public static PropertyData<Double> newInstance(String key, double value) throws IllegalArgumentException {
         return new PropertyData<Double>(key, value, P_DOUBLE);
     }
-    
+
     /**
      * Static factory method for <code>PropertyData</code> instance which preserves encoded type
-     * information for primitive byte type 
+     * information for primitive byte type
      * @param key
      * @param value
      * @return
@@ -201,10 +221,10 @@ public class PropertyData<T> {
     public static PropertyData<Byte> newInstance(String key, byte value) throws IllegalArgumentException {
         return new PropertyData<Byte>(key, value, P_BYTE);
     }
-    
+
     /**
      * Static factory method for <code>PropertyData</code> instance which preserves encoded type
-     * information for primitive char type 
+     * information for primitive char type
      * @param key
      * @param value
      * @return
@@ -213,10 +233,10 @@ public class PropertyData<T> {
     public static PropertyData<Character> newInstance(String key, char value) throws IllegalArgumentException {
         return new PropertyData<Character>(key, value, P_CHAR);
     }
-    
+
     /**
      * Static factory method for <code>PropertyData</code> instance which preserves encoded type
-     * information for primitive boolean type 
+     * information for primitive boolean type
      * @param key
      * @param value
      * @return
@@ -225,7 +245,7 @@ public class PropertyData<T> {
     public static PropertyData<Boolean> newInstance(String key, boolean value) throws IllegalArgumentException {
         return new PropertyData<Boolean>(key, value, P_BOOLEAN);
     }
-    
+
 
     /**
      * Returns CompositeData representing a Property typed by {@link JmxConstants#PROPERTY_TYPE}.
@@ -244,7 +264,7 @@ public class PropertyData<T> {
         }
         return result;
     }
-    
+
     /**
      * Constructs a <code>PropertyData</code> object from the given <code>CompositeData</code>
      * @param compositeData
@@ -307,8 +327,8 @@ public class PropertyData<T> {
         }
         return propertyData;
     }
- 
-    
+
+
     public String getKey() {
         return key;
     }
@@ -320,7 +340,7 @@ public class PropertyData<T> {
     public String getEncodedType() {
         return encodedType;
     }
-    
+
     public String getEncodedValue() {
         return encodedValue;
     }
@@ -328,5 +348,5 @@ public class PropertyData<T> {
     public boolean isEncodingPrimitive() {
         return primitiveTypes.containsKey(encodedType);
     }
-    
+
 }
