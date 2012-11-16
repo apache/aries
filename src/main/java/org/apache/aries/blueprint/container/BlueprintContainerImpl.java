@@ -475,7 +475,6 @@ public class BlueprintContainerImpl
     }
 
     private void processProcessors() throws Exception {
-        boolean changed = false;
         // Instanciate ComponentDefinitionRegistryProcessor and BeanProcessor
         for (BeanMetadata bean : getMetadata(BeanMetadata.class)) {
             if (bean instanceof ExtendedBeanMetadata && !((ExtendedBeanMetadata) bean).isProcessor()) {
@@ -496,44 +495,42 @@ public class BlueprintContainerImpl
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
                 Object obj = repository.create(bean.getId(), ProxyUtils.asList(ComponentDefinitionRegistryProcessor.class));
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
-                changed = true;
             } else if (Processor.class.isAssignableFrom(clazz)) {
                 Object obj = repository.create(bean.getId(), ProxyUtils.asList(Processor.class));
                 this.processors.add((Processor) obj);
-                changed = true;
-            } else {
+            } else { 
                 continue;
             }
-        }
-        if (changed) {
-            // Update repository with recipes processed by the processors
             untrackServiceReferences();
-            Repository tmpRepo = new RecipeBuilder(this, tempRecipeIdSpace).createRepository();
-            
-            LOGGER.debug("Updating blueprint repository");
-            
-            for (String name : repository.getNames()) {
-                if (repository.getInstance(name) == null) {
-                    LOGGER.debug("Removing uninstantiated recipe {}", new Object[] { name });
-                    repository.removeRecipe(name);
-                } else {
-                    LOGGER.debug("Recipe {} is already instantiated", new Object[] { name });
-                }
-            }
-            
-            for (String name : tmpRepo.getNames()) {
-                if (repository.getInstance(name) == null) {
-                    LOGGER.debug("Adding new recipe {}", new Object[] { name });
-                    Recipe r = tmpRepo.getRecipe(name);
-                    if (r != null) {
-                        repository.putRecipe(name, r);
-                    }
-                } else {
-                    LOGGER.debug("Recipe {} is already instantiated and cannot be updated", new Object[] { name });
-                }
-            }
+            updateUninstantiatedRecipes();
             getSatisfiableDependenciesMap(true);
-            trackServiceReferences();
+            trackServiceReferences();        
+        }
+    }
+    private void updateUninstantiatedRecipes() {
+        Repository tmpRepo = new RecipeBuilder(this, tempRecipeIdSpace).createRepository();
+        
+        LOGGER.debug("Updating blueprint repository");
+        
+        for (String name : repository.getNames()) {
+            if (repository.getInstance(name) == null) {
+                LOGGER.debug("Removing uninstantiated recipe {}", new Object[] { name });
+                repository.removeRecipe(name);
+            } else {
+                LOGGER.debug("Recipe {} is already instantiated", new Object[] { name });
+            }
+        }
+        
+        for (String name : tmpRepo.getNames()) {
+            if (repository.getInstance(name) == null) {
+                LOGGER.debug("Adding new recipe {}", new Object[] { name });
+                Recipe r = tmpRepo.getRecipe(name);
+                if (r != null) {
+                    repository.putRecipe(name, r);
+                }
+            } else {
+                LOGGER.debug("Recipe {} is already instantiated and cannot be updated", new Object[] { name });
+            }
         }
     }
 
