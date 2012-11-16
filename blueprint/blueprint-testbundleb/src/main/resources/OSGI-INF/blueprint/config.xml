@@ -17,7 +17,7 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0"
            xmlns:one="http://ns.handler.one"
            xmlns:two="http://ns.handler.two"
            xmlns:three="http://ns.handler.three"
@@ -30,6 +30,29 @@
            xmlns:seven="http://ns.handler.seven"
            default-availability="optional">
 
+    <ext:property-placeholder placeholder-prefix="$(" placeholder-suffix=")">
+        <ext:default-properties>
+            <ext:property name="test1" value="test1value"/>
+        </ext:default-properties>
+    </ext:property-placeholder>
+    
+
+    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" ignore-missing-locations="true">
+        <ext:default-properties>
+            <ext:property name="test2" value="$(test1)"/>
+        </ext:default-properties>
+    </ext:property-placeholder>
+
+    <ext:property-placeholder placeholder-prefix="${" placeholder-suffix="}" ignore-missing-locations="true">
+        <ext:default-properties>
+            <ext:property name="test3" value="$[test2]"/>
+        </ext:default-properties>
+    </ext:property-placeholder>
+    
+  <bean id="PlaceHolerTestBean" class="org.apache.aries.blueprint.testbundleb.OtherBean" init-method="init">
+     <property name="testValue" value="${test3}"/>
+  </bean>    
+    
   <!-- Default test.. no other ns interaction. -->
   <bean id="TestBeanA" class="org.apache.aries.blueprint.testbundleb.TestBean" scope="singleton">
      <property name="red" value="RED"/>
@@ -58,7 +81,7 @@
   </bean>
   
   <!--  drives a method on intercepted TestBeanC expects false as response -->
-    <bean id="OtherBeanB" class="org.apache.aries.blueprint.testbundleb.OtherBean" init-method="init">
+  <bean id="OtherBeanB" class="org.apache.aries.blueprint.testbundleb.OtherBean" init-method="init">
      <property name="testBean" ref="TestBeanC" />
      <property name="testValue" value="BLUE"/>
   </bean>

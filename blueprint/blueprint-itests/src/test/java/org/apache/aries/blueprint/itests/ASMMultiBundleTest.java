@@ -35,6 +35,7 @@ import org.apache.aries.blueprint.testbundlea.NSHandlerOne;
 import org.apache.aries.blueprint.testbundlea.NSHandlerTwo;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean.Phase;
+import org.apache.aries.blueprint.testbundleb.OtherBean;
 import org.apache.aries.blueprint.testbundleb.TestBean;
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.Test;
@@ -189,6 +190,11 @@ public class ASMMultiBundleTest extends AbstractIntegrationTest {
         //destroy invocation will only occur at tear down.. TODO, how to test after teardown.
         //assertEquals(pb.getProcessedBy(Phase.BEFORE_DESTROY).get(0),bp);
         //assertEquals(pb.getProcessedBy(Phase.AFTER_DESTROY).get(0),bp);
+        
+        
+        Object objOther = beanContainer.getComponentInstance("PlaceHolerTestBean");
+        assertTrue(objOther instanceof OtherBean);
+        assertEquals("test1value", ((OtherBean)objOther).getTestValue());
     }
     
     @org.ops4j.pax.exam.junit.Configuration
