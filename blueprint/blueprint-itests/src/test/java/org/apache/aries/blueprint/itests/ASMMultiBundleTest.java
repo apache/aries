@@ -192,7 +192,7 @@ public class ASMMultiBundleTest extends AbstractIntegrationTest {
         //assertEquals(pb.getProcessedBy(Phase.AFTER_DESTROY).get(0),bp);
         
         
-        Object objOther = beanContainer.getComponentInstance("PlaceHolerTestBean");
+        Object objOther = beanContainer.getComponentInstance("PlaceHolderTestBean");
         assertTrue(objOther instanceof OtherBean);
         assertEquals("test1value", ((OtherBean)objOther).getTestValue());
     }
