@@ -49,7 +49,7 @@
         </ext:default-properties>
     </ext:property-placeholder>
     
-  <bean id="PlaceHolerTestBean" class="org.apache.aries.blueprint.testbundleb.OtherBean" init-method="init">
+  <bean id="PlaceHolderTestBean" class="org.apache.aries.blueprint.testbundleb.OtherBean" init-method="init">
      <property name="testValue" value="${test3}"/>
   </bean>    
     
