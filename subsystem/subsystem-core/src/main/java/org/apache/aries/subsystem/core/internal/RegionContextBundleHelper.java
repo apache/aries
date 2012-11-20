@@ -24,6 +24,7 @@ import java.util.jar.Manifest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
+import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class RegionContextBundleHelper {
@@ -37,6 +38,9 @@ public class RegionContextBundleHelper {
 		if (b == null) {
 			ThreadLocalSubsystem.set(subsystem);
 			b = subsystem.getRegion().installBundleAtLocation(location, createRegionContextBundle(symbolicName));
+			// The start level of all managed bundles, including the region
+			// context bundle, should be 1.
+			b.adapt(BundleStartLevel.class).setStartLevel(1);
 		}
 		Utils.installResource(b.adapt(BundleRevision.class), subsystem);
 		// The region context bundle must be started persistently.
