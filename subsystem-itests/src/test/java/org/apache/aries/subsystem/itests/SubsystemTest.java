@@ -66,6 +66,8 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.startlevel.BundleStartLevel;
+import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
@@ -430,6 +432,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000), type);
 	}
 	
+	protected void assertStartLevel(Bundle bundle, int expected) {
+		assertEquals("Wrong start level", expected, bundle.adapt(BundleStartLevel.class).getStartLevel());
+	}
+	
 	protected void assertState(State expected, State actual) {
 		assertState(EnumSet.of(expected), actual);
 	}
@@ -609,6 +615,14 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected Subsystem getRootSubsystem() {
 		return getOsgiService(Subsystem.class);
+	}
+	
+	protected Bundle getSystemBundle() {
+		return bundleContext.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
+	}
+	
+	protected FrameworkStartLevel getSystemBundleAsFrameworkStartLevel() {
+		return getSystemBundle().adapt(FrameworkStartLevel.class);
 	}
 	
 	protected Bundle getSubsystemCoreBundle() {
