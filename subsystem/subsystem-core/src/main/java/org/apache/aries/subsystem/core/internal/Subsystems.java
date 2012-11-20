@@ -127,15 +127,7 @@ public class Subsystems {
 					// appropriate.
 					graph = new SubsystemGraph(root);
 					ResourceInstaller.newInstance(coordination, root, root).install();
-					// TODO Begin proof of concept.
-					// This is a proof of concept for initializing the relationships between the root subsystem and bundles
-					// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
-					// since this does not take into account the possibility of already existing bundles going away or new bundles
-					// being installed out of band while this initialization is taking place. Need a bundle event hook for that.
-					BundleContext context = Activator.getInstance().getBundleContext().getBundle(org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION).getBundleContext();
-					for (Bundle b : context.getBundles())
-						ResourceInstaller.newInstance(coordination, b.adapt(BundleRevision.class), root).install();
-					// TODO End proof of concept.
+					populateRootSubsystem(root, coordination);
 				} catch (Exception e) {
 					coordination.fail(e);
 				} finally {
@@ -155,6 +147,7 @@ public class Subsystems {
 					root = getSubsystemById(0);
 					graph = new SubsystemGraph(root);
 					ResourceInstaller.newInstance(coordination, root, root).install();
+					populateRootSubsystem(root, coordination);
 				} catch (Exception e) {
 					coordination.fail(e);
 				} finally {
@@ -163,6 +156,22 @@ public class Subsystems {
 			}
 		}
 		return root;
+	}
+	
+	private void populateRootSubsystem(BasicSubsystem root, Coordination coordination) throws Exception {
+		// TODO Begin proof of concept.
+		// This is a proof of concept for initializing the relationships between the root subsystem and bundles
+		// that already existed in its region. Not sure this will be the final resting place. Plus, there are issues
+		// since this does not take into account the possibility of already existing bundles going away or new bundles
+		// being installed out of band while this initialization is taking place. Need a bundle event hook for that.
+		BundleContext context = Activator.getInstance().getBundleContext().getBundle(org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION).getBundleContext();
+		for (Bundle bundle : context.getBundles()) {
+			BundleRevision revision = bundle.adapt(BundleRevision.class);
+			if (!resourceReferences.getSubsystems(revision).isEmpty())
+				continue;
+			ResourceInstaller.newInstance(coordination, revision, root).install();
+		}
+		// TODO End proof of concept.
 	}
 	
 	public BasicSubsystem getSubsystemById(long id) {
