@@ -17,6 +17,8 @@
  * under the License.
  */
 package org.apache.aries.application.modelling.internal;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -105,10 +107,34 @@ public class BundleBlueprintParser {
     setup(null);
   }
   
+  static final boolean _blueprintHeaderMandatory;
+  static 
+  { 
+	  String blueprintHeaderMandatory = AccessController.doPrivileged(new PrivilegedAction<String>() 
+	  {
+		  public String run()
+	      {
+	        return System.getProperty("org.apache.aries.blueprint.header.mandatory", "false");
+	      }
+	  });
+	  _blueprintHeaderMandatory = blueprintHeaderMandatory.toLowerCase().equals("true");
+  }
+  
+  /**
+   * @return true if this bundle might contain blueprint files
+   */
+  public boolean mightContainBlueprint() {
+	  return _mfHeader != null && _mfHeader.trim().length() > 0;
+  }
+  
   private void setup (String bundleBPHeader) { 
     _paths = new LinkedList <Path>();
     if (bundleBPHeader == null) { 
-      _mfHeader = DEFAULT_HEADER;
+    	if (_blueprintHeaderMandatory) { 
+    		_mfHeader = null;
+    	} else { 
+    		_mfHeader = DEFAULT_HEADER;	
+    	}
     } else { 
       _mfHeader = bundleBPHeader;
     }

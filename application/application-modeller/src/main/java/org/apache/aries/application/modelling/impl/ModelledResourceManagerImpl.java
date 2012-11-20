@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -206,6 +208,8 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
       return mbi;      
   }
 
+
+  
   /**
    * Helper method to pass a single bundle into findBlueprints 
    * @param bundleMf The bundle manifest 
@@ -220,32 +224,38 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
 
     Collection<IFile> blueprints = new ArrayList<IFile>();
     BundleBlueprintParser bpParser = new BundleBlueprintParser(bundleMf);
-    List<IFile> files = bundle.listAllFiles();
-    Iterator<IFile> it = files.iterator();
-    while (it.hasNext()) {
-        IFile file = it.next();         
-        String directoryFullPath = file.getName(); 
-        String directoryName = "";
-        String fileName = "";
-        if (directoryFullPath.lastIndexOf("/") != -1) {
-        	// This bundle may be nested within another archive. In that case, we need to trim
-        	// /bundleFileName.jar from the front of the directory. 
-        	int bundleNameLength = bundle.getName().length();
-            directoryName = directoryFullPath.substring(bundleNameLength, directoryFullPath.lastIndexOf("/"));
-            if (directoryName.startsWith("/") && directoryName.length() > 1) { 
-            	directoryName = directoryName.substring(1);
-            }
-            fileName = directoryFullPath.substring(directoryFullPath.lastIndexOf("/") + 1);
-        } else {
-            if (file.isFile()) {
-                directoryName="";
-                fileName = directoryFullPath;
-            } 
-
-        }
-        if (bpParser.isBPFile(directoryName, fileName)) {
-            blueprints.add(file);
-        }
+    
+    /* OSGi R5 Spec, section 121.3.4: "If the Bundle-Blueprint header is specified but empty, then the Blueprint 
+     * bundle must not be managed. This can be used to temporarily disable a Blueprint bundle."
+     */
+    if (bpParser.mightContainBlueprint()) { 
+	    List<IFile> files = bundle.listAllFiles();
+	    Iterator<IFile> it = files.iterator();
+	    while (it.hasNext()) {
+	        IFile file = it.next();         
+	        String directoryFullPath = file.getName(); 
+	        String directoryName = "";
+	        String fileName = "";
+	        if (directoryFullPath.lastIndexOf("/") != -1) {
+	        	// This bundle may be nested within another archive. In that case, we need to trim
+	        	// /bundleFileName.jar from the front of the directory. 
+	        	int bundleNameLength = bundle.getName().length();
+	            directoryName = directoryFullPath.substring(bundleNameLength, directoryFullPath.lastIndexOf("/"));
+	            if (directoryName.startsWith("/") && directoryName.length() > 1) { 
+	            	directoryName = directoryName.substring(1);
+	            }
+	            fileName = directoryFullPath.substring(directoryFullPath.lastIndexOf("/") + 1);
+	        } else {
+	            if (file.isFile()) {
+	                directoryName="";
+	                fileName = directoryFullPath;
+	            } 
+	
+	        }
+	        if (!file.isDirectory() && bpParser.isBPFile(directoryName, fileName)) {
+	            blueprints.add(file);
+	        }
+	    }
     }
     
     Collection<InputStream> result = new ArrayList<InputStream>();
