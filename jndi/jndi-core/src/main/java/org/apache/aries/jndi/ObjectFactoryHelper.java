@@ -33,6 +33,8 @@ import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
+import javax.naming.directory.Attributes;
+import javax.naming.spi.DirObjectFactory;
 import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
 
@@ -111,7 +113,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
 
         return (result == null) ? obj : result;
     }
-    
+ 
     /*
      * Attempt to obtain an Object instance via the java.naming.factory.object property
      */
@@ -119,6 +121,18 @@ public class ObjectFactoryHelper implements ObjectFactory {
             Name name,
             Context nameCtx,
             Hashtable<?, ?> environment) throws Exception
+    {
+    	return getObjectInstanceViaContextDotObjectFactories(obj, name, nameCtx, environment, null);
+    }
+    
+    /*
+     * Attempt to obtain an Object instance via the java.naming.factory.object property
+     */
+    protected Object getObjectInstanceViaContextDotObjectFactories(Object obj,
+            Name name,
+            Context nameCtx,
+            Hashtable<?, ?> environment,
+            Attributes attrs) throws Exception
     {
     	Object result = null;
     	String factories = (String) environment.get(Context.OBJECT_FACTORIES);
@@ -141,11 +155,22 @@ public class ObjectFactoryHelper implements ObjectFactory {
 				}
 				logger.log(Level.FINE, "cand=" + cand + " factory=" + factory);
 				if (factory != null) {
-					result = factory.getObjectInstance(obj, name, nameCtx, environment);
+					if(factory instanceof DirObjectFactory)
+					{
+						logger.log(Level.FINE, "its a DirObjectFactory");
+						final DirObjectFactory dirFactory = (DirObjectFactory) factory;
+						result = dirFactory.getObjectInstance(obj, name, nameCtx, environment, attrs);
+					}
+					else
+					{
+						logger.log(Level.FINE, "its an ObjectFactory");
+						result = factory.getObjectInstance(obj, name, nameCtx, environment);
+					}
 				}
 				if (result != null && result != obj) break;
 			}
 		}
+		logger.log(Level.FINE, "result = " + result);
 		return (result == null) ? obj : result;
     }
 
