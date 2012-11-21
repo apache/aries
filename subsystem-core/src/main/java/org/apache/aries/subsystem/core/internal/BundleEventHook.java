@@ -93,12 +93,24 @@ public class BundleEventHook implements EventHook {
 			handleExplicitlyInstalledBundleBundleContext(originRevision, bundleRevision);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void handleUninstalledEvent(BundleEvent event) {
 		Bundle bundle = event.getBundle();
 		BundleRevision revision = bundleToRevision.remove(bundle);
 		if (ThreadLocalSubsystem.get() != null)
 			return;
-		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsByConstituent(new BundleConstituent(null, revision)))
+		Collection<BasicSubsystem> subsystems;
+		if (revision == null) {
+			// The bundle was installed while the bundle event hook was unregistered.
+			Object[] o = Activator.getInstance().getSubsystems().getSubsystemsByBundle(bundle);
+			if (o == null)
+				return;
+			revision = (BundleRevision)o[0];
+			subsystems = (Collection<BasicSubsystem>)o[1];
+		}
+		else
+			subsystems = Activator.getInstance().getSubsystems().getSubsystemsByConstituent(new BundleConstituent(null, revision));
+		for (BasicSubsystem subsystem : subsystems)
 			ResourceUninstaller.newInstance(revision, subsystem).uninstall();
 	}
 }
