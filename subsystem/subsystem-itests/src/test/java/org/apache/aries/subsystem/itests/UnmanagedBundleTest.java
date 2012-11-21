@@ -116,4 +116,41 @@ public class UnmanagedBundleTest extends SubsystemTest {
 			}
 		}
 	}
+	
+	/*
+	 * Test that bundles installed when the bundle event hook is unavailable
+	 * (i.e. when the subsystems core bundle is stopped) are handled properly
+	 * by the hook when uninstalled.
+	 * 
+	 * See https://issues.apache.org/jira/browse/ARIES-967.
+	 */
+	@Test
+	public void testBundleEventHook() throws Exception {
+		Bundle core = getSubsystemCoreBundle();
+		// Stop the subsystems core bundle so the bundle event hook is not registered.
+		core.stop();
+		try {
+			// Install an unmanaged bundle that will not be seen by the bundle event hook.
+			Bundle a = bundleContext.installBundle(BUNDLE_A, new FileInputStream(BUNDLE_A));
+			try {
+				// Restart the subsystems core bundle.
+				core.start();
+				// Bundle A should be detected as a constituent of the root subsystem.
+				assertConstituent(getRootSubsystem(), BUNDLE_A);
+				// Uninstall bundle A so that it is seen by the bundle event hook.
+				a.uninstall();
+				// Bundle A should no longer be a constituent of the root subsystem.
+				assertNotConstituent(getRootSubsystem(), BUNDLE_A);
+			}
+			finally {
+				uninstallSilently(a);
+			}
+		}
+		finally {
+			try {
+				core.start();
+			}
+			catch (Exception e) {}
+		}
+	}
 }

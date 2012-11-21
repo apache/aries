@@ -108,6 +108,14 @@ public class BundleResourceInstaller extends ResourceInstaller {
 		public Bundle getBundle() {
 			return revision.getBundle();
 		}
+		
+		public Resource getResource() {
+			return resource;
+		}
+		
+		public BundleRevision getRevision() {
+			return revision;
+		}
 
 		@Override
 		public String getSymbolicName() {

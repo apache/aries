@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
@@ -188,6 +189,27 @@ public class Subsystems {
 	
 	public Collection<BasicSubsystem> getSubsystems() {
 		return new ArrayList<BasicSubsystem>(idToSubsystem.values());
+	}
+	
+	// TODO Not very pretty. A quick fix.
+	public Object[] getSubsystemsByBundle(Bundle bundle) {
+		BundleRevision revision = null;
+		ArrayList<BasicSubsystem> result = new ArrayList<BasicSubsystem>();
+		synchronized (subsystemToConstituents) {
+			for (BasicSubsystem subsystem : subsystemToConstituents.keySet()) {
+				for (Resource constituent : getConstituents(subsystem)) {
+					if (constituent instanceof BundleConstituent &&
+							((BundleConstituent)constituent).getBundle() == bundle) {
+						result.add(subsystem);
+						revision = ((BundleConstituent)constituent).getRevision();
+					}
+				}	
+			}
+		}
+		result.trimToSize();
+		if (revision == null)
+			return null;
+		return new Object[]{revision, result};
 	}
 	
 	public Collection<BasicSubsystem> getSubsystemsByConstituent(Resource constituent) {
