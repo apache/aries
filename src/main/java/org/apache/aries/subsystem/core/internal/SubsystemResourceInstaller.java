@@ -13,12 +13,14 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.apache.aries.util.filesystem.FileSystem;
+import org.osgi.framework.BundleException;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
@@ -90,8 +92,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		addReference(subsystem);
 		addConstituent(subsystem);
 		addSubsystem(subsystem);
-		if (subsystem.isScoped())
-			RegionContextBundleHelper.installRegionContextBundle(subsystem);
+		installRegionContextBundle(subsystem);
 		Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
 		Comparator<Resource> comparator = new InstallResourceComparator();
 		// Install dependencies first...
@@ -126,6 +127,23 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	private BasicSubsystem installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
 		SubsystemResource subsystemResource = new SubsystemResource(resource, provisionTo);
 		return installSubsystemResource(subsystemResource);
+	}
+	
+	private void installRegionContextBundle(final BasicSubsystem subsystem) throws BundleException, IOException {
+		if (!subsystem.isScoped())
+			return;
+		RegionContextBundleHelper.installRegionContextBundle(subsystem);
+		coordination.addParticipant(new Participant() {
+			@Override
+			public void ended(Coordination coordination) throws Exception {
+				// Nothing
+			}
+
+			@Override
+			public void failed(Coordination coordination) throws Exception {
+				RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
+			}
+		});
 	}
 	
 	private BasicSubsystem installRepositoryContent(RepositoryContent resource) throws Exception {
