@@ -42,9 +42,15 @@
     <properties>
          <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
-            org.osgi.service.subsystem,
-            org.apache.aries.subsystem
+        	org.apache.aries.subsystem,
+        	org.osgi.service.repository,
+            org.osgi.service.subsystem
         </aries.osgi.export.pkg>
+        <aries.osgi.import>
+    		org.osgi.service.repository;version="[1.0,2)",
+    		org.osgi.service.subsystem;version="[1.0,2)",
+    		*
+    	</aries.osgi.import>
     </properties>
 
     <dependencies>
