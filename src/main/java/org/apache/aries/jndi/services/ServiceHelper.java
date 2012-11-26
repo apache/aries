@@ -111,7 +111,8 @@ public final class ServiceHelper
       BundleContext systemBundle = AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
         public BundleContext run()
         {
-          return ctx.getBundle(0).getBundleContext();
+        	 Bundle system = ctx.getBundle(0); 
+        	 return system == null ? null : system.getBundleContext(); 
         }
       });
       if (systemBundle == null) systemBundle = ctx;
