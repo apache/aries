@@ -43,6 +43,7 @@
             org.apache.aries.subsystem.core.internal.Activator
         </aries.osgi.activator>
     	<aries.osgi.import>
+    		org.osgi.service.repository;version="[1.0,2)",
     		org.osgi.service.subsystem;version="[1.0,2)",
     		*
     	</aries.osgi.import>
