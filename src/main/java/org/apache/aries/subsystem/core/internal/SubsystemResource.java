@@ -77,7 +77,6 @@ public class SubsystemResource implements Resource {
 	
 	private final List<Capability> capabilities;
 	private final DeploymentManifest deploymentManifest;
-	private final long id;
 	private final Collection<Resource> installableContent = new HashSet<Resource>();
 	private final Collection<Resource> installableDependencies = new HashSet<Resource>();
 	private final Collection<Resource> mandatoryResources = new HashSet<Resource>();
@@ -96,7 +95,6 @@ public class SubsystemResource implements Resource {
 	public SubsystemResource(RawSubsystemResource resource, BasicSubsystem parent) throws IOException, BundleException, InvalidSyntaxException, URISyntaxException {
 		this.parent = parent;
 		this.resource = resource;
-		id = SubsystemIdentifier.getNextId();
 		preferredProviderRepository = new PreferredProviderRepository(this);
 		computeContentResources(resource.getDeploymentManifest());
 		capabilities = computeCapabilities();
@@ -113,7 +111,6 @@ public class SubsystemResource implements Resource {
 		resource = new RawSubsystemResource(directory);
 		preferredProviderRepository = null;
 		deploymentManifest = resource.getDeploymentManifest();
-		id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
 		computeContentResources(deploymentManifest);
 		capabilities = computeCapabilities();
 		computeDependencies(deploymentManifest);
@@ -167,7 +164,7 @@ public class SubsystemResource implements Resource {
 	}
 	
 	public long getId() {
-		return id;
+		return resource.getId();
 	}
 	
 	public Collection<Resource> getInstallableContent() {
