@@ -37,7 +37,7 @@
 
     <modules>
         <module>versioning-checker</module>
-    <module>org.apache.aries.versioning.plugin</module>
+        <module>versioning-plugin</module>
   </modules>
 
 </project>
