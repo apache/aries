@@ -19,10 +19,14 @@
 package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
@@ -37,6 +41,7 @@ import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
+import org.osgi.service.subsystem.SubsystemConstants;
 
 @RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class InstallTest extends SubsystemTest {
@@ -89,6 +94,9 @@ public class InstallTest extends SubsystemTest {
 		}
 		createApplication("feature3", new String[]{"tb3.jar"});
 		createApplication("feature2", new String[]{"tb3.jar", "tb2.jar"});
+		createBundleA();
+		createApplicationA();
+		createCompositeA();
 		createdApplications = true;
 	}
 	
@@ -173,6 +181,73 @@ public class InstallTest extends SubsystemTest {
     	catch (Exception e) {
     		e.printStackTrace();
     		fail("Subsystem installation using directory URL as location failed");
+    	}
+    }
+    
+    /*
+	 * Bundle-SymbolicName: bundle.a.jar
+	 */
+	private static final String BUNDLE_A = "bundle.a.jar";
+	
+	private static void createBundleA() throws IOException {
+		createBundle(BUNDLE_A);
+	}
+    
+    /*
+	 * No symbolic name. No manifest.
+	 */
+	private static final String APPLICATION_A = "application.a.esa";
+	
+	private static void createApplicationA() throws IOException {
+		createApplicationAManifest();
+		createSubsystem(APPLICATION_A, BUNDLE_A);
+	}
+	
+	private static void createApplicationAManifest() throws IOException {
+		File manifest = new File(APPLICATION_A + ".mf");
+		if (manifest.exists())
+			assertTrue("Could not delete manifest", manifest.delete());
+	}
+    
+    @Test
+    public void testGeneratedSymbolicNameWithoutManifest() throws Exception {
+    	String expected = "org.apache.aries.subsystem.1";
+    	Subsystem a = installSubsystemFromFile(APPLICATION_A);
+    	try {
+    		assertSymbolicName(expected, a);
+    		assertSymbolicName(expected, a.getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME));
+    	}
+    	finally {
+    		uninstallSubsystemSilently(a);
+    	}
+    }
+    
+    /*
+	 * Manifest with no symbolic name header.
+	 */
+	private static final String COMPOSITE_A = "composite.a.esa";
+	
+	private static void createCompositeA() throws IOException {
+		createCompositeAManifest();
+		createSubsystem(COMPOSITE_A);
+	}
+	
+	private static void createCompositeAManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
+		createManifest(COMPOSITE_A + ".mf", attributes);
+	}
+	
+	@Test
+    public void testGeneratedSymbolicNameWithManifest() throws Exception {
+    	String expected = "org.apache.aries.subsystem.1";
+    	Subsystem a = installSubsystemFromFile(COMPOSITE_A);
+    	try {
+    		assertSymbolicName(expected, a);
+    		assertSymbolicName(expected, a.getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME));
+    	}
+    	finally {
+    		uninstallSubsystemSilently(a);
     	}
     }
 }
