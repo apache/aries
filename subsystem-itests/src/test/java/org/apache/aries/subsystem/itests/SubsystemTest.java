@@ -484,7 +484,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void assertSymbolicName(String expected, Subsystem subsystem) {
-		assertEquals("Wrong symbolic name: " + subsystem.getSymbolicName(), expected, subsystem.getSymbolicName());
+		assertSymbolicName(expected, subsystem.getSymbolicName());
+	}
+	
+	protected void assertSymbolicName(String expected, String actual) {
+		assertEquals("Wrong symbolic name", expected, actual);
 	}
 	
 	protected void assertType(String expected, Subsystem subsystem) {
@@ -552,8 +556,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected static void createSubsystem(String name, String...contents) throws IOException {
-		// The following input stream is closed by ArchiveFixture.copy.
-		ZipFixture fixture = ArchiveFixture.newZip().binary("OSGI-INF/SUBSYSTEM.MF", new FileInputStream(name + ".mf"));
+		File manifest = new File(name + ".mf");
+		ZipFixture fixture = ArchiveFixture.newZip();
+		if (manifest.exists())
+			// The following input stream is closed by ArchiveFixture.copy.
+			fixture.binary("OSGI-INF/SUBSYSTEM.MF", new FileInputStream(name + ".mf"));
 		if (contents != null) {
 			for (String content : contents) {
 				// The following input stream is closed by ArchiveFixture.copy.

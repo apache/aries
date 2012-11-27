@@ -93,6 +93,7 @@ public class RawSubsystemResource implements Resource {
 	
 	private final List<Capability> capabilities;
 	private final DeploymentManifest deploymentManifest;
+	private final long id;
 	private final Repository localRepository;
 	private final Location location;
 	private final List<Requirement> requirements;
@@ -100,6 +101,7 @@ public class RawSubsystemResource implements Resource {
 	private final SubsystemManifest subsystemManifest;
 	
 	public RawSubsystemResource(String location, IDirectory content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
+		id = SubsystemIdentifier.getNextId();
 		this.location = new Location(location);
 		if (content == null)
 			content = this.location.open();
@@ -129,6 +131,7 @@ public class RawSubsystemResource implements Resource {
 		requirements = subsystemManifest.toRequirements(this);
 		capabilities = subsystemManifest.toCapabilities(this);
 		deploymentManifest = initializeDeploymentManifest(idir);
+		id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
 		location = new Location(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue());
 	}
 	
@@ -156,6 +159,10 @@ public class RawSubsystemResource implements Resource {
 	
 	public DeploymentManifest getDeploymentManifest() {
 		return deploymentManifest;
+	}
+	
+	public long getId() {
+		return id;
 	}
 	
 	public Repository getLocalRepository() {
@@ -379,9 +386,12 @@ public class RawSubsystemResource implements Resource {
 	
 	private SubsystemSymbolicNameHeader computeSubsystemSymbolicNameHeader(SubsystemManifest manifest) {
 		SubsystemSymbolicNameHeader header = manifest.getSubsystemSymbolicNameHeader();
-		if (header == null)
-			header = new SubsystemSymbolicNameHeader(location.getSymbolicName());
-		return header;
+		if (header != null)
+			return header;
+		String symbolicName = location.getSymbolicName();
+		if (symbolicName == null)
+			symbolicName = "org.apache.aries.subsystem." + id;
+		return new SubsystemSymbolicNameHeader(symbolicName);
 	}
 	
 	private SubsystemVersionHeader computeSubsystemVersionHeader(SubsystemManifest manifest) {
