@@ -15,23 +15,21 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraphVisitor;
 import org.eclipse.equinox.region.RegionFilter;
+import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 
 public class SharingPolicyValidator {
 	private static class Visitor implements RegionDigraphVisitor {
-		private final Map<String, ?> attributes;
-		private final String namespace;
+		private final Capability capability;
 		private final Collection<Region> visited;
 		
-		public Visitor(String namespace, Map<String, ?> attributes) {
-			this.namespace = namespace;
-			this.attributes = attributes;
+		public Visitor(Capability capability) {
+			this.capability = capability;
 			visited = new HashSet<Region>();
 		}
 		
@@ -46,7 +44,19 @@ public class SharingPolicyValidator {
 
 		@Override
 		public boolean preEdgeTraverse(RegionFilter filter) {
-			return filter.isAllowed(namespace, attributes);
+			if (filter
+					.isAllowed(
+							// The osgi.service namespace must be translated into the
+							// org.eclipse.equinox.allow.service namespace in order to validate
+							// service sharing policies.
+							ServiceNamespace.SERVICE_NAMESPACE
+									.equals(capability.getNamespace()) ? RegionFilter.VISIBLE_SERVICE_NAMESPACE
+									: capability.getNamespace(), capability
+									.getAttributes()))
+				return true;
+			if (capability instanceof BundleCapability)
+				return filter.isAllowed(((BundleCapability) capability).getRevision());
+			return false;
 		}
 
 		@Override
@@ -65,13 +75,7 @@ public class SharingPolicyValidator {
 	}
 	
 	public boolean isValid(Capability capability) {
-		// The osgi.service namespace must be translated into the
-		// org.eclipse.equinox.allow.service namespace in order to validate
-		// service sharing policies.
-		Visitor visitor = new Visitor(
-				ServiceNamespace.SERVICE_NAMESPACE.equals(capability
-						.getNamespace()) ? RegionFilter.VISIBLE_SERVICE_NAMESPACE
-						: capability.getNamespace(), capability.getAttributes());
+		Visitor visitor = new Visitor(capability);
 		to.visitSubgraph(visitor);
 		return visitor.contains(from);
 	}
