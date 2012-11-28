@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.core.archive.AriesSubsystemParentsHeader;
@@ -552,47 +554,86 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		// Unscoped subsystems import everything.already.
 		if (!isScoped())
 			return;
-		Region currentRegion = getRegion();
-		RegionDigraph currentDigraph = currentRegion.getRegionDigraph();
-		RegionFilterBuilder filterBuilder = currentDigraph.createRegionFilterBuilder();
-		try {
-			// Copy the sharing policy of the current region.
-			for (FilteredRegion filteredRegion : currentRegion.getEdges()) {
-				Map<String, Collection<String>> sharingPolicy = filteredRegion.getFilter().getSharingPolicy();
-				for (Map.Entry<String, Collection<String>> entry : sharingPolicy.entrySet())
-					for (String filter : entry.getValue())
-						filterBuilder.allow(entry.getKey(), filter);
-			}
-			// Add the additional requirements to the sharing policy.
-			for (Requirement requirement : requirements) {
-				String namespace = requirement.getNamespace();
-				// The osgi.service namespace requires translation.
-				if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
-					namespace = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
-				String filter = requirement.getDirectives().get(IdentityNamespace.REQUIREMENT_FILTER_DIRECTIVE);
-				// A null filter means import everything from that namespace.
-				if (filter == null)
-					filterBuilder.allowAll(namespace);
-				else
-					filterBuilder.allow(namespace, filter);
-			}
-			// Update the region digraph. Lock on the class to prevent conflicts
-			// with other subsystems updating their own requirements.
-			// TODO This lock does not prevent conflicts with users outside of
-			// subsystems.
-			synchronized (BasicSubsystem.class) {
+		for (int i = 0; i < 10; i++) {
+			try {
+				Region oldRegion = getRegion();
+				RegionDigraph currentDigraph = oldRegion.getRegionDigraph();
 				RegionDigraph copiedDigraph = currentDigraph.copy();
-				copiedDigraph.removeRegion(currentRegion);
-				Region fromRegion = copiedDigraph.createRegion(currentRegion.getName());
-				Region toRegion = ((BasicSubsystem)getParents().iterator().next()).getRegion();
-				copiedDigraph.connect(fromRegion, filterBuilder.build(), copiedDigraph.getRegion(toRegion.getName()));
-				// TODO Protect against the possibility of an already modified
-				// digraph with multiple attempts, if necessary?
-				currentDigraph.replace(copiedDigraph);
+				Region newRegion = copiedDigraph.getRegion(oldRegion.getName());
+				// Store the bundle ids for future reference.
+				Set<Long> bundleIds = newRegion.getBundleIds();
+				// Store the current connection info with parent for future reference.
+				RegionFilterBuilder parentFilter = copiedDigraph.createRegionFilterBuilder();
+				for (FilteredRegion filteredRegion : newRegion.getEdges()) {
+					Map<String, Collection<String>> sharingPolicy = filteredRegion.getFilter().getSharingPolicy();
+					for (Map.Entry<String, Collection<String>> entry : sharingPolicy.entrySet())
+						for (String filter : entry.getValue())
+							parentFilter.allow(entry.getKey(), filter);
+				}
+				// Add the additional requirements to the connection info with parent.
+				for (Requirement requirement : requirements) {
+					String namespace = requirement.getNamespace();
+					// The osgi.service namespace requires translation.
+					if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
+						namespace = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
+					String filter = requirement.getDirectives().get(IdentityNamespace.REQUIREMENT_FILTER_DIRECTIVE);
+					// A null filter means import everything from that namespace.
+					if (filter == null)
+						parentFilter.allowAll(namespace);
+					else
+						parentFilter.allow(namespace, filter);
+				}
+				// Store the connection info with children for future reference.
+				Map<String, RegionFilterBuilder> childFilters = new HashMap<String, RegionFilterBuilder>();
+				for (Subsystem child : getChildren()) {
+					if (!((BasicSubsystem)child).isScoped())
+						continue;
+					Region childRegion = ((BasicSubsystem)child).getRegion();
+					RegionFilterBuilder childBuilder = copiedDigraph.createRegionFilterBuilder();
+					for (FilteredRegion filteredRegion : childRegion.getEdges()) {
+						Map<String, Collection<String>> sharingPolicy = filteredRegion.getFilter().getSharingPolicy();
+						for (Map.Entry<String, Collection<String>> entry : sharingPolicy.entrySet())
+							for (String filter : entry.getValue())
+								childBuilder.allow(entry.getKey(), filter);
+					}
+					childFilters.put(childRegion.getName(), childBuilder);
+				}
+				// Remove the region so the parent connection can be updated.
+				copiedDigraph.removeRegion(newRegion);
+				// Recreate the region.
+				newRegion = copiedDigraph.createRegion(newRegion.getName());
+				// Copy the bundle ids.
+				for (Long bundleId : bundleIds)
+					newRegion.addBundle(bundleId);
+				// Reconnect to the parent.
+				copiedDigraph.connect(newRegion, parentFilter.build(), copiedDigraph.getRegion(((BasicSubsystem)getParents().iterator().next()).getRegion().getName()));
+				// Reconnect the children.
+				for (Map.Entry<String, RegionFilterBuilder> entry : childFilters.entrySet())
+					copiedDigraph.connect(copiedDigraph.getRegion(entry.getKey()), entry.getValue().build(), newRegion);
+				// Replace the current digraph.
+				try {
+					currentDigraph.replace(copiedDigraph);
+				}
+				catch (BundleException e) {
+					// Something modified digraph since the copy was made.
+					if (i < 10)
+						// There are more attempts to make.
+						continue;
+					// Number of attempts has been exhausted.
+					throw e;
+				}
+				// Success! No need to continue looping.
+				break;
 			}
-		}
-		catch (Exception e) {
-			throw new SubsystemException(e);
+			// If an exception occurs for any reason other than a replacement
+			// failure, or replacement failed with no more attempts left, break 
+			// out of the loop and throw it.
+			catch (SubsystemException e) {
+				throw e;
+			}
+			catch (Exception e) {
+				throw new SubsystemException(e);
+			}
 		}
 	}
 
