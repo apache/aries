@@ -73,7 +73,7 @@ public class ImportPackageHeader implements RequirementHeader<ImportPackageHeade
 		public Clause(String clause) {
 			Matcher matcher = PATTERN1.matcher(clause);
 			if (matcher.find())
-				myPath = matcher.group();
+				myPath = matcher.group().replaceAll("\\s", "");
 			else
 				throw new IllegalArgumentException("Invalid " + Constants.IMPORT_PACKAGE + " header clause: " + clause);
 			matcher.usePattern(PATTERN2);
