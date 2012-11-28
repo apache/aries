@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
@@ -60,6 +61,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -69,6 +72,7 @@ import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.repository.RepositoryContent;
@@ -250,6 +254,20 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertTrue("Wrong state: " + bundle + " [expected " + state + " but was " + bundle.getState() + "]", (bundle.getState() & state) != 0);
 	}
 	
+	protected Subsystem assertChild(Subsystem parent, String symbolicName) {
+		return assertChild(parent, symbolicName, null, null);
+	}
+	
+	protected Subsystem assertChild(Subsystem parent, String symbolicName, Version version) {
+		return assertChild(parent, symbolicName, version, null);
+	}
+	
+	protected Subsystem assertChild(Subsystem parent, String symbolicName, Version version, String type) {
+		Subsystem result = getChild(parent, symbolicName, version, type);
+		assertNotNull("Child does not exist: " + symbolicName, result);
+		return result;
+	}
+	
 	protected void assertChild(Subsystem parent, Subsystem child) {
 		Collection<Subsystem> children = new ArrayList<Subsystem>(1);
 		children.add(child);
@@ -397,6 +415,31 @@ public abstract class SubsystemTest extends IntegrationTest {
 			assertTrue("Subsystem accepts dependencies", directive.isRejectDependencies());
 	}
 	
+	protected void assertRefresh(Collection<Bundle> bundles) throws InterruptedException {
+		FrameworkWiring wiring = getSystemBundleAsFrameworkWiring();
+		final AtomicBoolean refreshed = new AtomicBoolean(false);
+		wiring.refreshBundles(bundles, new FrameworkListener() {
+			@Override
+			public void frameworkEvent(FrameworkEvent event) {
+				if (FrameworkEvent.PACKAGES_REFRESHED == event.getType()) {
+					synchronized (refreshed) {
+						refreshed.set(true);
+						refreshed.notify();
+					}
+				}
+			}
+		});
+		synchronized (refreshed) {
+			refreshed.wait(5000);
+		}
+		assertTrue("Bundles not refreshed", refreshed.get());
+	}
+	
+	protected void assertRefreshAndResolve(Collection<Bundle> bundles) throws InterruptedException {
+		assertRefresh(bundles);
+		assertResolve(bundles);
+	}
+	
 	protected void assertRegionContextBundle(Subsystem s) {
 		Bundle b = getRegionContextBundle(s);
 		assertEquals("Not active", Bundle.ACTIVE, b.getState());
@@ -404,6 +447,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEquals("Wrong symbolic name", "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), b.getSymbolicName());
 		assertEquals("Wrong version", Version.parseVersion("1.0.0"), b.getVersion());
 		assertConstituent(s, "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
+	}
+	
+	protected void assertResolve(Collection<Bundle> bundles) {
+		FrameworkWiring wiring = getSystemBundleAsFrameworkWiring();
+		assertTrue("Bundles not resolved", wiring.resolveBundles(bundles));
 	}
 	
 	protected void assertServiceEventsInstall(Subsystem subsystem) throws InterruptedException {
@@ -584,6 +632,31 @@ public abstract class SubsystemTest extends IntegrationTest {
 		return null;
 	}
 	
+	protected Subsystem getChild(Subsystem parent, String symbolicName) {
+		return getChild(parent, symbolicName, null, null);
+	}
+	
+	protected Subsystem getChild(Subsystem parent, String symbolicName, Version version) {
+		return getChild(parent, symbolicName, version, null);
+	}
+	
+	protected Subsystem getChild(Subsystem parent, String symbolicName, Version version, String type) {
+		for (Subsystem child : parent.getChildren()) {
+			if (symbolicName.equals(child.getSymbolicName())) {
+				if (version == null)
+					version = Version.emptyVersion;
+				if (version.equals(child.getVersion())) {
+					if (type == null)
+						type = SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
+					if (type.equals(child.getType())) {
+						return child;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	protected Resource getConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
 		for (Resource resource : subsystem.getConstituents()) {
 			if (symbolicName.equals(ResourceHelper.getSymbolicNameAttribute(resource))) {
@@ -601,6 +674,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 		return null;
 	}
 	
+	protected AriesSubsystem getConstituentAsAriesSubsystem(Subsystem subsystem, String symbolicName, Version version, String type) {
+		Resource resource = getConstituent(subsystem, symbolicName, version, type);
+		return (AriesSubsystem)resource;
+	}
+	
 	protected Bundle getConstituentAsBundle(Subsystem subsystem, String symbolicName, Version version, String type) {
 		return getConstituentAsBundleRevision(subsystem, symbolicName, version, type).getBundle();
 	}
@@ -608,6 +686,19 @@ public abstract class SubsystemTest extends IntegrationTest {
 	protected BundleRevision getConstituentAsBundleRevision(Subsystem subsystem, String symbolicName, Version version, String type) {
 		Resource resource = getConstituent(subsystem, symbolicName, version, type);
 		return (BundleRevision)resource;
+	}
+	
+	protected Subsystem getConstituentAsSubsystem(Subsystem subsystem, String symbolicName, Version version, String type) {
+		Resource resource = getConstituent(subsystem, symbolicName, version, type);
+		return (Subsystem)resource;
+	}
+	
+	protected Region getRegion(Subsystem subsystem) {
+		RegionDigraph digraph = getOsgiService(RegionDigraph.class);
+		String name = subsystem.getSymbolicName() + ';' + subsystem.getVersion() + ';' + subsystem.getType() + ';' + subsystem.getSubsystemId();
+		Region region = digraph.getRegion(name);
+		assertNotNull("Region not found: " + name, region);
+		return region;
 	}
 	
 	protected Bundle getRegionContextBundle(Subsystem subsystem) {
@@ -630,6 +721,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected FrameworkStartLevel getSystemBundleAsFrameworkStartLevel() {
 		return getSystemBundle().adapt(FrameworkStartLevel.class);
+	}
+	
+	protected FrameworkWiring getSystemBundleAsFrameworkWiring() {
+		return getSystemBundle().adapt(FrameworkWiring.class);
 	}
 	
 	protected Bundle getSubsystemCoreBundle() {
