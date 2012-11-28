@@ -15,6 +15,7 @@ import org.apache.aries.subsystem.core.internal.BasicRequirement;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.easymock.EasyMock;
+import org.eclipse.equinox.region.RegionFilter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
+import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.Subsystem;
@@ -179,6 +181,45 @@ public class AriesSubsystemTest extends SubsystemTest {
 			assertCompositeAAfter(compositeA);
 		}
 		finally {
+			stopAndUninstallSubsystemSilently(compositeA);
+		}
+	}
+	
+	/*
+	 * Aries Subsystems uses Equinox Region Digraph as its isolation engine.
+	 * Digraph has a "special" namespace value that tells the region to allow
+	 * everything a bundle offers. This test ensures that a correctly formatted
+	 * requirement in that namespace works as expected.
+	 */
+	@Test
+	public void testAddRequirementWithVisibleBundleNamespace() throws Exception {
+		Requirement requirement = new BasicRequirement.Builder()
+				.namespace(RegionFilter.VISIBLE_BUNDLE_NAMESPACE)
+				.directive(Namespace.REQUIREMENT_FILTER_DIRECTIVE, "(id=0)")
+				.resource(EasyMock.createMock(Resource.class)).build();
+		AriesSubsystem compositeA = (AriesSubsystem) installSubsystemFromFile(COMPOSITE_A);
+		try {
+			startSubsystem(compositeA);
+			// Test that the installation of applicationA fails.
+			try {
+				installSubsystemFromFile(compositeA, APPLICATION_A);
+				fail("Subsystem should not have installed due to unresolved org.osgi.framework package requirement");
+			} catch (SubsystemException e) {
+				// Okay.
+			}
+			// Add the requirement with the region digraph specific namespace.
+			compositeA.addRequirements(Collections.singleton(requirement));
+			// Test that the installation and startup of applicationA succeeds.
+			AriesSubsystem applicationA;
+			try {
+				applicationA = (AriesSubsystem) installSubsystemFromFile(
+						compositeA, APPLICATION_A);
+				startSubsystem(applicationA);
+			} catch (SubsystemException e) {
+				fail("Subsystem should have installed and started");
+			}
+			assertCompositeAAfter(compositeA);
+		} finally {
 			stopAndUninstallSubsystemSilently(compositeA);
 		}
 	}
