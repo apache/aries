@@ -95,8 +95,10 @@ public class InstallTest extends SubsystemTest {
 		createApplication("feature3", new String[]{"tb3.jar"});
 		createApplication("feature2", new String[]{"tb3.jar", "tb2.jar"});
 		createBundleA();
+		createBundleB();
 		createApplicationA();
 		createCompositeA();
+		createFeatureA();
 		createdApplications = true;
 	}
 	
@@ -250,4 +252,46 @@ public class InstallTest extends SubsystemTest {
     		uninstallSubsystemSilently(a);
     	}
     }
+	
+	/*
+	 * A bundle whose file extension does not end with ".jar".
+	 * 
+	 * Bundle-SymbolicName: bundle.b.war
+	 */
+	private static final String BUNDLE_B = "bundle.b.war";
+	
+	private static void createBundleB() throws IOException {
+		createBundle(BUNDLE_B);
+	}
+	
+	/*
+	 * Subsystem-SymbolicName: feature.a.esa
+	 * Subsystem-Type: osgi.subsystem.feature
+	 * Subsystem-Content: bundle.b.war
+	 */
+	private static final String FEATURE_A = "feature.a.esa";
+	
+	private static void createFeatureA() throws IOException {
+		createFeatureAManifest();
+		createSubsystem(FEATURE_A, BUNDLE_B);
+	}
+	
+	private static void createFeatureAManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, FEATURE_A);
+		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_FEATURE);
+		createManifest(FEATURE_A + ".mf", attributes);
+	}
+	
+	@Test
+	public void testSupportBundleResourcesNotEndingWithJar() throws Exception {
+		Subsystem featureA = installSubsystemFromFile(FEATURE_A);
+		try {
+			assertConstituents(1, featureA);
+			assertConstituent(featureA, BUNDLE_B);
+		}
+		finally {
+			uninstallSubsystemSilently(featureA);
+		}
+	}
 }
