@@ -395,9 +395,9 @@ public class ClassDeclaration extends GenericDeclaration {
             // check to see whether the serializable id is the same
             //ignore if it is enum
             if ((!getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS) && (!old.getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS)))) {
-                Long oldValue = getSerialVersionUID(old);
-                Long curValue = getSerialVersionUID(this);
-                if ((oldValue.longValue() != curValue.longValue())) {
+                long oldValue = getSerialVersionUID(old);
+                long curValue = getSerialVersionUID(this);
+                if ((oldValue != curValue)) {
                     reasons.add("The serializable class is no longer back compatible as the value of SerialVersionUID has changed from " + oldValue + " to " + curValue + ".");
                 }
             }
