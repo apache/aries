@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Type;
 
 public class ClassDeclaration extends GenericDeclaration {
@@ -398,7 +397,7 @@ public class ClassDeclaration extends GenericDeclaration {
             if ((!getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS) && (!old.getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS)))) {
                 Long oldValue = getSerialVersionUID(old);
                 Long curValue = getSerialVersionUID(this);
-                if ((oldValue != curValue)) {
+                if ((oldValue.longValue() != curValue.longValue())) {
                     reasons.add("The serializable class is no longer back compatible as the value of SerialVersionUID has changed from " + oldValue + " to " + curValue + ".");
                 }
             }
