@@ -19,10 +19,6 @@
 
 package org.apache.aries.versioning.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,17 +32,13 @@ public class SemanticVersioningUtils {
     public static final String schemaExt = ".xsd";
     public static final String jarExt = ".jar";
 
-    public static final String SEVERITY_2 = "2";
-    public static final String SEVERITY_3 = "3";
-    public static final String SEVERITY_4 = "4";
+    
     public static final String CONSTRUTOR = "<init>";
     public static final String MAJOR_CHANGE = "major";
     public static final String MINOR_CHANGE = "minor";
     public static final String NO_CHANGE = "no";
-    public static final String REVERT_CHANGE = "revert the changes";
+    
     public static final String oneLineBreak = "\r\n";
-    public static final String htmlOneLineBreak = "&#13;&#10;";
-    public static final String htmlTwoLineBreaks = htmlOneLineBreak + htmlOneLineBreak;
     public static final String twoLineBreaks = oneLineBreak + oneLineBreak;
     public static final String PROPERTY_FILE_IDENTIFIER = "java/util/ListResourceBundle";
     public static final String CLINIT = "<clinit>";
