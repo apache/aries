@@ -20,6 +20,9 @@
 
 package org.apache.aries.versioning.check;
 
+import static org.apache.aries.versioning.utils.SemanticVersioningUtils.oneLineBreak;
+import static org.apache.aries.versioning.utils.SemanticVersioningUtils.twoLineBreaks;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -48,9 +51,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlOneLineBreak;
-import static org.apache.aries.versioning.utils.SemanticVersioningUtils.htmlTwoLineBreaks;
 
 /**
 * @version $Rev:$ $Date:$
@@ -242,7 +242,13 @@ public class BundleCompatibility {
     }
 
     private String getBundleStatusText(String bundleFileName, String bundleSymbolicName, VERSION_CHANGE_TYPE status, String oldVersionStr, String newVersionStr, String reason) {
-        return "<bundle fileName=\"" + bundleFileName + "\" bundleSymbolicName =\"" + bundleSymbolicName + "\"" + getStatusText(status, oldVersionStr, newVersionStr) + "\" reason=\"" + transformForXml(reason) + "\" change=\"" + status.text() + "\">";
+      if (!isVersionCorrect(status, oldVersionStr, newVersionStr)) {
+        return "The bundle " + bundleSymbolicName + " has the following changes:\r\n" + reason + "\r\nThe bundle version should be " + getRecommendedVersion(status, oldVersionStr) + ".";
+      } else {
+        return "";
+      } 
+      
+      
     }
 
     /**
@@ -275,7 +281,7 @@ public class BundleCompatibility {
                 if (curFile == null) {
                     // the class we are scanning has been deleted from the current version of WAS
                     // This should be a major increase
-                    major_reason.append(htmlTwoLineBreaks + "The class/interface " + getClassName(changeClass) + " has been deleted from the package.");
+                    major_reason.append(twoLineBreaks + "The class/interface " + getClassName(changeClass) + " has been deleted from the package.");
                     //majorChange.update(reason, changeClass);
                     is_major_change = true;
                     // only replace the fatal class if not set as the class won't be found in cmvc due to the fact it has been deleted.
@@ -293,10 +299,10 @@ public class BundleCompatibility {
                     BinaryCompatibilityStatus bcs = newcd.getBinaryCompatibleStatus(oldcv.getClassDeclaration());
 
                     if (!bcs.isCompatible()) {
-                        major_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following changes have been made since the last release.");
+                        major_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following changes have been made since the last release.");
                         // break binary compatibility
                         for (String reason : bcs) {
-                            major_reason.append(htmlOneLineBreak).append(reason);
+                            major_reason.append(oneLineBreak).append(reason);
                         }
                         is_major_change = true;
                         fatal_class = changeClass;
@@ -319,15 +325,15 @@ public class BundleCompatibility {
                                     if (extraMethod.isAbstract()) {
                                         foundNewAbstract = true;
                                         containsAbstract = true;
-                                        subRemarks.append(htmlOneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc()));
+                                        subRemarks.append(oneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc()));
                                     } else {
                                         //only list one abstract method, no need to list all
                                         containsConcrete = true;
-                                        concreteSubRemarks = htmlOneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc());
+                                        concreteSubRemarks = oneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc());
                                     }
                                 } else {
                                     containsConcrete = true;
-                                    concreteSubRemarks = htmlOneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc());
+                                    concreteSubRemarks = oneLineBreak + SemanticVersioningUtils.getReadableMethodSignature(extraMethod.getName(), extraMethod.getDesc());
                                     break;
                                 }
                             }
@@ -340,10 +346,10 @@ public class BundleCompatibility {
                             }
                             if (containsAbstract) {
 
-                                minor_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following abstract methods have been added since the last release of WAS.");
+                                minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following abstract methods have been added since the last release of WAS.");
                                 minor_reason.append(subRemarks);
                             } else {
-                                minor_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following method has been added since the last release of WAS.");
+                                minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following method has been added since the last release of WAS.");
                                 minor_reason.append(concreteSubRemarks);
                             }
                         }
@@ -353,11 +359,11 @@ public class BundleCompatibility {
                             for (FieldDeclaration field : newcd.getExtraFields(oldcd)) {
                                 if (field.isPublic() || field.isProtected()) {
                                     is_minor_change = true;
-                                    String extraFieldRemarks = htmlOneLineBreak + " " + SemanticVersioningUtils.transform(field.getDesc()) + " " + field.getName();
+                                    String extraFieldRemarks = oneLineBreak + " " + SemanticVersioningUtils.transform(field.getDesc()) + " " + field.getName();
                                     if (!is_major_change) {
                                         fatal_class = changeClass;
                                     }
-                                    minor_reason.append(htmlTwoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following fields have been added since the last release of WAS.");
+                                    minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following fields have been added since the last release of WAS.");
                                     minor_reason.append(extraFieldRemarks);
                                     break;
                                 }
@@ -474,28 +480,34 @@ public class BundleCompatibility {
         }
         return versionCorrect;
     }
+    private String getRecommendedVersion( VERSION_CHANGE_TYPE status, String oldVersionStr) {
+      Version oldVersion = Version.parseVersion(oldVersionStr);
+      Version recommendedNewVersion;
+      
+      if (status == BundleCompatibility.VERSION_CHANGE_TYPE.MAJOR_CHANGE) {
+          recommendedNewVersion = new Version(oldVersion.getMajor() + 1, 0, 0);
+      } else if (status == BundleCompatibility.VERSION_CHANGE_TYPE.MINOR_CHANGE) {
+          recommendedNewVersion = new Version(oldVersion.getMajor(), oldVersion.getMinor() + 1, 0);
+      } else {
+          recommendedNewVersion = oldVersion;
+      }
+      return recommendedNewVersion.toString();
+    }
 
     private String getPkgStatusText(String pkgName, VERSION_CHANGE_TYPE status, String oldVersionStr, String newVersionStr, String reason, String key_class) {
 
-        String modified_key_class = key_class;
-        if (key_class.endsWith(SemanticVersioningUtils.classExt)) {
-            modified_key_class = key_class.substring(0, key_class.lastIndexOf(SemanticVersioningUtils.classExt)) + SemanticVersioningUtils.javaExt;
+       
+        
+
+        if (!isVersionCorrect(status, oldVersionStr, newVersionStr)) {
+          return "The package " + pkgName + " has the following changes:" + reason + "\r\nThe package version should be " + getRecommendedVersion(status, oldVersionStr) + ".";
+        } else {
+          return "";
         }
-
-        return "<package name=\"" + pkgName + "\"" + getStatusText(status, oldVersionStr, newVersionStr) + "\" reason=\"" + transformForXml(reason) + "\" key_class=\"" + modified_key_class + "\" change=\"" + status.text() + "\"/>";
+        
     }
 
-    private String getStatusText(VERSION_CHANGE_TYPE status, String oldVersionStr, String newVersionStr) {
-
-        VersionChange versionChange = new VersionChange(status, oldVersionStr, newVersionStr);
-        return versionChange.toString();
-    }
-
-    private String transformForXml(String str) {
-        str = str.replaceAll("<", "&lt;");
-        str = str.replaceAll(">", "&gt;");
-        return str;
-    }
+   
 
     private String getClassName(String fullClassPath) {
         String[] chunks = fullClassPath.split("/");
