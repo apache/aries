@@ -129,11 +129,11 @@ extends AbstractMojo
         String bundleElement = bundleCompatibility.getBundleElement();
         String pkgElement = bundleCompatibility.getPkgElements().toString();
         boolean failed = false;
-        if (bundleElement.trim().length() >0){
+        if ((bundleElement != null) && (bundleElement.trim().length() >0)){
           getLog().error(bundleElement + "\r\n");
           failed = true;
         }
-        if (pkgElement.trim().length() >0 ) {
+        if ((pkgElement != null) && (pkgElement.trim().length() >0 )) {
           getLog().error(pkgElement);
           failed = true;
         }
