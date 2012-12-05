@@ -18,37 +18,49 @@
  */
 package org.apache.aries.subsystem.obr.internal;
 
-import org.apache.aries.subsystem.core.ResourceResolver;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.repository.Repository;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
+	private final Map<ServiceReference<RepositoryAdmin>, ServiceRegistration<Repository>> registrations = Collections.synchronizedMap(new HashMap<ServiceReference<RepositoryAdmin>, ServiceRegistration<Repository>>());
+    
+    private ServiceTracker<RepositoryAdmin, RepositoryAdmin> tracker;
 
-    private BundleContext bundleContext;
-    private ServiceRegistration registration;
-    private ServiceTracker repositoryAdminTracker;
-
-    public void start(BundleContext context) throws Exception {
-        bundleContext = context;
-        repositoryAdminTracker = new ServiceTracker(bundleContext,
-                                                    RepositoryAdmin.class.getName(),
-                                                    null) {
-            public Object addingService(ServiceReference reference) {
-                registration = bundleContext.registerService(ResourceResolver.class.getName(),
-                                                             new ObrResourceResolver(repositoryAdminTracker),
-                                                             null);
+    @Override
+    public void start(final BundleContext context) {
+        tracker = new ServiceTracker<RepositoryAdmin, RepositoryAdmin>(context, RepositoryAdmin.class.getName(), null) {
+            @Override
+        	public RepositoryAdmin addingService(ServiceReference<RepositoryAdmin> reference) {
+                registrations.put(reference, context.registerService(
+                		Repository.class,
+                		new RepositoryAdminRepository(context.getService(reference)),
+                		null));
                 return super.addingService(reference);
             }
+            
+            @Override
+            public void removedService(ServiceReference<RepositoryAdmin> reference, RepositoryAdmin service) {
+            	ServiceRegistration<Repository> registration = registrations.get(reference);
+            	if (registration == null)
+            		return;
+            	registration.unregister();
+            	super.removedService(reference, service);
+            }
         };
-        repositoryAdminTracker.open();
+        tracker.open();
     }
 
-    public void stop(BundleContext context) throws Exception {
-        registration.unregister();
-        repositoryAdminTracker.close();
+    @Override
+    public void stop(BundleContext context) {
+        tracker.close();
     }
 }
