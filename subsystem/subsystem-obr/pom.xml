@@ -21,8 +21,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>0.4</version>
+        <artifactId>java6-parent</artifactId>
+        <version>1.0.0</version>
         <relativePath />
     </parent>
 
@@ -30,8 +30,8 @@
     <artifactId>org.apache.aries.subsystem.obr</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystem OBR</name>
-    <version>0.1-SNAPSHOT</version>
-    <description>Subsystems OBR support</description>
+    <version>1.0.0-SNAPSHOT</version>
+    <description>Subsystems OBR support.</description>
 
      <scm>
          <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-obr</connection>
@@ -49,25 +49,20 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
+    	<dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.apache.aries.subsystem.api</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -75,18 +70,22 @@
             <version>1.6.4</version>
         </dependency>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+    	<dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
