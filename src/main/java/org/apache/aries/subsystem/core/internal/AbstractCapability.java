@@ -41,7 +41,7 @@ public abstract class AbstractCapability implements Capability {
 	
 	@Override
 	public String toString() {
-		return new StringBuffer().append("[Capability: ")
+		return new StringBuilder().append("[Capability: ")
 				.append("namespace=").append(getNamespace())
 				.append(", attributes=").append(getAttributes())
 				.append(", directives=").append(getDirectives())
