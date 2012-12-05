@@ -51,7 +51,19 @@ public class BundleResourceInstaller extends ResourceInstaller {
 		private final BundleRevision revision;
 		
 		public BundleConstituent(Resource resource, BundleRevision revision) {
-			this.resource = resource;
+			if (resource instanceof BundleRevision) {
+				try {
+					this.resource = new BundleRevisionResource((BundleRevision)resource);
+				}
+				catch (SubsystemException e) {
+					throw e;
+				}
+				catch (Exception e) {
+					throw new SubsystemException(e);
+				}
+			}
+			else
+				this.resource = resource;
 			this.revision = revision;
 		}
 
