@@ -66,6 +66,7 @@ public class RegionContextBundleHelper {
 	private static Manifest createManifest(String symbolicName) {
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+		manifest.getMainAttributes().putValue(org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION, "2");
 		manifest.getMainAttributes().putValue(Constants.BundleSymbolicName, symbolicName);
 		manifest.getMainAttributes().putValue(Constants.BundleVersion, VERSION.toString());
 		return manifest;
