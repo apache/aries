@@ -43,6 +43,14 @@ public class ProvideCapabilityHeader implements CapabilityHeader<ProvideCapabili
 				parameters.put(DIRECTIVE_EFFECTIVE, EffectiveDirective.DEFAULT);
 		}
 		
+		private static String removeQuotes(String value) {
+			if (value == null)
+				return null;
+			if (value.startsWith("\"") && value.endsWith("\""))
+				return value.substring(1, value.length() - 1);
+			return value;
+		}
+		
 		private final String path;
 		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
 		
@@ -55,14 +63,14 @@ public class ProvideCapabilityHeader implements CapabilityHeader<ProvideCapabili
 			while (matcher.find()) {
 				if (":=".equals(matcher.group(2))) {
 					// This is a directive.
-					parameters.put(matcher.group(1), DirectiveFactory.createDirective(matcher.group(1), matcher.group(3)));
+					parameters.put(matcher.group(1), DirectiveFactory.createDirective(matcher.group(1), removeQuotes(matcher.group(3))));
 				}
 				else if (":".equals(matcher.group(5)))
 					// This is a typed attribute with a declared version.
-					parameters.put(matcher.group(4), new TypedAttribute(matcher.group(4), matcher.group(7), matcher.group(6)));
+					parameters.put(matcher.group(4), new TypedAttribute(matcher.group(4), removeQuotes(matcher.group(7)), matcher.group(6)));
 				else
 					// This is a typed attribute without a declared version.
-					parameters.put(matcher.group(4), new TypedAttribute(matcher.group(4), matcher.group(7), TypedAttribute.Type.String));
+					parameters.put(matcher.group(4), new TypedAttribute(matcher.group(4), removeQuotes(matcher.group(7)), TypedAttribute.Type.String));
 			}
 			fillInDefaults(parameters);
 		}
