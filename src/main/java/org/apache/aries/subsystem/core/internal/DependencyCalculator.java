@@ -135,7 +135,7 @@ public class DependencyCalculator {
 			String filter = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
 			if (filter == null)
 				return;
-			Pattern pattern = Pattern.compile("\\(([^(=]+)=([^)]+)\\)");
+			Pattern pattern = Pattern.compile("\\(([^<>~(=]+)(?:=|<=|>=|~=)([^)]+)\\)");
 			Matcher matcher = pattern.matcher(filter);
 			while (matcher.find())
 				attributes.put(matcher.group(1), matcher.group(2));
