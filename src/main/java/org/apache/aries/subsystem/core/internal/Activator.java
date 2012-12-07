@@ -152,7 +152,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		synchronized (Activator.class) {
 			instance = Activator.this;
 		}
-		registerBundleEventHook();
+		BundleEventHook hook = registerBundleEventHook();
 		try {
 			subsystems = new Subsystems();
 		}
@@ -166,6 +166,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		registrar = new SubsystemServiceRegistrar(bundleContext);
 		BasicSubsystem root = subsystems.getRootSubsystem();
 		root.start();
+		hook.activate();
 	}
 	
 	private void deactivate() {
@@ -228,10 +229,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 	}
 	
-	private void registerBundleEventHook() {
+	private BundleEventHook registerBundleEventHook() {
 		Dictionary<String, Object> properties = new Hashtable<String, Object>(1);
-		properties.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.MIN_VALUE);
-		registrations.add(bundleContext.registerService(EventHook.class, new BundleEventHook(), properties));
+		properties.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.MAX_VALUE);
+		BundleEventHook result = new BundleEventHook();
+		registrations.add(bundleContext.registerService(EventHook.class, result, properties));
+		return result;
 	}
 	
 	/* Begin ServiceTrackerCustomizer methods */
