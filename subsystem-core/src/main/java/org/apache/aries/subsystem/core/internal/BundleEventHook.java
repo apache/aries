@@ -13,10 +13,10 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.eclipse.equinox.region.Region;
@@ -28,14 +28,28 @@ import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class BundleEventHook implements EventHook {
-	private final Map<Bundle, BundleRevision> bundleToRevision;
+	private final ConcurrentHashMap<Bundle, BundleRevision> bundleToRevision;
+	
+	private boolean active;
+	private List<BundleEvent> events;
 	
 	public BundleEventHook() {
-		bundleToRevision = Collections.synchronizedMap(new HashMap<Bundle, BundleRevision>());
+		bundleToRevision = new ConcurrentHashMap<Bundle, BundleRevision>();
 	}
 	
 	@Override
 	public void event(BundleEvent event, Collection<BundleContext> contexts) {
+		// Protected against deadlock when the bundle event hook receives an
+		// event before subsystems has fully initialized, in which case the
+		// events are queued and processed once initialization is complete.
+		synchronized (this) {
+			if (!active) {
+				if (events == null)
+					events = new ArrayList<BundleEvent>();
+				events.add(event);
+				return;
+			}
+		}
 		switch (event.getType()) {
 			case BundleEvent.INSTALLED:
 				handleInstalledEvent(event);
@@ -46,6 +60,15 @@ public class BundleEventHook implements EventHook {
 				handleUninstalledEvent(event);
 				break;
 		}
+	}
+	
+	synchronized void activate() {
+		active = true;
+		if (events == null)
+			return;
+		for (BundleEvent event : events)
+			event(event, null);
+		events = null;
 	}
 	
 	private void handleExplicitlyInstalledBundleBundleContext(BundleRevision originRevision, BundleRevision bundleRevision) {
