@@ -239,7 +239,6 @@
                         </goals>
                         <configuration>
                             <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint.core:1.0.0</oldArtifact>
-                            <writePackageinfos>true</writePackageinfos>
                         </configuration>
                     </execution>
                 </executions>
