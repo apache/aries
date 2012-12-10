@@ -151,7 +151,7 @@ public class SubsystemResource implements Resource {
 		computeOsgiServiceCapabilities(capabilities);
 	}
 	
-	public void computeOsgiServiceCapabilities(List<Capability> capabilities) throws InvalidSyntaxException {
+	private void computeOsgiServiceCapabilities(List<Capability> capabilities) throws InvalidSyntaxException {
 		SubsystemExportServiceHeader header = getSubsystemManifest().getSubsystemExportServiceHeader();
 		if (header == null)
 			return;
