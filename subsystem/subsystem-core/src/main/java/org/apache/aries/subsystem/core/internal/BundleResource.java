@@ -189,6 +189,9 @@ public class BundleResource implements Resource, RepositoryContent {
 					.directive(
 							Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE, 
 							service.isOptional() ? Namespace.RESOLUTION_OPTIONAL : Namespace.RESOLUTION_MANDATORY)
+					.directive(
+							Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE, 
+							service.isMultiple() ? Namespace.CARDINALITY_MULTIPLE : Namespace.CARDINALITY_SINGLE)
 					.resource(this)
 					.build());
 		}
