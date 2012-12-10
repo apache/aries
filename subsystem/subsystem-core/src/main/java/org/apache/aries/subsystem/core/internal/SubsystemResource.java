@@ -279,7 +279,7 @@ public class SubsystemResource implements Resource {
 		if (m.containsKey(requirement)) {
 			Collection<Capability> cc = m.get(requirement);
 			// TODO The following check only needs to be done on capabilities from the system repository.
-			addValidCapabilities(cc, capabilities);
+			addValidCapabilities(cc, capabilities, requirement);
 		}
 		return !capabilities.isEmpty();
 	}
@@ -322,9 +322,9 @@ public class SubsystemResource implements Resource {
 		missingResources.add(resource);
 	}
 	
-	private void addValidCapabilities(Collection<Capability> from, Collection<Capability> to) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+	private void addValidCapabilities(Collection<Capability> from, Collection<Capability> to, Requirement requirement) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		for (Capability c : from)
-			if (isValid(c))
+			if (isValid(c, requirement))
 				to.add(c);
 	}
 	
@@ -665,16 +665,19 @@ public class SubsystemResource implements Resource {
 		return !isScoped();
 	}
 	
-	private boolean isValid(Capability capability) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+	private boolean isValid(Capability capability, Requirement requirement) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace()))
 			return true;
-		Resource resource = capability.getResource();
-		Region region;
+		Region from = findRegionForCapabilityValidation(capability.getResource());
+		Region to = findRegionForCapabilityValidation(requirement.getResource());
+		return new SharingPolicyValidator(from, to).isValid(capability);
+	}
+	
+	private Region findRegionForCapabilityValidation(Resource resource) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (isInstallable(resource)) {
 			if (isContent(resource))
-				region = getRegion();
-			else
-				region = Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(parent).getRegion();
+				return getRegion();
+			return Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(parent).getRegion();
 		}
 		else {
 			// This is an already installed resource from the system repository.
@@ -682,13 +685,12 @@ public class SubsystemResource implements Resource {
 				// If it's a bundle, use region digraph to get the region in order
 				// to account for bundles in isolated regions outside of the
 				// subsystems API.
-				region = Activator.getInstance().getRegionDigraph().getRegion(((BundleRevision)resource).getBundle());
+				return Activator.getInstance().getRegionDigraph().getRegion(((BundleRevision)resource).getBundle());
 			else
 				// If it's anything else, get the region from one of the
 				// subsystems referencing it.
-				region = Activator.getInstance().getSubsystems().getSubsystemsReferencing(capability.getResource()).iterator().next().getRegion();
+				return Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource).iterator().next().getRegion();
 		}
-		return new SharingPolicyValidator(region, getRegion()).isValid(capability);
 	}
 	
 	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
