@@ -204,7 +204,7 @@ public class BundleResourceInstaller extends ResourceInstaller {
 			}
 
 			public void failed(Coordination coordination) throws Exception {
-				provisionTo.getRegion().removeBundle(bundle);
+				bundle.uninstall();
 			}
 		});
 		// Set the start level of all bundles managed (i.e. installed) by the
