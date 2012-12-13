@@ -312,7 +312,7 @@ public class BeanRecipe extends AbstractRecipe {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
                     instance = invoke(match.getKey(), null, match.getValue().toArray());
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
+                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getType().getName() + " for arguments " + args + " when instanciating bean " + getName());
@@ -330,7 +330,7 @@ public class BeanRecipe extends AbstractRecipe {
                     Map.Entry<Constructor, List<Object>> match = matches.entrySet().iterator().next();
                     instance = newInstance(match.getKey(), match.getValue().toArray());
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
+                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getType().getName() + " for arguments " + args + " when instanciating bean " + getName());
@@ -711,7 +711,7 @@ public class BeanRecipe extends AbstractRecipe {
             try {
                 invoke(initMethod, obj, (Object[]) null);
             } catch (Throwable t) {
-                throw new ComponentDefinitionException("Unable to intialize bean " + getName(), getRealCause(t));
+                throw new ComponentDefinitionException("Unable to initialize bean " + getName(), getRealCause(t));
             }
         }   
     }
