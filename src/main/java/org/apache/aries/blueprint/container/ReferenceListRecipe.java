@@ -50,8 +50,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
     private final List<ManagedCollection> collections = new ArrayList<ManagedCollection>();
     private final DynamicCollection<ServiceDispatcher> storage = new DynamicCollection<ServiceDispatcher>();
     private final List<ServiceDispatcher> unboundDispatchers = new ArrayList<ServiceDispatcher>();
-    private final Object monitor = new Object();
-    
+
     public ReferenceListRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
                          ReferenceListMetadata metadata,
