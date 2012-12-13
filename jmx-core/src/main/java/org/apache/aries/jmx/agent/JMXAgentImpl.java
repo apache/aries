@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import java.util.concurrent.TimeUnit;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -185,11 +185,6 @@ public class JMXAgentImpl implements JMXAgent {
      */
     public synchronized void registerMBean(final MBeanHandler mBeanHandler) {
         Object[] servers = getMBeanServers();
-        if (servers == null) {
-            logger.log(LogService.LOG_WARNING, "There are no MBean servers registred, can't register MBeans");
-            return;
-        }
-
         for (Object server : servers) {
             String name = mBeanHandler.getName();
             StandardMBean mbean = mBeanHandler.getMbean();
@@ -270,14 +265,21 @@ public class JMXAgentImpl implements JMXAgent {
     /**
      * @see org.apache.aries.jmx.agent.JMXAgent#stop()
      */
-    public synchronized void stop() {
+    public void stop() {
         logger.log(LogService.LOG_INFO, "Stopping JMX OSGi agent");
-        mbeanServiceTracker.close();
-        for (MBeanHandler mBeanHandler : mbeansHandlers.keySet()) {
-            mBeanHandler.close();
+        synchronized (this) {
+            mbeanServiceTracker.close();
+            for (MBeanHandler mBeanHandler : mbeansHandlers.keySet()) {
+                mBeanHandler.close();
+            }
         }
         if (registrationExecutor != null && !registrationExecutor.isShutdown()) {
             registrationExecutor.shutdown();
+            try {
+                registrationExecutor.awaitTermination(5 * 60, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                logger.log(LogService.LOG_WARNING, "Interrupted while waiting for executor shutdown", e);
+            }
         }
     }
 
@@ -301,7 +303,8 @@ public class JMXAgentImpl implements JMXAgent {
      * @return array of MBean servers.
      */
     private Object[] getMBeanServers() {
-        return mbeanServiceTracker.getServices();
+        Object[] servers = mbeanServiceTracker.getServices();
+        return servers != null ? servers : new Object[0];
     }
 
     /**
