@@ -83,6 +83,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     /** The list of listeners for this reference.  This list will be lazy created */
     protected List<Listener> listeners;
 
+    protected final Object monitor = new Object();
     private final List<ServiceReference> references = new ArrayList<ServiceReference>();
     private final AtomicBoolean started = new AtomicBoolean();
     private final AtomicBoolean satisfied = new AtomicBoolean();
@@ -129,7 +130,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 satisfied.set(optional);
                 // Synchronized block on references so that service events won't interfere with initial references tracking
                 // though this may not be sufficient because we don't control ordering of those events
-                synchronized (references) {
+                synchronized (monitor) {
                     getBundleContextForServiceLookup().addServiceListener(this, getOsgiFilter());
                     ServiceReference[] references = getBundleContextForServiceLookup().getServiceReferences(null, getOsgiFilter());
                     if (references != null) {
@@ -149,7 +150,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     public void stop() {
         if (started.compareAndSet(true, false)) {
-            synchronized (references) {
+            synchronized (monitor) {
                 getBundleContextForServiceLookup().removeServiceListener(this);
                 doStop();
                 for (Iterator<ServiceReference> it = references.iterator(); it.hasNext();) {
@@ -330,7 +331,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private void serviceAdded(ServiceReference ref) {
         LOGGER.debug("Tracking reference {} for OSGi service {}", ref, getOsgiFilter());
         if (isStarted()) {
-            synchronized (references) {
+            synchronized (monitor) {
                 if (references.contains(ref)) {
                     return;
                 }
@@ -344,7 +345,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private void serviceModified(ServiceReference ref) {
         // ref must be in references and must be satisfied
         if (isStarted()) {
-            synchronized (references) {
+            synchronized (monitor) {
                 if (references.contains(ref)) {
                     track(ref);
                 }
@@ -357,7 +358,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             LOGGER.debug("Untracking reference {} for OSGi service {}", ref, getOsgiFilter());
             boolean removed;
             boolean satisfied;
-            synchronized (references) {
+            synchronized (monitor) {
                 removed = references.remove(ref);
                 satisfied = optional || !references.isEmpty();
             }
@@ -439,13 +440,13 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
     
     public List<ServiceReference> getServiceReferences() {
-        synchronized (references) {
+        synchronized (monitor) {
             return new ArrayList<ServiceReference>(references);
         }
     }
 
     public ServiceReference getBestServiceReference() {
-        synchronized (references) {
+        synchronized (monitor) {
             int length = references.size();
             if (length == 0) { /* if no service is being tracked */
                 return null;
