@@ -151,7 +151,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     public void stop() {
         if (started.compareAndSet(true, false)) {
             synchronized (monitor) {
-                getBundleContextForServiceLookup().removeServiceListener(this);
+                try {
+                    getBundleContextForServiceLookup().removeServiceListener(this);
+                } catch (IllegalStateException e) {
+                    // Ignore in case bundle context is already invalidated
+                }
                 doStop();
                 for (Iterator<ServiceReference> it = references.iterator(); it.hasNext();) {
                     ServiceReference ref = it.next();
