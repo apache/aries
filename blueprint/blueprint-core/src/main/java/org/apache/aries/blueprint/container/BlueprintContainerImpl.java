@@ -159,14 +159,14 @@ public class BlueprintContainerImpl
                                   NamespaceHandlerRegistry handlers, ExecutorService executor, ScheduledExecutorService timer,
                                   List<Object> pathList, ProxyManager proxyManager) {
         this.bundleContext = bundleContext;
-        this.bundle = bundleContext.getBundle();
+        this.bundle = bundleContext != null ? bundleContext.getBundle() : null;
         this.extenderBundle = extenderBundle;
         this.eventDispatcher = eventDispatcher;
         this.handlers = handlers;
         this.pathList = pathList;
         this.converter = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
-        this.executors = new ExecutorServiceWrapper(executor);
+        this.executors = executor != null ? new ExecutorServiceWrapper(executor) : null;
         this.timer = timer;
         this.processors = new ArrayList<Processor>();
         if (System.getSecurityManager() != null) {
