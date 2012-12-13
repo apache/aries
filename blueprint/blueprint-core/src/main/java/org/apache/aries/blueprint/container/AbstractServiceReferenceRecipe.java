@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.blueprint.BlueprintConstants;
@@ -304,21 +305,26 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     public void serviceChanged(final ServiceEvent event) {
         final int eventType = event.getType();
         final ServiceReference ref = event.getServiceReference();
-        blueprintContainer.getExecutors().submit(new Runnable() {
-            public void run() {
-                switch (eventType) {
-                    case ServiceEvent.REGISTERED:
-                        serviceAdded(ref);
-                        break;
-                    case ServiceEvent.MODIFIED:
-                        serviceModified(ref);
-                        break;
-                    case ServiceEvent.UNREGISTERING:
-                        serviceRemoved(ref);
-                        break;
+        try {
+            blueprintContainer.getExecutors().submit(new Runnable() {
+                public void run() {
+                    switch (eventType) {
+                        case ServiceEvent.REGISTERED:
+                            serviceAdded(ref);
+                            break;
+                        case ServiceEvent.MODIFIED:
+                            serviceModified(ref);
+                            break;
+                        case ServiceEvent.UNREGISTERING:
+                            serviceRemoved(ref);
+                            break;
+                    }
                 }
-            }
-        });
+            });
+        } catch (RejectedExecutionException e) {
+            // The job has been rejected because the executor is shut down
+            // so ignore the exception
+        }
     }
 
     private void serviceAdded(ServiceReference ref) {
