@@ -61,7 +61,6 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     private volatile ServiceReference trackedServiceReference;
     private volatile Object trackedService;
     private Object defaultBean;
-    private final Object monitor = new Object();
 
     private final Collection<Class<?>> proxyChildBeanClasses;
     private final Collection<WeakReference<Voidable>> proxiedChildren;
