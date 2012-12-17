@@ -49,6 +49,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
-public class BlueprintExtender implements BundleActivator, BundleTrackerCustomizer {
+public class BlueprintExtender implements BundleActivator, BundleTrackerCustomizer, SynchronousBundleListener {
 
     /** The QuiesceParticipant implementation class name */
     private static final String QUIESCE_PARTICIPANT_CLASS = "org.apache.aries.quiesce.participant.QuiesceParticipant";
@@ -92,6 +93,12 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         });
         eventDispatcher = new BlueprintEventDispatcher(ctx, executors);
 
+        // Ideally we'd want to only track STARTING and ACTIVE bundle, but this is not supported
+        // when using equinox composites.  This would ensure that no STOPPING event is lost while
+        // tracking the initial bundles. To work around this issue, we need to register
+        // a synchronous bundle listener that will ensure the stopping event will be correctly
+        // handled.
+        context.addBundleListener(this);
         int mask = Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.STOPPING | Bundle.ACTIVE;
         bt = new RecursiveBundleTracker(ctx, mask, this);
         
@@ -101,7 +108,12 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             bt.open();
           }
           public void serviceLost() {
-            // TODO we should probably close here, not sure.
+            while (!containers.isEmpty()) {
+              for (Bundle bundle : getBundlesToDestroy()) {
+                destroyContainer(bundle);
+              }
+            }
+            bt.close();
           }
           public void serviceReplaced() {
           }
@@ -155,6 +167,20 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     }
 
     /*
+     * SynchronousBundleListener
+     */
+
+    public void bundleChanged(BundleEvent event) {
+        Bundle bundle = event.getBundle();
+        if (bundle.getState() != Bundle.ACTIVE && bundle.getState() != Bundle.STARTING) {
+            // The bundle is not in STARTING or ACTIVE state anymore
+            // so destroy the context
+            destroyContainer(bundle);
+            return;
+        }
+    }
+
+    /*
      * BundleTrackerCustomizer
      */
 
@@ -198,11 +224,20 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                 // This bundle is not a blueprint bundle, so ignore it
                 return false;
             }
-            BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(),
+            ProxyManager pm = proxyManager.getService();
+            if (pm == null) {
+                // The pm isn't available.  It may be because it is being untracked
+                return false;
+            }
+            BundleContext bundleContext = bundle.getBundleContext();
+            if (bundleContext == null) {
+                // The bundle has been stopped in the mean time
+                return false;
+            }
+            BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle, bundleContext,
                                                                 context.getBundle(), eventDispatcher,
                                                                 handlers, getExecutorService(bundle),
-                                                                executors, paths,
-                                                                proxyManager.getService());
+                                                                executors, paths, pm);
             synchronized (containers) {
                 if (containers.putIfAbsent(bundle, blueprintContainer) != null) {
                     return false;
@@ -373,7 +408,9 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                     }
                 }
             }
-            bundlesToDestroy.add(ref.getBundle());
+            if (ref != null) {
+                bundlesToDestroy.add(ref.getBundle());
+            }
             LOGGER.debug("Selected bundle {} for destroy (lowest ranking service)", bundlesToDestroy);
         }
         return bundlesToDestroy;
