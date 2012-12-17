@@ -82,7 +82,6 @@ public class ServiceRecipe extends AbstractRecipe {
     private final List<Recipe> explicitDependencies;
 
     private Map properties;
-    private final AtomicBoolean registered = new AtomicBoolean();
     private final AtomicReference<ServiceRegistration> registration = new AtomicReference<ServiceRegistration>();
     private Map registrationProperties;
     private List<ServiceListener> listeners;
@@ -149,7 +148,7 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     public boolean isRegistered() {
-        return registered.get();
+        return registration.get() != null;
     }
 
     public void register() {
@@ -157,47 +156,50 @@ public class ServiceRecipe extends AbstractRecipe {
         if (state != Bundle.ACTIVE && state != Bundle.STARTING) {
             return;
         }
-        if (registered.compareAndSet(false, true)) {
-            createExplicitDependencies();
-            
-            Hashtable props = new Hashtable();
-            if (properties == null) {
-                properties = (Map) createRecipe(propertiesRecipe);
-            }
-            props.putAll(properties);
-            if (metadata.getRanking() == 0) {
-                props.remove(Constants.SERVICE_RANKING);
-            } else {
-                props.put(Constants.SERVICE_RANKING, metadata.getRanking());
-            }
-            String componentName = getComponentName();
-            if (componentName != null) {
-                props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
-            } else {
-                props.remove(BlueprintConstants.COMPONENT_NAME_PROPERTY);
-            }
-            for (ServiceProcessor processor : blueprintContainer.getProcessors(ServiceProcessor.class)) {
-                processor.updateProperties(new PropertiesUpdater(), props);
-            }
+        createExplicitDependencies();
 
-            registrationProperties = props;
+        Hashtable props = new Hashtable();
+        if (properties == null) {
+            properties = (Map) createRecipe(propertiesRecipe);
+        }
+        props.putAll(properties);
+        if (metadata.getRanking() == 0) {
+            props.remove(Constants.SERVICE_RANKING);
+        } else {
+            props.put(Constants.SERVICE_RANKING, metadata.getRanking());
+        }
+        String componentName = getComponentName();
+        if (componentName != null) {
+            props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
+        } else {
+            props.remove(BlueprintConstants.COMPONENT_NAME_PROPERTY);
+        }
+        for (ServiceProcessor processor : blueprintContainer.getProcessors(ServiceProcessor.class)) {
+            processor.updateProperties(new PropertiesUpdater(), props);
+        }
 
-            Set<String> classes = getClasses();
-            String[] classArray = classes.toArray(new String[classes.size()]);
+        registrationProperties = props;
 
-            LOGGER.debug("Registering service {} with interfaces {} and properties {}",
-                         new Object[] { name, classes, props });
+        Set<String> classes = getClasses();
+        String[] classArray = classes.toArray(new String[classes.size()]);
 
-            registration.set(blueprintContainer.registerService(classArray, new TriggerServiceFactory(this, metadata), props));            
+        LOGGER.debug("Registering service {} with interfaces {} and properties {}",
+                     new Object[] { name, classes, props });
+
+        if (registration.get() == null) {
+            ServiceRegistration reg = blueprintContainer.registerService(classArray, new TriggerServiceFactory(this, metadata), props);
+            if (!registration.compareAndSet(null, reg) && registration.get() != reg) {
+                reg.unregister();
+            }
         }
     }
 
     public void unregister() {
-        if (registered.compareAndSet(true, false)) {
+        ServiceRegistration reg = registration.get();
+        if (reg != null) {
             LOGGER.debug("Unregistering service {}", name);
             // This method needs to allow reentrance, so if we need to make sure the registration is
             // set to null before actually unregistering the service
-            ServiceRegistration reg = registration.get();
             if (listeners != null) {
                 LOGGER.debug("Calling listeners for service unregistration");
                 for (ServiceListener listener : listeners) {
@@ -307,7 +309,7 @@ public class ServiceRecipe extends AbstractRecipe {
                     listeners = Collections.emptyList();
                 }
                 LOGGER.debug("Listeners created: {}", listeners);
-                if (registered.get()) {
+                if (registration.get() != null) {
                     LOGGER.debug("Calling listeners for initial service registration");
                     for (ServiceListener listener : listeners) {
                         listener.register(service, registrationProperties);
