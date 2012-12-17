@@ -138,7 +138,7 @@ public class BlueprintContainerImpl
     private Set<URI> namespaces;
     private State state = State.Unknown;
     private NamespaceHandlerSet handlerSet;
-    private boolean destroyed;
+    private final AtomicBoolean destroyed = new AtomicBoolean(false);
     private Parser parser;
     private BlueprintRepository repository;
     private ServiceRegistration registration;
@@ -151,15 +151,15 @@ public class BlueprintContainerImpl
     private ScheduledFuture timeoutFuture;
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private List<ServiceRecipe> services;
-    private AccessControlContext accessControlContext;
+    private final AccessControlContext accessControlContext;
     private final IdSpace tempRecipeIdSpace = new IdSpace();
-    private ProxyManager proxyManager;
+    private final ProxyManager proxyManager;
 
-    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher,
+    public BlueprintContainerImpl(Bundle bundle, BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher,
                                   NamespaceHandlerRegistry handlers, ExecutorService executor, ScheduledExecutorService timer,
                                   List<Object> pathList, ProxyManager proxyManager) {
+        this.bundle = bundle;
         this.bundleContext = bundleContext;
-        this.bundle = bundleContext != null ? bundleContext.getBundle() : null;
         this.extenderBundle = extenderBundle;
         this.eventDispatcher = eventDispatcher;
         this.handlers = handlers;
@@ -171,6 +171,8 @@ public class BlueprintContainerImpl
         this.processors = new ArrayList<Processor>();
         if (System.getSecurityManager() != null) {
             this.accessControlContext = BlueprintDomainCombiner.createAccessControlContext(bundleContext);
+        } else {
+            this.accessControlContext = null;
         }
         this.proxyManager = proxyManager;
     }
@@ -233,6 +235,9 @@ public class BlueprintContainerImpl
 
     public void reload() {
         synchronized (scheduled) {
+            if (destroyed.get()) {
+                return;
+            }
             tidyupComponents();
             this.componentDefinitionRegistry.reset();
             this.repository = null;
@@ -263,7 +268,7 @@ public class BlueprintContainerImpl
     private void doRun() {
         try {
             for (;;) {
-                if (destroyed) {
+                if (destroyed.get()) {
                     return;
                 }
                 if (bundle.getState() != Bundle.ACTIVE && bundle.getState() != Bundle.STARTING) {
@@ -317,6 +322,9 @@ public class BlueprintContainerImpl
                         Runnable r = new Runnable() {
                             public void run() {
                                 synchronized (scheduled) {
+                                    if (destroyed.get()) {
+                                        return;
+                                    }
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
                                     String[] missingDependecies = getMissingDependencies();
@@ -607,6 +615,9 @@ public class BlueprintContainerImpl
     }
 
     public void notifySatisfaction(SatisfiableRecipe satisfiable) {
+        if (destroyed.get()) {
+            return;
+        }
         LOGGER.debug("Notified satisfaction {} in bundle {}: {}",
                 new Object[] { satisfiable.getName(), bundle.getSymbolicName(), satisfiable.isSatisfied() });
         if (state == State.Create || state == State.Created ) {
@@ -727,7 +738,7 @@ public class BlueprintContainerImpl
     }
     
     public Object getComponentInstance(String id) throws NoSuchComponentException {
-        if (repository == null) {
+        if (repository == null || destroyed.get()) {
             throw new NoSuchComponentException(id);
         }
         try {
@@ -827,38 +838,30 @@ public class BlueprintContainerImpl
     }
 
     public void destroy() {
-//        synchronized (scheduled) {
-            destroyed = true;
-            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundle(), getExtenderBundle()));
-            executors.shutdownNow();
+        synchronized (scheduled) {
+            destroyed.set(true);
+        }
+        eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundle(), getExtenderBundle()));
+        executors.shutdownNow();
+        if (handlerSet != null) {
+            handlerSet.removeListener(this);
+            handlerSet.destroy();
+        }
 
-            cancelFutureIfPresent();
-            AriesFrameworkUtil.safeUnregisterService(registration);
+        try {
+            executors.awaitTermination(5 * 60, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOGGER.debug("Interrupted waiting for executor to shut down");
+        }
 
-            unregisterServices();
+        tidyupComponents();
 
-            if (handlerSet != null) {
-                handlerSet.removeListener(this);
-                handlerSet.destroy();
-            }
-
-            destroyComponents();
-
-            untrackServiceReferences();
-
-            try {
-                executors.awaitTermination(5 * 60, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                LOGGER.debug("Interrupted waiting for executor to shut down");
-            }
-
-            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundle(), getExtenderBundle()));
-            LOGGER.debug("Blueprint container destroyed: {}", this.bundleContext);
-//        }
+        eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundle(), getExtenderBundle()));
+        LOGGER.debug("Blueprint container destroyed: {}", this.bundleContext);
     }
     
     protected void quiesce() {
-        destroyed = true;
+        destroyed.set(true);
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundle(), getExtenderBundle()));
 
         cancelFutureIfPresent();
@@ -886,6 +889,9 @@ public class BlueprintContainerImpl
     public void namespaceHandlerUnregistered(URI uri) {
         if (namespaces != null && namespaces.contains(uri)) {
             synchronized (scheduled) {
+                if (destroyed.get()) {
+                    return;
+                }
                 tidyupComponents();
                 this.componentDefinitionRegistry.reset();
                 this.repository = null;
@@ -897,9 +903,9 @@ public class BlueprintContainerImpl
 
     private void tidyupComponents()
     {
+      untrackServiceReferences();
       unregisterServices();
       destroyComponents();
-      untrackServiceReferences();
     }
 
     public void injectBeanInstance(BeanMetadata bmd, Object o) 
