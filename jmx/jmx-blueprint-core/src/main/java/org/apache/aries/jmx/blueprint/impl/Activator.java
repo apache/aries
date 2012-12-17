@@ -85,8 +85,7 @@ public class Activator implements BundleActivator {
         public void removedService(ServiceReference servicereference, Object obj) {
             try {
                 LOGGER.debug("Removing MBeanServer: {}", servicereference);
-                final MBeanServer mbeanServer = (MBeanServer) bundleContext.getService(servicereference);
-                Activator.this.deregisterMBeans(mbeanServer);
+                Activator.this.deregisterMBeans((MBeanServer) obj);
             } catch (Throwable e) {
                 LOGGER.debug("uncaught exception in removedService", e);
             }
