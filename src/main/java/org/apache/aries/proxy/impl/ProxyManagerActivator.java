@@ -24,11 +24,13 @@ import java.util.Hashtable;
 import org.apache.aries.proxy.ProxyManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 public class ProxyManagerActivator implements BundleActivator 
 {
   private static final boolean ASM_PROXY_SUPPORTED;
   private AbstractProxyManager managerService;
+  private ServiceRegistration registration;
   
   static
   {
@@ -68,10 +70,11 @@ public class ProxyManagerActivator implements BundleActivator
       managerService = new JdkProxyManager();
     }
     
-    context.registerService(ProxyManager.class.getName(), managerService, null);
+    registration = context.registerService(ProxyManager.class.getName(), managerService, null);
   }
 
   public void stop(BundleContext context)
   {
+    registration.unregister();
   }
 }
