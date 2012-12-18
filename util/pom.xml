@@ -27,7 +27,7 @@
 
     <artifactId>org.apache.aries.util</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>Apache Aries Util</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util-r42</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -120,6 +120,23 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>default-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>version-check</goal>
+                        </goals>
+                        <configuration>
+                            <oldArtifact>org.apache.aries:org.apache.aries.util:1.0.0</oldArtifact>
+                        </configuration>
+                    </execution>
+                </executions>
+        </plugin>
         </plugins>
     </build>
 </project>
