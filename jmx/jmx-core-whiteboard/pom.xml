@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.jmx.core.whiteboard</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Core via Whiteboards</name>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <description>
         This bundle contains an implementation of the JMX Core specification which registers the
         MBeans as services in the service registry. This allows the whiteboard module to be
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.core</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>2.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -102,5 +102,27 @@
         </dependency>
 
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>default-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>version-check</goal>
+                        </goals>
+                        <configuration>
+                            <oldArtifact>org.apache.aries.jmx:org.apache.aries.jmx.core.whiteboard:1.0.0</oldArtifact>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
  </project>
