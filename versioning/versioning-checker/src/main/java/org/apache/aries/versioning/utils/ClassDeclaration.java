@@ -421,14 +421,7 @@ public class ClassDeclaration extends GenericDeclaration {
     private boolean isFieldTypeSame(FieldDeclaration bef_fd, FieldDeclaration cur_fd) {
         boolean descSame = bef_fd.getDesc().equals(cur_fd.getDesc());
         if (descSame) {
-            // check whether the signatures are the same
-            if ((bef_fd.getSignature() == null) && (cur_fd.getSignature() == null)) {
-
-                return true;
-            }
-            if ((bef_fd.getSignature() != null) && (bef_fd.getSignature().equals(cur_fd.getSignature()))) {
-                return true;
-            }
+            return true;
         }
         return false;
 
