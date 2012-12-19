@@ -82,7 +82,7 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
         // Added under Aries-822, with reference 
         // to https://www.osgi.org/bugzilla/show_bug.cgi?id=138 
         if (result == null || result == obj) {
-            result = getObjectInstanceViaContextDotObjectFactories(obj, name, nameCtx, environment);
+            result = getObjectInstanceViaContextDotObjectFactories(obj, name, nameCtx, environment, attrs);
         } 
         
         return (result == null) ? obj : result;
