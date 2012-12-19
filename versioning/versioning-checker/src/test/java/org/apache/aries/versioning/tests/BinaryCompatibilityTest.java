@@ -45,8 +45,6 @@ import java.util.HashSet;
 import org.apache.aries.versioning.utils.BinaryCompatibilityStatus;
 import org.apache.aries.versioning.utils.MethodDeclaration;
 import org.apache.aries.versioning.utils.SemanticVersioningClassVisitor;
-
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
@@ -326,11 +324,11 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
-        assertEquals(new HashSet<String>(Arrays.asList(new String[] {"The public field more has changed its type.",
+        assertEquals(new HashSet<String>(Arrays.asList(new String[] {
                 "The public field more becomes less accessible."})), new HashSet<String>(bcs));
         assertTrue(
                 "Changing the declared access of a field to permit less access  , this should break binary compatibility.",
-                bcs.size() == 2);
+                bcs.size() == 1);
     }
 
     /**
