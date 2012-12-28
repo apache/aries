@@ -405,17 +405,20 @@ public class ClassDeclaration extends GenericDeclaration {
 
     }
 
-    private Long getSerialVersionUID(ClassDeclaration cd) {
-        FieldDeclaration serialID = cd.getAllFields().get(SemanticVersioningUtils.SERIAL_VERSION_UTD);
-        if (serialID != null) {
-            if (serialID.isFinal() && serialID.isStatic() && Type.LONG_TYPE.equals(Type.getType(serialID.getDesc()))) {
-                if (serialID.getValue() != null) {
-                    return (Long) (serialID.getValue());
-                }
-            }
+    private long getSerialVersionUID(ClassDeclaration cd) {
+      FieldDeclaration serialID = cd.getAllFields().get(SemanticVersioningUtils.SERIAL_VERSION_UTD);
+      if (serialID != null) {
+        if (serialID.isFinal() && serialID.isStatic() && Type.LONG_TYPE.equals(Type.getType(serialID.getDesc()))) {
+          if (serialID.getValue() != null) {
+            return (Long)serialID.getValue();
+
+          } else {
+            return 0;
+          }
         }
+      }
         // get the generated value
-        return cd.getSerialVisitor() == null? null: cd.getSerialVisitor().getComputeSerialVersionUID();
+        return cd.getSerialVisitor().getComputeSerialVersionUID();
     }
 
     private boolean isFieldTypeSame(FieldDeclaration bef_fd, FieldDeclaration cur_fd) {
