@@ -46,6 +46,7 @@ import org.apache.aries.versioning.utils.FieldDeclaration;
 import org.apache.aries.versioning.utils.MethodDeclaration;
 import org.apache.aries.versioning.utils.SemanticVersioningClassVisitor;
 import org.apache.aries.versioning.utils.SemanticVersioningUtils;
+import org.apache.aries.versioning.utils.SerialVersionClassVisitor;
 import org.objectweb.asm.ClassReader;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -533,7 +534,9 @@ public class BundleCompatibility {
   }
 
   private SemanticVersioningClassVisitor getVisitor(IFile file, URLClassLoader loader) {
-    SemanticVersioningClassVisitor oldcv = new SemanticVersioningClassVisitor(loader);
+   
+    SerialVersionClassVisitor sv = new SerialVersionClassVisitor(null);
+    SemanticVersioningClassVisitor oldcv = new SemanticVersioningClassVisitor(loader, sv);
     try {
       ClassReader cr = new ClassReader(file.open());
       cr.accept(oldcv, 0);
