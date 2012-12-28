@@ -31,7 +31,7 @@
     <artifactId>org.apache.aries.transaction.manager</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Transaction Manager</name> 
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
 
      <scm>
          <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager</connection>
@@ -40,7 +40,7 @@
      </scm>
     <properties>
         <aries.osgi.export>
-            org.apache.geronimo.transaction.manager;version="2.2.1";provide:=true,
+            org.apache.geronimo.transaction.manager;version="2.3.0";provide:=true,
             org.apache.geronimo.transaction*;version="2.2.1",
             javax.transaction*;version="1.1.0"
         </aries.osgi.export>
@@ -242,6 +242,24 @@
                             <createSourcesJar>true</createSourcesJar>
                             <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>default-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>version-check</goal>
+                        </goals>
+                        <configuration>
+                            <oldArtifact>org.apache.aries.transaction:org.apache.aries.transaction.manager:1.0.0</oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
