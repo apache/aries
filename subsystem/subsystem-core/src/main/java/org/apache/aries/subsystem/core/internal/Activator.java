@@ -66,7 +66,9 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		logger.debug(LOG_EXIT, "checkInstance");
 	}
 	
-	private BundleContext bundleContext;
+	// @GuardedBy("this")
+	private BundleEventHook bundleEventHook;
+	private volatile BundleContext bundleContext;
 	private volatile Coordinator coordinator;
 	private volatile ModelledResourceManager modelledResourceManager;
 	private volatile SubsystemServiceRegistrar registrar;
@@ -152,7 +154,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		synchronized (Activator.class) {
 			instance = Activator.this;
 		}
-		BundleEventHook hook = registerBundleEventHook();
+		registerBundleEventHook();
 		try {
 			subsystems = new Subsystems();
 		}
@@ -166,12 +168,13 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		registrar = new SubsystemServiceRegistrar(bundleContext);
 		BasicSubsystem root = subsystems.getRootSubsystem();
 		root.start();
-		hook.activate();
+		bundleEventHook.activate();
 	}
 	
 	private void deactivate() {
 		if (!isActive())
 			return;
+		bundleEventHook.deactivate();
 		new StopAction(subsystems.getRootSubsystem(), subsystems.getRootSubsystem(), true).run();
 		for (ServiceRegistration<?> registration : registrations) {
 			try {
@@ -181,6 +184,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				logger.debug("Service had already been unregistered", e);
 			}
 		}
+		bundleEventHook.processPendingEvents();
 		synchronized (Activator.class) {
 			instance = null;
 		}
@@ -229,12 +233,11 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 	}
 	
-	private BundleEventHook registerBundleEventHook() {
+	private void registerBundleEventHook() {
 		Dictionary<String, Object> properties = new Hashtable<String, Object>(1);
 		properties.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.MAX_VALUE);
-		BundleEventHook result = new BundleEventHook();
-		registrations.add(bundleContext.registerService(EventHook.class, result, properties));
-		return result;
+		bundleEventHook = new BundleEventHook();
+		registrations.add(bundleContext.registerService(EventHook.class, bundleEventHook, properties));
 	}
 	
 	/* Begin ServiceTrackerCustomizer methods */
