@@ -28,17 +28,22 @@ import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class BundleEventHook implements EventHook {
+	private final Activator activator;
 	private final ConcurrentHashMap<Bundle, BundleRevision> bundleToRevision;
 	
 	private boolean active;
 	private List<BundleEvent> events;
+	private volatile Subsystems subsystems;
 	
 	public BundleEventHook() {
+		activator = Activator.getInstance();
 		bundleToRevision = new ConcurrentHashMap<Bundle, BundleRevision>();
 	}
 	
 	@Override
 	public void event(BundleEvent event, Collection<BundleContext> contexts) {
+		if ((event.getType() & (BundleEvent.INSTALLED | BundleEvent.UNINSTALLED)) == 0)
+			return;
 		// Protected against deadlock when the bundle event hook receives an
 		// event before subsystems has fully initialized, in which case the
 		// events are queued and processed once initialization is complete.
@@ -50,6 +55,39 @@ public class BundleEventHook implements EventHook {
 				return;
 			}
 		}
+		handleEvent(event);
+	}
+	
+	// Events must be processed in order. Don't allow events to go through
+	// synchronously before all pending events have been processed.
+	synchronized void activate() {
+		active = true;
+		processPendingEvents();
+	}
+	
+	synchronized void deactivate() {
+		active = false;
+	}
+	
+	synchronized void processPendingEvents() {
+		if (events == null)
+			return;
+		for (BundleEvent event : events)
+			handleEvent(event);
+		events = null;
+	}
+	
+	private Subsystems getSubsystems() {
+		if (subsystems == null) {
+			synchronized (this) {
+				if (subsystems == null)
+					subsystems = activator.getSubsystems();
+			}
+		}
+		return subsystems;
+	}
+	
+	private void handleEvent(BundleEvent event) {
 		switch (event.getType()) {
 			case BundleEvent.INSTALLED:
 				handleInstalledEvent(event);
@@ -62,20 +100,11 @@ public class BundleEventHook implements EventHook {
 		}
 	}
 	
-	synchronized void activate() {
-		active = true;
-		if (events == null)
-			return;
-		for (BundleEvent event : events)
-			event(event, null);
-		events = null;
-	}
-	
 	private void handleExplicitlyInstalledBundleBundleContext(BundleRevision originRevision, BundleRevision bundleRevision) {
 		// The bundle needs to be associated with all subsystems that are 
 		// associated with the bundle whose context was used to install the 
 		// bundle.
-		Collection<BasicSubsystem> subsystems = Activator.getInstance().getSubsystems().getSubsystemsReferencing(originRevision);
+		Collection<BasicSubsystem> subsystems = getSubsystems().getSubsystemsReferencing(originRevision);
 		if (subsystems.isEmpty())
 			throw new IllegalStateException("Orphaned bundle revision detected: " + originRevision);
 		for (BasicSubsystem s : subsystems)
@@ -85,9 +114,9 @@ public class BundleEventHook implements EventHook {
 	private void handleExplicitlyInstalledBundleRegionDigraph(Bundle origin, BundleRevision bundleRevision) {
 			// The bundle needs to be associated with the scoped subsystem of 
 			// the region used to install the bundle.
-			RegionDigraph digraph = Activator.getInstance().getRegionDigraph();
+			RegionDigraph digraph = activator.getRegionDigraph();
 			Region region = digraph.getRegion(origin);
-			for (BasicSubsystem s : Activator.getInstance().getSubsystems().getSubsystems()) {
+			for (BasicSubsystem s : getSubsystems().getSubsystems()) {
 				if ((s.isApplication() || s.isComposite())
 						&& region.equals(s.getRegion())) {
 					Utils.installResource(bundleRevision, s);
