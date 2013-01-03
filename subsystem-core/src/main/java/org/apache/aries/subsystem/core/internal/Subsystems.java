@@ -168,6 +168,9 @@ public class Subsystems {
 		BundleContext context = Activator.getInstance().getBundleContext().getBundle(org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION).getBundleContext();
 		for (Bundle bundle : context.getBundles()) {
 			BundleRevision revision = bundle.adapt(BundleRevision.class);
+			if (revision == null)
+				// The bundle has been uninstalled. Do not process.
+				continue;
 			if (!resourceReferences.getSubsystems(revision).isEmpty())
 				continue;
 			ResourceInstaller.newInstance(coordination, revision, root).install();
