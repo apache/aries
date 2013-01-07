@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.aries.jpa.container.context.JTAPersistenceContextManager;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
@@ -37,6 +37,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +78,10 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
   private ServiceRegistration pcpReg;
   /** Our bundle */
   private Bundle bundle;
+  
+  // Used to track the the region context bundles provided by subsystems so the
+  // appropriate persistence context manager relationships are maintained.
+  private BundleTracker subsystemContextBundleTracker;
    
   public void registerContext(String unitName, Bundle client, HashMap<String, Object> properties) {
     if (_logger.isDebugEnabled()) {
@@ -87,7 +93,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
       _logger.warn(NLS.MESSAGES.getMessage("no.tran.manager.for.bundle", unitName, client.getSymbolicName(), client.getVersion()));
     
     //Find the framework for this bundle (we may be in a composite)
-    Bundle frameworkBundle = client.getBundleContext().getBundle(0);
+    Bundle frameworkBundle = findFrameworkBundle(client);
     PersistenceContextManager manager = null;
     boolean newManager = false;
     
@@ -132,7 +138,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     //We only care about bundles stopping
     if (event.getType() == BundleEvent.STOPPING) {
       Set<String> contextsToBeRemoved = new HashSet<String>();
-      Bundle frameworkBundle = bundle.getBundleContext().getBundle(0);
+      Bundle frameworkBundle = findFrameworkBundle(bundle);
       PersistenceContextManager manager = null;
       boolean removeManager = false;
       
@@ -240,6 +246,11 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     bundle = context.getBundle();
     registry = new JTAPersistenceContextRegistry(context);
     
+    // Create and open the subsystem bundle context tracker before registering
+    // as a PersistenceContextProvider service.
+    subsystemContextBundleTracker = createSubsystemContextBundleTracker();
+    subsystemContextBundleTracker.open();
+    
     //Register our service
     pcpReg = context.registerService(PersistenceContextProvider.class.getName(), this, null);
     registryReg = context.registerService(JTAPersistenceContextManager.class.getName(), registry, null);
@@ -269,10 +280,68 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     for(PersistenceContextManager mgr : mgrs)
       mgr.close();
     
+    subsystemContextBundleTracker.close();
+    
     registry.close();
   }
   
   public Bundle getBundle() {
     return bundle;
+  }
+  
+  private BundleTracker createSubsystemContextBundleTracker() {
+	  BundleContext context = getSystemBundleContext();
+	  BundleTrackerCustomizer customizer = createSubsystemContextBundleTrackerCustomizer();
+	  return new BundleTracker(context, Bundle.ACTIVE, customizer);
+  }
+  
+  private BundleContext getSystemBundleContext() {
+	  // This assumes the JPA bundle has visibility to the system bundle, which
+	  // may not be true. Ideally the system bundle should be gotten by
+	  // location, but the method is not available in the OSGi version used by
+	  // JPA.
+	  return bundle.getBundleContext().getBundle(0).getBundleContext();
+  }
+  
+  private BundleTrackerCustomizer createSubsystemContextBundleTrackerCustomizer() {
+	  // Assume only the ACTIVE state is being tracked.
+	  return new BundleTrackerCustomizer() {
+		public Bundle addingBundle(Bundle bundle, BundleEvent event) {
+			// Only track the region context bundles of subsystems.
+			if (bundle.getSymbolicName().startsWith("org.osgi.service.subsystem.region.context."))
+				return bundle;
+			return null;
+		}
+
+		public void modifiedBundle(Bundle bundle, BundleEvent event,
+				Object object) {
+			// Nothing.
+		}
+
+		public void removedBundle(Bundle bundle, BundleEvent event,
+				Object object) {
+			// Nothing.
+		}
+	  };
+  }
+  
+  /*
+   * Find the bundle with which to associate the persistence context manager.
+   * For subsystems, this will be the region context bundle of the subsystem of
+   * which the client is a constituent (which might be the root subsystem in
+   * which case the system bundle of the framework is returned). For composite 
+   * bundles, this will be the system bundle of the composite bundle framework. 
+   * Otherwise, this will be the system bundle of the framework.
+   */
+  private Bundle findFrameworkBundle(Bundle client) {
+	  BundleContext clientBundleContext = client.getBundleContext();
+	  Bundle[] tracked = subsystemContextBundleTracker.getBundles();
+	  if (tracked != null)
+		  for (Object subsystemContextBundle : tracked)
+			  if (clientBundleContext.getBundle(((Bundle)subsystemContextBundle).getBundleId()) != null)
+				  // If the subsystem context bundle is visible to the client bundle,
+				  // then the client is a constituent of the subsystem.
+				  return (Bundle)subsystemContextBundle;
+	  return clientBundleContext.getBundle(0);
   }
 }
