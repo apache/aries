@@ -87,8 +87,8 @@ public class DependencyCalculator {
 			
 			public Resource() {
 				Map<String, Object> attributes = new HashMap<String, Object>();
-				attributes.put(IdentityNamespace.IDENTITY_NAMESPACE, "org.apache.aries.subsystem.resource.dummy");
-				attributes.put(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE, IdentityNamespace.TYPE_UNKNOWN);
+				attributes.put(IdentityNamespace.IDENTITY_NAMESPACE, org.apache.aries.subsystem.core.internal.Constants.ResourceTypeSynthesized);
+				attributes.put(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE, org.apache.aries.subsystem.core.internal.Constants.ResourceTypeSynthesized);
 				identity = new BasicCapability(IdentityNamespace.IDENTITY_NAMESPACE, attributes, null, this);
 			}
 			
