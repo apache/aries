@@ -21,6 +21,7 @@ public class Constants {
 	public static final String RegionContextBundleSymbolicNamePrefix = "org.osgi.service.subsystem.region.context.";
 	public static final String ResourceTypeBundle = IdentityNamespace.TYPE_BUNDLE;
 	public static final String ResourceTypeFragment = IdentityNamespace.TYPE_FRAGMENT;
+	public static final String ResourceTypeSynthesized = "org.apache.aries.subsystem.resource.synthesized";
 	public static final String SubsystemServicePropertyRegions = "org.apache.aries.subsystem.service.regions";
 	
 	private Constants() {}

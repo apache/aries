@@ -31,7 +31,16 @@ public abstract class ResourceInstaller {
 			return new SubsystemResourceInstaller(coordination, resource, subsystem);
 		else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type))
 			return new BundleResourceInstaller(coordination, resource, subsystem);
-		else
+		else if (Constants.ResourceTypeSynthesized.equals(type)) {
+			return new ResourceInstaller(coordination, resource, subsystem) {
+				
+				@Override
+				public Resource install() throws Exception {
+					// do nothing;
+					return resource;
+				}
+			};
+		}
 			throw new SubsystemException("No installer exists for resource type: " + type);
 	}
 	
