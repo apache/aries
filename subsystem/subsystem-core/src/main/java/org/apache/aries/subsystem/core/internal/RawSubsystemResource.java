@@ -18,9 +18,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,9 +45,11 @@ import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.BundleNamespace;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
@@ -56,6 +62,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
 
 public class RawSubsystemResource implements Resource {
 	private static final Pattern PATTERN = Pattern.compile("([^@/\\\\]+)(?:@(.+))?.esa");
+	private static final String APPLICATION_IMPORT_SERVICE_HEADER = "Application-ImportService";
 	
 	private static SubsystemManifest computeExistingSubsystemManifest(IDirectory directory) throws IOException {
 		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(directory, "OSGI-INF/SUBSYSTEM.MF");
@@ -98,6 +105,7 @@ public class RawSubsystemResource implements Resource {
 	private final Location location;
 	private final List<Requirement> requirements;
 	private final Collection<Resource> resources;
+	private final Resource fakeImportServiceResource;
 	private final SubsystemManifest subsystemManifest;
 	
 	public RawSubsystemResource(String location, IDirectory content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
@@ -107,8 +115,9 @@ public class RawSubsystemResource implements Resource {
 			content = this.location.open();
 		try {
 			resources = computeResources(content);
-			localRepository = computeLocalRepository();
 			SubsystemManifest manifest = computeSubsystemManifest(content);
+			fakeImportServiceResource = createFakeResource(manifest);
+			localRepository = computeLocalRepository();
 			manifest = computeSubsystemManifestBeforeRequirements(manifest);
 			requirements = computeRequirements(manifest);
 			subsystemManifest = computeSubsystemManifestAfterRequirements(manifest);
@@ -126,6 +135,7 @@ public class RawSubsystemResource implements Resource {
 	
 	public RawSubsystemResource(IDirectory idir) throws IOException, URISyntaxException, ResolutionException {
 		resources = Collections.emptyList();
+		fakeImportServiceResource = null; // not needed for persistent subsystems
 		localRepository = computeLocalRepository();
 		subsystemManifest = initializeSubsystemManifest(idir);
 		requirements = subsystemManifest.toRequirements(this);
@@ -134,7 +144,54 @@ public class RawSubsystemResource implements Resource {
 		id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
 		location = new Location(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue());
 	}
-	
+
+	private static Resource createFakeResource(SubsystemManifest manifest) {
+		Header<?> importServiceHeader = manifest.getHeaders().get(APPLICATION_IMPORT_SERVICE_HEADER);
+		if (importServiceHeader == null) {
+			return null;
+		}
+		List<Capability> modifiableCaps = new ArrayList<Capability>();
+		final List<Capability> fakeCapabilities = Collections.unmodifiableList(modifiableCaps);
+		Resource fakeResource = new Resource() {
+
+			@Override
+			public List<Capability> getCapabilities(String namespace) {
+				if (namespace == null) {
+					return fakeCapabilities;
+				}
+				List<Capability> results = new ArrayList<Capability>();
+				for (Capability capability : fakeCapabilities) {
+					if (namespace.equals(capability.getNamespace())) {
+						results.add(capability);
+					}
+				}
+				return results;
+			}
+
+			@Override
+			public List<Requirement> getRequirements(String namespace) {
+				return Collections.emptyList();
+			}
+		};
+
+		modifiableCaps.add(new OsgiIdentityCapability(fakeResource, Constants.ResourceTypeSynthesized, new Version(1,0,0), Constants.ResourceTypeSynthesized));
+    	Map<String, Map<String, String>> serviceImports = ManifestHeaderProcessor.parseImportString(importServiceHeader.getValue());
+    	for (Entry<String, Map<String, String>> serviceImport : serviceImports.entrySet()) {
+			Collection<String> objectClasses = new ArrayList<String>(Arrays.asList(serviceImport.getKey()));
+			String filter = serviceImport.getValue().get(IdentityNamespace.REQUIREMENT_FILTER_DIRECTIVE);
+			BasicCapability.Builder capBuilder = new BasicCapability.Builder();
+			capBuilder.namespace(ServiceNamespace.SERVICE_NAMESPACE);
+			capBuilder.attribute(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, objectClasses);
+			if (filter != null)
+				capBuilder.attributes(new HashMap<String, Object>(ManifestHeaderProcessor.parseFilter(filter)));
+			capBuilder.attribute("service.imported", "");
+			capBuilder.resource(fakeResource);
+			modifiableCaps.add(capBuilder.build());
+		}
+
+    	return fakeResource;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == this)
@@ -265,6 +322,11 @@ public class RawSubsystemResource implements Resource {
 	}
 	
 	private Repository computeLocalRepository() {
+		if (fakeImportServiceResource != null) {
+			Collection<Resource> temp = new ArrayList<Resource>(resources);
+			temp.add(fakeImportServiceResource);
+			return new LocalRepository(temp);
+		}
 		return new LocalRepository(resources);
 	}
 	
