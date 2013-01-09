@@ -35,9 +35,10 @@ public class BlueprintContainerTest {
         BlueprintContainerImpl container = new BlueprintContainerImpl(getClass().getClassLoader(), Arrays.asList(url));
 
         Foo foo = (Foo) container.getComponentInstance("foo");
+        System.out.println(foo);
         assertNotNull(foo);
         assertEquals(5, foo.getA());
-        assertEquals(-1, foo.getB());
+        assertEquals(1, foo.getB());
 
         container.destroy();
     }

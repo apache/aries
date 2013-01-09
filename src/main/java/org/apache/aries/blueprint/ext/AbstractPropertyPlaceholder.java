@@ -34,6 +34,7 @@ import org.apache.aries.blueprint.mutable.MutableCollectionMetadata;
 import org.apache.aries.blueprint.mutable.MutableMapEntry;
 import org.apache.aries.blueprint.mutable.MutableMapMetadata;
 import org.apache.aries.blueprint.mutable.MutablePropsMetadata;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -58,6 +59,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholder.class);
 
+    private ExtendedBlueprintContainer blueprintContainer;
     private String placeholderPrefix = "${";
     private String placeholderSuffix = "}";
     private Pattern pattern;
@@ -78,6 +80,14 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     public void setPlaceholderSuffix(String placeholderSuffix) {
         this.placeholderSuffix = placeholderSuffix;
+    }
+
+    public ExtendedBlueprintContainer getBlueprintContainer() {
+        return blueprintContainer;
+    }
+
+    public void setBlueprintContainer(ExtendedBlueprintContainer blueprintContainer) {
+        this.blueprintContainer = blueprintContainer;
     }
 
     public void process(ComponentDefinitionRegistry registry) throws ComponentDefinitionException {
