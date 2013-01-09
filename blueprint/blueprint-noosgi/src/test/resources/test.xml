@@ -38,6 +38,7 @@
             <ext:property name="key.b" value="-1" />
         </ext:default-properties>
         <ext:location>file:///url</ext:location>
+        <ext:location>classpath:test.properties</ext:location>
     </ext:property-placeholder>
 
     <bean id="foo" class="org.apache.aries.blueprint.sample.Foo"

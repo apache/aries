@@ -26,6 +26,7 @@ import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
+import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.Converter;
@@ -84,6 +85,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
         if (unsupported.size() > 0) {
             throw new IllegalArgumentException("Unsupported namespaces: " + unsupported.toString());
         }
+        // Add predefined beans
+        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
         // Validate
         parser.validate(handlerSet.getSchema());
         // Populate
@@ -111,6 +114,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
 
     public Class loadClass(String name) throws ClassNotFoundException {
         return loader.loadClass(name);
+    }
+
+    public URL getResource(String name) {
+        return loader.getResource(name);
     }
 
     public AccessControlContext getAccessControlContext() {
