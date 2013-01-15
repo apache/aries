@@ -45,9 +45,6 @@
             javax.persistence;version="[1.0.0,3.0.0)",
             *
         </aries.osgi.import>
-        <aries.osgi.export.service>
-            org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/jpa/v1.0.0
-        </aries.osgi.export.service>
     </properties>
 
     <dependencies>
