@@ -23,16 +23,20 @@
             default-activation="lazy">
             
   <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="nsHandler">
-        <service-properties>
-            <entry key="osgi.service.blueprint.namespace">
-            	<list>
-				    <value>http://aries.apache.org/xmlns/transactions/v1.0.0</value>
-				    <value>http://aries.apache.org/xmlns/transactions/v1.1.0</value>
-				    <value>http://aries.apache.org/xmlns/transactions/v1.2.0</value>
-			    </list>
-			</entry>
-        </service-properties>
-  </service>              
+    <service-properties>
+      <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/xmlns/transactions/v1.0.0"/>
+    </service-properties>
+  </service>
+  <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="nsHandler">
+    <service-properties>
+      <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/xmlns/transactions/v1.1.0"/>
+    </service-properties>
+  </service>
+  <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="nsHandler">
+    <service-properties>
+      <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/xmlns/transactions/v1.2.0"/>
+    </service-properties>
+  </service>
 
   <bean id="nsHandler" class="org.apache.aries.transaction.parsing.TxElementHandler">
     <property ref="txenhancer" name="txMetaDataHelper"/>
