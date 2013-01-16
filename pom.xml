@@ -35,9 +35,9 @@
     <url>http://maven.apache.org</url>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/versioning/checker</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/versioning/checker</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/versioning/checker</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-checker</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-checker</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/versioning/versioning-checker</url>
     </scm>
 
     <properties>
