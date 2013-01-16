@@ -3,20 +3,31 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>org.apache.aries.versioning</artifactId>
-        <groupId>org.apache.aries.versioning</groupId>
-        <version>0.1.0-SNAPSHOT</version>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath />
     </parent>
     <groupId>org.apache.aries.versioning</groupId>
     <artifactId>org.apache.aries.versioning.plugin</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>org.apache.aries.versioning.plugin Maven Mojo</name>
+    
+    
+    
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-plugin</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/versioning/versioning-plugin</url>
+    </scm>
+    
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.versioning</groupId>
             <artifactId>org.apache.aries.versioning.checker</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
