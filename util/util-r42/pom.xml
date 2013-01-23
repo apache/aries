@@ -27,7 +27,7 @@
 
     <artifactId>org.apache.aries.util-r42</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>Apache Aries Util classes compiled under r 42 framework</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries classes that need to be compiled under r 4.2
