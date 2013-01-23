@@ -27,15 +27,15 @@
     <artifactId>org.apache.aries.jmx</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Bundle</name>
-    <version>1.1.0</version>
+    <version>1.1.0-SNAPSHOT</version>
     <description>
        This bundle contains the standalone implementation of the along with the API.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx-1.1.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx-1.1.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx-1.1.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx</url>
      </scm>
     <properties>
         <aries.osgi.activator>
