@@ -27,15 +27,15 @@
     <artifactId>org.apache.aries.jmx.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX API</name>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <description>
         This bundle contains the JMX 1.1.0 API
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-api</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-api</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-api</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.api-1.1.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.api-1.1.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx.api-1.1.0</url>
      </scm>
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
