@@ -55,6 +55,17 @@ public class UserData extends RoleData {
     public UserData(User user){
         this(user.getName(), user.getType(), user.getProperties(), user.getCredentials());
     }
+    
+    
+    /**
+     * Constructs new UserData.
+     *
+     * @param name user name.
+     * @param type role type.
+     */
+    public UserData(String name, int type){
+        super(name, type);
+    }    
 
     /**
      * Constructs new UserData.
