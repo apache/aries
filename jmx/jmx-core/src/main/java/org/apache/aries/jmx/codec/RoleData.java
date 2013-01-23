@@ -72,6 +72,15 @@ public class RoleData {
      * Constructs new RoleData.
      * @param name role name.
      * @param type role type.
+     */
+    public RoleData(String name, int type) {
+        this(name, type, null);
+    }
+    
+    /**
+     * Constructs new RoleData.
+     * @param name role name.
+     * @param type role type.
      * @param properties role properties.
      */
     public RoleData(String name, int type, Dictionary properties) {

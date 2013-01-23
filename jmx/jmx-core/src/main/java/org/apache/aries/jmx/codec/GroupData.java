@@ -66,7 +66,19 @@ public class GroupData extends UserData {
      * Constructs new GroupData.
      *
      * @param name group name.
+     * @param members basic members.
+     * @param requiredMembers required members.
+     */
+    public GroupData(String name, String[] members, String[] requiredMembers) {
+        this(name, null, null, members, requiredMembers);
+    }
+    
+    /**
+     * Constructs new GroupData.
+     *
+     * @param name group name.
      * @param properties group properties.
+     * @param credentials group credentials.
      * @param members basic members.
      * @param requiredMembers required members.
      */
