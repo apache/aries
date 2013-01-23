@@ -27,15 +27,15 @@
     <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint Core</name>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <description>
         This bundle contains the core implementation of the JMX Blueprint API
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.blueprint.core-1.1.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.blueprint.core-1.1.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx.blueprint.core-1.1.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-core</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-core</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-blueprint-core</url>
      </scm>
 
     <properties>
