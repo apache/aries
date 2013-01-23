@@ -90,7 +90,7 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
             <scope>test</scope>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
