@@ -67,15 +67,15 @@
 
     <dependencies>
         <dependency>
-        	<groupId>org.apache.aries.proxy</groupId>
-        	<artifactId>org.apache.aries.proxy.api</artifactId>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.api</artifactId>
             <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-        	<groupId>org.apache.aries.proxy</groupId>
-        	<artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.impl</artifactId>
+            <version>1.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
