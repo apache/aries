@@ -27,15 +27,15 @@
     <artifactId>org.apache.aries.jmx.blueprint</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint Bundle</name>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <description>
        This bundle contains the standalone implementation of the along with the API.
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.blueprint-1.1.0</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.blueprint-1.1.0</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx.blueprint-1.1.0</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-bundle</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-bundle</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-blueprint-bundle</url>
      </scm>
 
     <properties>
