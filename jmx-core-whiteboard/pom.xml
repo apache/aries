@@ -27,7 +27,7 @@
     <artifactId>org.apache.aries.jmx.core.whiteboard</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Core via Whiteboards</name>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <description>
         This bundle contains an implementation of the JMX Core specification which registers the
         MBeans as services in the service registry. This allows the whiteboard module to be
@@ -35,9 +35,9 @@
     </description>
 
      <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-core-whiteboard</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-core-whiteboard</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-core-whiteboard</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.core.whiteboard-1.1.0</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.core.whiteboard-1.1.0</developerConnection>
+         <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx.core.whiteboard-1.1.0</url>
      </scm>
 
     <properties>
