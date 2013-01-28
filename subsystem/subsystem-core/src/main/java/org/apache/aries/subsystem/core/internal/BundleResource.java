@@ -181,7 +181,7 @@ public class BundleResource implements Resource, RepositoryContent {
 					.append(')');
 			String filter = service.getFilter();
 			if (filter != null)
-				builder.append('(').append(filter).append(')');
+				builder.append(filter);
 			builder.append(')');
 			requirements.add(new BasicRequirement.Builder()
 					.namespace(ServiceNamespace.SERVICE_NAMESPACE)
