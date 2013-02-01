@@ -40,17 +40,19 @@
      </scm>
 
     <properties>
-        <aries.osgi.activator>
+    	<aries.osgi.activator>
             org.apache.aries.subsystem.core.internal.Activator
         </aries.osgi.activator>
+    	<aries.osgi.import>
+    		org.osgi.service.repository;version="[1.0,2)",
+    		org.osgi.service.subsystem;version="[1.0,2)",
+    		org.apache.aries.subsystem;version="[1.0,2)",
+    		*
+    	</aries.osgi.import>
+        <aries.osgi.export.pkg/>
         <aries.osgi.private.pkg>
-        	org.apache.aries.subsystem.core,
-        	org.apache.aries.subsystem.core.archive,
-            org.apache.aries.subsystem.core.internal
+            org.apache.aries.subsystem.core.*
         </aries.osgi.private.pkg>
-         <aries.osgi.import>
-         	*
-         </aries.osgi.import>
     </properties>
 
     <dependencies>
