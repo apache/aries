@@ -67,12 +67,12 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.api</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.core</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -117,7 +117,7 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.jmx:org.apache.aries.jmx.core.whiteboard:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.jmx:org.apache.aries.jmx.core.whiteboard:1.1.0</oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
