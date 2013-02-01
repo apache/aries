@@ -238,7 +238,7 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint.core:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint.core:1.1.0</oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
