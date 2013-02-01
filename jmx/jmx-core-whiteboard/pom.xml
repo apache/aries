@@ -52,14 +52,14 @@
           org.apache.aries.jmx*
         </aries.osgi.private.pkg>
         <aries.osgi.dynamic>
-            org.osgi.jmx.service.cm;version="[1.3.0,2)",
-            org.osgi.jmx.service.permissionadmin;version="[1.2.0,2)",
-            org.osgi.jmx.service.provisioning;version="[1.2.0,2)",
-            org.osgi.jmx.service.useradmin;version="[1.1.0,2)",
-            org.osgi.service.cm;version="[1.3.0,2)",
-            org.osgi.service.permissionadmin;version="[1.2.0,2)",
-            org.osgi.service.provisioning;version="[1.2.0,2)",
-            org.osgi.service.useradmin;version="[1.1.0,2)"
+            org.osgi.jmx.service.cm;version="[1.3,2)",
+            org.osgi.jmx.service.permissionadmin;version="[1.2,2)",
+            org.osgi.jmx.service.provisioning;version="[1.2,2)",
+            org.osgi.jmx.service.useradmin;version="[1.1,2)",
+            org.osgi.service.cm;version="[1.4,2)",
+            org.osgi.service.permissionadmin;version="[1.2,2)",
+            org.osgi.service.provisioning;version="[1.2,2)",
+            org.osgi.service.useradmin;version="[1.1,2)"
         </aries.osgi.dynamic>
     </properties>
 

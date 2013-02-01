@@ -51,10 +51,10 @@
             !org.apache.aries.jmx*,
             javax.management,
             javax.management.openmbean,
-            org.osgi.framework;version="1.5.0",
-            org.osgi.service.blueprint.container;version="1.0",
-            org.osgi.service.blueprint.reflect;version="1.0",
-            org.osgi.util.tracker;version="1.4",
+            org.osgi.framework;version="[1.5,2)",
+            org.osgi.service.blueprint.container;version="[1.0,2)",
+            org.osgi.service.blueprint.reflect;version="[1.0,2)",
+            org.osgi.util.tracker;version="[1.4,2)",
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg>
