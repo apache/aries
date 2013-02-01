@@ -117,7 +117,7 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.proxy:org.apache.aries.proxy:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.proxy:org.apache.aries.proxy:1.0.1</oldArtifact>
                         </configuration>
                     </execution>
                 </executions>

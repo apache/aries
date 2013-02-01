@@ -132,7 +132,7 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries:org.apache.aries.util:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries:org.apache.aries.util:1.1.0</oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
