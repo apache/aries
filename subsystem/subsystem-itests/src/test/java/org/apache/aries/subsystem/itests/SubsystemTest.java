@@ -55,6 +55,7 @@ import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.Bundle;
@@ -198,6 +199,8 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").versionAsInProject(),
 				mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").versionAsInProject(),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.api").versionAsInProject(),
+				// The itests need private packages from the core subsystems bundle.
+				CoreOptions.provision(SubsystemTest.class.getClassLoader().getResourceAsStream("core.fragment/core.fragment.jar")),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.core").versionAsInProject(),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.itest.interfaces").versionAsInProject(),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.apache.aries.subsystem.core.fragment
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.apache.aries.subsystem.core.internal,org.apache.aries.subsystem.core.archive
+Fragment-Host: org.apache.aries.subsystem.core
