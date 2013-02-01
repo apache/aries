@@ -115,13 +115,13 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -229,7 +229,7 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint:1.1.0</oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
