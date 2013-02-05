@@ -13,31 +13,30 @@
  */
 package org.apache.aries.subsystem.obr.internal;
 
+import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Resource;
 
-public class FelixCapabilityAdapter extends AbstractCapability {
-	private final org.apache.felix.bundlerepository.Capability capability;
+public class OsgiContentCapability extends AbstractCapability {
+	private final Map<String, Object> attributes = new HashMap<String, Object>();
 	private final Resource resource;
 	
-	public FelixCapabilityAdapter(org.apache.felix.bundlerepository.Capability capability, Resource resource) {
-		if (capability == null)
-			throw new NullPointerException("Missing required parameter: capability");
-		this.capability = capability;
+	public OsgiContentCapability(Resource resource, String url) {
+		// TOOD Add to constants.
+		attributes.put("osgi.content", url);
+		// TODO Any directives?
 		this.resource = resource;
+	}
+	
+	public OsgiContentCapability(Resource resource, URL url) {
+		this(resource, url.toExternalForm());
 	}
 
 	public Map<String, Object> getAttributes() {
-		Map<String, Object> result = capability.getPropertiesAsMap();
-		String namespace = getNamespace();
-		if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
-			result.put(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, result.get("objectclass"));
-		else
-			result.put(namespace, result.get(capability.getName()));
-		return result;
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	public Map<String, String> getDirectives() {
@@ -45,7 +44,8 @@ public class FelixCapabilityAdapter extends AbstractCapability {
 	}
 
 	public String getNamespace() {
-		return NamespaceTranslator.translate(capability.getName());
+		// TODO Add to constants.
+		return "osgi.content";
 	}
 
 	public Resource getResource() {

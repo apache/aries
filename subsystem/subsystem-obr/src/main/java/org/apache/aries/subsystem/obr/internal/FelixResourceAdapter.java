@@ -20,9 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.internal.OsgiContentCapability;
-import org.apache.aries.subsystem.core.internal.OsgiIdentityCapability;
-import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
