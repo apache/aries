@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
+import org.osgi.service.subsystem.Subsystem;
 
 /*
  * Contains a series of tests for unmanaged bundles. An unmanaged bundle is a
@@ -59,7 +60,7 @@ public class UnmanagedBundleTest extends SubsystemTest {
 	public void testInstallWhileImplBundleActive() throws Exception {
 		Bundle a = bundleContext.installBundle(BUNDLE_A, new FileInputStream(BUNDLE_A));
 		try {
-			assertConstituent(getRootSubsystem(), BUNDLE_A);
+			assertConstituent(getRootSubsystemInState(Subsystem.State.ACTIVE, 5000L), BUNDLE_A);
 		}
 		finally {
 			uninstallSilently(a);
