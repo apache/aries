@@ -33,7 +33,6 @@ public class BundleEventHook implements EventHook {
 	
 	private boolean active;
 	private List<BundleEvent> events;
-	private volatile Subsystems subsystems;
 	
 	public BundleEventHook() {
 		activator = Activator.getInstance();
@@ -78,13 +77,7 @@ public class BundleEventHook implements EventHook {
 	}
 	
 	private Subsystems getSubsystems() {
-		if (subsystems == null) {
-			synchronized (this) {
-				if (subsystems == null)
-					subsystems = activator.getSubsystems();
-			}
-		}
-		return subsystems;
+		return activator.getSubsystems();
 	}
 	
 	private void handleEvent(BundleEvent event) {

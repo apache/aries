@@ -75,8 +75,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private volatile RegionDigraph regionDigraph;
 	private volatile Resolver resolver;
 	private ServiceTracker<?,?> serviceTracker;
-	// @GuardedBy("this")
-	private Subsystems subsystems;
+
+	private volatile Subsystems subsystems;
 	
 	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
 	private final Collection<Repository> repositories = Collections.synchronizedSet(new HashSet<Repository>());
@@ -110,12 +110,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		return resolver;
 	}
 	
-	/* Synchronization was introduced here to prevent conflicts between the
-	 * BundleEventHook and the activation process. The activation process
-	 * must complete the initialization of the root subsystem in order to
-	 * fully initialize the Subsystems object.
-	 */
-	public synchronized Subsystems getSubsystems() {
+	public Subsystems getSubsystems() {
 		return subsystems;
 	}
 	
@@ -154,7 +149,6 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		synchronized (Activator.class) {
 			instance = Activator.this;
 		}
-		registerBundleEventHook();
 		try {
 			subsystems = new Subsystems();
 		}
@@ -164,11 +158,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		catch (Exception e) {
 			throw new SubsystemException(e);
 		}
+		registerBundleEventHook();
 		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(subsystems), null));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
 		BasicSubsystem root = subsystems.getRootSubsystem();
-		root.start();
 		bundleEventHook.activate();
+		root.start();
 	}
 	
 	private void deactivate() {
@@ -213,11 +208,11 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(Resolver.class.getName()).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
-        .append(Repository.class.getName()).append(")(")
+				.append(Repository.class.getName()).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
-        .append(ModelledResourceManager.class.getName()).append(")(")
-        .append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
-        .append(IDirectoryFinder.class.getName()).append("))").toString();
+				.append(ModelledResourceManager.class.getName()).append(")(")
+				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
+				.append(IDirectoryFinder.class.getName()).append("))").toString();
 	}
 	
 	private boolean hasRequiredServices() {
