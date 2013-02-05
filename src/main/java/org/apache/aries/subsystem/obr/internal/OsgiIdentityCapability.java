@@ -14,30 +14,37 @@
 package org.apache.aries.subsystem.obr.internal;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.osgi.namespace.service.ServiceNamespace;
+import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 
-public class FelixCapabilityAdapter extends AbstractCapability {
-	private final org.apache.felix.bundlerepository.Capability capability;
+public class OsgiIdentityCapability extends AbstractCapability {
+	private final Map<String, Object> attributes = new HashMap<String, Object>();
 	private final Resource resource;
 	
-	public FelixCapabilityAdapter(org.apache.felix.bundlerepository.Capability capability, Resource resource) {
-		if (capability == null)
-			throw new NullPointerException("Missing required parameter: capability");
-		this.capability = capability;
+	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version) {
+		this(resource, symbolicName, version, IdentityNamespace.TYPE_BUNDLE);
+	}
+	
+	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version, String identityType) {
 		this.resource = resource;
+		attributes.put(
+				IdentityNamespace.IDENTITY_NAMESPACE, 
+				symbolicName);
+		attributes.put(
+				IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE, 
+				version);
+		attributes.put(
+				IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE, 
+				identityType);
+		// TODO Add directives, particularly "effective" and "singleton".
 	}
 
 	public Map<String, Object> getAttributes() {
-		Map<String, Object> result = capability.getPropertiesAsMap();
-		String namespace = getNamespace();
-		if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
-			result.put(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, result.get("objectclass"));
-		else
-			result.put(namespace, result.get(capability.getName()));
-		return result;
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	public Map<String, String> getDirectives() {
@@ -45,7 +52,7 @@ public class FelixCapabilityAdapter extends AbstractCapability {
 	}
 
 	public String getNamespace() {
-		return NamespaceTranslator.translate(capability.getName());
+		return IdentityNamespace.IDENTITY_NAMESPACE;
 	}
 
 	public Resource getResource() {

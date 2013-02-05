@@ -16,7 +16,6 @@ package org.apache.aries.subsystem.obr.internal;
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
-import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Requirement;
 import org.osgi.framework.Constants;

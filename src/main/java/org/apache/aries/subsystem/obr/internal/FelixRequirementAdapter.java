@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.internal.AbstractRequirement;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
