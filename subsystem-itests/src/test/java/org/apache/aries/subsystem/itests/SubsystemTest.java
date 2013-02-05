@@ -718,6 +718,17 @@ public abstract class SubsystemTest extends IntegrationTest {
 		return getOsgiService(Subsystem.class);
 	}
 	
+	protected Subsystem getRootSubsystemInState(Subsystem.State state, long timeout) throws InterruptedException {
+		Subsystem root = getRootSubsystem();
+		long now = System.currentTimeMillis();
+		long then = now + timeout;
+		while (!root.getState().equals(state) && System.currentTimeMillis() < then)
+			Thread.sleep(100);
+		if (!root.getState().equals(state))
+			fail("Root subsystem never achieved state: " + state);
+		return root;
+	}
+	
 	protected Bundle getSystemBundle() {
 		return bundleContext.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
 	}
