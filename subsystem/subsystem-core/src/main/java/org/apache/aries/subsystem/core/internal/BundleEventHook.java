@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,7 +44,7 @@ public class BundleEventHook implements EventHook {
 	public void event(BundleEvent event, Collection<BundleContext> contexts) {
 		if ((event.getType() & (BundleEvent.INSTALLED | BundleEvent.UNINSTALLED)) == 0)
 			return;
-		// Protected against deadlock when the bundle event hook receives an
+		// Protect against deadlock when the bundle event hook receives an
 		// event before subsystems has fully initialized, in which case the
 		// events are queued and processed once initialization is complete.
 		synchronized (this) {
@@ -80,6 +81,12 @@ public class BundleEventHook implements EventHook {
 		return activator.getSubsystems();
 	}
 	
+	/*
+	 * Note that because some events may be processed asynchronously, we can no
+	 * longer rely on the guarantees that a synchronous event brings. For
+	 * example, bundle revisions adapted from bundles included in events may be
+	 * null.
+	 */
 	private void handleEvent(BundleEvent event) {
 		switch (event.getType()) {
 			case BundleEvent.INSTALLED:
@@ -93,13 +100,22 @@ public class BundleEventHook implements EventHook {
 		}
 	}
 	
+	/*
+	 * This method guards against an uninstalled origin bundle. Guards against a
+	 * null bundle revision are done elsewhere. It is assumed the bundle
+	 * revision is never null once we get here.
+	 */
 	private void handleExplicitlyInstalledBundleBundleContext(BundleRevision originRevision, BundleRevision bundleRevision) {
 		// The bundle needs to be associated with all subsystems that are 
 		// associated with the bundle whose context was used to install the 
 		// bundle.
 		Collection<BasicSubsystem> subsystems = getSubsystems().getSubsystemsReferencing(originRevision);
 		if (subsystems.isEmpty())
-			throw new IllegalStateException("Orphaned bundle revision detected: " + originRevision);
+			// If subsystems does not know about the origin bundle for some
+			// reason (e.g., the event is being processed asynchronously
+			// and the origin bundle has been uninstalled), associate the
+			// installed bundle with the root subsystem.
+			subsystems = Collections.singleton(getSubsystems().getRootSubsystem());
 		for (BasicSubsystem s : subsystems)
 			Utils.installResource(bundleRevision, s);
 	}
@@ -124,13 +140,17 @@ public class BundleEventHook implements EventHook {
 		BundleRevision originRevision = origin.adapt(BundleRevision.class);
 		Bundle bundle = event.getBundle();
 		BundleRevision bundleRevision = bundle.adapt(BundleRevision.class);
+		if (bundleRevision == null)
+			// The event is being processed asynchronously and the installed
+			// bundle has been uninstalled. Nothing we can do.
+			return;
 		bundleToRevision.put(bundle, bundleRevision);
 		// Only handle explicitly installed bundles. An explicitly installed
 		// bundle is a bundle that was installed using some other bundle's
 		// BundleContext or using RegionDigraph.
 		if (ThreadLocalSubsystem.get() != null)
 			return;
-		if ("org.eclipse.equionox.region".equals(origin.getSymbolicName()))
+		if ("org.eclipse.equinox.region".equals(origin.getSymbolicName()))
 			// The bundle was installed using RegionDigraph.
 			handleExplicitlyInstalledBundleRegionDigraph(origin, bundleRevision);
 		else

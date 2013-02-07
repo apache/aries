@@ -715,7 +715,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected Subsystem getRootSubsystem() {
-		return getOsgiService(Subsystem.class);
+		return getOsgiService(Subsystem.class, "(&(objectClass=org.osgi.service.subsystem.Subsystem)(subsystem.id=0))", DEFAULT_TIMEOUT);
 	}
 	
 	protected Subsystem getRootSubsystemInState(Subsystem.State state, long timeout) throws InterruptedException {
