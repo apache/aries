@@ -27,6 +27,8 @@ import org.osgi.service.coordinator.Participant;
 import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.Subsystem.State;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 public class SubsystemResourceInstaller extends ResourceInstaller {
 	public SubsystemResourceInstaller(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
 		super(coordination, resource, subsystem);
@@ -83,17 +85,15 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	}
 	
 	private BasicSubsystem installAriesSubsystem(BasicSubsystem subsystem) throws Exception {
-		// If the state is null, this is a brand new subsystem. If the state is
-		// not null, this is a persisted subsystem. For brand new subsystems,
-		// an INSTALLING event must be propagated.
-		if (subsystem.getState() == null)
-			subsystem.setState(State.INSTALLING);
 		addChild(subsystem);
 		addReference(subsystem);
 		addConstituent(subsystem);
 		addSubsystem(subsystem);
 		installRegionContextBundle(subsystem);
-		Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
+		// This will emit the initial service event for INSTALLING subsystems.
+		// The first event for RESOLVED (i.e. persisted) subsystems is emitted later.
+		if (State.INSTALLING.equals(subsystem.getState()))
+			Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
 		Comparator<Resource> comparator = new InstallResourceComparator();
 		// Install dependencies first...
 		List<Resource> dependencies = new ArrayList<Resource>(subsystem.getResource().getInstallableDependencies());
@@ -121,6 +121,9 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		// in which case an INSTALLED event must be propagated.
 		if (State.INSTALLING.equals(subsystem.getState()))
 			subsystem.setState(State.INSTALLED);
+		else
+			// This is a persisted subsystem in the RESOLVED state. Emit the first service event.
+			Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
 		return subsystem;
 	}
 	
