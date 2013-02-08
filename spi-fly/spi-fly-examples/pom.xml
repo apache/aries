@@ -19,29 +19,28 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.spifly.examples</groupId>
     <artifactId>spi-fly-examples</artifactId>
     <name>Apache Aries SPI Fly Examples</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <description>
         SPI examples
     </description>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-examples</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-examples</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-examples</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/spi-fly-examples-1.0.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/spi-fly-examples-1.0.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/spi-fly-examples-1.0.0</url>
     </scm>
 
     <modules>
