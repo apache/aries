@@ -24,6 +24,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>1.0.0</version>
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
@@ -32,6 +33,12 @@
     <packaging>jar</packaging>
     <name>Apache Aries SPI Fly Weaver (internal module)</name>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-weaver</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-weaver</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-weaver</url>
+    </scm>
+    
     <dependencies>
         <dependency>
             <groupId>org.ow2.asm</groupId>

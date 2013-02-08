@@ -24,7 +24,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../../parent/default-parent/java6-parent/pom.xml</relativePath>
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
@@ -37,6 +37,13 @@ This bundle contains an extender that facilitates the use
 of JRE SPI providers (components typically plugged in to the 
 JRE through META-INF/services resources).
     </description>
+    
+    
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-dynamic-bundle</url>
+    </scm>
 
     <dependencies>
         <dependency>
