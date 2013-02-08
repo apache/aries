@@ -17,19 +17,18 @@
  specific language governing permissions and limitations
  under the License.
     -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>bundle</packaging>
     <name>Apache Aries SPI Fly Dynamic Weaving Bundle</name>
     <description>
@@ -40,9 +39,9 @@ JRE through META-INF/services resources).
     
     
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-bundle</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-bundle</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-dynamic-bundle</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.spifly.dynamic.bundle-1.0.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.spifly.dynamic.bundle-1.0.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.spifly.dynamic.bundle-1.0.0</url>
     </scm>
 
     <dependencies>
@@ -55,7 +54,7 @@ JRE through META-INF/services resources).
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core-internal</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -72,7 +71,7 @@ JRE through META-INF/services resources).
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.weaver-internal</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0</version>
         </dependency>
         
         <dependency>
