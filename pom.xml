@@ -26,7 +26,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../../parent/default-parent/java6-parent/pom.xml</relativePath>
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.spifly.examples</groupId>
@@ -38,7 +38,12 @@
     <description>
         SPI examples
     </description>
-    
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-examples</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-examples</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-examples</url>
+    </scm>
+
     <modules>
         <module>spi-fly-example-spi-bundle</module>
         <module>spi-fly-example-provider1-jar</module>
