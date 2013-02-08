@@ -27,8 +27,6 @@ import org.osgi.service.coordinator.Participant;
 import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.Subsystem.State;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 public class SubsystemResourceInstaller extends ResourceInstaller {
 	public SubsystemResourceInstaller(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
 		super(coordination, resource, subsystem);
