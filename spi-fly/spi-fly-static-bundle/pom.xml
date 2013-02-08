@@ -24,7 +24,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java6-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../../parent/default-parent/java6-parent/pom.xml</relativePath>
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
@@ -37,6 +37,12 @@
         woven using the static weaving done through the org.apache.aries.spifly.static
         component.
     </description>
+    
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-static-bundle</url>
+    </scm>
 
     <dependencies>
         <dependency>
