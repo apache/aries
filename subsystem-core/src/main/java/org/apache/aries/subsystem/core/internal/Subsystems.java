@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -146,6 +147,10 @@ public class Subsystems {
 						addSubsystem(s);
 					}
 					root = getSubsystemById(0);
+					SubsystemIdentifier.setLastId(
+							Long.parseLong(
+									root.getDeploymentManifest().getHeaders().get(
+											DeploymentManifest.ARIESSUBSYSTEM_LASTID).getValue()));
 					graph = new SubsystemGraph(root);
 					ResourceInstaller.newInstance(coordination, root, root).install();
 					populateRootSubsystem(root, coordination);

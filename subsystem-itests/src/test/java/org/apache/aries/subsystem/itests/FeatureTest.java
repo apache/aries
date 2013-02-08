@@ -112,6 +112,7 @@ public class FeatureTest extends SubsystemTest {
 			assertFeature3(feature3Before);
 			Bundle bundle = getSubsystemCoreBundle();
 			bundle.stop();
+			resetLastId();
 			bundle.start();
 			Subsystem root = getRootSubsystem();
 			assertChildren(1, root);
