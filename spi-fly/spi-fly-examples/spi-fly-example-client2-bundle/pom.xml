@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries.spifly.examples</groupId>
         <artifactId>spi-fly-examples</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.spifly.examples.client2.bundle</artifactId>
