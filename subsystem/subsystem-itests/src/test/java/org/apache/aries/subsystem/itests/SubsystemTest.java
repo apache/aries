@@ -370,11 +370,17 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertTrue("Subsystem ID was not a positive integer: " + id, id > 0);
 	}
 	
-	protected void assertLastId(long id) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+	protected void assertLastId(long id) throws Exception {
 		Subsystem root = getRootSubsystem();
 		Field lastId = SubsystemIdentifier.class.getDeclaredField("lastId");
 		lastId.setAccessible(true);
 		assertEquals("Wrong lastId", id, lastId.getLong(root));
+	}
+	
+	protected void resetLastId() throws Exception {
+		Field lastId = SubsystemIdentifier.class.getDeclaredField("lastId");
+		lastId.setAccessible(true);
+		lastId.setInt(SubsystemIdentifier.class, 0);
 	}
 	
 	protected void assertLocation(String expected, String actual) {
