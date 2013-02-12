@@ -23,8 +23,11 @@ import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -124,47 +127,53 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     return result;
   }
 
-  public synchronized void remove(AriesApplicationContext app) throws BundleException
+  public void remove(AriesApplicationContext app) throws BundleException
   {
     LOGGER.debug(LOG_ENTRY, "remove", app);
     
-    Iterator<Map.Entry<AriesApplication, AriesApplicationContext>> it = _appToContextMap.entrySet()
-        .iterator();
-
-    while (it.hasNext()) {
-      Map.Entry<AriesApplication, AriesApplicationContext> entry = it.next();
-
-      ApplicationContextImpl potentialMatch = (ApplicationContextImpl) entry.getValue();
-
-      if (potentialMatch == app) {
-        it.remove();
-
-        potentialMatch.uninstall();
-
-        break;
-      }
+    ApplicationContextImpl appToRemove = null;
+    synchronized (_appToContextMap) { 
+    	Iterator<Map.Entry<AriesApplication, AriesApplicationContext>> it = _appToContextMap.entrySet().iterator();
+    	while (it.hasNext()) {
+        Map.Entry<AriesApplication, AriesApplicationContext> entry = it.next();
+        ApplicationContextImpl potentialMatch = (ApplicationContextImpl) entry.getValue();
+        if (potentialMatch == app) {
+          it.remove();
+          appToRemove = potentialMatch;
+          break;
+        }
+    	}
     }
-        
+    
+    if (appToRemove != null) { 
+    	appToRemove.uninstall();
+    }
+
     LOGGER.debug(LOG_EXIT, "remove");
   }
   
-  public synchronized void close()
+  public void close()
   {
     LOGGER.debug(LOG_ENTRY, "close");
     
-    Iterator<AriesApplicationContext> it = _appToContextMap.values().iterator();
-    while (it.hasNext())
-    {      
-      try {
-        ApplicationContextImpl ctx = (ApplicationContextImpl)it.next();
-        if (ctx.getApplicationState() != ApplicationState.UNINSTALLED) {
-          ctx.uninstall();
-        }
-      } catch (BundleException e)
+    List<ApplicationContextImpl> contextsToUninstall = new ArrayList<ApplicationContextImpl>();
+    synchronized (_appToContextMap) { 
+    	Iterator<AriesApplicationContext> it = _appToContextMap.values().iterator();
+    	while (it.hasNext()) { 
+    		ApplicationContextImpl ctx = (ApplicationContextImpl)it.next();
+    		if (ctx.getApplicationState() != ApplicationState.UNINSTALLED) { 
+    			contextsToUninstall.add(ctx);
+    			it.remove();
+    		}
+    	}
+    }
+    for (ApplicationContextImpl c : contextsToUninstall) { 
+    	try { 
+    		c.uninstall();
+    	} catch (BundleException e)
       {
         LOGGER.debug(LOG_EXCEPTION,e);
       }
-      it.remove();
     }
     
     LOGGER.debug(LOG_EXIT, "close");
@@ -192,42 +201,41 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     return ctx;
   }
 
-  public synchronized void bindBundleFrameworkManager(BundleFrameworkManager bfm)
+  public void bindBundleFrameworkManager(BundleFrameworkManager bfm)
   {
     LOGGER.debug(LOG_ENTRY, "bindBundleFrameworkManager", bfm);
     
-    Iterator<AriesApplicationContext> it = _appToContextMap.values().iterator();
-    while (it.hasNext())
-    {      
-      try {
-        ApplicationContextImpl ctx = (ApplicationContextImpl)it.next();
-        ctx.open();
-      } catch (BundleException e)
-      {
+    List<AriesApplicationContext> contexts = new ArrayList<AriesApplicationContext>();
+    synchronized (_appToContextMap) { 
+    	contexts.addAll (_appToContextMap.values());
+    }
+    
+    for (AriesApplicationContext ctx : contexts) { 
+    	try { 
+    		((ApplicationContextImpl)ctx).open();
+    	} catch (BundleException e) {
         LOGGER.debug(LOG_EXCEPTION,e);
       }
     }
     LOGGER.debug(LOG_EXIT, "bindBundleFrameworkManager");
   }
 
-  public synchronized void unbindBundleFrameworkManager(BundleFrameworkManager bfm)
+  public void unbindBundleFrameworkManager(BundleFrameworkManager bfm)
   {
     LOGGER.debug(LOG_ENTRY, "unbindBundleFrameworkManager", bfm);
     
-    Iterator<AriesApplicationContext> it = _appToContextMap.values().iterator();
-    while (it.hasNext())
-    {      
-      try {
-        ApplicationContextImpl ctx = (ApplicationContextImpl)it.next();
-        ctx.close();
-      } catch (BundleException e)
-      {
-        LOGGER.debug(LOG_EXCEPTION,e);
-      }
+    List<AriesApplicationContext> appContexts = new ArrayList<AriesApplicationContext>();
+    synchronized (_appToContextMap) { 
+    	appContexts.addAll(_appToContextMap.values());
     }
-    
+    for (AriesApplicationContext c : appContexts) { 
+    	try { 
+    		((ApplicationContextImpl)c).close();
+    	} catch (BundleException e) { 
+    		LOGGER.debug(LOG_EXCEPTION,e);
+    	}
+    }
+   
     LOGGER.debug(LOG_EXIT, "unbindBundleFrameworkManager");
-    
-    
   }
 }
