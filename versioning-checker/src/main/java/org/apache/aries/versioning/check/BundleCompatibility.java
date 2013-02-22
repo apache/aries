@@ -282,7 +282,7 @@ public class BundleCompatibility {
       if ((cd != null) && (!SemanticVersioningUtils.isPropertyFile(cd))) {
 
         if (curFile == null) {
-          // the class we are scanning has been deleted from the current version of WAS
+          // the class we are scanning has been deleted from the current version of the bundle
           // This should be a major increase
           major_reason.append(twoLineBreaks + "The class/interface " + getClassName(changeClass) + " has been deleted from the package.");
           //majorChange.update(reason, changeClass);
@@ -293,7 +293,7 @@ public class BundleCompatibility {
           }
         } else {
           // check for binary compatibility
-          // load the class from the current version of WAS
+          // load the class from the current version of the bundle
           // remove it from the curClazz collection as we would like to know whether there are more classes added
           curClazz.remove(file.getKey());
           SemanticVersioningClassVisitor newcv = getVisitor(curFile, newJarsLoader);
@@ -349,10 +349,10 @@ public class BundleCompatibility {
               }
               if (containsAbstract) {
 
-                minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following abstract methods have been added since the last release of WAS.");
+                minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following abstract methods have been added since the last release of this bundle.");
                 minor_reason.append(subRemarks);
               } else {
-                minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following method has been added since the last release of WAS.");
+                minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following method has been added since the last release of this bundle.");
                 minor_reason.append(concreteSubRemarks);
               }
             }
@@ -366,7 +366,7 @@ public class BundleCompatibility {
                   if (!is_major_change) {
                     fatal_class = changeClass;
                   }
-                  minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following fields have been added since the last release of WAS.");
+                  minor_reason.append(twoLineBreaks + "In the " + getClassName(changeClass) + " class or its supers, the following fields have been added since the last release of this bundle.");
                   minor_reason.append(extraFieldRemarks);
                   break;
                 }
