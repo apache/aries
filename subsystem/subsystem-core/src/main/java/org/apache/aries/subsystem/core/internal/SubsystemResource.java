@@ -723,15 +723,7 @@ public class SubsystemResource implements Resource {
 	}
 	
 	private void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header) throws InvalidSyntaxException {
-		if (header == null)
-			return;
 		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
-		for (ImportPackageHeader.Clause clause : header.getClauses()) {
-			ImportPackageRequirement requirement = new ImportPackageRequirement(clause, this);
-			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
-			builder.allow(policy, filter);
-		}
-		
 		// work around https://www.osgi.org/bugzilla/show_bug.cgi?id=144 
 		// In the first instance, what if the various weaving services were to have a property, 
 		// osgi.woven.packages, that was a comma separated list of packages that might be woven 
@@ -739,6 +731,13 @@ public class SubsystemResource implements Resource {
 		Collection<String> wovenPackages = getWovenPackages();
 		for (String pkg : wovenPackages) { 
 			builder.allow(policy, "(osgi.wiring.package=" + pkg + ")");
+		}
+		if (header == null)
+			return;
+		for (ImportPackageHeader.Clause clause : header.getClauses()) {
+			ImportPackageRequirement requirement = new ImportPackageRequirement(clause, this);
+			String filter = requirement.getDirectives().get(ImportPackageRequirement.DIRECTIVE_FILTER);
+			builder.allow(policy, filter);
 		}
 	}
 	
