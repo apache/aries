@@ -17,11 +17,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.osgi.framework.Constants;
 import org.osgi.resource.Capability;
+import org.osgi.resource.Namespace;
 import org.osgi.resource.Resource;
 
 public class FelixRequirementAdapter extends AbstractRequirement {
+	private final Map<String, String> directives;
 	private final org.apache.felix.bundlerepository.Requirement requirement;
 	private final Resource resource;
 	
@@ -32,6 +33,7 @@ public class FelixRequirementAdapter extends AbstractRequirement {
 			throw new NullPointerException("Missing required parameter: resource");
 		this.requirement = requirement;
 		this.resource = resource;
+		directives = computeDirectives();
 	}
 
 	public Map<String, Object> getAttributes() {
@@ -39,16 +41,7 @@ public class FelixRequirementAdapter extends AbstractRequirement {
 	}
 
 	public Map<String, String> getDirectives() {
-		Map<String, String> result = new HashMap<String, String>(1);
-		/* (1) The Felix OBR specific "mandatory:<*" syntax must be stripped out of the filter.
-		 * (2) The namespace must be translated.
-		 */
-		result.put(Constants.FILTER_DIRECTIVE, requirement.getFilter()
-				.replaceAll("\\(mandatory\\:\\<\\*[^\\)]*\\)", "")
-				.replaceAll("\\(service\\=[^\\)]*\\)", "")
-				.replaceAll("objectclass", "objectClass")
-				.replaceAll(requirement.getName() + '=', getNamespace() + '='));
-		return result;
+		return directives;
 	}
 
 	public String getNamespace() {
@@ -61,5 +54,20 @@ public class FelixRequirementAdapter extends AbstractRequirement {
 
 	public boolean matches(Capability capability) {
 		return requirement.isSatisfied(new OsgiCapabilityAdapter(capability));
+	}
+	
+	private Map<String, String> computeDirectives() {
+		Map<String, String> result = new HashMap<String, String>(3);
+		/* (1) The Felix OBR specific "mandatory:<*" syntax must be stripped out of the filter.
+		 * (2) The namespace must be translated.
+		 */
+		result.put(Namespace.REQUIREMENT_FILTER_DIRECTIVE, requirement.getFilter()
+				.replaceAll("\\(mandatory\\:\\<\\*[^\\)]*\\)", "")
+				.replaceAll("\\(service\\=[^\\)]*\\)", "")
+				.replaceAll("objectclass", "objectClass")
+				.replaceAll(requirement.getName() + '=', getNamespace() + '='));
+		result.put(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE, requirement.isOptional() ? Namespace.RESOLUTION_OPTIONAL : Namespace.RESOLUTION_MANDATORY);
+		result.put(Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE, requirement.isMultiple() ? Namespace.CARDINALITY_MULTIPLE : Namespace.CARDINALITY_SINGLE);
+		return Collections.unmodifiableMap(result);
 	}
 }
