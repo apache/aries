@@ -18,7 +18,11 @@
  */
 package org.apache.aries.jpa.container.weaving.impl;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 
 /**
@@ -34,9 +38,15 @@ public class TransformerRegistryFactory {
     try {
       tr = (TransformerRegistry) Class.forName("org.apache.aries.jpa.container.weaving.impl.JPAWeavingHook").newInstance();
       Bundle b = FrameworkUtil.getBundle(tr.getClass());
-      if(b != null && (b.getState() & mask) != 0)
+      if(b != null && (b.getState() & mask) != 0) {
+        // ARIES-1019: Register with the highest possible service ranking to
+        // avoid ClassNotFoundException caused by interfaces added by earlier
+        // weaving hooks that are not yet visible to the bundle class loader.
+        Dictionary<String, Object> props = new Hashtable<String, Object>(1);
+        props.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
         b.getBundleContext().registerService(
-            "org.osgi.framework.hooks.weaving.WeavingHook", tr, null);
+            "org.osgi.framework.hooks.weaving.WeavingHook", tr, props);
+      }
     } catch (NoClassDefFoundError ncdfe) {
       //TODO log this
     } catch (Exception e) {
