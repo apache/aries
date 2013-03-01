@@ -16,7 +16,7 @@ public class FelixRequirementAdapterTest {
 		EasyMock.expect(req.isMultiple()).andReturn(true);
 		EasyMock.replay(req);
 		FelixRequirementAdapter adapter = new FelixRequirementAdapter(req, EasyMock.createNiceMock(Resource.class));
-		assertEquals(adapter.getDirectives().get(Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE), Namespace.CARDINALITY_MULTIPLE);
+		assertEquals("Wrong value for directive " + Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE, Namespace.CARDINALITY_MULTIPLE, adapter.getDirectives().get(Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE));
 	}
 	
 	@Test
@@ -26,7 +26,7 @@ public class FelixRequirementAdapterTest {
 		EasyMock.expect(req.isMultiple()).andReturn(false);
 		EasyMock.replay(req);
 		FelixRequirementAdapter adapter = new FelixRequirementAdapter(req, EasyMock.createNiceMock(Resource.class));
-		assertEquals(adapter.getDirectives().get(Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE), Namespace.CARDINALITY_SINGLE);
+		assertEquals("Wrong value for directive " + Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE, Namespace.CARDINALITY_SINGLE, adapter.getDirectives().get(Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE));
 	}
 	
 	@Test
@@ -36,7 +36,7 @@ public class FelixRequirementAdapterTest {
 		EasyMock.expect(req.isOptional()).andReturn(false);
 		EasyMock.replay(req);
 		FelixRequirementAdapter adapter = new FelixRequirementAdapter(req, EasyMock.createNiceMock(Resource.class));
-		assertEquals(adapter.getDirectives().get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE), Namespace.RESOLUTION_MANDATORY);
+		assertEquals("Wrong value for directive " + Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE, Namespace.RESOLUTION_MANDATORY, adapter.getDirectives().get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE));
 	}
 	
 	@Test
@@ -46,6 +46,6 @@ public class FelixRequirementAdapterTest {
 		EasyMock.expect(req.isOptional()).andReturn(true);
 		EasyMock.replay(req);
 		FelixRequirementAdapter adapter = new FelixRequirementAdapter(req, EasyMock.createNiceMock(Resource.class));
-		assertEquals(adapter.getDirectives().get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE), Namespace.RESOLUTION_OPTIONAL);
+		assertEquals("Wrong value for directive " + Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE, Namespace.RESOLUTION_OPTIONAL, adapter.getDirectives().get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE));
 	}
 }
