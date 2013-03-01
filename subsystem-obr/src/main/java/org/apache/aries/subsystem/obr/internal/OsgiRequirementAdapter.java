@@ -19,6 +19,7 @@ import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Requirement;
 import org.osgi.framework.Constants;
+import org.osgi.resource.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,8 @@ public class OsgiRequirementAdapter implements Requirement {
 	}
 
 	public boolean isMultiple() {
-		return false;
+		String multiple = requirement.getDirectives().get(Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE);
+		return Namespace.CARDINALITY_MULTIPLE.equals(multiple);
 	}
 
 	public boolean isOptional() {
