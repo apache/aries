@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.obr.internal;
 import java.util.Collections;
 import java.util.Map;
 
+import org.osgi.framework.namespace.BundleNamespace;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Resource;
 
@@ -34,7 +35,9 @@ public class FelixCapabilityAdapter extends AbstractCapability {
 		Map<String, Object> result = capability.getPropertiesAsMap();
 		String namespace = getNamespace();
 		if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
-			result.put(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, result.get("objectclass"));
+			result.put(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, result.get(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE.toLowerCase()));
+		else if (BundleNamespace.BUNDLE_NAMESPACE.equals(namespace))
+			result.put(BundleNamespace.BUNDLE_NAMESPACE, result.get(org.apache.felix.bundlerepository.Resource.SYMBOLIC_NAME));
 		else
 			result.put(namespace, result.get(capability.getName()));
 		return result;
