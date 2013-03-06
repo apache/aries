@@ -135,6 +135,12 @@
             </exclusions>
         </dependency>
         <dependency>
+        	<groupId>org.easymock</groupId>
+        	<artifactId>easymock</artifactId>
+        	<version>3.0</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
