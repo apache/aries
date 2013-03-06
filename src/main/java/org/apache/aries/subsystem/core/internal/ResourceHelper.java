@@ -15,17 +15,23 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.core.archive.TypeAttribute;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.AbstractWiringNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;
+import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
@@ -103,32 +109,73 @@ public class ResourceHelper {
 	}
 	
 	public static boolean matches(Requirement requirement, Capability capability) {
-//		if (logger.isDebugEnabled())
-//			logger.debug(LOG_ENTRY, "matches", new Object[]{requirement, capability});
-		boolean result = false;
 		if (requirement == null && capability == null)
-			result = true;
+			return true;
 		else if (requirement == null || capability == null) 
-			result = false;
+			return false;
 		else if (!capability.getNamespace().equals(requirement.getNamespace())) 
-			result = false;
+			return false;
 		else {
 			String filterStr = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
-			if (filterStr == null)
-				result = true;
-			else {
+			if (filterStr != null) {
 				try {
-					if (FrameworkUtil.createFilter(filterStr).matches(capability.getAttributes()))
-						result = true;
+					if (!FrameworkUtil.createFilter(filterStr).matches(capability.getAttributes()))
+						return false;
 				}
 				catch (InvalidSyntaxException e) {
 					logger.debug("Requirement had invalid filter string: " + requirement, e);
-					result = false;
+					return false;
 				}
 			}
 		}
-		// TODO Check directives.
-//		logger.debug(LOG_EXIT, "matches", result);
-		return result;
+		return matchMandatoryDirective(requirement, capability);
+	}
+	
+	private static final String ATTR = "((?:\\s*[^=><~()]\\s*)+)";
+	private static final String VALUE = "(?:\\\\\\\\|\\\\\\*|\\\\\\(|\\\\\\)|[^\\*()])+";
+	private static final String FINAL = "(?:" + VALUE + ")?";
+	private static final String STAR_VALUE = "(?:" + FINAL + "(?:\\*" + FINAL + ")*)";
+	private static final String ANY = "(?:\\*" + STAR_VALUE + ")";
+	private static final String INITIAL = FINAL;
+	private static final String SUBSTRING = "(?:" + ATTR + "=" + INITIAL + ANY + FINAL + ")";
+	private static final String PRESENT = "(?:" + ATTR + "=\\*)";
+	private static final String LESS_EQ = "(?:<=)";
+	private static final String GREATER_EQ = "(?:>=)";
+	private static final String APPROX = "(?:~=)";
+	private static final String EQUAL = "(?:=)";
+	private static final String FILTER_TYPE = "(?:" + EQUAL + "|" + APPROX + "|" + GREATER_EQ + "|" + LESS_EQ + ")";
+	private static final String SIMPLE = "(?:" + ATTR + FILTER_TYPE + VALUE + ")";
+	private static final String OPERATION = "(?:" + SIMPLE + "|" + PRESENT + "|" + SUBSTRING + ")";
+	
+	private static final Pattern PATTERN = Pattern.compile(OPERATION);
+	
+	private static boolean matchMandatoryDirective(Requirement requirement, Capability capability) {
+		if (!requirement.getNamespace().startsWith("osgi.wiring."))
+			// Mandatory directives only affect osgi.wiring.* namespaces.
+			return true;
+		String mandatoryDirective = capability.getDirectives().get(AbstractWiringNamespace.CAPABILITY_MANDATORY_DIRECTIVE);
+		if (mandatoryDirective == null)
+			// There are no mandatory attributes to check.
+			return true;
+		String filterDirective = requirement.getDirectives().get(Namespace.REQUIREMENT_FILTER_DIRECTIVE);
+		if (filterDirective == null)
+			// The filter specifies none of the mandatory attributes.
+			return false;
+		Set<String> attributeNames = new HashSet<String>();
+		Matcher matcher = PATTERN.matcher(filterDirective);
+		// Collect all of the attribute names from the filter.
+		while (matcher.find())
+			attributeNames.add(matcher.group(1));
+		// Collect all of the mandatory attribute names.
+		for (String s : mandatoryDirective.split(","))
+			// Although all whitespace appears to be significant in a mandatory
+			// directive value according to OSGi syntax (since it must be quoted 
+			// due to commas), we'll anticipate issues here and trim off
+			// whitespace around the commas.
+			if (!attributeNames.contains(s.trim()))
+				// The filter does not specify a mandatory attribute.
+				return false;
+		// The filter specifies all mandatory attributes.
+		return true;
 	}
 }
