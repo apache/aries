@@ -1,5 +1,6 @@
 package org.apache.aries.subsystem.itests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
@@ -15,6 +16,7 @@ import org.apache.aries.subsystem.core.internal.BasicRequirement;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.easymock.EasyMock;
+import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionFilter;
 import org.junit.Before;
 import org.junit.Test;
@@ -124,6 +126,64 @@ public class AriesSubsystemTest extends SubsystemTest {
 	
 	public void setUp() throws Exception {
 		super.setUp();
+	}
+	
+	/*
+	 * The region copy process when adding additional requirements should
+	 * keep all edges, not just the ones running between parent and child. This
+	 * is of particular concern with regard to the connections all subsystem
+	 * regions have with the root region to allow the subsystem services
+	 * through. However, it may also be of concern if the region digraph is
+	 * modified outside of the subsystems API.
+	 */
+	@Test
+	public void testAddRequirementsKeepsEdgesOtherThanParentChild() throws Exception {
+		AriesSubsystem compositeA = (AriesSubsystem)installSubsystemFromFile(COMPOSITE_A);
+		AriesSubsystem applicationB = (AriesSubsystem)getConstituentAsSubsystem(compositeA, APPLICATION_B, null, SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION);
+		Region bRegion = getRegion(applicationB);
+		// One edge to parent for import package. One edge to root for subsystem
+		// service.
+		assertEquals("Wrong number of edges", 2, bRegion.getEdges().size());
+		Requirement requirement = new BasicRequirement.Builder()
+				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
+				.directive(
+						PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE, 
+						"(osgi.wiring.package=org.osgi.framework)")
+				.resource(EasyMock.createMock(Resource.class))
+				.build();
+		applicationB.addRequirements(Collections.singleton(requirement));
+		bRegion = getRegion(applicationB);
+		// Still one edge to parent for import package. One edge to root for 
+		// subsystem service.
+		assertEquals("Wrong number of edges", 2, bRegion.getEdges().size());
+		Region rootRegion = getRegion(getRootSubsystem());
+		// The root region won't be the tail region for any connection unless
+		// manually added.
+		assertEquals("Wrong number of edges", 0, rootRegion.getEdges().size());
+		// Manually add a connection from root to application B.
+		rootRegion.connectRegion(
+				bRegion, 
+				rootRegion.getRegionDigraph().createRegionFilterBuilder().allow(
+						"com.foo", 
+						"(bar=b)").build());
+		// The root region should now have an edge.
+		assertEquals("Wrong number of edges", 1, rootRegion.getEdges().size());
+		// Add another requirement to force a copy.
+		requirement = new BasicRequirement.Builder()
+				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
+				.directive(
+						PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE, 
+						"(osgi.wiring.package=org.osgi.framework.wiring)")
+				.resource(EasyMock.createMock(Resource.class))
+				.build();
+		applicationB.addRequirements(Collections.singleton(requirement));
+		rootRegion = getRegion(getRootSubsystem());
+		// The root region should still have its edge.
+		assertEquals("Wrong number of edges", 1, rootRegion.getEdges().size());
+		bRegion = getRegion(applicationB);
+		// Still one edge to parent for import package. One edge to root for 
+		// subsystem service.
+		assertEquals("Wrong number of edges", 2, bRegion.getEdges().size());
 	}
 	
 	/*

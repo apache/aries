@@ -704,7 +704,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected Region getRegion(Subsystem subsystem) {
 		RegionDigraph digraph = getOsgiService(RegionDigraph.class);
-		String name = subsystem.getSymbolicName() + ';' + subsystem.getVersion() + ';' + subsystem.getType() + ';' + subsystem.getSubsystemId();
+		String name = getRegionName(subsystem);
 		Region region = digraph.getRegion(name);
 		assertNotNull("Region not found: " + name, region);
 		return region;
@@ -714,6 +714,12 @@ public abstract class SubsystemTest extends IntegrationTest {
 		BundleContext bc = subsystem.getBundleContext();
 		assertNotNull("No region context bundle", bc);
 		return bc.getBundle();
+	}
+	
+	protected String getRegionName(Subsystem subsystem) {
+		if (subsystem.getSubsystemId() == 0)
+			return "org.eclipse.equinox.region.kernel";
+		return subsystem.getSymbolicName() + ';' + subsystem.getVersion() + ';' + subsystem.getType() + ';' + subsystem.getSubsystemId();
 	}
 	
 	protected AriesSubsystem getRootAriesSubsystem() {
