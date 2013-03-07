@@ -903,9 +903,9 @@ public class BlueprintContainerImpl
 
     private void tidyupComponents()
     {
-      untrackServiceReferences();
       unregisterServices();
       destroyComponents();
+      untrackServiceReferences();
     }
 
     public void injectBeanInstance(BeanMetadata bmd, Object o) 
