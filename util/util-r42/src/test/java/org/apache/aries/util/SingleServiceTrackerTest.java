@@ -18,6 +18,10 @@
  */
 package org.apache.aries.util;
 
+import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -27,6 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 
 import static org.junit.Assert.*;
 
@@ -46,9 +51,65 @@ public class SingleServiceTrackerTest {
   }
   
   private void createSut() {
+	  createSut(null);
+  }
+  
+  private void createSut(String filter) {
     listener = Skeleton.newMock(SingleServiceListener.class);
-    sut = new SingleServiceTracker<String>(ctx, String.class, listener);
+    try {
+		sut = new SingleServiceTracker<String>(ctx, String.class, filter, listener);
+	} catch (InvalidSyntaxException e) {
+		throw new RuntimeException(e);
+	}
     sut.open();
+  }
+  
+  @Test
+  public void testBeforeTheFactService() {
+	  ctx.registerService("java.lang.String", "uno", null);
+	  createSut();
+	  Skeleton.getSkeleton(listener).assertCalled(Arrays.asList(new MethodCall(SingleServiceListener.class, "serviceFound")), true);
+	  assertEquals("uno", sut.getService());
+  }
+  
+  @Test
+  public void testBeforeTheFactServiceDoubleRegistration() {
+	  testBeforeTheFactService();
+	  
+	  ctx.registerService("java.lang.String", "due", null);
+	  Skeleton.getSkeleton(listener).assertCalled(Arrays.asList(new MethodCall(SingleServiceListener.class, "serviceFound")), true);
+	  assertEquals("uno", sut.getService());
+  }
+  
+  @Test
+  public void testBeforeTheFactChoice() {
+	  ctx.registerService("java.lang.String", "uno", null);
+	  ctx.registerService("java.lang.String", "due", null);
+	  createSut();
+	  Skeleton.getSkeleton(listener).assertCalled(Arrays.asList(new MethodCall(SingleServiceListener.class, "serviceFound")), true);
+	  assertEquals("uno", sut.getService());
+  }
+  
+  @Test
+  public void testBeforeTheFactChoiceWithPropertiesAndFilterWithFirstMatch() {
+	  Dictionary<String, String> props = new Hashtable<String, String>();
+	  props.put("foo", "bar");
+	  ctx.registerService("java.lang.String", "uno", props);
+	  ctx.registerService("java.lang.String", "due", null);
+	  createSut("(foo=bar)");
+	  Skeleton.getSkeleton(listener).assertCalled(Arrays.asList(new MethodCall(SingleServiceListener.class, "serviceFound")), true);
+	  assertEquals("uno", sut.getService());
+  }
+  
+  @Test
+  public void testBeforeTheFactChoiceWithPropertiesAndFilterWithSecondMatch() {
+	  Dictionary<String, String> props = new Hashtable<String, String>();
+	  props.put("foo", "bar");
+	  ctx.registerService("java.lang.String", "uno", null);
+	  ctx.registerService("java.lang.String", "due", props);
+	  createSut("(foo=bar)");
+	  Skeleton.getSkeleton(listener).assertCalled(Arrays.asList(new MethodCall(SingleServiceListener.class, "serviceFound")), true);
+	  assertEquals("due", sut.getService());
   }
   
   @Test
