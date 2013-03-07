@@ -136,6 +136,23 @@ public class SingleServiceTrackerTest {
   }
   
   @Test
+  public void testAfterTheFactChoiceWithPropertiesAndFilterWithSecondMatch() {
+	  
+	  createSut("(foo=bar)");
+	  Skeleton.getSkeleton(listener).assertSkeletonNotCalled();
+	  
+	  ctx.registerService("java.lang.String", "uno", null);
+	  Skeleton.getSkeleton(listener).assertSkeletonNotCalled();
+
+	  Dictionary<String, String> props = new Hashtable<String, String>();
+	  props.put("foo", "bar");
+	  ctx.registerService("java.lang.String", "due", props);
+	  
+	  Skeleton.getSkeleton(listener).assertCalled(Arrays.asList(new MethodCall(SingleServiceListener.class, "serviceFound")), true);
+	  assertEquals("due", sut.getService());
+  }
+  
+  @Test
   public void testRegistrationWhileClosed() {
     createSut();
     sut.close();
