@@ -174,9 +174,11 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         Bundle bundle = event.getBundle();
         if (bundle.getState() != Bundle.ACTIVE && bundle.getState() != Bundle.STARTING) {
             // The bundle is not in STARTING or ACTIVE state anymore
-            // so destroy the context
-            destroyContainer(bundle);
-            return;
+            // so destroy the context.  Ignore our own bundle since it
+            // needs to kick the orderly shutdown and not unregister the namespaces.
+            if (bundle != this.context.getBundle()) {
+                destroyContainer(bundle);
+            }
         }
     }
 
@@ -202,8 +204,11 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
         if (bundle.getState() != Bundle.ACTIVE && bundle.getState() != Bundle.STARTING) {
             // The bundle is not in STARTING or ACTIVE state anymore
-            // so destroy the context
-            destroyContainer(bundle);
+            // so destroy the context.  Ignore our own bundle since it
+            // needs to kick the orderly shutdown and not unregister the namespaces.
+            if (bundle != this.context.getBundle()) {
+                destroyContainer(bundle);
+            }
             return;
         }
         // Do not track bundles given we are stopping
