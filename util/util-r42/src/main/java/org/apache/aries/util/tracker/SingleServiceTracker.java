@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -45,7 +45,7 @@ public final class SingleServiceTracker<T>
   private final AtomicBoolean open = new AtomicBoolean(false);
   private final SingleServiceListener serviceListener;
   private String filterString;
-  private Filter filter;
+  private boolean isCustomFilter;
 
   private final ServiceListener listener = new ServiceListener()
   {
@@ -69,13 +69,17 @@ public final class SingleServiceTracker<T>
     ctx = context;
     this.className = clazz.getName();
     serviceListener = sl;
+    this.filterString = '(' + Constants.OBJECTCLASS + '=' + className + ')';
   }
   
   public SingleServiceTracker(BundleContext context, Class<T> clazz, String filterString, SingleServiceListener sl) throws InvalidSyntaxException
   {
     this(context, clazz, sl);
-    this.filterString = filterString;
-    if (filterString != null) filter = context.createFilter(filterString);
+    if (filterString != null) {
+    	this.filterString = "(&" + this.filterString + filterString + ')';
+    	isCustomFilter = true;
+    }
+    FrameworkUtil.createFilter(this.filterString);
   }
   
   public T getService()
@@ -92,8 +96,6 @@ public final class SingleServiceTracker<T>
   {
     if (open.compareAndSet(false, true)) {
       try {
-        String filterString = '(' + Constants.OBJECTCLASS + '=' + className + ')';
-        if (filter != null) filterString = "(&" + filterString + filter + ')';
         ctx.addServiceListener(listener, filterString);
         findMatchingReference(null);
       } catch (InvalidSyntaxException e) {
@@ -104,8 +106,23 @@ public final class SingleServiceTracker<T>
 
   private void findMatchingReference(ServiceReference original) {
     boolean clear = true;
-    ServiceReference ref = ctx.getServiceReference(className);
-    if (ref != null && (filter == null || filter.match(ref))) {
+    ServiceReference ref;
+    if(isCustomFilter) {
+      try {
+        ServiceReference[] refs = ctx.getServiceReferences(className, filterString);
+        if(refs == null || refs.length == 0) {
+          ref = null;
+        } else {
+    	  ref = refs[0];
+        }
+      } catch (InvalidSyntaxException e) {
+        //This can't happen, we'd have blown up in the constructor
+        ref = null;
+      }
+    } else {
+	  ref = ctx.getServiceReference(className);
+    }
+    if (ref != null) {
       @SuppressWarnings("unchecked")
       T service = (T) ctx.getService(ref);
       if (service != null) {
