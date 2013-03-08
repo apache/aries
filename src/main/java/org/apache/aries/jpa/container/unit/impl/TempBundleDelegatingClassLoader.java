@@ -27,9 +27,14 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Deque;
 import java.util.Enumeration;
+import java.util.LinkedList;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 
 /**
  * This is a simple temporary ClassLoader that delegates to the Bundle,
@@ -37,7 +42,26 @@ import org.osgi.framework.Bundle;
  */
 public class TempBundleDelegatingClassLoader extends ClassLoader {
 
+  private static final boolean CONTEXT_TRACKING_ENABLED; 
+  
+  static {
+	boolean enabled = true;
+    try {
+    	Class.forName("org.osgi.framework.wiring.BundleWiring");
+    } catch (ClassNotFoundException cnfe) {
+    	enabled = false;
+    }
+    CONTEXT_TRACKING_ENABLED = enabled;
+  }
+	
   private final Bundle bundle;
+
+  private final ThreadLocal<Deque<Bundle>> currentLoadingBundle = new ThreadLocal<Deque<Bundle>>(){
+	@Override
+	protected Deque<Bundle> initialValue() {
+		return new LinkedList<Bundle>();
+	}
+  };
   
   public TempBundleDelegatingClassLoader(Bundle b, ClassLoader parent) {
     super(parent);
@@ -49,7 +73,13 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
     String classResName = className.replace('.', '/').concat(".class");
     
     //Don't use loadClass, just load the bytes and call defineClass
-    InputStream is = getResourceAsStream(classResName);
+    Bundle currentContext = currentLoadingBundle.get().peek();
+    InputStream is;
+    if(currentContext == null) {
+      is = getResourceAsStream(classResName);
+    } else {
+      is = getResourceInBundleAsStream(classResName, currentContext);
+    }
     
     if(is == null)
       throw new ClassNotFoundException(className);
@@ -68,12 +98,46 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
     }
     
     buff = baos.toByteArray();
-    
-    return defineClass(className, buff, 0, buff.length);
+
+    if(CONTEXT_TRACKING_ENABLED) {
+    	updateContext(currentContext, className);
+    }
+    try {
+    	return defineClass(className, buff, 0, buff.length);
+    } finally {
+    	if(CONTEXT_TRACKING_ENABLED) {
+        	currentLoadingBundle.get().pop();
+        }
+    }
   }
 
-  @Override
+  private void updateContext(Bundle currentContext, String className) {
+	if(currentContext == null) {
+		currentContext = bundle;
+	}
+	
+	int idx = className.lastIndexOf('.');
+	String packageName = (idx == -1) ? "" : className.substring(0, idx);
+	
+	Bundle contextToSet = currentContext;
+	
+	BundleWiring wiring = currentContext.adapt(BundleWiring.class);
+	for(BundleWire wire : wiring.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE)) {
+	  if(wire.getCapability().getAttributes().get(BundleRevision.PACKAGE_NAMESPACE).equals(packageName)) {
+	    contextToSet = wire.getProviderWiring().getBundle();
+	    break;
+	  }
+	}
+	currentLoadingBundle.get().push(contextToSet);
+  }
+
+@Override
   protected URL findResource(final String resName)
+  {
+    return findResourceInBundle(resName, bundle);
+  }
+  
+  protected URL findResourceInBundle(final String resName, final Bundle inBundle)
   {
     //Bundle.getResource requires privileges that the client may not have but we need
     //use a doPriv so that only this bundle needs the privileges
@@ -81,14 +145,27 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
 
       public URL run()
       {
-        return bundle.getResource(resName);
+        return inBundle.getResource(resName);
       }
     });
   }
 
-  @SuppressWarnings("unchecked")
+  private InputStream getResourceInBundleAsStream(final String resName, final Bundle inBundle) {
+	  URL url = findResourceInBundle(resName, inBundle);
+	  try {
+		return (url == null) ? null : url.openStream();
+	} catch (IOException e) {
+		return null;
+	}
+  }
+  
   @Override
   protected Enumeration<URL> findResources(final String resName) throws IOException
+  {
+    return findResourcesInBundle(resName, bundle);
+  }
+  
+  protected Enumeration<URL> findResourcesInBundle(final String resName, final Bundle inBundle) throws IOException
   {
     Enumeration<URL> resources = null;
     try {
@@ -98,7 +175,7 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
 
         public Enumeration<URL> run() throws IOException
         {
-          return bundle.getResources(resName);
+          return inBundle.getResources(resName);
         }
       });
     } catch(PrivilegedActionException pae) {
