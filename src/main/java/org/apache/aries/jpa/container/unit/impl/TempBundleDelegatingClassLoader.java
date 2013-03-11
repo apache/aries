@@ -88,14 +88,18 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
     
     byte[] buff = new byte[4096];
     try {
-      int read = is.read(buff);
-      while(read >0) {
-        baos.write(buff, 0, read);
-        read = is.read(buff);
+      try {
+        int read = is.read(buff);
+        while(read >0) {
+          baos.write(buff, 0, read);
+          read = is.read(buff);
+        }
+      }finally {
+        is.close();
       }
     } catch (IOException ioe) {
       throw new ClassNotFoundException(className, ioe);
-    }
+    } 
     
     buff = baos.toByteArray();
 
