@@ -195,7 +195,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         // If the bundle being stopped is the system bundle,
         // do an orderly shutdown of all blueprint contexts now
         // so that service usage can actually be useful
-        if (bundle.getBundleId() == 0 && bundle.getState() == Bundle.STOPPING) {
+        if (context.getBundle(0).equals(bundle) && bundle.getState() == Bundle.STOPPING) {
             String val = context.getProperty("org.apache.aries.blueprint.preemptiveShutdown");
             if (val == null || Boolean.parseBoolean(val)) {
                 stop(context);
