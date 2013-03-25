@@ -269,7 +269,7 @@ public interface FrameworkMBean {
      *         property is undefined.
      * @throws IOException if the operation failed
      */
-    String getProperty(String key);
+    String getProperty(String key) throws IOException;
 
 	/**
      * Returns the bundles IDs that have non-current, in use bundle wirings. This
