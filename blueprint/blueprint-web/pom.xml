@@ -1,0 +1,148 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>java5-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath />
+    </parent>
+
+    <groupId>org.apache.aries.blueprint</groupId>
+    <artifactId>org.apache.aries.blueprint.web</artifactId>
+    <packaging>jar</packaging>
+    <name>Apache Aries Blueprint Web</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <description>
+        This bundle contains a Servlet ContextListener for bootstrapping
+        blueprint inside web containers.
+    </description>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-web</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-web</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-web</url>
+    </scm>
+    <properties>
+        <blueprint.api.version>1.0.0</blueprint.api.version>
+        <blueprint.core.version>1.0.0</blueprint.core.version>
+        <blueprint.parser.version>1.0.0</blueprint.parser.version>
+        <proxy.impl.version>1.0.0</proxy.impl.version>
+        <blueprint.nosgi.version>1.0.0-SNAPSHOT</blueprint.nosgi.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+              <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
+              <blueprint.core.version>1.0.1-SNAPSHOT</blueprint.core.version>
+              <blueprint.parser.version>1.0.1-SNAPSHOT</blueprint.parser.version>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.api</artifactId>
+            <version>${blueprint.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.noosgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_2.5_spec</artifactId>
+            <scope>provided</scope>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.build.sourceDirectory}</directory>
+                <includes>
+                    <include>**/packageinfo</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.blueprint</groupId>
+                                    <artifactId>org.apache.aries.blueprint.api</artifactId>
+                                    <includes>**/blueprint.xsd</includes>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.1.0</version>
+                <executions>
+                    <execution>
+                        <id>default-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>version-check</goal>
+                        </goals>
+                        <configuration>
+                            <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint.core:1.1.0</oldArtifact>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+        
+</project>
