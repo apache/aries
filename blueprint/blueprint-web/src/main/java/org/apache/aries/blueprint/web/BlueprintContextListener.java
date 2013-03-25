@@ -32,16 +32,24 @@ import org.apache.aries.blueprint.container.BlueprintContainerImpl;
  * Initialises all the blueprint XML files called <code>META-INF/blueprint.xml</code> on the classpath
  */
 public class BlueprintContextListener implements ServletContextListener {
+
     public static final String CONTAINER_ATTRIBUTE = "org.apache.aries.blueprint.container";
+
+    public static final String LOCATION = "location";
+
+    public static final String DEFAULT_LOCATION = "META-INF/blueprint.xml";
 
     public void contextInitialized(ServletContextEvent event) {
         ServletContext servletContext = event.getServletContext();
-        String blueprintPath = "META-INF/blueprint.xml";
-        Set<URL> resourcePathSet = servletContext.getResourcePaths(blueprintPath);
+        String location = servletContext.getInitParameter(LOCATION);
+        if (location == null) {
+            location = DEFAULT_LOCATION;
+        }
+        Set<URL> resourcePathSet = servletContext.getResourcePaths(location);
         List<URL> resourcePaths = new ArrayList<URL>(resourcePathSet);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
-            Enumeration<URL> resources = classLoader.getResources(blueprintPath);
+            Enumeration<URL> resources = classLoader.getResources(location);
             while (resources.hasMoreElements()) {
                 resourcePaths.add(resources.nextElement());
             }
