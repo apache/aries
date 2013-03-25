@@ -387,11 +387,16 @@ public class BlueprintContainerImpl
                 }
             }
         } catch (Throwable t) {
-            state = State.Failed;
-            cancelFutureIfPresent();
-            tidyupComponents();
-            LOGGER.error("Unable to start blueprint container for bundle " + getBundle().getSymbolicName(), t);
-            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundle(), getExtenderBundle(), t));
+            try {
+                state = State.Failed;
+                cancelFutureIfPresent();
+                tidyupComponents();
+                LOGGER.error("Unable to start blueprint container for bundle " + getBundle().getSymbolicName(), t);
+                eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundle(), getExtenderBundle(), t));
+            } catch (RuntimeException re) {
+                LOGGER.debug("Tidying up components failed. ", re);
+                throw re;
+            }
         }
     }
 
