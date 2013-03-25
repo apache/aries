@@ -9,9 +9,16 @@
     <listener-class>org.apache.aries.blueprint.web.BlueprintContextListener</listener-class>
   </listener>
 
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
+    <servlet>
+        <servlet-name>accounts</servlet-name>
+        <servlet-class>org.apache.aries.blueprint.sample.AccountsServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>accounts</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
 
 </web-app>
 

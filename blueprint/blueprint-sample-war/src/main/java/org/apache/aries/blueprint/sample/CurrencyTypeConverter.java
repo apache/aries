@@ -16,7 +16,19 @@
  */
 package org.apache.aries.blueprint.sample;
 
-public interface InterfaceA {
+import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.ReifiedType;
 
-    String hello(String msg);
+import java.util.Currency;
+
+public class CurrencyTypeConverter implements Converter {
+
+    public boolean canConvert(Object fromValue, ReifiedType toType) {
+        return Currency.class.isAssignableFrom(toType.getRawClass());
+    }
+
+    public Object convert(Object source, ReifiedType toType) throws Exception {
+        return Currency.getInstance(source.toString());
+    }
+
 }

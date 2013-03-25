@@ -41,10 +41,6 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-web</url>
     </scm>
     <properties>
-        <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.core.version>1.0.0</blueprint.core.version>
-        <blueprint.parser.version>1.0.0</blueprint.parser.version>
-        <proxy.impl.version>1.0.0</proxy.impl.version>
         <blueprint.nosgi.version>1.0.0-SNAPSHOT</blueprint.nosgi.version>
     </properties>
 
@@ -52,9 +48,7 @@
         <profile>
             <id>dev</id>
             <properties>
-              <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
-              <blueprint.core.version>1.0.1-SNAPSHOT</blueprint.core.version>
-              <blueprint.parser.version>1.0.1-SNAPSHOT</blueprint.parser.version>
+              <blueprint.nosgi.version>1.0.0-SNAPSHOT</blueprint.nosgi.version>
             </properties>
         </profile>
     </profiles>
@@ -62,18 +56,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>${blueprint.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.noosgi</artifactId>
-            <version>${project.version}</version>
+            <version>${blueprint.nosgi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
-            <scope>provided</scope>
             <version>1.2</version>
         </dependency>
         <dependency>
@@ -115,7 +103,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.apache.aries.blueprint</groupId>
-                                    <artifactId>org.apache.aries.blueprint.api</artifactId>
+                                    <artifactId>org.apache.aries.blueprint.noosgi</artifactId>
                                     <includes>**/blueprint.xsd</includes>
                                 </artifactItem>
                             </artifactItems>

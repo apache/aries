@@ -15,51 +15,27 @@
 		License.
 	-->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-	default-availability="optional">
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0">
 
-    <!--
-    	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
-	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0"
+    <type-converters>
+        <bean id="converter1" class="org.apache.aries.blueprint.sample.DateTypeConverter">
+            <property name="format" value="yyyy.MM.dd" />
+        </bean>
+        <bean id="converter2" class="org.apache.aries.blueprint.sample.CurrencyTypeConverter" />
+    </type-converters>
 
+    <ext:property-placeholder>
+        <ext:default-properties>
+            <ext:property name="name" value="value" />
+            <ext:property name="a" value="Hello " />
+            <ext:property name="b" value="FooBar" />
+        </ext:default-properties>
+        <ext:location>classpath:test.properties</ext:location>
+    </ext:property-placeholder>
 
-	<ext:property-placeholder placeholder-prefix="$["
-		placeholder-suffix="]" ignore-missing-locations="true"
-		system-properties="override" evaluator="jexl">
-		<ext:default-properties>
-			<ext:property name="name" value="value" />
-			<ext:property name="a" value="Hello " />
-			<ext:property name="b" value="FooBar" />
-		</ext:default-properties>
-		<ext:location>file:///url</ext:location>
-	</ext:property-placeholder>
-
-	<cm:property-placeholder id="property-placeholder"
-		persistent-id="blueprint-sample-placeholder">
-		<cm:default-properties>
-			<cm:property name="key.b" value="-1" />
-		</cm:default-properties>
-	</cm:property-placeholder>
-
-	<bean id="none-managed" class="org.apache.aries.blueprint.sample.Foo">
-		<cm:managed-properties persistent-id="blueprint-sample-managed.none"
-			update-strategy="none" />
-	</bean>
-
-	<bean id="component-managed" class="org.apache.aries.blueprint.sample.Foo">
-		<cm:managed-properties persistent-id="blueprint-sample-managed.component"
-			update-strategy="component-managed" update-method="update" />
-	</bean>
-
-	<bean id="container-managed" class="org.apache.aries.blueprint.sample.Foo">
-		<cm:managed-properties persistent-id="blueprint-sample-managed.container"
-			update-strategy="container-managed" />
-	</bean>
-	-->
-
-	<bean id="foo" class="org.apache.aries.blueprint.sample.Foo"
+    <bean id="foo" class="org.apache.aries.blueprint.sample.Foo"
 		init-method="init" destroy-method="destroy">
 		<property name="a" value="5" />
-<!--
 		<property name="b" value="${key.b}" />
 		<property name="currency">
 			<value>PLN</value>
@@ -67,13 +43,7 @@
 		<property name="date">
 			<value>2009.04.17</value>
 		</property>
--->
 	</bean>
-
-	<bean id="fooRegistrationListener"
-		class="org.apache.aries.blueprint.sample.FooRegistrationListener" />
-
-	<bean id="defaultRunnable" class="org.apache.aries.blueprint.sample.DefaultRunnable"/>
 
 	<bean id="accountOne" class="org.apache.aries.blueprint.sample.Account">
 		<argument value="1" />
@@ -92,5 +62,15 @@
 		factory-method="createAccount">
 		<argument value="3" />
 	</bean>
+
+    <bean id="accounts" class="java.util.ArrayList">
+        <argument>
+            <list>
+                <ref component-id="accountOne"/>
+                <ref component-id="accountTwo"/>
+                <ref component-id="accountThree"/>
+            </list>
+        </argument>
+    </bean>
 </blueprint>
 
