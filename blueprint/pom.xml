@@ -46,12 +46,14 @@
         <module>blueprint-compatibility</module>
         <module>blueprint-core-compatibility</module>
         <module>blueprint-noosgi</module>
+        <module>blueprint-web</module>
         <module>blueprint-jexl-evaluator</module>
         <module>blueprint-sample</module>
         <module>blueprint-annotation-api</module>
         <module>blueprint-annotation-impl</module>
         <module>blueprint-sample-annotation</module>
         <module>blueprint-sample-fragment</module>
+        <module>blueprint-sample-war</module>
         <module>blueprint-testbundlea</module>
         <module>blueprint-testbundleb</module>
         <module>blueprint-testquiescebundle</module>

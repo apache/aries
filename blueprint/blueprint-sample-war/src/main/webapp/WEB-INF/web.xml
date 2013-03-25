@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <description>blueprint web sample</description>
+
+  <display-name>blueprint web sample</display-name>
+
+  <listener>
+    <listener-class>org.apache.aries.blueprint.web.BlueprintContextListener</listener-class>
+  </listener>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>
+
