@@ -5,6 +5,11 @@
 
   <display-name>blueprint web sample</display-name>
 
+  <context-param>
+      <param-name>location</param-name>
+      <param-value>META-INF/test.xml</param-value>
+  </context-param>
+
   <listener>
     <listener-class>org.apache.aries.blueprint.web.BlueprintContextListener</listener-class>
   </listener>
