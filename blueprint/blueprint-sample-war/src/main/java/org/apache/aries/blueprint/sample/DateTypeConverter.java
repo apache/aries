@@ -16,30 +16,27 @@
  */
 package org.apache.aries.blueprint.sample;
 
-import java.io.Serializable;
-import java.util.Map;
+import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.ReifiedType;
 
-public class FooRegistrationListener {
-        
-    private Map props;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class DateTypeConverter implements Converter {
+
+    DateFormat dateFormat;
     
-    private Object lock = new Object();
-    
-    public void serviceRegistered(Serializable foo, Map props) {
-        System.out.println("Service registration notification: " + foo + " " + props);
-        synchronized (lock) {
-            this.props = props;
-        }
+    public void setFormat(String format) {
+        dateFormat = new SimpleDateFormat(format);
     }
     
-    public void serviceUnregistered(Foo foo, Map props) {
-        System.out.println("Service unregistration notification: " + foo + " " + props);
+    public Object convert(Object source, ReifiedType toType) throws Exception {
+        return dateFormat.parse(source.toString());
     }
-    
-    public Map getProperties() {
-        synchronized (lock) {
-            return this.props;
-        }
+
+    public boolean canConvert(Object fromValue, ReifiedType toType) {
+        return Date.class.isAssignableFrom(toType.getRawClass());
     }
 
 }
