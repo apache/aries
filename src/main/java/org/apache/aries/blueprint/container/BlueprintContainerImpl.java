@@ -53,19 +53,32 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     private final IdSpace tempRecipeIdSpace = new IdSpace();
     private BlueprintRepository repository;
     private List<Processor> processors = new ArrayList<Processor>();
+    private Map<String, String> properties;
 
     public BlueprintContainerImpl(ClassLoader loader, List<URL> resources) throws Exception {
-        this(loader, resources,  true);
+        this(loader, resources, null, true);
     }
 
     public BlueprintContainerImpl(ClassLoader loader, List<URL> resources, boolean init) throws Exception {
+        this(loader, resources, null, init);
+    }
+
+    public BlueprintContainerImpl(ClassLoader loader, List<URL> resources, Map<String, String> properties, boolean init) throws Exception {
         this.loader = loader;
         this.converter = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.resources = resources;
+        this.properties = properties;
         if (init) {
             init();
         }
+    }
+
+    public String getProperty(String key) {
+        if (properties != null && properties.containsKey(key)) {
+            return properties.get(key);
+        }
+        return System.getProperty(key);
     }
 
     public void init() throws Exception {

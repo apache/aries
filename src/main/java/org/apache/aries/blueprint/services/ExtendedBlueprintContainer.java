@@ -41,4 +41,6 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
     <T extends Processor> List<T> getProcessors(Class<T> type);
 
+    String getProperty(String key);
+
 }
