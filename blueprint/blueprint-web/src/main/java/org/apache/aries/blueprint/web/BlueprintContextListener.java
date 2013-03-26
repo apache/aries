@@ -35,7 +35,7 @@ public class BlueprintContextListener implements ServletContextListener {
 
     public static final String CONTAINER_ATTRIBUTE = "org.apache.aries.blueprint.container";
 
-    public static final String LOCATION = "location";
+    public static final String LOCATION = "blueprintLocation";
 
     public static final String DEFAULT_LOCATION = "META-INF/blueprint.xml";
 
