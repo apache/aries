@@ -24,7 +24,7 @@
         <bean id="converter2" class="org.apache.aries.blueprint.sample.CurrencyTypeConverter" />
     </type-converters>
 
-    <ext:property-placeholder system-properties="override">
+    <ext:property-placeholder>
         <ext:default-properties>
             <ext:property name="name" value="value" />
             <ext:property name="a" value="Hello " />
