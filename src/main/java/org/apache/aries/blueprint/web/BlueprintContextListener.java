@@ -45,8 +45,7 @@ public class BlueprintContextListener implements ServletContextListener {
         if (location == null) {
             location = DEFAULT_LOCATION;
         }
-        Set<URL> resourcePathSet = servletContext.getResourcePaths(location);
-        List<URL> resourcePaths = new ArrayList<URL>(resourcePathSet);
+        List<URL> resourcePaths = new ArrayList<URL>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             Enumeration<URL> resources = classLoader.getResources(location);
