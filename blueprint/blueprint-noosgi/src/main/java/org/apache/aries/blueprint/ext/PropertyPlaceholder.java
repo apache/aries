@@ -126,7 +126,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         LOGGER.debug("Retrieving property {}", val);
         Object v = null;
         if (v == null && systemProperties == SystemProperties.override) {
-            v = System.getProperty(val);
+            v = getBlueprintContainer().getProperty(val);
             if (v != null) {
                 LOGGER.debug("Found system property {} with value {}", val, v);
             }
@@ -138,7 +138,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
             }
         }
         if (v == null && systemProperties == SystemProperties.fallback) {
-            v = System.getProperty(val);
+            v = getBlueprintContainer().getProperty(val);
             if (v != null) {
                 LOGGER.debug("Found system property {} with value {}", val, v);
             }
