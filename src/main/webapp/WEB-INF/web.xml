@@ -6,7 +6,7 @@
   <display-name>blueprint web sample</display-name>
 
   <context-param>
-      <param-name>location</param-name>
+      <param-name>blueprintLocation</param-name>
       <param-value>META-INF/test.xml</param-value>
   </context-param>
 
