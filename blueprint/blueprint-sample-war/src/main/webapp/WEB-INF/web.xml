@@ -16,8 +16,8 @@
     </context-param>
 
     <listener>
-    <listener-class>org.apache.aries.blueprint.web.BlueprintContextListener</listener-class>
-  </listener>
+        <listener-class>org.apache.aries.blueprint.web.BlueprintContextListener</listener-class>
+    </listener>
 
     <servlet>
         <servlet-name>accounts</servlet-name>

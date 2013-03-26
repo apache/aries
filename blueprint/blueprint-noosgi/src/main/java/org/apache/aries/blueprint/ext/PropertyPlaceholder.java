@@ -50,7 +50,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
     private Properties properties;
     private List<String> locations;
     private boolean ignoreMissingLocations;
-    private SystemProperties systemProperties = SystemProperties.fallback;
+    private SystemProperties systemProperties = SystemProperties.override;
     private PropertyEvaluator evaluator = null;
 
     public Map getDefaultProperties() {
