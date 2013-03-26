@@ -24,13 +24,12 @@
         <bean id="converter2" class="org.apache.aries.blueprint.sample.CurrencyTypeConverter" />
     </type-converters>
 
-    <ext:property-placeholder>
+    <ext:property-placeholder system-properties="override">
         <ext:default-properties>
             <ext:property name="name" value="value" />
             <ext:property name="a" value="Hello " />
             <ext:property name="b" value="FooBar" />
         </ext:default-properties>
-        <ext:location>classpath:test.properties</ext:location>
     </ext:property-placeholder>
 
     <bean id="foo" class="org.apache.aries.blueprint.sample.Foo"
