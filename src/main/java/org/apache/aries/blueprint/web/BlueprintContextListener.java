@@ -21,10 +21,14 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import org.apache.aries.blueprint.container.BlueprintContainerImpl;
 
@@ -36,6 +40,8 @@ public class BlueprintContextListener implements ServletContextListener {
     public static final String CONTAINER_ATTRIBUTE = "org.apache.aries.blueprint.container";
 
     public static final String LOCATION = "blueprintLocation";
+
+    public static final String PROPERTIES = "blueprintProperties";
 
     public static final String DEFAULT_LOCATION = "META-INF/blueprint.xml";
 
@@ -53,7 +59,31 @@ public class BlueprintContextListener implements ServletContextListener {
                 resourcePaths.add(resources.nextElement());
             }
             servletContext.log("Loading Blueprint contexts " + resourcePaths);
-            BlueprintContainerImpl container = new BlueprintContainerImpl(classLoader, resourcePaths);
+
+            Map<String, String> properties = new HashMap<String, String>();
+            String propLocations = servletContext.getInitParameter(PROPERTIES);
+            if (propLocations != null) {
+                for (String propLoc : propLocations.split(",")) {
+                    Enumeration<URL> propUrl = classLoader.getResources(propLoc);
+                    while (propUrl.hasMoreElements()) {
+                        URL url = propUrl.nextElement();
+                        InputStream is = url.openStream();
+                        try {
+                            Properties props = new Properties();
+                            props.load(is);
+                            Enumeration names = props.propertyNames();
+                            while (names.hasMoreElements()) {
+                                String key = names.nextElement().toString();
+                                properties.put(key, props.getProperty(key));
+                            }
+                        } finally {
+                            is.close();
+                        }
+                    }
+                }
+            }
+
+            BlueprintContainerImpl container = new BlueprintContainerImpl(classLoader, resourcePaths, properties, true);
             servletContext.setAttribute(CONTAINER_ATTRIBUTE, container);
         } catch (Exception e) {
             servletContext.log("Failed to startup blueprint container. " + e, e);
