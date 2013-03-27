@@ -59,7 +59,7 @@
     	<dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.osgi</groupId>
