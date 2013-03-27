@@ -18,8 +18,11 @@
  */
 package org.apache.aries.blueprint.ext.impl;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.ParserContext;
+import org.apache.aries.blueprint.ext.AbstractPropertyPlaceholder;
 import org.apache.aries.blueprint.ext.PlaceholdersUtils;
 import org.apache.aries.blueprint.ext.PropertyPlaceholder;
 import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
@@ -258,10 +261,91 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             metadata.addProperty("locations", createList(context, locations));
         }
 
-        PlaceholdersUtils.validatePlaceholder(metadata, context.getComponentDefinitionRegistry());
+        boolean result = validatePlaceholder(metadata, context.getComponentDefinitionRegistry());
 
-        return metadata;
+        return result ? metadata : null;
     }
+
+    private boolean validatePlaceholder(MutableBeanMetadata metadata, ComponentDefinitionRegistry registry) {
+        for (String id : registry.getComponentDefinitionNames()) {
+            ComponentMetadata component = registry.getComponentDefinition(id);
+            if (component instanceof ExtendedBeanMetadata) {
+                ExtendedBeanMetadata bean = (ExtendedBeanMetadata) component;
+                if (bean.getRuntimeClass() != null && AbstractPropertyPlaceholder.class.isAssignableFrom(bean.getRuntimeClass())) {
+                    if (arePropertiesEquals(bean, metadata, "placeholderPrefix")
+                            && arePropertiesEquals(bean, metadata, "placeholderSuffix")) {
+                        if (!arePropertiesEquals(bean, metadata, "systemProperties")
+                                || !arePropertiesEquals(bean, metadata, "ignoreMissingLocations")) {
+                            throw new ComponentDefinitionException("Multiple incompatible placeholders found");
+                        }
+                        // Merge both placeholders
+                        mergeList(bean, metadata, "locations");
+                        mergeMap(bean, metadata, "defaultProperties");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private void mergeList(ExtendedBeanMetadata bean1, MutableBeanMetadata bean2, String name) {
+        Metadata m1 = getProperty(bean1, name);
+        Metadata m2 = getProperty(bean2, name);
+        if (m1 == null && m2 != null) {
+            ((MutableBeanMetadata) bean1).addProperty(name, m2);
+        } else if (m1 != null && m2 != null) {
+            if (!(m1 instanceof MutableCollectionMetadata) || !(m2 instanceof MutableCollectionMetadata)) {
+                throw new ComponentDefinitionException("Unable to merge " + name + " list properties");
+            }
+            MutableCollectionMetadata c1 = (MutableCollectionMetadata) m1;
+            MutableCollectionMetadata c2 = (MutableCollectionMetadata) m2;
+            for (Metadata v : c2.getValues()) {
+                c1.addValue(v);
+            }
+        }
+    }
+
+    private void mergeMap(ExtendedBeanMetadata bean1, MutableBeanMetadata bean2, String name) {
+        Metadata m1 = getProperty(bean1, name);
+        Metadata m2 = getProperty(bean2, name);
+        if (m1 == null && m2 != null) {
+            ((MutableBeanMetadata) bean1).addProperty(name, m2);
+        } else if (m1 != null && m2 != null) {
+            if (!(m1 instanceof MutableMapMetadata) || !(m2 instanceof MutableMapMetadata)) {
+                throw new ComponentDefinitionException("Unable to merge " + name + " list properties");
+            }
+            MutableMapMetadata c1 = (MutableMapMetadata) m1;
+            MutableMapMetadata c2 = (MutableMapMetadata) m2;
+            for (MapEntry e : c2.getEntries()) {
+                c1.addEntry(e);
+            }
+        }
+    }
+
+    private boolean arePropertiesEquals(BeanMetadata bean1, BeanMetadata bean2, String name) {
+        String v1 = getPlaceholderProperty(bean1, name);
+        String v2 = getPlaceholderProperty(bean2, name);
+        return v1 == null ? v2 == null : v1.equals(v2);
+    }
+
+    private String getPlaceholderProperty(BeanMetadata bean, String name) {
+        Metadata metadata = getProperty(bean, name);
+        if (metadata instanceof ValueMetadata) {
+            return ((ValueMetadata) metadata).getStringValue();
+        }
+        return null;
+    }
+
+    private Metadata getProperty(BeanMetadata bean, String name) {
+        for (BeanProperty property : bean.getProperties()) {
+            if (name.equals(property.getName())) {
+                return property.getValue();
+            }
+        }
+        return null;
+    }
+
 
     private Metadata parseDefaultProperties(ParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
         MutableMapMetadata props = context.createMetadata(MutableMapMetadata.class);
