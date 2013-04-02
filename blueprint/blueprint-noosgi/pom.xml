@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.noosgi</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Apache Aries Blueprint no-OSGI</name>
     <description>
         This jar contains everything needed to run Blueprint outside OSGi.
