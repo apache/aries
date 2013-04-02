@@ -35,14 +35,14 @@
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-war</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-war</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample</url>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample-war</url>
     </scm>
 
     <properties>
         <context>/</context>
         <httpPort>8080</httpPort>
 
-        <blueprint.web.version>1.0.0-SNAPSHOT</blueprint.web.version>
+        <blueprint.web.version>1.0.0</blueprint.web.version>
     </properties>
 
     <dependencies>
