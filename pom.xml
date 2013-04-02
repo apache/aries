@@ -27,15 +27,15 @@
     <artifactId>org.apache.aries.blueprint.sample.war</artifactId>
     <name>Apache Aries Blueprint WAR Sample</name>
     <packaging>war</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>
         Example blueprint web application using blueprint-noosgi, mostly used for integration tests.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-war</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-sample-war</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-sample-war</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.sample.war-1.0.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.sample.war-1.0.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.sample.war-1.0.0</url>
     </scm>
 
     <properties>
