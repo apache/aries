@@ -56,6 +56,12 @@
                 <blueprint.parser.version>1.0.1-SNAPSHOT</blueprint.parser.version>
             </properties>
         </profile>
+        <profile>
+            <id>apache-release</id>
+            <properties>
+                <createSourcesJar>true</createSourcesJar>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencies>
