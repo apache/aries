@@ -41,7 +41,7 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-web</url>
     </scm>
     <properties>
-        <blueprint.nosgi.version>1.0.0-SNAPSHOT</blueprint.nosgi.version>
+        <blueprint.nosgi.version>1.0.0</blueprint.nosgi.version>
     </properties>
 
     <profiles>
