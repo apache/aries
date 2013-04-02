@@ -26,35 +26,25 @@
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
-    <artifactId>org.apache.aries.blueprint.cm</artifactId>
-    <packaging>bundle</packaging>
-    <version>1.0.2-SNAPSHOT</version>
-    <name>Apache Aries Blueprint CM</name>
+    <artifactId>org.apache.aries.blueprint.noosgi</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0.0</version>
+    <name>Apache Aries Blueprint no-OSGI</name>
     <description>
-        This bundle contains the ConfigAdmin namespace for blueprint.
+        This jar contains everything needed to run Blueprint outside OSGi.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-cm</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-cm</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-cm</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.noosgi-1.0.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.noosgi-1.0.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.noosgi-1.0.0</url>
     </scm>
 
     <properties>
-        <!-- Export package versions are maintained in packageinfo files -->
-        <aries.osgi.export.pkg />
-        <aries.osgi.import.pkg>
-           org.apache.aries.blueprint;provide:=true;version="[1.0,1.2)",
-           org.apache.aries.blueprint.ext;provide:=true;version="[1.0,1.2)",
-           *
-        </aries.osgi.import.pkg>
-        <aries.osgi.private.pkg>
-            org.apache.aries.blueprint.compendium.cm
-        </aries.osgi.private.pkg>
-
         <blueprint.api.version>1.0.0</blueprint.api.version>
         <blueprint.core.version>1.0.0</blueprint.core.version>
         <blueprint.parser.version>1.0.0</blueprint.parser.version>
+        <proxy.impl.version>1.0.0</proxy.impl.version>
     </properties>
 
     <profiles>
@@ -64,6 +54,12 @@
                 <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
                 <blueprint.core.version>1.0.1-SNAPSHOT</blueprint.core.version>
                 <blueprint.parser.version>1.0.1-SNAPSHOT</blueprint.parser.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>apache-release</id>
+            <properties>
+                <createSourcesJar>true</createSourcesJar>
             </properties>
         </profile>
     </profiles>
@@ -84,34 +80,28 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
             <version>${blueprint.core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.aries.quiesce</groupId>
+                    <artifactId>org.apache.aries.quiesce.api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.aries</groupId>
+                    <artifactId>org.apache.aries.util</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <!--
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.impl</artifactId>
+            <version>${proxy.impl.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-            <version>4.1.0</version>
-        </dependency>
+        -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.pojosr</groupId>
-            <artifactId>de.kalpatec.pojosr.framework</artifactId>
-            <version>0.1.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.swissbox</groupId>
-            <artifactId>pax-swissbox-tinybundles</artifactId>
-            <version>1.3.1</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -131,34 +121,66 @@
             <version>1.5.11</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.configadmin</artifactId>
-            <version>1.2.8</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <version>0.1.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
-                            <goal>version-check</goal>
+                            <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint.cm:1.0.1</oldArtifact>
+                            <filters>
+                                <filter>
+                                    <artifact>org.apache.aries.blueprint:org.apache.aries.blueprint.core</artifact>
+                                    <excludes>
+                                        <exclude>org/apache/aries/blueprint/container/AbstractServiceReferenceRecipe*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/BlueprintContainerImpl*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/BlueprintEventDispatcher*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/BlueprintExtender*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/BlueprintQuiesceParticipant*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/BlueprintThreadFactory*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/GenericType*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/NamespaceHandlerRegistry*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/ParserServiceImpl*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/QuiesceInterceptor*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/ReferenceListRecipe*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/ReferenceRecipe*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/SatisfiableRecipe*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/container/ServiceRecipe*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/ext/AbstractPropertyPlaceholder$LateBindingValueMetadata.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/ext/AbstractPropertyPlaceholder.class</exclude>
+                                        <!--
+                                        <exclude>org/apache/aries/blueprint/mutable/MutableReference*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/mutable/MutableRegistrationListener.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/mutable/MutableService*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/reflect/Reference*.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/reflect/Service*.class</exclude>
+                                        -->
+                                        <exclude>org/apache/aries/blueprint/services/ExtendedBlueprintContainer.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/namespace/**</exclude>
+                                        <!--
+                                          - Check if we can exclude proxy
+                                        <exclude>org/apache/aries/blueprint/proxy/**</exclude>
+                                        -->
+                                        <exclude>org/apache/aries/blueprint/utils/ServiceListener.class</exclude>
+                                        <exclude>org/apache/aries/blueprint/utils/threading/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.apache.aries.proxy:org.apache.aries.proxy.api</artifact>
+                                    <excludes>
+                                        <exclude>org/apache/aries/proxy/weavinghook/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <createSourcesJar>${createSourcesJar}</createSourcesJar>
+                            <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
                         </configuration>
                     </execution>
                 </executions>
