@@ -13,6 +13,7 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,11 +25,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.core.archive.AriesSubsystemParentsHeader;
@@ -485,17 +488,39 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		}
 	}
 	
-	synchronized void setDeploymentManifest(DeploymentManifest value) throws IOException, URISyntaxException {
+	synchronized void setDeploymentManifest(DeploymentManifest value) throws IOException {
+		deploymentManifest = value;
+		Coordination coordination = Activator.getInstance().getCoordinator().peek();
+		if (coordination == null) {
+			saveDeploymentManifest();
+		} else {
+			Map<Class<?>, Object> variables = coordination.getVariables();
+			synchronized (variables) {
+				@SuppressWarnings("unchecked")
+				Set<BasicSubsystem> dirtySubsystems = (Set<BasicSubsystem>) variables.get(SaveManifestParticipant.class);
+				if (dirtySubsystems == null) {
+					// currently no dirty subsystems found;
+					// create a list to hold them and store it as a variable
+					dirtySubsystems = new HashSet<BasicSubsystem>();
+					variables.put(SaveManifestParticipant.class, dirtySubsystems);
+					// add the save manifest participant
+					coordination.addParticipant(new SaveManifestParticipant());
+				}
+				dirtySubsystems.add(this);
+			}
+		}
+	}
+
+	synchronized void saveDeploymentManifest() throws IOException {
 		File file = new File(getDirectory(), "OSGI-INF");
 		if (!file.exists())
 			file.mkdirs();
-		FileOutputStream fos = new FileOutputStream(new File(file, "DEPLOYMENT.MF"));
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(file, "DEPLOYMENT.MF")));
 		try {
-			value.write(fos);
-			deploymentManifest = value;
+			deploymentManifest.write(out);
 		}
 		finally {
-			IOUtils.close(fos);
+			IOUtils.close(out);
 		}
 	}
 	
@@ -558,5 +583,29 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	@Override
 	public AriesSubsystem install(String location, IDirectory content) {
 		return AccessController.doPrivileged(new InstallAction(location, content, this, AccessController.getContext()));
+	}
+
+	private static class SaveManifestParticipant implements Participant {
+		protected SaveManifestParticipant() {}
+
+		@Override
+		public void ended(Coordination coordination) throws Exception {
+			Map<Class<?>, Object> variables = coordination.getVariables();
+			Set<BasicSubsystem> dirtySubsystems;
+			synchronized (variables) {
+				@SuppressWarnings("unchecked")
+				Set<BasicSubsystem> temp = (Set<BasicSubsystem>) variables.remove(SaveManifestParticipant.class);
+				dirtySubsystems = temp == null ? Collections. <BasicSubsystem>emptySet() : temp;
+			}
+			for (BasicSubsystem dirtySubsystem : dirtySubsystems) {
+				dirtySubsystem.saveDeploymentManifest();
+			}
+		}
+
+		@Override
+		public void failed(Coordination coordination) throws Exception {
+			// Do no saving
+		}
+		
 	}
 }
