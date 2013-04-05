@@ -18,19 +18,24 @@
  */
 package org.apache.aries.jpa.container.context.transaction.impl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.aries.jpa.container.context.impl.NLS;
@@ -254,6 +259,11 @@ public class JTAEntityManager implements EntityManager {
     //This should be a no-op for a JTA entity manager
   }
 
+	public boolean isJoinedToTransaction() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
   /**
    * @throws TransactionRequiredException
    */
@@ -316,6 +326,50 @@ public class JTAEntityManager implements EntityManager {
     }
   }
 
+	public StoredProcedureQuery createStoredProcedureQuery(String arg0) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.createStoredProcedureQuery( arg0 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
+
+	public StoredProcedureQuery createStoredProcedureQuery(String arg0, Class... arg1) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.createStoredProcedureQuery( arg0, arg1 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
+
+	public StoredProcedureQuery createStoredProcedureQuery(String arg0, String... arg1) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.createStoredProcedureQuery( arg0, arg1 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
+
+	public StoredProcedureQuery createNamedStoredProcedureQuery(String arg0) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.createNamedStoredProcedureQuery( arg0 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
+
   public <T> TypedQuery<T> createQuery(CriteriaQuery<T> arg0)
   {
     EntityManager em = getPersistenceContext(false);
@@ -337,6 +391,28 @@ public class JTAEntityManager implements EntityManager {
         em.clear();
     }
   }
+
+	public Query createQuery(CriteriaUpdate arg0) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.createQuery( arg0 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
+
+	public Query createQuery(CriteriaDelete arg0) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.createQuery( arg0 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
 
   public void detach(Object arg0)
   {
@@ -467,4 +543,48 @@ public class JTAEntityManager implements EntityManager {
         em.clear();
     }
   }
+
+	public <T> EntityGraph<T> createEntityGraph(Class<T> arg0) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.createEntityGraph( arg0 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
+
+	public EntityGraph<?> createEntityGraph(String arg0) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.createEntityGraph( arg0 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
+
+	public <T> EntityGraph<T> getEntityGraph(String arg0) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.getEntityGraph( arg0 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
+
+	public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> arg0) {
+		EntityManager em = getPersistenceContext( false );
+		try {
+			return em.getEntityGraphs( arg0 );
+		}
+		finally {
+			if ( em == detachedManager )
+				em.clear();
+		}
+	}
 }

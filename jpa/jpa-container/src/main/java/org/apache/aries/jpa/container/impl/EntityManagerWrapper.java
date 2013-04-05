@@ -18,17 +18,22 @@
  */
 package org.apache.aries.jpa.container.impl;
 
+import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 
 /**
@@ -68,6 +73,26 @@ public class EntityManagerWrapper implements EntityManager {
     return delegate.createNamedQuery(arg0);
   }
 
+	@Override
+	public StoredProcedureQuery createNamedStoredProcedureQuery(String arg0) {
+		return delegate.createNamedStoredProcedureQuery( arg0 );
+	}
+
+	@Override
+	public StoredProcedureQuery createStoredProcedureQuery(String arg0) {
+		return delegate.createStoredProcedureQuery( arg0 );
+	}
+
+	@Override
+	public StoredProcedureQuery createStoredProcedureQuery(String arg0, Class... arg1) {
+		return delegate.createStoredProcedureQuery( arg0, arg1 );
+	}
+
+	@Override
+	public StoredProcedureQuery createStoredProcedureQuery(String arg0, String... arg1) {
+		return delegate.createStoredProcedureQuery( arg0, arg1 );
+	}
+
   public Query createNativeQuery(String arg0, Class arg1) {
     return delegate.createNativeQuery(arg0, arg1);
   }
@@ -91,6 +116,16 @@ public class EntityManagerWrapper implements EntityManager {
   public Query createQuery(String arg0) {
     return delegate.createQuery(arg0);
   }
+
+	@Override
+	public Query createQuery(CriteriaUpdate arg0) {
+		return delegate.createQuery( arg0 );
+	}
+
+	@Override
+	public Query createQuery(CriteriaDelete arg0) {
+		return delegate.createQuery( arg0 );
+	}
 
   public void detach(Object arg0) {
     delegate.detach(arg0);
@@ -161,6 +196,11 @@ public class EntityManagerWrapper implements EntityManager {
     delegate.joinTransaction();
   }
 
+	@Override
+	public boolean isJoinedToTransaction() {
+		return delegate.isJoinedToTransaction();
+	}
+
   public void lock(Object arg0, LockModeType arg1, Map<String, Object> arg2) {
     delegate.lock(arg0, arg1, arg2);
   }
@@ -208,4 +248,24 @@ public class EntityManagerWrapper implements EntityManager {
   public <T> T unwrap(Class<T> arg0) {
     return delegate.unwrap(arg0);
   }
+
+	@Override
+	public <T> EntityGraph<T> createEntityGraph(Class<T> arg0) {
+		return delegate.createEntityGraph( arg0 );
+	}
+
+	@Override
+	public EntityGraph<?> createEntityGraph(String arg0) {
+		return delegate.createEntityGraph( arg0 );
+	}
+
+	@Override
+	public <T> EntityGraph<T> getEntityGraph(String arg0) {
+		return delegate.getEntityGraph( arg0 );
+	}
+
+	@Override
+	public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> arg0) {
+		return delegate.getEntityGraphs( arg0 );
+	}
 }
