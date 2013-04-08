@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.archive.Clause;
+import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -132,7 +134,12 @@ public class ResolutionTest extends SubsystemTest {
 			// Make sure the Require-Capability exists for capability a...
 			assertHeaderExists(applicationA, Constants.REQUIRE_CAPABILITY);
 			// ...but not for capability b.
-			assertEquals("Wrong Require-Capability header", "a;resolution:=mandatory;effective:=resolve", applicationA.getSubsystemHeaders(null).get(Constants.REQUIRE_CAPABILITY));
+			RequireCapabilityHeader header = new RequireCapabilityHeader(applicationA.getSubsystemHeaders(null).get(Constants.REQUIRE_CAPABILITY));
+			assertEquals("Wrong number of clauses", 1, header.getClauses().size());
+			Clause clause = header.getClauses().iterator().next();
+			assertEquals("Wrong path", "a", clause.getPath());
+			assertEquals("Wrong resolution directive", Constants.RESOLUTION_MANDATORY, clause.getDirective(Constants.RESOLUTION_DIRECTIVE).getValue());
+			assertEquals("Wrong effective directive", Constants.EFFECTIVE_RESOLVE, clause.getDirective(Constants.EFFECTIVE_DIRECTIVE).getValue());
 			try {
 				// Make sure the runtime resolution works as well.
 				applicationA.start();
