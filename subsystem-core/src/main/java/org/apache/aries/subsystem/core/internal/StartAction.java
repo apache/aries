@@ -68,7 +68,7 @@ public class StartAction extends AbstractAction {
 			throw new SubsystemException("Cannot stop from state " + state);
 		// The following states must wait.
 		if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
-			waitForStateChange();
+			waitForStateChange(state);
 			return new StartAction(instigator, requestor, target).run();
 		}
 		// The following states mean the requested state has already been attained.
