@@ -18,8 +18,6 @@ import java.security.PrivilegedAction;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemException;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 public abstract class AbstractAction implements PrivilegedAction<Object> {
 	protected final boolean disableRootCheck;
 	protected final BasicSubsystem requestor;
