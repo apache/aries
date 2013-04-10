@@ -57,6 +57,8 @@ public abstract class AbstractAction implements PrivilegedAction<Object> {
 					target.wait(then - now);
 				}
 				catch (InterruptedException e) {
+					// Reset the interrupted flag.
+					Thread.currentThread().interrupt();
 					throw new SubsystemException(e);
 				}
 			}
