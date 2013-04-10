@@ -15,7 +15,10 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.security.PrivilegedAction;
 
+import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemException;
+
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 public abstract class AbstractAction implements PrivilegedAction<Object> {
 	protected final boolean disableRootCheck;
@@ -39,13 +42,23 @@ public abstract class AbstractAction implements PrivilegedAction<Object> {
 			throw new IllegalStateException("Detected stale subsystem instance: " + s);
 	}
 	
-	protected void waitForStateChange() {
+	protected void waitForStateChange(State fromState) {
+		long then = System.currentTimeMillis() + 60000;
 		synchronized (target) {
-			try {
-				target.wait();
-			}
-			catch (InterruptedException e) {
-				throw new SubsystemException(e);
+			while (target.getState().equals(fromState)) {
+				// State change has not occurred.
+				long now = System.currentTimeMillis();
+				if (then <= now)
+					// Wait time has expired.
+					throw new SubsystemException("Operation timed out while waiting for the subsystem to change state from " + fromState);
+				try {
+					// Wait will never be called with zero or a negative
+					// argument due to previous check.
+					target.wait(then - now);
+				}
+				catch (InterruptedException e) {
+					throw new SubsystemException(e);
+				}
 			}
 		}
 	}

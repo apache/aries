@@ -30,7 +30,7 @@ public class UninstallAction extends AbstractAction {
 		if (EnumSet.of(State.UNINSTALLED).contains(state))
 			return null;
 		else if (EnumSet.of(State.INSTALL_FAILED, State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING, State.UNINSTALLING).contains(state)) {
-			waitForStateChange();
+			waitForStateChange(state);
 			target.uninstall();
 		}
 		else if (state.equals(State.ACTIVE)) {
