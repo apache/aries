@@ -581,6 +581,19 @@
 						</configuration>
 					</execution>
 					
+					<execution>
+						<id>add-source-classes</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/test/classes</source>
+							</sources>
+						</configuration>
+					</execution>
+					
 				</executions>
 			</plugin>
             <plugin>

@@ -60,7 +60,7 @@ public class InstallTest extends SubsystemTest {
 								"compositeDir" + "/a.jar/META-INF/MANIFEST.MF"))
 				.binary("a.jar/a/A.class", 
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/a.jar/a/A.class"))
+								"a/A.class"))
 				.binary("applicationDir.esa/OSGI-INF/SUBSYSTEM.MF",
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
 								"compositeDir" + "/applicationDir/OSGI-INF/SUBSYSTEM.MF"))
@@ -69,7 +69,7 @@ public class InstallTest extends SubsystemTest {
 								"compositeDir" + "/applicationDir/b.jar/META-INF/MANIFEST.MF"))
 				.binary("applicationDir.esa/b.jar/b/B.class", 
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/applicationDir/b.jar/b/B.class"))
+								"b/B.class"))
 				.binary("applicationDir.esa/featureDir.esa/OSGI-INF/SUBSYSTEM.MF",
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
 								"compositeDir" + "/applicationDir/featureDir/OSGI-INF/SUBSYSTEM.MF"))
@@ -78,13 +78,13 @@ public class InstallTest extends SubsystemTest {
 								"compositeDir" + "/applicationDir/featureDir/a.jar/META-INF/MANIFEST.MF"))
 				.binary("applicationDir.esa/featureDir.esa/a.jar/a/A.class", 
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/applicationDir/featureDir/a.jar/a/A.class"))
+								"a/A.class"))
 				.binary("applicationDir.esa/featureDir.esa/b.jar/META-INF/MANIFEST.MF", 
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
 								"compositeDir" + "/applicationDir/featureDir/b.jar/META-INF/MANIFEST.MF"))
 				.binary("applicationDir.esa/featureDir.esa/b.jar/b/B.class", 
 						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/applicationDir/featureDir/b.jar/b/B.class"));
+								"b/B.class"));
 		feature.end();
 		FileOutputStream fos = new FileOutputStream("compositeDir" + ".esa");
 		try {
