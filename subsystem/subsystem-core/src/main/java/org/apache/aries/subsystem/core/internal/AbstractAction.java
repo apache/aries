@@ -17,8 +17,12 @@ import java.security.PrivilegedAction;
 
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractAction implements PrivilegedAction<Object> {
+	private static final Logger logger = LoggerFactory.getLogger(AbstractAction.class);
+	
 	protected final boolean disableRootCheck;
 	protected final BasicSubsystem requestor;
 	protected final BasicSubsystem target;
@@ -43,13 +47,19 @@ public abstract class AbstractAction implements PrivilegedAction<Object> {
 	protected void waitForStateChange(State fromState) {
 		long then = System.currentTimeMillis() + 60000;
 		synchronized (target) {
+			if (logger.isDebugEnabled())
+				logger.debug("Request to wait for state change of subsystem {} from state {}", target.getSymbolicName(), target.getState());
 			while (target.getState().equals(fromState)) {
+				if (logger.isDebugEnabled())
+					logger.debug("{} equals {}", target.getState(), fromState);
 				// State change has not occurred.
 				long now = System.currentTimeMillis();
 				if (then <= now)
 					// Wait time has expired.
 					throw new SubsystemException("Operation timed out while waiting for the subsystem to change state from " + fromState);
 				try {
+					if (logger.isDebugEnabled())
+						logger.debug("Waiting for {} ms", then - now);
 					// Wait will never be called with zero or a negative
 					// argument due to previous check.
 					target.wait(then - now);
@@ -60,6 +70,8 @@ public abstract class AbstractAction implements PrivilegedAction<Object> {
 					throw new SubsystemException(e);
 				}
 			}
+			if (logger.isDebugEnabled())
+				logger.debug("Done waiting for subsystem {} in state {} to change from state {}", new Object[]{target.getSymbolicName(), target.getState(), fromState});
 		}
 	}
 }

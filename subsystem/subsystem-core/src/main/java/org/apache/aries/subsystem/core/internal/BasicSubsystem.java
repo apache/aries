@@ -57,8 +57,12 @@ import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BasicSubsystem implements Resource, AriesSubsystem {
+	private static final Logger logger = LoggerFactory.getLogger(BasicSubsystem.class);
+	
 	public static final String ROOT_SYMBOLIC_NAME = "org.osgi.service.subsystem.root";
 	public static final Version ROOT_VERSION = Version.parseVersion("1.0.0");
 	public static final String ROOT_LOCATION = "subsystem://?"
@@ -310,8 +314,14 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	
 	void addedConstituent(Resource resource, boolean referenced) {
 		try {
-			setDeploymentManifest(new DeploymentManifest.Builder()
-					.manifest(getDeploymentManifest()).content(resource, referenced).build());
+			if (logger.isDebugEnabled())
+				logger.debug("Adding constituent {} to deployment manifest...", resource);
+			synchronized (this) {
+				setDeploymentManifest(new DeploymentManifest.Builder()
+						.manifest(getDeploymentManifest()).content(resource, referenced).build());
+			}
+			if (logger.isDebugEnabled())
+				logger.debug("Added constituent {} to deployment manifest", resource);
 		} catch (Exception e) {
 			throw new SubsystemException(e);
 		}
@@ -319,8 +329,14 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	
 	void addedParent(BasicSubsystem subsystem, boolean referenceCount) {
 		try {
-			setDeploymentManifest(new DeploymentManifest.Builder()
-					.manifest(getDeploymentManifest()).parent(subsystem, referenceCount).build());
+			if (logger.isDebugEnabled())
+				logger.debug("Adding parent {} to deployment manifest...", subsystem.getSymbolicName());
+			synchronized (this) {
+				setDeploymentManifest(new DeploymentManifest.Builder()
+						.manifest(getDeploymentManifest()).parent(subsystem, referenceCount).build());
+			}
+			if (logger.isDebugEnabled())
+				logger.debug("Added parent {} to deployment manifest", subsystem.getSymbolicName());
 		} catch (Exception e) {
 			throw new SubsystemException(e);
 		}
@@ -453,7 +469,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		removedContent(Collections.singleton(clause));
 	}
 	
-	void removedContent(Collection<DeployedContentHeader.Clause> content) {
+	synchronized void removedContent(Collection<DeployedContentHeader.Clause> content) {
 		DeploymentManifest manifest = getDeploymentManifest();
 		DeployedContentHeader header = manifest.getDeployedContentHeader();
 		if (header == null)
@@ -481,8 +497,10 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	
 	void setAutostart(boolean value) {
 		try {
-			setDeploymentManifest(new DeploymentManifest.Builder()
-					.manifest(getDeploymentManifest()).autostart(value).build());
+			synchronized (this) {
+				setDeploymentManifest(new DeploymentManifest.Builder()
+						.manifest(getDeploymentManifest()).autostart(value).build());
+			}
 		} catch (Exception e) {
 			throw new SubsystemException(e);
 		}
@@ -491,6 +509,8 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	synchronized void setDeploymentManifest(DeploymentManifest value) throws IOException {
 		deploymentManifest = value;
 		Coordination coordination = Activator.getInstance().getCoordinator().peek();
+		if (logger.isDebugEnabled())
+			logger.debug("Setting deployment manifest for subsystem {} using coordination {}", getSymbolicName(), coordination == null ? null : coordination.getName());
 		if (coordination == null) {
 			saveDeploymentManifest();
 		} else {
@@ -517,7 +537,11 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 			file.mkdirs();
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(file, "DEPLOYMENT.MF")));
 		try {
+			if (logger.isDebugEnabled())
+				logger.debug("Writing deployment manifest for subsystem {} in state {}", getSymbolicName(), getState());
 			deploymentManifest.write(out);
+			if (logger.isDebugEnabled())
+				logger.debug("Wrote deployment manifest for subsystem {} in state {}", getSymbolicName(), getState());
 		}
 		finally {
 			IOUtils.close(out);
@@ -525,16 +549,28 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	}
 	
 	void setState(State value) {
-		if (value.equals(getState()))
+		if (logger.isDebugEnabled())
+			logger.debug("Setting state of subsystem {} to {}", getSymbolicName(), value);
+		State state = getState();
+		if (value.equals(state)) {
+			if (logger.isDebugEnabled())
+				logger.debug("Requested state {} equals current state {}", value, state);
 			return;
+		}
 		try {
-			setDeploymentManifest(new DeploymentManifest.Builder()
-					.manifest(getDeploymentManifest()).state(value).build());
+			if (logger.isDebugEnabled())
+				logger.debug("Setting the deployment manifest...");
+			synchronized (this) {
+				setDeploymentManifest(new DeploymentManifest.Builder()
+						.manifest(getDeploymentManifest()).state(value).build());
+			}
 		} catch (Exception e) {
 			throw new SubsystemException(e);
 		}
 		Activator.getInstance().getSubsystemServiceRegistrar().update(this);
 		synchronized (this) {
+			if (logger.isDebugEnabled())
+				logger.debug("Notifying all waiting for state change of subsystem {}", getSymbolicName());
 			notifyAll();
 		}
 	}
@@ -590,6 +626,8 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 
 		@Override
 		public void ended(Coordination coordination) throws Exception {
+			if (logger.isDebugEnabled())
+				logger.debug("Saving deployment manifests because coordination {} ended", coordination.getName());
 			Map<Class<?>, Object> variables = coordination.getVariables();
 			Set<BasicSubsystem> dirtySubsystems;
 			synchronized (variables) {
@@ -598,6 +636,8 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 				dirtySubsystems = temp == null ? Collections. <BasicSubsystem>emptySet() : temp;
 			}
 			for (BasicSubsystem dirtySubsystem : dirtySubsystems) {
+				if (logger.isDebugEnabled())
+					logger.debug("Saving deployment manifest of subsystem {} for coordination {}", dirtySubsystem.getSymbolicName(), coordination.getName());
 				dirtySubsystem.saveDeploymentManifest();
 			}
 		}
