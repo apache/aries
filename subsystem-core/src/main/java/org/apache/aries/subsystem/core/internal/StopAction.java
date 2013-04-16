@@ -71,15 +71,17 @@ public class StopAction extends AbstractAction {
 		// TODO Can we automatically assume it actually is resolved?
 		target.setState(State.RESOLVED);
 		try {
-			target.setDeploymentManifest(new DeploymentManifest(
-					target.getDeploymentManifest(),
-					null,
-					target.isAutostart(),
-					target.getSubsystemId(),
-					SubsystemIdentifier.getLastId(),
-					target.getLocation(),
-					false,
-					false));
+			synchronized (target) {
+				target.setDeploymentManifest(new DeploymentManifest(
+						target.getDeploymentManifest(),
+						null,
+						target.isAutostart(),
+						target.getSubsystemId(),
+						SubsystemIdentifier.getLastId(),
+						target.getLocation(),
+						false,
+						false));
+			}
 		}
 		catch (Exception e) {
 			throw new SubsystemException(e);
