@@ -19,7 +19,6 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.aries.subsystem.AriesSubsystem;
@@ -39,19 +38,23 @@ public class SubsystemServiceRegistrar {
 		this.context = context;
 	}
 	
-	public synchronized void addRegion(BasicSubsystem subsystem, Region region) {
-		ServiceRegistration<?> registration = map.get(subsystem);
-		if (registration == null)
-			throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
-		Collection<String> currentRegions = (Collection<String>)registration.getReference().getProperty(Constants.SubsystemServicePropertyRegions);
-		String regionName = region.getName();
-		if (currentRegions.contains(regionName))
-			return;
-		Collection<String> newRegions = new HashSet<String>(currentRegions.size() + 1);
-		newRegions.addAll(currentRegions);
-		newRegions.add(regionName);
-		Dictionary<String, Object> properties = properties(subsystem);
-		properties.put(Constants.SubsystemServicePropertyRegions, Collections.unmodifiableCollection(newRegions));
+	public void addRegion(BasicSubsystem subsystem, Region region) {
+		ServiceRegistration<?> registration;
+		Dictionary<String, Object> properties;
+		synchronized (this) {
+			registration = map.get(subsystem);
+			if (registration == null)
+				throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
+			Collection<String> currentRegions = (Collection<String>)registration.getReference().getProperty(Constants.SubsystemServicePropertyRegions);
+			String regionName = region.getName();
+			if (currentRegions.contains(regionName))
+				return;
+			Collection<String> newRegions = new HashSet<String>(currentRegions.size() + 1);
+			newRegions.addAll(currentRegions);
+			newRegions.add(regionName);
+			properties = properties(subsystem);
+			properties.put(Constants.SubsystemServicePropertyRegions, Collections.unmodifiableCollection(newRegions));
+		}
 		registration.setProperties(properties);
 	}
 	
@@ -62,51 +65,68 @@ public class SubsystemServiceRegistrar {
 		return (Subsystem)Activator.getInstance().getBundleContext().getService(registration.getReference());
 	}
 	
-	public synchronized void register(BasicSubsystem child, BasicSubsystem parent) {
-		if (map.containsKey(child))
-			return;
-		Dictionary<String, Object> properties = properties(child, parent);
-		ServiceRegistration<?> registration = context.registerService(
+	public void register(BasicSubsystem child, BasicSubsystem parent) {
+		Dictionary<String, Object> properties;
+		synchronized (this) {
+			if (map.containsKey(child))
+				return;
+			map.put(child, null);
+			properties = properties(child, parent);
+		}
+		ServiceRegistration<?> registration = null;
+		try {
+			registration = context.registerService(
 				new String[] {Subsystem.class.getName(), AriesSubsystem.class.getName()}, 
 				child, properties);
-		map.put(child, registration);
-	}
-	
-	public synchronized void removeRegion(BasicSubsystem subsystem, Region region) {
-		ServiceRegistration<?> registration = map.get(subsystem);
-		if (registration == null)
-			return;
-		Collection<String> regions = (Collection<String>)registration.getReference().getProperty(Constants.SubsystemServicePropertyRegions);
-		String regionName = region.getName();
-		if (regions == null || !regions.contains(regionName))
-			return;
-		regions = new HashSet<String>(regions);
-		regions.remove(regionName);
-		Dictionary<String, Object> properties = properties(subsystem);
-		properties.put(Constants.SubsystemServicePropertyRegions, Collections.unmodifiableCollection(regions));
-		registration.setProperties(properties);
-	}
-	
-	public synchronized void unregister(Subsystem subsystem) {
-		ServiceRegistration<?> registration = map.remove(subsystem);
-		if (registration == null)
-			throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
-		registration.unregister();
-	}
-	
-	public synchronized void unregisterAll() {
-		for (Iterator<ServiceRegistration<?>> i = map.values().iterator(); i.hasNext();) {
-			ServiceRegistration<?> registration = i.next();
-			registration.unregister();
-			i.remove();
+		}
+		finally {
+			synchronized (this) {
+				if (registration == null)
+					map.remove(child);
+				else
+					map.put(child, registration);
+			}
 		}
 	}
 	
-	public synchronized void update(BasicSubsystem subsystem) {
-		ServiceRegistration<?> registration = map.get(subsystem);
-		if (registration == null)
-			throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
-		Dictionary<String, Object> properties = properties(subsystem, registration);
+	public void removeRegion(BasicSubsystem subsystem, Region region) {
+		ServiceRegistration<?> registration;
+		Dictionary<String, Object> properties;
+		synchronized (this) {
+			registration = map.get(subsystem);
+			if (registration == null)
+				return;
+			Collection<String> regions = (Collection<String>)registration.getReference().getProperty(Constants.SubsystemServicePropertyRegions);
+			String regionName = region.getName();
+			if (regions == null || !regions.contains(regionName))
+				return;
+			regions = new HashSet<String>(regions);
+			regions.remove(regionName);
+			properties = properties(subsystem);
+			properties.put(Constants.SubsystemServicePropertyRegions, Collections.unmodifiableCollection(regions));
+		}
+		registration.setProperties(properties);
+	}
+	
+	public void unregister(Subsystem subsystem) {
+		ServiceRegistration<?> registration;
+		synchronized (this) {
+			registration = map.remove(subsystem);
+			if (registration == null)
+				throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
+		}
+		registration.unregister();
+	}
+	
+	public void update(BasicSubsystem subsystem) {
+		ServiceRegistration<?> registration;
+		Dictionary<String, Object> properties;
+		synchronized (this) {
+			registration = map.get(subsystem);
+			if (registration == null)
+				throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
+			properties = properties(subsystem, registration);
+		}
 		registration.setProperties(properties);
 	}
 	
