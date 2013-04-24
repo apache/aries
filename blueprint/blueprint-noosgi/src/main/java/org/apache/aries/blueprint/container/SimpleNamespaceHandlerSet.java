@@ -29,23 +29,34 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
 
     public static final URI EXT_1_2_NAMESPACE = URI.create("http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0");
 
-    private Set<URI> namespaces;
+    private Map<URI, URL> namespaces;
+    private Map<URI, NamespaceHandler> handlers;
     private Schema schema;
 
     public SimpleNamespaceHandlerSet() {
-        this.namespaces = new LinkedHashSet<URI>();
-        this.namespaces.add(EXT_1_2_NAMESPACE);
+        this.namespaces = new LinkedHashMap<URI, URL>();
+        this.handlers = new LinkedHashMap<URI, NamespaceHandler>();
+        addNamespace(EXT_1_2_NAMESPACE,
+                getClass().getResource("/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd"),
+                new ExtNamespaceHandler());
     }
 
     public Set<URI> getNamespaces() {
-        return Collections.unmodifiableSet(namespaces);
+        return Collections.unmodifiableSet(namespaces.keySet());
+    }
+
+    public void addNamespace(URI namespace, URL schema, NamespaceHandler handler) {
+        namespaces.put(namespace, schema);
+        handlers.put(namespace, handler);
     }
 
     public boolean isComplete() {
@@ -53,19 +64,29 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
     }
 
     public NamespaceHandler getNamespaceHandler(URI uri) {
-        if (EXT_1_2_NAMESPACE.equals(uri)) {
-            return new ExtNamespaceHandler();
-        }
-        return null;
+        return handlers.get(uri);
     }
 
     public Schema getSchema() throws SAXException, IOException {
         if (schema == null) {
             final List<StreamSource> schemaSources = new ArrayList<StreamSource>();
-            schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/aries/blueprint/blueprint.xsd")));
-            schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd")));
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            schema = schemaFactory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+            final List<InputStream> streams = new ArrayList<InputStream>();
+            try {
+                InputStream is = getClass().getResourceAsStream("/org/apache/aries/blueprint/blueprint.xsd");
+                streams.add(is);
+                schemaSources.add(new StreamSource(is));
+                for (URI uri : namespaces.keySet()) {
+                    is = namespaces.get(uri).openStream();
+                    streams.add(is);
+                    schemaSources.add(new StreamSource(is));
+                }
+                SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                schema = schemaFactory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+            } finally {
+                for (InputStream is : streams) {
+                    is.close();
+                }
+            }
         }
         return schema;
     }
