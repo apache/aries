@@ -24,6 +24,7 @@ import org.apache.aries.blueprint.Processor;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
@@ -81,14 +82,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
         return System.getProperty(key);
     }
 
-    public void init() throws Exception {
-        // Parse xml resources
-        Parser parser = new Parser();
-        parser.parse(getResources());
-        // Create handler set
-        SimpleNamespaceHandlerSet handlerSet = new SimpleNamespaceHandlerSet();
+    protected NamespaceHandlerSet createNamespaceHandlerSet(Set<URI> namespaces) {
+        NamespaceHandlerSet handlerSet = new SimpleNamespaceHandlerSet();
         // Check namespaces
-        Set<URI> namespaces = parser.getNamespaces();
         Set<URI> unsupported = new LinkedHashSet<URI>();
         for (URI ns : namespaces) {
             if (!handlerSet.getNamespaces().contains(ns)) {
@@ -98,6 +94,17 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
         if (unsupported.size() > 0) {
             throw new IllegalArgumentException("Unsupported namespaces: " + unsupported.toString());
         }
+        return handlerSet;
+    }
+
+    public void init() throws Exception {
+        // Parse xml resources
+        Parser parser = new Parser();
+        parser.parse(getResources());
+        // Check namespaces
+        Set<URI> namespaces = parser.getNamespaces();
+        // Create handler set
+        NamespaceHandlerSet handlerSet = createNamespaceHandlerSet(namespaces);
         // Add predefined beans
         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
         // Validate
