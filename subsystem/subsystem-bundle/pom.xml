@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.subsystem</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystems Bundle</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>This is a standalone bundle to support Aries Subsystems.</description>
 
      <scm>
