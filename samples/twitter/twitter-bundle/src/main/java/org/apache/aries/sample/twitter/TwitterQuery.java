@@ -42,7 +42,7 @@ public class TwitterQuery implements BundleActivator {
 			QueryResult result = twitter.search(query);
 		    List<Tweet> tweets = result.getTweets(); 
 		    System.out.println("hits:" + tweets.size());
-		    for (Tweet tweet : result.getTweets()) {
+		    for (Tweet tweet : tweets) {
 		        System.out.println(tweet.getFromUser() + ":" + StringEscapeUtils.unescapeXml(tweet.getText()));
 		    }
 		} catch (Exception e) {
