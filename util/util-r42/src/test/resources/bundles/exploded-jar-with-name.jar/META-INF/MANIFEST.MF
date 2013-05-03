@@ -1,0 +1,3 @@
+Name: foo
+Bundle-SymbolicName: com.ibm.test;singleton:=true
+Bundle-Version: 1.0.0
