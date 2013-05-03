@@ -129,10 +129,11 @@ public class ManifestProcessor
             man.getEntries().put(attributeValue, new Attributes());
             namedAttribute = attributeValue;
           } else {
-            if (namedAttribute == null) {
-              man.getMainAttributes().put(new Attributes.Name(attributeName), attributeValue);
+        	Attributes.Name nameToAdd = new Attributes.Name(attributeName);
+            if (namedAttribute == null || !man.getMainAttributes().containsKey(nameToAdd)) {
+              man.getMainAttributes().put(nameToAdd, attributeValue);
             } else {
-              man.getAttributes(namedAttribute).put(new Attributes.Name(attributeName), attributeValue);
+              man.getAttributes(namedAttribute).put(nameToAdd, attributeValue);
             }
           }
           
