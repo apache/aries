@@ -368,6 +368,8 @@
                     <debug>true</debug>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
+                    <fork>true</fork>
+                    <compilerArgument>-Xlint:-options</compilerArgument>
                 </configuration>
             </plugin>
 
