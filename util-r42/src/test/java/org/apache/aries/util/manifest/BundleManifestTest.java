@@ -24,71 +24,152 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.io.IOUtils;
-import org.apache.aries.util.manifest.BundleManifest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class BundleManifestTest
 {
-  private static File _testfile;
-  
+  private static final String EXPECTED_VERSION = "1.0.0";
+  private static final String EXPECTED_SYMBOLIC_NAME = "com.ibm.test";
+  private static File BUNDLE_WITHOUT_NAME_HEADER;
+  private static File BUNDLE_WITH_NAME_HEADER;
+
   @BeforeClass
   public static void setup() throws Exception
   {
-    _testfile = new File ("./bundleManifestTest/nonExploded.jar");
-    _testfile.getParentFile().mkdirs();
+    BUNDLE_WITHOUT_NAME_HEADER = new File ("./bundleManifestTest/nonExploded.jar");
+    BUNDLE_WITHOUT_NAME_HEADER.getParentFile().mkdirs();
+    BUNDLE_WITH_NAME_HEADER = new File ("./bundleManifestTest/nonExplodedWithName.jar");
+    BUNDLE_WITH_NAME_HEADER.getParentFile().mkdirs();
     
-    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(_testfile));
+    createZippedJar(BUNDLE_WITHOUT_NAME_HEADER, "exploded.jar");
+    createZippedJar(BUNDLE_WITH_NAME_HEADER, "exploded-jar-with-name.jar");
+    
+  }
+
+  private static void createZippedJar(File outputFile, String inputFolderName) throws FileNotFoundException, IOException {
+	ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outputFile));
     ZipEntry ze = new ZipEntry("META-INF/");
     out.putNextEntry(ze);
     
-    File f = new File("../src/test/resources/bundles/exploded.jar/META-INF/beforeManifest.file");
+    File f = new File("../src/test/resources/bundles/" + inputFolderName + "/META-INF/beforeManifest.file");
     ze = new ZipEntry("META-INF/beforeManifest.file");
     ze.setSize(f.length());
     out.putNextEntry(ze);
     IOUtils.copy(new FileInputStream(f), out);
     
-    f = new File("../src/test/resources/bundles/exploded.jar/META-INF/MANIFEST.MF");
+    f = new File("../src/test/resources/bundles/" + inputFolderName + "/META-INF/MANIFEST.MF");
     ze = new ZipEntry("META-INF/MANIFEST.MF");
     ze.setSize(f.length());
     out.putNextEntry(ze);
     IOUtils.copy(new FileInputStream(f), out);    
     
     out.close();
-  }
+}
   
   @AfterClass
   public static void cleanup()
   {
-	  IOUtils.deleteRecursive(new File("bundleManifestTest/"));
+    IOUtils.deleteRecursive(new File("bundleManifestTest/"));
   }
-  
+
   @Test
   public void testExploded()
   {
     BundleManifest sut = BundleManifest.fromBundle(new File("../src/test/resources/bundles/exploded.jar"));
-    assertEquals("com.ibm.test", sut.getSymbolicName());
-    assertEquals("1.0.0", sut.getVersion().toString());
+    assertEquals(EXPECTED_SYMBOLIC_NAME, sut.getSymbolicName());
+    assertEquals(EXPECTED_VERSION, sut.getVersion().toString());
   }
-  
+
+  @Test
+  public void testExplodedFromIDirectory()
+  {
+	  BundleManifest sut = BundleManifest.fromBundle(FileSystem.getFSRoot(
+			  new File("../src/test/resources/bundles/exploded.jar")));
+	  assertEquals(EXPECTED_SYMBOLIC_NAME, sut.getSymbolicName());
+	  assertEquals(EXPECTED_VERSION, sut.getVersion().toString());
+  }
+
+  @Test
+  public void testExplodedWithName()
+  {
+	  BundleManifest sut = BundleManifest.fromBundle(new File("../src/test/resources/bundles/exploded-jar-with-name.jar"));
+	  assertEquals(EXPECTED_SYMBOLIC_NAME, sut.getSymbolicName());
+	  assertEquals(EXPECTED_VERSION, sut.getVersion().toString());
+  }
+
+  @Test
+  public void testExplodedWithNameFromIDirectory()
+  {
+	  BundleManifest sut = BundleManifest.fromBundle(FileSystem.getFSRoot(
+			  new File("../src/test/resources/bundles/exploded-jar-with-name.jar")));
+	  assertEquals(EXPECTED_SYMBOLIC_NAME, sut.getSymbolicName());
+	  assertEquals(EXPECTED_VERSION, sut.getVersion().toString());
+  }
+
   @Test
   public void testZip() throws Exception
   {
     // make sure that the manifest is not the first file in the jar archive
-    JarInputStream jarIs = new JarInputStream(new FileInputStream(_testfile));
+    JarInputStream jarIs = new JarInputStream(new FileInputStream(BUNDLE_WITHOUT_NAME_HEADER));
     assertNull(jarIs.getManifest());
     jarIs.close();
     
-    BundleManifest sut = BundleManifest.fromBundle(_testfile);
-    assertEquals("com.ibm.test", sut.getSymbolicName());
-    assertEquals("1.0.0", sut.getVersion().toString());
+    BundleManifest sut = BundleManifest.fromBundle(BUNDLE_WITHOUT_NAME_HEADER);
+    assertEquals(EXPECTED_SYMBOLIC_NAME, sut.getSymbolicName());
+    assertEquals(EXPECTED_VERSION, sut.getVersion().toString());
   }
+
+  @Test
+  public void testZipFromIDirectory() throws Exception
+  {
+	  // make sure that the manifest is not the first file in the jar archive
+	  JarInputStream jarIs = new JarInputStream(new FileInputStream(BUNDLE_WITHOUT_NAME_HEADER));
+	  assertNull(jarIs.getManifest());
+	  jarIs.close();
+	  
+	  BundleManifest sut = BundleManifest.fromBundle(
+			  FileSystem.getFSRoot(BUNDLE_WITHOUT_NAME_HEADER));
+	  assertEquals(EXPECTED_SYMBOLIC_NAME, sut.getSymbolicName());
+	  assertEquals(EXPECTED_VERSION, sut.getVersion().toString());
+  }
+
+  @Test
+  public void testZipWithName() throws Exception
+  {
+	  // make sure that the manifest is not the first file in the jar archive
+	  JarInputStream jarIs = new JarInputStream(new FileInputStream(BUNDLE_WITH_NAME_HEADER));
+	  assertNull(jarIs.getManifest());
+	  jarIs.close();
+	  
+	  BundleManifest sut = BundleManifest.fromBundle(BUNDLE_WITH_NAME_HEADER);
+	  assertEquals(EXPECTED_SYMBOLIC_NAME, sut.getSymbolicName());
+	  assertEquals(EXPECTED_VERSION, sut.getVersion().toString());
+  }
+  
+  @Test
+  public void testZipWithNameFromIDirectory() throws Exception
+  {
+	  // make sure that the manifest is not the first file in the jar archive
+	  JarInputStream jarIs = new JarInputStream(new FileInputStream(BUNDLE_WITH_NAME_HEADER));
+	  assertNull(jarIs.getManifest());
+	  jarIs.close();
+	  
+	  BundleManifest sut = BundleManifest.fromBundle(
+			  FileSystem.getFSRoot(BUNDLE_WITH_NAME_HEADER));
+	  assertEquals(EXPECTED_SYMBOLIC_NAME, sut.getSymbolicName());
+	  assertEquals(EXPECTED_VERSION, sut.getVersion().toString());
+  }
+
 }
 
