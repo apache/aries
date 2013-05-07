@@ -33,9 +33,7 @@ public class R43Worker implements FrameworkUtilWorker {
     }
 
     public ClassLoader getClassLoader(Bundle b) {
-    	//This cast should be unnecessary, but without it I get a compile failure 
-    	//when using Maven 3.0.4, Java 7.0.21 and MacOSX 10.8.3
-        return ((BundleWiring)b.adapt(BundleWiring.class)).getClassLoader();
+        return b.adapt(BundleWiring.class).getClassLoader();
     }
 
     public boolean isValid() {
