@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>default-parent</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <name>Aries :: Default Parent POM</name>
     <packaging>pom</packaging>
 
@@ -629,5 +629,11 @@
         <module>java5-parent</module>
         <module>java6-parent</module>
     </modules>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/default-parent-1.1.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/default-parent-1.1.0</developerConnection>
+    <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/default-parent-1.1.0</url>
+  </scm>
 </project>
 
