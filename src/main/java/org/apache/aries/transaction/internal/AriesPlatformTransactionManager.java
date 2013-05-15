@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.transaction;
+package org.apache.aries.transaction.internal;
 
 import java.util.Map;
 import java.util.Iterator;
@@ -40,29 +40,29 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
  */
-public class GeronimoPlatformTransactionManager extends GeronimoTransactionManager implements PlatformTransactionManager {
+public class AriesPlatformTransactionManager extends AriesTransactionManagerImpl implements PlatformTransactionManager {
 
     private final PlatformTransactionManager platformTransactionManager;
     private final Map<Transaction, SuspendedResourcesHolder> suspendedResources = new ConcurrentHashMap<Transaction, SuspendedResourcesHolder>();
 
-    public GeronimoPlatformTransactionManager() throws XAException {
+    public AriesPlatformTransactionManager() throws XAException {
         platformTransactionManager = new JtaTransactionManager(this, this);
         registerTransactionAssociationListener();
     }
 
-    public GeronimoPlatformTransactionManager(int defaultTransactionTimeoutSeconds) throws XAException {
+    public AriesPlatformTransactionManager(int defaultTransactionTimeoutSeconds) throws XAException {
         super(defaultTransactionTimeoutSeconds);
         platformTransactionManager = new JtaTransactionManager(this, this);
         registerTransactionAssociationListener();
     }
 
-    public GeronimoPlatformTransactionManager(int defaultTransactionTimeoutSeconds, TransactionLog transactionLog) throws XAException {
+    public AriesPlatformTransactionManager(int defaultTransactionTimeoutSeconds, TransactionLog transactionLog) throws XAException {
         super(defaultTransactionTimeoutSeconds, transactionLog);
         platformTransactionManager = new JtaTransactionManager(this, this);
         registerTransactionAssociationListener();
     }
 
-    public GeronimoPlatformTransactionManager(int defaultTransactionTimeoutSeconds, XidFactory xidFactory, TransactionLog transactionLog) throws XAException {
+    public AriesPlatformTransactionManager(int defaultTransactionTimeoutSeconds, XidFactory xidFactory, TransactionLog transactionLog) throws XAException {
         super(defaultTransactionTimeoutSeconds, xidFactory, transactionLog);
         platformTransactionManager = new JtaTransactionManager(this, this);
         registerTransactionAssociationListener();

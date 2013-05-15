@@ -40,8 +40,9 @@
      </scm>
     <properties>
         <aries.osgi.export>
-            org.apache.geronimo.transaction.manager;version="2.3.0";provide:=true,
-            org.apache.geronimo.transaction*;version="2.2.1",
+            org.apache.geronimo.transaction.manager;version="3.0";provide:=true,
+            org.apache.geronimo.transaction*;version="3.0",
+            org.apache.aries.transaction;version="1.0",
             javax.transaction*;version="1.1.0"
         </aries.osgi.export>
         <aries.osgi.import>
@@ -55,12 +56,13 @@
         </aries.osgi.import>
         <aries.osgi.private.pkg>
             org.objectweb.howl.log*,
-            org.apache.aries.transaction
+            org.apache.aries.transaction.internal
         </aries.osgi.private.pkg>
         <aries.osgi.activator>
-            org.apache.aries.transaction.Activator
+            org.apache.aries.transaction.internal.Activator
         </aries.osgi.activator>
         <aries.osgi.export.service>
+            org.apache.aries.transaction.AriesTransactionManager,
             javax.transaction.TransactionManager,
             javax.transaction.TransactionSynchronizationRegistry,
             javax.transaction.UserTransaction,
@@ -246,7 +248,10 @@
                     </execution>
                 </executions>
             </plugin>
-            
+            <!--
+              - Disable plugin because it barfs that the org.apache.geronimo.transaction
+              - package version should be 2.2.1 because there has been no change
+              -
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
@@ -264,6 +269,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
         </plugins>
     </build>
 
