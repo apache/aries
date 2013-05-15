@@ -20,6 +20,7 @@ package org.apache.aries.transaction.itests;
 
 import static org.ops4j.pax.exam.CoreOptions.bootDelegationPackages;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
@@ -46,18 +47,18 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
                 // this is how you set the default log level when using pax
                 // logging (logProfile)
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+                systemProperty("org.apache.aries.proxy.weaving.enabled").value("none"),
 
                 // Bundles
                 mavenBundle("org.osgi", "org.osgi.compendium"),
-                mavenBundle("org.ow2.asm", "asm-all"),
+                //mavenBundle("org.ow2.asm", "asm-all"),
                 mavenBundle("org.apache.derby", "derby"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-               // mavenBundle("asm", "asm-all"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
-                mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers"),
+                mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.jdbc"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.testbundle"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.testds"),
 
