@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.transaction;
+package org.apache.aries.transaction.internal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAException;
 
+import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
@@ -67,7 +68,7 @@ public class TransactionManagerService {
     private final Dictionary properties;
     private final BundleContext bundleContext;
     private boolean useSpring;
-    private GeronimoTransactionManager transactionManager;
+    private AriesTransactionManagerImpl transactionManager;
     private TransactionLog transactionLog;
     private ServiceRegistration serviceRegistration;
 
@@ -143,7 +144,7 @@ public class TransactionManagerService {
                 transactionManager = new SpringTransactionManagerCreator().create(transactionTimeout, xidFactory, transactionLog);
                 useSpring = true;
             } catch (NoClassDefFoundError e) {
-                transactionManager = new GeronimoTransactionManager(transactionTimeout, xidFactory, transactionLog);
+                transactionManager = new AriesTransactionManagerImpl(transactionTimeout, xidFactory, transactionLog);
             }
         } catch (XAException e) {
             throw new RuntimeException(NLS.MESSAGES.getMessage("tx.recovery.error"), e);
@@ -152,6 +153,7 @@ public class TransactionManagerService {
 
     public void start() throws Exception {
         List<String> clazzes = new ArrayList<String>();
+        clazzes.add(AriesTransactionManager.class.getName());
         clazzes.add(TransactionManager.class.getName());
         clazzes.add(TransactionSynchronizationRegistry.class.getName());
         clazzes.add(UserTransaction.class.getName());
@@ -208,8 +210,8 @@ public class TransactionManagerService {
      */
     public static class SpringTransactionManagerCreator {
 
-        public GeronimoTransactionManager create(int defaultTransactionTimeoutSeconds, XidFactory xidFactory, TransactionLog transactionLog) throws XAException {
-            return new GeronimoPlatformTransactionManager(defaultTransactionTimeoutSeconds, xidFactory, transactionLog);
+        public AriesTransactionManagerImpl create(int defaultTransactionTimeoutSeconds, XidFactory xidFactory, TransactionLog transactionLog) throws XAException {
+            return new AriesPlatformTransactionManager(defaultTransactionTimeoutSeconds, xidFactory, transactionLog);
         }
 
     }

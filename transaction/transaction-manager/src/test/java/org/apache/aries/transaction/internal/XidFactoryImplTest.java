@@ -15,11 +15,12 @@
  *  limitations under the License.
  */
 
-package org.apache.aries.transaction;
+package org.apache.aries.transaction.internal;
 
 import java.util.concurrent.TimeUnit;
 import javax.transaction.xa.Xid;
 
+import org.apache.aries.transaction.internal.XidFactoryImpl;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.junit.Test;
 

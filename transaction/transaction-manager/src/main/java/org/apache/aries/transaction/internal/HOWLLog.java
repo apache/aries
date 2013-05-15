@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.apache.aries.transaction;
+package org.apache.aries.transaction.internal;
 
 import java.io.File;
 import java.io.IOException;

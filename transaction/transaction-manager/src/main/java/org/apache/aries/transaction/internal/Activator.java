@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.transaction;
+package org.apache.aries.transaction.internal;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.apache.aries.transaction.internal.NLS;
+import org.apache.aries.transaction.internal.TransactionManagerService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;

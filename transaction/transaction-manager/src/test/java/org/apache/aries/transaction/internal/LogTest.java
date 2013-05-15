@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.apache.aries.transaction;
+package org.apache.aries.transaction.internal;
 
 import java.io.File;
 import javax.transaction.SystemException;
@@ -25,6 +25,8 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.aries.transaction.internal.HOWLLog;
+import org.apache.aries.transaction.internal.XidFactoryImpl;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.geronimo.transaction.manager.NamedXAResource;
 import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
