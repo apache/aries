@@ -248,13 +248,15 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       {
         deployedBundles.addBundle(rbm);
       }
+      
+      requiredUseBundle = deployedBundles.getRequiredUseBundle();
     }
 
     // Check for circular dependencies. No shared bundle can depend on any 
     // isolated bundle. 
     Collection<ModelledResource> sharedBundles = new HashSet<ModelledResource>();
     sharedBundles.addAll (deployedBundles.getDeployedProvisionBundle());
-    sharedBundles.addAll (deployedBundles.getRequiredUseBundle()); 
+    sharedBundles.addAll (requiredUseBundle); 
 
     Collection<ModelledResource> appContentBundles = deployedBundles.getDeployedContent();
     Collection<Content> requiredSharedBundles = new ArrayList<Content>();
