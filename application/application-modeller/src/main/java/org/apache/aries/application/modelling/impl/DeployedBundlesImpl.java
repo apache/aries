@@ -56,6 +56,11 @@ public final class DeployedBundlesImpl implements DeployedBundles
 {
   private final Logger logger = LoggerFactory.getLogger(DeployedBundlesImpl.class);
   private final String assetName;
+  
+  private String cachedImportPackage;
+  private Collection<ModelledResource> cachedRequiredUseBundle;
+  private Collection<ImportedPackage> cachedExternalRequirements;
+  private String cachedDeployedImportService;
 
   /** Content from APPLICATION.MF */
   private final Set<ImportedBundle> appContent = new HashSet<ImportedBundle>();
@@ -128,6 +133,13 @@ public final class DeployedBundlesImpl implements DeployedBundles
       logger.debug("Added to " + AppConstants.DEPLOYMENT_PROVISION_BUNDLE + ": " + resolvedBundle);
       deployedProvisionBundle.add(modelledBundle);
     }
+    
+    // Invalidate caches
+    cachedImportPackage = null;
+    cachedRequiredUseBundle = null;
+    cachedDeployedImportService = null;
+    cachedExternalRequirements = null;
+    
    logger.debug(LOG_EXIT, "addBundle");    
   }
 
@@ -189,39 +201,47 @@ public final class DeployedBundlesImpl implements DeployedBundles
   public String getImportPackage() throws ResolverException
   {
     logger.debug(LOG_ENTRY, "getImportPackage");
-    Collection<ImportedPackage> externalReqs = new ArrayList<ImportedPackage>(getExternalPackageRequirements());
-
-    //Validate that we don't have attributes that will break until RFC138 is used
-    validateOtherImports(externalReqs);
     
-    // Find the matching capabilities from bundles in use bundle, and prune
-    // matched requirements out of the external requirements collection.
-    Map<ImportedPackage,ExportedPackage> useBundlePkgs = new HashMap<ImportedPackage,ExportedPackage>();
-    for (Iterator<ImportedPackage> iter = externalReqs.iterator(); iter.hasNext(); )
+    String result = cachedImportPackage; 
+    if (result == null)
     {
-      ImportedPackage req = iter.next();
-      ExportedPackage match = getPackageMatch(req, deployedUseBundle);
-      if (match != null)
+      
+      Collection<ImportedPackage> externalReqs = new ArrayList<ImportedPackage>(getExternalPackageRequirements());
+  
+      //Validate that we don't have attributes that will break until RFC138 is used
+      validateOtherImports(externalReqs);
+      
+      // Find the matching capabilities from bundles in use bundle, and prune
+      // matched requirements out of the external requirements collection.
+      Map<ImportedPackage,ExportedPackage> useBundlePkgs = new HashMap<ImportedPackage,ExportedPackage>();
+      for (Iterator<ImportedPackage> iter = externalReqs.iterator(); iter.hasNext(); )
       {
-        useBundlePkgs.put(req, match);
-        iter.remove();
+        ImportedPackage req = iter.next();
+        ExportedPackage match = getPackageMatch(req, deployedUseBundle);
+        if (match != null)
+        {
+          useBundlePkgs.put(req, match);
+          iter.remove();
+        }
       }
+      
+      StringBuilder useBundleImports = new StringBuilder();
+      for(Map.Entry<ImportedPackage, ExportedPackage> entry : useBundlePkgs.entrySet()) {
+        useBundleImports.append(entry.getValue().toDeploymentString());
+        ImportedPackage key = entry.getKey();
+        if(key.isOptional())
+          useBundleImports.append(";" + Constants.RESOLUTION_DIRECTIVE +":=" + Constants.RESOLUTION_OPTIONAL);
+        useBundleImports.append(",");
+      }
+      
+      result = useBundleImports.toString() + createManifestString(externalReqs);
+      
+      if(result.endsWith(","))
+        result = result.substring(0, result.length() - 1);
+      
+      cachedImportPackage = result;
     }
     
-    
-    StringBuilder useBundleImports = new StringBuilder();
-    for(Map.Entry<ImportedPackage, ExportedPackage> entry : useBundlePkgs.entrySet()) {
-      useBundleImports.append(entry.getValue().toDeploymentString());
-      ImportedPackage key = entry.getKey();
-      if(key.isOptional())
-        useBundleImports.append(";" + Constants.RESOLUTION_DIRECTIVE +":=" + Constants.RESOLUTION_OPTIONAL);
-      useBundleImports.append(",");
-    }
-    
-    String result = useBundleImports.toString() + createManifestString(externalReqs);
-    
-    if(result.endsWith(","))
-      result = result.substring(0, result.length() - 1);
     logger.debug(LOG_EXIT, "getImportPackage", result);
     return result;
   }
@@ -237,31 +257,37 @@ public final class DeployedBundlesImpl implements DeployedBundles
    */
   public String getDeployedImportService() { 
     logger.debug(LOG_ENTRY,"getDeployedImportService");
-    Collection<ImportedService> deployedBundleServiceImports = new ArrayList<ImportedService>();
-    Collection<ExportedService> servicesExportedWithinIsolatedContent = new ArrayList<ExportedService>();
-    for (ModelledResource mRes : getDeployedContent()) { 
-      servicesExportedWithinIsolatedContent.addAll(mRes.getExportedServices());
-    }
-    for (ModelledResource mRes : fakeDeployedBundles) { 
-      servicesExportedWithinIsolatedContent.addAll(mRes.getExportedServices());
-    }
-    for (ImportedService impService : deployedImportService) { 
-      if (impService.isMultiple()) { 
-        deployedBundleServiceImports.add(impService);
-      } else { 
-        boolean serviceProvidedWithinIsolatedContent = false;
-        Iterator<ExportedService> it = servicesExportedWithinIsolatedContent.iterator();
-        while (!serviceProvidedWithinIsolatedContent && it.hasNext()) { 
-          ExportedService svc = it.next(); 
-          serviceProvidedWithinIsolatedContent |= impService.isSatisfied(svc);
-        }
-        if (!serviceProvidedWithinIsolatedContent) { 
+    
+    String result = cachedDeployedImportService;
+    if (result == null)
+    {
+      Collection<ImportedService> deployedBundleServiceImports = new ArrayList<ImportedService>();
+      Collection<ExportedService> servicesExportedWithinIsolatedContent = new ArrayList<ExportedService>();
+      for (ModelledResource mRes : getDeployedContent()) { 
+        servicesExportedWithinIsolatedContent.addAll(mRes.getExportedServices());
+      }
+      for (ModelledResource mRes : fakeDeployedBundles) { 
+        servicesExportedWithinIsolatedContent.addAll(mRes.getExportedServices());
+      }
+      for (ImportedService impService : deployedImportService) { 
+        if (impService.isMultiple()) { 
           deployedBundleServiceImports.add(impService);
+        } else { 
+          boolean serviceProvidedWithinIsolatedContent = false;
+          Iterator<ExportedService> it = servicesExportedWithinIsolatedContent.iterator();
+          while (!serviceProvidedWithinIsolatedContent && it.hasNext()) { 
+            ExportedService svc = it.next(); 
+            serviceProvidedWithinIsolatedContent |= impService.isSatisfied(svc);
+          }
+          if (!serviceProvidedWithinIsolatedContent) { 
+            deployedBundleServiceImports.add(impService);
+          }
         }
       }
+      
+      result = createManifestString(deployedBundleServiceImports);
+      cachedDeployedImportService = result;
     }
-    
-    String result = createManifestString(deployedBundleServiceImports);
     logger.debug(LOG_EXIT,"getDeployedImportService", result);
     
     return result;
@@ -277,48 +303,61 @@ public final class DeployedBundlesImpl implements DeployedBundles
   {
     logger.debug(LOG_ENTRY,"getExternalPackageRequirements");
     
-    // Get all the internal requirements.
-    Collection<ImportedPackage> requirements = new ArrayList<ImportedPackage>();
-    for (ModelledResource bundle : deployedContent)
+    Collection<ImportedPackage> result = cachedExternalRequirements;
+    if (result == null)
     {
-      requirements.addAll(bundle.getImportedPackages());
-    }
-    
-    // Filter out requirements satisfied by internal capabilities.
-    Collection<ImportedPackage> result = new ArrayList<ImportedPackage>();
-    for (ImportedPackage req : requirements)
-    {
-      ExportedPackage match = getPackageMatch(req, deployedContent);
-      //If we didn't find a match then it must come from outside
-      if (match == null)
+      // Get all the internal requirements.
+      Collection<ImportedPackage> requirements = new ArrayList<ImportedPackage>();
+      Collection<ExportedPackage> internalExports = new ArrayList<ExportedPackage>();
+      for (ModelledResource bundle : deployedContent)
       {
-        result.add(req);
+        requirements.addAll(bundle.getImportedPackages());
+        internalExports.addAll(bundle.getExportedPackages());
       }
-    }
-    
-    PackageRequirementMerger merger = new PackageRequirementMerger(result);
-    if (!merger.isMergeSuccessful())
-    {
-      List<String> pkgNames = new ArrayList<String>(merger.getInvalidRequirements());
-      
-      StringBuilder buff = new StringBuilder();
-      for (String pkgName : merger.getInvalidRequirements())
+          
+      // Filter out requirements satisfied by internal capabilities.
+      result = new ArrayList<ImportedPackage>();
+      for (ImportedPackage req : requirements)
       {
-        buff.append(pkgName).append(", ");
+        boolean satisfied = false;
+        for (ExportedPackage export : internalExports)
+        {
+          if (req.isSatisfied(export))
+          {
+            satisfied = true;
+            break;
+          }
+        }
+        //If we didn't find a match then it must come from outside
+        if (!satisfied)
+          result.add(req);
       }
-
-      int buffLen = buff.length();
-      String pkgString = (buffLen > 0 ? buff.substring(0, buffLen - 2) : "");
-
-      ResolverException re = new ResolverException(MessageUtil.getMessage(
-          "INCOMPATIBLE_PACKAGE_VERSION_REQUIREMENTS", new Object[] { assetName, pkgString }));
-      re.setUnsatisfiedRequirements(pkgNames);
-      logger.debug(LOG_EXIT,"getExternalPackageRequirements", re);
       
-      throw re;
+      PackageRequirementMerger merger = new PackageRequirementMerger(result);
+      if (!merger.isMergeSuccessful())
+      {
+        List<String> pkgNames = new ArrayList<String>(merger.getInvalidRequirements());
+        
+        StringBuilder buff = new StringBuilder();
+        for (String pkgName : merger.getInvalidRequirements())
+        {
+          buff.append(pkgName).append(", ");
+        }
+  
+        int buffLen = buff.length();
+        String pkgString = (buffLen > 0 ? buff.substring(0, buffLen - 2) : "");
+  
+        ResolverException re = new ResolverException(MessageUtil.getMessage(
+            "INCOMPATIBLE_PACKAGE_VERSION_REQUIREMENTS", new Object[] { assetName, pkgString }));
+        re.setUnsatisfiedRequirements(pkgNames);
+        logger.debug(LOG_EXIT,"getExternalPackageRequirements", re);
+        
+        throw re;
+      }
+      
+      result = merger.getMergedRequirements();
+      cachedExternalRequirements = result;
     }
-    
-    result = merger.getMergedRequirements();
     logger.debug(LOG_EXIT,"getExternalPackageRequirements", result);
     
     return result;
@@ -440,17 +479,24 @@ public final class DeployedBundlesImpl implements DeployedBundles
   public Collection<ModelledResource> getRequiredUseBundle() throws ResolverException
   {
     logger.debug(LOG_ENTRY, "getRequiredUseBundle");
-    Collection<ImportedPackage> externalReqs = getExternalPackageRequirements();
-    Collection<ModelledResource> usedUseBundles = new HashSet<ModelledResource>();
-    for (ImportedPackage req : externalReqs)
+    
+    Collection<ModelledResource> usedUseBundles =  cachedRequiredUseBundle;
+    if (usedUseBundles == null)
     {
-      // Find a match from the supplied bundle capabilities.
-      ExportedPackage match = getPackageMatch(req, deployedUseBundle);
-      if (match != null)
+      Collection<ImportedPackage> externalReqs = getExternalPackageRequirements();
+      usedUseBundles = new HashSet<ModelledResource>();
+      for (ImportedPackage req : externalReqs)
       {
-          usedUseBundles.add(match.getBundle());
+        // Find a match from the supplied bundle capabilities.
+        ExportedPackage match = getPackageMatch(req, deployedUseBundle);
+        if (match != null)
+        {
+            usedUseBundles.add(match.getBundle());
+        }
       }
+      cachedRequiredUseBundle = usedUseBundles;
     }
+    
     logger.debug(LOG_EXIT, "getRequiredUseBundle", usedUseBundles);
     return usedUseBundles;
   }
