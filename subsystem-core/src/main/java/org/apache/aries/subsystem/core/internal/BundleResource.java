@@ -31,6 +31,7 @@ import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.subsystem.core.archive.BundleManifest;
+import org.apache.aries.subsystem.core.archive.BundleRequiredExecutionEnvironmentHeader;
 import org.apache.aries.subsystem.core.archive.BundleSymbolicNameHeader;
 import org.apache.aries.subsystem.core.archive.BundleVersionHeader;
 import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
@@ -42,6 +43,7 @@ import org.apache.aries.subsystem.core.archive.RequireBundleHeader;
 import org.apache.aries.subsystem.core.archive.RequireBundleRequirement;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityRequirement;
+import org.apache.aries.subsystem.core.archive.RequirementHeader;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
@@ -156,6 +158,13 @@ public class BundleResource implements Resource, RepositoryContent {
 				requirements.add(new RequireCapabilityRequirement(clause, this));
 	}
 	
+	private void computeOsgiExecutionEnvironmentRequirement() {
+		RequirementHeader<?> header = (RequirementHeader<?>)manifest.getHeader(BundleRequiredExecutionEnvironmentHeader.NAME);
+		if (header == null)
+			return;
+		requirements.addAll(header.toRequirements(this));
+	}
+	
 	private void computeOsgiIdentityCapability() {
 		capabilities.add(new OsgiIdentityCapability(this, manifest));
 	}
@@ -228,7 +237,7 @@ public class BundleResource implements Resource, RepositoryContent {
 		computeGenericRequirements();
 		computeOsgiWiringBundleRequirements();
 		computeOsgiServiceRequirements(resource);
-		// TODO Bundle-RequiredExecutionEnvironment
+		computeOsgiExecutionEnvironmentRequirement();
 	}
 	
 	private String getFileName(IFile file) {
