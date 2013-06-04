@@ -19,6 +19,7 @@
 package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
@@ -47,6 +49,11 @@ public class ResolutionTest extends SubsystemTest {
 	 * Subsystem-Content: bundle.a.jar
 	 */
 	private static final String APPLICATION_A = "application.a.esa";
+	/*
+	 * Subsystem-SymbolicName: application.b.esa
+	 * Subsystem-Content: bundle.d.jar
+	 */
+	private static final String APPLICATION_B = "application.b.esa";
 	/*
 	 * Bundle-SymbolicName: bundle.a.jar
 	 * Require-Capability: a
@@ -63,6 +70,11 @@ public class ResolutionTest extends SubsystemTest {
 	 * Provide-Capability: b
 	 */
 	private static final String BUNDLE_C = "bundle.c.jar";
+	/*
+	 * Bundle-SymbolicName: bundle.d.jar
+	 * Bundle-RequiredExecutionEnvironment: JavaSE-100.100
+	 */
+	private static final String BUNDLE_D = "bundle.d.jar";
 	
 	@Before
 	public static void createApplications() throws Exception {
@@ -72,7 +84,9 @@ public class ResolutionTest extends SubsystemTest {
 		createBundleA();
 		createBundleB();
 		createBundleC();
+		createBundleD();
 		createApplicationA();
+		createApplicationB();
 		createdApplications = true;
 	}
 	
@@ -85,6 +99,17 @@ public class ResolutionTest extends SubsystemTest {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_A);
 		createManifest(APPLICATION_A + ".mf", attributes);
+	}
+	
+	private static void createApplicationB() throws IOException {
+		createApplicationBManifest();
+		createSubsystem(APPLICATION_B, BUNDLE_D);
+	}
+	
+	private static void createApplicationBManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_B);
+		createManifest(APPLICATION_B + ".mf", attributes);
 	}
 	
 	private static void createBundleA() throws IOException {
@@ -104,6 +129,13 @@ public class ResolutionTest extends SubsystemTest {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put(Constants.PROVIDE_CAPABILITY, "b");
 		createBundle(BUNDLE_C, headers);
+	}
+	
+	@SuppressWarnings("deprecation")
+	private static void createBundleD() throws IOException {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, "JavaSE-100.100");
+		createBundle(BUNDLE_D, headers);
 	}
 	
 	/*
@@ -156,6 +188,27 @@ public class ResolutionTest extends SubsystemTest {
 		}
 		finally {
 			uninstallSilently(bundleC);
+		}
+	}
+	
+	/*
+	 * BREE headers must be converted into osgi.ee requirements.
+	 * 
+	 * The subsystem should fail to resolve and install if the required
+	 * execution environment is not present.
+	 */
+	@Test
+	public void testMissingBundleRequiredExecutionEnvironment() throws Exception {
+		Subsystem applicationB = null;
+		try {
+			applicationB = installSubsystemFromFile(APPLICATION_B);
+			fail("Missing BREE should result in installation failure");
+		}
+		catch (Exception e) {
+			assertTrue("Installation failure should be due to resolution error", e.getCause() instanceof ResolutionException);
+		}
+		finally {
+			uninstallSubsystemSilently(applicationB);
 		}
 	}
 }

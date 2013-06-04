@@ -3,6 +3,5 @@ Bundle-ManifestVersion: 2
 Bundle-Name: TB1
 Bundle-SymbolicName: org.apache.aries.subsystem.itests.tb1
 Bundle-Version: 1.0.0
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.apache.aries.subsystem.itests.tb1
 Import-Package: org.apache.aries.subsystem.itests.tb3
