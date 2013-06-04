@@ -113,6 +113,8 @@ public class HeaderFactory {
 			return new PreferredProviderHeader(value);
 		if (AriesSubsystemParentsHeader.NAME.equals(name))
 			return new AriesSubsystemParentsHeader(value);
+		if (BundleRequiredExecutionEnvironmentHeader.NAME.equals(name))
+			return new BundleRequiredExecutionEnvironmentHeader(value);
 		return new GenericHeader(name, value);
 			
 	}
