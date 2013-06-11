@@ -49,6 +49,7 @@ import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.BundleNamespace;
+import org.osgi.framework.namespace.ExecutionEnvironmentNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.namespace.service.ServiceNamespace;
@@ -350,7 +351,10 @@ public class RawSubsystemResource implements Resource {
 			return null;
 		ArrayList<RequireCapabilityHeader.Clause> clauses = new ArrayList<RequireCapabilityHeader.Clause>();
 		for (Requirement requirement : requirements) {
-			if (requirement.getNamespace().startsWith("osgi."))
+			String namespace = requirement.getNamespace();
+			if (namespace.startsWith("osgi.") && 
+					// Don't filter out the osgi.ee namespace.
+					!namespace.equals(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE))
 				continue;
 			clauses.add(new RequireCapabilityHeader.Clause(requirement));
 		}
