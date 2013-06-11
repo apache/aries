@@ -55,6 +55,11 @@ public class ResolutionTest extends SubsystemTest {
 	 */
 	private static final String APPLICATION_B = "application.b.esa";
 	/*
+	 * Subsystem-SymbolicName: application.c.esa
+	 * Subsystem-Content: bundle.e.jar
+	 */
+	private static final String APPLICATION_C = "application.c.esa";
+	/*
 	 * Bundle-SymbolicName: bundle.a.jar
 	 * Require-Capability: a
 	 */
@@ -75,6 +80,11 @@ public class ResolutionTest extends SubsystemTest {
 	 * Bundle-RequiredExecutionEnvironment: JavaSE-100.100
 	 */
 	private static final String BUNDLE_D = "bundle.d.jar";
+	/*
+	 * Bundle-SymbolicName: bundle.e.jar
+	 * Bundle-RequiredExecutionEnvironment: J2SE-1.4, J2SE-1.5,		J2SE-1.6,JavaSE-1.7
+	 */
+	private static final String BUNDLE_E = "bundle.e.jar";
 	
 	@Before
 	public static void createApplications() throws Exception {
@@ -85,8 +95,10 @@ public class ResolutionTest extends SubsystemTest {
 		createBundleB();
 		createBundleC();
 		createBundleD();
+		createBundleE();
 		createApplicationA();
 		createApplicationB();
+		createApplicationC();
 		createdApplications = true;
 	}
 	
@@ -110,6 +122,17 @@ public class ResolutionTest extends SubsystemTest {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_B);
 		createManifest(APPLICATION_B + ".mf", attributes);
+	}
+	
+	private static void createApplicationC() throws IOException {
+		createApplicationCManifest();
+		createSubsystem(APPLICATION_C, BUNDLE_E);
+	}
+	
+	private static void createApplicationCManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_C);
+		createManifest(APPLICATION_C + ".mf", attributes);
 	}
 	
 	private static void createBundleA() throws IOException {
@@ -136,6 +159,13 @@ public class ResolutionTest extends SubsystemTest {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, "JavaSE-100.100");
 		createBundle(BUNDLE_D, headers);
+	}
+	
+	@SuppressWarnings("deprecation")
+	private static void createBundleE() throws IOException {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, "J2SE-1.4, J2SE-1.5,		J2SE-1.6,JavaSE-1.7");
+		createBundle(BUNDLE_E, headers);
 	}
 	
 	/*
@@ -209,6 +239,27 @@ public class ResolutionTest extends SubsystemTest {
 		}
 		finally {
 			uninstallSubsystemSilently(applicationB);
+		}
+	}
+	
+	/*
+	 * BREE headers must be converted into osgi.ee requirements.
+	 * 
+	 * The subsystem should resolve and install if at least one of the specified
+	 * execution environments is present.
+	 */
+	@Test
+	public void testMultipleBundleRequiredExecutionEnvironments() throws Exception {
+		Subsystem applicationC = null;
+		try {
+			applicationC = installSubsystemFromFile(APPLICATION_C);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			fail("Installation should succeed when at least one BREE is present");
+		}
+		finally {
+			uninstallSubsystemSilently(applicationC);
 		}
 	}
 }
