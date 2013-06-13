@@ -26,12 +26,13 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.service.coordinator.Coordination;
 
 public class RegionContextBundleHelper {
 	public static final String SYMBOLICNAME_PREFIX = Constants.RegionContextBundleSymbolicNamePrefix;
 	public static final Version VERSION = Version.parseVersion("1.0.0");
 	
-	public static void installRegionContextBundle(BasicSubsystem subsystem) throws BundleException, IOException {
+	public static void installRegionContextBundle(final BasicSubsystem subsystem, Coordination coordination) throws Exception {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		String location = subsystem.getLocation() + '/' + subsystem.getSubsystemId();
 		Bundle b = subsystem.getRegion().getBundle(symbolicName, VERSION);
@@ -42,7 +43,7 @@ public class RegionContextBundleHelper {
 			// context bundle, should be 1.
 			b.adapt(BundleStartLevel.class).setStartLevel(1);
 		}
-		Utils.installResource(b.adapt(BundleRevision.class), subsystem);
+		ResourceInstaller.newInstance(coordination, b.adapt(BundleRevision.class), subsystem).install();
 		// The region context bundle must be started persistently.
 		b.start();
 	}
@@ -51,7 +52,7 @@ public class RegionContextBundleHelper {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		Bundle bundle = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (bundle == null)
-			throw new IllegalStateException("Missing region context bundle: " + symbolicName);
+			return;
 		ThreadLocalSubsystem.set(subsystem);
 		BundleRevision revision = bundle.adapt(BundleRevision.class);
 		try {
