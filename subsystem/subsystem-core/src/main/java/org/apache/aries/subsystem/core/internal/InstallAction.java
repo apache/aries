@@ -31,31 +31,21 @@ import org.osgi.service.subsystem.SubsystemException;
 public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 	private final IDirectory content;
 	private final AccessControlContext context;
-	private final Coordination coordination;
-	private final boolean embedded;
 	private final String location;
 	private final BasicSubsystem parent;
 	
 	public InstallAction(String location, IDirectory content, BasicSubsystem parent, AccessControlContext context) {
-		this(location, content, parent, context, null, false);
-	}
-	
-	public InstallAction(String location, IDirectory content, BasicSubsystem parent, AccessControlContext context, Coordination coordination, boolean embedded) {
 		this.location = location;
 		this.content = content;
 		this.parent = parent;
 		this.context = context;
-		this.coordination = coordination;
-		this.embedded = embedded;
 	}
 	
 	@Override
 	public BasicSubsystem run() {
 		// Initialization of a null coordination must be privileged and,
 		// therefore, occur in the run() method rather than in the constructor.
-		Coordination coordination = this.coordination;
-		if (coordination == null)
-			coordination = Utils.createCoordination(parent);
+		Coordination coordination = Utils.createCoordination(parent);
 		BasicSubsystem result = null;
 		try {
 			TargetRegion region = new TargetRegion(parent);
@@ -88,26 +78,22 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 			coordination.fail(t);
 		}
 		finally {
-			if (!embedded) {
-				try {
-					coordination.end();
-				}
-				catch (CoordinationException e) {
-					Throwable t = e.getCause();
-					if (t instanceof SubsystemException)
-						throw (SubsystemException)t;
-					if (t instanceof SecurityException)
-						throw (SecurityException)t;
-					throw new SubsystemException(t);
-				}
+			try {
+				coordination.end();
+			}
+			catch (CoordinationException e) {
+				Throwable t = e.getCause();
+				if (t instanceof SubsystemException)
+					throw (SubsystemException)t;
+				if (t instanceof SecurityException)
+					throw (SecurityException)t;
+				throw new SubsystemException(t);
 			}
 		}
 		return result;
 	}
 
 	private void checkLifecyclePermission(final BasicSubsystem subsystem) {
-		if (embedded)
-			return;
 		AccessController.doPrivileged(new PrivilegedAction<Object>() {
 			@Override
 			public Object run() {

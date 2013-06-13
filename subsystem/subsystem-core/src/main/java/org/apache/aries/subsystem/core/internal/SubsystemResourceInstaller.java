@@ -13,14 +13,12 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.apache.aries.util.filesystem.FileSystem;
-import org.osgi.framework.BundleException;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
@@ -130,10 +128,10 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		return installSubsystemResource(subsystemResource);
 	}
 	
-	private void installRegionContextBundle(final BasicSubsystem subsystem) throws BundleException, IOException {
+	private void installRegionContextBundle(final BasicSubsystem subsystem) throws Exception {
 		if (!subsystem.isScoped())
 			return;
-		RegionContextBundleHelper.installRegionContextBundle(subsystem);
+		RegionContextBundleHelper.installRegionContextBundle(subsystem, coordination);
 		coordination.addParticipant(new Participant() {
 			@Override
 			public void ended(Coordination coordination) throws Exception {
