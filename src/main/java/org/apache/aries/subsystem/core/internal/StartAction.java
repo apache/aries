@@ -53,11 +53,17 @@ import org.slf4j.LoggerFactory;
 public class StartAction extends AbstractAction {
 	private static final Logger logger = LoggerFactory.getLogger(BasicSubsystem.class);
 	
+	private final Coordination coordination;
 	private final BasicSubsystem instigator;
 	
 	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target) {
+		this(instigator, requestor, target, null);
+	}
+	
+	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, Coordination coordination) {
 		super(requestor, target, false);
 		this.instigator = instigator;
+		this.coordination = coordination;
 	}
 	
 	@Override
@@ -69,7 +75,7 @@ public class StartAction extends AbstractAction {
 		// The following states must wait.
 		if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
 			waitForStateChange(state);
-			return new StartAction(instigator, requestor, target).run();
+			return new StartAction(instigator, requestor, target, coordination).run();
 		}
 		// The following states mean the requested state has already been attained.
 		if (State.ACTIVE.equals(state))
@@ -87,17 +93,17 @@ public class StartAction extends AbstractAction {
 				}
 			}
 		}
-		// Resolve if necessary.
-		if (State.INSTALLED.equals(state))
-			resolve(target);
-		target.setState(State.STARTING);
-		// TODO Need to hold a lock here to guarantee that another start
-		// operation can't occur when the state goes to RESOLVED.
-		// Start the subsystem.
-		Coordination coordination = Activator.getInstance()
-				.getCoordinator()
-				.create(target.getSymbolicName() + '-' + target.getSubsystemId(), 0);
+		Coordination coordination = this.coordination;
+		if (coordination == null)
+			coordination = Utils.createCoordination(target);
 		try {
+			// Resolve if necessary.
+			if (State.INSTALLED.equals(state))
+				resolve(target);
+			target.setState(State.STARTING);
+			// TODO Need to hold a lock here to guarantee that another start
+			// operation can't occur when the state goes to RESOLVED.
+			// Start the subsystem.
 			List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(target));
 			SubsystemContentHeader header = target.getSubsystemManifest().getSubsystemContentHeader();
 			if (header != null)
@@ -111,7 +117,10 @@ public class StartAction extends AbstractAction {
 			// region and transition to INSTALLED.
 		} finally {
 			try {
-				coordination.end();
+				// Don't end the coordination if the subsystem being started 
+				// (i.e. the target) did not begin it.
+				if (coordination.getName().equals(Utils.computeCoordinationName(target)))
+					coordination.end();
 			} catch (CoordinationException e) {
 				target.setState(State.RESOLVED);
 				Throwable t = e.getCause();
@@ -221,7 +230,7 @@ public class StartAction extends AbstractAction {
 			builder.allow(policy, filter.toString());
 		}
 	}
-	
+
 	private static void setExportIsolationPolicy(RegionFilterBuilder builder, SubsystemExportServiceHeader header, BasicSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
@@ -281,7 +290,7 @@ public class StartAction extends AbstractAction {
 		// their autostart setting set to started.
 		if (Utils.isContent(this.target, subsystem))
 			subsystem.setAutostart(true);
-		new StartAction(instigator, target, subsystem).run();
+		new StartAction(instigator, target, subsystem, coordination).run();
 		if (coordination == null)
 			return;
 		coordination.addParticipant(new Participant() {

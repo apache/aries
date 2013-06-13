@@ -30,12 +30,16 @@ import org.slf4j.LoggerFactory;
 public class Utils {
 	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 	
+	public static String computeCoordinationName(Subsystem subsystem) {
+		return subsystem.getSymbolicName() + '-' + subsystem.getSubsystemId();
+	}
+	
 	public static Coordination createCoordination() {
 		return Activator.getInstance().getCoordinator().begin(BasicSubsystem.ROOT_SYMBOLIC_NAME + "-0", 0);
 	}
 	
 	public static Coordination createCoordination(BasicSubsystem subsystem) {
-		return Activator.getInstance().getCoordinator().begin(subsystem.getSymbolicName() + '-' + subsystem.getSubsystemId(), 0);
+		return Activator.getInstance().getCoordinator().begin(computeCoordinationName(subsystem), 0);
 	}
 	
 	public static BasicSubsystem findFirstSubsystemAcceptingDependenciesStartingFrom(BasicSubsystem subsystem) {
