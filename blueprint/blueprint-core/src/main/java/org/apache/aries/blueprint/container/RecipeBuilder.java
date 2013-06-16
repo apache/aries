@@ -28,6 +28,8 @@ import java.util.Set;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
+import org.apache.aries.blueprint.ExtendedReferenceMetadata;
+import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ServiceListener;
 import org.apache.aries.blueprint.PassThroughMetadata;
@@ -143,6 +145,13 @@ public class RecipeBuilder {
     }
 
     private Recipe createReferenceListRecipe(ReferenceListMetadata metadata) {
+        ValueRecipe filterRecipe = null;
+        if (metadata instanceof ExtendedReferenceMetadata) {
+            ValueMetadata filterMetadata = ((ExtendedServiceReferenceMetadata) metadata).getExtendedFilter();
+            if (filterMetadata != null) {
+                filterRecipe = (ValueRecipe) getValue(filterMetadata, null);
+            }
+        }
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class, Object.class.getName());
@@ -153,12 +162,20 @@ public class RecipeBuilder {
         ReferenceListRecipe recipe = new ReferenceListRecipe(getName(metadata.getId()),
                                                  blueprintContainer,
                                                  metadata,
+                                                 filterRecipe,
                                                  listenersRecipe,
                                                  getDependencies(metadata));
         return recipe;
     }
 
     private ReferenceRecipe createReferenceRecipe(ReferenceMetadata metadata) {
+        ValueRecipe filterRecipe = null;
+        if (metadata instanceof ExtendedReferenceMetadata) {
+            ValueMetadata filterMetadata = ((ExtendedServiceReferenceMetadata) metadata).getExtendedFilter();
+            if (filterMetadata != null) {
+                filterRecipe = (ValueRecipe) getValue(filterMetadata, null);
+            }
+        }
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class, Object.class.getName());
@@ -169,6 +186,7 @@ public class RecipeBuilder {
         ReferenceRecipe recipe = new ReferenceRecipe(getName(metadata.getId()),
                                                      blueprintContainer,
                                                      metadata,
+                                                     filterRecipe,
                                                      listenersRecipe,
                                                      getDependencies(metadata));
         return recipe;

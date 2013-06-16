@@ -113,7 +113,7 @@ public class BlueprintContainerImpl
             BlueprintProtectionDomain.class,
     };
     
-    private enum State {
+    public enum State {
         Unknown,
         WaitForNamespaceHandlers,
         Populated,
@@ -260,6 +260,10 @@ public class BlueprintContainerImpl
         synchronized (scheduled) {
             doRun();
         }
+    }
+
+    public State getState() {
+        return state;
     }
 
     /**

@@ -27,6 +27,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * Implementation of ServiceReferenceMetadata 
@@ -43,6 +44,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     protected int proxyMethod;
     protected Class runtimeInterface;
     protected BundleContext bundleContext;
+    protected ValueMetadata extendedFilter;
 
     public ServiceReferenceMetadataImpl() {
     }
@@ -143,5 +145,13 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     
     public void setBundleContext(BundleContext ctx) {
       this.bundleContext = ctx;
+    }
+
+    public ValueMetadata getExtendedFilter() {
+        return extendedFilter;
+    }
+
+    public void setExtendedFilter(ValueMetadata extendedFilter) {
+        this.extendedFilter = extendedFilter;
     }
 }

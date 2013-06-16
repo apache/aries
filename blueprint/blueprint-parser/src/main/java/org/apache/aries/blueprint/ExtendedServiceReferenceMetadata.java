@@ -18,6 +18,7 @@ package org.apache.aries.blueprint;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * TODO: javadoc
@@ -35,5 +36,7 @@ public interface ExtendedServiceReferenceMetadata extends ServiceReferenceMetada
     Class getRuntimeInterface();
     
     BundleContext getBundleContext();
+
+    ValueMetadata getExtendedFilter();
 
 }

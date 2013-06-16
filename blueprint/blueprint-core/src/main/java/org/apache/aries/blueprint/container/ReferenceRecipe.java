@@ -30,6 +30,7 @@ import java.util.concurrent.Callable;
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.Recipe;
+import org.apache.aries.blueprint.di.ValueRecipe;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintEvent;
@@ -68,9 +69,10 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     public ReferenceRecipe(String name,
                            ExtendedBlueprintContainer blueprintContainer,
                            ReferenceMetadata metadata,
+                           ValueRecipe filterRecipe,
                            CollectionRecipe listenersRecipe,
                            List<Recipe> explicitDependencies) {
-        super(name, blueprintContainer, metadata, listenersRecipe, explicitDependencies);
+        super(name, blueprintContainer, metadata, filterRecipe, listenersRecipe, explicitDependencies);
         this.metadata = metadata;
         if(metadata instanceof ExtendedReferenceMetadata) 
             proxyChildBeanClasses = ((ExtendedReferenceMetadata) metadata).getProxyChildBeanClasses();

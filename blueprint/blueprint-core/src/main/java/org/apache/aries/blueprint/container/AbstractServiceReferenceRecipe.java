@@ -41,7 +41,9 @@ import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
+import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
+import org.apache.aries.blueprint.di.ValueRecipe;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.BundleContext;
@@ -74,6 +76,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     protected final ExtendedBlueprintContainer blueprintContainer;
     protected final ServiceReferenceMetadata metadata;
+    protected final ValueRecipe filterRecipe;
     protected final CollectionRecipe listenersRecipe;
     protected final List<Recipe> explicitDependencies;
     protected final boolean optional;
@@ -93,18 +96,20 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
                                              ServiceReferenceMetadata metadata,
+                                             ValueRecipe filterRecipe,
                                              CollectionRecipe listenersRecipe,
                                              List<Recipe> explicitDependencies) {
         super(name);
         this.prototype = false;
         this.blueprintContainer = blueprintContainer;
         this.metadata = metadata;
+        this.filterRecipe = filterRecipe;
         this.listenersRecipe = listenersRecipe;
         this.explicitDependencies = explicitDependencies;
         
         
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
-        this.filter = createOsgiFilter(metadata);
+        this.filter = createOsgiFilter(metadata, null);
         
         if (System.getSecurityManager() != null) {
             accessControlContext = createAccessControlContext();
@@ -197,7 +202,41 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     public String getOsgiFilter() {
+        if (filterRecipe != null && blueprintContainer instanceof BlueprintContainerImpl) {
+            BlueprintContainerImpl.State state = ((BlueprintContainerImpl) blueprintContainer).getState();
+            switch (state) {
+                case InitialReferencesSatisfied:
+                case WaitForInitialReferences2:
+                case Create:
+                case Created:
+                    return createOsgiFilter(metadata, getExtendedOsgiFilter());
+            }
+        }
         return filter;
+    }
+
+    private String getExtendedOsgiFilter() {
+        if (filterRecipe != null) {
+            Object object;
+            BlueprintRepository repository = ((BlueprintContainerImpl) blueprintContainer).getRepository();
+            ExecutionContext oldContext = null;
+            try {
+                oldContext = ExecutionContext.Holder.setContext(repository);
+                object = filterRecipe.create();
+            } finally {
+                ExecutionContext.Holder.setContext(oldContext);
+            }
+            if (object != null) {
+                String flt = object.toString();
+                if (flt != null && flt.length() > 0) {
+                    if (!flt.startsWith("(")) {
+                        flt = "(" + flt + ")";
+                    }
+                    return flt;
+                }
+            }
+        }
+        return null;
     }
 
 	protected Object getServiceSecurely(final ServiceReference serviceReference) {
@@ -571,7 +610,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
      * @param metadata the service reference metadata
      * @return the OSGi filter
      */
-    private static String createOsgiFilter(ServiceReferenceMetadata metadata) {
+    private static String createOsgiFilter(ServiceReferenceMetadata metadata, String extendedFilter) {
         List<String> members = new ArrayList<String>();
         // Handle filter
         String flt = metadata.getFilter();
@@ -580,6 +619,13 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 flt = "(" + flt + ")";
             }
             members.add(flt);
+        }
+        // Handle extended filter
+        if (extendedFilter != null && extendedFilter.length() > 0) {
+            if (!extendedFilter.startsWith("(")) {
+                extendedFilter = "(" + extendedFilter + ")";
+            }
+            members.add(extendedFilter);
         }
         // Handle interfaces
         String interfaceName = metadata.getInterface();

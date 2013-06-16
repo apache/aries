@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.container;
 import java.util.*;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.blueprint.di.ValueRecipe;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.di.Recipe;
@@ -54,9 +55,10 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
     public ReferenceListRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
                          ReferenceListMetadata metadata,
+                         ValueRecipe filterRecipe,
                          CollectionRecipe listenersRecipe,
                          List<Recipe> explicitDependencies) {
-        super(name, blueprintContainer, metadata, listenersRecipe, explicitDependencies);
+        super(name, blueprintContainer, metadata, filterRecipe, listenersRecipe, explicitDependencies);
         this.metadata = metadata;
     }
 
