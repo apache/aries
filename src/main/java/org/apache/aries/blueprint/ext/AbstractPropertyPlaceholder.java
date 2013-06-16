@@ -37,6 +37,7 @@ import org.apache.aries.blueprint.mutable.MutablePropsMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceListener;
 import org.apache.aries.blueprint.mutable.MutableRegistrationListener;
 import org.apache.aries.blueprint.mutable.MutableServiceMetadata;
+import org.apache.aries.blueprint.mutable.MutableServiceReferenceMetadata;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanArgument;
@@ -270,6 +271,13 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     private Metadata processServiceReferenceMetadata(ServiceReferenceMetadata component) {
+        if (component instanceof MutableServiceReferenceMetadata) {
+            ValueMetadata valueMetadata = ((MutableServiceReferenceMetadata) component).getExtendedFilter();
+            if (valueMetadata != null) {
+                ((MutableServiceReferenceMetadata) component).setExtendedFilter(
+                        doProcessValueMetadata(valueMetadata));
+            }
+        }
         for (ReferenceListener listener : component.getReferenceListeners()) {
             Target listenerComponent = listener.getListenerComponent();
             try {
@@ -395,7 +403,10 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     protected Metadata processValueMetadata(ValueMetadata metadata) {
-      
+        return doProcessValueMetadata(metadata);
+    }
+
+    protected ValueMetadata doProcessValueMetadata(ValueMetadata metadata) {
         return new LateBindingValueMetadata(metadata);
     }
 
