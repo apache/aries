@@ -37,4 +37,9 @@
             <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0"/>
         </service-properties>
     </service>
+    <service ref="ExtNamespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
+        <service-properties>
+            <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0"/>
+        </service-properties>
+    </service>
 </blueprint>
