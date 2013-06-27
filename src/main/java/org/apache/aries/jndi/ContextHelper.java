@@ -21,6 +21,8 @@ package org.apache.aries.jndi;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -210,6 +212,8 @@ public final class ContextHelper {
         return provider;
     }
 
+    private static final Logger logger = Logger.getLogger(ContextHelper.class.getName());
+    
     private static ContextProvider getInitialContextUsingBuilder(BundleContext context,
                                                                  Hashtable<?, ?> environment)
             throws NamingException {
@@ -230,6 +234,9 @@ public final class ContextHelper {
                 } catch (NamingException ne) {
                   // TODO: log
                   // ignore this, if the builder fails we want to move onto the next one
+                } catch (NullPointerException npe) { 
+                	logger.log(Level.SEVERE,  "NPE caught in ContextHelper.getInitialContextUsingBuilder. context=" + context + " ref=" + ref);
+                	throw npe;
                 }
                 
                 if (factory != null) {
