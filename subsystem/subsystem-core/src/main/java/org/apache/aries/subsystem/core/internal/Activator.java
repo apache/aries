@@ -149,15 +149,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		synchronized (Activator.class) {
 			instance = Activator.this;
 		}
-		try {
-			subsystems = new Subsystems();
-		}
-		catch (SubsystemException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			throw new SubsystemException(e);
-		}
+		subsystems = new Subsystems();
 		registerBundleEventHook();
 		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(subsystems), null));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
