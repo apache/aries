@@ -240,34 +240,24 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	@Override
 	public synchronized Object addingService(ServiceReference<Object> reference) {
 		Object service = bundleContext.getService(reference);
-		if (service instanceof Coordinator) {
-			if (coordinator == null) {
-				coordinator = (Coordinator)service;
-				activate();
-			}
-		}
-		else if (service instanceof RegionDigraph) {
-			if (regionDigraph == null) {
-				regionDigraph = (RegionDigraph)service;
-				activate();
-			}
-		}
-		else if (service instanceof Resolver) {
-			if (resolver == null) {
-				resolver = (Resolver)service;
-				activate();
-			}
-		}
-		else if (service instanceof ModelledResourceManager) {
-			if (modelledResourceManager == null) {
-				modelledResourceManager = (ModelledResourceManager)service;
-				activate();
-			}
-		}
-		else if (service instanceof IDirectoryFinder)
-			finders.add((IDirectoryFinder)service);
-		else
-			repositories.add((Repository)service);
+		// Use all of each type of the following services.
+		if (service instanceof IDirectoryFinder)
+			finders.add((IDirectoryFinder) service);
+		else if (service instanceof Repository)
+			repositories.add((Repository) service);
+		// Use only one of each type of the following services.
+		else if (service instanceof Coordinator && coordinator == null)
+			coordinator = (Coordinator) service;
+		else if (service instanceof RegionDigraph && regionDigraph == null)
+			regionDigraph = (RegionDigraph) service;
+		else if (service instanceof Resolver && resolver == null)
+			resolver = (Resolver) service;
+		else if (service instanceof ModelledResourceManager && modelledResourceManager == null)
+			modelledResourceManager = (ModelledResourceManager) service;
+		// Activation is harmless if already active or all required services
+		// have not yet been found.
+		activate();
+		// Filter guarantees we want to track all services received.
 		return service;
 	}
 
