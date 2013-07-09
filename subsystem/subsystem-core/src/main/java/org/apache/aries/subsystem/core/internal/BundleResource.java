@@ -27,9 +27,9 @@ import java.util.jar.JarOutputStream;
 
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
-import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.ModellerException;
+import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.BundleRequiredExecutionEnvironmentHeader;
 import org.apache.aries.subsystem.core.archive.BundleSymbolicNameHeader;
@@ -164,8 +164,7 @@ public class BundleResource implements Resource, RepositoryContent {
 		capabilities.add(new OsgiIdentityCapability(this, manifest));
 	}
 	
-	private void computeOsgiServiceCapabilities(ModelledResource resource) {
-		Collection<? extends ExportedService> services = resource.getExportedServices();
+	private void computeOsgiServiceCapabilities(Collection<ExportedService> services) {
 		for (ExportedService service : services)
 			capabilities.add(new BasicCapability.Builder()
 					.namespace(ServiceNamespace.SERVICE_NAMESPACE)
@@ -175,8 +174,7 @@ public class BundleResource implements Resource, RepositoryContent {
 					.build());
 	}
 	
-	private void computeOsgiServiceRequirements(ModelledResource resource) {
-		Collection<? extends ImportedService> services = resource.getImportedServices();
+	private void computeOsgiServiceRequirements(Collection<ImportedService> services) {
 		for (ImportedService service : services) {
 			StringBuilder builder = new StringBuilder("(&(")
 					.append(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE)
@@ -228,16 +226,18 @@ public class BundleResource implements Resource, RepositoryContent {
 	}
 	
 	private void computeRequirementsAndCapabilities(IDirectory directory) throws ModellerException {
+		// Compute all requirements and capabilities other than those related
+		// to services.
 		computeRequirementsOtherThanService();
 		computeCapabilitiesOtherThanService();
+		// Compute service requirements and capabilities if the optional
+		// ModelledResourceManager service is present.
 		ModelledResourceManager manager = getModelledResourceManager();
 		if (manager == null)
 			return;
-		// TODO Could use ModelledResourceManager.getServiceElements instead. 
-		// Only the service dependency info is being used right now.
-		ModelledResource resource = manager.getModelledResource(directory);
-		computeOsgiServiceRequirements(resource);
-		computeOsgiServiceCapabilities(resource);
+		ParsedServiceElements elements = manager.getServiceElements(directory);
+		computeOsgiServiceRequirements(elements.getReferences());
+		computeOsgiServiceCapabilities(elements.getServices());
 	}
 	
 	private void computeRequirementsOtherThanService() {
