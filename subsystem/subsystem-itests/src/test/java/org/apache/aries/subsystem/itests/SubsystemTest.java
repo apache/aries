@@ -20,7 +20,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
@@ -179,9 +178,8 @@ public abstract class SubsystemTest extends IntegrationTest {
 		}
 	}
 	
-	@org.ops4j.pax.exam.junit.Configuration
-	public static Option[] configuration() {
-		Option[] options = options(
+	protected static Option[] defineOptions() {
+		return new Option[] {
 				// this is how you set the default log level when using pax
 				// logging (logProfile)
 				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
@@ -212,7 +210,13 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.easymock",					"easymock").versionAsInProject(),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-				equinox().version("3.8.0.V20120529-1548"));
+				equinox().version("3.8.0.V20120529-1548")
+		};
+	}
+	
+	@org.ops4j.pax.exam.junit.Configuration
+	public static Option[] configuration() {
+		Option[] options = defineOptions();
 		options = updateOptions(options);
 		return options;
 	}
