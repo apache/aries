@@ -75,6 +75,8 @@ public class BundleRevisionResource implements Resource {
 	private ModelledResource computeModelledResource() {
 		Activator activator = Activator.getInstance();
 		ModelledResourceManager manager = activator.getModelledResourceManager();
+		if (manager == null)
+			return null;
 		BundleDirectory directory = new BundleDirectory(revision.getBundle());
 		try {
 			return manager.getModelledResource(directory);
@@ -86,6 +88,8 @@ public class BundleRevisionResource implements Resource {
 	
 	private List<Capability> computeServiceCapabilities() {
 		ModelledResource resource = getModelledResource();
+		if (resource == null)
+			return Collections.emptyList();
 		Collection<? extends ExportedService> services = resource.getExportedServices();
 		if (services.isEmpty())
 			return Collections.emptyList();
@@ -102,6 +106,8 @@ public class BundleRevisionResource implements Resource {
 	
 	private List<Requirement> computeServiceRequirements() {
 		ModelledResource resource = getModelledResource();
+		if (resource == null)
+			return Collections.emptyList();
 		Collection<? extends ImportedService> services = resource.getImportedServices();
 		if (services.isEmpty())
 			return Collections.emptyList();
