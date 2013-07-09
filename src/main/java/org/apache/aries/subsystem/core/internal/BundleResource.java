@@ -71,11 +71,7 @@ public class BundleResource implements Resource, RepositoryContent {
 		this.content = content;
 		IDirectory dir = content.isDirectory() ? content.convert() : content.convertNested();
 		manifest = computeManifest(dir);
-		// TODO Could use ModelledResourceManager.getServiceElements instead. 
-		// Only the service dependency info is being used right now.
-		ModelledResource resource = getModelledResourceManager().getModelledResource(dir);
-		computeRequirements(resource);
-		computeCapabilities(resource);
+		computeRequirementsAndCapabilities(dir);
 	}
 
 	public List<Capability> getCapabilities(String namespace) {
@@ -136,12 +132,11 @@ public class BundleResource implements Resource, RepositoryContent {
         return content.toString();
     }
 	
-	private void computeCapabilities(ModelledResource resource) {
+	private void computeCapabilitiesOtherThanService() {
 		computeOsgiIdentityCapability();
 		computeOsgiWiringPackageCapabilities();
 		computeOsgiWiringBundleCapability();
 		computeGenericCapabilities();
-		computeOsgiServiceCapabilities(resource);
 	}
 	
 	private void computeGenericCapabilities() {
@@ -231,12 +226,24 @@ public class BundleResource implements Resource, RepositoryContent {
 		if (iph != null)
 			requirements.addAll(iph.toRequirements(this));
 	}
-
-	private void computeRequirements(ModelledResource resource) {
+	
+	private void computeRequirementsAndCapabilities(IDirectory directory) throws ModellerException {
+		computeRequirementsOtherThanService();
+		computeCapabilitiesOtherThanService();
+		ModelledResourceManager manager = getModelledResourceManager();
+		if (manager == null)
+			return;
+		// TODO Could use ModelledResourceManager.getServiceElements instead. 
+		// Only the service dependency info is being used right now.
+		ModelledResource resource = manager.getModelledResource(directory);
+		computeOsgiServiceRequirements(resource);
+		computeOsgiServiceCapabilities(resource);
+	}
+	
+	private void computeRequirementsOtherThanService() {
 		computeOsgiWiringPackageRequirements();
 		computeGenericRequirements();
 		computeOsgiWiringBundleRequirements();
-		computeOsgiServiceRequirements(resource);
 		computeOsgiExecutionEnvironmentRequirement();
 	}
 	
