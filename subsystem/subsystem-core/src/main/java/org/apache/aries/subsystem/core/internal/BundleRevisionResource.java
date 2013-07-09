@@ -20,9 +20,9 @@ import java.util.List;
 
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
-import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.ModellerException;
+import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
@@ -34,7 +34,7 @@ import org.osgi.service.subsystem.SubsystemException;
 public class BundleRevisionResource implements Resource {
 	private final BundleRevision revision;
 	
-	private volatile ModelledResource resource;
+	private volatile ParsedServiceElements elements;
 	
 	public BundleRevisionResource(BundleRevision revision) {
 		if (revision == null)
@@ -72,14 +72,14 @@ public class BundleRevisionResource implements Resource {
 		return revision.getRequirements(namespace);
 	}
 	
-	private ModelledResource computeModelledResource() {
+	private ParsedServiceElements computeParsedServiceElements() {
 		Activator activator = Activator.getInstance();
 		ModelledResourceManager manager = activator.getModelledResourceManager();
 		if (manager == null)
 			return null;
 		BundleDirectory directory = new BundleDirectory(revision.getBundle());
 		try {
-			return manager.getModelledResource(directory);
+			return manager.getServiceElements(directory);
 		}
 		catch (ModellerException e) {
 			throw new SubsystemException(e);
@@ -87,10 +87,10 @@ public class BundleRevisionResource implements Resource {
 	}
 	
 	private List<Capability> computeServiceCapabilities() {
-		ModelledResource resource = getModelledResource();
-		if (resource == null)
+		ParsedServiceElements elements = getParsedServiceElements();
+		if (elements == null)
 			return Collections.emptyList();
-		Collection<? extends ExportedService> services = resource.getExportedServices();
+		Collection<? extends ExportedService> services = elements.getServices();
 		if (services.isEmpty())
 			return Collections.emptyList();
 		List<Capability> result = new ArrayList<Capability>(services.size());
@@ -105,10 +105,10 @@ public class BundleRevisionResource implements Resource {
 	}
 	
 	private List<Requirement> computeServiceRequirements() {
-		ModelledResource resource = getModelledResource();
-		if (resource == null)
+		ParsedServiceElements elements = getParsedServiceElements();
+		if (elements == null)
 			return Collections.emptyList();
-		Collection<? extends ImportedService> services = resource.getImportedServices();
+		Collection<? extends ImportedService> services = elements.getReferences();
 		if (services.isEmpty())
 			return Collections.emptyList();
 		List<Requirement> result = new ArrayList<Requirement>(services.size());
@@ -134,13 +134,13 @@ public class BundleRevisionResource implements Resource {
 		return result;
 	}
 
-	private ModelledResource getModelledResource() {
-		ModelledResource result = resource;
+	private ParsedServiceElements getParsedServiceElements() {
+		ParsedServiceElements result = elements;
 		if (result == null) {
 			synchronized (this) {
-				result = resource;
+				result = elements;
 				if (result == null)
-					resource = result = computeModelledResource();
+					elements = result = computeParsedServiceElements();
 			}
 		}
 		return result;
