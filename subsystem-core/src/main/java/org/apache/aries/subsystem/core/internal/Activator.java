@@ -209,8 +209,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private boolean hasRequiredServices() {
 		return coordinator != null &&
 				regionDigraph != null &&
-				resolver != null &&
-				modelledResourceManager != null;
+				resolver != null;
 	}
 	
 	private boolean isActive() {
