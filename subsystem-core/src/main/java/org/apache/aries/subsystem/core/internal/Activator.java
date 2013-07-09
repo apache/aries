@@ -37,7 +37,6 @@ import org.osgi.framework.hooks.resolver.ResolverHookFactory;
 import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.Resolver;
-import org.osgi.service.subsystem.SubsystemException;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
