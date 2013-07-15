@@ -500,7 +500,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             this.listeners = new CopyOnWriteArrayList<Listener>();
             this.namespaces = namespaces;
             this.bundle = bundle;
-            handlers = new HashMap<URI, NamespaceHandler>();
+            handlers = new ConcurrentHashMap<URI, NamespaceHandler>();
             for (URI ns : namespaces) {
                 findCompatibleNamespaceHandler(ns);
             }
