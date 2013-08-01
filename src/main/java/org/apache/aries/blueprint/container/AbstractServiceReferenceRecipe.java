@@ -26,11 +26,11 @@ import java.security.Permission;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,13 +85,13 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     /** The list of listeners for this reference.  This list will be lazy created */
     protected List<Listener> listeners;
 
-    protected final Object monitor = new Object();
-    private final List<ServiceReference> references = new ArrayList<ServiceReference>();
     private final AtomicBoolean started = new AtomicBoolean();
     private final AtomicBoolean satisfied = new AtomicBoolean();
     private SatisfactionListener satisfactionListener;
 
     private final AccessControlContext accessControlContext;
+
+    private final Tracked tracked = new Tracked();
 
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
@@ -125,7 +125,6 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return listenersRecipe;
     }
 
-    static boolean waited = false;
     public void start(SatisfactionListener listener) {
         if (listener == null) throw new NullPointerException("satisfactionListener is null");
         if (started.compareAndSet(false, true)) {
@@ -134,18 +133,15 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 satisfied.set(optional);
                 // Synchronized block on references so that service events won't interfere with initial references tracking
                 // though this may not be sufficient because we don't control ordering of those events
-                synchronized (monitor) {
+                synchronized (tracked) {
                     getBundleContextForServiceLookup().addServiceListener(this, getOsgiFilter());
                     ServiceReference[] references = getBundleContextForServiceLookup().getServiceReferences(null, getOsgiFilter());
-                    if (references != null) {
-                        for (ServiceReference reference : references) {
-                            this.references.add(reference);
-                            track(reference);                           
-                        }
-                        satisfied.set(optional || !this.references.isEmpty());
-                    }
-                    LOGGER.debug("Found initial references {} for OSGi service {}", references, getOsgiFilter());
+                    tracked.setInitial(references != null ? references : new ServiceReference[0]);
                 }
+                tracked.trackInitial();
+                satisfied.set(optional || !tracked.isEmpty());
+                retrack();
+                LOGGER.debug("Found initial references {} for OSGi service {}", getServiceReferences(), getOsgiFilter());
             } catch (InvalidSyntaxException e) {
                 throw new ComponentDefinitionException(e);
             }
@@ -154,20 +150,17 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     public void stop() {
         if (started.compareAndSet(true, false)) {
-            synchronized (monitor) {
-                try {
-                    getBundleContextForServiceLookup().removeServiceListener(this);
-                } catch (IllegalStateException e) {
-                    // Ignore in case bundle context is already invalidated
-                }
-                doStop();
-                for (Iterator<ServiceReference> it = references.iterator(); it.hasNext();) {
-                    ServiceReference ref = it.next();
-                    it.remove();
-                    untrack(ref);
-                }
-                satisfied.set(false);
+            tracked.close();
+            try {
+                getBundleContextForServiceLookup().removeServiceListener(this);
+            } catch (IllegalStateException e) {
+                // Ignore in case bundle context is already invalidated
             }
+            doStop();
+            for (ServiceReference ref : getServiceReferences()) {
+                untrack(ref);
+            }
+            satisfied.set(false);
             satisfactionListener = null;
         }
     }
@@ -350,56 +343,49 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
       ServiceReference ref = event.getServiceReference();
       switch (eventType) {
           case ServiceEvent.REGISTERED:
-              serviceAdded(ref);
+              serviceAdded(ref, event);
               break;
           case ServiceEvent.MODIFIED:
-              serviceModified(ref);
+              serviceModified(ref, event);
               break;
           case ServiceEvent.UNREGISTERING:
-              serviceRemoved(ref);
+              serviceRemoved(ref, event);
               break;
       }
     }  
 
 
-    private void serviceAdded(ServiceReference ref) {
+    private void serviceAdded(ServiceReference ref, ServiceEvent event) {
         LOGGER.debug("Tracking reference {} for OSGi service {}", ref, getOsgiFilter());
         if (isStarted()) {
-            synchronized (monitor) {
-                if (references.contains(ref)) {
-                    return;
-                }
-                references.add(ref);
-            }
-            track(ref);
-            setSatisfied(true);
-        }
-    }
-
-    private void serviceModified(ServiceReference ref) {
-        // ref must be in references and must be satisfied
-        if (isStarted()) {
-            synchronized (monitor) {
-                if (references.contains(ref)) {
-                    track(ref);
-                }
-            }
-        }
-    }
-
-    private void serviceRemoved(ServiceReference ref) {
-        if (isStarted()) {
-            LOGGER.debug("Untracking reference {} for OSGi service {}", ref, getOsgiFilter());
-            boolean removed;
+            tracked.track(ref, event);
             boolean satisfied;
-            synchronized (monitor) {
-                removed = references.remove(ref);
-                satisfied = optional || !references.isEmpty();
-            }
-            if (removed) {
-                untrack(ref);
+            synchronized (tracked) {
+                satisfied = optional || !tracked.isEmpty();
             }
             setSatisfied(satisfied);
+            track(ref);
+        }
+    }
+
+    private void serviceModified(ServiceReference ref, ServiceEvent event) {
+        // ref must be in references and must be satisfied
+        if (isStarted()) {
+            tracked.track(ref, event);
+            track(ref);
+        }
+    }
+
+    private void serviceRemoved(ServiceReference ref, ServiceEvent event) {
+        if (isStarted()) {
+            LOGGER.debug("Untracking reference {} for OSGi service {}", ref, getOsgiFilter());
+            tracked.untrack(ref, event);
+            boolean satisfied;
+            synchronized (tracked) {
+                satisfied = optional || !tracked.isEmpty();
+            }
+            setSatisfied(satisfied);
+            untrack(ref);
         }
     }
     
@@ -445,8 +431,12 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     protected abstract void retrack();
 
-    protected void updateListeners() {  
-        if (references.isEmpty()) {
+    protected void updateListeners() {
+        boolean empty;
+        synchronized (tracked) {
+            empty = tracked.isEmpty();
+        }
+        if (empty) {
             unbind(null, null);
         } else {
             retrack();
@@ -474,34 +464,36 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
     
     public List<ServiceReference> getServiceReferences() {
-        synchronized (monitor) {
-            return new ArrayList<ServiceReference>(references);
+        ServiceReference[] refs;
+        synchronized (tracked) {
+            refs = new ServiceReference[tracked.size()];
+            tracked.copyKeys(refs);
         }
+        return Arrays.asList(refs);
     }
 
     public ServiceReference getBestServiceReference() {
-        synchronized (monitor) {
-            int length = references.size();
-            if (length == 0) { /* if no service is being tracked */
-                return null;
-            }
-            int index = 0;
-            if (length > 1) { /* if more than one service, select highest ranking */
-                int maxRanking = Integer.MIN_VALUE;
-                long minId = Long.MAX_VALUE;
-                for (int i = 0; i < length; i++) {
-                    Object property = references.get(i).getProperty(Constants.SERVICE_RANKING);
-                    int ranking = (property instanceof Integer) ? (Integer) property : 0;
-                    long id = (Long) references.get(i).getProperty(Constants.SERVICE_ID);
-                    if ((ranking > maxRanking) || (ranking == maxRanking && id < minId)) {
-                        index = i;
-                        maxRanking = ranking;
-                        minId = id;
-                    }
+        List<ServiceReference> references = getServiceReferences();
+        int length = references.size();
+        if (length == 0) { /* if no service is being tracked */
+            return null;
+        }
+        int index = 0;
+        if (length > 1) { /* if more than one service, select highest ranking */
+            int maxRanking = Integer.MIN_VALUE;
+            long minId = Long.MAX_VALUE;
+            for (int i = 0; i < length; i++) {
+                Object property = references.get(i).getProperty(Constants.SERVICE_RANKING);
+                int ranking = (property instanceof Integer) ? (Integer) property : 0;
+                long id = (Long) references.get(i).getProperty(Constants.SERVICE_ID);
+                if ((ranking > maxRanking) || (ranking == maxRanking && id < minId)) {
+                    index = i;
+                    maxRanking = ranking;
+                    minId = id;
                 }
             }
-            return references.get(index);
         }
+        return references.get(index);
     }
 
     public static class Listener {
@@ -656,18 +648,17 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return sb.toString();
     }
 
-    private static Class[] getInterfaces(Class[] classes) {
-        Set<Class> interfaces = new HashSet<Class>();
-        for (Class clazz : classes) {
-            if (clazz.isInterface()) {
-                interfaces.add(clazz);
-            }
+    private class Tracked extends AbstractTracked<ServiceReference, ServiceReference, ServiceEvent> {
+        @Override
+        ServiceReference customizerAdding(ServiceReference item, ServiceEvent related) {
+            return item;
         }
-        return toClassArray(interfaces);
-    }
-
-    private static Class[] toClassArray(Set<Class> classes) {
-        return classes.toArray(new Class [classes.size()]);
+        @Override
+        void customizerModified(ServiceReference item, ServiceEvent related, ServiceReference object) {
+        }
+        @Override
+        void customizerRemoved(ServiceReference item, ServiceEvent related, ServiceReference object) {
+        }
     }
 
 }

@@ -59,6 +59,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     private final ReferenceMetadata metadata;
     private Object proxy;
 
+    private final Object monitor = new Object();
     private volatile ServiceReference trackedServiceReference;
     private volatile Object trackedService;
     private Object defaultBean;
