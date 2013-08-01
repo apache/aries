@@ -86,9 +86,10 @@ public class ServiceRecipe extends AbstractRecipe {
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private volatile Object service;
-    /** Only ever access when holding a lock on <code>this</code> */
+    private final Object monitor = new Object();
+    /** Only ever access when holding a lock on <code>monitor</code> */
     private int activeCalls;
-    /** Only ever access when holding a lock on <code>this</code> */
+    /** Only ever access when holding a lock on <code>monitor</code> */
     private boolean quiesce;
     private Collection<DestroyCallback> destroyCallbacks = new ArrayList<DestroyCallback>();
     
@@ -448,7 +449,7 @@ public class ServiceRecipe extends AbstractRecipe {
 
     protected void incrementActiveCalls()
     {
-    	  synchronized(this) 
+    	  synchronized(monitor)
     	  {
     		    activeCalls++;	
 		    }
@@ -457,7 +458,7 @@ public class ServiceRecipe extends AbstractRecipe {
   	protected void decrementActiveCalls() 
   	{
   	    List<DestroyCallback> callbacksToCall = new ArrayList<DestroyCallback>();
-      	synchronized(this) 
+      	synchronized(monitor)
       	{
       	    activeCalls--;
   			    if(quiesce && activeCalls == 0) {
@@ -475,7 +476,7 @@ public class ServiceRecipe extends AbstractRecipe {
     {
     	  unregister();
     	  int calls;
-    	  synchronized (this) {
+    	  synchronized (monitor) {
             if(activeCalls != 0)
               destroyCallbacks.add(destroyCallback);
     	      quiesce = true;
