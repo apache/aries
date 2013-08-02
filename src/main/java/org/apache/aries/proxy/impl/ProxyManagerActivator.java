@@ -38,7 +38,7 @@ public class ProxyManagerActivator implements BundleActivator
     try {
       // Try load load a asm class (to make sure it's actually available
       // then create the asm factory
-      Class.forName("org.objectweb.asm.ClassVisitor");
+      Class.forName("org.objectweb.asm.ClassVisitor", false, ProxyManagerActivator.class.getClassLoader());
       classProxy = true;
     } catch (Throwable t) {
     }
@@ -53,7 +53,8 @@ public class ProxyManagerActivator implements BundleActivator
       
       try {
         //if ASM is available then we should also try weaving
-        Class<?> cls = Class.forName("org.apache.aries.proxy.impl.weaving.ProxyWeavingHook");
+        Class<?> cls = Class.forName("org.apache.aries.proxy.impl.weaving.ProxyWeavingHook",
+        		true, ProxyManagerActivator.class.getClassLoader());
         Dictionary<String,String> props = new Hashtable<String,String>();
         // SubsystemResource.java also uses this constant. 
         //   While it could be turned into a static final constant, note that this

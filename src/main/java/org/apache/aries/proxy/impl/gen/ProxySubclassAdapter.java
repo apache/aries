@@ -43,6 +43,7 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
 
   private static final Type STRING_TYPE = Type.getType(String.class);
   private static final Type CLASS_TYPE = Type.getType(Class.class);
+  private static final Type CLASSLOADER_TYPE = Type.getType(ClassLoader.class);
   private static final Type OBJECT_TYPE = Type.getType(Object.class);
   private static final Type METHOD_TYPE = Type.getType(java.lang.reflect.Method.class);
   private static final Type IH_TYPE = Type.getType(InvocationHandler.class);
@@ -618,7 +619,7 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
      * 
      * produces bytecode for retrieving the superclass and storing in a
      * private static field: private static Class superClass = null; static{
-     * superClass = Class.forName(superclass); }
+     * superClass = Class.forName(superclass, true, TYPE_BEING_PROXIED.class.getClassLoader()); }
      */
 
     // add a private static field for the superclass Class
@@ -627,10 +628,15 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
 
     // push the String arg for the Class.forName onto the stack
     staticAdapter.push(classBinaryName);
+    //push the boolean arg for the Class.forName onto the stack
+    staticAdapter.push(true);
+    //get the classloader
+    staticAdapter.push(newClassType);
+    staticAdapter.invokeVirtual(CLASS_TYPE, new Method("getClassLoader", CLASSLOADER_TYPE, NO_ARGS));
 
     // invoke the Class forName putting the Class on the stack
     staticAdapter.invokeStatic(CLASS_TYPE, new Method("forName", CLASS_TYPE,
-        new Type[] { STRING_TYPE }));
+        new Type[] { STRING_TYPE, Type.BOOLEAN_TYPE, CLASSLOADER_TYPE }));
 
     // put the Class in the static field
     staticAdapter.putStatic(newClassType, currentClassFieldName, CLASS_TYPE);
