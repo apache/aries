@@ -71,8 +71,14 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       | ACC_SYNTHETIC;
   /** The internal name for Throwable */
   static final String THROWABLE_INAME = Type.getInternalName(Throwable.class);
-  /** A UUID for adding to our method names */
-  private static final String UU_ID = getSanitizedUUIDString();
+  /** 
+   * A static UUID for adding to our method names. 
+   * This must not change over time, otherwise uninstalling
+   * and reinstalling the proxy component with a separate
+   * API bundle will cause BIG trouble (NoSuchFieldError)
+   * with subclasses that get woven by the "new" hook
+   */
+  private static final String UU_ID = "04df3c80_2877_4f6c_99e2_5a25e11d5535";
   /** A constant for No Args methods */
   static final Type[] NO_ARGS = new Type[0];
 
