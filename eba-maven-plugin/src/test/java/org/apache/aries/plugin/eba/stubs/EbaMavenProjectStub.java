@@ -110,17 +110,22 @@ public class EbaMavenProjectStub
     
     public Set getArtifacts()
     {   
-        Set artifacts = new HashSet();
- 
-        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
-        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact02", "1.0-SNAPSHOT", false ) );
+        Set artifacts = getDependencyArtifacts();
+
+	// this one's a transitive dependency 
+        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact03", "1.0-SNAPSHOT", false ) );
         
         return artifacts;
     }
 
     @Override
     public Set getDependencyArtifacts() {
-        return getArtifacts();
+        Set artifacts = new HashSet();
+ 
+        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
+        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact02", "1.0-SNAPSHOT", false ) );
+        
+        return artifacts;
     }
 
     public List getAttachedArtifacts()

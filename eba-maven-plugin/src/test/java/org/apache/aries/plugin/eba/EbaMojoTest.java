@@ -376,6 +376,55 @@ public class EbaMojoTest
 
     }
 
+    public void testArchiveContentConfigurationAllBundles()
+        throws Exception
+    {
+        File testPom = new File( getBasedir(),
+                                 "target/test-classes/unit/basic-eba-all-bundles/plugin-config.xml" );
+
+        EbaMojo mojo = ( EbaMojo ) lookupMojo( "eba", testPom );
+
+        assertNotNull( mojo );
+
+        String finalName = ( String ) getVariableValueFromObject( mojo, "finalName" );
+
+        String workDir = ( String ) getVariableValueFromObject( mojo, "workDirectory" );
+
+        String outputDir = ( String ) getVariableValueFromObject( mojo, "outputDirectory" );
+
+        mojo.execute();
+
+
+        //check the generated eba file
+        File ebaFile = new File( outputDir, finalName + ".eba" );
+
+        assertTrue( ebaFile.exists() );
+
+        //expected files/directories inside the eba file
+        List expectedFiles = new ArrayList();
+
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.properties" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.xml" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
+        expectedFiles.add( "META-INF/maven/" );
+        expectedFiles.add( "META-INF/APPLICATION.MF" );
+        expectedFiles.add( "META-INF/" );
+        expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
+        expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
+        expectedFiles.add( "maven-artifact03-1.0-SNAPSHOT.jar" );
+
+        ZipFile eba = new ZipFile( ebaFile );
+
+        Enumeration entries = eba.getEntries();
+
+        assertTrue( entries.hasMoreElements() );
+
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles,  0, missing);
+
+    }
+
     private int getSizeOfExpectedFiles( Enumeration entries, List expectedFiles )
     {
         while( entries.hasMoreElements() )
