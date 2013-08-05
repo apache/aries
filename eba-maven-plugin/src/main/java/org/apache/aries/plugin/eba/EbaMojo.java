@@ -254,7 +254,7 @@ public class EbaMojo
         try
         {
             Set<Artifact> artifacts = null;
-            if (useTransitiveDependencies) {
+            if (useTransitiveDependencies || "all".equals(archiveContent)) {
                 // if use transitive is set (i.e. true) then we need to make sure archiveContent does not contradict (i.e. is set
                 // to the same compatible value or is the default).
             	if ("none".equals(archiveContent)) {
