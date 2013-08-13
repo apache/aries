@@ -23,6 +23,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -285,7 +286,7 @@ public final class ServiceHelper
       result = AccessController.doPrivileged(new PrivilegedAction<Object>() {
         public Object run()
         {
-          return proxyPriviledged(interface1, filter, rebind, ctx, pair, timeout);
+          return proxyPrivileged(interface1, filter, rebind, ctx, pair, timeout);
         }
       });
 
@@ -299,7 +300,7 @@ public final class ServiceHelper
     return result;
   }
 
-  private static Object proxyPriviledged(String interface1, String filter, boolean dynamicRebind, BundleContext ctx, ServicePair pair, int timeout)
+  private static Object proxyPrivileged(String interface1, String filter, boolean dynamicRebind, BundleContext ctx, ServicePair pair, int timeout)
   {
     String[] interfaces = null;
     if (interface1 != null) {
@@ -310,33 +311,29 @@ public final class ServiceHelper
 
     List<Class<?>> clazz = new ArrayList<Class<?>>(interfaces.length);
 
-    // We load the interface classes the service is registered under using
-    // the defining
-    // bundle. This is ok because the service must be able to see the
-    // classes to be
-    // registered using them. We then check to see if isAssignableTo on the
-    // reference
-    // works for the owning bundle and the interface name and only use the
-    // interface if
-    // true is returned there.
+    // We load the interface classes the service is registered under using the defining bundle. 
+    // This is ok because the service must be able to see the classes to be registered using them. 
+    // We then check to see if isAssignableTo on the reference  works for the owning bundle and 
+    // the interface name and only use the interface if true is returned there.
 
-    // This might seem odd, but equinox and felix return true for
-    // isAssignableTo if the
-    // Bundle provided does not import the package. This is under the
-    // assumption the
-    // caller will then use reflection. The upshot of doing it this way is
-    // that a utility
-    // bundle can be created which centralizes JNDI lookups, but the service
-    // will be used
-    // by another bundle. It is true that class space consistency is less
-    // safe, but we
+    // This might seem odd, but equinox and felix return true for isAssignableTo if the 
+    // Bundle provided does not import the package. This is under the assumption the
+    // caller will then use reflection. The upshot of doing it this way is that a utility
+    // bundle can be created which centralizes JNDI lookups, but the service will be used
+    // by another bundle. It is true that class space consistency is less safe, but we
     // are enabling a slightly odd use case anyway.
+    
+    // August 13th 2013: We've found valid use cases in which a Bundle is exporting 
+    // services that the Bundle itself cannot load. We deal with this rare case by
+    // noting the classes that we failed to load. If as a result we have no classes 
+    // to proxy, we try those classes again but instead pull the Class objects off 
+    // the service rather than from the bundle exporting that service. 
 
     Bundle serviceProviderBundle = pair.ref.getBundle();
     Bundle owningBundle = ctx.getBundle();
-
     ProxyManager proxyManager = Activator.getProxyManager();
 
+    Collection<String> classesNotFound = new ArrayList<String>();
     for (String interfaceName : interfaces) {
       try {
         Class<?> potentialClass = serviceProviderBundle.loadClass(interfaceName);
@@ -344,9 +341,28 @@ public final class ServiceHelper
           clazz.add(potentialClass);
         }
       } catch (ClassNotFoundException e) {
+      	classesNotFound.add(interfaceName);
       }
     }
-
+    
+    if (clazz.isEmpty() && !classesNotFound.isEmpty()) { 
+			Class<?> ifacesOnService[] = ctx.getService(pair.ref).getClass().getInterfaces();
+    	for (String interfaceName : classesNotFound) {
+    		Class<?> thisClass = null;
+    		for (Class<?> c : ifacesOnService) { 
+    			inner: if (c.getName().equals(interfaceName)) { 
+    				thisClass = c;
+    				break inner;
+    			}
+    		}
+    		if (thisClass != null) { 
+    			if (pair.ref.isAssignableTo(owningBundle, interfaceName)) {
+    				clazz.add(thisClass);
+    			}
+    		}
+    	}
+    }
+    
     if (clazz.isEmpty()) {
       throw new IllegalArgumentException(Arrays.asList(interfaces).toString());
     }
