@@ -43,7 +43,7 @@ public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
   public static final String WEAVING_DISABLED_CLASSES = "org.apache.aries.proxy.weaving.disabled";
 
   public static final String WEAVING_ENABLED_CLASSES_DEFAULT = "*";
-  public static final String WEAVING_DISABLED_CLASSES_DEFAULT = "org.objectweb.asm.*,org.slf4j.*,org.apache.log4j.*,javax.*";
+  public static final String WEAVING_DISABLED_CLASSES_DEFAULT = "org.objectweb.asm.*,org.slf4j.*,org.apache.log4j.*,javax.*,ch.qos.logback.*";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProxyWeavingHook.class);
   /** An import of the WovenProxy package */
