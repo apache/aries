@@ -25,9 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -349,10 +351,10 @@ public final class ServiceHelper
 			Class<?> ifacesOnService[] = ctx.getService(pair.ref).getClass().getInterfaces();
     	for (String interfaceName : classesNotFound) {
     		Class<?> thisClass = null;
-    		for (Class<?> c : ifacesOnService) { 
-    			inner: if (c.getName().equals(interfaceName)) { 
+    		for (Class<?> c : getAllInterfaces(ifacesOnService)) { 
+    			if (c.getName().equals(interfaceName)) { 
     				thisClass = c;
-    				break inner;
+    				break;
     			}
     		}
     		if (thisClass != null) { 
@@ -468,4 +470,18 @@ public final class ServiceHelper
     return result;
   }
  
+  static Collection<Class<?>> getAllInterfaces (Class<?>[] baseInterfaces) 
+  {
+  	Set<Class<?>> result = new HashSet<Class<?>>();
+  	for (Class<?> c : baseInterfaces) {
+  		if (!c.equals(Object.class)) { 
+  			result.add (c);
+  			Class<?> ifaces[] = c.getInterfaces();
+  			if (ifaces.length != 0) { 
+  				result.addAll(getAllInterfaces(ifaces));
+  			}
+  		}
+  	}
+  	return result;
+  }
 }
