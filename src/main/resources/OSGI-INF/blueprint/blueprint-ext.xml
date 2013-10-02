@@ -42,4 +42,11 @@
             <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0"/>
         </service-properties>
     </service>
+    
+    <!-- Also provide the "xml" namespace as a core functionality to avoid many bundles registering a handler for this -->
+    <service ref="ExtNamespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
+        <service-properties>
+            <entry key="osgi.service.blueprint.namespace" value="http://www.w3.org/XML/1998/namespace"/>
+        </service-properties>
+    </service>
 </blueprint>
