@@ -126,9 +126,10 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
           return getClass().getResource("blueprint-ext-1.2.xsd");
         } else if (BLUEPRINT_EXT_NAMESPACE_V1_3.equals(namespace)) {
             return getClass().getResource("blueprint-ext-1.3.xsd");
-        } else {
-          return null;
+        } else if ("http://www.w3.org/XML/1998/namespace".equals(namespace)) {
+            return getClass().getResource("xml.xsd");
         }
+        return null;
     }
 
     public Set<Class> getManagedClasses() {
