@@ -239,7 +239,7 @@ public class BlueprintContainerImpl
                 return;
             }
             tidyupComponents();
-            this.componentDefinitionRegistry.reset();
+            resetComponentDefinitionRegistry();
             this.repository = null;
             this.processors = new ArrayList<Processor>();
             timeout = 5 * 60 * 1000;
@@ -253,6 +253,14 @@ public class BlueprintContainerImpl
             state = State.Unknown;
             schedule();
         }
+    }
+    
+    private void resetComponentDefinitionRegistry() {
+        this.componentDefinitionRegistry.reset();
+        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
+        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", bundle));
+        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundleContext", bundleContext));
+        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintConverter", converter));
     }
 
     public void run() {
@@ -308,11 +316,7 @@ public class BlueprintContainerImpl
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
-                        componentDefinitionRegistry.reset();
-                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
-                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", bundle));
-                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundleContext", bundleContext));
-                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintConverter", converter));
+                        resetComponentDefinitionRegistry();
                         if (xmlValidation) {
                             parser.validate(handlerSet.getSchema());
                         }
@@ -737,13 +741,7 @@ public class BlueprintContainerImpl
     }
     
     public Set<String> getComponentIds() {
-        Set<String> set = new LinkedHashSet<String>();
-        set.addAll(componentDefinitionRegistry.getComponentDefinitionNames());
-        set.add("blueprintContainer");
-        set.add("blueprintBundle");
-        set.add("blueprintBundleContext");
-        set.add("blueprintConverter");
-        return set;
+        return new LinkedHashSet<String>(componentDefinitionRegistry.getComponentDefinitionNames());
     }
     
     public Object getComponentInstance(String id) throws NoSuchComponentException {
@@ -902,7 +900,7 @@ public class BlueprintContainerImpl
                     return;
                 }
                 tidyupComponents();
-                this.componentDefinitionRegistry.reset();
+                resetComponentDefinitionRegistry();
                 this.repository = null;
                 state = State.WaitForNamespaceHandlers;
                 schedule();
