@@ -44,7 +44,7 @@
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg />
         <aries.osgi.import.pkg>
-           org.apache.aries.blueprint;provide:=true;version="[1.0,1.2)",
+           org.apache.aries.blueprint;provide:=true;version="[1.0,1.3)",
            org.apache.aries.blueprint.ext;provide:=true;version="[1.0,1.2)",
            *
         </aries.osgi.import.pkg>
@@ -53,8 +53,8 @@
         </aries.osgi.private.pkg>
 
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.core.version>1.0.0</blueprint.core.version>
-        <blueprint.parser.version>1.0.0</blueprint.parser.version>
+        <blueprint.core.version>1.2.0</blueprint.core.version>
+        <blueprint.parser.version>1.1.0</blueprint.parser.version>
     </properties>
 
     <profiles>
