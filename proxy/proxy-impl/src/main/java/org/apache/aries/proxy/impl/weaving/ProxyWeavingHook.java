@@ -19,6 +19,8 @@
 package org.apache.aries.proxy.impl.weaving;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,6 +35,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,20 +63,34 @@ public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
   private final ServiceTracker controllers;
 
   public ProxyWeavingHook(BundleContext context) {
-    enabled = parseMatchers(context != null ? context.getProperty(WEAVING_ENABLED_CLASSES) : null, WEAVING_ENABLED_CLASSES_DEFAULT);
+    String enabledProp = context != null ? context.getProperty(WEAVING_ENABLED_CLASSES) : null;
+    enabled = parseMatchers(enabledProp, WEAVING_ENABLED_CLASSES_DEFAULT);
     disabled = parseMatchers(context != null ? context.getProperty(WEAVING_DISABLED_CLASSES) : null, WEAVING_DISABLED_CLASSES_DEFAULT);
     controllers = new ServiceTracker(context, ProxyWeavingController.class.getName(), null);
     controllers.open();
+    
+    if (!"none".equals(enabledProp)) {
+        Dictionary<String,String> props = new Hashtable<String,String>();
+        // SubsystemResource.java also uses this constant. 
+        //   While it could be turned into a static final constant, note that this
+        //   is also a non-standard workaround in the absence of a solution in the spec. 
+        // See the associated OSGi spec bug. 
+        props.put("osgi.woven.packages", "org.apache.aries.proxy.weaving,org.apache.aries.proxy");
+        context.registerService("org.osgi.framework.hooks.weaving.WeavingHook", this, props);
+    }
   }
 
   public final void weave(WovenClass wovenClass) {
+    BundleWiring bw = wovenClass.getBundleWiring();
     
-    Bundle b = wovenClass.getBundleWiring().getBundle();
-    
-    if(b.getBundleId() == 0 || 
-        b.getSymbolicName().startsWith("org.apache.aries.proxy") ||
-        b.getSymbolicName().startsWith("org.apache.aries.util")) {
-      return;
+    if (bw != null) {
+        Bundle b = bw.getBundle();
+        
+        if(b.getBundleId() == 0 || 
+            b.getSymbolicName().startsWith("org.apache.aries.proxy") ||
+            b.getSymbolicName().startsWith("org.apache.aries.util")) {
+          return;
+        }
     }
 
     if (!isEnabled(wovenClass.getClassName()) || isDisabled(wovenClass.getClassName())) {
