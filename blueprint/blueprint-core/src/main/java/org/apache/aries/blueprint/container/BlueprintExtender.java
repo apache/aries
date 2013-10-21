@@ -32,6 +32,7 @@ import java.util.concurrent.*;
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
+import org.apache.aries.blueprint.services.BlueprintExtenderService;
 import org.apache.aries.blueprint.services.ParserService;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
@@ -75,6 +76,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     private NamespaceHandlerRegistry handlers;
     private RecursiveBundleTracker bt;
     private ServiceRegistration parserServiceReg;
+    private ServiceRegistration blueprintServiceReg;
     private ServiceRegistration quiesceParticipantReg;
     private SingleServiceTracker<ProxyManager> proxyManager;
     private ExecutorServiceFinder executorServiceFinder;
@@ -125,6 +127,12 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             new ParserServiceImpl (handlers), 
             new Hashtable<String, Object>());
 
+        // Create and publish a BlueprintContainerService
+        blueprintServiceReg = ctx.registerService(
+                BlueprintExtenderService.class.getName(),
+                new BlueprintContainerServiceImpl(),
+                new Hashtable<String, Object>());
+
         try{
             ctx.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
             //Class was loaded, register
@@ -147,7 +155,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         stopping = true;
 
         AriesFrameworkUtil.safeUnregisterService(parserServiceReg);
-
+        AriesFrameworkUtil.safeUnregisterService(blueprintServiceReg);
         AriesFrameworkUtil.safeUnregisterService(quiesceParticipantReg);
 
         // Orderly shutdown of containers
@@ -233,9 +241,13 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     }
 
     private boolean createContainer(Bundle bundle) {
-        try {
-            List<Object> paths = getBlueprintPaths(bundle);
-            if (paths == null) {
+        List<Object> paths = getBlueprintPaths(bundle);
+        return createContainer(bundle, paths);
+    }
+
+    private boolean createContainer(Bundle bundle, List<Object> paths) {
+    try {
+            if (paths == null || paths.isEmpty()) {
                 // This bundle is not a blueprint bundle, so ignore it
                 return false;
             }
@@ -531,6 +543,40 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     protected BlueprintContainerImpl getBlueprintContainerImpl(Bundle bundle)
     {
         return containers.get(bundle);
+    }
+
+    private class BlueprintContainerServiceImpl implements BlueprintExtenderService {
+
+        public BlueprintContainer createContainer(Bundle bundle) {
+            if (BlueprintExtender.this.createContainer(bundle)) {
+                return getContainer(bundle);
+            } else {
+                return null;
+            }
+        }
+
+        public BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths) {
+            if (BlueprintExtender.this.createContainer(bundle, blueprintPaths)) {
+                return getContainer(bundle);
+            } else {
+                return null;
+            }
+        }
+
+        public void destroyContainer(Bundle bundle, BlueprintContainer container) {
+            BlueprintContainer bundleContainer = getContainer(bundle);
+            if (bundleContainer != container) {
+                String error = "Unexpected Blueprint Container";
+                LOGGER.error(error);
+                throw new IllegalArgumentException(error);
+            }
+            BlueprintExtender.this.destroyContainer(bundle);
+        }
+
+        public BlueprintContainer getContainer(Bundle bundle) {
+            return BlueprintExtender.this.getBlueprintContainerImpl(bundle);
+        }
+
     }
     
 }
