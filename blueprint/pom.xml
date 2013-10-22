@@ -47,6 +47,7 @@
         <module>blueprint-core-compatibility</module>
         <module>blueprint-noosgi</module>
         <module>blueprint-web</module>
+        <module>blueprint-web-osgi</module>
         <module>blueprint-jexl-evaluator</module>
         <module>blueprint-sample</module>
         <module>blueprint-annotation-api</module>
