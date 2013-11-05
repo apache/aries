@@ -82,4 +82,17 @@
         </dependency>
     </dependencies>
     
+    <build>
+	<pluginManagement>
+	    <plugins>
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-release-plugin</artifactId>
+	            <configuration>
+	                <mavenExecutorId>forked-path</mavenExecutorId>
+	            </configuration>
+	        </plugin>
+	    </plugins>
+	</pluginManagement>
+    </build>
 </project>
