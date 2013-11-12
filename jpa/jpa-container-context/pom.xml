@@ -43,9 +43,9 @@
 
         <aries.osgi.export.pkg />
         <aries.osgi.import>
-            javax.persistence;version="[1.0.0,2.1.0)",
-            javax.persistence.criteria;version="[1.1.0,2.1.0)";resolution:=optional,
-            javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
+            javax.persistence;version="[1.0.0,3.0.0)",
+            javax.persistence.criteria;version="[1.1.0,3.0.0)";resolution:=optional,
+            javax.persistence.metamodel;version="[1.1.0,3.0.0)";resolution:=optional,
             org.apache.aries.jpa.container.context;provide:=true,
             org.apache.aries.quiesce.manager;provide:=true;resolution:=optional,
             org.apache.aries.quiesce.participant;provide:=true;resolution:=optional,
