@@ -46,8 +46,8 @@
             org.apache.aries.jpa.container.context
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-             javax.persistence;version="[1.0.0,3.0.0)",
-             javax.persistence.spi;version="[1.0.0,3.0.0)",
+             javax.persistence;version="[1.0.0,2.1.0)",
+             javax.persistence.spi;version="[1.0.0,2.1.0)",
              org.osgi.framework;version="[1.5.0,2.0.0)"
         </aries.osgi.import>
         <aries.osgi.private.pkg />
