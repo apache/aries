@@ -249,23 +249,19 @@ public class EntityManagerWrapper implements EntityManager {
     return delegate.unwrap(arg0);
   }
 
-	@Override
 	public <T> EntityGraph<T> createEntityGraph(Class<T> arg0) {
-		return delegate.createEntityGraph( arg0 );
+		return delegate.createEntityGraph(arg0);
 	}
-
-	@Override
+	
 	public EntityGraph<?> createEntityGraph(String arg0) {
-		return delegate.createEntityGraph( arg0 );
+		return delegate.createEntityGraph(arg0);
 	}
-
-	@Override
-	public <T> EntityGraph<T> getEntityGraph(String arg0) {
-		return delegate.getEntityGraph( arg0 );
+	
+	public EntityGraph<?> getEntityGraph(String arg0) {
+		return delegate.getEntityGraph(arg0);
 	}
-
-	@Override
+	
 	public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> arg0) {
-		return delegate.getEntityGraphs( arg0 );
+		return delegate.getEntityGraphs(arg0);
 	}
 }

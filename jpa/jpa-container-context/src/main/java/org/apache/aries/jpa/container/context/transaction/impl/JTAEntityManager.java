@@ -566,7 +566,7 @@ public class JTAEntityManager implements EntityManager {
 		}
 	}
 
-	public <T> EntityGraph<T> getEntityGraph(String arg0) {
+	public EntityGraph<?> getEntityGraph(String arg0) {
 		EntityManager em = getPersistenceContext( false );
 		try {
 			return em.getEntityGraph( arg0 );

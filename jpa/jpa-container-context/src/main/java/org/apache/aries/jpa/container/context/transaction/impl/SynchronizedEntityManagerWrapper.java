@@ -236,18 +236,18 @@ public class SynchronizedEntityManagerWrapper implements EntityManager {
     }
 
 	public <T> EntityGraph<T> createEntityGraph(Class<T> arg0) {
-		return entityManager.createEntityGraph( arg0 );
+		return entityManager.createEntityGraph(arg0);
 	}
 
 	public EntityGraph<?> createEntityGraph(String arg0) {
-		return entityManager.createEntityGraph( arg0 );
+		return entityManager.createEntityGraph(arg0);
 	}
 
-	public <T> EntityGraph<T> getEntityGraph(String arg0) {
-		return entityManager.getEntityGraph( arg0 );
+	public EntityGraph<?> getEntityGraph(String arg0) {
+		return entityManager.getEntityGraph(arg0);
 	}
 
 	public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> arg0) {
-		return entityManager.getEntityGraphs( arg0 );
+		return entityManager.getEntityGraphs(arg0);
 	}
 }
