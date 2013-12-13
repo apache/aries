@@ -109,7 +109,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     public static final String FILTER_ATTRIBUTE = "filter";
     
     public static final String ADDITIONAL_INTERFACES = "additional-interfaces";
-    public static final String INTERFACE = "interface";
+    public static final String INTERFACE_VALUE = "value";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
@@ -187,7 +187,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         List<String> list = new ArrayList<String>();
         Node nd = node.getFirstChild();
         while (nd != null) {
-            if (node instanceof Element && nodeNameEquals(node, INTERFACE)) {
+            if (node instanceof Element && nodeNameEquals(node, INTERFACE_VALUE)) {
                 list.add(((Element)nd).getNodeValue());
             }
             nd = nd.getNextSibling();

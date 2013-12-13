@@ -119,11 +119,6 @@
     <xsd:attribute name="filter" type="xsd:normalizedString"/>
     
     <!-- Additional interfaces for references -->
-    <xsd:element name="additional-interfaces" type="TinterfaceList"/>
-    <xsd:complexType name="TinterfaceList">
-        <xsd:sequence>
-            <xsd:element maxOccurs="unbounded" minOccurs="0" name="interface" type="bp:Tclass"/>
-        </xsd:sequence>
-    </xsd:complexType>
+    <xsd:element name="additional-interfaces" type="bp:Tinterfaces"/>
     
 </xsd:schema>
