@@ -52,11 +52,14 @@ public class BlueprintContainer2Test extends AbstractIntegrationTest {
         cf.update(props);
 
         Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-        Bundle blueprintBundle = context().getBundleByName("org.apache.aries.blueprint");
+        Bundle blueprintBundle = context().getBundleByName("org.apache.aries.blueprint.core");
+        Bundle blueprintCMBundle = context().getBundleByName("org.apache.aries.blueprint.cm");
+        assertNotNull(bundle);
         assertNotNull(bundle);
 
         bundle.start();
         blueprintBundle.start();
+        blueprintCMBundle.start();
         
         // do the test
         Helper.testBlueprintContainer(context(), bundle);

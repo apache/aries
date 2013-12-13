@@ -21,10 +21,13 @@ package org.apache.aries.blueprint.itests;
 import static org.apache.aries.itest.ExtraOptions.mavenBundle;
 import static org.apache.aries.itest.ExtraOptions.paxLogging;
 import static org.apache.aries.itest.ExtraOptions.testOptions;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 
 import java.util.ArrayList;
@@ -35,11 +38,17 @@ import org.apache.aries.blueprint.testbundlea.NSHandlerOne;
 import org.apache.aries.blueprint.testbundlea.NSHandlerTwo;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean.Phase;
+import org.apache.aries.blueprint.testbundlea.multi.InterfaceA;
+import org.apache.aries.blueprint.testbundlea.multi.InterfaceB;
+import org.apache.aries.blueprint.testbundlea.multi.InterfaceC;
+import org.apache.aries.blueprint.testbundlea.multi.InterfaceD;
 import org.apache.aries.blueprint.testbundleb.OtherBean;
 import org.apache.aries.blueprint.testbundleb.TestBean;
 import org.apache.aries.itest.AbstractIntegrationTest;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
@@ -82,7 +91,7 @@ public class ASMMultiBundleTest extends AbstractIntegrationTest {
             assertTrue("interceptor invocation "+expected[i]+" not found",found[i]);
         }
     }
-    
+
     @Test
     public void multiBundleTest() throws Exception {
         
@@ -195,6 +204,48 @@ public class ASMMultiBundleTest extends AbstractIntegrationTest {
         Object objOther = beanContainer.getComponentInstance("PlaceHolderTestBean");
         assertTrue(objOther instanceof OtherBean);
         assertEquals("test1value", ((OtherBean)objOther).getTestValue());
+    }
+
+    @Test
+    public void testMultiInterfaceReferences() throws Exception {
+        //bundlea provides the ns handlers, bean processors, interceptors etc for this test.
+        Bundle bundlea = context().getBundleByName("org.apache.aries.blueprint.testbundlea");
+        assertNotNull(bundlea);
+        bundlea.start();
+        
+        //bundleb makes use of the extensions provided by bundlea
+        Bundle bundleb = context().getBundleByName("org.apache.aries.blueprint.testbundleb");
+        assertNotNull(bundleb);
+        bundleb.start();
+        
+        //bundleb's container will hold the beans we need to query to check the function
+        //provided by bundlea functioned as expected
+        BlueprintContainer beanContainer = 
+            Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.testbundleb");
+        assertNotNull(beanContainer);
+
+        Object obj1 = beanContainer.getComponentInstance("OnlyA");
+        Object obj2 = beanContainer.getComponentInstance("AandB");
+        Object obj3 = beanContainer.getComponentInstance("AandBandC");
+        Object obj4 = beanContainer.getComponentInstance("AandBandCandD");
+        
+        assertEquals("A", ((InterfaceA)obj1).methodA());
+        assertEquals("A", ((InterfaceA)obj2).methodA());
+        assertEquals("A", ((InterfaceA)obj3).methodA());
+        assertEquals("B", ((InterfaceB)obj2).methodB());
+        assertEquals("C", ((InterfaceC)obj3).methodC());
+        
+        assertFalse(obj1 instanceof InterfaceC);
+        assertFalse(obj2 instanceof InterfaceC);
+        assertFalse(obj1 instanceof InterfaceB);
+        
+        assertTrue(obj4 instanceof InterfaceD);
+        try {
+            ((InterfaceD)obj4).methodD();
+            fail("This should not work");
+        } catch (org.osgi.service.blueprint.container.ServiceUnavailableException t) {
+            //expected
+        }        
     }
     
     @org.ops4j.pax.exam.junit.Configuration

@@ -86,9 +86,13 @@ public class BlueprintContainer2BTCustomizerTest extends BaseBlueprintContainerB
             bundle.start();
             
             // start the blueprint bundle and it should detect the previously started blueprint sample
-            Bundle blueprintBundle = context().getBundleByName("org.apache.aries.blueprint");
+            Bundle blueprintBundle = context().getBundleByName("org.apache.aries.blueprint.core");
             blueprintBundle.start();
+            Bundle blueprintCMBundle = context().getBundleByName("org.apache.aries.blueprint.cm");
+            blueprintCMBundle.start();
             Thread.sleep(2000);
+            
+            
 
             // do the test
             Helper.testBlueprintContainer(new RichBundleContext(compositeBundleContext), bundle);
