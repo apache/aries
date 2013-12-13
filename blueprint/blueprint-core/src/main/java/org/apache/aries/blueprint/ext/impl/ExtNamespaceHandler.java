@@ -187,8 +187,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         List<String> list = new ArrayList<String>();
         Node nd = node.getFirstChild();
         while (nd != null) {
-            if (node instanceof Element && nodeNameEquals(node, INTERFACE_VALUE)) {
-                list.add(((Element)nd).getNodeValue());
+            if (nd instanceof Element && nodeNameEquals(nd, INTERFACE_VALUE)) {
+                list.add(((Element)nd).getTextContent());
             }
             nd = nd.getNextSibling();
         }
