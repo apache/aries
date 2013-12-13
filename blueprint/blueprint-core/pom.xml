@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.blueprint.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Core</name>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
     <description>
         This bundle contains the core implementation of Blueprint
         along with the "ext" namespace handler.
@@ -238,7 +238,7 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint.core:1.2.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.blueprint:org.apache.aries.blueprint.core:1.3.0</oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
