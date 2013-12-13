@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.reflect;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
@@ -33,6 +34,7 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
     private long timeout;
     private String defaultBeanId;
     private Collection<Class<?>> proxyChildBeanClasses;
+    private Collection<String> extraInterfaces;
 
     public ReferenceMetadataImpl() {
     }
@@ -70,6 +72,7 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
                 ", filter='" + filter + '\'' +
                 ", referenceListeners=" + referenceListeners +
                 ", timeout=" + timeout +
+                ", additonalInterfaces=" + getExtraInterfaces() +
                 ']';
     }
 
@@ -79,5 +82,16 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
 
     public void setProxyChildBeanClasses(Collection<Class<?>> c) {
         proxyChildBeanClasses = c;
+    }
+
+    public Collection<String> getExtraInterfaces() {
+        if (extraInterfaces == null) {
+            return Collections.emptyList();
+        }
+        return extraInterfaces;
+    }
+
+    public void setExtraInterfaces(Collection<String> interfaces) {
+        extraInterfaces = interfaces;
     }
 }
