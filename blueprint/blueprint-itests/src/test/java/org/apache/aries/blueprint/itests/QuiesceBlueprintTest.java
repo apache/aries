@@ -129,7 +129,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest {
 	
 	if (obj != null)
 	{
-	  QuiesceParticipant participant = getParticipant("org.apache.aries.blueprint");
+	  QuiesceParticipant participant = getParticipant("org.apache.aries.blueprint.core");
 	  
 	  if (participant != null)
 	  {
@@ -188,7 +188,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest {
 	
 	if (obj != null)
 	{    
-		QuiesceParticipant participant = getParticipant("org.apache.aries.blueprint");
+		QuiesceParticipant participant = getParticipant("org.apache.aries.blueprint.core");
 		
 		if (participant != null)
 		{
@@ -249,7 +249,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest {
 	
 	if (obj != null)
 	{    
-		QuiesceParticipant participant = getParticipant("org.apache.aries.blueprint");
+		QuiesceParticipant participant = getParticipant("org.apache.aries.blueprint.core");
 		
 		if (participant != null)
 		{
@@ -306,7 +306,7 @@ public class QuiesceBlueprintTest extends AbstractIntegrationTest {
 	
 	if (obj != null)
 	{    
-		QuiesceParticipant participant = getParticipant("org.apache.aries.blueprint");
+		QuiesceParticipant participant = getParticipant("org.apache.aries.blueprint.core");
 		
 		if (participant != null)
 		{
