@@ -38,6 +38,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.blueprint.BlueprintConstants;
+import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
@@ -626,7 +627,22 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             interfaceName = runtimeClass.getName();
         }
         if (interfaceName != null && interfaceName.length() > 0) {
-            members.add("(" + Constants.OBJECTCLASS + "=" + interfaceName + ")");
+            if (metadata instanceof ExtendedReferenceMetadata) {
+                ExtendedReferenceMetadata erm = (ExtendedReferenceMetadata)metadata;
+                if (!erm.getExtraInterfaces().isEmpty()) {
+                    StringBuilder sb = new StringBuilder("(&");
+                    sb.append("(" + Constants.OBJECTCLASS + "=" + interfaceName + ")");
+                    for (String s : erm.getExtraInterfaces()) {
+                        sb.append("(" + Constants.OBJECTCLASS + "=" + s + ")");                        
+                    }
+                    sb.append(")");
+                    members.add(sb.toString());
+                } else {
+                    members.add("(" + Constants.OBJECTCLASS + "=" + interfaceName + ")");                    
+                }
+            } else {
+                members.add("(" + Constants.OBJECTCLASS + "=" + interfaceName + ")");
+            }
         }
         // Handle component name
         String componentName = metadata.getComponentName();
