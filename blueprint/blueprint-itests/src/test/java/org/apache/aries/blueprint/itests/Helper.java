@@ -73,6 +73,8 @@ public class Helper {
                     mavenBundle("org.ow2.asm", "asm-all"),
                     mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator"),
                     
+                    ((startBlueprint) ? mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api") :
+                        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").noStart()),
                     ((startBlueprint) ? mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api") :
                         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").noStart()),
                     ((startBlueprint) ? mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core") :
