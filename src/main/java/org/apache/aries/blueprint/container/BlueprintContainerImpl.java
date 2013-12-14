@@ -848,6 +848,8 @@ public class BlueprintContainerImpl
         synchronized (scheduled) {
             destroyed.set(true);
         }
+        cancelFutureIfPresent();
+
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundle(), getExtenderBundle()));
         executors.shutdownNow();
         if (handlerSet != null) {
