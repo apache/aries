@@ -191,6 +191,13 @@ public class ServiceRecipe extends AbstractRecipe {
             ServiceRegistration reg = blueprintContainer.registerService(classArray, new TriggerServiceFactory(this, metadata), props);
             if (!registration.compareAndSet(null, reg) && registration.get() != reg) {
                 reg.unregister();
+            } else {
+                if (listeners != null) {
+                    LOGGER.debug("Calling listeners for service registration");
+                    for (ServiceListener listener : listeners) {
+                        listener.register(service, registrationProperties);
+                    }
+                }
             }
         }
     }
