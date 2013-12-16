@@ -248,7 +248,6 @@ public class ServiceRecipe extends AbstractRecipe {
      */
     private Object internalGetService(Bundle bundle, ServiceRegistration registration) {
         LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
-        LOGGER.debug("Stack trace", new Throwable());
         createService();
 
         Object service = this.service;
