@@ -206,48 +206,6 @@ public class ASMMultiBundleTest extends AbstractIntegrationTest {
         assertEquals("test1value", ((OtherBean)objOther).getTestValue());
     }
 
-    @Test
-    public void testMultiInterfaceReferences() throws Exception {
-        //bundlea provides the ns handlers, bean processors, interceptors etc for this test.
-        Bundle bundlea = context().getBundleByName("org.apache.aries.blueprint.testbundlea");
-        assertNotNull(bundlea);
-        bundlea.start();
-        
-        //bundleb makes use of the extensions provided by bundlea
-        Bundle bundleb = context().getBundleByName("org.apache.aries.blueprint.testbundleb");
-        assertNotNull(bundleb);
-        bundleb.start();
-        
-        //bundleb's container will hold the beans we need to query to check the function
-        //provided by bundlea functioned as expected
-        BlueprintContainer beanContainer = 
-            Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.testbundleb");
-        assertNotNull(beanContainer);
-
-        Object obj1 = beanContainer.getComponentInstance("OnlyA");
-        Object obj2 = beanContainer.getComponentInstance("AandB");
-        Object obj3 = beanContainer.getComponentInstance("AandBandC");
-        Object obj4 = beanContainer.getComponentInstance("AandBandCandD");
-        
-        assertEquals("A", ((InterfaceA)obj1).methodA());
-        assertEquals("A", ((InterfaceA)obj2).methodA());
-        assertEquals("A", ((InterfaceA)obj3).methodA());
-        assertEquals("B", ((InterfaceB)obj2).methodB());
-        assertEquals("C", ((InterfaceC)obj3).methodC());
-        
-        assertFalse(obj1 instanceof InterfaceC);
-        assertFalse(obj2 instanceof InterfaceC);
-        assertFalse(obj1 instanceof InterfaceB);
-        
-        assertTrue(obj4 instanceof InterfaceD);
-        try {
-            ((InterfaceD)obj4).methodD();
-            fail("This should not work");
-        } catch (org.osgi.service.blueprint.container.ServiceUnavailableException t) {
-            //expected
-        }        
-    }
-    
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
         return testOptions(

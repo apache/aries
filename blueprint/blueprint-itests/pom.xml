@@ -56,6 +56,42 @@
             <artifactId>osgi</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>blueprint-parser</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.quiesce</groupId>
+            <artifactId>org.apache.aries.quiesce.api</artifactId>
+            <type>bundle</type>
+            <scope>provided</scope>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.cm</artifactId>
+            <version>1.0.3</version>
+            <type>bundle</type>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.aries.blueprint</groupId>
+                    <artifactId>org.apache.aries.blueprint.core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
@@ -79,7 +115,7 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
@@ -167,24 +203,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
-            <type>bundle</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.quiesce</groupId>
-            <artifactId>org.apache.aries.quiesce.api</artifactId>
-            <type>bundle</type>
-            <scope>provided</scope>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
             <version>1.0.0</version>
             <type>bundle</type>
@@ -201,19 +219,6 @@
             <artifactId>org.apache.aries.blueprint.api</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.cm</artifactId>
-            <version>1.0.3</version>
-            <type>bundle</type>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.aries.blueprint</groupId>
-                    <artifactId>org.apache.aries.blueprint.core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
