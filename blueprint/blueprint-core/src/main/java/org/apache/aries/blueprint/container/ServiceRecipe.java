@@ -92,6 +92,7 @@ public class ServiceRecipe extends AbstractRecipe {
     /** Only ever access when holding a lock on <code>monitor</code> */
     private boolean quiesce;
     private Collection<DestroyCallback> destroyCallbacks = new ArrayList<DestroyCallback>();
+    private boolean initialServiceRegistration = true;
     
     public ServiceRecipe(String name,
                          BlueprintContainerImpl blueprintContainer,
@@ -191,15 +192,9 @@ public class ServiceRecipe extends AbstractRecipe {
             ServiceRegistration reg = blueprintContainer.registerService(classArray, new TriggerServiceFactory(this, metadata), props);
             if (!registration.compareAndSet(null, reg) && registration.get() != reg) {
                 reg.unregister();
-            } else {
-                if (listeners != null) {
-                    LOGGER.debug("Calling listeners for service registration");
-                    for (ServiceListener listener : listeners) {
-                        listener.register(service, registrationProperties);
-                    }
-                }
             }
         }
+        initialServiceRegistration = false;
     }
 
     public void unregister() {
@@ -253,10 +248,9 @@ public class ServiceRecipe extends AbstractRecipe {
      */
     private Object internalGetService(Bundle bundle, ServiceRegistration registration) {
         LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
-        if (this.service == null) {
-            createService();
-        }
-        
+        LOGGER.debug("Stack trace", new Throwable());
+        createService();
+
         Object service = this.service;
         // We need the real service ...
         if (bundle != null) {
@@ -281,35 +275,37 @@ public class ServiceRecipe extends AbstractRecipe {
 
     private void createService() {
         try {
-            LOGGER.debug("Creating service instance");
-            //We can't use the BlueprintRepository because we don't know what interfaces
-            //to use yet! We have to be a bit smarter.
-            ExecutionContext old = ExecutionContext.Holder.setContext(blueprintContainer.getRepository());
-           
-            try {
-            	Object o = serviceRecipe.create();
-            
-            	if (o instanceof Convertible) {
-            		o = blueprintContainer.getRepository().convert(o, new ReifiedType(Object.class));
-                    validateClasses(o);
-            	} else if (o instanceof UnwrapperedBeanHolder) {
-                    UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) o;
-                    validateClasses(holder.unwrapperedBean);
-                    o = BeanRecipe.wrap(holder, getClassesForProxying(holder.unwrapperedBean));
-                } else {
-                    validateClasses(o);
+            if (service == null) {
+                LOGGER.debug("Creating service instance");
+                //We can't use the BlueprintRepository because we don't know what interfaces
+                //to use yet! We have to be a bit smarter.
+                ExecutionContext old = ExecutionContext.Holder.setContext(blueprintContainer.getRepository());
+
+                try {
+                    Object o = serviceRecipe.create();
+
+                    if (o instanceof Convertible) {
+                        o = blueprintContainer.getRepository().convert(o, new ReifiedType(Object.class));
+                        validateClasses(o);
+                    } else if (o instanceof UnwrapperedBeanHolder) {
+                        UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) o;
+                        validateClasses(holder.unwrapperedBean);
+                        o = BeanRecipe.wrap(holder, getClassesForProxying(holder.unwrapperedBean));
+                    } else {
+                        validateClasses(o);
+                    }
+                    service = o;
+                } catch (Exception e) {
+                    LOGGER.error("Error retrieving service from " + this, e);
+                    throw new ComponentDefinitionException(e);
+                } finally {
+                    ExecutionContext.Holder.setContext(old);
                 }
-            	service = o;
-			} catch (Exception e) {
-				LOGGER.error("Error retrieving service from " + this, e);
-				throw new ComponentDefinitionException(e);
-			} finally {
-				ExecutionContext.Holder.setContext(old);
-			}
-            
-            LOGGER.debug("Service created: {}", service);
+                LOGGER.debug("Service created: {}", service);
+            }
+
             // When the service is first requested, we need to create listeners and call them
-            if (listeners == null) {
+            if (!initialServiceRegistration && listeners == null) {
                 LOGGER.debug("Creating listeners");
                 if (listenersRecipe != null) {
                     listeners = (List) createRecipe(listenersRecipe);
