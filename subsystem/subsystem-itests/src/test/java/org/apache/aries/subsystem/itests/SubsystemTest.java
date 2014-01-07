@@ -253,11 +253,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected void assertBundleState(int state, String symbolicName, Subsystem subsystem) {
     	Bundle bundle = getBundle(subsystem, symbolicName);
+    	assertNotNull("Bundle not found: " + symbolicName, bundle);
     	assertBundleState(bundle, state);
     }
 	
 	protected void assertBundleState(Bundle bundle, int state) {
-		assertNotNull("Bundle not found: " + bundle, bundle);
 		assertTrue("Wrong state: " + bundle + " [expected " + state + " but was " + bundle.getState() + "]", (bundle.getState() & state) != 0);
 	}
 	

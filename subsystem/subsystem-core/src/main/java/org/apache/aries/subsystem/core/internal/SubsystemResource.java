@@ -408,9 +408,18 @@ public class SubsystemResource implements Resource {
 		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		try {
 			Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
-			for (Resource resource : resolution.keySet())
-				if (!contentHeader.contains(resource))
-					addDependency(resource);
+			for (Map.Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
+				Resource key = entry.getKey();
+				if (!contentHeader.contains(key)) {
+					addDependency(key);
+				}
+				for (Wire wire : entry.getValue()) {
+					Resource provider = wire.getProvider();
+					if (!contentHeader.contains(provider)) {
+						addDependency(provider);
+					}
+				}
+			}
 		}
 		catch (ResolutionException e) {
 			throw new SubsystemException(e);
