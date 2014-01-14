@@ -30,11 +30,11 @@ import org.osgi.service.subsystem.SubsystemConstants;
 public class SubsystemUri {
 	private static final String REGEXP = "([^=]*)=([^&]*)&?";
 	private static final Pattern PATTERN = Pattern.compile(REGEXP);
-
+	
 	private final String symbolicName;
 	private final URL url;
 	private final Version version;
-
+	
 	public SubsystemUri(String location) throws URISyntaxException, MalformedURLException {
 		if (!location.startsWith("subsystem://"))
 			throw new IllegalArgumentException(location);
@@ -48,32 +48,17 @@ public class SubsystemUri {
 		Version version = Version.emptyVersion;
 		while (matcher.find()) {
 			String name = matcher.group(1);
-			if (SubsystemSymbolicNameHeader.NAME.equals(name)) {
-			    int idx = location.indexOf("!/");
-                if (idx > 0) {
-			        symbolicName = location.substring(idx + 2);
-			        int idx2 = symbolicName.indexOf('@');
-			        if (idx2 > 0) {
-			            symbolicName = symbolicName.substring(0, idx2);
-			        }
-			    } else {
-			        symbolicName = new SubsystemSymbolicNameHeader(matcher.group(2)).getValue();
-			    }
-			} else if (SubsystemVersionHeader.NAME.equals(name)) {
-			    String group = matcher.group(2);
-			    if (group.contains("!/") && group.contains("@")) {
-			        int idx = group.lastIndexOf('@');
-			        version = Version.parseVersion(group.substring(idx + 1));
-			    } else {
-			        version = Version.parseVersion(group);
-			    }
-			} else
+			if (SubsystemSymbolicNameHeader.NAME.equals(name))
+				symbolicName = new SubsystemSymbolicNameHeader(matcher.group(2)).getValue();
+			else if (SubsystemVersionHeader.NAME.equals(name))
+				version = Version.parseVersion(matcher.group(2));
+			else
 				throw new IllegalArgumentException("Unsupported subsystem URI parameter: " + name);
 		}
 		this.symbolicName = symbolicName;
 		this.version = version;
 	}
-
+	
 	public SubsystemUri(String symbolicName, Version version, URL url) {
 		// TODO symbolicName should conform to OSGi grammar.
 		if (symbolicName == null || symbolicName.length() == 0)
@@ -83,19 +68,19 @@ public class SubsystemUri {
 		this.version = version;
 		this.url = url;
 	}
-
+	
 	public String getSymbolicName() {
 		return symbolicName;
 	}
-
+	
 	public URL getURL() {
 		return url;
 	}
-
+	
 	public Version getVersion() {
 		return version;
 	}
-
+	
 	public String toString() {
 		StringBuilder builder = new StringBuilder("subsystem://");
 		if (url != null) {
