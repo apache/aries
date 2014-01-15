@@ -20,6 +20,7 @@ import static org.junit.Assert.fail;
 import java.net.MalformedURLException;
 
 import org.junit.Test;
+import org.osgi.framework.Version;
 
 public class LocationTest {
 	@Test
@@ -47,5 +48,27 @@ public class LocationTest {
 			t.printStackTrace();
 			fail("Wrong exception");
 		}
+	}
+
+    @Test
+    public void testSubsystemLocation() throws Exception {
+        // In some cases the following location string is generated
+        String locationString = "subsystem://?Subsystem-SymbolicName=org.osgi.service.subsystem.root&Subsystem-Version=1.2.3";
+
+        Location location = new Location(locationString);
+        assertEquals(locationString, location.getValue());
+        assertEquals("org.osgi.service.subsystem.root", location.getSymbolicName());
+        assertEquals(Version.parseVersion("1.2.3"), location.getVersion());
+    }
+
+    @Test
+	public void testSubsystemLocationInvalid() throws Exception {
+	    // In some cases the following location string is generated
+	    String locationString = "subsystem://?Subsystem-SymbolicName=org.osgi.service.subsystem.root&Subsystem-Version=1.0.0!/my-subsystem@0.5.0";
+
+	    Location location = new Location(locationString);
+	    assertEquals(locationString, location.getValue());
+	    assertNull(location.getSymbolicName());
+	    assertNull(location.getVersion());
 	}
 }

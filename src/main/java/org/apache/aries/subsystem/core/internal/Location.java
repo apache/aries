@@ -55,9 +55,21 @@ public class Location {
       String scheme = locationUri.getScheme();
       if (LocationType.SUBSYSTEM.scheme.equals(scheme)) {
         type = LocationType.SUBSYSTEM;
-        subsystemUri = new SubsystemUri(location);
-        url = subsystemUri.getURL(); // subsystem uris may contain a nested url.
-        uri = (url==null) ? null : url.toURI(); 
+        SubsystemUri ssUri;
+        try {
+          ssUri = new SubsystemUri(location);
+        } catch (Exception ex) {
+          // In some cases the SubsystemUri can't be parsed by the SubsystemUri parser.
+          ssUri = null;
+        }
+        subsystemUri = ssUri;
+        if (subsystemUri != null) {
+          url = subsystemUri.getURL(); // subsystem uris may contain a nested url.
+          uri = (url==null) ? null : url.toURI();
+        } else {
+          url = null;
+          uri = locationUri;
+        }
       } else if (LocationType.IDIRFINDER.scheme.equals(scheme)) {
         type = LocationType.IDIRFINDER;
         subsystemUri = null;
@@ -82,11 +94,11 @@ public class Location {
   }
     
   public String getSymbolicName() {
-    return (type==LocationType.SUBSYSTEM) ? subsystemUri.getSymbolicName() : null;
+    return (subsystemUri!=null) ? subsystemUri.getSymbolicName() : null;
   }
     
   public Version getVersion() {
-    return (type==LocationType.SUBSYSTEM) ? subsystemUri.getVersion() : null;
+    return (subsystemUri!=null) ? subsystemUri.getVersion() : null;
   }
 
   public IDirectory open() throws IOException, URISyntaxException {
