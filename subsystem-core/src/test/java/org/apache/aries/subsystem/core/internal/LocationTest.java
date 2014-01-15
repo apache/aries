@@ -52,7 +52,6 @@ public class LocationTest {
 
     @Test
     public void testSubsystemLocation() throws Exception {
-        // In some cases the following location string is generated
         String locationString = "subsystem://?Subsystem-SymbolicName=org.osgi.service.subsystem.root&Subsystem-Version=1.2.3";
 
         Location location = new Location(locationString);
@@ -62,13 +61,13 @@ public class LocationTest {
     }
 
     @Test
-	public void testSubsystemLocationInvalid() throws Exception {
-	    // In some cases the following location string is generated
-	    String locationString = "subsystem://?Subsystem-SymbolicName=org.osgi.service.subsystem.root&Subsystem-Version=1.0.0!/my-subsystem@0.5.0";
+    public void testSubsystemLocationInvalid() throws Exception {
+        // In some cases the following location string is generated
+        String locationString = "subsystem://?Subsystem-SymbolicName=org.osgi.service.subsystem.root&Subsystem-Version=1.0.0!/my-subsystem@0.5.0";
 
-	    Location location = new Location(locationString);
-	    assertEquals(locationString, location.getValue());
-	    assertNull(location.getSymbolicName());
-	    assertNull(location.getVersion());
-	}
+        Location location = new Location(locationString);
+        assertEquals(locationString, location.getValue());
+        assertNull(location.getSymbolicName());
+        assertNull(location.getVersion());
+    }
 }
