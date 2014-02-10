@@ -81,7 +81,7 @@ public class RequirementTest {
             Assert.assertEquals("2.0", expectedMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
             Assert.assertEquals("testbundle", expectedMF.getMainAttributes().getValue("Bundle-SymbolicName"));
             Assert.assertEquals("Bar Bar", expectedMF.getMainAttributes().getValue("Foo"));
-            Assert.assertEquals("osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple,",
+            Assert.assertEquals("osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple",
                     expectedMF.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY));
             String importPackage = expectedMF.getMainAttributes().getValue("Import-Package");
             Assert.assertTrue(
