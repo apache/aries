@@ -72,6 +72,11 @@ public class Util {
     }
 
     public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
+        if (BaseActivator.activator == null) {
+            // The system is not yet initialized. We can't do anything.
+            return;
+        }
+
         if (!(bundleLoader instanceof BundleReference)) {
             BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return;
