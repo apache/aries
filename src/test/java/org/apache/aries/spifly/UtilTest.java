@@ -102,6 +102,39 @@ public class UtilTest {
         assertSame(providerCL, Thread.currentThread().getContextClassLoader());
     }
 
+    @Test
+    public void testNotInitialized() throws Exception {
+        BaseActivator.activator = null;
+
+        URL url = getClass().getResource("/embedded3.jar");
+        assertNotNull("precondition", url);
+
+        Bundle providerBundle = EasyMock.createMock(Bundle.class);
+        final ClassLoader providerCL = new TestBundleClassLoader(new URL [] {url}, getClass().getClassLoader(), providerBundle);
+        EasyMock.expect(providerBundle.getBundleId()).andReturn(42L).anyTimes();
+        EasyMock.expect(providerBundle.getEntryPaths((String) EasyMock.anyObject())).andReturn(null).anyTimes();
+        Dictionary<String, String> providerHeaders = new Hashtable<String, String>();
+        providerHeaders.put(Constants.BUNDLE_CLASSPATH, ".,embedded3.jar");
+        EasyMock.expect(providerBundle.getHeaders()).andReturn(providerHeaders).anyTimes();
+        EasyMock.expect(providerBundle.getResource("embedded3.jar")).andReturn(url).anyTimes();
+        EasyMock.expect(providerBundle.loadClass((String) EasyMock.anyObject())).andAnswer(new IAnswer<Class<?>>() {
+            @Override
+            public Class<?> answer() throws Throwable {
+                return providerCL.loadClass((String) EasyMock.getCurrentArguments()[0]);
+            }
+        }).anyTimes();
+        EasyMock.replay(providerBundle);
+
+        Bundle clientBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.replay(clientBundle);
+        ClassLoader clientCL = new TestBundleClassLoader(new URL [] {}, getClass().getClassLoader(), clientBundle);
+
+        Thread.currentThread().setContextClassLoader(null);
+        Util.fixContextClassloader(ServiceLoader.class.getName(), "load", MySPI.class, clientCL);
+        assertSame("The system is not yet initialized, so the TCCL should not be set",
+                null, Thread.currentThread().getContextClassLoader());
+    }
+
     private static class TestBundleClassLoader extends URLClassLoader implements BundleReference {
         private final Bundle bundle;
 
