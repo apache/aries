@@ -58,7 +58,7 @@ public class RequirementTest {
             mainAttributes.putValue("Foo", "Bar Bar");
             mainAttributes.putValue("Import-Package", "org.foo.bar");
             mainAttributes.putValue(SpiFlyConstants.REQUIRE_CAPABILITY,
-                    "osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple," +
+                    "osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple, " +
                     "osgi.extender; filter:=\"(osgi.extender=osgi.serviceloader.processor)\"");
 
             JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), mf);
@@ -76,14 +76,16 @@ public class RequirementTest {
             Assert.assertTrue("A processed separate bundle should have been created", expectedFile.exists());
             // Check manifest in generated bundle.
             JarFile transformedJarFile = new JarFile(expectedFile);
-            Manifest expectedMF = transformedJarFile.getManifest();
-            Assert.assertEquals("1.0", expectedMF.getMainAttributes().getValue("Manifest-Version"));
-            Assert.assertEquals("2.0", expectedMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
-            Assert.assertEquals("testbundle", expectedMF.getMainAttributes().getValue("Bundle-SymbolicName"));
-            Assert.assertEquals("Bar Bar", expectedMF.getMainAttributes().getValue("Foo"));
+            Manifest actualMF = transformedJarFile.getManifest();
+            Assert.assertEquals("1.0", actualMF.getMainAttributes().getValue("Manifest-Version"));
+            Assert.assertEquals("2.0", actualMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
+            Assert.assertEquals("testbundle", actualMF.getMainAttributes().getValue("Bundle-SymbolicName"));
+            Assert.assertEquals("Bar Bar", actualMF.getMainAttributes().getValue("Foo"));
             Assert.assertEquals("osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple",
-                    expectedMF.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY));
-            String importPackage = expectedMF.getMainAttributes().getValue("Import-Package");
+                    actualMF.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY));
+            Assert.assertNull("Should not generate this header when processing Require-Capability",
+                    actualMF.getMainAttributes().getValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER));
+            String importPackage = actualMF.getMainAttributes().getValue("Import-Package");
             Assert.assertTrue(
                 "org.foo.bar,org.apache.aries.spifly;version=\"[1.0.0,1.1.0)\"".equals(importPackage) ||
                 "org.apache.aries.spifly;version=\"[1.0.0,1.1.0)\",org.foo.bar".equals(importPackage));

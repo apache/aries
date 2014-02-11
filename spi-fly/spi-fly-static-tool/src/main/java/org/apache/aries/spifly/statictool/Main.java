@@ -97,20 +97,22 @@ public class Main {
 
             if (SpiFlyConstants.SPI_CONSUMER_HEADER.equals(consumerHeaderKey)) {
                 manifest.getMainAttributes().remove(new Attributes.Name(SpiFlyConstants.SPI_CONSUMER_HEADER));
+                manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeaderVal);
             } else {
                 // It's SpiFlyConstants.REQUIRE_CAPABILITY
 
                 // Take out the processor requirement, this probably needs to be improved a little bit
                 String newConsumerHeaderVal = consumerHeaderVal.replaceAll(
-                        "osgi[.]extender;\\s*filter[:][=][\"]?[(]osgi[.]extender[=]osgi[.]serviceloader[.]processor[)][\"]?", "");
+                        "osgi[.]extender;\\s*filter[:][=][\"]?[(]osgi[.]extender[=]osgi[.]serviceloader[.]processor[)][\"]?", "").
+                        trim();
                 if (newConsumerHeaderVal.startsWith(","))
                     newConsumerHeaderVal = newConsumerHeaderVal.substring(1);
 
                 if (newConsumerHeaderVal.endsWith(","))
                     newConsumerHeaderVal = newConsumerHeaderVal.substring(0, newConsumerHeaderVal.length()-1);
                 manifest.getMainAttributes().putValue(SpiFlyConstants.REQUIRE_CAPABILITY, newConsumerHeaderVal);
+                manifest.getMainAttributes().putValue("X-SpiFly-Processed-Require-Capability", consumerHeaderVal);
             }
-            manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeaderVal);
 
             // TODO if new packages needed then...
             extendImportPackage(manifest);
