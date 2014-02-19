@@ -138,5 +138,10 @@ public class Location {
     }
     throw new IOException("cannot find IDirectory corresponding to id " + uri);
   }
+  
+  @Override
+  public String toString() {
+	  return value;
+  }
 
 }
