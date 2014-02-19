@@ -60,8 +60,12 @@ import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RawSubsystemResource implements Resource {
+	private static final Logger logger = LoggerFactory.getLogger(RawSubsystemResource.class);
+	
 	private static final Pattern PATTERN = Pattern.compile("([^@/\\\\]+)(?:@(.+))?.esa");
 	private static final String APPLICATION_IMPORT_SERVICE_HEADER = "Application-ImportService";
 	
@@ -403,6 +407,9 @@ public class RawSubsystemResource implements Resource {
 					}
 					catch (Exception e) {
 						// Ignore if the resource is an invalid bundle or not a bundle at all.
+						if (logger.isDebugEnabled()) {
+							logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource", e);
+						}
 					}
 				}
 			}
@@ -415,6 +422,9 @@ public class RawSubsystemResource implements Resource {
 					}
 					catch (Exception e) {
 						// Ignore
+						if (logger.isDebugEnabled()) {
+							logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource", e);
+						}
 					}
 				}
 			}
