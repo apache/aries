@@ -381,7 +381,7 @@ public class SubsystemResource implements Resource {
 			Resource resource = findContent(requirement);
 			if (resource == null) {
 				if (clause.isMandatory())
-					throw new SubsystemException("Resource does not exist: "+ requirement);
+					throw new SubsystemException("A required content resource could not be found. This means the resource was either missing or not recognized as a supported resource format due to, for example, an invalid bundle manifest or blueprint XML file. Turn on debug logging for more information. The resource was: " + requirement);
 				continue;
 			}
 			addContentResource(resource);
@@ -398,7 +398,7 @@ public class SubsystemResource implements Resource {
 			for (ProvisionResourceHeader.Clause clause : header.getClauses()) {
 				Resource resource = findDependency(clause);
 				if (resource == null)
-					throw new SubsystemException("Resource does not exist: " + clause);
+					throw new SubsystemException("A required dependency could not be found. This means the resource was either missing or not recognized as a supported resource format due to, for example, an invalid bundle manifest or blueprint XML file. Turn on debug logging for more information. The resource was: " + resource);
 				addDependency(resource);
 			}
 		}	
