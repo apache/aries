@@ -21,7 +21,6 @@ package org.apache.aries.plugin.esa;
 
 import org.apache.maven.archiver.PomPropertiesUtil;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -212,7 +211,7 @@ public class EsaMojo
             Set<Artifact> artifacts = null;
             switch (EsaContent.valueOf(archiveContent)) {
             case none:
-                getLog().info("archiveContent=none: subsystem arvhive will not contain any bundles.");                  
+                getLog().info("archiveContent=none: subsystem archive will not contain any bundles.");                  
                 break;
             case content:
                 // only include the direct dependencies in the archive
@@ -227,15 +226,28 @@ public class EsaMojo
             }
               
             if (artifacts != null) {
+				// Explicitly add self to bundle set (used when pom packaging
+				// type != "esa" AND a file is present (no point to add to
+				// zip archive without file)
+            	final Artifact selfArtifact = project.getArtifact();
+				if (!"esa".equals(selfArtifact.getType()) && selfArtifact.getFile() != null) {
+                    getLog().info("Explicitly adding artifact[" + selfArtifact.getGroupId() + ", " + selfArtifact.getId() + ", " +
+                    		selfArtifact.getScope() + "]");
+            		artifacts.add(project.getArtifact());
+            	}
+            	
                 artifacts = selectArtifacts(artifacts);
+                int cnt = 0;
                 for (Artifact artifact : artifacts) {
 
                     if (!artifact.isOptional() /*&& filter.include(artifact)*/) {
                         getLog().info("Copying artifact[" + artifact.getGroupId() + ", " + artifact.getId() + ", " +
                                 artifact.getScope() + "]");
                         zipArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null ? "jar" : artifact.getType()));
+                        cnt++;
                     }
                 }               
+                getLog().info(String.format("Added %s artifacts to subsystem subsystem archive.", cnt));
             }
         }
         catch ( ArchiverException e )
