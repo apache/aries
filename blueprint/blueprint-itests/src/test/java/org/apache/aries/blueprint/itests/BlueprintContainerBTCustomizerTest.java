@@ -99,7 +99,7 @@ public class BlueprintContainerBTCustomizerTest extends BaseBlueprintContainerBT
             paxLogging("DEBUG"),
             Helper.blueprintBundles(),
 //            vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
-            equinox().version("3.5.1")
+            equinox().version("3.5.0")
         );
     }
 
