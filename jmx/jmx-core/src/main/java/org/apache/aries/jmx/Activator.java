@@ -44,9 +44,7 @@ public class Activator implements BundleActivator {
         //starting logger
         logger.open();
         logger.log(LogService.LOG_DEBUG, "Starting JMX OSGi bundle");
-        agent = new JMXAgentImpl(logger);
-        JMXAgentContext agentContext = new JMXAgentContext(context, agent, logger);
-        agent.setAgentContext(agentContext);
+        agent = new JMXAgentImpl(context, logger);
         agent.start();
     }
 
