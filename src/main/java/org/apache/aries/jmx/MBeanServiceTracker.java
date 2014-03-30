@@ -51,19 +51,11 @@ public class MBeanServiceTracker extends ServiceTracker {
      * @see ServiceTracker#addingService(ServiceReference)
      */
     public Object addingService(final ServiceReference reference) {
-        final MBeanServer mbeanServer = (MBeanServer) context.getService(reference);
+        final MBeanServer mbeanServer = (MBeanServer) super.addingService(reference);
         Logger logger = agentContext.getLogger();
         logger.log(LogService.LOG_DEBUG, "Discovered MBean server " + mbeanServer);
-        ExecutorService executor = agentContext.getRegistrationExecutor();
-        executor.submit(new Runnable() {
-
-            public void run() {
-                agentContext.registerMBeans(mbeanServer);
-
-            }
-        });
-
-        return super.addingService(reference);
+        agentContext.registerMBeans(mbeanServer);
+        return mbeanServer;
     }
 
     /**
@@ -73,16 +65,10 @@ public class MBeanServiceTracker extends ServiceTracker {
      * @see ServiceTracker#removedService(ServiceReference, Object)
      */
     public void removedService(final ServiceReference reference, Object service) {
-        final MBeanServer mbeanServer = (MBeanServer) context.getService(reference);
+        final MBeanServer mbeanServer = (MBeanServer) service;
         Logger logger = agentContext.getLogger();
-        logger.log(LogService.LOG_DEBUG, "MBean server " + mbeanServer+ " is unregistered from SeviceRegistry");
-        ExecutorService executor = agentContext.getRegistrationExecutor();
-        executor.submit(new Runnable() {
-
-            public void run() {
-                agentContext.unregisterMBeans(mbeanServer);
-            }
-        });
+        logger.log(LogService.LOG_DEBUG, "MBean server " + mbeanServer+ " is unregistered from ServiceRegistry");
+        agentContext.unregisterMBeans(mbeanServer);
         super.removedService(reference, service);
     }
 

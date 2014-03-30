@@ -23,6 +23,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
@@ -43,6 +44,7 @@ import org.osgi.service.startlevel.StartLevel;
  */
 public class BundleStateMBeanHandler implements MBeanHandler {
 
+    private JMXAgentContext agentContext;
     private Logger logger;
     private String name;
     private StandardMBean mbean;
@@ -52,9 +54,10 @@ public class BundleStateMBeanHandler implements MBeanHandler {
     private ServiceReference startLevelRef;
 
 
-    public BundleStateMBeanHandler(BundleContext bundleContext, Logger logger) {
-        this.bundleContext = bundleContext;
-        this.logger = logger;
+    public BundleStateMBeanHandler(JMXAgentContext agentContext) {
+        this.agentContext = agentContext;
+        this.bundleContext = agentContext.getBundleContext();
+        this.logger = agentContext.getLogger();
         this.name = ObjectNameUtils.createFullObjectName(bundleContext, OBJECTNAME);
     }
 
@@ -72,6 +75,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + BundleStateMBean.class.getName(), e);
         }
+        agentContext.registerMBean(this);
     }
 
     /**
@@ -93,6 +97,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
+        agentContext.unregisterMBean(this);
         if (packageAdminRef != null) {
             try {
                 bundleContext.ungetService(packageAdminRef);

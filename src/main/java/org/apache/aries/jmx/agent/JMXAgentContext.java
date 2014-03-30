@@ -83,15 +83,6 @@ public class JMXAgentContext {
     }
 
     /**
-     * Delegates invocation to JMX agent.
-     * @see org.apache.aries.jmx.agent.JMXAgent#unregisterMBean(String)
-     * @deprecated
-     */
-    public void unregisterMBean(final String name) {
-        agent.unregisterMBean(name);
-    }
-
-    /**
      * Gets bundle context.
      * @return bundle context.
      */
@@ -107,11 +98,4 @@ public class JMXAgentContext {
         return logger;
     }
 
-    /**
-     * Delegates invocation to JMX agent.
-     * @see org.apache.aries.jmx.agent.JMXAgent#getRegistrationExecutor()
-     */
-    public ExecutorService getRegistrationExecutor() {
-        return agent.getRegistrationExecutor();
-    }
 }
