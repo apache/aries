@@ -21,6 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.apache.aries.jmx.Logger;
+import org.apache.aries.jmx.agent.JMXAgent;
+import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -46,7 +48,10 @@ public class ServiceStateMBeanHandlerTest {
         when(mockSystemBundle.getSymbolicName()).thenReturn("the.sytem.bundle");
         when(context.getBundle(0)).thenReturn(mockSystemBundle);
 
-        ServiceStateMBeanHandler handler = new ServiceStateMBeanHandler(context, logger);
+        JMXAgent agent = mock(JMXAgent.class);
+        JMXAgentContext agentContext = new JMXAgentContext(context, agent, logger);
+
+        ServiceStateMBeanHandler handler = new ServiceStateMBeanHandler(agentContext);
         handler.open();
 
         assertNotNull(handler.getMbean());
