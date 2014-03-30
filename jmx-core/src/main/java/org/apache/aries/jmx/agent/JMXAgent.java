@@ -62,34 +62,9 @@ public interface JMXAgent {
     void unregisterMBean(final MBeanHandler mBeanHandler);
 
     /**
-     * Unregisters MBean with all available MBeanServers.
-     * @param name of MBean to be unregistered.
-     * @deprecated
-     */
-    void unregisterMBean(final String name);
-
-    /**
      * Stops JMXAgent.
      * This method stops MBeanServiceTracker and all MBean handlers.
      */
     void stop();
-
-    /**
-     * Gets JMXAgentContext @see {@link JMXAgentContext}.
-     * @return JMXAgentContext instance.
-     */
-    JMXAgentContext getAgentContext();
-
-    /**
-     * Sets JMXAgentContext for this agent.
-     * @param agentContext JMXAgentContext instance created for this agent.
-     */
-    void setAgentContext(JMXAgentContext agentContext);
-
-    /**
-     * Gets registration {@link ExecutorService}.
-     * @return registration executor.
-     */
-    ExecutorService getRegistrationExecutor();
 
 }

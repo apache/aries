@@ -81,12 +81,13 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.3.0</version>
+            <version>4.3.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
+            <version>4.3.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -110,6 +111,11 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>

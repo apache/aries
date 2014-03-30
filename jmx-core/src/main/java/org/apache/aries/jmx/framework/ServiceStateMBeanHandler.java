@@ -23,6 +23,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
@@ -40,6 +41,7 @@ import org.osgi.service.log.LogService;
  */
 public class ServiceStateMBeanHandler implements MBeanHandler {
 
+    private JMXAgentContext agentContext;
     private String name;
     private StandardMBean mbean;
     private ServiceState serviceStateMBean;
@@ -47,9 +49,10 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
     private Logger logger;
 
 
-    public ServiceStateMBeanHandler(BundleContext bundleContext, Logger logger) {
-        this.bundleContext = bundleContext;
-        this.logger = logger;
+    public ServiceStateMBeanHandler(JMXAgentContext agentContext) {
+        this.agentContext = agentContext;
+        this.bundleContext = agentContext.getBundleContext();
+        this.logger = agentContext.getLogger();
         this.name = ObjectNameUtils.createFullObjectName(bundleContext, OBJECTNAME);
     }
 
@@ -63,6 +66,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + ServiceStateMBean.class.getName(), e);
         }
+        agentContext.registerMBean(this);
     }
 
     /**
@@ -83,6 +87,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
+        agentContext.unregisterMBean(this);
        // ensure dispatcher is shutdown even if postDeRegister is not honored
        if (serviceStateMBean != null) {
            serviceStateMBean.shutDownDispatcher();
