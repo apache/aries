@@ -177,7 +177,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
       while(it.hasNext()) {
         EntityManagerFactoryManager mgr = it.next();
         ServiceReference reference = getProviderServiceReference(mgr.getParsedPersistenceUnits());
-        if(ref != null) {
+        if(reference != null) {
           managersToManage.put(mgr, reference);
           it.remove();
         }
