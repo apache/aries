@@ -18,17 +18,16 @@
  */
 package org.apache.aries.transaction.itests;
 
+import static org.apache.aries.itest.ExtraOptions.mavenBundle;
+import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.ops4j.pax.exam.CoreOptions.bootDelegationPackages;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
-import static org.apache.aries.itest.ExtraOptions.*;
-
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 
 @RunWith(JUnit4TestRunner.class)
@@ -54,7 +53,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
                 //mavenBundle("org.ow2.asm", "asm-all"),
                 mavenBundle("org.apache.derby", "derby"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
