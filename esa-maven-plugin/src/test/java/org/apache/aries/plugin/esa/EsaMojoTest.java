@@ -52,8 +52,20 @@ public class EsaMojoTest
     public void testBasicEsa()
         throws Exception
     {
+        testBasicEsa( "target/test-classes/unit/basic-esa-test/plugin-config.xml", null );
+    }
+    
+    public void testBasicEsaPgkType()
+        throws Exception
+    {
+        testBasicEsa( "target/test-classes/unit/basic-esa-test-with-pgk-type/plugin-config.xml", "maven-esa-test-1.0-SNAPSHOT.jar" );
+    }
+      
+    private void testBasicEsa(String path, String extraExpectedFiles)
+        throws Exception
+    {
         File testPom = new File( getBasedir(),
-                                 "target/test-classes/unit/basic-esa-test/plugin-config.xml" );
+                                 path );
 
         EsaMojo mojo = ( EsaMojo ) lookupMojo( "esa", testPom );
 
@@ -83,6 +95,10 @@ public class EsaMojoTest
         expectedFiles.add( "META-INF/" );
         expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
         expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
+        if (extraExpectedFiles != null)
+        {
+            expectedFiles.add( extraExpectedFiles );
+        }
 
         ZipFile esa = new ZipFile( esaFile );
 
