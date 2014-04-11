@@ -19,14 +19,20 @@
 package org.apache.aries.transaction.jdbc.internal;
 
 import org.tranql.connector.AllExceptionsAreFatalSorter;
+import org.tranql.connector.CredentialExtractor;
 import org.tranql.connector.ExceptionSorter;
 import org.tranql.connector.NoExceptionsAreFatalSorter;
 import org.tranql.connector.jdbc.AbstractXADataSourceMCF;
 import org.tranql.connector.jdbc.ConfigurableSQLStateExceptionSorter;
 import org.tranql.connector.jdbc.KnownSQLStateExceptionSorter;
 
+import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ResourceAdapterInternalException;
+import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,6 +123,21 @@ public class XADataSourceMCFFactory {
         public String getPassword() {
             return password;
         }
+
+        protected XAConnection getPhysicalConnection(CredentialExtractor credentialExtractor) throws ResourceException {
+            try {
+                String userName = credentialExtractor.getUserName();
+                String password = credentialExtractor.getPassword();
+                if (userName != null) {
+                    return xaDataSource.getXAConnection(userName, password);
+                } else {
+                    return xaDataSource.getXAConnection();
+                }
+            } catch (SQLException e) {
+                throw new ResourceAdapterInternalException("Unable to obtain physical connection to " + xaDataSource, e);
+            }
+        }
+
     }
 
 }
