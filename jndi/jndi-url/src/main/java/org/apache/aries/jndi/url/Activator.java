@@ -19,6 +19,8 @@
 package org.apache.aries.jndi.url;
 
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.spi.ObjectFactory;
 
@@ -56,7 +58,9 @@ public class Activator implements BundleActivator, SingleServiceListener
               new BlueprintURLContextServiceFactory(), blueprintURlSchemeProps);
         } catch (ClassNotFoundException cnfe) {
           // The blueprint packages aren't available, so do nothing. That's fine.
-          cnfe.printStackTrace();
+          Logger logger = Logger.getLogger("org.apache.aries.jndi");
+          logger.log(Level.INFO, "Blueprint support disabled: " + cnfe);
+          logger.log(Level.FINE, "Blueprint support disabled", cnfe);
         }
     }
 
