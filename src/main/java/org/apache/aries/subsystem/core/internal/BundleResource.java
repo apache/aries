@@ -19,17 +19,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import org.apache.aries.application.modelling.ExportedService;
-import org.apache.aries.application.modelling.ImportedService;
-import org.apache.aries.application.modelling.ModelledResourceManager;
-import org.apache.aries.application.modelling.ModellerException;
-import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.BundleRequiredExecutionEnvironmentHeader;
 import org.apache.aries.subsystem.core.archive.BundleSymbolicNameHeader;
@@ -67,7 +61,7 @@ public class BundleResource implements Resource, RepositoryContent {
 	private final BundleManifest manifest;
 	private final List<Requirement> requirements = new ArrayList<Requirement>();
 	
-	public BundleResource(IFile content) throws ModellerException {
+	public BundleResource(IFile content) {
 		this.content = content;
 		IDirectory dir = content.isDirectory() ? content.convert() : content.convertNested();
 		manifest = computeManifest(dir);
@@ -164,41 +158,6 @@ public class BundleResource implements Resource, RepositoryContent {
 		capabilities.add(new OsgiIdentityCapability(this, manifest));
 	}
 	
-	private void computeOsgiServiceCapabilities(Collection<ExportedService> services) {
-		for (ExportedService service : services)
-			capabilities.add(new BasicCapability.Builder()
-					.namespace(ServiceNamespace.SERVICE_NAMESPACE)
-					.attribute(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, new ArrayList<String>(service.getInterfaces()))
-					.attributes(service.getServiceProperties())
-					.resource(this)
-					.build());
-	}
-	
-	private void computeOsgiServiceRequirements(Collection<ImportedService> services) {
-		for (ImportedService service : services) {
-			StringBuilder builder = new StringBuilder("(&(")
-					.append(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE)
-					.append('=')
-					.append(service.getInterface())
-					.append(')');
-			String filter = service.getFilter();
-			if (filter != null)
-				builder.append(filter);
-			builder.append(')');
-			requirements.add(new BasicRequirement.Builder()
-					.namespace(ServiceNamespace.SERVICE_NAMESPACE)
-					.directive(Namespace.REQUIREMENT_FILTER_DIRECTIVE, builder.toString())
-					.directive(
-							Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE, 
-							service.isOptional() ? Namespace.RESOLUTION_OPTIONAL : Namespace.RESOLUTION_MANDATORY)
-					.directive(
-							Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE, 
-							service.isMultiple() ? Namespace.CARDINALITY_MULTIPLE : Namespace.CARDINALITY_SINGLE)
-					.resource(this)
-					.build());
-		}
-	}
-	
 	private void computeOsgiWiringBundleCapability() {
 		// TODO The osgi.wiring.bundle capability should not be provided for fragments. Nor should the host capability.
 		BundleSymbolicNameHeader bsnh = (BundleSymbolicNameHeader)manifest.getHeader(BundleSymbolicNameHeader.NAME);
@@ -225,19 +184,19 @@ public class BundleResource implements Resource, RepositoryContent {
 			requirements.addAll(iph.toRequirements(this));
 	}
 	
-	private void computeRequirementsAndCapabilities(IDirectory directory) throws ModellerException {
+	private void computeRequirementsAndCapabilities(IDirectory directory) {
 		// Compute all requirements and capabilities other than those related
 		// to services.
 		computeRequirementsOtherThanService();
 		computeCapabilitiesOtherThanService();
 		// Compute service requirements and capabilities if the optional
 		// ModelledResourceManager service is present.
-		ModelledResourceManager manager = getModelledResourceManager();
-		if (manager == null)
+		ServiceModeller modeller = getServiceModeller();
+		if (modeller == null)
 			return;
-		ParsedServiceElements elements = manager.getServiceElements(directory);
-		computeOsgiServiceRequirements(elements.getReferences());
-		computeOsgiServiceCapabilities(elements.getServices());
+        ServiceModeller.ServiceModel model = modeller.computeRequirementsAndCapabilities(this, directory);
+        capabilities.addAll(model.getServiceCapabilities());
+        requirements.addAll(model.getServiceRequirements());
 	}
 	
 	private void computeRequirementsOtherThanService() {
@@ -266,8 +225,8 @@ public class BundleResource implements Resource, RepositoryContent {
 		return name.substring(index + 1);
 	}
 
-	private ModelledResourceManager getModelledResourceManager() {
-		return Activator.getInstance().getModelledResourceManager();
+	private ServiceModeller getServiceModeller() {
+		return Activator.getInstance().getServiceModeller();
 	}
 
 	private void jar(JarOutputStream out, String prefix, IDirectory directory) throws IOException {
