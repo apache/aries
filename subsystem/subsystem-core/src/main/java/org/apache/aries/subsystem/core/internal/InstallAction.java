@@ -19,7 +19,6 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -110,7 +109,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 		
 	}
 	
-	private SubsystemResource createSubsystemResource(String location, IDirectory content, BasicSubsystem parent) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException, ModellerException {
+	private SubsystemResource createSubsystemResource(String location, IDirectory content, BasicSubsystem parent) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException {
 		final SubsystemResource result = new SubsystemResource(location, content, parent);
 		return result;
 	}

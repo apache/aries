@@ -29,7 +29,6 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.Header;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
@@ -113,7 +112,7 @@ public class RawSubsystemResource implements Resource {
 	private final Resource fakeImportServiceResource;
 	private final SubsystemManifest subsystemManifest;
 	
-	public RawSubsystemResource(String location, IDirectory content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
+	public RawSubsystemResource(String location, IDirectory content) throws URISyntaxException, IOException, ResolutionException {
 		id = SubsystemIdentifier.getNextId();
 		this.location = new Location(location);
 		if (content == null)
@@ -389,7 +388,7 @@ public class RawSubsystemResource implements Resource {
 		return new DependencyCalculator(resources).calculateDependencies();
 	}
 	
-	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, ResolutionException, ModellerException {
+	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
 		List<IFile> files = directory.listFiles();
 		if (files.isEmpty())
 			return Collections.emptyList();

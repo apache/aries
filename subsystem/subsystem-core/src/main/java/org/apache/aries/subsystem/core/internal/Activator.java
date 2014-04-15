@@ -13,16 +13,12 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 
-import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.util.filesystem.IDirectoryFinder;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleActivator;
@@ -47,9 +43,13 @@ import org.slf4j.LoggerFactory;
  * activator will create and register the SubsystemAdmin service.
  */
 public class Activator implements BundleActivator, ServiceTrackerCustomizer<Object, Object> {
-	private static final Logger logger = LoggerFactory.getLogger(Activator.class);
-	
-	private static Activator instance;
+    private static final Logger logger = LoggerFactory.getLogger(Activator.class);
+    public static final String MODELLED_RESOURCE_MANAGER = "org.apache.aries.application.modelling.ModelledResourceManager";
+
+    public static final String LOG_ENTRY = "Method entry: {}, args {}";
+    public static final String LOG_EXIT = "Method exit: {}, returning {}";
+
+    private static Activator instance;
 	
 	public static synchronized Activator getInstance() {
 		logger.debug(LOG_ENTRY, "getInstance");
@@ -69,7 +69,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private BundleEventHook bundleEventHook;
 	private volatile BundleContext bundleContext;
 	private volatile Coordinator coordinator;
-	private volatile ModelledResourceManager modelledResourceManager;
+    private volatile Object modelledResourceManager;
+    private volatile ServiceModeller serviceModeller;
 	private volatile SubsystemServiceRegistrar registrar;
 	private volatile RegionDigraph regionDigraph;
 	private volatile Resolver resolver;
@@ -89,11 +90,11 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		return coordinator;
 	}
 	
-	public ModelledResourceManager getModelledResourceManager() {
-		return modelledResourceManager;
-	}
-	
-	public RegionDigraph getRegionDigraph() {
+    public ServiceModeller getServiceModeller() {
+        return serviceModeller;
+    }
+
+    public RegionDigraph getRegionDigraph() {
 		return regionDigraph;
 	}
 	
@@ -176,13 +177,13 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 	}
 	
-	private Object findAlternateServiceFor(Object service) {
+	private <T> T findAlternateServiceFor(Class<T> service) {
 		Object[] services = serviceTracker.getServices();
 		if (services == null)
 			return null;
 		for (Object alternate : services)
-			if (alternate.getClass().equals(service.getClass()))
-					return alternate;
+			if (service.isInstance(alternate))
+					return service.cast(alternate);
 		return null;
 	}
 	
@@ -201,7 +202,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(Repository.class.getName()).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
-				.append(ModelledResourceManager.class.getName()).append(")(")
+				.append(MODELLED_RESOURCE_MANAGER).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(IDirectoryFinder.class.getName()).append("))").toString();
 	}
@@ -242,8 +243,19 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 			regionDigraph = (RegionDigraph) service;
 		else if (service instanceof Resolver && resolver == null)
 			resolver = (Resolver) service;
-		else if (service instanceof ModelledResourceManager && modelledResourceManager == null)
-			modelledResourceManager = (ModelledResourceManager) service;
+		else {
+            try {
+                Class clazz = getClass().getClassLoader().loadClass(MODELLED_RESOURCE_MANAGER);
+                if (clazz.isInstance(service) && serviceModeller == null) {
+                    modelledResourceManager = service;
+                    serviceModeller = new ApplicationServiceModeller(service);
+                }
+            } catch (ClassNotFoundException e) {
+                // ignore
+            } catch (NoClassDefFoundError e) {
+                // ignore
+            }
+        }
 		// Activation is harmless if already active or all required services
 		// have not yet been found.
 		activate();
@@ -260,7 +272,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	public synchronized void removedService(ServiceReference<Object> reference, Object service) {
 		if (service instanceof Coordinator) {
 			if (service.equals(coordinator)) {
-				Coordinator coordinator = (Coordinator)findAlternateServiceFor(this.coordinator);
+				Coordinator coordinator = findAlternateServiceFor(Coordinator.class);
 				if (coordinator == null)
 					deactivate();
 				this.coordinator = coordinator;
@@ -268,7 +280,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 		else if (service instanceof RegionDigraph) {
 			if (service.equals(regionDigraph)) {
-				RegionDigraph regionDigraph = (RegionDigraph)findAlternateServiceFor(this.regionDigraph);
+				RegionDigraph regionDigraph = findAlternateServiceFor(RegionDigraph.class);
 				if (regionDigraph == null)
 					deactivate();
 				this.regionDigraph = regionDigraph;
@@ -276,24 +288,35 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 		else if (service instanceof Resolver) {
 			if (service.equals(resolver)) {
-				Resolver resolver = (Resolver)findAlternateServiceFor(this.resolver);
+				Resolver resolver = findAlternateServiceFor(Resolver.class);
 				if (resolver == null)
 					deactivate();
 				this.resolver = resolver;
 			}
 		}
-		else if (service instanceof ModelledResourceManager) {
-			if (service.equals(modelledResourceManager)) {
-				ModelledResourceManager modelledResourceManager = (ModelledResourceManager)findAlternateServiceFor(this.modelledResourceManager);
-				if (modelledResourceManager == null)
-					deactivate();
-				this.modelledResourceManager = modelledResourceManager;
-			}
-		}
 		else if (service instanceof IDirectoryFinder)
 			finders.remove(service);
-		else
+		else if (service instanceof Repository)
 			repositories.remove(service);
+        else {
+            if (service.equals(modelledResourceManager)) {
+                try {
+                    Class clazz = getClass().getClassLoader().loadClass(MODELLED_RESOURCE_MANAGER);
+                    Object manager = findAlternateServiceFor(clazz);
+                    if (manager == null) {
+                        modelledResourceManager = null;
+                        serviceModeller = null;
+                    } else {
+                        modelledResourceManager = service;
+                        serviceModeller = new ApplicationServiceModeller(service);
+                    }
+                } catch (ClassNotFoundException e) {
+                    // ignore
+                } catch (NoClassDefFoundError e) {
+                    // ignore
+                }
+            }
+        }
 	}
 	
 	/* End ServiceTrackerCustomizer methods */

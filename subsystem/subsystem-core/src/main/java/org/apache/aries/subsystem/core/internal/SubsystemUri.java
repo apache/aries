@@ -80,7 +80,8 @@ public class SubsystemUri {
 	public Version getVersion() {
 		return version;
 	}
-	
+
+    @SuppressWarnings("deprecation")
 	public String toString() {
 		StringBuilder builder = new StringBuilder("subsystem://");
 		if (url != null) {
