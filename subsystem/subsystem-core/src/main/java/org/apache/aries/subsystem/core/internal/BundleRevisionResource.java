@@ -14,27 +14,17 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.aries.application.modelling.ExportedService;
-import org.apache.aries.application.modelling.ImportedService;
-import org.apache.aries.application.modelling.ModelledResourceManager;
-import org.apache.aries.application.modelling.ModellerException;
-import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
-import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.subsystem.SubsystemException;
 
 public class BundleRevisionResource implements Resource {
 	private final BundleRevision revision;
-	
-	private volatile ParsedServiceElements elements;
 	
 	public BundleRevisionResource(BundleRevision revision) {
 		if (revision == null)
@@ -72,77 +62,24 @@ public class BundleRevisionResource implements Resource {
 		return revision.getRequirements(namespace);
 	}
 	
-	private ParsedServiceElements computeParsedServiceElements() {
-		Activator activator = Activator.getInstance();
-		ModelledResourceManager manager = activator.getModelledResourceManager();
-		if (manager == null)
-			return null;
-		BundleDirectory directory = new BundleDirectory(revision.getBundle());
-		try {
-			return manager.getServiceElements(directory);
-		}
-		catch (ModellerException e) {
-			throw new SubsystemException(e);
-		}
-	}
-	
 	private List<Capability> computeServiceCapabilities() {
-		ParsedServiceElements elements = getParsedServiceElements();
-		if (elements == null)
-			return Collections.emptyList();
-		Collection<? extends ExportedService> services = elements.getServices();
-		if (services.isEmpty())
-			return Collections.emptyList();
-		List<Capability> result = new ArrayList<Capability>(services.size());
-		for (ExportedService service : services)
-			result.add(new BasicCapability.Builder()
-					.namespace(ServiceNamespace.SERVICE_NAMESPACE)
-					.attribute(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, new ArrayList<String>(service.getInterfaces()))
-					.attributes(service.getServiceProperties())
-					.resource(this)
-					.build());
-		return result;
+        Activator activator = Activator.getInstance();
+        ServiceModeller modeller = activator.getServiceModeller();
+        if (modeller == null)
+            return null;
+        ServiceModeller.ServiceModel model =
+                modeller.computeRequirementsAndCapabilities(this, new BundleDirectory(revision.getBundle()));
+        return model.getServiceCapabilities();
 	}
 	
 	private List<Requirement> computeServiceRequirements() {
-		ParsedServiceElements elements = getParsedServiceElements();
-		if (elements == null)
-			return Collections.emptyList();
-		Collection<? extends ImportedService> services = elements.getReferences();
-		if (services.isEmpty())
-			return Collections.emptyList();
-		List<Requirement> result = new ArrayList<Requirement>(services.size());
-		for (ImportedService service : services) {
-			StringBuilder builder = new StringBuilder("(&(")
-					.append(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE)
-					.append('=')
-					.append(service.getInterface())
-					.append(')');
-			String filter = service.getFilter();
-			if (filter != null)
-				builder.append('(').append(filter).append(')');
-			builder.append(')');
-			result.add(new BasicRequirement.Builder()
-					.namespace(ServiceNamespace.SERVICE_NAMESPACE)
-					.directive(Namespace.REQUIREMENT_FILTER_DIRECTIVE, builder.toString())
-					.directive(
-							Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE, 
-							service.isOptional() ? Namespace.RESOLUTION_OPTIONAL : Namespace.RESOLUTION_MANDATORY)
-					.resource(this)
-					.build());
-		}
-		return result;
+        Activator activator = Activator.getInstance();
+        ServiceModeller modeller = activator.getServiceModeller();
+        if (modeller == null)
+            return null;
+        ServiceModeller.ServiceModel model =
+                modeller.computeRequirementsAndCapabilities(this, new BundleDirectory(revision.getBundle()));
+        return model.getServiceRequirements();
 	}
 
-	private ParsedServiceElements getParsedServiceElements() {
-		ParsedServiceElements result = elements;
-		if (result == null) {
-			synchronized (this) {
-				result = elements;
-				if (result == null)
-					elements = result = computeParsedServiceElements();
-			}
-		}
-		return result;
-	}
 }

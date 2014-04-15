@@ -73,6 +73,7 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 	}
 	
 	@Test
+    @SuppressWarnings("deprecation")
 	public void testHeaderWithMultipleClauses() {
 		String value = "CDC-1.0/Foundation-1.0,OSGi/Minimum-1.2,J2SE-1.4,JavaSE-1.6,AA/BB-1.7,V1-1.5/V2-1.6,MyEE-badVersion";
 		String filter = "(|" +
