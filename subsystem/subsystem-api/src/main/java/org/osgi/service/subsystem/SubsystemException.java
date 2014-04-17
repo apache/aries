@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2011, 2012). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2011, 2013). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.osgi.service.subsystem;
 /**
  * A Subsystem exception used to indicate a problem.
  * 
- * @version $Id: 06542037c2bdaa7d328a368223b4f71b7a1c3dea $
+ * @author $Id: ad56ae269d24c698380e80d2f91c76d61ee121ff $
  */
 public class SubsystemException extends RuntimeException {
 	private static final long	serialVersionUID	= 1L;

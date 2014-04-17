@@ -75,7 +75,6 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
-import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -206,11 +205,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.coordinator").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
-				mavenBundle("org.osgi",                     "org.osgi.enterprise").version("5.0.0"),
+				mavenBundle("org.osgi",                     "org.osgi.enterprise").versionAsInProject(),
 				mavenBundle("org.easymock",					"easymock").versionAsInProject(),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-				equinox().version("3.8.0.V20120529-1548")
+				equinox().version("3.10.0.V20131210-2136")
 		};
 	}
 	
@@ -596,11 +595,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 		write(symbolicName, bundle);
 	}
 	
-	protected RepositoryContent createBundleRepositoryContent(String file) throws Exception {
+	protected Resource createBundleRepositoryContent(String file) throws Exception {
 		return createBundleRepositoryContent(new File(file));
 	}
 	
-	protected RepositoryContent createBundleRepositoryContent(File file) throws Exception {
+	protected Resource createBundleRepositoryContent(File file) throws Exception {
 		return new BundleResource(FileSystem.getFSRoot(file));
 	}
 	
@@ -1005,6 +1004,10 @@ public abstract class SubsystemTest extends IntegrationTest {
 		} finally {
 			Utils.closeQuietly(fos);
 		}
+	}
+	
+	protected static String normalizeBundleLocation(Bundle bundle) {
+		return normalizeBundleLocation(bundle.getLocation());
 	}
 	
 	protected static String normalizeBundleLocation(String location) {

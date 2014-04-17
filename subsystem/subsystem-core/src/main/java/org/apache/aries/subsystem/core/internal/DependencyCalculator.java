@@ -79,7 +79,7 @@ public class DependencyCalculator {
 		}
 	}
 
-	private static class MissingCapability extends AbstractCapability {
+	static class MissingCapability extends AbstractCapability {
 		private static class Resource implements org.osgi.resource.Resource {
 			public static final Resource INSTANCE = new Resource();
 			

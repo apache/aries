@@ -52,10 +52,9 @@ import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemException;
 
-public class BundleResource implements Resource, RepositoryContent {
+public class BundleResource implements Resource, org.apache.aries.subsystem.core.repository.RepositoryContent {
 	private static BundleManifest computeManifest(IDirectory directory) {
 		return new BundleManifest(org.apache.aries.util.manifest.BundleManifest
 				.fromBundle(directory)
@@ -230,14 +229,24 @@ public class BundleResource implements Resource, RepositoryContent {
 		// to services.
 		computeRequirementsOtherThanService();
 		computeCapabilitiesOtherThanService();
+		// OSGi RFC 201 for R6: The presence of any Require/Provide-Capability
+		// clauses in the osgi.service namespace overrides any service related
+		// requirements or capabilities that might have been found by other
+		// means.
+		boolean computeServiceRequirements = getRequirements(ServiceNamespace.SERVICE_NAMESPACE).isEmpty();
+		boolean computeServiceCapabilities = getCapabilities(ServiceNamespace.SERVICE_NAMESPACE).isEmpty();
+		if (!(computeServiceCapabilities || computeServiceRequirements))
+			return;
 		// Compute service requirements and capabilities if the optional
 		// ModelledResourceManager service is present.
 		ModelledResourceManager manager = getModelledResourceManager();
 		if (manager == null)
 			return;
 		ParsedServiceElements elements = manager.getServiceElements(directory);
-		computeOsgiServiceRequirements(elements.getReferences());
-		computeOsgiServiceCapabilities(elements.getServices());
+		if (computeServiceRequirements)
+			computeOsgiServiceRequirements(elements.getReferences());
+		if (computeServiceCapabilities)
+			computeOsgiServiceCapabilities(elements.getServices());
 	}
 	
 	private void computeRequirementsOtherThanService() {

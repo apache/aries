@@ -21,9 +21,8 @@ import java.util.Map;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.repository.Repository;
 
-public class SystemRepository implements Repository {
+public class SystemRepository implements org.apache.aries.subsystem.core.repository.Repository {
 	private final BasicSubsystem root;
 	
 	public SystemRepository(BasicSubsystem root) {

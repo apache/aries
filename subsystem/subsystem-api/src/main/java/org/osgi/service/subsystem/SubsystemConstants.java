@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2011, 2012). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2011, 2013). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ package org.osgi.service.subsystem;
  * otherwise indicated.
  * 
  * @Immutable
- * @version $Id: 53f0bd1ccdd14681f09adc3c9dde8e0b95154b71 $
+ * @author $Id: 36e2190a16d3bd0e4ed0e34799286284c0986974 $
  */
 public class SubsystemConstants {
 	private SubsystemConstants() {
@@ -91,10 +91,33 @@ public class SubsystemConstants {
 	public static final String	START_ORDER_DIRECTIVE					= "start-order";
 
 	/**
+	 * Manifest header identifying the categories of a subsystem as a
+	 * comma-delimited list.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_CATEGORY						= "Subsystem-Category";
+
+	/**
+	 * Manifest header identifying the contact address where problems with a
+	 * subsystem may be reported; for example, an email address.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_CONTACTADDRESS				= "Subsystem-ContactAddress";
+
+	/**
 	 * Manifest header identifying the list of subsystem contents identified by
 	 * a symbolic name and version.
 	 */
 	public static final String	SUBSYSTEM_CONTENT						= "Subsystem-Content";
+
+	/**
+	 * Manifest header identifying a subsystem's copyright information.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_COPYRIGHT						= "Subsystem-Copyright";
 
 	/**
 	 * Manifest header identifying the human readable description.
@@ -102,9 +125,24 @@ public class SubsystemConstants {
 	public static final String	SUBSYSTEM_DESCRIPTION					= "Subsystem-Description";
 
 	/**
+	 * Manifest header identifying a subsystem's documentation URL, from which
+	 * further information about the subsystem may be obtained.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_DOCURL						= "Subsystem-DocURL";
+
+	/**
 	 * Manifest header identifying services offered for export.
 	 */
 	public static final String	SUBSYSTEM_EXPORTSERVICE					= "Subsystem-ExportService";
+
+	/**
+	 * Manifest header identifying the icon URL for the subsystem.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_ICON							= "Subsystem-Icon";
 
 	/**
 	 * The name of the service property for the
@@ -117,6 +155,29 @@ public class SubsystemConstants {
 	 * Manifest header identifying services required for import.
 	 */
 	public static final String	SUBSYSTEM_IMPORTSERVICE					= "Subsystem-ImportService";
+
+	/**
+	 * Manifest header identifying a subsystem's license.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_LICENSE						= "Subsystem-License";
+
+	/**
+	 * Manifest header identifying the base name of a subsystem's localization
+	 * entries.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_LOCALIZATION					= "Subsystem-Localization";
+
+	/**
+	 * Default value for the {@link #SUBSYSTEM_LOCALIZATION
+	 * Subsystem-Localization} manifest header.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_LOCALIZATION_DEFAULT_BASENAME	= "OSGI-INF/l10n/subsystem";
 
 	/**
 	 * Manifest header identifying the subsystem manifest version. If not
@@ -201,6 +262,13 @@ public class SubsystemConstants {
 	 * {@link #SUBSYSTEM_TYPE_PROPERTY} service property.
 	 */
 	public static final String	SUBSYSTEM_TYPE_FEATURE					= "osgi.subsystem.feature";
+
+	/**
+	 * Manifest header identifying a subsystem's vendor.
+	 * 
+	 * @since 1.1
+	 */
+	public static final String	SUBSYSTEM_VENDOR						= "Subsystem-Vendor";
 
 	/**
 	 * Manifest header value identifying the version of the subsystem. If not

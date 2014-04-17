@@ -34,7 +34,6 @@ import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +83,7 @@ public class ResourceHelper {
 		return getSymbolicNameAttribute(resource) + '@' + getVersionAttribute(resource);
 	}
 	
-	public static Resource getResource(Requirement requirement, Repository repository) {
+	public static Resource getResource(Requirement requirement, org.apache.aries.subsystem.core.repository.Repository repository) {
 		Map<Requirement, Collection<Capability>> map = repository.findProviders(Arrays.asList(requirement));
 		Collection<Capability> capabilities = map.get(requirement);
 		return capabilities == null ? null : capabilities.size() == 0 ? null : capabilities.iterator().next().getResource();
