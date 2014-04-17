@@ -5,5 +5,3 @@ Bundle-SymbolicName: org.apache.aries.subsystem.itests.hello.impl
 Bundle-Version: 1.0.0
 Import-Package: org.apache.aries.subsystem.itests.hello.api, org.osgi.framework
 Bundle-Activator: org.apache.aries.subsystem.itests.hello.impl.Activator
-Provide-Capability: osgi.ee;osgi.ee=JavaSE;version=1.5
-

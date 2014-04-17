@@ -23,9 +23,8 @@ import java.util.Map;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.repository.Repository;
 
-public class ContentRepository implements Repository {
+public class ContentRepository implements org.apache.aries.subsystem.core.repository.Repository {
 	private static void findContent(Requirement requirement, Collection<Capability> capabilities, Collection<Resource> resources) {
 		for (Resource resource : resources)
 			for (Capability capability : resource.getCapabilities(requirement.getNamespace()))

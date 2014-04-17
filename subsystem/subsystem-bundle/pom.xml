@@ -29,7 +29,7 @@
     <artifactId>org.apache.aries.subsystem</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystems Bundle</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <description>This is a standalone bundle to support Aries Subsystems.</description>
 
      <scm>
@@ -43,14 +43,14 @@
             org.apache.aries.subsystem.core.internal.Activator
         </aries.osgi.activator>
     	<aries.osgi.import>
-    		org.osgi.service.repository;version="[1.0,2)",
-    		org.osgi.service.subsystem;version="[1.0,2)",
+    		org.osgi.service.repository;version="[1.0,1.1)",
+    		org.osgi.service.subsystem;version="[1.1,1.2)",
     		*
     	</aries.osgi.import>
         <aries.osgi.export.pkg>
-        	org.apache.aries.subsystem;version="1.0",
+        	org.apache.aries.subsystem;version="1.1",
         	org.osgi.service.repository;version="1.0",
-            org.osgi.service.subsystem;version="1.0"
+            org.osgi.service.subsystem;version="1.1"
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.subsystem.*
@@ -61,12 +61,12 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.8.0.v20120529-1548</version>
+            <version>3.10.0.v20131210-2136</version>
         </dependency>
     </dependencies>
     

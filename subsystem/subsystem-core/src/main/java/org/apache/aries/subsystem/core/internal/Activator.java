@@ -35,7 +35,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
 import org.osgi.service.coordinator.Coordinator;
-import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.Resolver;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -78,7 +77,6 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private volatile Subsystems subsystems;
 	
 	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
-	private final Collection<Repository> repositories = Collections.synchronizedSet(new HashSet<Repository>());
 	private final Collection<IDirectoryFinder> finders = Collections.synchronizedSet(new HashSet<IDirectoryFinder>());
 	
 	public BundleContext getBundleContext() {
@@ -95,10 +93,6 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	
 	public RegionDigraph getRegionDigraph() {
 		return regionDigraph;
-	}
-	
-	public Collection<Repository> getRepositories() {
-		return Collections.unmodifiableCollection(repositories);
 	}
 	
 	public Collection<IDirectoryFinder> getIDirectoryFinders() {
@@ -120,7 +114,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		return result;
 	}
 	
-	public Repository getSystemRepository() {
+	public org.apache.aries.subsystem.core.repository.Repository getSystemRepository() {
 		return new SystemRepository(getSubsystems().getRootSubsystem());
 	}
 
@@ -155,6 +149,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		BasicSubsystem root = subsystems.getRootSubsystem();
 		bundleEventHook.activate();
 		root.start();
+		registerWovenClassListener();
 	}
 	
 	private void deactivate() {
@@ -199,7 +194,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(Resolver.class.getName()).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
-				.append(Repository.class.getName()).append(")(")
+				.append("org.osgi.service.repository.Repository").append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(ModelledResourceManager.class.getName()).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
@@ -225,6 +220,14 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		registrations.add(bundleContext.registerService(EventHook.class, bundleEventHook, properties));
 	}
 	
+	private void registerWovenClassListener() {
+		registrations.add(
+				bundleContext.registerService(
+						org.osgi.framework.hooks.weaving.WovenClassListener.class,
+						new WovenClassListener(bundleContext, subsystems),
+						null));
+	}
+	
 	/* Begin ServiceTrackerCustomizer methods */
 
 	@Override
@@ -233,8 +236,6 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		// Use all of each type of the following services.
 		if (service instanceof IDirectoryFinder)
 			finders.add((IDirectoryFinder) service);
-		else if (service instanceof Repository)
-			repositories.add((Repository) service);
 		// Use only one of each type of the following services.
 		else if (service instanceof Coordinator && coordinator == null)
 			coordinator = (Coordinator) service;
@@ -244,6 +245,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 			resolver = (Resolver) service;
 		else if (service instanceof ModelledResourceManager && modelledResourceManager == null)
 			modelledResourceManager = (ModelledResourceManager) service;
+		else
+			service = null;
 		// Activation is harmless if already active or all required services
 		// have not yet been found.
 		activate();
@@ -292,8 +295,6 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 		else if (service instanceof IDirectoryFinder)
 			finders.remove(service);
-		else
-			repositories.remove(service);
 	}
 	
 	/* End ServiceTrackerCustomizer methods */

@@ -25,29 +25,28 @@ import org.apache.aries.subsystem.core.archive.PreferredProviderRequirement;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.repository.Repository;
 
-public class PreferredProviderRepository implements Repository {
+public class PreferredProviderRepository implements org.apache.aries.subsystem.core.repository.Repository {
 	// @GuardedBy("this")
 	private boolean initialized;
 	
-	private final Repository localRepository;
-	private final Repository repositoryServiceRepository = new RepositoryServiceRepository();
+	private final org.apache.aries.subsystem.core.repository.Repository repositoryServiceRepository = new RepositoryServiceRepository();
 	private final SubsystemResource resource;
 	private final Collection<Resource> resources = new HashSet<Resource>();
-	private final Repository systemRepository = Activator.getInstance().getSystemRepository();
+	private final org.apache.aries.subsystem.core.repository.Repository systemRepository = Activator.getInstance().getSystemRepository();
 	
 	public PreferredProviderRepository(SubsystemResource resource) {
 		this.resource = resource;
-		localRepository = resource.getLocalRepository();
 	}
 
 	@Override
 	public Map<Requirement, Collection<Capability>> findProviders(
 			Collection<? extends Requirement> requirements) {
 		synchronized (this) {
-			if (!initialized)
+			if (!initialized) {
 				initialize();
+				initialized = true;
+			}
 		}
 		Map<Requirement, Collection<Capability>> result = new HashMap<Requirement, Collection<Capability>>();
 		for (Requirement requirement : requirements)
@@ -56,10 +55,10 @@ public class PreferredProviderRepository implements Repository {
 	}
 	
 	private boolean addLocalRepositoryProviders(Requirement requirement) {
-		return addProviders(requirement, localRepository, false);
+		return addProviders(requirement, resource.getLocalRepository(), false);
 	}
 	
-	private boolean addProviders(Requirement requirement, Repository repository, boolean checkValid) {
+	private boolean addProviders(Requirement requirement, org.apache.aries.subsystem.core.repository.Repository repository, boolean checkValid) {
 		Map<Requirement, Collection<Capability>> map = repository.findProviders(Collections.singleton(requirement));
 		Collection<Capability> capabilities = map.get(requirement);
 		if (capabilities == null || capabilities.isEmpty())

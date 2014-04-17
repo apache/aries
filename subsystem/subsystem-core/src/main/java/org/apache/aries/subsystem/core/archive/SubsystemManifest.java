@@ -109,6 +109,7 @@ public class SubsystemManifest {
 	public static final String SUBSYSTEM_DESCRIPTION = SubsystemConstants.SUBSYSTEM_DESCRIPTION;
 	public static final String SUBSYSTEM_EXPORTSERVICE = SubsystemConstants.SUBSYSTEM_EXPORTSERVICE;
 	public static final String SUBSYSTEM_IMPORTSERVICE = SubsystemConstants.SUBSYSTEM_IMPORTSERVICE;
+	public static final String SUBSYTEM_LOCALIZATION = SubsystemConstants.SUBSYSTEM_LOCALIZATION;
 	public static final String SUBSYSTEM_MANIFESTVERSION = SubsystemConstants.SUBSYSTEM_MANIFESTVERSION;
 	public static final String SUBSYSTEM_NAME = SubsystemConstants.SUBSYSTEM_NAME;
 	public static final String SUBSYSTEM_SYMBOLICNAME = SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
@@ -132,6 +133,9 @@ public class SubsystemManifest {
 		header = headers.get(SUBSYSTEM_TYPE);
 		if (header == null)
 			headers.put(SUBSYSTEM_TYPE, SubsystemTypeHeader.DEFAULT);
+		header = headers.get(SUBSYTEM_LOCALIZATION);
+		if (header == null)
+			headers.put(SUBSYTEM_LOCALIZATION, SubsystemLocalizationHeader.DEFAULT);
 	}
 	
 	private final Map<String, Header<?>> headers;
@@ -227,6 +231,10 @@ public class SubsystemManifest {
 	
 	public SubsystemImportServiceHeader getSubsystemImportServiceHeader() {
 		return (SubsystemImportServiceHeader)getHeaders().get(SUBSYSTEM_IMPORTSERVICE);
+	}
+	
+	public SubsystemLocalizationHeader getSubsystemLocalizationHeader() {
+		return (SubsystemLocalizationHeader)getHeaders().get(SUBSYTEM_LOCALIZATION);
 	}
 	
 	public SubsystemSymbolicNameHeader getSubsystemSymbolicNameHeader() {

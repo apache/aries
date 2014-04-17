@@ -21,9 +21,8 @@ import java.util.Map;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.repository.Repository;
 
-public class LocalRepository implements Repository {
+public class LocalRepository implements org.apache.aries.subsystem.core.repository.Repository {
 	private final Collection<Resource> resources;
 	
 	public LocalRepository(Collection<Resource> resources) {
