@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,7 +69,18 @@ public class EsaMojo
     private static final String SUBSYSTEM_CONTENT = "Subsystem-Content";
     private static final String SUBSYSTEM_USEBUNDLE = "Use-Bundle";
     private static final String SUBSYSTEM_TYPE = "Subsystem-Type";
-    
+
+    private static final Set<String> SKIP_INSTRUCTIONS = new HashSet<String>();
+
+    static {
+        SKIP_INSTRUCTIONS.add(SUBSYSTEM_MANIFESTVERSION);
+        SKIP_INSTRUCTIONS.add(SUBSYSTEM_SYMBOLICNAME);
+        SKIP_INSTRUCTIONS.add(SUBSYSTEM_VERSION);
+        SKIP_INSTRUCTIONS.add(SUBSYSTEM_NAME);
+        SKIP_INSTRUCTIONS.add(SUBSYSTEM_DESCRIPTION);
+        SKIP_INSTRUCTIONS.add(SUBSYSTEM_CONTENT);
+    }
+
     /**
      * Coverter for maven pom values to OSGi manifest values (pulled in from the maven-bundle-plugin)
      */
@@ -158,7 +170,7 @@ public class EsaMojo
      *
      * @parameter
      */
-    private Map instructions = new LinkedHashMap();;    
+    private Map instructions = new LinkedHashMap();
     
     /**
      * Adding pom.xml and pom.properties to the archive.
@@ -451,16 +463,15 @@ public class EsaMojo
 
             FileUtils.fileAppend(fileName, "\n");
 
-            // Add any use bundle entry
-            if (instructions.containsKey(SUBSYSTEM_USEBUNDLE)) {
-                FileUtils.fileAppend(fileName, SUBSYSTEM_USEBUNDLE + ": "
-                        + instructions.get(SUBSYSTEM_USEBUNDLE) + "\n");
-            }
-
-            // Add any subsystem type
-            if (instructions.containsKey(SUBSYSTEM_TYPE)) {
-                FileUtils.fileAppend(fileName, SUBSYSTEM_TYPE + ": "
-                        + instructions.get(SUBSYSTEM_TYPE) + "\n");
+            Iterator<Map.Entry<?, ?>> instructionIter = instructions.entrySet().iterator();
+            while(instructionIter.hasNext()) {
+                Map.Entry<?, ?> entry = instructionIter.next();
+                String header = entry.getKey().toString();
+                if (SKIP_INSTRUCTIONS.contains(header)) {
+                    continue;
+                }
+                getLog().debug("Adding header: " + header);
+                FileUtils.fileAppend(fileName, header + ": " + entry.getValue() + "\n");
             }
 
         } catch (Exception e) {
@@ -469,7 +480,7 @@ public class EsaMojo
         }
 
     }
-    
+
     // The maven2OsgiConverter assumes the artifact is a jar so we need our own
     // This uses the same fallback scheme as the converter
     private String getSubsystemSymbolicName(Artifact artifact) {
