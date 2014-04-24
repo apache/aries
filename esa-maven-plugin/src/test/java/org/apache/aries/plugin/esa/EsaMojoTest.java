@@ -498,6 +498,9 @@ public class EsaMojoTest
 
         // Test for the MyHeader header
         testForHeader(esa, "MyHeader", "MyHeader: myValue");
+        
+        // Test for the Subsystem-Name header
+        testForHeader(esa, "Subsystem-Name", "Subsystem-Name: myName");
     }
 
     private int getSizeOfExpectedFiles( Enumeration entries, List expectedFiles )
