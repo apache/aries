@@ -419,9 +419,11 @@ public class EsaMojo
                     + getSubsystemSymbolicName(project.getArtifact()) + "\n");
             FileUtils.fileAppend(fileName, SUBSYSTEM_VERSION + ": "
                     + getSubsystemVersion() + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_NAME + ": " + project.getName() + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_DESCRIPTION + ": "
-                    + project.getDescription() + "\n");
+            FileUtils.fileAppend(fileName, SUBSYSTEM_NAME + ": " + getSubsystemName() + "\n");
+            String description = getSubsystemDescription();
+            if (description != null) {
+                FileUtils.fileAppend(fileName, SUBSYSTEM_DESCRIPTION + ": " + description + "\n");
+            }
 
             // Write the SUBSYSTEM-CONTENT
             // TODO: check that the dependencies are bundles (currently, the converter
@@ -495,6 +497,20 @@ public class EsaMojo
             return instructions.get(SUBSYSTEM_VERSION).toString();
         }
         return aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion());
+    }
+    
+    private String getSubsystemName() {
+        if (instructions.containsKey(SUBSYSTEM_NAME)) {
+            return instructions.get(SUBSYSTEM_NAME).toString();
+        }
+        return project.getName();
+    }
+    
+    private String getSubsystemDescription() {
+        if (instructions.containsKey(SUBSYSTEM_DESCRIPTION)) {
+            return instructions.get(SUBSYSTEM_DESCRIPTION).toString();
+        }
+        return project.getDescription();
     }
     
     private File getBuildDir() {

@@ -29,6 +29,7 @@ under the License.
              <Subsystem-Type>feature</Subsystem-Type>
              <MyHeader>myValue</MyHeader>
              <Foo>bar</Foo>
+             <Subsystem-Name>myName</Subsystem-Name>
           </instructions>
           <addMavenDescriptor>false</addMavenDescriptor>
           <includeEmptyDirs>true</includeEmptyDirs>
