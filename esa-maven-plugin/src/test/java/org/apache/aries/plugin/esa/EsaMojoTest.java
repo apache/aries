@@ -21,16 +21,22 @@ package org.apache.aries.plugin.esa;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.archiver.zip.ZipEntry;
 import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.util.FileUtils;
+
+import aQute.lib.osgi.Analyzer;
 
 /**
  * @author <a href="mailto:aramirez@apache.org">Allan Ramirez</a>
@@ -209,6 +215,22 @@ public class EsaMojoTest
         int missing = getSizeOfExpectedFiles(entries, expectedFiles);
         assertEquals("Missing files: " + expectedFiles,  0, missing);
     }
+
+    private Manifest getSubsystemManifest(ZipFile esa) throws Exception {
+        ZipEntry entry = esa.getEntry("OSGI-INF/SUBSYSTEM.MF");
+
+        InputStream in = esa.getInputStream(entry);
+        Manifest mf = new Manifest(in);
+        
+        return mf;
+    }
+          
+    private Map<String, Map<String, String>> getHeader(Manifest mf, String header) {
+        Attributes attributes = mf.getMainAttributes();
+        String value = attributes.getValue(header);
+        assertNotNull("Header " + header + " not found", value);
+        return Analyzer.parseHeader(value, null);
+    }
     
     private void testForHeader(ZipFile esa, String header, String exactEntry) throws Exception {
         
@@ -229,27 +251,6 @@ public class EsaMojoTest
             }
         }
         assertTrue("Found " + header + ":", foundHeader);
-        
-    }
-    
-    private void testForLine(ZipFile esa, String exactEntry) throws Exception {
-        
-        Enumeration entries = esa.getEntries();
-
-
-        // Test Use-Bundle & Subsytem-Type inclusion
-        ZipEntry entry = esa.getEntry("OSGI-INF/SUBSYSTEM.MF");
-        BufferedReader br = new BufferedReader(new InputStreamReader(esa.getInputStream(entry)));
-
-        Boolean foundEntry=false;
-        
-        String line;
-        while ((!foundEntry) && ((line = br.readLine()) != null)) {
-            if (line.equals(exactEntry)) {
-                foundEntry = true;
-            }
-        }
-        assertTrue("Found " + exactEntry + ":", foundEntry);
         
     }
 
@@ -348,11 +349,22 @@ public class EsaMojoTest
         int missing = getSizeOfExpectedFiles(entries, expectedFiles);
         assertEquals("Missing files: " + expectedFiles,  0, missing);
 
-        // Test for the Use-Bundle header
-        testForHeader(esa, "Subsystem-Content", "Subsystem-Content: maven-artifact02-1.0-SNAPSHOT;version=\"1.0.0.SNAPSHOT\";start-order=\"1\",");
- 
-        // Test for the Subsystem-Content header
-        testForLine(esa, " maven-artifact01-1.0-SNAPSHOT;version=\"1.0.0.SNAPSHOT\";start-order=\"2\"");
+        Manifest mf = getSubsystemManifest(esa);
+        Map<String, Map<String, String>> header = getHeader(mf, "Subsystem-Content");
+        
+        Map<String, String> attributes = null;
+        
+        attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
+        assertNotNull(attributes);
+        assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
+        assertEquals("1", attributes.get("start-order"));
+        assertNull(attributes.get("type"));
+        
+        attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
+        assertNotNull(attributes);
+        assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
+        assertEquals("2", attributes.get("start-order"));
+        assertNull(attributes.get("type"));
     }
 
 
@@ -503,6 +515,73 @@ public class EsaMojoTest
         testForHeader(esa, "Subsystem-Name", "Subsystem-Name: myName");
     }
 
+    public void testSubsystemContentType()
+        throws Exception
+    {
+        File testPom = new File(getBasedir(),
+                "target/test-classes/unit/basic-esa-content-type/plugin-config.xml");
+
+        EsaMojo mojo = (EsaMojo) lookupMojo("esa", testPom);
+
+        assertNotNull(mojo);
+
+        String finalName = (String) getVariableValueFromObject(mojo, "finalName");
+
+        String workDir = (String) getVariableValueFromObject(mojo, "workDirectory");
+
+        String outputDir = (String) getVariableValueFromObject(mojo, "outputDirectory");
+
+        mojo.execute();
+
+        // check the generated esa file
+        File esaFile = new File(outputDir, finalName + ".esa");
+
+        assertTrue(esaFile.exists());
+
+        // expected files/directories inside the esa file
+        List expectedFiles = new ArrayList();
+
+        expectedFiles.add("OSGI-INF/SUBSYSTEM.MF");
+        expectedFiles.add("OSGI-INF/");
+        expectedFiles.add("maven-artifact01-1.0-SNAPSHOT.jar");
+        expectedFiles.add("maven-artifact02-1.0-SNAPSHOT.jar");
+        expectedFiles.add("maven-artifact03-1.1-SNAPSHOT.jar");
+
+        ZipFile esa = new ZipFile(esaFile);
+
+        Enumeration entries = esa.getEntries();
+
+        assertTrue(entries.hasMoreElements());
+
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles, 0, missing);
+
+        Manifest mf = getSubsystemManifest(esa);
+        Map<String, Map<String, String>> header = getHeader(mf, "Subsystem-Content");
+        
+        Map<String, String> attributes = null;
+        
+        attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
+        assertNotNull(attributes);
+        assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
+        assertNull(attributes.get("type"));
+        
+        attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
+        assertNotNull(attributes);
+        assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
+        assertNull(attributes.get("type"));
+        
+        attributes = header.get("maven-artifact03");
+        assertNotNull(attributes);
+        assertEquals("1.1.0.SNAPSHOT.NNN", attributes.get("version"));
+        assertEquals("osgi.fragment", attributes.get("type"));
+        
+        attributes = header.get("maven-artifact04");
+        assertNotNull(attributes);
+        assertEquals("1.2.0.SNAPSHOT", attributes.get("version"));
+        assertEquals("feature", attributes.get("type"));
+    }
+    
     private int getSizeOfExpectedFiles( Enumeration entries, List expectedFiles )
     {
         while( entries.hasMoreElements() )
