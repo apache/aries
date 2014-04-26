@@ -22,7 +22,7 @@ package org.apache.aries.plugin.esa.stubs;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -110,7 +110,7 @@ public class EsaMavenProjectStub
     
     public Set getArtifacts()
     {   
-        Set artifacts = new HashSet();
+        Set artifacts = new LinkedHashSet();
  
         artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
         artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact02", "1.0-SNAPSHOT", false ) );
@@ -134,6 +134,11 @@ public class EsaMavenProjectStub
     
     protected Artifact createArtifact( String groupId, String artifactId, String version, boolean optional )
     {
+        return createArtifact(groupId, artifactId, version, "jar", optional);
+    }
+    
+    protected Artifact createArtifact( String groupId, String artifactId, String version, String type, boolean optional )
+    {
         Artifact artifact = new EsaArtifactStub();
         
         artifact.setGroupId( groupId );
@@ -146,7 +151,7 @@ public class EsaMavenProjectStub
         
         artifact.setFile( new File ( getBasedir() + "/src/test/remote-repo/" + artifact.getGroupId().replace( '.', '/' ) + 
                           "/" + artifact.getArtifactId() + "/" + artifact.getVersion() + 
-                          "/" + artifact.getArtifactId() + "-" + artifact.getVersion() + ".jar" ) ) ;
+                          "/" + artifact.getArtifactId() + "-" + artifact.getVersion() + "." + type ) ) ;
         
         return artifact;
     }

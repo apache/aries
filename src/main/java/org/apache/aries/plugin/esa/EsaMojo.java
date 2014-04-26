@@ -28,9 +28,6 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
-import org.apache.maven.shared.osgi.DefaultMaven2OsgiConverter;
-import org.apache.maven.shared.osgi.Maven2OsgiConverter;
-import aQute.lib.osgi.Analyzer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -58,34 +55,17 @@ public class EsaMojo
 
     private static final String[] DEFAULT_INCLUDES = {"**/**"};
 
-    /*
-     * Subsystem manifest headers
-     */
-    private static final String SUBSYSTEM_MANIFESTVERSION = "Subsystem-ManifestVersion";
-    private static final String SUBSYSTEM_SYMBOLICNAME = "Subsystem-SymbolicName";
-    private static final String SUBSYSTEM_VERSION = "Subsystem-Version";
-    private static final String SUBSYSTEM_NAME = "Subsystem-Name";
-    private static final String SUBSYSTEM_DESCRIPTION = "Subsystem-Description";
-    private static final String SUBSYSTEM_CONTENT = "Subsystem-Content";
-    private static final String SUBSYSTEM_USEBUNDLE = "Use-Bundle";
-    private static final String SUBSYSTEM_TYPE = "Subsystem-Type";
-
     private static final Set<String> SKIP_INSTRUCTIONS = new HashSet<String>();
 
     static {
-        SKIP_INSTRUCTIONS.add(SUBSYSTEM_MANIFESTVERSION);
-        SKIP_INSTRUCTIONS.add(SUBSYSTEM_SYMBOLICNAME);
-        SKIP_INSTRUCTIONS.add(SUBSYSTEM_VERSION);
-        SKIP_INSTRUCTIONS.add(SUBSYSTEM_NAME);
-        SKIP_INSTRUCTIONS.add(SUBSYSTEM_DESCRIPTION);
-        SKIP_INSTRUCTIONS.add(SUBSYSTEM_CONTENT);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_MANIFESTVERSION);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_SYMBOLICNAME);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_VERSION);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_NAME);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_DESCRIPTION);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_CONTENT);
     }
 
-    /**
-     * Coverter for maven pom values to OSGi manifest values (pulled in from the maven-bundle-plugin)
-     */
-    private Maven2OsgiConverter maven2OsgiConverter = new DefaultMaven2OsgiConverter();
-    
     /**
      * Single directory for extra files to include in the esa.
      *
@@ -249,8 +229,7 @@ public class EsaMojo
                 
                 artifacts = selectArtifacts(artifacts);
                 int cnt = 0;
-                for (Artifact artifact : artifacts) {
-
+                for (Artifact artifact : artifacts) {                    
                     if (!artifact.isOptional() /*&& filter.include(artifact)*/) {
                         getLog().info("Copying artifact[" + artifact.getGroupId() + ", " + artifact.getId() + ", " +
                                 artifact.getScope() + "]");
@@ -414,15 +393,15 @@ public class EsaMojo
         try {
             // TODO: add support for dependency version ranges. Need to pick
             // them up from the pom and convert them to OSGi version ranges.
-            FileUtils.fileAppend(fileName, SUBSYSTEM_MANIFESTVERSION + ": " + "1" + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_SYMBOLICNAME + ": "
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_MANIFESTVERSION + ": " + "1" + "\n");
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_SYMBOLICNAME + ": "
                     + getSubsystemSymbolicName(project.getArtifact()) + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_VERSION + ": "
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_VERSION + ": "
                     + getSubsystemVersion() + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_NAME + ": " + getSubsystemName() + "\n");
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_NAME + ": " + getSubsystemName() + "\n");
             String description = getSubsystemDescription();
             if (description != null) {
-                FileUtils.fileAppend(fileName, SUBSYSTEM_DESCRIPTION + ": " + description + "\n");
+                FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_DESCRIPTION + ": " + description + "\n");
             }
 
             // Write the SUBSYSTEM-CONTENT
@@ -435,30 +414,21 @@ public class EsaMojo
             artifacts = selectArtifacts(artifacts);
             Iterator<Artifact> iter = artifacts.iterator();
 
-            FileUtils.fileAppend(fileName, SUBSYSTEM_CONTENT + ": ");
-            int order = 1;
-            if (iter.hasNext()) {
-                Artifact artifact = iter.next(); 
-                String entry = new String(
-                        maven2OsgiConverter.getBundleSymbolicName(artifact)
-                        + ";version=\""
-                        + Analyzer.cleanupVersion(artifact.getVersion())
-                        + "\"");
-                if ("dependencies".equals(startOrder)) {
-                    entry += ";start-order=\"" + order + "\"";                  
-                }
-                FileUtils.fileAppend(fileName, entry);
-            }
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_CONTENT + ": ");
+            int order = 0;
             while (iter.hasNext()) {
                 Artifact artifact = iter.next();
                 order++;
-                String entry = new String(",\n "
-                        + maven2OsgiConverter.getBundleSymbolicName(artifact)
-                        + ";version=\""
-                        + Analyzer.cleanupVersion(artifact.getVersion())
-                        + "\"");
+                ContentInfo info = ContentInfo.create(artifact, getLog());
+                if (info == null) {
+                    continue;
+                }
+                String entry = info.getContentLine();
                 if ("dependencies".equals(startOrder)) {
                     entry += ";start-order=\"" + order + "\"";                  
+                }
+                if (iter.hasNext()) {
+                    entry += ",\n ";
                 }
                 FileUtils.fileAppend(fileName, entry);
             }
@@ -486,29 +456,29 @@ public class EsaMojo
     // The maven2OsgiConverter assumes the artifact is a jar so we need our own
     // This uses the same fallback scheme as the converter
     private String getSubsystemSymbolicName(Artifact artifact) {
-        if (instructions.containsKey(SUBSYSTEM_SYMBOLICNAME)) {
-            return instructions.get(SUBSYSTEM_SYMBOLICNAME).toString();
+        if (instructions.containsKey(Constants.SUBSYSTEM_SYMBOLICNAME)) {
+            return instructions.get(Constants.SUBSYSTEM_SYMBOLICNAME).toString();
         }
         return artifact.getGroupId() + "." + artifact.getArtifactId();
     }
     
     private String getSubsystemVersion() {
-        if (instructions.containsKey(SUBSYSTEM_VERSION)) {
-            return instructions.get(SUBSYSTEM_VERSION).toString();
+        if (instructions.containsKey(Constants.SUBSYSTEM_VERSION)) {
+            return instructions.get(Constants.SUBSYSTEM_VERSION).toString();
         }
         return aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion());
     }
     
     private String getSubsystemName() {
-        if (instructions.containsKey(SUBSYSTEM_NAME)) {
-            return instructions.get(SUBSYSTEM_NAME).toString();
+        if (instructions.containsKey(Constants.SUBSYSTEM_NAME)) {
+            return instructions.get(Constants.SUBSYSTEM_NAME).toString();
         }
         return project.getName();
     }
     
     private String getSubsystemDescription() {
-        if (instructions.containsKey(SUBSYSTEM_DESCRIPTION)) {
-            return instructions.get(SUBSYSTEM_DESCRIPTION).toString();
+        if (instructions.containsKey(Constants.SUBSYSTEM_DESCRIPTION)) {
+            return instructions.get(Constants.SUBSYSTEM_DESCRIPTION).toString();
         }
         return project.getDescription();
     }
