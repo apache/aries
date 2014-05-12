@@ -31,13 +31,13 @@ import org.apache.aries.versioning.check.BundleInfo;
 import org.apache.aries.versioning.check.VersionChange;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResult;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResult;
 
 /**
  * Check semantic version changes between an explicitly named old artifact and the project output artifact.
@@ -199,7 +199,7 @@ extends AbstractMojo
     ArtifactResult result;
     try {
       result = repoSystem.resolveArtifact(repoSession, request);
-    } catch (org.sonatype.aether.resolution.ArtifactResolutionException e) {
+    } catch (org.eclipse.aether.resolution.ArtifactResolutionException e) {
       getLog().warn("could not resolve " + artifact, e);
       return null;
     }
