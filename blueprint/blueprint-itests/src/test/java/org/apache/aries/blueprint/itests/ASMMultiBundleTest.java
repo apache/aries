@@ -18,17 +18,11 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,24 +32,18 @@ import org.apache.aries.blueprint.testbundlea.NSHandlerOne;
 import org.apache.aries.blueprint.testbundlea.NSHandlerTwo;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean.Phase;
-import org.apache.aries.blueprint.testbundlea.multi.InterfaceA;
-import org.apache.aries.blueprint.testbundlea.multi.InterfaceB;
-import org.apache.aries.blueprint.testbundlea.multi.InterfaceC;
-import org.apache.aries.blueprint.testbundlea.multi.InterfaceD;
 import org.apache.aries.blueprint.testbundleb.OtherBean;
 import org.apache.aries.blueprint.testbundleb.TestBean;
-import org.apache.aries.itest.AbstractIntegrationTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-@RunWith(JUnit4TestRunner.class)
-public class ASMMultiBundleTest extends AbstractIntegrationTest {
+@RunWith(PaxExam.class)
+public class ASMMultiBundleTest extends AbstractBlueprintIntegrationTest {
 
     private void checkInterceptorLog(String []expected, List<String> log){
         assertNotNull("interceptor log should not be null",log);
@@ -206,14 +194,13 @@ public class ASMMultiBundleTest extends AbstractIntegrationTest {
         assertEquals("test1value", ((OtherBean)objOther).getTestValue());
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        return testOptions(
-            paxLogging("DEBUG"),
+    @Configuration
+    public Option[] configuration() {
+        return new Option[] {
+            baseOptions(),
             Helper.blueprintBundles(),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart(),
-            equinox().version("3.5.0")
-        );
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart()
+        };
     } 
 }

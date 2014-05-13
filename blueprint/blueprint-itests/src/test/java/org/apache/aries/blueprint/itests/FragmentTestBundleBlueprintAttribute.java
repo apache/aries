@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.streamBundle;
 
 import java.io.InputStream;
@@ -34,7 +33,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 @RunWith(PaxExam.class)
-public class FragmentTest extends AbstractBlueprintIntegrationTest
+public class FragmentTestBundleBlueprintAttribute extends AbstractBlueprintIntegrationTest
 {
     
   @Test
@@ -50,22 +49,23 @@ public class FragmentTest extends AbstractBlueprintIntegrationTest
   public Option[] configuration() {
       InputStream hostJar = TinyBundles.bundle()
               .set(Constants.BUNDLE_MANIFESTVERSION, "2")
+              .set("Bundle-Blueprint", "META-INF/bp/*.xml")
               .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.test.host").build();
       
       InputStream fragmentJar = TinyBundles.bundle()
               .set(Constants.BUNDLE_MANIFESTVERSION, "2")
               .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.test.fragment")
               .set(Constants.FRAGMENT_HOST, "org.apache.aries.test.host")
-              .add("OSGI-INF/blueprint/bp.xml", this.getClass().getResourceAsStream("/bp.xml"))
+              .add("META-INF/bp/bp.xml", this.getClass().getResourceAsStream("/bp.xml"))
               .build();
-      
+
       return new Option[] {
           baseOptions(),
           Helper.blueprintBundles(),
           streamBundle(fragmentJar).noStart(),
           streamBundle(hostJar),
-          mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart()
       };
   }
+
 
 }

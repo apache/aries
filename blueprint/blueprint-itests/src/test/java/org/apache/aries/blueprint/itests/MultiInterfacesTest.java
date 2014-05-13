@@ -18,52 +18,35 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import org.apache.aries.blueprint.testbundlea.multi.InterfaceA;
 import org.apache.aries.blueprint.testbundlea.multi.InterfaceB;
 import org.apache.aries.blueprint.testbundlea.multi.InterfaceC;
 import org.apache.aries.blueprint.testbundlea.multi.InterfaceD;
-import org.apache.aries.itest.AbstractIntegrationTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.Bundle;
+import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-@RunWith(JUnit4TestRunner.class)
-public class MultiInterfacesTest extends AbstractIntegrationTest {
+@RunWith(PaxExam.class)
+public class MultiInterfacesTest extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void testMultiInterfaceReferences() throws Exception {
         //bundlea provides the ns handlers, bean processors, interceptors etc for this test.
-        Bundle bundlea = context().getBundleByName("org.apache.aries.blueprint.testbundlea");
-        assertNotNull(bundlea);
-        bundlea.start();
+        startBundleBlueprint("org.apache.aries.blueprint.testbundlea");
         
         //bundleb makes use of the extensions provided by bundlea
-        Bundle bundleb = context().getBundleByName("org.apache.aries.blueprint.testbundleb");
-        assertNotNull(bundleb);
-        bundleb.start();
-        
         //bundleb's container will hold the beans we need to query to check the function
         //provided by bundlea functioned as expected
-        BlueprintContainer beanContainer = 
-            Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.testbundleb");
-        assertNotNull(beanContainer);
+        BlueprintContainer beanContainer = startBundleBlueprint("org.apache.aries.blueprint.testbundleb");
 
         Object obj1 = beanContainer.getComponentInstance("OnlyA");
         Object obj2 = beanContainer.getComponentInstance("AandB");
@@ -89,14 +72,13 @@ public class MultiInterfacesTest extends AbstractIntegrationTest {
         }        
     }
     
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        return testOptions(
-            paxLogging("DEBUG"),
+    @Configuration
+    public Option[] configuration() {
+        return new Option[] {
+            baseOptions(),
             Helper.blueprintBundles(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart(),
-            equinox().version("3.5.0")
-        );
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb")
+        };
     } 
 }
