@@ -165,11 +165,13 @@ public class RichBundleContext implements BundleContext {
         delegate.removeFrameworkListener(listener);
     }
 
+    @SuppressWarnings("rawtypes")
     public ServiceRegistration registerService(String[] clazzes,
             Object service, Dictionary properties) {
         return delegate.registerService(clazzes, service, properties);
     }
 
+    @SuppressWarnings("rawtypes")
     public ServiceRegistration registerService(String clazz, Object service,
             Dictionary properties) {
         return delegate.registerService(clazz, service, properties);
