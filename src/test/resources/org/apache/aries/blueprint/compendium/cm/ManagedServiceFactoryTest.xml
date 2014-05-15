@@ -15,7 +15,8 @@
         License.
     -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:cm1_3="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0">
 
     <cm:managed-service-factory id="managed-service-factory"
                                 factory-pid="blueprint-sample-managed-service-factory"
@@ -74,7 +75,7 @@
     
     <bean id="fooFactory" class="org.apache.aries.blueprint.compendium.cm.FooFactory" />
 
-    <cm:managed-service-factory id="managed-service-factory5"
+    <cm1_3:managed-service-factory id="managed-service-factory5"
                                 factory-pid="blueprint-sample-managed-service-factory5"
                                 interface="org.apache.aries.blueprint.compendium.cm.Foo">
         <service-properties>
@@ -85,6 +86,6 @@
             <cm:managed-properties persistent-id="" />
             <property name="a" value="1" />
             <property name="b" value="default" />
-        </cm:managed-component>
-    </cm:managed-service-factory>    
+        </cm1_3:managed-component>
+    </cm1_3:managed-service-factory>    
 </blueprint>
