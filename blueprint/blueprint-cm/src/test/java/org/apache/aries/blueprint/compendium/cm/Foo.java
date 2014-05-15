@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.compendium.cm;
 
+import java.util.Map;
 import java.util.Properties;
 
 public class Foo implements FooInterface {
@@ -52,5 +53,23 @@ public class Foo implements FooInterface {
     public void setProps(Properties props) {
         this.props = props;
     }
+    
+  public void update(Map<String, String> pMap) {
+    Properties properties = new Properties();
+
+    String value = pMap.get("a");
+    if (value != null) {
+      a = Integer.parseInt(value);
+      properties.put("a", a);
+    }
+
+    value = pMap.get("b");
+    if (value != null) {
+      b = value;
+      properties.put("b", b);
+    }
+
+    props = properties;
+  }
 }
 
