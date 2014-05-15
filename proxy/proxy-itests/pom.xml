@@ -115,15 +115,14 @@
         <dependency>
             <groupId>org.ops4j.pax.runner</groupId>
             <artifactId>pax-runner-no-jcl</artifactId>
-            <version>1.8.6-SNAPSHOT</version>
+            <version>1.8.5</version>
         </dependency>
 
         <dependency>
             <groupId>org.ops4j.pax.runner</groupId>
             <artifactId>pax-runner-platform-equinox</artifactId>
-            <version>1.8.6-SNAPSHOT</version>
+            <version>1.8.5</version>
         </dependency>
-
 
         <dependency>
             <groupId>junit</groupId>
