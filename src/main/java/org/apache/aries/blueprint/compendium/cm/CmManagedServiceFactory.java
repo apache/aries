@@ -134,7 +134,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
             while (!properties.isEmpty()) {
                 properties.remove(properties.keys().nextElement());
             }
-        } else  {
+        } else {
             if (!cm.getUpdate()) {
                 if (update) {
                     while (!properties.isEmpty()) {
@@ -157,10 +157,10 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
         properties.put(Constants.SERVICE_PID, pid);
     }
 
-    private void updateComponentProperties(Dictionary props) {
+    private void updateComponentProperties(Object bean, Dictionary props) {
         CmManagedProperties cm = findBeanProcessor();
         if (cm != null) {
-            cm.updated(props);
+            cm.updated(bean, props);
         }
     }
 
@@ -200,14 +200,14 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     }
 
     protected Object doCreate(Dictionary properties) throws Exception {
-        updateComponentProperties(copy(properties));
+        updateComponentProperties(null, copy(properties));
         Object component = blueprintContainer.getComponentInstance(managedComponentName);
         getRegistrationProperties(properties, false);
         return component;
     }
 
     protected Object doUpdate(Object service, Dictionary properties) throws Exception {
-        updateComponentProperties(copy(properties));
+        updateComponentProperties(service, copy(properties));
         getRegistrationProperties(properties, true);
         return service;
     }
