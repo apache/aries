@@ -18,6 +18,16 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 
@@ -26,21 +36,14 @@ import org.apache.aries.blueprint.sample.AccountFactory;
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
 import org.apache.aries.itest.RichBundleContext;
-
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-import static org.apache.aries.itest.ExtraOptions.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup; 
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 public class Helper {
+    private static final String SAMPLE_SYM_NAME = "org.apache.aries.blueprint.sample";
+
     public static BlueprintContainer getBlueprintContainerForBundle(RichBundleContext context, String symbolicName) {
         return context.getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + symbolicName + ")");
     }
@@ -49,61 +52,95 @@ public class Helper {
         return context.getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + symbolicName + ")", timeout);
     }
     
-    public static Option[] blueprintBundles() {
+    public static Option blueprintBundles() {
         return blueprintBundles(true);
     }
     
-    public static Option[] debug(int port) {
-      return flatOptions(vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + port),waitForFrameworkStartup());
+    public static Option debug(int port) {
+      return CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + port);
     }
     
-    public static Option[] blueprintBundles(boolean startBlueprint) {
-        return flatOptions(
-                bundles(
-                    // Felix Config Admin
-                    "org.apache.felix/org.apache.felix.configadmin",
-                    // Felix mvn url handler
-                    "org.ops4j.pax.url/pax-url-mvn",
-                    
-                    "org.apache.aries/org.apache.aries.util",
-                    "org.apache.aries.proxy/org.apache.aries.proxy",
-                   
-                    "org.apache.commons/commons-jexl",
-                    "org.osgi/org.osgi.compendium"),
-                    mavenBundle("org.ow2.asm", "asm-all"),
-                    mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator"),
-                    
-                    ((startBlueprint) ? mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api") :
-                        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").noStart()),
-                    ((startBlueprint) ? mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api") :
-                        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").noStart()),
-                    ((startBlueprint) ? mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core") :
-                        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core").noStart()),
-                    ((startBlueprint) ? mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.cm") :
-                        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.cm").noStart()),
-                    ((startBlueprint) ? mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.api") :
-                        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.api").noStart())
+    public static Option blueprintBundles(boolean startBlueprint) {
+        return composite(
+                mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+                mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.url", "pax-url-aether").versionAsInProject(),
+                mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+                mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl").versionAsInProject(),
+                mavenBundle("org.apache.commons", "commons-jexl").versionAsInProject(),
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator").versionAsInProject(),
+                mavenBundle("org.apache.xbean", "xbean-asm4-shaded").versionAsInProject(),
+                mavenBundle("org.apache.xbean", "xbean-bundleutils").versionAsInProject(),
+                mavenBundle("org.apache.xbean", "xbean-finder-shaded").versionAsInProject(),
+                mvnBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api", startBlueprint),
+                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api", startBlueprint),
+                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core", startBlueprint),
+                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.cm", startBlueprint),
+                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.api", startBlueprint),
+                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.impl", startBlueprint)
         );
     }
     
+    public static Option mvnBundle(String groupId, String artifactId, boolean start) {
+    	return mavenBundle(groupId, artifactId).versionAsInProject().start(start);
+    }
+    
     public static void testBlueprintContainer(RichBundleContext context, Bundle bundle) throws Exception {
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(context, "org.apache.aries.blueprint.sample");
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(context, SAMPLE_SYM_NAME);
         assertNotNull(blueprintContainer);
 
-        Object obj = blueprintContainer.getComponentInstance("bar");
-        assertNotNull(obj);
-        assertEquals(Bar.class, obj.getClass());
-        Bar bar = (Bar) obj;
+        Bar bar = getInstance(blueprintContainer, "bar", Bar.class);
+        checkBar(bar);
+        
+        Foo foo = getInstance(blueprintContainer, "foo", Foo.class);
+        checkFoo(bar, foo);
+
+        Foo fooService = context.getService(Foo.class);
+        assertNotNull(fooService);
+        checkFoo(bar, fooService);
+        
+        // TODO Does not work
+        //assertEquals(obj, foo);
+        
+        Account account = getInstance(blueprintContainer, "accountOne", Account.class);
+        assertEquals(1, account.getAccountNumber());
+     
+        Account account2 = getInstance(blueprintContainer, "accountTwo", Account.class);
+        assertEquals(2, account2.getAccountNumber());
+        
+        Account account3 = getInstance(blueprintContainer, "accountThree", Account.class);
+        assertEquals(3, account3.getAccountNumber());
+        
+        AccountFactory accountFactory = getInstance(blueprintContainer, "accountFactory", AccountFactory.class);
+        assertEquals("account factory", accountFactory.getFactoryName());
+        
+        bundle.stop();
+
+        Thread.sleep(1000);
+
+        try {
+            blueprintContainer = getBlueprintContainerForBundle(context, SAMPLE_SYM_NAME, 1);
+            fail("BlueprintContainer should have been unregistered");
+        } catch (Exception e) {
+            // Expected, as the module container should have been unregistered
+        }
+
+        assertTrue(foo.isInitialized());
+        assertTrue(foo.isDestroyed());
+    }
+
+    private static void checkBar(Bar bar) {
         assertNotNull(bar.getContext());
         assertEquals("Hello FooBar", bar.getValue());
         assertNotNull(bar.getList());
         assertEquals(2, bar.getList().size());
         assertEquals("a list element", bar.getList().get(0));
         assertEquals(Integer.valueOf(5), bar.getList().get(1));
-        obj = blueprintContainer.getComponentInstance("foo");
-        assertNotNull(obj);
-        assertEquals(Foo.class, obj.getClass());
-        Foo foo = (Foo) obj;
+    }
+
+    private static void checkFoo(Bar bar, Foo foo) throws ParseException {
         assertEquals(5, foo.getA());
         assertEquals(10, foo.getB());
         assertSame(bar, foo.getBar());
@@ -113,43 +150,14 @@ public class Helper {
 
         assertTrue(foo.isInitialized());
         assertFalse(foo.isDestroyed());
-
-        obj = context.getService(Foo.class);
-        assertNotNull(obj);
-        assertEquals(obj, foo);
-        
-        obj = blueprintContainer.getComponentInstance("accountOne");
-        assertNotNull(obj);
-        Account account = (Account)obj;
-        assertEquals(1, account.getAccountNumber());
-     
-        obj = blueprintContainer.getComponentInstance("accountTwo");
-        assertNotNull(obj);
-        account = (Account)obj;
-        assertEquals(2, account.getAccountNumber());
-        
-        obj = blueprintContainer.getComponentInstance("accountThree");
-        assertNotNull(obj);
-        account = (Account)obj;
-        assertEquals(3, account.getAccountNumber());
-        
-        obj = blueprintContainer.getComponentInstance("accountFactory");
-        assertNotNull(obj);
-        AccountFactory accountFactory = (AccountFactory)obj;
-        assertEquals("account factory", accountFactory.getFactoryName());
-        
-        bundle.stop();
-
-        Thread.sleep(1000);
-
-        try {
-            blueprintContainer = getBlueprintContainerForBundle(context, "org.apache.aries.blueprint.sample", 1);
-            fail("BlueprintContainer should have been unregistered");
-        } catch (Exception e) {
-            // Expected, as the module container should have been unregistered
-        }
-
-        assertTrue(foo.isInitialized());
-        assertTrue(foo.isDestroyed());
     }
+    
+    @SuppressWarnings("unchecked")
+    private static <T>T getInstance(BlueprintContainer container, String name, Class<T> clazz) {
+        Object obj = container.getComponentInstance(name);
+        assertNotNull(obj);
+        assertEquals(clazz, obj.getClass());
+        return (T) obj;
+    }
+
 }

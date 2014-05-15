@@ -22,26 +22,26 @@ import java.util.Currency;
 import java.util.Hashtable;
 
 import org.apache.aries.blueprint.sample.Foo;
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
-@RunWith(JUnit4TestRunner.class)
-public class TestConfigAdmin extends AbstractIntegrationTest {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerMethod.class)
+public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void testStrategyNone() throws Exception {
@@ -118,6 +118,8 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         props.put("a", "5");
         props.put("currency", "PLN");
         cf.update(props);
+        
+        Thread.sleep(2000);
 
         Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
         assertNotNull(bundle);
@@ -146,6 +148,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertEquals("USD", foo.getProps().get("currency"));
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testManagedServiceFactory() throws Exception {
 
@@ -176,15 +179,13 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
 
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
+    @org.ops4j.pax.exam.Configuration
     public static Option[] configuration() {
-        return testOptions(
+        return new Option[] {
+            junitBundles(),
             Helper.blueprintBundles(),
-            paxLogging("DEBUG"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-
-            equinox().version("3.5.0")
-        );
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart()
+        };
     }
 
 }
