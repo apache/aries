@@ -18,7 +18,8 @@
  */
 package org.apache.aries.itest;
 
-import org.ops4j.pax.exam.Inject;
+import javax.inject.Inject;
+
 import org.osgi.framework.BundleContext;
 
 /**
