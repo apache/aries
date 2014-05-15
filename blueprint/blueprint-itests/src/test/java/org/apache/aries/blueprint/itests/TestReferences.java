@@ -23,32 +23,33 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import junit.framework.Assert;
 
 import org.apache.aries.blueprint.sample.BindingListener;
 import org.apache.aries.blueprint.sample.DefaultRunnable;
 import org.apache.aries.blueprint.sample.DestroyTest;
 import org.apache.aries.blueprint.sample.InterfaceA;
-import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 
-import static org.apache.aries.itest.ExtraOptions.*;
+@RunWith(PaxExam.class)
+public class TestReferences extends AbstractBlueprintIntegrationTest {
 
-@RunWith(JUnit4TestRunner.class)
-public class TestReferences extends AbstractIntegrationTest {
-
+    @SuppressWarnings("rawtypes")
     @Test
     public void testUnaryReference() throws Exception {
         BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
@@ -77,7 +78,7 @@ public class TestReferences extends AbstractIntegrationTest {
         assertNotNull(listener.getReference());
         assertEquals("Hello world!", a.hello("world"));
 
-        Hashtable props = new Hashtable();
+        Hashtable<String, Object> props = new Hashtable<String, Object>();
         props.put(Constants.SERVICE_RANKING, Integer.valueOf(1));
         ServiceRegistration reg2 = bundleContext.registerService(InterfaceA.class.getName(), new InterfaceA() {
             public String hello(String msg) {
@@ -119,15 +120,16 @@ public class TestReferences extends AbstractIntegrationTest {
         assertNull(listener.getA());
         assertNull(listener.getReference());
 
-        List refs = (List) blueprintContainer.getComponentInstance("ref-list");
+        List<?> refs = (List<?>) blueprintContainer.getComponentInstance("ref-list");
         assertNotNull(refs);
         assertTrue(refs.isEmpty());
 
-        ServiceRegistration reg1 = bundleContext.registerService(InterfaceA.class.getName(), new InterfaceA() {
+        InterfaceA testService = new InterfaceA() {
             public String hello(String msg) {
                 return "Hello " + msg + "!";
             }
-        }, null);
+        };
+        bundleContext.registerService(InterfaceA.class.getName(), testService, null);
     
         waitForAsynchronousHandling();
         assertNotNull(listener.getA());
@@ -139,6 +141,7 @@ public class TestReferences extends AbstractIntegrationTest {
 
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void testDefaultReference() throws Exception {
       BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
@@ -152,7 +155,12 @@ public class TestReferences extends AbstractIntegrationTest {
       
       assertEquals("The default runnable was not called", 1, defaultRunnable.getCount());
       
-      Runnable mockService = Skeleton.newMock(Runnable.class);
+      final AtomicBoolean called = new AtomicBoolean(false);
+      Runnable mockService = new Runnable() {
+        public void run() {
+            called.set(true);
+        }
+      };
       
       ServiceRegistration reg = bundleContext.registerService(Runnable.class.getName(), mockService, null);
       waitForAsynchronousHandling();
@@ -162,7 +170,7 @@ public class TestReferences extends AbstractIntegrationTest {
       
       assertEquals("The default runnable was called when a service was bound", 1, defaultRunnable.getCount());
       
-      Skeleton.getSkeleton(mockService).assertCalled(new MethodCall(Runnable.class, "run"));
+      Assert.assertTrue("Service should have been called", called.get());
       
       reg.unregister();
       waitForAsynchronousHandling();
@@ -208,15 +216,13 @@ public class TestReferences extends AbstractIntegrationTest {
       
    }
 
-   @org.ops4j.pax.exam.junit.Configuration
+   @Configuration
     public static Option[] configuration() {
-        return testOptions(
-                paxLogging("INFO"),
-                equinox().version("3.5.0"),
+        return new Option[] {
+                CoreOptions.junitBundles(),
                 Helper.blueprintBundles(),
-                
-                bundles("org.apache.aries.blueprint/org.apache.aries.blueprint.sample")
-        );
+                CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample")
+        };
     }
 
 }

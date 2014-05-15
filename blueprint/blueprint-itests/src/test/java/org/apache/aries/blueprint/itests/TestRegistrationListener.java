@@ -21,23 +21,22 @@ package org.apache.aries.blueprint.itests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+
 import java.util.Map;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.sample.Foo;
 import org.apache.aries.blueprint.sample.FooRegistrationListener;
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import static org.apache.aries.itest.ExtraOptions.*;
-
-@RunWith(JUnit4TestRunner.class)
-public class TestRegistrationListener extends AbstractIntegrationTest {
+@RunWith(PaxExam.class)
+public class TestRegistrationListener extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void testWithAutoExportEnabled() throws Exception {
@@ -57,7 +56,7 @@ public class TestRegistrationListener extends AbstractIntegrationTest {
         // have already been called and properties that were passed to this
         // method should have been not null
 
-        Map props = listener.getProperties();
+        Map<?, ?> props = listener.getProperties();
         assertNotNull(props);
 
         assertTrue(props.containsKey(BlueprintConstants.COMPONENT_NAME_PROPERTY));
@@ -68,14 +67,13 @@ public class TestRegistrationListener extends AbstractIntegrationTest {
 
     }
     
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        return testOptions(
-                equinox().version("3.5.0"),
-                paxLogging("INFO"),
+    @Configuration
+    public Option[] configuration() {
+        return new Option[] {
+                baseOptions(),
                 Helper.blueprintBundles(),
-                
-                bundles("org.apache.aries.blueprint/org.apache.aries.blueprint.sample"));
+                CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample")
+        };
     }
 
 }

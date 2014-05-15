@@ -23,26 +23,27 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+
 import java.text.SimpleDateFormat;
 import java.util.Currency;
+
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
-import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.itest.RichBundleContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-import static org.apache.aries.itest.ExtraOptions.*;
 
-@RunWith(JUnit4TestRunner.class)
-public class BlueprintAnnotationTest extends AbstractIntegrationTest {
+@RunWith(PaxExam.class)
+public class BlueprintAnnotationTest extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void test() throws Exception {
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample-annotation");
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample-annotation");
     
         assertNotNull(blueprintContainer);
     
@@ -73,28 +74,18 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
         assertEquals(foo.toString(), obj.toString());
     }
 
-    private BlueprintContainer getBlueprintContainerForBundle(RichBundleContext context, String symbolicName) {
-        return context.getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + symbolicName + ")");
+    private BlueprintContainer getBlueprintContainerForBundle(String symbolicName) throws InvalidSyntaxException, InterruptedException {
+        return context().getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + symbolicName + ")", 15000);
     }    
-    
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        return testOptions(
-            paxLogging("DEBUG"),
 
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-            mavenBundle("asm", "asm-all"),
-            mavenBundle("org.apache.xbean", "xbean-finder"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.api"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.impl"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-annotation"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-fragment"),
-            mavenBundle("org.osgi", "org.osgi.compendium"),
-
-            equinox().version("3.5.0")
-        );
+    @Configuration
+    public Option[] configuration() {
+        return new Option[] {
+            baseOptions(),
+            Helper.blueprintBundles(),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-annotation").versionAsInProject(),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-fragment").versionAsInProject().noStart(),
+        };
     }
 
 }
