@@ -61,4 +61,5 @@ public class NeverTranAttributeTest extends AbstractIntegrationTest {
       finalRows = bean.countRows();
       assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
   }
+  
 }
