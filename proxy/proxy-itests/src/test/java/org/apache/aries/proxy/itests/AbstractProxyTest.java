@@ -322,8 +322,7 @@ public class AbstractProxyTest extends AbstractIntegrationTest {
   protected static Option[] equinox37()
   {
 	  return new Option[] {          
-			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),          
-	          equinox().version("3.7.0.v20110613")
+	          equinox().version("3.7.0")
 	  };
   }
 }

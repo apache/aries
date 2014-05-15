@@ -50,7 +50,7 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
       methodVisitorToReturn = new WovenProxyConcreteMethodAdapter(cv.visitMethod(
           access, name, desc, signature, exceptions), access, name, desc,
           exceptions, methodStaticFieldName, currentMethod, typeBeingWoven,
-          currentMethodDeclaringType);
+          currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
     } else {
       methodVisitorToReturn = cv.visitMethod(access, name, desc, signature, exceptions);
     }
