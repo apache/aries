@@ -113,7 +113,7 @@ public class ManagedServiceFactoryTest extends BaseTest {
         cf.update(props);
 
         BundleContext context = getBundleContext();
-        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(key=foo3)", Helper.DEFAULT_TIMEOUT);
+        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=5))", Helper.DEFAULT_TIMEOUT);
         assertNotNull(sr);
 
         Foo foo = (Foo) context.getService(sr);
@@ -138,4 +138,101 @@ public class ManagedServiceFactoryTest extends BaseTest {
         assertEquals("foo", sr.getProperty("b"));
     }
 
+    @Test
+    public void testCreateServices() throws Exception {
+        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
+        Hashtable<String,String> props = new Hashtable<String,String>();
+        props.put("a", "5");
+        cf.update(props);
+
+        Configuration cf2 = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
+        Hashtable<String,String> props2 = new Hashtable<String,String>();
+        props2.put("a", "7");
+        cf2.update(props2);
+
+        BundleContext context = getBundleContext();
+        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=5))", Helper.DEFAULT_TIMEOUT);
+        assertNotNull(sr);
+
+        ServiceReference sr2 = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=7))", Helper.DEFAULT_TIMEOUT);
+        assertNotNull(sr2);
+
+        Foo foo = (Foo) context.getService(sr);
+        assertNotNull(foo);
+        assertEquals(5, foo.getA());
+        assertEquals("default", foo.getB());
+        assertEquals("5", sr.getProperty("a"));
+        assertNull(sr.getProperty("b"));
+
+        Foo foo2 = (Foo) context.getService(sr2);
+        assertNotNull(foo2);
+        assertEquals(7, foo2.getA());
+        assertEquals("default", foo2.getB());
+        assertEquals("7", sr2.getProperty("a"));
+        assertNull(sr2.getProperty("b"));
+    }
+
+    @Test
+    public void testCreateAndUpdate() throws Exception {
+        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+
+        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
+        Hashtable<String,String> props = new Hashtable<String,String>();
+        props.put("a", "5");
+        cf.update(props);
+
+        Configuration cf2 = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
+        Hashtable<String,String> props2 = new Hashtable<String,String>();
+        props2.put("a", "7");
+        cf2.update(props2);
+
+        BundleContext context = getBundleContext();
+        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=5))", Helper.DEFAULT_TIMEOUT);
+        assertNotNull(sr);
+
+        ServiceReference sr2 = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=7))", Helper.DEFAULT_TIMEOUT);
+        assertNotNull(sr2);
+
+        Foo foo = (Foo) context.getService(sr);
+        assertNotNull(foo);
+        assertEquals(5, foo.getA());
+        assertEquals("default", foo.getB());
+        assertEquals("5", sr.getProperty("a"));
+        assertNull(sr.getProperty("b"));
+
+        Foo foo2 = (Foo) context.getService(sr2);
+        assertNotNull(foo2);
+        assertEquals(7, foo2.getA());
+        assertEquals("default", foo2.getB());
+        assertEquals("7", sr2.getProperty("a"));
+        assertNull(sr2.getProperty("b"));
+
+        props = new Hashtable<String,String>();
+        props.put("a", "5");
+        props.put("b", "foo");
+        cf.update(props);
+
+        props2 = new Hashtable<String,String>();
+        props2.put("a", "7");
+        props2.put("b", "foo2");
+        cf2.update(props2);
+
+        // Update after creation
+        Thread.sleep(500);
+        assertEquals(5, foo.getA());
+        assertEquals("foo", foo.getB());
+
+        // Update of service properties
+        assertEquals("5", sr.getProperty("a"));
+        assertEquals("foo", sr.getProperty("b"));
+
+        // 2a Update after creation
+        assertEquals(7, foo2.getA());
+        assertEquals("foo2", foo2.getB());
+
+        // 2b Update of service properties
+        assertEquals("7", sr2.getProperty("a"));
+        assertEquals("foo2", sr2.getProperty("b"));
+    }
 }
