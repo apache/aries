@@ -30,6 +30,7 @@ public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testMandatory() throws Exception {
+	  String prefix = "MTAT";
       TestBean bean = context().getService(TestBean.class, "(tranAttribute=Mandatory)");
       UserTransaction tran = context().getService(UserTransaction.class);
       
@@ -37,7 +38,7 @@ public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
       int initialRows = bean.countRows();
       
       tran.begin();
-      bean.insertRow("testWithClientTran", 1);
+      bean.insertRow(prefix + "testWithClientTran", 1);
       tran.commit();
       
       int finalRows = bean.countRows();
@@ -47,10 +48,10 @@ public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
       initialRows = bean.countRows();
       
       tran.begin();
-      bean.insertRow("testWithClientTranAndWithAppException", 1);
+      bean.insertRow(prefix + "testWithClientTranAndWithAppException", 1);
       
       try {
-          bean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
+          bean.insertRow(prefix + "testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
       } catch (SQLException e) {
           e.printStackTrace();
       }
@@ -64,10 +65,10 @@ public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
       initialRows = bean.countRows();
       
       tran.begin();
-      bean.insertRow("testWithClientTranAndWithRuntimeException", 1);
+      bean.insertRow(prefix + "testWithClientTranAndWithRuntimeException", 1);
       
       try {
-          bean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
+          bean.insertRow(prefix + "testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
       } catch (RuntimeException e) {
           e.printStackTrace();
       }
@@ -84,7 +85,7 @@ public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
       
       //Test without client transaction - an exception is thrown because a transaction is mandatory
       try {
-          bean.insertRow("testWithoutClientTran", 1);
+          bean.insertRow(prefix + "testWithoutClientTran", 1);
           fail("IllegalStateException not thrown");
       } catch (IllegalStateException e) {
           e.printStackTrace();
