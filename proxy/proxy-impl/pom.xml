@@ -73,7 +73,6 @@
             <artifactId>asm-all</artifactId>
             <optional>true</optional>
             <version>5.0.2</version>
-            <classifier>debug</classifier>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
