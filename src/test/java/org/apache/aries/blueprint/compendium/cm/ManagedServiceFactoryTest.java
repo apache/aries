@@ -298,4 +298,37 @@ public class ManagedServiceFactoryTest extends BaseTest {
     assertEquals("7", sr2.getProperty("a"));
     assertEquals("foo2", sr2.getProperty("b"));
   }
+  
+  @Test
+  public void testFactoryCreation() throws Exception {
+    ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+    Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory5", null);
+    Hashtable<String, String> props = new Hashtable<String, String>();
+    props.put("a", "5");
+    cf.update(props);
+
+    BundleContext context = getBundleContext();
+    ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(key=foo5)", Helper.DEFAULT_TIMEOUT);
+    assertNotNull(sr);
+    Foo foo = (Foo) context.getService(sr);
+    assertNotNull(foo);
+    assertEquals(5, foo.getA());
+    assertEquals("default", foo.getB());
+    assertEquals("5", sr.getProperty("a"));
+    assertNull(sr.getProperty("b"));
+
+    props = new Hashtable<String, String>();
+    props.put("a", "5");
+    props.put("b", "foo");
+    cf.update(props);
+    Thread.sleep(500);
+
+    // No update of bean after creation
+    assertEquals(5, foo.getA());
+    assertEquals("default", foo.getB());
+
+    // Only initial update of service properties
+    assertEquals("5", sr.getProperty("a"));
+    assertNull(sr.getProperty("b"));
+  }
 }

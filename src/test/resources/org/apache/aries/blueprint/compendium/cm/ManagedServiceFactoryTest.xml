@@ -57,7 +57,7 @@
             <property name="b" value="default" />
         </cm:managed-component>
     </cm:managed-service-factory>
-    
+
     <cm:managed-service-factory id="managed-service-factory4"
                                 factory-pid="blueprint-sample-managed-service-factory4"
                                 interface="org.apache.aries.blueprint.compendium.cm.Foo">
@@ -71,5 +71,20 @@
             <property name="b" value="default" />
         </cm:managed-component>
     </cm:managed-service-factory>
+    
+    <bean id="fooFactory" class="org.apache.aries.blueprint.compendium.cm.FooFactory" />
 
+    <cm:managed-service-factory id="managed-service-factory5"
+                                factory-pid="blueprint-sample-managed-service-factory5"
+                                interface="org.apache.aries.blueprint.compendium.cm.Foo">
+        <service-properties>
+            <entry key="key" value="foo5" />
+            <cm:cm-properties persistent-id="" />
+        </service-properties>
+        <cm1_3:managed-component factory-ref="fooFactory" factory-method="create">
+            <cm:managed-properties persistent-id="" />
+            <property name="a" value="1" />
+            <property name="b" value="default" />
+        </cm:managed-component>
+    </cm:managed-service-factory>    
 </blueprint>
