@@ -20,27 +20,17 @@ package org.apache.aries.proxy.itests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.FinalModifierException;
-import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
-@RunWith(JUnit4TestRunner.class)
-public class AbstractBasicProxyTest extends AbstractProxyTest
+public abstract class AbstractBasicProxyTest extends AbstractProxyTest
 {
   /**
    * This test does two things. First of all it checks that we throw a FinalModifierException if we
@@ -50,8 +40,7 @@ public class AbstractBasicProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalClass() throws UnableToProxyException
   {
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Bundle b = bundleContext.getBundle();
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
     classes.add(TestCallable.class);
@@ -71,8 +60,7 @@ public class AbstractBasicProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalMethods() throws UnableToProxyException
   {
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Bundle b = bundleContext.getBundle();
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
     Runnable r = new Runnable() {

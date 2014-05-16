@@ -18,12 +18,8 @@
  */
 package org.apache.aries.proxy.itests;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -31,21 +27,14 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.FinalModifierException;
-import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.apache.aries.proxy.weavinghook.ProxyWeavingController;
 import org.apache.aries.proxy.weavinghook.WeavingHelper;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
-@RunWith(JUnit4TestRunner.class)
-public class AbstractWeavingProxyTest extends AbstractProxyTest
+public abstract class AbstractWeavingProxyTest extends AbstractProxyTest
 {
 
   /**
@@ -56,13 +45,13 @@ public class AbstractWeavingProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalClass() throws Exception
   {
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Bundle b = bundleContext.getBundle();
     TestCallable dispatcher = new TestCallable();
     TestCallable template = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
     classes.add(TestCallable.class);
-    Callable<Object> o = (Callable<Object>) mgr.createDelegatingProxy(b, classes, 
+    @SuppressWarnings("unchecked")
+	Callable<Object> o = (Callable<Object>) mgr.createDelegatingProxy(b, classes, 
         dispatcher, template);
     if(!!!(o instanceof WovenProxy))
       fail("Proxy should be woven!");
@@ -80,8 +69,7 @@ public class AbstractWeavingProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalMethods() throws Exception
   {
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Bundle b = bundleContext.getBundle();
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
     Runnable r = new Runnable() {
@@ -106,8 +94,7 @@ public class AbstractWeavingProxyTest extends AbstractProxyTest
       }
     }, null);
 
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Bundle b = bundleContext.getBundle();
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
     // Don't use anonymous inner class in this test as IBM and Sun load it at a different time
@@ -124,20 +111,17 @@ public class AbstractWeavingProxyTest extends AbstractProxyTest
     @Override
     public String get(int location)
     {
-
       return null;
     }
 
     @Override
     public int size()
     {
-
       return 0;
     }
 
     public final String call() throws Exception
     {
-
       return null;
     }
   }

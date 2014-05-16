@@ -39,11 +39,17 @@
          <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-itests</developerConnection>
          <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-itests</url>
     </scm>
+    
+    <properties>
+        <exam.version>3.4.0</exam.version>
+        <url.version>1.6.0</url.version>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <groupId>org.eclipse</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>3.8.0.v20120529-1548</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -52,27 +58,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.7.0.v20110613</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy</artifactId>
-            <scope>test</scope>
-            <version>1.0.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.api</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
@@ -89,77 +78,69 @@
         <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
           <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>1.0.0</version>
+          <version>2.0.0-SNAPSHOT</version>
           <scope>test</scope>
+        </dependency>
+        
+        <!-- pax exam -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
+            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit</artifactId>
+            <artifactId>pax-exam-container-forked</artifactId>
+            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-default</artifactId>
+            <artifactId>pax-exam-junit4</artifactId>
+            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit-extender-impl</artifactId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.ops4j.pax.runner</groupId>
-            <artifactId>pax-runner-no-jcl</artifactId>
-            <version>1.8.5</version>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+            <version>${url.version}</version>
+            <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.ops4j.pax.runner</groupId>
-            <artifactId>pax-runner-platform-equinox</artifactId>
-            <version>1.8.5</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>0.9.29</version>
+            <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>0.9.29</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.tinybundles</groupId>
+            <artifactId>tinybundles</artifactId>
+            <version>2.0.0</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>1.2.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.compendium</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
-            <version>1.7.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.url</groupId>
-            <artifactId>pax-url-mvn</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
@@ -172,7 +153,6 @@
             <artifactId>javax.inject</artifactId>
             <version>1</version>
             <scope>test</scope>
-            
         </dependency>
     </dependencies>
 
@@ -187,31 +167,21 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <excludes>
-                        <exclude>**/*$*</exclude>
-                        <exclude>**/Abstract*.java</exclude>
-                    </excludes>
-                    <includes>
-                        <include>**/Test*.java</include>
-                        <include>**/*Test.java</include>
-                    </includes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.ops4j.pax.exam</groupId>
-                <artifactId>maven-paxexam-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-config</id>
-                        <goals>
-                            <goal>generate-depends-file</goal>
-                        </goals>
-                        <configuration>
-                            <outputFile>${project.build.directory}/test-classes/META-INF/maven/dependencies.properties</outputFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+            	<groupId>org.apache.servicemix.tooling</groupId>
+            	<artifactId>depends-maven-plugin</artifactId>
+            	<version>1.2</version>
+            	<executions>
+                	<execution>
+	                    <id>generate-depends-file</id>
+    	                <goals>
+        	                <goal>generate-depends-file</goal>
+                    	</goals>
+                	</execution>
+            	</executions>
+        	</plugin>
         </plugins>
     </build>
 
