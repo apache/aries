@@ -18,14 +18,16 @@
  */
 package org.apache.aries.proxy.itests;
 
-import static org.apache.aries.itest.ExtraOptions.flatOptions;
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.lang.reflect.Method;
 import java.util.AbstractList;
@@ -34,16 +36,25 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import javax.inject.Inject;
+
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
-public class AbstractProxyTest extends AbstractIntegrationTest {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public abstract class AbstractProxyTest extends AbstractIntegrationTest {
+  @Inject
+  ProxyManager mgr;
 
   public final static class TestCallable implements Callable<Object> {
     private Object list = new ArrayList<Object>();
@@ -141,11 +152,9 @@ public class AbstractProxyTest extends AbstractIntegrationTest {
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void testEquals() throws Exception {
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Bundle b = bundleContext.getBundle();
     
     TestCallable c = new TestCallable();
     c.setReturn(new TestDelegate("One"));
@@ -165,8 +174,7 @@ public class AbstractProxyTest extends AbstractIntegrationTest {
 
   @Test
   public void testDelegation() throws Exception {
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Bundle b = bundleContext.getBundle();
     
     TestCallable c = new TestCallable();
     
@@ -185,8 +193,7 @@ public class AbstractProxyTest extends AbstractIntegrationTest {
   
   @Test
   public void testInterception() throws Exception {
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
+    Bundle b = bundleContext.getBundle();
     
     TestDelegate td = new TestDelegate("Hello");
     
@@ -226,9 +233,7 @@ public class AbstractProxyTest extends AbstractIntegrationTest {
   
   @Test
   public void testDelegationAndInterception() throws Exception {
-    ProxyManager mgr = context().getService(ProxyManager.class);
-    Bundle b = FrameworkUtil.getBundle(this.getClass());
-    
+    Bundle b = bundleContext.getBundle();
     
     TestCallable c = new TestCallable();
     
@@ -282,47 +287,38 @@ public class AbstractProxyTest extends AbstractIntegrationTest {
     assertEquals(ex, listener.postInvokeExceptionalReturn);
   }
   
-  protected static Option[] generalOptions() {
-	  return  flatOptions(paxLogging("DEBUG"),
-
-	          // Bundles
-	          mavenBundle("org.apache.aries", "org.apache.aries.util"),
-	          mavenBundle("org.ow2.asm", "asm-all"),
-	          // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
-	          // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-	          mavenBundle("org.osgi", "org.osgi.compendium")
+  protected Option generalOptions() {
+	  String localRepo = System.getProperty("maven.repo.local");
+      if (localRepo == null) {
+          localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+      }
+	  return composite(
+			  junitBundles(),
+              systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+              when(localRepo != null).useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+	          mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+	          mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+	          mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject()
 	         /* vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 	          waitForFrameworkStartup(),*/
 	  );
-
   }
 
-  protected static Option[] proxyBundles()
+  protected Option[] proxyBundles()
   {
-	  return new Option[] {          
-	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
-	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
-	  };
+	  return options(
+			  generalOptions(),
+	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
+	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl").versionAsInProject()
+	  );
   }
 
-  protected static Option[] proxyUberBundle()
+  protected Option[] proxyUberBundle()
   {
-	  return new Option[] {          
-	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-	  };
+	  return options(
+			  generalOptions(),
+			  mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").version("1.0.2-SNAPSHOT")
+	  );
   }
 
-  protected static Option[] equinox35()
-  {
-	  return new Option[] {          
-	          equinox().version("3.5.0")
-	  };
-  }
-  
-  protected static Option[] equinox37()
-  {
-	  return new Option[] {          
-	          equinox().version("3.7.0")
-	  };
-  }
 }
