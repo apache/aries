@@ -18,31 +18,8 @@
  */
 package org.apache.aries.proxy.itests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
-import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.proxy.FinalModifierException;
-import org.apache.aries.proxy.ProxyManager;
-import org.apache.aries.proxy.UnableToProxyException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.CoreOptions;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.container.def.options.CleanCachesOption;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 /**
  * This test runs the basic proxy tests for the proxy uber bundle. 
@@ -51,26 +28,12 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
  * uber-bundle, which means we test nothing.
  *
  */
-@RunWith(JUnit4TestRunner.class)
 public class BasicProxyUberBundleTest extends AbstractBasicProxyTest
 {
 
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration35UberBundle() {
-      return testOptions(
-          generalOptions(),
-          proxyUberBundle(),
-          equinox35()
-      );
-  }
-  
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration37UberBundle() {
-      return testOptions(
-          generalOptions(), 
-          proxyUberBundle(),
-          equinox37()
-      );
+  @Configuration
+  public Option[] configuration() {
+	  return proxyUberBundle();
   }
 
 }
