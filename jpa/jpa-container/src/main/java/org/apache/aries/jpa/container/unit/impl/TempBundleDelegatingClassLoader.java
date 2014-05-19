@@ -125,8 +125,9 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
 	
 	Bundle contextToSet = currentContext;
 	
-	BundleWiring wiring = currentContext.adapt(BundleWiring.class);
-	for(BundleWire wire : wiring.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE)) {
+	BundleWiring wiring = (BundleWiring) currentContext.adapt(BundleWiring.class);
+	for (Object o : wiring.getRequiredWires(BundleRevision.PACKAGE_NAMESPACE)) {
+      BundleWire wire = (BundleWire) o;
 	  if(wire.getCapability().getAttributes().get(BundleRevision.PACKAGE_NAMESPACE).equals(packageName)) {
 	    contextToSet = wire.getProviderWiring().getBundle();
 	    break;

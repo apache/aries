@@ -90,7 +90,7 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
     }
   }
   
-  public void addTransformer(Bundle pBundle, ClassTransformer transformer, ServiceReference<?> provider) {
+  public void addTransformer(Bundle pBundle, ClassTransformer transformer, ServiceReference provider) {
     
     //Optimised for single adds
     

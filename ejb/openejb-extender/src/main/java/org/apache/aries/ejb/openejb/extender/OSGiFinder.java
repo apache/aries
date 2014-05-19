@@ -34,9 +34,8 @@ public class OSGiFinder extends AbstractFinder {
   public OSGiFinder(Bundle bundle) {
     b = bundle;
     
-    for(String resource : bundle.adapt(BundleWiring.class).
-        listResources("/", "*.class", BundleWiring.LISTRESOURCES_RECURSE)) {
-      
+    for(Object r : ((BundleWiring) bundle.adapt(BundleWiring.class)).listResources("/", "*.class", BundleWiring.LISTRESOURCES_RECURSE)) {
+        String resource = (String) r;
       try {
         readClassDef(getResource(resource).openStream());
       } catch (IOException e) {
