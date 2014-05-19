@@ -59,8 +59,8 @@ public class RunningApplication implements ServiceTrackerCustomizer {
   
   private final AppContext ctx;
   private final Bundle bundle;
-  private final Collection<ServiceRegistration<?>> regs = 
-    new ArrayList<ServiceRegistration<?>>();
+  private final Collection<ServiceRegistration> regs =
+    new ArrayList<ServiceRegistration>();
   
   private ServiceTracker tracker;
   
@@ -126,7 +126,7 @@ public class RunningApplication implements ServiceTrackerCustomizer {
   
   public void destroy() {
     tracker.close();
-    for(ServiceRegistration<?> reg : regs) {
+    for(ServiceRegistration reg : regs) {
       AriesFrameworkUtil.safeUnregisterService(reg);
     }
   }

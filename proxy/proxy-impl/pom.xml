@@ -20,9 +20,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
          <groupId>org.apache.aries</groupId>
-         <artifactId>java5-parent</artifactId>
-         <version>1.0.0</version>
-         <relativePath />
+         <artifactId>parent</artifactId>
+         <version>1.0.1-SNAPSHOT</version>
+         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.proxy</groupId>
@@ -147,47 +147,6 @@
          </executions>
        </plugin>
 
-       <plugin>
-	       <groupId>org.apache.maven.plugins</groupId>
-	       <artifactId>maven-enforcer-plugin</artifactId>
-	       <executions>
-	           <execution>
-	               <phase>validate</phase>
-	               <goals>
-	                   <goal>enforce</goal>
-	               </goals>
-	               <configuration>
-	                   <rules>
-	                       <requireJavaVersion>
-	                           <version>[1.5,)</version>
-	                       </requireJavaVersion>
-	                   </rules>
-	               </configuration>
-	           </execution>
-	           <execution>
-	             <id>check-java15</id>
-	             <phase>test</phase>
-	             <goals>
-	               <goal>enforce</goal>
-	             </goals>
-	             <configuration>
-	               <rules>
-	                 <checkSignatureRule implementation="org.codehaus.mojo.animal_sniffer.enforcer.CheckSignatureRule">
-	                   <ignoreDependencies>true</ignoreDependencies>
-	                   <ignores>
-	    			  <ignore>sun.reflect.*</ignore>
-	  				</ignores>
-	                   <signature>
-	                     <groupId>org.codehaus.mojo.signature</groupId>
-	                     <artifactId>java15</artifactId>
-	                     <version>1.0</version>
-	                   </signature>
-	                 </checkSignatureRule>
-	               </rules>
-	             </configuration>
-	           </execution>
-	       </executions>	       
-	   </plugin>
 	   <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>

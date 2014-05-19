@@ -116,6 +116,10 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
     //No op
   }
 
+  public java.util.logging.Logger getParentLogger() {
+    return null;
+  }
+
   @Override
   public void serviceLost() {
     ds.set(null);

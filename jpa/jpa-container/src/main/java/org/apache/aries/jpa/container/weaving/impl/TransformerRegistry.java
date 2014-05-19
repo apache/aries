@@ -36,7 +36,7 @@ public interface TransformerRegistry {
    * @param transformer  The transformer to weave with
    * @param provider The provider to provide packages from
    */
-  public void addTransformer(Bundle pBundle, ClassTransformer transformer, ServiceReference<?> provider);
+  public void addTransformer(Bundle pBundle, ClassTransformer transformer, ServiceReference provider);
   
   
   /**

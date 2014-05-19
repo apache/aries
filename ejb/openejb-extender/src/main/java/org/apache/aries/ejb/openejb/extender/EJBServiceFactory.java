@@ -27,7 +27,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
-public class EJBServiceFactory implements ServiceFactory<Object>{
+public class EJBServiceFactory implements ServiceFactory {
 
   private static enum Type {LOCAL, LOCAL_NO_IFACE, REMOTE;}
   
@@ -59,7 +59,7 @@ public class EJBServiceFactory implements ServiceFactory<Object>{
   }
 
   public Object getService(Bundle bundle,
-      ServiceRegistration<Object> registration) {
+      ServiceRegistration registration) {
     switch(type) {
       case LOCAL :
         return localHome.create();
@@ -79,6 +79,6 @@ public class EJBServiceFactory implements ServiceFactory<Object>{
   }
 
   public void ungetService(Bundle bundle,
-      ServiceRegistration<Object> registration, Object service) {
+      ServiceRegistration registration, Object service) {
   }
 }

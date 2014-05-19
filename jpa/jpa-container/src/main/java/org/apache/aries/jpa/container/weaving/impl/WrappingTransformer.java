@@ -38,7 +38,7 @@ class WrappingTransformer implements ClassTransformer {
   private final Collection<String> packageImportsToAdd = new HashSet<String>();
   
   public WrappingTransformer(ClassTransformer delegate,
-      ServiceReference<?> persistenceProvider) {
+      ServiceReference persistenceProvider) {
 
     if(delegate == null) 
       throw new NullPointerException(NLS.MESSAGES.getMessage("jpa.weaving.null.transformer"));
@@ -61,8 +61,9 @@ class WrappingTransformer implements ClassTransformer {
       provider.getSymbolicName() + ";" + Constants.BUNDLE_VERSION_ATTRIBUTE 
       + "=" + provider.getVersion();
 
-      BundleRevision br = provider.adapt(BundleWiring.class).getRevision();
-      for(BundleCapability bc : br.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE)) {
+      BundleRevision br = ((BundleWiring) provider.adapt(BundleWiring.class)).getRevision();
+      for(Object o : br.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE)) {
+        BundleCapability bc = (BundleCapability) o;
         packageImportsToAdd.add(bc.getAttributes().get(BundleRevision.PACKAGE_NAMESPACE) + suffix);
       }
     }

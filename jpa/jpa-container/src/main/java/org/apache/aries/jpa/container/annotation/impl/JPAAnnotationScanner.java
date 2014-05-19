@@ -33,7 +33,7 @@ class JPAAnnotationScanner implements AnnotationScanner {
 
   
   public Collection<String> findJPAAnnotatedClasses(Bundle b) {
-    BundleWiring bw = b.adapt(BundleWiring.class);
+    BundleWiring bw = (BundleWiring) b.adapt(BundleWiring.class);
     Collection<String> resources = bw.listResources("/", "*.class", 
         BundleWiring.LISTRESOURCES_LOCAL | BundleWiring.LISTRESOURCES_RECURSE);
     
