@@ -22,14 +22,14 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries.versioning</groupId>
     <artifactId>org.apache.aries.versioning</artifactId>
     <packaging>pom</packaging>
     <name>Apache Aries Semantic Versioning Checker</name>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.0</version>
     <description>
         OSGi Semantic Versioning Checker
     </description>
@@ -40,4 +40,10 @@
         <module>versioning-plugin</module>
   </modules>
 
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.versioning-0.2.0/org.apache.aries.versioning</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.versioning-0.2.0/org.apache.aries.versioning</developerConnection>
+    <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.versioning-0.2.0/org.apache.aries.versioning</url>
+  </scm>
 </project>
