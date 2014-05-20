@@ -22,15 +22,10 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContextType;
-import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
@@ -138,6 +133,26 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
     if(activeCount.get() == 0) {
       tidyUp.unitQuiesced(unitName);
     }
+  }
+
+  public <T> void addNamedEntityGraph(String arg0, EntityGraph<T> arg1) {
+      throw new UnsupportedOperationException();
+  }
+
+  public void addNamedQuery(String arg0, Query arg1) {
+      throw new UnsupportedOperationException();
+  }
+
+  public EntityManager createEntityManager(SynchronizationType arg0) {
+      return null;
+  }
+
+  public EntityManager createEntityManager(SynchronizationType arg0, Map arg1) {
+      return null;
+  }
+
+  public <T> T unwrap(Class<T> arg0) {
+      return null;
   }
 
   /**

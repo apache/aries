@@ -23,10 +23,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
@@ -127,6 +124,26 @@ public class CountingEntityManagerFactory implements EntityManagerFactory, Destr
     if(c != null) {
       c.callback(name);
     }
+  }
+
+  public <T> void addNamedEntityGraph(String arg0, EntityGraph<T> arg1) {
+      delegate.addNamedEntityGraph(arg0, arg1);
+  }
+
+  public void addNamedQuery(String arg0, Query arg1) {
+      delegate.addNamedQuery(arg0, arg1);
+  }
+
+  public EntityManager createEntityManager(SynchronizationType arg0) {
+      return delegate.createEntityManager(arg0);
+  }
+
+  public EntityManager createEntityManager(SynchronizationType arg0, Map arg1) {
+      return delegate.createEntityManager(arg0, arg1);
+  }
+
+  public <T> T unwrap(Class<T> arg0) {
+      return delegate.unwrap(arg0);
   }
 
 }
