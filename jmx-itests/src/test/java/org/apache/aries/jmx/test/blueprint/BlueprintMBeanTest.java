@@ -18,14 +18,13 @@
  */
 package org.apache.aries.jmx.test.blueprint;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
@@ -45,10 +44,12 @@ import org.apache.aries.jmx.test.blueprint.framework.ReferenceValidator;
 import org.apache.aries.jmx.test.blueprint.framework.RegistrationListenerValidator;
 import org.apache.aries.jmx.test.blueprint.framework.ServiceValidator;
 import org.apache.aries.jmx.test.blueprint.framework.ValueValidator;
+import org.junit.Before;
 import org.junit.Test;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.Configuration;
+import org.ops4j.pax.exam.util.Filter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
@@ -56,78 +57,65 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 public class BlueprintMBeanTest extends AbstractIntegrationTest {
+	@Inject
+	@Filter("(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint)")
+	BlueprintContainer blueprintExtender;
+	
+	@Inject
+	@Filter("(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint.sample)")
+	BlueprintContainer blueprintSample;
+
+	private Bundle extender;
+	private Bundle sample;
 
     @Configuration
-    public static Option[] configuration() {
-        return testOptions(
-                CoreOptions.equinox(),
-                paxLogging("INFO"),
-
-                mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-                mavenBundle("org.apache.aries", "org.apache.aries.util"),
-                mavenBundle("org.ow2.asm", "asm-all"),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator"),
-                mavenBundle("org.apache.commons", "commons-jexl"),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"),
-                mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint"),
-                mavenBundle("org.osgi", "org.osgi.compendium")
+    public Option[] configuration() {
+        return CoreOptions.options(
+        		jmxRuntime(),
+        		blueprint(),
+        		mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint").versionAsInProject(),
+        		mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").versionAsInProject()
         );
     }
 
-    @Override
-    public void doSetUp() throws Exception {
-        waitForMBean(new ObjectName(BlueprintStateMBean.OBJECTNAME));
-        waitForMBean(new ObjectName(BlueprintMetadataMBean.OBJECTNAME));
-
-       // Wait enough time for osgi framework and blueprint bundles to be set up
-       System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Waiting for bundles to be set up");
-       context().getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint)");
-       context().getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint.sample)");
-    }
+	protected Option blueprint() {
+		return composite(
+				mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+				mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
+				mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
+				mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator").versionAsInProject(),
+				mavenBundle("org.apache.commons", "commons-jexl").versionAsInProject()
+				);
+	}
+	
+	@Before
+	public void setup() {
+		extender = getBundleByName("org.apache.aries.blueprint");
+		sample = getBundleByName("org.apache.aries.blueprint.sample");
+	}
 
     @Test
-    public void BlueprintSample() throws Exception {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start Test Blueprint Sample");
-
-        //////////////////////////////
-        //Test BlueprintStateMBean
-        //////////////////////////////
-
-        //find the Blueprint Sample bundle id and the blueprint extender bundle id
-        long sampleBundleId = -1;
-        long extenderBundleId = -1;     // the blueprint extender bundle "org.apache.geronimo.blueprint.geronimo-blueprint" is also a blueprint bundle.
-        for (Bundle bundle : bundleContext.getBundles()){
-            if (bundle.getSymbolicName().equals("org.apache.aries.blueprint.sample")) sampleBundleId = bundle.getBundleId();
-            if (bundle.getSymbolicName().equals("org.apache.aries.blueprint")) extenderBundleId = bundle.getBundleId();
-        }
-        if (-1==sampleBundleId) fail("Blueprint Sample Bundle is not found!");
-        if (-1==extenderBundleId) fail("Blueprint Extender Bundle is not found!");
-
-        //retrieve the proxy object
-        BlueprintStateMBean stateProxy = MBeanServerInvocationHandler.newProxyInstance(mbeanServer, new ObjectName(BlueprintStateMBean.OBJECTNAME), BlueprintStateMBean.class, false);
+    public void testBlueprintStateMBean() throws Exception {
+        BlueprintStateMBean stateProxy = getMBean(BlueprintStateMBean.OBJECTNAME, BlueprintStateMBean.class);
 
         // test getBlueprintBundleIds
         long[] bpBundleIds = stateProxy.getBlueprintBundleIds();
         assertEquals("The blueprint bundle ids are: " + Arrays.toString(bpBundleIds), 3, bpBundleIds.length);
         // test getLastEvent
-        BlueprintEventValidator sampleValidator = new BlueprintEventValidator(sampleBundleId, extenderBundleId, 2);
-        sampleValidator.validate(stateProxy.getLastEvent(sampleBundleId));
+        BlueprintEventValidator sampleValidator = new BlueprintEventValidator(sample.getBundleId(), extender.getBundleId(), 2);
+        sampleValidator.validate(stateProxy.getLastEvent(sample.getBundleId()));
         // test getLastEvents
         TabularData lastEvents = stateProxy.getLastEvents();
         assertEquals(BlueprintStateMBean.OSGI_BLUEPRINT_EVENTS_TYPE,lastEvents.getTabularType());
-        sampleValidator.validate(lastEvents.get(new Long[]{sampleBundleId}));
-
-        //////////////////////////////
-        //Test BlueprintMetadataMBean
-        //////////////////////////////
-
+        sampleValidator.validate(lastEvents.get(new Long[]{sample.getBundleId()}));
+    }
+    
+    @Test
+    public void testBlueprintMetaDataMBean() throws Exception {
         //find the Blueprint Sample bundle's container service id
-        Bundle sampleBundle = bundleContext.getBundle(sampleBundleId);
         String filter = "(&(osgi.blueprint.container.symbolicname=" // no similar one in interfaces
-                + sampleBundle.getSymbolicName() + ")(osgi.blueprint.container.version=" + sampleBundle.getVersion() + "))";
-        ServiceReference[] serviceReferences = null;
+                + sample.getSymbolicName() + ")(osgi.blueprint.container.version=" + sample.getVersion() + "))";
+        ServiceReference<?>[] serviceReferences = null;
         try {
             serviceReferences = bundleContext.getServiceReferences(BlueprintContainer.class.getName(), filter);
         } catch (InvalidSyntaxException e) {
@@ -143,39 +131,31 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         assertEquals(3, bpContainerServiceIds.length);
 
         // test getBlueprintContainerServiceId
-        assertEquals(sampleBlueprintContainerServiceId, metadataProxy.getBlueprintContainerServiceId(sampleBundleId));
+        assertEquals(sampleBlueprintContainerServiceId, metadataProxy.getBlueprintContainerServiceId(sample.getBundleId()));
 
         // test getComponentMetadata
         // bean: foo
         BeanValidator bv_foo = new BeanValidator("org.apache.aries.blueprint.sample.Foo", "init", "destroy");
 
-        BeanPropertyValidator bpv_a = new BeanPropertyValidator("a");
-        bpv_a.setObjectValueValidator(new ValueValidator("5"));
-
-        BeanPropertyValidator bpv_b = new BeanPropertyValidator("b");
-        bpv_b.setObjectValueValidator(new ValueValidator("-1"));
-
+        BeanPropertyValidator bpv_a = property("a", "5");
+        BeanPropertyValidator bpv_b = property("b", "-1");
         BeanPropertyValidator bpv_bar = new BeanPropertyValidator("bar");
         bpv_bar.setObjectValueValidator(new RefValidator("bar"));
-
-        BeanPropertyValidator bpv_currency = new BeanPropertyValidator("currency");
-        bpv_currency.setObjectValueValidator(new ValueValidator("PLN"));
-
-        BeanPropertyValidator bpv_date = new BeanPropertyValidator("date");
-        bpv_date.setObjectValueValidator(new ValueValidator("2009.04.17"));
+        BeanPropertyValidator bpv_currency = property("currency", "PLN");
+        BeanPropertyValidator bpv_date = property("date", "2009.04.17");
 
         bv_foo.addPropertyValidators(bpv_a, bpv_b, bpv_bar, bpv_currency, bpv_date);
         bv_foo.validate(metadataProxy.getComponentMetadata(sampleBlueprintContainerServiceId, "foo"));
 
         // bean: bar
-        BeanPropertyValidator bpv_value = new BeanPropertyValidator("value");
-        bpv_value.setObjectValueValidator(new ValueValidator("Hello FooBar"));
-
+        BeanPropertyValidator bpv_value = property("value", "Hello FooBar");
         BeanPropertyValidator bpv_context = new BeanPropertyValidator("context");
         bpv_context.setObjectValueValidator(new RefValidator("blueprintBundleContext"));
 
         CollectionValidator cv = new CollectionValidator("java.util.List");
-        cv.addCollectionValueValidators(new ValueValidator("a list element"), new ValueValidator("5", "java.lang.Integer"));
+        cv.addCollectionValueValidators(
+        		new ValueValidator("a list element"), 
+        		new ValueValidator("5", "java.lang.Integer"));
         BeanPropertyValidator bpv_list = new BeanPropertyValidator("list");
         bpv_list.setObjectValueValidator(cv);
 
@@ -241,5 +221,11 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         bv_circularReference.addPropertyValidators(bpv_list_2);
         bv_circularReference.validate(metadataProxy.getComponentMetadata(sampleBlueprintContainerServiceId, "circularReference"));
     }
+
+	private BeanPropertyValidator property(String name, String expectedValue) {
+		BeanPropertyValidator val = new BeanPropertyValidator(name);
+        val.setObjectValueValidator(new ValueValidator(expectedValue));
+		return val;
+	}
 
 }

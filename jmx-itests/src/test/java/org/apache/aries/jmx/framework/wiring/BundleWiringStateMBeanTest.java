@@ -16,13 +16,7 @@
  */
 package org.apache.aries.jmx.framework.wiring;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
-import static org.ops4j.pax.exam.CoreOptions.provision;
-import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
-import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,11 +35,11 @@ import javax.management.openmbean.TabularData;
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.PropertyData;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleCapability;
@@ -57,66 +51,27 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
 
 public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
-    @Configuration
-    public static Option[] configuration() {
-        return testOptions(
+    private BundleWiringStateMBean brsMBean;
+	private Bundle bundleA;
+
+	@Configuration
+    public Option[] configuration() {
+        return CoreOptions.options(
             // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
             // new TimeoutOption( 0 ),
 
-            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-            CoreOptions.equinox().version("3.8.0.V20120529-1548"),
-            paxLogging("INFO"),
-
-            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-            mavenBundle("org.osgi", "org.osgi.compendium"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            provision(newBundle()
-                    .add(org.apache.aries.jmx.test.bundlea.Activator.class)
-                    .add(org.apache.aries.jmx.test.bundlea.api.InterfaceA.class)
-                    .add(org.apache.aries.jmx.test.bundlea.impl.A.class)
-                    .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundlea")
-                    .set(Constants.BUNDLE_VERSION, "2.0.0")
-                    .set(Constants.EXPORT_PACKAGE, "org.apache.aries.jmx.test.bundlea.api;version=2.0.0")
-                    .set(Constants.IMPORT_PACKAGE,
-                            "org.osgi.framework;version=1.5.0,org.osgi.util.tracker,org.apache.aries.jmx.test.bundleb.api;version=1.1.0;resolution:=optional" +
-                            ",org.osgi.service.cm")
-                    .set(Constants.BUNDLE_ACTIVATOR,
-                            org.apache.aries.jmx.test.bundlea.Activator.class.getName())
-                    .build(withBnd())),
-            provision(newBundle()
-                    .add(org.apache.aries.jmx.test.bundleb.Activator.class)
-                    .add(org.apache.aries.jmx.test.bundleb.api.InterfaceB.class)
-                    .add(org.apache.aries.jmx.test.bundleb.api.MSF.class)
-                    .add(org.apache.aries.jmx.test.bundleb.impl.B.class)
-                    .set(Constants.BUNDLE_SYMBOLICNAME,"org.apache.aries.jmx.test.bundleb")
-                    .set(Constants.BUNDLE_VERSION, "1.0.0")
-                    .set(Constants.EXPORT_PACKAGE,"org.apache.aries.jmx.test.bundleb.api;version=1.1.0")
-                    .set(Constants.IMPORT_PACKAGE,"org.osgi.framework;version=1.5.0,org.osgi.util.tracker," +
-                            "org.osgi.service.cm,org.apache.aries.jmx.test.fragmentc")
-                    .set(Constants.BUNDLE_ACTIVATOR,
-                            org.apache.aries.jmx.test.bundleb.Activator.class.getName())
-                    .build(withBnd())),
-            provision(newBundle()
-                    .add(org.apache.aries.jmx.test.fragmentc.C.class)
-                    .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.fragc")
-                    .set(Constants.FRAGMENT_HOST, "org.apache.aries.jmx.test.bundlea")
-                    .set(Constants.EXPORT_PACKAGE, "org.apache.aries.jmx.test.fragmentc")
-                    .build(withBnd())),
-            provision(newBundle()
-                    .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundled")
-                    .set(Constants.BUNDLE_VERSION, "3.0.0")
-                    .set(Constants.REQUIRE_BUNDLE, "org.apache.aries.jmx.test.bundlea;bundle-version=2.0.0")
-                    .build(withBnd()))
+        	jmxRuntime(),
+            bundlea(),
+            bundleb(),
+            fragmentc(),
+            bundled()
             );
-
     }
 
-    @Override
+    @Before
     public void doSetUp() throws Exception {
-        waitForMBean(new ObjectName(BundleWiringStateMBean.OBJECTNAME));
+        brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
+        bundleA = getBundleByName("org.apache.aries.jmx.test.bundlea");
     }
 
     @Test
@@ -131,9 +86,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetCurrentRevisionDeclaredRequirements() throws Exception {
-        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
-
-        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
+        Bundle a = getBundleByName("org.apache.aries.jmx.test.bundlea");
         BundleRevision br = a.adapt(BundleRevision.class);
 
         List<BundleRequirement> requirements = br.getDeclaredRequirements(BundleRevision.PACKAGE_NAMESPACE);
@@ -147,13 +100,10 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetCurrentRevisionDeclaredCapabilities() throws Exception {
-        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
-
-        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        BundleRevision br = a.adapt(BundleRevision.class);
+        BundleRevision br = bundleA.adapt(BundleRevision.class);
 
         List<BundleCapability> capabilities = br.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
-        CompositeData[] jmxCapabilities = brsMBean.getCurrentRevisionDeclaredCapabilities(a.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData[] jmxCapabilities = brsMBean.getCurrentRevisionDeclaredCapabilities(bundleA.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
         Assert.assertEquals(capabilities.size(), jmxCapabilities.length);
 
         Map<Map<String, Object>, Map<String, String>> expectedCapabilities = capabilitiesToMap(capabilities);
@@ -163,14 +113,11 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetRevisionsDeclaredRequirements() throws Exception {
-        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
-
-        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        BundleRevisions revisions = a.adapt(BundleRevisions.class);
+        BundleRevisions revisions = bundleA.adapt(BundleRevisions.class);
 
         Assert.assertEquals("Precondition", 1, revisions.getRevisions().size());
 
-        TabularData jmxRequirementsTable = brsMBean.getRevisionsDeclaredRequirements(a.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
+        TabularData jmxRequirementsTable = brsMBean.getRevisionsDeclaredRequirements(bundleA.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
         Assert.assertEquals(1, jmxRequirementsTable.size());
 
         List<BundleRequirement> requirements = revisions.getRevisions().iterator().next().getDeclaredRequirements(BundleRevision.PACKAGE_NAMESPACE);
@@ -184,14 +131,11 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetRevisionsDeclaredCapabilities() throws Exception {
-        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
-
-        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        BundleRevisions revisions = a.adapt(BundleRevisions.class);
+        BundleRevisions revisions = bundleA.adapt(BundleRevisions.class);
 
         Assert.assertEquals("Precondition", 1, revisions.getRevisions().size());
 
-        TabularData jmxCapabilitiesTable = brsMBean.getRevisionsDeclaredCapabilities(a.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
+        TabularData jmxCapabilitiesTable = brsMBean.getRevisionsDeclaredCapabilities(bundleA.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
         Assert.assertEquals(1, jmxCapabilitiesTable.size());
 
         List<BundleCapability> capabilities = revisions.getRevisions().iterator().next().getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
@@ -205,31 +149,25 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetCurrentWiring() throws Exception {
-        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
-
-        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        CompositeData jmxWiring = brsMBean.getCurrentWiring(a.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
+        CompositeData jmxWiring = brsMBean.getCurrentWiring(bundleA.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
 
         Assert.assertEquals(BundleWiringStateMBean.BUNDLE_WIRING_TYPE, jmxWiring.getCompositeType());
-        Assert.assertEquals(a.getBundleId(), jmxWiring.get(BundleWiringStateMBean.BUNDLE_ID));
+        Assert.assertEquals(bundleA.getBundleId(), jmxWiring.get(BundleWiringStateMBean.BUNDLE_ID));
 
-        BundleWiring bw = a.adapt(BundleWiring.class);
+        BundleWiring bw = bundleA.adapt(BundleWiring.class);
         assertBundleWiring(bw, jmxWiring);
     }
 
     @Test
     public void testRevisionsWiring() throws Exception {
-        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
-
-        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        TabularData jmxWiringTable = brsMBean.getRevisionsWiring(a.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
+        TabularData jmxWiringTable = brsMBean.getRevisionsWiring(bundleA.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
 
         Assert.assertEquals(1, jmxWiringTable.size());
         CompositeData jmxWiring = (CompositeData) jmxWiringTable.values().iterator().next();
         Assert.assertEquals(BundleWiringStateMBean.BUNDLE_WIRING_TYPE, jmxWiring.getCompositeType());
-        Assert.assertEquals(a.getBundleId(), jmxWiring.get(BundleWiringStateMBean.BUNDLE_ID));
+        Assert.assertEquals(bundleA.getBundleId(), jmxWiring.get(BundleWiringStateMBean.BUNDLE_ID));
 
-        BundleWiring bw = a.adapt(BundleWiring.class);
+        BundleWiring bw = bundleA.adapt(BundleWiring.class);
         assertBundleWiring(bw, jmxWiring);
     }
 
@@ -313,13 +251,10 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testCurrentWiringClosure() throws Exception {
-        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
+        TabularData jmxWiringClosure = brsMBean.getCurrentWiringClosure(bundleA.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
 
-        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        TabularData jmxWiringClosure = brsMBean.getCurrentWiringClosure(a.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
-
-        CompositeData jmxWiringA = jmxWiringClosure.get(new Object [] {a.getBundleId(), 0});
-        assertBundleWiring(a.adapt(BundleWiring.class), jmxWiringA);
+        CompositeData jmxWiringA = jmxWiringClosure.get(new Object [] {bundleA.getBundleId(), 0});
+        assertBundleWiring(bundleA.adapt(BundleWiring.class), jmxWiringA);
 
         Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
         int bRevID = findRevisionID(jmxWiringA, b);
@@ -339,13 +274,10 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testRevisionsWiringClosure() throws Exception {
-        BundleWiringStateMBean brsMBean = getMBean(BundleWiringStateMBean.OBJECTNAME, BundleWiringStateMBean.class);
+        TabularData jmxWiringClosure = brsMBean.getRevisionsWiringClosure(bundleA.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
 
-        Bundle a = context().getBundleByName("org.apache.aries.jmx.test.bundlea");
-        TabularData jmxWiringClosure = brsMBean.getRevisionsWiringClosure(a.getBundleId(), BundleRevision.PACKAGE_NAMESPACE);
-
-        CompositeData jmxWiringA = jmxWiringClosure.get(new Object [] {a.getBundleId(), 0});
-        assertBundleWiring(a.adapt(BundleWiring.class), jmxWiringA);
+        CompositeData jmxWiringA = jmxWiringClosure.get(new Object [] {bundleA.getBundleId(), 0});
+        assertBundleWiring(bundleA.adapt(BundleWiring.class), jmxWiringA);
 
         Bundle b = context().getBundleByName("org.apache.aries.jmx.test.bundleb");
         int bRevID = findRevisionID(jmxWiringA, b);

@@ -172,7 +172,6 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
     /**
      * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#getPropertiesForLocation(java.lang.String, java.lang.String)
      */
-    @SuppressWarnings("unchecked")
     public TabularData getPropertiesForLocation(String pid, String location) throws IOException {
         if (pid == null || pid.length() < 1) {
             throw new IOException("Argument pid cannot be null or empty");
@@ -227,7 +226,7 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
         Dictionary<String, Object> configurationProperties = new Hashtable<String, Object>();
         Collection<CompositeData> compositeData = (Collection<CompositeData>) configurationTable.values();
         for (CompositeData row: compositeData) {
-            PropertyData<? extends Class> propertyData = PropertyData.from(row);
+            PropertyData<? extends Class<?>> propertyData = PropertyData.from(row);
             configurationProperties.put(propertyData.getKey(), propertyData.getValue());
         }
         Configuration config = configurationAdmin.getConfiguration(pid, location);
