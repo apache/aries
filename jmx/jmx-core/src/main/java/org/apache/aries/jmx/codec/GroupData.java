@@ -82,7 +82,8 @@ public class GroupData extends UserData {
      * @param members basic members.
      * @param requiredMembers required members.
      */
-    public GroupData(String name, Dictionary properties, Dictionary credentials, String[] members, String[] requiredMembers) {
+    @SuppressWarnings("rawtypes")
+	public GroupData(String name, Dictionary properties, Dictionary credentials, String[] members, String[] requiredMembers) {
         super(name, Role.GROUP, properties, credentials);
         this.members = (members == null) ? new String[0] : members;
         this.requiredMembers = (requiredMembers == null) ? new String[0] : requiredMembers;

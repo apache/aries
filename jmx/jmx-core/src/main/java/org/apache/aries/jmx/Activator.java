@@ -18,7 +18,6 @@ package org.apache.aries.jmx;
 
 import org.apache.aries.jmx.agent.JMXAgent;
 import org.apache.aries.jmx.agent.JMXAgentImpl;
-import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;

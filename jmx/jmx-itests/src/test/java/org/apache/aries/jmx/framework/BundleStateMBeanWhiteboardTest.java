@@ -18,29 +18,13 @@
  */
 package org.apache.aries.jmx.framework;
 
-import org.apache.aries.itest.ExtraOptions;
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 
-public class BundleStateMBeanWhiteboardTest extends BundleStateMBeanTest
-{
-  @Configuration
-  public static Option[] configuration() {
-    Option[] options = BundleStateMBeanTest.configuration();
-    
-    for (int i = 0; i < options.length; i++)
-    {
-      if (options[i] instanceof MavenArtifactProvisionOption) {
-        MavenArtifactProvisionOption po = (MavenArtifactProvisionOption) options[i];
-        String url = po.getURL();
-        if (url.contains("mvn:org.apache.aries.jmx/org.apache.aries.jmx/")) {
-          options[i] = ExtraOptions.mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.core.whiteboard");
-        }
-      }
-    }
-    
-    return options;
-  }
+public class BundleStateMBeanWhiteboardTest extends BundleStateMBeanTest {
+
+	@Override
+	protected MavenArtifactProvisionOption jmxBundle() {
+		return jmxWhiteBoardBundle();
+	}
 
 }

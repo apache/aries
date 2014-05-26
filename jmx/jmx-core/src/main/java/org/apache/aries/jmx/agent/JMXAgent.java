@@ -16,8 +16,6 @@
  */
 package org.apache.aries.jmx.agent;
 
-import java.util.concurrent.ExecutorService;
-
 import javax.management.MBeanServer;
 
 import org.apache.aries.jmx.MBeanHandler;

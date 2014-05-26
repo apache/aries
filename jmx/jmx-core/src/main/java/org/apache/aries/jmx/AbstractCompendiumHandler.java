@@ -16,7 +16,6 @@
  */
 package org.apache.aries.jmx;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.StandardMBean;
@@ -41,6 +40,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * 
  * @version $Rev$ $Date$
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractCompendiumHandler extends ServiceTracker implements MBeanHandler {
 
     protected final JMXAgentContext agentContext;
