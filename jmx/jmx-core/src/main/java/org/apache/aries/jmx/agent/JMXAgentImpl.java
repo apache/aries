@@ -20,9 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -32,7 +30,6 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
-import org.apache.aries.jmx.JMXThreadFactory;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.MBeanServiceTracker;
@@ -60,7 +57,8 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class JMXAgentImpl implements JMXAgent {
 
-    private ServiceTracker mbeanServiceTracker;
+    @SuppressWarnings("rawtypes")
+	private ServiceTracker mbeanServiceTracker;
     /**
      * {@link MBeanHandler} store.
      */

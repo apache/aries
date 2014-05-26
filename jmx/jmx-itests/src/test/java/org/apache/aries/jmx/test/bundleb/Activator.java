@@ -25,7 +25,6 @@ import org.apache.aries.jmx.test.bundleb.impl.B;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
 
 /**
@@ -35,27 +34,22 @@ import org.osgi.service.cm.ManagedServiceFactory;
  */
 public class Activator implements BundleActivator {
 
-    ServiceRegistration plainRegistration;
-    ServiceRegistration msfRegistration;
-    
     /* (non-Javadoc)
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
     public void start(BundleContext context) throws Exception {
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put(Constants.SERVICE_PID, "org.apache.aries.jmx.test.ServiceB");
-        plainRegistration = context.registerService(InterfaceB.class.getName(), new B(), props);
+        context.registerService(InterfaceB.class.getName(), new B(), props);
         Dictionary<String, Object> fprops = new Hashtable<String, Object>();
         fprops.put(Constants.SERVICE_PID, "jmx.test.B.factory");
-        msfRegistration = context.registerService(ManagedServiceFactory.class.getName(), new MSF(), fprops);
+        context.registerService(ManagedServiceFactory.class.getName(), new MSF(), fprops);
     }
 
     /* (non-Javadoc)
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
-        plainRegistration.unregister();
-        msfRegistration.unregister();
     }
 
 }

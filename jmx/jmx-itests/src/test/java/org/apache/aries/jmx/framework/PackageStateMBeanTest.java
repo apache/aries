@@ -16,14 +16,12 @@
  */
 package org.apache.aries.jmx.framework;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.ops4j.pax.exam.CoreOptions.options;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -34,11 +32,10 @@ import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
+import org.junit.Before;
 import org.junit.Test;
-import org.ops4j.pax.exam.CoreOptions;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.Constants;
 import org.osgi.jmx.framework.PackageStateMBean;
 
@@ -50,20 +47,16 @@ import org.osgi.jmx.framework.PackageStateMBean;
 public class PackageStateMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
-    public static Option[] configuration() {
-        return testOptions(
-            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-            CoreOptions.equinox().version("3.8.0.V20120529-1548"),
-            paxLogging("INFO"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
-            mavenBundle("org.apache.aries", "org.apache.aries.util"));
+    public Option[] configuration() {
+        return options(
+        		jmxRuntime(),
+        		bundlea()
+        		);
     }
 
-    @Override
-    public void doSetUp() throws Exception {
-        waitForMBean(new ObjectName(PackageStateMBean.OBJECTNAME));
+    @Before
+    public void doSetUp() {
+        waitForMBean(PackageStateMBean.OBJECTNAME);
     }
 
     @Test
@@ -95,7 +88,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         TabularData table = packagaState.listPackages();
         assertNotNull("TabularData containing CompositeData with packages info shouldn't be null", table);
         assertEquals("TabularData should be a type PACKAGES", PackageStateMBean.PACKAGES_TYPE, table.getTabularType());
-        Collection colData = table.values();
+        Collection<?> colData = table.values();
         assertNotNull("Collection of CompositeData shouldn't be null", colData);
         assertFalse("Collection of CompositeData should contain elements", colData.isEmpty());
 

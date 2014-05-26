@@ -25,7 +25,6 @@ import org.apache.aries.jmx.test.bundleb.api.InterfaceB;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -36,7 +35,6 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator implements BundleActivator {
 
-    ServiceRegistration registration;
     ServiceTracker tracker;
     
     /* (non-Javadoc)
@@ -49,7 +47,8 @@ public class Activator implements BundleActivator {
         
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put(Constants.SERVICE_PID, "org.apache.aries.jmx.test.ServiceA");
-        registration = context.registerService(new String[] { InterfaceA.class.getName(), ManagedService.class.getName() }, new A(tracker), props);
+        String[] interfaces = new String[] { InterfaceA.class.getName(), ManagedService.class.getName() };
+		context.registerService(interfaces, new A(tracker), props);
         
     }
 
@@ -57,7 +56,6 @@ public class Activator implements BundleActivator {
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
-        registration.unregister();
         tracker.close();
     }
 

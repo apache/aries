@@ -29,18 +29,17 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see org.osgi.util.tracker.ServiceTracker
  * @version $Rev$ $Date$
  */
+@SuppressWarnings("rawtypes")
 public class Logger extends ServiceTracker implements LogService {
     
-    private String bundleLocation;
-
     /**
      * Constructs new Logger(ServiceTracker for LogService).
      * 
      * @param context bundle context.
      */
-    public Logger(BundleContext context) {
+    @SuppressWarnings("unchecked")
+	public Logger(BundleContext context) {
         super(context, LogService.class.getName(), null);
-        this.bundleLocation = context.getBundle().getLocation();
     }
 
     /**

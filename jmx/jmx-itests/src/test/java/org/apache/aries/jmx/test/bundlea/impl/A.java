@@ -28,7 +28,7 @@ import org.osgi.util.tracker.ServiceTracker;
  *
  * @version $Rev$ $Date$
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class A implements InterfaceA {
 
     private ServiceTracker tracker;
@@ -52,7 +52,7 @@ public class A implements InterfaceA {
         
     }
 
-    public void updated(Dictionary dictionary) throws ConfigurationException {
+	public void updated(Dictionary dictionary) throws ConfigurationException {
         this.props = dictionary;
     }
     

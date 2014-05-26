@@ -84,6 +84,7 @@ import org.osgi.service.startlevel.StartLevel;
  *
  * @version $Rev$ $Date$
  */
+@SuppressWarnings("deprecation")
 public class BundleData {
 
     /**
@@ -190,7 +191,6 @@ public class BundleData {
         super();
     }
 
-    @SuppressWarnings("unchecked")
     public BundleData(BundleContext localBundleContext, Bundle bundle, PackageAdmin packageAdmin, StartLevel startLevel) {
         if (bundle == null) {
             throw new IllegalArgumentException("Argument bundle cannot be null");

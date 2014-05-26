@@ -16,28 +16,17 @@
  */
 package org.apache.aries.jmx.permissionadmin;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.provision;
-import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.newBundle;
-import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
+import static org.ops4j.pax.exam.CoreOptions.options;
 
 import java.io.IOException;
 
-import javax.management.ObjectName;
-
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.junit.Test;
-import org.ops4j.pax.exam.CoreOptions;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
 import org.osgi.jmx.service.permissionadmin.PermissionAdminMBean;
 import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
@@ -50,41 +39,20 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
-    public static Option[] configuration() {
-        return testOptions(
-            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-            CoreOptions.equinox().version("3.8.0.V20120529-1548"),
-            paxLogging("INFO"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api"),
-            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard"),
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            provision(newBundle()
-                    .add(org.apache.aries.jmx.test.bundlea.Activator.class)
-                    .add(org.apache.aries.jmx.test.bundlea.api.InterfaceA.class)
-                    .add(org.apache.aries.jmx.test.bundlea.impl.A.class)
-                    .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.jmx.test.bundlea")
-                    .set(Constants.BUNDLE_VERSION, "2.0.0")
-                    .set(Constants.IMPORT_PACKAGE,
-                            "org.osgi.framework;version=1.5.0,org.osgi.util.tracker,org.apache.aries.jmx.test.bundleb.api;version=1.1.0;resolution:=optional")
-                    .set(Constants.BUNDLE_ACTIVATOR,
-                            org.apache.aries.jmx.test.bundlea.Activator.class.getName())
-                    .build(withBnd()))
+    public Option[] configuration() {
+        return options(
+            jmxRuntime(),
+            bundlea()
                     /* For debugging, uncomment the next two lines */
 //                     vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7778"),
 //                     waitForFrameworkStartup()
         );
     }
 
-    @Override
-    public void doSetUp() throws Exception {
-        waitForMBean(new ObjectName(PermissionAdminMBean.OBJECTNAME));
-    }
-
     @Test
     public void testMBeanInterface() throws IOException {
         PermissionAdminMBean mBean = getMBean(PermissionAdminMBean.OBJECTNAME, PermissionAdminMBean.class);
-        PermissionAdmin permAdminService = getService(PermissionAdmin.class);
+        PermissionAdmin permAdminService = context().getService(PermissionAdmin.class);
         assertNotNull(permAdminService);
 
         String[] serviceLocation = permAdminService.getLocations();
@@ -132,14 +100,4 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
         return encoded;
     }
 
-    private <S> S getService(Class<S> serviceInterface){
-        ServiceReference ref =  bundleContext.getServiceReference(serviceInterface.getName());
-        if(ref != null){
-            Object service = bundleContext.getService(ref);
-            if(service != null){
-                return (S)service;
-            }
-        }
-        return null;
-    }
 }
