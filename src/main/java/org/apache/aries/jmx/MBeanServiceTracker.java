@@ -16,8 +16,6 @@
  */
 package org.apache.aries.jmx;
 
-import java.util.concurrent.ExecutorService;
-
 import javax.management.MBeanServer;
 
 import org.apache.aries.jmx.agent.JMXAgentContext;
@@ -32,6 +30,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see ServiceTracker
  * @version $Rev$ $Date$
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class MBeanServiceTracker extends ServiceTracker {
 
     private JMXAgentContext agentContext;
@@ -40,7 +39,7 @@ public class MBeanServiceTracker extends ServiceTracker {
      * Constructs new MBeanServiceTracker.
      * @param agentContext agent context.
      */
-    public MBeanServiceTracker(JMXAgentContext agentContext) {
+	public MBeanServiceTracker(JMXAgentContext agentContext) {
         super(agentContext.getBundleContext(), MBeanServer.class.getName(), null);
         this.agentContext = agentContext;
     }
