@@ -39,4 +39,12 @@ public abstract class AbstractIntegrationTest {
     public RichBundleContext context() {
         return new RichBundleContext(bundleContext);
     }
+    
+    public String getLocalRepo() {
+    	String localRepo = System.getProperty("maven.repo.local");
+    	if (localRepo == null) {
+    		localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+    	}
+    	return localRepo;
+    }
 }
