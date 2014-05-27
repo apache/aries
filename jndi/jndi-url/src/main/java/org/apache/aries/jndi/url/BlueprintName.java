@@ -31,7 +31,7 @@ public class BlueprintName extends AbstractName
 
   public BlueprintName(String name) throws InvalidNameException
   {
-    super(split(name));
+    super(name);
   }
 
   public BlueprintName(Name name) throws InvalidNameException

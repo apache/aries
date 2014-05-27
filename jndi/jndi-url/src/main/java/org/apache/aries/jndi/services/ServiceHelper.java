@@ -456,18 +456,14 @@ public final class ServiceHelper
   public static Object getService(BundleContext ctx, ServiceReference ref)
   {
     Object service = ctx.getService(ref);
-
-    Object result = null;
-
-    if (service != null) {
-      ServicePair pair = new ServicePair();
-      pair.ref = ref;
-      pair.service = service;
-
-      result = proxy(null, null, false, ctx, pair, 0);
+    if (service == null) {
+      return null;
     }
 
-    return result;
+    ServicePair pair = new ServicePair();
+    pair.ref = ref;
+    pair.service = service;
+    return proxy(null, null, false, ctx, pair, 0);
   }
  
   static Collection<Class<?>> getAllInterfaces (Class<?>[] baseInterfaces) 
