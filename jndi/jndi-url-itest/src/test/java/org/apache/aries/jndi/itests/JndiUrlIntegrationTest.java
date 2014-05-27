@@ -21,8 +21,12 @@ package org.apache.aries.jndi.itests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.vmOption;
+import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,14 +37,21 @@ import java.net.URL;
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 
-@RunWith(JUnit4TestRunner.class)
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
   private static final int CONNECTION_TIMEOUT = 10000;
+  
+
     
   /**
    * This test exercises the blueprint:comp/ jndi namespace by driving
@@ -57,7 +68,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     
     Bundle bweb = context().getBundleByName("org.apache.aries.jndi.url.itest.web");
     assertNotNull(bweb);
-    
+    context().getBundleByName("org.ops4j.pax.web.pax-web-extender-war").start();
     printBundleStatus ("Before making web request");
     try { 
       Thread.sleep(5000);
@@ -71,7 +82,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
   
   private void printBundleStatus (String msg) { 
     System.out.println("-----\nprintBundleStatus: " + msg + "\n-----");
-    for (Bundle b : bundleContext.getBundles()) { 
+    for (Bundle b : bundleContext.getBundles()) {
       System.out.println (b.getSymbolicName() + " " + "state=" + formatState(b.getState()));
     }
     System.out.println();
@@ -125,34 +136,47 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     return response.toString();
   }
   
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration()
+  public Option baseOptions() {
+      String localRepo = System.getProperty("maven.repo.local");
+      if (localRepo == null) {
+          localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+      }
+      return composite(
+              junitBundles(),
+              // this is how you set the default log level when using pax
+              // logging (logProfile)
+              systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+              when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
+       );
+  }
+  
+  @Configuration
+  public Option[] configuration()
   {
-    return testOptions(
-        paxLogging("DEBUG"),
-        transactionBootDelegation(), 
+    return CoreOptions.options(
+    	baseOptions(),
         
         // Bundles
-        mavenBundle("org.eclipse.equinox", "cm"),
-        mavenBundle("org.eclipse.osgi", "services"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-servlet_2.5_spec"),
+        mavenBundle("org.eclipse.equinox", "cm").versionAsInProject(),
+        mavenBundle("org.eclipse.osgi", "services").versionAsInProject(),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-servlet_2.5_spec").versionAsInProject(),
 
-        mavenBundle("org.ops4j.pax.web", "pax-web-extender-war"),
-        mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle"),
+        mavenBundle("org.ops4j.pax.web", "pax-web-extender-war").versionAsInProject(),
+        mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle").versionAsInProject(),
         
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi"),
-      
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.web"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.biz"),
-        mavenBundle("org.ow2.asm", "asm-all"),
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").versionAsInProject(),
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core").versionAsInProject(),
+        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
+        mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi").versionAsInProject(),
+        
+        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.web").versionAsInProject(),
+        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.biz").versionAsInProject(),
+        mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject()
+        );
 
-        /* For debugging, uncomment the next two lines */
         // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
         // org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup(),
-        equinox().version("3.5.0"));
   }
 }
