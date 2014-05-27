@@ -108,22 +108,14 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
   public NamingEnumeration<NameClassPair> list(String name) throws NamingException
   {
     if (!!!"".equals(name)) throw new NameNotFoundException(name);
-    
-    final ServiceReference[] refs = ServiceHelper.getServiceReferences(callerContext, parentName.getInterface(), parentName.getFilter(), parentName.getServiceName(), env);
-    
+    final ServiceReference[] refs = getServiceRefs();
     return new ServiceNamingEnumeration<NameClassPair>(callerContext, refs, new ThingManager<NameClassPair>() {
       public NameClassPair get(BundleContext ctx, ServiceReference ref)
       {
-        String serviceId = String.valueOf(ref.getProperty(Constants.SERVICE_ID));
-        String className = null;
         Object service = ctx.getService(ref);
-        if (service != null) {
-          className = service.getClass().getName();
-        }
-
+        String className = (service != null) ? service.getClass().getName() : null;
         ctx.ungetService(ref);
-        
-        return new NameClassPair(serviceId, className, true);
+        return new NameClassPair(serviceId(ref), className, true);
       }
 
       public void release(BundleContext ctx, ServiceReference ref)
@@ -140,17 +132,12 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
   public NamingEnumeration<Binding> listBindings(String name) throws NamingException
   {
     if (!!!"".equals(name)) throw new NameNotFoundException(name);
-    
-    final ServiceReference[] refs = ServiceHelper.getServiceReferences(callerContext, parentName.getInterface(), parentName.getFilter(), parentName.getServiceName(), env);
-
+    final ServiceReference[] refs = getServiceRefs();
     return new ServiceNamingEnumeration<Binding>(callerContext, refs, new ThingManager<Binding>() {
       public Binding get(BundleContext ctx, ServiceReference ref)
       {
-        String serviceId = String.valueOf(ref.getProperty(Constants.SERVICE_ID));
-        
         Object service = ServiceHelper.getService(ctx, ref);
-
-        return new Binding(serviceId, service, true);
+        return new Binding(serviceId(ref), service, true);
       }
 
       public void release(BundleContext ctx, ServiceReference ref)
@@ -167,14 +154,19 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
 
   public Object lookup(String name) throws NamingException
   {
-    Object result = null;
-    
-    result = ServiceHelper.getService(callerContext, parentName, name, false, env, true);
-    
+    Object result = ServiceHelper.getService(callerContext, parentName, name, false, env, true);
     if (result == null) {
       throw new NameNotFoundException(name.toString());
     }
-    
     return result;
   }
+  
+  private String serviceId(ServiceReference ref) {
+    return String.valueOf(ref.getProperty(Constants.SERVICE_ID));
+  }
+  
+  private ServiceReference[] getServiceRefs() throws NamingException {
+    return ServiceHelper.getServiceReferences(callerContext, parentName.getInterface(), parentName.getFilter(), parentName.getServiceName(), env);
+  }
+
 }

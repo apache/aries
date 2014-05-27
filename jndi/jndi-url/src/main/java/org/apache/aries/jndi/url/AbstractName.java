@@ -29,11 +29,11 @@ import javax.naming.CompositeName;
 @SuppressWarnings("serial")
 public abstract class AbstractName extends CompositeName 
 {
-  public AbstractName (Enumeration<String> e) { 
-    super(e);
+  public AbstractName (String name) { 
+    super(split(name));
   }
 
-  static Enumeration<String> split(String name)
+  protected static Enumeration<String> split(String name)
   {
     List<String> elements = new ArrayList<String>();
 
@@ -64,16 +64,11 @@ public abstract class AbstractName extends CompositeName
   {
     String part0 = get(0);
     int index = part0.indexOf(':');
-    
-    String result;
-    
     if (index > 0) {
-      result = part0.substring(0, index);
+      return part0.substring(0, index);
     } else {
-      result = null;
+      return null;
     }
-    
-    return result;
   }
   
   public String getSchemePath()

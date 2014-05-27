@@ -117,19 +117,13 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
     }
 
     private OsgiName convert(Name name) throws NamingException {
-        OsgiName result;
-
         if (name instanceof OsgiName) {
-            result = (OsgiName) name;
+            return (OsgiName) name;
+        } else if (parentName != null) {
+            return new OsgiName(parentName.toString() + "/" + name.toString());
         } else {
-            if (parentName != null) {
-                result = new OsgiName(parentName.toString() + "/" + name.toString());
-            } else {
-                result = (OsgiName) parser.parse(name.toString());
-            }
+            return (OsgiName) parser.parse(name.toString());
         }
-
-        return result;
     }
 
     private Name parse(String name) throws NamingException {
