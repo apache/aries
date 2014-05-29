@@ -19,6 +19,7 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -26,12 +27,15 @@ import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 	private final IDirectory content;
 	private final AccessControlContext context;
 	private final String location;
 	private final BasicSubsystem parent;
+	private static final Logger logger = LoggerFactory.getLogger(InstallAction.class);
 	
 	public InstallAction(String location, IDirectory content, BasicSubsystem parent, AccessControlContext context) {
 		this.location = location;
@@ -88,10 +92,27 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 					throw (SecurityException)t;
 				throw new SubsystemException(t);
 			}
+			finally {
+				closeContentIfIClosable();
+			}
 		}
+		closeContentIfIClosable();
 		return result;
 	}
 
+	private void closeContentIfIClosable() {
+		//clean up temp file
+		if (content instanceof ICloseableDirectory) {
+			try{
+				((ICloseableDirectory) content).close();
+			}
+			catch (IOException ioex) {
+				logger.info("Exception calling close for content {}. Exception {}", 
+						content, ioex);					
+			}
+		} 
+	}
+	
 	private void checkLifecyclePermission(final BasicSubsystem subsystem) {
 		AccessController.doPrivileged(new PrivilegedAction<Object>() {
 			@Override

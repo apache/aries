@@ -106,10 +106,12 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 				ResourceInstaller.newInstance(coordination, dependency, subsystem).install();
 		}
 		// ...followed by content.
-		List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
-		Collections.sort(installableContent, comparator);
-		for (Resource content : installableContent)
-			ResourceInstaller.newInstance(coordination, content, subsystem).install();
+		if (State.INSTALLING.equals(subsystem.getState())) {
+			List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
+			Collections.sort(installableContent, comparator);
+			for (Resource content : installableContent)
+				ResourceInstaller.newInstance(coordination, content, subsystem).install();
+		}
 		// Simulate installation of shared content so that necessary relationships are established.
 		for (Resource content : subsystem.getResource().getSharedContent())
 			ResourceInstaller.newInstance(coordination, content, subsystem).install();
