@@ -442,9 +442,9 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
 
         EasyMock.expect(implBC.registerService((String) EasyMock.anyObject(), EasyMock.anyObject(), (Dictionary<String,?>)EasyMock.anyObject())).
-            andAnswer(new IAnswer<ServiceRegistration>() {
+            andAnswer(new IAnswer<ServiceRegistration<?>>() {
                 @Override
-                public ServiceRegistration answer() throws Throwable {
+                public ServiceRegistration<?> answer() throws Throwable {
                     final String className = (String) EasyMock.getCurrentArguments()[0];
                     final Object serviceObject = EasyMock.getCurrentArguments()[1];
                     final Dictionary<String, Object> registrationProps =
@@ -499,7 +499,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         return implBundle;
     }
 
-    private static class ServiceRegistrationImpl implements ServiceRegistration, ServiceReference {
+    private static class ServiceRegistrationImpl implements ServiceRegistration<Object>, ServiceReference {
         private final Object serviceObject;
         private final Dictionary<String, Object> properties;
 
@@ -514,12 +514,12 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         }
 
         @Override
-        public ServiceReference getReference() {
+        public ServiceReference<Object> getReference() {
             return this;
         }
 
         @Override
-        public void setProperties(@SuppressWarnings("rawtypes") Dictionary properties) {
+        public void setProperties(Dictionary<String, ?> properties) {
             throw new UnsupportedOperationException();
         }
 
