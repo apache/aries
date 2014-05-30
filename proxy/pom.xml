@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -18,29 +19,29 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>  
 
-    <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.proxy</groupId>
     <artifactId>proxy</artifactId>
     <name>Apache Aries Class Proxy</name>
     <packaging>pom</packaging>
     <version>1.0.1-SNAPSHOT</version>
-
     <description>
        A common proxy class generation service that can be used by blueprint and jndi and others.
     </description>
 
     <modules>
-      <module>proxy-api</module>
-      <module>proxy-impl</module>
-      <module>proxy-bundle</module>
-      <module>proxy-itests</module>
+        <module>proxy-api</module>
+        <module>proxy-impl</module>
+        <module>proxy-bundle</module>
+        <module>proxy-itests</module>
     </modules>
 
 </project>
