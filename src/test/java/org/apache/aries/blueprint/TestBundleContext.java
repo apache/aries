@@ -20,6 +20,7 @@ package org.apache.aries.blueprint;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Dictionary;
 
 import org.osgi.framework.Bundle;
@@ -65,6 +66,8 @@ public class TestBundleContext implements BundleContext {
         return null;
     }
 
+    public Bundle getBundle(String arg0) { return null; }
+
     public Bundle[] getBundles() {
         return null;
     }
@@ -85,8 +88,15 @@ public class TestBundleContext implements BundleContext {
         return null;
     }
 
-    public ServiceReference[] getServiceReferences(String arg0, String arg1)
-    throws InvalidSyntaxException {
+    public ServiceReference getServiceReference(Class aClass) {
+        return null;
+    }
+
+    public ServiceReference[] getServiceReferences(String arg0, String arg1) throws InvalidSyntaxException {
+        return null;
+    }
+
+    public Collection getServiceReferences(Class arg0, String arg1) throws InvalidSyntaxException {
         return null;
     }
 
@@ -103,6 +113,10 @@ public class TestBundleContext implements BundleContext {
     }
 
     public ServiceRegistration registerService(String arg0, Object arg1, Dictionary arg2) {
+        return null;
+    }
+
+    public <S> ServiceRegistration<S> registerService(Class<S> aClass, S s, Dictionary<String,?> dictionary) {
         return null;
     }
 
