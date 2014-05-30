@@ -8,29 +8,20 @@ import java.net.URI;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.apache.aries.itest.RichBundleContext;
 import org.apache.aries.subsystem.itests.hello.api.Hello;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IDirectoryFinder;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.Inject;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemException;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class HelloWorldTest extends SubsystemTest 
 {
-  // Get the root subsystem bundle context.
-  @Inject
-  protected BundleContext bundleContext;
 
-	private static boolean _testAppCreated = false;
-	
 	/*
 	 * An implementation of the IDirectoryFinder interface that provides the
 	 * IDirectory that corresponds to some id URI. In practice this could come 
@@ -56,20 +47,16 @@ public class HelloWorldTest extends SubsystemTest
     }
   }
 
-	@Before
-	public void installTestApp() throws Exception 
-	{
-		if (!_testAppCreated) { 
-			createApplication("hello", new String[]{"helloImpl.jar"});
-			_testAppCreated = true;
-		}
+	@Override
+	public void createApplications() throws Exception {
+		createApplication("hello", "helloImpl.jar");
 	}
 
 	void checkHelloSubsystem(Subsystem helloSubsystem) throws Exception
 	{
     helloSubsystem.start();
     BundleContext bc = helloSubsystem.getBundleContext();
-    Hello h = getOsgiService(bc, Hello.class, null, DEFAULT_TIMEOUT);
+    Hello h = new RichBundleContext(bc).getService(Hello.class);
     String message = h.saySomething();
     assertEquals ("Wrong message back", "something", message);
     helloSubsystem.stop();

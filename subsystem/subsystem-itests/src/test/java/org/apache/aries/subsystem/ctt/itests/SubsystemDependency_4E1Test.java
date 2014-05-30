@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -42,18 +41,15 @@ public class SubsystemDependency_4E1Test extends SubsystemDependencyTestBase
 	private static final String SUBSYSTEM_4E_S2_APP = "sdt_application4e_s2.esa";
 	private static final String SUBSYSTEM_4E_S2_COMP = "sdt_composite4e_s2.esa";
 	private static final String SUBSYSTEM_4E_S2_FEATURE = "sdt_feature4e_s2.esa";
-	private static boolean _testSubsystemsCreated = false;
 	
-	@Before
-	public void setUp() throws Exception
+	@Override
+	public void createApplications() throws Exception
 	{
-		super.setUp();
-		if (!_testSubsystemsCreated) { 
-			createComposite4E_S1();
-			createApplication4E_S2();
-			createComposite4E_S2();
-			createFeature4E_S2();
-		}
+		super.createApplications();
+		createComposite4E_S1();
+		createApplication4E_S2();
+		createComposite4E_S2();
+		createFeature4E_S2();
 		registerRepositoryR2();
 	}
 	

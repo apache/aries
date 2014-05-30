@@ -23,21 +23,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.subsystem.itests.util.GenericMetadataWrapper;
-import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class ServiceDependencyTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -147,15 +142,10 @@ public class ServiceDependencyTest extends SubsystemTest {
 		createManifest(symbolicName + ".mf", attributes);
 	}
 	
-	private static void createBundle(String symbolicName, String blueprintXml)
-			throws IOException {
-		write(symbolicName,
-				ArchiveFixture.newJar().manifest().symbolicName(symbolicName)
-						.end().file("OSGI-INF/blueprint/blueprint.xml", blueprintXml));
-	}
+
 	
 	private static void createBundleA() throws IOException {
-		createBundle(
+		createBlueprintBundle(
 				BUNDLE_A, 
 				new StringBuilder()
 					.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
@@ -173,7 +163,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 	}
 	
 	private static void createBundleB() throws IOException {
-		createBundle(
+		createBlueprintBundle(
 				BUNDLE_B, 
 				new StringBuilder()
 					.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
@@ -214,11 +204,8 @@ public class ServiceDependencyTest extends SubsystemTest {
 		createManifest(COMPOSITE_A + ".mf", attributes);
 	}
 	
-	private static boolean createdTestFiles;
-	@Before
-	public static void createTestFiles() throws Exception {
-		if (createdTestFiles)
-			return;
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createBundleB();
 		createApplicationA();
@@ -226,7 +213,6 @@ public class ServiceDependencyTest extends SubsystemTest {
 		createApplicationC();
 		createCompositeA();
 		createApplicationD();
-		createdTestFiles = true;
 	}
 	
 	//@Test

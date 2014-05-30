@@ -19,8 +19,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.streamBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.vmOption;
+import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +44,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.aries.itest.AbstractIntegrationTest;
+import org.apache.aries.itest.RichBundleContext;
 import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
@@ -54,9 +61,14 @@ import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
-import org.ops4j.pax.exam.CoreOptions;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -80,7 +92,19 @@ import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public abstract class SubsystemTest extends IntegrationTest {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public abstract class SubsystemTest extends AbstractIntegrationTest {
+	protected static boolean createdApplications = false;
+	boolean installModeler = true;
+	
+	public SubsystemTest() {
+	}
+	
+	public SubsystemTest(boolean installModeller) {
+		this.installModeler = installModeller;
+	}
+	
 	protected static class SubsystemEventHandler implements ServiceListener {
 		private static class ServiceEventInfo {
 			private final ServiceEvent event;
@@ -178,55 +202,57 @@ public abstract class SubsystemTest extends IntegrationTest {
 		}
 	}
 	
-	protected static Option[] defineOptions() {
+	public Option baseOptions() {
+        String localRepo = getLocalRepo();
+        return composite(
+                junitBundles(),
+                // this is how you set the default log level when using pax
+                // logging (logProfile)
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
+         );
+    }
+	
+	@Configuration
+	public Option[] configuration() throws Exception {
+		// The itests need private packages from the core subsystems bundle.
+		InputStream fragment = SubsystemTest.class.getClassLoader().getResourceAsStream("core.fragment/core.fragment.jar");
 		return new Option[] {
-				// this is how you set the default log level when using pax
-				// logging (logProfile)
-				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				baseOptions(),
 				systemProperty("org.osgi.framework.bsnversion").value("multiple"),
-				// Log
-				mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-				mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-				// Felix mvn url handler
-				mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 				// Bundles
 				mavenBundle("org.apache.aries",             "org.apache.aries.util").versionAsInProject(),
-				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
-				mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
-				mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").versionAsInProject(),
-				mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").versionAsInProject(),
+				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
+				when(installModeler).useOptions(
+						mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").versionAsInProject(),
+						mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").versionAsInProject(),
+						mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").versionAsInProject()),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.api").versionAsInProject(),
-				// The itests need private packages from the core subsystems bundle.
-				CoreOptions.provision(SubsystemTest.class.getClassLoader().getResourceAsStream("core.fragment/core.fragment.jar")),
+				streamBundle(fragment).noStart(),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.core").versionAsInProject(),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.itest.interfaces").versionAsInProject(),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
-				mavenBundle("org.apache.felix",             "org.apache.felix.resolver"),
+				mavenBundle("org.apache.felix",             "org.apache.felix.resolver").versionAsInProject(),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.coordinator").version("1.1.0.v20120522-1841"),
-				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").version("1.2.200.v20120522-2049"),
+				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").versionAsInProject(),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.osgi",                     "org.osgi.enterprise").version("5.0.0"),
 				mavenBundle("org.easymock",					"easymock").versionAsInProject(),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-				PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-				equinox().version("3.8.0.V20120529-1548")
 		};
-	}
-	
-	@org.ops4j.pax.exam.junit.Configuration
-	public static Option[] configuration() {
-		Option[] options = defineOptions();
-		options = updateOptions(options);
-		return options;
 	}
 	
 	protected final SubsystemEventHandler subsystemEvents = new SubsystemEventHandler();
 	
 	protected Collection<ServiceRegistration<?>> serviceRegistrations = new ArrayList<ServiceRegistration<?>>();
 	
+	@Before
 	public void setUp() throws Exception {
-		super.setUp();
+		if (!createdApplications) {
+			createApplications();
+			createdApplications = true;
+		}
 		try {
 			bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
 		}
@@ -236,13 +262,19 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertSubsystemNotNull(getRootSubsystem());
 	}
 	
+	protected abstract void createApplications() throws Exception;
+
+	@After
 	public void tearDown() throws Exception 
 	{
 		bundleContext.removeServiceListener(subsystemEvents);
 		for (ServiceRegistration<?> registration : serviceRegistrations)
 			Utils.unregisterQuietly(registration);
 		serviceRegistrations.clear();
-		super.tearDown();
+	}
+	
+	protected RichBundleContext context(Subsystem subsystem) {
+		return new RichBundleContext(subsystem.getBundleContext());
 	}
 	
 	protected void assertEmptySubsystem(Subsystem subsystem) {
@@ -252,7 +284,7 @@ public abstract class SubsystemTest extends IntegrationTest {
     }
 	
 	protected void assertBundleState(int state, String symbolicName, Subsystem subsystem) {
-    	Bundle bundle = getBundle(subsystem, symbolicName);
+    	Bundle bundle = context(subsystem).getBundleByName(symbolicName);
     	assertNotNull("Bundle not found: " + symbolicName, bundle);
     	assertBundleState(bundle, state);
     }
@@ -494,6 +526,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected void assertStartLevel(Bundle bundle, int expected) {
+		assertNotNull("Bundle is null", bundle);
 		assertEquals("Wrong start level", expected, bundle.adapt(BundleStartLevel.class).getStartLevel());
 	}
 	
@@ -514,7 +547,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected Subsystem assertSubsystemLifeCycle(File file) throws Exception {
-		Subsystem rootSubsystem = getOsgiService(Subsystem.class);
+		Subsystem rootSubsystem = context().getService(Subsystem.class);
         assertNotNull("Root subsystem was null", rootSubsystem);
         Subsystem subsystem = rootSubsystem.install(file.toURI().toURL().toExternalForm());
         assertNotNull("The subsystem was null", subsystem);
@@ -568,24 +601,43 @@ public abstract class SubsystemTest extends IntegrationTest {
 		assertEquals("Wrong version", expected, actual);
 	}
 	
-	protected static void createBundle(String symbolicName) throws IOException {
-		createBundle(symbolicName, null);
+	protected Header version(String version) {
+		return new Header(Constants.BUNDLE_VERSION, version);
 	}
 	
-	protected static void createBundle(String symbolicName, Map<String, String> headers) throws IOException {
-		createBundle(symbolicName, null, headers);
+	protected Header name(String name) {
+		return new Header(Constants.BUNDLE_SYMBOLICNAME, name);
 	}
 	
-	protected static void createBundle(String symbolicName, String version, Map<String, String> headers) throws IOException {
-		if (headers == null)
-			headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_SYMBOLICNAME, symbolicName);
-		if (version != null)
-			headers.put(Constants.BUNDLE_VERSION, version);
-		createBundle(headers);
+	protected Header exportPackage(String exportPackage) {
+		return new Header(Constants.EXPORT_PACKAGE, exportPackage);
 	}
 	
-	protected static void createBundle(Map<String, String> headers) throws IOException 
+	protected Header importPackage(String importPackage) {
+		return new Header(Constants.IMPORT_PACKAGE, importPackage);
+	}
+
+	protected Header requireBundle(String bundleName) {
+		return new Header(Constants.REQUIRE_BUNDLE, bundleName);
+	}
+	
+	protected Header requireCapability(String capability) {
+		return new Header(Constants.REQUIRE_CAPABILITY, capability);
+	}
+
+	protected Header provideCapability(String capability) {
+		return new Header(Constants.PROVIDE_CAPABILITY, capability);
+	}
+	
+	protected static void createBundle(Header...  headers) throws IOException {
+		HashMap<String, String> headerMap = new HashMap<String, String>();
+		for (Header header : headers) {
+			headerMap.put(header.key, header.value);
+		}
+		createBundle(headerMap);
+	}
+	
+	private static void createBundle(Map<String, String> headers) throws IOException 
 	{
 		String symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
 		JarFixture bundle = ArchiveFixture.newJar();
@@ -596,11 +648,18 @@ public abstract class SubsystemTest extends IntegrationTest {
 		write(symbolicName, bundle);
 	}
 	
-	protected RepositoryContent createBundleRepositoryContent(String file) throws Exception {
+	protected static void createBlueprintBundle(String symbolicName, String blueprintXml)
+			throws IOException {
+		write(symbolicName,
+				ArchiveFixture.newJar().manifest().symbolicName(symbolicName)
+						.end().file("OSGI-INF/blueprint/blueprint.xml", blueprintXml));
+	}
+	
+	private RepositoryContent createBundleRepositoryContent(String file) throws Exception {
 		return createBundleRepositoryContent(new File(file));
 	}
 	
-	protected RepositoryContent createBundleRepositoryContent(File file) throws Exception {
+	private RepositoryContent createBundleRepositoryContent(File file) throws Exception {
 		return new BundleResource(FileSystem.getFSRoot(file));
 	}
 	
@@ -610,10 +669,6 @@ public abstract class SubsystemTest extends IntegrationTest {
 			manifest.attribute(header.getKey(), header.getValue());
 		}
 		write(name, manifest);
-	}
-	
-	protected static void createSubsystem(String name) throws IOException {
-		createSubsystem(name, new String[0]);
 	}
 	
 	protected static void createSubsystem(String name, String...contents) throws IOException {
@@ -633,16 +688,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	
 	protected Subsystem findSubsystemService(long id) throws InvalidSyntaxException {
 		String filter = "(" + SubsystemConstants.SUBSYSTEM_ID_PROPERTY + "=" + id + ")";
-		return getOsgiService(Subsystem.class, filter, 5000);
-	}
-	
-	protected Bundle getBundle(Subsystem subsystem, String symbolicName) {
-		for (Bundle bundle : subsystem.getBundleContext().getBundles()) {
-			if (symbolicName.equals(bundle.getSymbolicName())) { 
-				return bundle;
-			}
-		}
-		return null;
+		return context().getService(Subsystem.class, filter, 5000);
 	}
 	
 	protected Subsystem getChild(Subsystem parent, String symbolicName) {
@@ -707,7 +753,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected Region getRegion(Subsystem subsystem) {
-		RegionDigraph digraph = getOsgiService(RegionDigraph.class);
+		RegionDigraph digraph = context().getService(RegionDigraph.class);
 		String name = getRegionName(subsystem);
 		Region region = digraph.getRegion(name);
 		assertNotNull("Region not found: " + name, region);
@@ -727,11 +773,11 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected AriesSubsystem getRootAriesSubsystem() {
-		return getOsgiService(AriesSubsystem.class);
+		return context().getService(AriesSubsystem.class);
 	}
 	
 	protected Subsystem getRootSubsystem() {
-		return getOsgiService(Subsystem.class, "(&(objectClass=org.osgi.service.subsystem.Subsystem)(subsystem.id=0))", DEFAULT_TIMEOUT);
+		return context().getService(Subsystem.class, "(subsystem.id=0)");
 	}
 	
 	protected Subsystem getRootSubsystemInState(Subsystem.State state, long timeout) throws InterruptedException {
@@ -758,28 +804,24 @@ public abstract class SubsystemTest extends IntegrationTest {
 	}
 	
 	protected Bundle getSubsystemCoreBundle() {
-		return findBundleBySymbolicName("org.apache.aries.subsystem.core");
+		return context().getBundleByName("org.apache.aries.subsystem.core");
 	}
 	
 	protected Bundle installBundleFromFile(String fileName) throws FileNotFoundException, BundleException {
-		return installBundleFromFile(new File(fileName));
+		return installBundleFromFile(new File(fileName), getRootSubsystem());
 	}
 	
-	protected Bundle installBundleFromFile(File file) throws FileNotFoundException, BundleException {
-		return installBundleFromFile(file, getRootSubsystem());
+	protected Bundle installBundleFromFile(String fileName, Subsystem subsystem) throws FileNotFoundException, BundleException {
+		return installBundleFromFile(new File(fileName), subsystem);
 	}
 	
-	protected Bundle installBundleFromFile(String file, Subsystem subsystem) throws FileNotFoundException, BundleException {
-		return installBundleFromFile(new File(file), subsystem);
-	}
-	
-	protected Bundle installBundleFromFile(File file, Subsystem subsystem) throws FileNotFoundException, BundleException {
+	private Bundle installBundleFromFile(File file, Subsystem subsystem) throws FileNotFoundException, BundleException {
 		Bundle bundle = installBundleFromFile(file, subsystem.getBundleContext());
 		assertBundleState(Bundle.INSTALLED|Bundle.RESOLVED, bundle.getSymbolicName(), subsystem);
 		return bundle;
 	}
 	
-	protected Bundle installBundleFromFile(File file, BundleContext bundleContext) throws FileNotFoundException, BundleException {
+	private Bundle installBundleFromFile(File file, BundleContext bundleContext) throws FileNotFoundException, BundleException {
 		// The following input stream is closed by the bundle context.
 		return bundleContext.installBundle(file.toURI().toString(), new FileInputStream(file));
 	}
@@ -796,7 +838,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 		return installSubsystem(parent, file.toURI().toURL().toExternalForm());
 	}
 	
-	protected Subsystem installSubsystemFromFile(File file) throws Exception {
+	private Subsystem installSubsystemFromFile(File file) throws Exception {
 		return installSubsystem(getRootSubsystem(), file.toURI().toURL().toExternalForm());
 	}
 	
@@ -929,7 +971,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 		Collection<Subsystem> parents = subsystem.getParents();
 		Bundle b = null;
 		Region region = null;
-		RegionDigraph digraph = getOsgiService(RegionDigraph.class);
+		RegionDigraph digraph = context().getService(RegionDigraph.class);
 		if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
 				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)) {
 			b = getRegionContextBundle(subsystem);
@@ -968,7 +1010,7 @@ public abstract class SubsystemTest extends IntegrationTest {
 		write(new File(file), fixture);
 	}
 	
-	protected static void write(File file, ArchiveFixture.AbstractFixture fixture) throws IOException {
+	private static void write(File file, ArchiveFixture.AbstractFixture fixture) throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
     	try {
     		fixture.writeOut(fos);
@@ -978,7 +1020,7 @@ public abstract class SubsystemTest extends IntegrationTest {
     	}
 	}
 	
-	static void createApplication(String name, String[] content) throws Exception 
+	static void createApplication(String name, String ... content) throws Exception 
 	{
 		ZipFixture feature = ArchiveFixture
 				.newZip()
