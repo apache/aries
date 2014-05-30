@@ -16,8 +16,6 @@ package org.apache.aries.subsystem.itests.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,15 +28,11 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.aries.subsystem.itests.obr.felix.FelixResourceAdapter;
 import org.apache.aries.subsystem.itests.obr.felix.OsgiResourceAdapter;
-import org.apache.felix.bundlerepository.Capability;
-import org.apache.felix.bundlerepository.Property;
 import org.apache.felix.bundlerepository.Reason;
 import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
-import org.apache.felix.bundlerepository.Requirement;
 import org.apache.felix.bundlerepository.Resolver;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -133,10 +127,9 @@ public class RepositoryGenerator {
 
     }
 
-    private void registerOBR() {
+	private void registerOBR() {
         // set repositoryAdmin
-        ServiceReference ref = context
-                .getServiceReference(RepositoryAdmin.class.getName());
+        ServiceReference<RepositoryAdmin> ref = context.getServiceReference(RepositoryAdmin.class);
         
         if (ref != null) {
             this.repositoryAdmin = (RepositoryAdmin) context.getService(ref);
@@ -159,7 +152,8 @@ public class RepositoryGenerator {
     /**
      * the format of resource is like bundlesymbolicname;version=1.0.0, for example com.ibm.ws.eba.example.blog.api;version=1.0.0,
      */
-    public Resource find(String resource) throws SubsystemException {
+    @SuppressWarnings({ "rawtypes", "unused" })
+	public Resource find(String resource) throws SubsystemException {
         generateOBR();
         
         Content content = new ContentImpl(resource);
@@ -197,47 +191,7 @@ public class RepositoryGenerator {
 
         return new FelixResourceAdapter(res);
     }
-    
-    /**
-     * the format of resource is like bundlesymbolicname;version=1.0.0, for example com.ibm.ws.eba.example.blog.api;version=1.0.0,
-     */
-    private org.apache.felix.bundlerepository.Resource findOBRResource(Resource resource) throws SubsystemException {
-        String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
-        // this version could possibly be a range
-        Version version = ResourceHelper.getVersionAttribute(resource);
 
-        //org.apache.felix.bundlerepository.Resource[] res = this.repositoryAdmin.discoverResources(filterString.toString());
-        Repository[] repos = this.repositoryAdmin.listRepositories();
-        org.apache.felix.bundlerepository.Resource res = null;
-        for (Repository repo : repos) {
-            org.apache.felix.bundlerepository.Resource[] resources = repo.getResources();
-            for (int i = 0; i < resources.length; i++) {
-                if (resources[i].getSymbolicName().equals(symbolicName)) {
-                    if (resources[i].getVersion().compareTo(version) == 0) {
-                        res = resources[i];
-                    }
-                }
-            }
-        }
-        return res;
-    }
-
-    /**
-     * convert to the resource from the obr resource
-     */
-    private Resource toResource(org.apache.felix.bundlerepository.Resource resource) throws SubsystemException {
-        if (resource == null) {
-            throw new SubsystemException("unable to find the resource " + resource);
-        }
-        
-        Map props = resource.getProperties();
-        
-
-        Object type = props.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
-
-        return new FelixResourceAdapter(resource);
-    }
-    
     public List<Resource> resolve(List<Resource> subsystemContent,
             List<Resource> subsystemResources) throws SubsystemException {
         generateOBR();
@@ -290,74 +244,6 @@ public class RepositoryGenerator {
             throw new SubsystemException(builder.toString());
         }
         return resources;
-    }
-    
-    private org.apache.felix.bundlerepository.Resource convert(final Resource resource) {
-    	return new org.apache.felix.bundlerepository.Resource() {
-			public Capability[] getCapabilities() {
-				Collection<Capability> result = new ArrayList<Capability>(resource.getCapabilities(null).size());
-				for (org.osgi.resource.Capability capability : resource.getCapabilities(null)) {
-					result.add(new Capability() {
-						public String getName() {
-							// TODO Auto-generated method stub
-							return null;
-						}
-
-						public Property[] getProperties() {
-							// TODO Auto-generated method stub
-							return null;
-						}
-
-						public Map getPropertiesAsMap() {
-							// TODO Auto-generated method stub
-							return null;
-						}
-					});
-				}
-				return null;
-			}
-
-			public String[] getCategories() {
-				return new String[0];
-			}
-
-			public String getId() {
-				return getSymbolicName() + ";version=" + getVersion();
-			}
-
-			public String getPresentationName() {
-				return getSymbolicName();
-			}
-
-			public Map getProperties() {
-				return Collections.EMPTY_MAP;
-			}
-
-			public Requirement[] getRequirements() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public Long getSize() {
-				return 0L;
-			}
-
-			public String getSymbolicName() {
-				return ResourceHelper.getSymbolicNameAttribute(resource);
-			}
-
-			public String getURI() {
-				return ResourceHelper.getContentAttribute(resource);
-			}
-
-			public Version getVersion() {
-				return ResourceHelper.getVersionAttribute(resource);
-			}
-
-			public boolean isLocal() {
-				return false;
-			}
-    	};
     }
 
 }

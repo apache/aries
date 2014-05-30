@@ -20,16 +20,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Constants;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class ProvisionPolicyTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -82,24 +78,20 @@ public class ProvisionPolicyTest extends SubsystemTest {
 		createManifest(APPLICATION_A + ".mf", attributes);
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, "x");
-		createBundle(BUNDLE_A, headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), importPackage("x"));
 	}
 	
-	private static void createBundleB() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.EXPORT_PACKAGE, "x");
-		createBundle(BUNDLE_B, headers);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B), exportPackage("x"));
 	}
 	
-	private static void createCompositeA() throws IOException {
+	private void createCompositeA() throws IOException {
 		createCompositeAManifest();
 		createSubsystem(COMPOSITE_A);
 	}
 	
-	private static void createCompositeAManifest() throws IOException {
+	private void createCompositeAManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, COMPOSITE_A);
 		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
@@ -107,12 +99,12 @@ public class ProvisionPolicyTest extends SubsystemTest {
 		createManifest(COMPOSITE_A + ".mf", attributes);
 	}
 	
-	private static void createFeatureA() throws IOException {
+	private void createFeatureA() throws IOException {
 		createFeatureAManifest();
 		createSubsystem(FEATURE_A);
 	}
 	
-	private static void createFeatureAManifest() throws IOException {
+	private void createFeatureAManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, FEATURE_A);
 		attributes
@@ -138,18 +130,14 @@ public class ProvisionPolicyTest extends SubsystemTest {
 		createManifest(FEATURE_B + ".mf", attributes);
 	}
 	
-	private static boolean createdTestFiles;
-	@Before
-	public static void createTestFiles() throws Exception {
-		if (createdTestFiles)
-			return;
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createBundleB();
 		createApplicationA();
 		createCompositeA();
 		createFeatureA();
 		createFeatureB();
-		createdTestFiles = true;
 	}
 	
 	public void setUp() throws Exception {

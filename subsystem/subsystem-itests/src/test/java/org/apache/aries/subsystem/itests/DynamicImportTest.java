@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.options;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,19 +13,18 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.aries.itest.RichBundleContext;
 import org.apache.aries.subsystem.itests.hello.api.Hello;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.JarFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ManifestFixture;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.Configuration;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
@@ -34,30 +32,21 @@ import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
-import aQute.lib.osgi.Constants;
-
 /*
  * Simple iTest for dynamic imports. In the first instance we'll use a 
  * DynamicImport-Package header because it's the simplest to set up. 
  * _Hopefully_ if this works, then packages added by WeavingProxy services
  * will also work. If not, we'll need extra tests :-/ 
  */
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
+@ExamReactorStrategy(PerMethod.class)
 public class DynamicImportTest extends SubsystemTest 
 {
-	private static boolean _testAppCreated = false;
-	
-	@Before
-	public void setUp() throws Exception 
-	{
-		super.setUp();
-		if (!_testAppCreated) { 
-			createApplication("dynamicImport", new String[]{"dynamicImport.jar"});
-			createEmptyClass();
-			createBundleA();
-			createApplicationA();
-			_testAppCreated = true;
-		}
+	@Override
+	protected void createApplications() throws Exception {
+		createApplication("dynamicImport", "dynamicImport.jar");
+		createEmptyClass();
+		createBundleA();
+		createApplicationA();
 	}
 
 	/*
@@ -99,7 +88,7 @@ public class DynamicImportTest extends SubsystemTest
 			startSubsystem(subsystem);
 		
 			BundleContext bc = subsystem.getBundleContext();
-			Hello h = getOsgiService(bc, Hello.class, null, DEFAULT_TIMEOUT);
+			Hello h = new RichBundleContext(bc).getService(Hello.class);
 			String message = h.saySomething();
 			assertEquals ("Wrong message back", "Hello, this is something", message); // DynamicImportHelloImpl.java
 		
@@ -108,15 +97,6 @@ public class DynamicImportTest extends SubsystemTest
 		} finally { 
 			sr.unregister();
 		}
-	}
-	
-	@Configuration
-	public static Option[] extraBundles() 
-	{
-		return options(
-				mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.itest.interfaces")
-//				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777")
-		);
 	}
 	
 	/*

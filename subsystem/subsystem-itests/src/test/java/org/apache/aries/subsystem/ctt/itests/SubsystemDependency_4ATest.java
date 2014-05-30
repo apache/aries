@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.service.subsystem.Subsystem;
@@ -30,16 +29,11 @@ A) Test a transitively closed subsystem deploys no transitive resources
 public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase 
 {
 	protected static String APPLICATION_A="sdt_application.a.esa";
-	private static boolean _testAppCreated = false;
 	
-	@Before
-	public void setUp() throws Exception
-	{
-		super.setUp();
-		if (!_testAppCreated) { 
-			createTestApplicationA();
-			_testAppCreated = true;
-		}
+	@Override
+	public void createApplications() throws Exception {
+		super.createApplications();
+		createTestApplicationA();
 		registerRepositoryR1();
 	}
 	
