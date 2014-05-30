@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -17,12 +18,14 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.subsystem</groupId>
@@ -32,28 +35,28 @@
     <version>1.0.1-SNAPSHOT</version>
     <description>Subsystems API.</description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-api</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-api</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-api</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-api</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-api</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-api</url>
+    </scm>
 
     <properties>
-         <!-- Export package versions are maintained in packageinfo files -->
+        <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
-        	org.apache.aries.subsystem,
-        	org.osgi.service.repository,
+            org.apache.aries.subsystem,
+            org.osgi.service.repository,
             org.osgi.service.subsystem
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-    		org.osgi.service.repository;version="[1.0,2)",
-    		org.osgi.service.subsystem;version="[1.0,2)",
-    		*
-    	</aries.osgi.import>
+            org.osgi.service.repository;version="[1.0,2)",
+            org.osgi.service.subsystem;version="[1.0,2)",
+            *
+        </aries.osgi.import>
     </properties>
 
     <dependencies>
-    	<dependency>
+        <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <version>1.1.0</version>
@@ -65,12 +68,13 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
