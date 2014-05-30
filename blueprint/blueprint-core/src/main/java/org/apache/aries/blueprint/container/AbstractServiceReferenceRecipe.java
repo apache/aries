@@ -136,7 +136,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 // though this may not be sufficient because we don't control ordering of those events
                 synchronized (tracked) {
                     getBundleContextForServiceLookup().addServiceListener(this, getOsgiFilter());
-                    ServiceReference[] references = getBundleContextForServiceLookup().getServiceReferences(null, getOsgiFilter());
+                    ServiceReference[] references = getBundleContextForServiceLookup().getServiceReferences((String) null, getOsgiFilter());
                     tracked.setInitial(references != null ? references : new ServiceReference[0]);
                 }
                 tracked.trackInitial();

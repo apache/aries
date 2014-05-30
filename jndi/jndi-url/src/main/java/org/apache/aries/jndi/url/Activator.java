@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jndi.url;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,7 +56,7 @@ public class Activator implements BundleActivator, SingleServiceListener
           Hashtable<Object, Object> blueprintURlSchemeProps = new Hashtable<Object, Object>();
           blueprintURlSchemeProps.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "blueprint" });
           blueprintUrlReg = ctx.registerService(ObjectFactory.class.getName(),
-              new BlueprintURLContextServiceFactory(), blueprintURlSchemeProps);
+              new BlueprintURLContextServiceFactory(), (Dictionary) blueprintURlSchemeProps);
         } catch (ClassNotFoundException cnfe) {
           // The blueprint packages aren't available, so do nothing. That's fine.
           Logger logger = Logger.getLogger("org.apache.aries.jndi");
@@ -78,7 +79,7 @@ public class Activator implements BundleActivator, SingleServiceListener
     Hashtable<Object, Object> osgiUrlprops = new Hashtable<Object, Object>();
     osgiUrlprops.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
     osgiUrlReg = ctx.registerService(ObjectFactory.class.getName(),
-        new OsgiURLContextServiceFactory(), osgiUrlprops);
+        new OsgiURLContextServiceFactory(), (Dictionary) osgiUrlprops);
   }
 
   @Override

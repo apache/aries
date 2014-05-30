@@ -18,14 +18,16 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    
-    <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.runtime.isolated.itests</artifactId>
     <packaging>jar</packaging>
@@ -35,16 +37,17 @@
         Integration tests for the Application runtime
     </description>
     
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-itests</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-itests</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-itests</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-itests</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-itests</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/application-itests</url>
+    </scm>
 
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -83,7 +86,7 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
-            <version>4.0</version>
+            <version>5.0.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -99,18 +102,21 @@
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>
 			<artifactId>pax-exam</artifactId>
+            <version>1.2.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>
 			<artifactId>pax-exam-junit</artifactId>
+            <version>1.2.4</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.exam</groupId>
-			<artifactId>pax-exam-container-default</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-default</artifactId>
+            <version>1.2.4</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.url</groupId>
 			<artifactId>pax-url-mvn</artifactId>
@@ -125,6 +131,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>       
         <dependency>
@@ -375,4 +382,5 @@
       		</build>
         </profile>
     </profiles>
+
 </project>

@@ -18,14 +18,15 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    
-    <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.install</artifactId>
@@ -36,15 +37,12 @@
         A very basic application installer
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-install</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-install</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-install</url>
-     </scm>
-    
-    <properties>
-    </properties>
-    
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-install</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-install</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/application-install</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -93,6 +91,7 @@
             <version>1.0.0</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
