@@ -21,6 +21,7 @@ package org.apache.aries.transaction;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.Properties;
 import java.util.Set;
 
@@ -76,7 +77,7 @@ public class BaseNameSpaceHandlerSetup {
             
         Properties props = new Properties();
         props.put("osgi.service.blueprint.namespace", new String[]{"http://aries.apache.org/xmlns/transactions/v1.0.0", "http://aries.apache.org/xmlns/transactions/v1.1.0", "http://aries.apache.org/xmlns/transactions/v1.2.0"});
-        ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
+        ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, (Dictionary) props);
     }
       
     @After

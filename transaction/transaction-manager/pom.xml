@@ -23,21 +23,22 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>org.apache.aries.transaction.manager</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries Transaction Manager</name> 
+    <name>Apache Aries Transaction Manager</name>
     <version>1.1.1-SNAPSHOT</version>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-manager</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager
+        </developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-manager</url>
+    </scm>
     <properties>
         <aries.osgi.export>
             org.apache.geronimo.transaction.manager;version="3.0";provide:=true,
@@ -167,7 +168,7 @@
                         <configuration>
                             <tasks>
                                 <copy todir="${project.build.directory}/sources">
-                                    <fileset dir="${basedir}/src/main/java" />
+                                    <fileset dir="${basedir}/src/main/java"/>
                                 </copy>
                             </tasks>
                         </configuration>

@@ -18,34 +18,37 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-  <groupId>org.apache.aries.transaction</groupId>
-  <artifactId>org.apache.aries.transaction.testbundle</artifactId>
-  <packaging>bundle</packaging>
-  <version>1.0.1-SNAPSHOT</version>
-  <name>Apache Aries Transaction Test Bundle</name>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-testbundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-testbundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-testbundle</url>
-     </scm>
+    <groupId>org.apache.aries.transaction</groupId>
+    <artifactId>org.apache.aries.transaction.testbundle</artifactId>
+    <packaging>bundle</packaging>
+    <version>1.0.1-SNAPSHOT</version>
+    <name>Apache Aries Transaction Test Bundle</name>
 
-  <properties>
-    <!-- Export package versions are maintained in packageinfo files -->
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-testbundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-testbundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-testbundle</url>
+    </scm>
 
-    <aries.osgi.export.pkg>
-      org.apache.aries.transaction.test
-    </aries.osgi.export.pkg>
-    <aries.osgi.private.pkg>
-      org.apache.aries.transaction.test.impl
-    </aries.osgi.private.pkg>
-  </properties>
+    <properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+
+        <aries.osgi.export.pkg>
+            org.apache.aries.transaction.test
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.transaction.test.impl
+        </aries.osgi.private.pkg>
+    </properties>
 
 </project>

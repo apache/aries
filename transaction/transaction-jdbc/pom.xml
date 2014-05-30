@@ -18,51 +18,54 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-  <groupId>org.apache.aries.transaction</groupId>
-  <artifactId>org.apache.aries.transaction.jdbc</artifactId>
-  <name>Apache Aries Transaction Enlisting JDBC Datasource</name>
-  <version>2.0.1-SNAPSHOT</version>
-  <packaging>bundle</packaging>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jdbc</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jdbc</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-jdbc</url>
-     </scm>
+    <groupId>org.apache.aries.transaction</groupId>
+    <artifactId>org.apache.aries.transaction.jdbc</artifactId>
+    <name>Apache Aries Transaction Enlisting JDBC Datasource</name>
+    <version>2.0.1-SNAPSHOT</version>
+    <packaging>bundle</packaging>
 
-  <properties>
-    <aries.osgi.export.pkg>
-      org.apache.aries.transaction.jdbc;-noimport:=true;version="2.0",
-      javax.resource*;version="1.6.0",
-    </aries.osgi.export.pkg>
-    <aries.osgi.import>
-      org.osgi.service.blueprint;resolution:=optional,
-      javax.validation;resolution:=optional,
-      *
-    </aries.osgi.import>
-    <aries.osgi.private.pkg>
-      org.apache.aries.transaction.jdbc.internal,
-      org.apache.geronimo.connector*,
-      org.tranql*,
-    </aries.osgi.private.pkg>
-    <aries.osgi.activator>
-      org.apache.aries.transaction.jdbc.internal.Activator
-    </aries.osgi.activator>
-  </properties>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jdbc</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jdbc</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-jdbc</url>
+    </scm>
 
-  <dependencies>
-      <dependency>
-          <groupId>org.apache.aries.transaction</groupId>
-          <artifactId>org.apache.aries.transaction.manager</artifactId>
-          <version>1.1.1-SNAPSHOT</version>
-      </dependency>
+    <properties>
+        <aries.osgi.export.pkg>
+            org.apache.aries.transaction.jdbc;-noimport:=true;version="2.0",
+            javax.resource*;version="1.6.0",
+        </aries.osgi.export.pkg>
+        <aries.osgi.import>
+            org.osgi.service.blueprint;resolution:=optional,
+            javax.validation;resolution:=optional,
+            *
+        </aries.osgi.import>
+        <aries.osgi.private.pkg>
+            org.apache.aries.transaction.jdbc.internal,
+            org.apache.geronimo.connector*,
+            org.tranql*,
+        </aries.osgi.private.pkg>
+        <aries.osgi.activator>
+            org.apache.aries.transaction.jdbc.internal.Activator
+        </aries.osgi.activator>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
+            <artifactId>org.apache.aries.transaction.manager</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
@@ -83,31 +86,31 @@
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
-      <dependency>
-          <groupId>org.tranql</groupId>
-          <artifactId>tranql-connector</artifactId>
-          <version>1.8</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.geronimo.components</groupId>
-          <artifactId>geronimo-connector</artifactId>
-          <version>3.1.1</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.aries.blueprint</groupId>
-          <artifactId>org.apache.aries.blueprint.core</artifactId>
-          <version>1.0.0</version>
-          <optional>true</optional>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.xbean</groupId>
-          <artifactId>xbean-blueprint</artifactId>
-          <version>3.7</version>
-          <optional>true</optional>
-      </dependency>
-      <dependency>
+        <dependency>
+            <groupId>org.tranql</groupId>
+            <artifactId>tranql-connector</artifactId>
+            <version>1.8</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.components</groupId>
+            <artifactId>geronimo-connector</artifactId>
+            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>1.0.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-blueprint</artifactId>
+            <version>3.7</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
@@ -118,7 +121,7 @@
             <version>1.7</version>
             <optional>true</optional>
         </dependency>
-  </dependencies>
+    </dependencies>
 
     <build>
         <plugins>
@@ -149,11 +152,13 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.transaction:org.apache.aries.transaction.jdbc:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.transaction:org.apache.aries.transaction.jdbc:1.0.0
+                            </oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>

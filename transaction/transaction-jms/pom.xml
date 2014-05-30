@@ -19,25 +19,27 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>org.apache.aries.transaction.jms</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMS Pool</name>
     <version>1.0.1-SNAPSHOT</version>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jms</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jms</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-jms</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jms</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-jms</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-jms</url>
+    </scm>
+
     <properties>
         <aries.osgi.export>
             org.apache.aries.transaction.jms;version="1.0.0";-noimport:=true
@@ -91,7 +93,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.5.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -125,7 +126,8 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.transaction:org.apache.aries.transaction.jms:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.transaction:org.apache.aries.transaction.jms:1.0.0
+                            </oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
