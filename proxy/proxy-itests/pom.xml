@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -17,29 +18,30 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-       <groupId>org.apache.aries</groupId>
-       <artifactId>java5-parent</artifactId>
-       <version>1.0.0</version>
-       <relativePath />
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.proxy</groupId>
     <artifactId>org.apache.aries.proxy.itests</artifactId>
     <version>1.0.1-SNAPSHOT</version>
-    
     <name>Apache Aries Proxy iTests</name>
     <description>
         Integration tests using the standalone proxy-bundle.
     </description>
 
     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-itests</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-itests</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-itests</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-itests</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-itests</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-itests</url>
     </scm>
-    
+
     <properties>
         <exam.version>3.4.0</exam.version>
         <url.version>1.6.0</url.version>
@@ -76,12 +78,12 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>2.0.0-SNAPSHOT</version>
-          <scope>test</scope>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
-        
+
         <!-- pax exam -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -146,7 +148,6 @@
             <artifactId>asm-all</artifactId>
             <version>5.0.2</version>
             <scope>test</scope>
-            
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -169,19 +170,19 @@
                     <forkMode>pertest</forkMode>
                 </configuration>
             </plugin>
-			<plugin>
-            	<groupId>org.apache.servicemix.tooling</groupId>
-            	<artifactId>depends-maven-plugin</artifactId>
-            	<version>1.2</version>
-            	<executions>
-                	<execution>
-	                    <id>generate-depends-file</id>
-    	                <goals>
-        	                <goal>generate-depends-file</goal>
-                    	</goals>
-                	</execution>
-            	</executions>
-        	</plugin>
+            <plugin>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>generate-depends-file</id>
+                        <goals>
+                            <goal>generate-depends-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
