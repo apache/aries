@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -17,12 +18,14 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.subsystem</groupId>
@@ -32,25 +35,25 @@
     <version>1.0.1-SNAPSHOT</version>
     <description>This is a standalone bundle to support Aries Subsystems.</description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-bundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-bundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/subsystem-bundle</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/subsystem-bundle</url>
+    </scm>
 
     <properties>
-    	<aries.osgi.activator>
+        <aries.osgi.activator>
             org.apache.aries.subsystem.core.internal.Activator
         </aries.osgi.activator>
-    	<aries.osgi.import>
-    		org.osgi.service.repository;version="[1.0,2)",
-    		org.osgi.service.subsystem;version="[1.0,2)",
+        <aries.osgi.import>
+            org.osgi.service.repository;version="[1.0,2)",
+            org.osgi.service.subsystem;version="[1.0,2)",
             org.apache.aries.application.*;resolution:=optional,
-    		*
-    	</aries.osgi.import>
+            *
+        </aries.osgi.import>
         <aries.osgi.export.pkg>
-        	org.apache.aries.subsystem;version="1.0",
-        	org.osgi.service.repository;version="1.0",
+            org.apache.aries.subsystem;version="1.0",
+            org.osgi.service.repository;version="1.0",
             org.osgi.service.subsystem;version="1.0"
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
@@ -105,11 +108,11 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
-    		<groupId>org.eclipse.equinox</groupId>
-    		<artifactId>org.eclipse.equinox.coordinator</artifactId>
-    		<version>1.1.0.v20120522-1841</version>
-    	</dependency>
-    	<dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.coordinator</artifactId>
+            <version>1.1.0.v20120522-1841</version>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>org.eclipse.equinox.region</artifactId>
             <version>1.1.0.v20120522-1841</version>
@@ -120,7 +123,7 @@
             <version>3.8.0.v20120529-1548</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <!-- Use the shade plugin with the dependency plugin to unjar the various jars
@@ -143,7 +146,7 @@
                                 </includes>
                             </artifactSet>
                             <filters>
-                                 <filter>
+                                <filter>
                                     <artifact>org.apache.aries.subsystem:org.apache.aries.subsystem.api</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
@@ -166,6 +169,7 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
