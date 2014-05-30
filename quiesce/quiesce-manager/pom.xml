@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -17,12 +18,14 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-    <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.quiesce</groupId>
@@ -31,18 +34,17 @@
     <version>1.0.1-SNAPSHOT</version>
     <name>Apache Aries Quiesce Manager</name>
     <description>
-      Quiesce Manager.
+        Quiesce Manager.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/quiesce/quiesce-manager</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/quiesce/quiesce-manager</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/quiesce/quiesce-manager</url>
-     </scm>
-
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/quiesce/quiesce-manager</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/quiesce/quiesce-manager</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/quiesce/quiesce-manager</url>
+    </scm>
 
     <properties>
-        <aries.osgi.export.pkg />
+        <aries.osgi.export.pkg/>
         <aries.osgi.private.pkg>
             org.apache.aries.quiesce.manager.impl
         </aries.osgi.private.pkg>
@@ -86,6 +88,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -107,6 +110,5 @@
             </plugin>
         </plugins>
     </build>
-        
 
 </project>
