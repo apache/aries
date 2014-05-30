@@ -433,7 +433,7 @@ public final class ServiceHelper
       refs = ctx.getServiceReferences(interface1, filter);
 
       if (refs == null || refs.length == 0) {
-        refs = ctx.getServiceReferences(null, "(" + JNDIConstants.JNDI_SERVICENAME + "="
+        refs = ctx.getServiceReferences((String) null, "(" + JNDIConstants.JNDI_SERVICENAME + "="
             + serviceName + ')');
       }
     } catch (InvalidSyntaxException e) {
