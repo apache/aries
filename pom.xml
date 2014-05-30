@@ -25,18 +25,18 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>7</version>
+        <version>14</version>
         <relativePath />
     </parent>
 
     <groupId>org.apache.aries</groupId>
     <artifactId>parent</artifactId>
-    <name>Aries :: Top Parent POM</name>
+    <name>Aries :: Parent POM</name>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
-        Aries top-level parent pom
+        Aries parent pom
     </description>
 
     <url>http://aries.apache.org</url>
@@ -100,11 +100,11 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-        
+
         <repository>
-          <id>EclipseLink Repo</id>
-          <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
-        </repository>        
+            <id>EclipseLink Repo</id>
+            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -139,12 +139,145 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <modules>
-        <module>default-parent</module>
-    </modules>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.8.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>1.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-service</artifactId>
+                <version>1.7.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sun.jdmk</groupId>
+                        <artifactId>jmxtools</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.jmx</groupId>
+                        <artifactId>jmxri</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.mail</groupId>
+                        <artifactId>mail</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.url</groupId>
+                <artifactId>pax-url-mvn</artifactId>
+                <version>1.3.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>4.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.5</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <properties>
+        <!-- OSGi bundles properties -->
+        <aries.osgi.import.defaults />
+        <aries.osgi.import.before.defaults />
+        <aries.osgi.import.additional />
+        <aries.osgi.import.pkg>
+            org.apache.aries.*,
+            ${aries.osgi.import.before.defaults},
+            ${aries.osgi.import.defaults},
+            ${aries.osgi.import.additional},
+            *
+        </aries.osgi.import.pkg>
+        <aries.osgi.activator />
+        <aries.osgi.failok>false</aries.osgi.failok>
+        <!--This is the default (consumer policy) range - override in the pom if you need a provider range -->
+        <aries.osgi.import.default.version>[$(version;==;$(@)),$(version;+;$(@)))</aries.osgi.import.default.version>
+        <aries.osgi.private.pkg>${project.artifactId}*.impl</aries.osgi.private.pkg>
+        <aries.osgi.export>${aries.osgi.export.pkg};-noimport:=true</aries.osgi.export>
+        <aries.osgi.export.pkg>!*.impl;${project.artifactId}*</aries.osgi.export.pkg>
+
+        <aries.osgi.version>version=${project.version}</aries.osgi.version>
+
+        <aries.osgi.split.pkg>-split-package:=first</aries.osgi.split.pkg>
+        <aries.osgi.import>${aries.osgi.import.pkg}</aries.osgi.import>
+        <aries.osgi.dynamic />
+        <aries.osgi.symbolic.name>${project.artifactId}</aries.osgi.symbolic.name>
+        <aries.osgi.exclude.dependencies>false</aries.osgi.exclude.dependencies>
+        <aries.osgi.remove.headers>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</aries.osgi.remove.headers>
+        <aries.osgi.include.resource>{maven-resources}</aries.osgi.include.resource>
+        <aries.javadoc.exclude.packages>${aries.osgi.private.pkg}</aries.javadoc.exclude.packages>
+    </properties>
 
     <build>
         <defaultGoal>install</defaultGoal>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.build.sourceDirectory}</directory>
+                <includes>
+                    <include>**/packageinfo</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/test/filtered-resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </testResource>
+        </testResources>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -155,9 +288,289 @@
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                     </configuration>
                 </plugin>
+                <!--TODO TEXT. This plugin's configuration is used in m2e only.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.servicemix.tooling
+                                        </groupId>
+                                        <artifactId>
+                                            depends-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.2,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>
+                                                generate-depends-file
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-antrun-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.2,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>run</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.codehaus.mojo
+                                        </groupId>
+                                        <artifactId>
+                                            properties-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.0-alpha-2,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>
+                                                read-project-properties
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.ops4j.pax.exam
+                                        </groupId>
+                                        <artifactId>
+                                            maven-paxexam-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.2.3,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>
+                                                generate-depends-file
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>1.2.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                        <forkMode>once</forkMode>
+                        <argLine>-enableassertions</argLine>
+                        <failIfNoTests>false</failIfNoTests>
+                        <workingDirectory>${project.build.directory}</workingDirectory>
+                        <excludes>
+                            <exclude>**/Abstract*.java</exclude>
+                            <exclude>**/Test*.java</exclude>
+                        </excludes>
+                        <includes>
+                            <include>**/*Test.java</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>1.1</version>
+                    <configuration>
+                        <excludes>
+                            <!--  3.5.0.v20090520 < 3.3.0-v20070530 -->
+                            <exclude>org.eclipse:osgi</exclude>
+                            <!-- 2.0.0-SNAPSHOT < 2.0.0-beta -->
+                            <exclude>org.apache.openjpa:openjpa</exclude>
+                            <!-- maven 3.0 components don't work with 2.0 -->
+                            <exclude>org.apache.maven:maven-plugin-api</exclude>
+                            <exclude>org.apache.maven:maven-project</exclude>
+                            <exclude>org.apache.maven:maven-artifact</exclude>
+                            <exclude>org.apache.maven:maven-archiver</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>2.3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.ops4j.pax.exam</groupId>
+                    <artifactId>maven-paxexam-plugin</artifactId>
+                    <version>1.2.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <optimize>true</optimize>
+                        <debug>true</debug>
+                        <showDeprecation>true</showDeprecation>
+                        <showWarnings>true</showWarnings>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
-    </build> 
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>animal-sniffer-enforcer-rule</artifactId>
+                        <version>1.6</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.0,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[1.7,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>ianal-maven-plugin</artifactId>
+                <version>1.0-alpha-1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>verify-legal-files</goal>
+                        </goals>
+                        <configuration>
+                            <strict>true</strict>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.3.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <inherited>true</inherited>
+                <configuration>
+                    <excludeDependencies>${aries.osgi.exclude.dependencies}</excludeDependencies>
+                    <instructions>
+                        <Bundle-Name>${project.name}</Bundle-Name>
+                        <Bundle-SymbolicName>${aries.osgi.symbolic.name}</Bundle-SymbolicName>
+                        <Bundle-Activator>${aries.osgi.activator}</Bundle-Activator>
+                        <Export-Package>${aries.osgi.export}</Export-Package>
+                        <Import-Package>${aries.osgi.import}</Import-Package>
+                        <DynamicImport-Package>${aries.osgi.dynamic}</DynamicImport-Package>
+                        <Private-Package>${aries.osgi.private.pkg}</Private-Package>
+                        <Implementation-Title>Apache Aries</Implementation-Title>
+                        <Implementation-Version>${project.version}</Implementation-Version>
+                        <Bundle-Vendor>The Apache Software Foundation</Bundle-Vendor>
+                        <Include-Resource>${aries.osgi.include.resource}</Include-Resource>
+                        <_removeheaders>${aries.osgi.remove.headers}}</_removeheaders>
+                        <_failok>${aries.osgi.failok}</_failok>
+                        <_consumer-policy>${aries.osgi.import.default.version}</_consumer-policy>
+                        <_provider-policy>$&lt;range;[==,=+)&gt;</_provider-policy>
+                        <Export-Service>${aries.osgi.export.service}</Export-Service>
+                        <Import-Service>${aries.osgi.import.service}</Import-Service>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>
@@ -168,7 +581,6 @@
                     <value>strict</value>
                 </property>
             </activation>
-
             <build>
                 <plugins>
                     <plugin>
@@ -221,7 +633,7 @@
                             <excludes>
                                 <exclude>**/target/**/*</exclude>
                                 <exclude>**/appended-resources/**/*</exclude>
-                                <exclude>**/dependency-reduced-pom.xml</exclude> 
+                                <exclude>**/dependency-reduced-pom.xml</exclude>
                                 <exclude>**/velocity.log</exclude>
                                 <exclude>**/DEPENDENCIES</exclude>
                                 <!-- manifest files don't support comments so don't contain the ASL2.0 header -->
@@ -236,7 +648,130 @@
                 </plugins>
             </build>
         </profile>
-
+        <profile>
+            <id>license-check</id>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>mc-release</id>
+                    <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                </pluginRepository>
+            </pluginRepositories>
+            <build>
+                <defaultGoal>license:check</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-license-plugin</groupId>
+                        <artifactId>maven-license-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>javadoc</report>
+                            <report>test-javadoc</report>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+                <configuration>
+                    <excludePackageNames>${aries.javadoc.exclude.packages}</excludePackageNames>
+                    <quiet>true</quiet>
+                    <source>1.7</source>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.7.0/docs/api</link>
+                        <link>http://www.osgi.org/javadoc/r4v43/</link>
+                    </links>
+                    <tags>
+                        <tag>
+                            <name>goal</name>
+                            <placement>Xt</placement>
+                        </tag>
+                        <tag>
+                            <name>phase</name>
+                            <placement>Xt</placement>
+                        </tag>
+                        <tag>
+                            <name>execute</name>
+                            <placement>Xt</placement>
+                        </tag>
+                        <tag>
+                            <name>requiresDependencyResolution</name>
+                            <placement>Xt</placement>
+                        </tag>
+                        <tag>
+                            <name>parameter</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>required</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>readonly</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>component</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>plexus.component</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>plexus.requirement</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>Immutable</name>
+                            <placement>t</placement>
+                        </tag>
+                        <tag>
+                            <name>ThreadSafe</name>
+                            <placement>t</placement>
+                        </tag>
+                    </tags>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.3.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <targetJdk>1.7</targetJdk>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
 </project>
 
