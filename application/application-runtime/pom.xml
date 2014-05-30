@@ -18,14 +18,16 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    
-    <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.runtime</artifactId>
     <packaging>bundle</packaging>
@@ -35,20 +37,19 @@
         A very basic runtime implementation
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-runtime</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-runtime</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-runtime</url>
-     </scm>
-
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-runtime</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-runtime</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/application-runtime</url>
+    </scm>
 
      <properties>
-     <aries.osgi.export.pkg />
-     <aries.osgi.import.pkg>
-       org.apache.aries.application.management;provide:=true,
-       org.apache.aries.application.management.spi.runtime;provide:=true,
-       * 
-     </aries.osgi.import.pkg>
+        <aries.osgi.export.pkg />
+        <aries.osgi.import.pkg>
+            org.apache.aries.application.management;provide:=true,
+            org.apache.aries.application.management.spi.runtime;provide:=true,
+            *
+        </aries.osgi.import.pkg>
      </properties>
 
     <dependencies>
@@ -89,6 +90,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -110,4 +112,5 @@
             </plugin>
         </plugins>
     </build>
+
  </project>

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -97,7 +98,7 @@ public class ObjectFactoryTest
     Properties props = new Properties();
     props.setProperty("osgi.jndi.urlScheme", "wibble");
 
-    bc.registerService(ObjectFactory.class.getName(), factory, props);
+    bc.registerService(ObjectFactory.class.getName(), factory, (Dictionary) props);
 
     Reference ref = new Reference(null);
     ref.add(new StringRefAddr("URL", "wibble"));
@@ -113,7 +114,7 @@ public class ObjectFactoryTest
     URLObjectFactoryFinder factory = Skeleton.newMock(URLObjectFactoryFinder.class);
     Skeleton.getSkeleton(factory).setReturnValue(new MethodCall(ObjectFactory.class, "getObjectInstance", Object.class, Name.class, Context.class, Hashtable.class), testObject);
 
-    bc.registerService(URLObjectFactoryFinder.class.getName(), factory, new Properties());
+    bc.registerService(URLObjectFactoryFinder.class.getName(), factory, (Dictionary) new Properties());
 
     Reference ref = new Reference(null);
     ref.add(new StringRefAddr("URL", "wibble"));

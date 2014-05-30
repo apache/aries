@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -17,12 +18,14 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.application</groupId>
@@ -35,11 +38,11 @@
       Aries applications.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-bundle</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-bundle</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-bundle</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/application-bundle</url>
+    </scm>
 
     <properties>
         <aries.osgi.symbolic.name>
@@ -47,7 +50,7 @@
         </aries.osgi.symbolic.name>
         <aries.osgi.import>
             org.osgi.framework;version="[1.5,2)",
-            org.slf4j;version="[1.5,2)",
+            org.slf4j;version="[1.5,2)";resolution:=optional,
             *
         </aries.osgi.import>
         <aries.osgi.export.pkg>

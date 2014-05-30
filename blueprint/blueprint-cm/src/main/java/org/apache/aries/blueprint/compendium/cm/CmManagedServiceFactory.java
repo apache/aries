@@ -79,7 +79,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
 
-        registration = blueprintContainer.getBundleContext().registerService(ManagedServiceFactory.class.getName(), this, props);
+        registration = blueprintContainer.getBundleContext().registerService(ManagedServiceFactory.class.getName(), this, (Dictionary) props);
     }
 
     public void destroy() {

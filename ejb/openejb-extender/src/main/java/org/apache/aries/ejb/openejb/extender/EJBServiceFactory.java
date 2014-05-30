@@ -16,8 +16,6 @@
  */
 package org.apache.aries.ejb.openejb.extender;
 
-import java.lang.reflect.Method;
-
 import org.apache.openejb.BeanContext.BusinessLocalBeanHome;
 import org.apache.openejb.BeanContext.BusinessLocalHome;
 import org.apache.openejb.BeanContext.BusinessRemoteHome;
@@ -27,7 +25,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
-public class EJBServiceFactory implements ServiceFactory<Object>{
+public class EJBServiceFactory implements ServiceFactory<Object> {
 
   private static enum Type {LOCAL, LOCAL_NO_IFACE, REMOTE;}
   

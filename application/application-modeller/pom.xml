@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -17,12 +18,14 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.application</groupId>
@@ -34,11 +37,11 @@
       Modelling utilities for working with Aries Applications.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-modeller</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-modeller</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-modeller</url>
-     </scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/application/application-modeller</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/application/application-modeller</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/application-modeller</url>
+    </scm>
 
     <properties>
     	<aries.osgi.private.pkg>
@@ -52,7 +55,6 @@
             org.apache.aries.application.modelling.utils;provide:=true,
             *
         </aries.osgi.import.pkg>
-    	
     </properties>
 
     <dependencies>
@@ -91,8 +93,7 @@
             <artifactId>org.apache.aries.blueprint.core</artifactId>
             <version>1.2.0</version>
         </dependency>
-        
-        
+
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -119,6 +120,7 @@
             <version>1.0.0</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -140,6 +142,5 @@
             </plugin>
         </plugins>
     </build>
-    
 
 </project>

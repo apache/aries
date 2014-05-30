@@ -46,7 +46,7 @@ public class ManagedObjectManager {
         ConfigurationWatcher reg = map.get(key);
         if (reg == null) {
             reg = new ConfigurationWatcher(); 
-            ServiceRegistration registration = cm.getBundle().getBundleContext().registerService(ManagedService.class.getName(), reg, props);
+            ServiceRegistration registration = cm.getBundle().getBundleContext().registerService(ManagedService.class.getName(), reg, (Dictionary) props);
             reg.setRegistration(registration);            
             map.put(key, reg);
         }

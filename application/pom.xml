@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Licensed to the Apache Software Foundation (ASF) under one or more
-    contributor license agreements. See the NOTICE file distributed with
-    this work for additional information regarding copyright ownership.
-    The ASF licenses this file to you under the Apache License, Version
-    2.0 (the "License"); you may not use this file except in compliance
-    with the License. You may obtain a copy of the License at
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0 Unless required by
-    applicable law or agreed to in writing, software distributed under the
-    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-    CONDITIONS OF ANY KIND, either express or implied. See the License for
-    the specific language governing permissions and limitations under the
-    License.
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.application</groupId>
     <artifactId>application</artifactId>
     <name>Apache Aries Application</name>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
-
     <description>
        Reactor pom for the Aries Application module 
     </description>
@@ -39,7 +42,7 @@
       <module>application-utils</module>
       <module>application-bundle</module>
       <module>application-converters</module>
-	    <module>application-default-local-platform</module>
+	  <module>application-default-local-platform</module>
       <module>application-deployment-management</module>
       <module>application-install</module>
       <module>application-itest-interface</module>
@@ -53,10 +56,10 @@
       <module>application-resolve-transform-cm</module>
       <module>application-resolve-transform-cm-itests</module>
       <module>application-runtime</module>
-	    <module>application-runtime-isolated</module>
-	    <module>application-runtime-framework</module>
-	    <module>application-runtime-framework-management</module>
-	    <module>application-tooling-repository-generator</module>
+	  <module>application-runtime-isolated</module>
+	  <module>application-runtime-framework</module>
+	  <module>application-runtime-framework-management</module>
+	  <module>application-tooling-repository-generator</module>
       <module>application-runtime-repository</module>
       <module>application-distro</module>
       <module>application-isolated-distro</module>
