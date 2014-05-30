@@ -20,6 +20,7 @@ package org.apache.aries.itest;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Dictionary;
 
 import org.osgi.framework.Bundle;
@@ -38,31 +39,30 @@ import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * {@link BundleContext} wrapper that adds a couple of additional utilities
- * @author vmahrwald
  *
  */
 public class RichBundleContext implements BundleContext {
     public static final long DEFAULT_TIMEOUT = 15000;
-    
+
     private final BundleContext delegate;
 
     public RichBundleContext(BundleContext delegate) {
         this.delegate = delegate;
     }
-    
+
 
     public <T> T getService(Class<T> type) {
         return getService(type, null, DEFAULT_TIMEOUT);
     }
-    
+
     public <T> T getService(Class<T> type, long timeout) {
         return getService(type, null, timeout);
     }
-    
+
     public <T> T getService(Class<T> type, String filter) {
         return getService(type, filter, DEFAULT_TIMEOUT);
     }
-    
+
     public <T> T getService(Class<T> type, String filter, long timeout) {
         ServiceTracker tracker = null;
         try {
@@ -79,10 +79,10 @@ public class RichBundleContext implements BundleContext {
             Filter osgiFilter = FrameworkUtil.createFilter(flt);
             tracker = new ServiceTracker(delegate, osgiFilter, null);
             tracker.open();
-            
+
             Object svc = type.cast(tracker.waitForService(timeout));
             if (svc == null) {
-                System.out.println("Could not obtain a service in time, service-ref="+ 
+                System.out.println("Could not obtain a service in time, service-ref="+
                   tracker.getServiceReference()+
                   ", time="+System.currentTimeMillis());
                 throw new RuntimeException("Gave up waiting for service " + flt);
@@ -95,7 +95,7 @@ public class RichBundleContext implements BundleContext {
         }
     }
 
-    
+
     public Bundle getBundleByName(String symbolicName) {
         for (Bundle b : delegate.getBundles()) {
             if (b.getSymbolicName().equals(symbolicName)) {
@@ -105,12 +105,6 @@ public class RichBundleContext implements BundleContext {
         return null;
     }
 
-    
-    
-    /*
-     * Delegate methods
-     */
-    
     public String getProperty(String key) {
         return delegate.getProperty(key);
     }
@@ -118,6 +112,8 @@ public class RichBundleContext implements BundleContext {
     public Bundle getBundle() {
         return delegate.getBundle();
     }
+
+    public Bundle getBundle(String filter) { return delegate.getBundle(filter); }
 
     public Bundle installBundle(String location, InputStream input)
             throws BundleException {
@@ -177,8 +173,16 @@ public class RichBundleContext implements BundleContext {
         return delegate.registerService(clazz, service, properties);
     }
 
+    public ServiceRegistration registerService(Class clazz, Object service, Dictionary props) {
+        return delegate.registerService(clazz, service, props);
+    }
+
     public ServiceReference[] getServiceReferences(String clazz, String filter)
             throws InvalidSyntaxException {
+        return delegate.getServiceReferences(clazz, filter);
+    }
+
+    public Collection getServiceReferences(Class clazz, String filter) throws InvalidSyntaxException {
         return delegate.getServiceReferences(clazz, filter);
     }
 
@@ -190,6 +194,8 @@ public class RichBundleContext implements BundleContext {
     public ServiceReference getServiceReference(String clazz) {
         return delegate.getServiceReference(clazz);
     }
+
+    public ServiceReference getServiceReference(Class clazz) { return delegate.getServiceReference(clazz); }
 
     public Object getService(ServiceReference reference) {
         return delegate.getService(reference);
