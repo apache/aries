@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <!--
+<!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -16,14 +16,16 @@
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
  under the License.
-    -->
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
@@ -32,12 +34,11 @@
     <packaging>bundle</packaging>
     <name>Apache Aries SPI Fly Dynamic Weaving Bundle</name>
     <description>
-This bundle contains an extender that facilitates the use
-of JRE SPI providers (components typically plugged in to the 
-JRE through META-INF/services resources).
+        This bundle contains an extender that facilitates the use
+        of JRE SPI providers (components typically plugged in to the
+        JRE through META-INF/services resources).
     </description>
-    
-    
+
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-bundle</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-bundle</developerConnection>
@@ -58,12 +59,12 @@ JRE through META-INF/services resources).
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>                    
+                    <artifactId>org.osgi.core</artifactId>
                 </exclusion>
 
                 <exclusion>
                     <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.compendium</artifactId>                    
+                    <artifactId>org.osgi.compendium</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -73,11 +74,10 @@ JRE through META-INF/services resources).
             <artifactId>org.apache.aries.spifly.weaver-internal</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.3.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -85,7 +85,7 @@ JRE through META-INF/services resources).
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
-        </dependency>        
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -119,7 +119,9 @@ JRE through META-INF/services resources).
                             org.apache.aries.spifly.dynamic
                         </Private-Package>
                         <Embed-Dependency>org.apache.aries.spifly.*;scope=compile;inline=true</Embed-Dependency>
-                        <Provide-Capability>osgi.extender;osgi.extender=osgi.serviceloader.registrar,osgi.extender;osgi.extender=osgi.serviceloader.processor</Provide-Capability>
+                        <Provide-Capability>
+                            osgi.extender;osgi.extender=osgi.serviceloader.registrar,osgi.extender;osgi.extender=osgi.serviceloader.processor
+                        </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
@@ -135,11 +137,13 @@ JRE through META-INF/services resources).
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.spifly:org.apache.aries.spifly.dynamic.bundle:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.spifly:org.apache.aries.spifly.dynamic.bundle:1.0.0
+                            </oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>
