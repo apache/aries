@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.container.unit.impl;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataSourceFactoryDataSource extends DelayedLookupDataSource implements SingleServiceListener {
+
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
@@ -125,4 +127,10 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
   public void serviceReplaced() {
     ds.set(null);
   }
+
+  @Override
+  public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    return null;
+  }
+
 }

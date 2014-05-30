@@ -22,8 +22,10 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -151,6 +153,11 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
     public int getLoginTimeout() throws SQLException
     {
       return wrappedDS.getLoginTimeout();
+    }
+
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;
     }
 
     public void setLogWriter(PrintWriter out) throws SQLException
