@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <!--
+<!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -16,14 +16,16 @@
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
  under the License.
-    -->
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
@@ -36,7 +38,7 @@
         woven using the static weaving done through the org.apache.aries.spifly.static
         component.
     </description>
-    
+
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-bundle</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-bundle</developerConnection>
@@ -49,18 +51,18 @@
             <artifactId>org.apache.aries.spifly.core-internal</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
-        </dependency>        
+        </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
-        </dependency>        
+        </dependency>
     </dependencies>
 
     <build>
@@ -80,7 +82,8 @@
                             org.apache.aries.spifly.staticbundle
                         </Private-Package>
                         <Bundle-Activator>org.apache.aries.spifly.staticbundle.StaticWeavingActivator</Bundle-Activator>
-                        <Provide-Capability>osgi.extender;osgi.extender=osgi.serviceloader.registrar</Provide-Capability>
+                        <Provide-Capability>osgi.extender;osgi.extender=osgi.serviceloader.registrar
+                        </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
@@ -96,11 +99,13 @@
                             <goal>version-check</goal>
                         </goals>
                         <configuration>
-                            <oldArtifact>org.apache.aries.spifly:org.apache.aries.spifly.static.bundle:1.0.0</oldArtifact>
+                            <oldArtifact>org.apache.aries.spifly:org.apache.aries.spifly.static.bundle:1.0.0
+                            </oldArtifact>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>

@@ -1,21 +1,31 @@
-<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
-    license agreements. See the NOTICE file distributed with this work for additional 
-    information regarding copyright ownership. The ASF licenses this file to 
-    you under the Apache License, Version 2.0 (the "License"); you may not use 
-    this file except in compliance with the License. You may obtain a copy of 
-    the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
-    by applicable law or agreed to in writing, software distributed under the 
-    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
-    OF ANY KIND, either express or implied. See the License for the specific 
-    language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.subsystem</groupId>
@@ -26,19 +36,19 @@
         Integration tests using the subsystem api, core for the implementation
         and subsystem-sample for the subsystem to be tested.
     </description>
-    
+
     <properties>
         <exam.version>3.4.0</exam.version>
         <url.version>1.6.0</url.version>
     </properties>
 
     <dependencies>
-    	<dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-    	<dependency>
+        <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
@@ -50,7 +60,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-    	<dependency>
+        <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
             <scope>test</scope>
@@ -67,10 +77,10 @@
             <artifactId>org.apache.aries.application.modeller</artifactId>
             <version>1.0.0</version>
             <exclusions>
-            	<exclusion>
-            		<groupId>org.osgi</groupId>
-            		<artifactId>org.osgi.core</artifactId>
-            	</exclusion>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -85,19 +95,19 @@
                 </exclusion>
             </exclusions>
         </dependency>
-    	<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint</artifactId>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
             <version>1.0.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.proxy</groupId>
-			<artifactId>org.apache.aries.proxy</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy</artifactId>
             <version>1.0.1</version>
-			<scope>test</scope>
-		</dependency>
-    	<dependency>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <scope>test</scope>
@@ -114,11 +124,11 @@
             <artifactId>org.apache.aries.subsystem.core</artifactId>
             <scope>test</scope>
             <version>1.0.1-SNAPSHOT</version>
-			<exclusions>
-            	<exclusion>
-            		<groupId>org.osgi</groupId>
-            		<artifactId>org.osgi.core</artifactId>
-            	</exclusion>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -144,9 +154,9 @@
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
                 <exclusion>
-            		<groupId>org.apache.felix</groupId>
-            		<artifactId>org.osgi.core</artifactId>
-            	</exclusion>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -160,9 +170,9 @@
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
                 <exclusion>
-            		<groupId>org.apache.felix</groupId>
-            		<artifactId>org.osgi.core</artifactId>
-            	</exclusion>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.compendium</artifactId>
@@ -170,18 +180,18 @@
             </exclusions>
         </dependency>
         <dependency>
-        	<groupId>org.apache.felix</groupId>
-        	<artifactId>org.apache.felix.resolver</artifactId>
-        	<version>0.1.0-SNAPSHOT</version>
-        	<exclusions>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.resolver</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
                 <exclusion>
-            		<groupId>org.apache.felix</groupId>
-            		<artifactId>org.osgi.core</artifactId>
-            	</exclusion>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.compendium</artifactId>
@@ -199,9 +209,9 @@
                     <artifactId>org.osgi.core</artifactId>
                 </exclusion>
                 <exclusion>
-            		<groupId>org.apache.felix</groupId>
-            		<artifactId>org.osgi.core</artifactId>
-            	</exclusion>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.compendium</artifactId>
@@ -209,12 +219,12 @@
             </exclusions>
         </dependency>
         <dependency>
-        	<groupId>org.easymock</groupId>
-        	<artifactId>easymock</artifactId>
-        	<version>3.0</version>
-        	<scope>test</scope>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
         </dependency>
-    	<dependency>
+        <dependency>
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>org.eclipse.equinox.event</artifactId>
             <scope>test</scope>
@@ -227,14 +237,13 @@
             <version>5.0.0</version>
         </dependency>
 
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
             <version>4.0</version>
-			<scope>test</scope>
-		</dependency>
-        
-        
+            <scope>test</scope>
+        </dependency>
+
         <!-- pax exam -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -288,10 +297,10 @@
             <artifactId>tinybundles</artifactId>
             <version>2.0.0</version>
             <exclusions>
-            	<exclusion>
-            		<artifactId>org.osgi.core</artifactId>
-            		<groupId>org.osgi</groupId>
-            	</exclusion>
+                <exclusion>
+                    <artifactId>org.osgi.core</artifactId>
+                    <groupId>org.osgi</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -305,317 +314,318 @@
             <version>3.8.0.v20120529-1548</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
-        	<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<id>core-fragment</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/core.fragment/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<excludes>
-								<exclude>**/*</exclude>
-							</excludes>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<outputDirectory>${project.build.directory}/test-classes/core.fragment</outputDirectory>
-							<finalName>core.fragment</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					<execution>
-						<id>tb1-application1</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/tb1/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<excludes>
-								<exclude>**/*</exclude>
-							</excludes>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<outputDirectory>${project.build.directory}/test-classes/application1</outputDirectory>
-							<finalName>tb1</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					<execution>
-						<id>tb1-feature1</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/tb1/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<includes>
-								<include>org/apache/aries/subsystem/itests/tb1/**</include>
-							</includes>
-							<outputDirectory>${project.build.directory}/test-classes/feature1</outputDirectory>
-							<finalName>tb1</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					<execution>
-						<id>tb2-feature2</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/tb2/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<includes>
-								<include>org/apache/aries/subsystem/itests/tb2/**</include>
-								<include>org/apache/aries/subsystem/itests/tb3/**</include>
-							</includes>
-							<outputDirectory>${project.build.directory}/test-classes/feature2</outputDirectory>
-							<finalName>tb2</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					<execution>
-						<id>tb3-feature1</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<includes>
-								<include>org/apache/aries/subsystem/itests/tb3/**</include>
-							</includes>
-							<outputDirectory>${project.build.directory}/test-classes/feature1</outputDirectory>
-							<finalName>tb3</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					<execution>
-						<id>tb3-feature2</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<includes>
-								<include>org/apache/aries/subsystem/itests/tb3/**</include>
-							</includes>
-							<outputDirectory>${project.build.directory}/test-classes/feature2</outputDirectory>
-							<finalName>tb3</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					<execution>
-						<id>tb3-feature3</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<includes>
-								<include>org/apache/aries/subsystem/itests/tb3/**</include>
-							</includes>
-							<outputDirectory>${project.build.directory}/test-classes/feature3</outputDirectory>
-							<finalName>tb3</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					
-					<!-- New pom for hello + related tests, part 1 -->
-					
-					<execution>
-						<id>hello-impl</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/helloImpl/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<includes>
-								<include>org/apache/aries/subsystem/itests/hello/impl/**</include>
-							</includes>
-							<outputDirectory>${project.build.directory}/test-classes/hello</outputDirectory>
-							<finalName>helloImpl</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					
-					<execution>
-						<id>dynamic-import-impl</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifestFile>src/test/bundles/dynamicImport/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-							<includes>
-								<include>org/apache/aries/subsystem/itests/dynamicImport/**</include>
-							</includes>
-							<outputDirectory>${project.build.directory}/test-classes/dynamicImport</outputDirectory>
-							<finalName>dynamicImport</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					
-					<!-- End of new pom for hello tests, part 1 -->
-					
-					<execution>
-						<id>basic-blueprint-application</id>
-						<goals>
-						  <goal>jar</goal>
-						</goals>
-						<configuration>
-						  <archive>
-						    <manifestFile>src/test/bundles/blueprint/META-INF/MANIFEST.MF</manifestFile>
-						  </archive>
-						  <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-						  <includes>
-						    <include>org/apache/aries/subsystem/itests/blueprint/**</include>
-						    <include>OSGI-INF/blueprint/blueprint.xml</include>
-						  </includes>
-						  <outputDirectory>${project.build.directory}/test-classes/blueprint</outputDirectory>
-						  <finalName>blueprint</finalName>
-						</configuration>
-						<phase>process-test-classes</phase>
-					</execution>
-					
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<id>core-fragment</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/bundles/core.fragment</source>
-							</sources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>add-source-tb1</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/bundles/tb1</source>
-							</sources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>add-source-tb2</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/bundles/tb2</source>
-							</sources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>add-source-tb3</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/bundles/tb3</source>
-							</sources>
-						</configuration>
-					</execution>
-					
-					<!-- New pom for hello tests, part 2 -->
-						
-					<execution>
-						<id>add-source-helloImpl</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/bundles/helloImpl</source>
-							</sources>
-						</configuration>
-					</execution>
-					
-					<execution>
-						<id>add-source-dynamicImport</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/bundles/dynamicImport</source>
-							</sources>
-						</configuration>
-					</execution>
-					
-					<!-- End of new pom for hello tests, part 2 -->
-					
-					<execution>
-						<id>add-source-blueprint</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/bundles/blueprint</source>
-							</sources>
-						</configuration>
-					</execution>
-					
-					<execution>
-						<id>add-source-classes</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-test-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/classes</source>
-							</sources>
-						</configuration>
-					</execution>
-					
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>core-fragment</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/core.fragment/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <excludes>
+                                <exclude>**/*</exclude>
+                            </excludes>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <outputDirectory>${project.build.directory}/test-classes/core.fragment</outputDirectory>
+                            <finalName>core.fragment</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                    <execution>
+                        <id>tb1-application1</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/tb1/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <excludes>
+                                <exclude>**/*</exclude>
+                            </excludes>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <outputDirectory>${project.build.directory}/test-classes/application1</outputDirectory>
+                            <finalName>tb1</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                    <execution>
+                        <id>tb1-feature1</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/tb1/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/tb1/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/feature1</outputDirectory>
+                            <finalName>tb1</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                    <execution>
+                        <id>tb2-feature2</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/tb2/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/tb2/**</include>
+                                <include>org/apache/aries/subsystem/itests/tb3/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/feature2</outputDirectory>
+                            <finalName>tb2</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                    <execution>
+                        <id>tb3-feature1</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/tb3/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/feature1</outputDirectory>
+                            <finalName>tb3</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                    <execution>
+                        <id>tb3-feature2</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/tb3/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/feature2</outputDirectory>
+                            <finalName>tb3</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                    <execution>
+                        <id>tb3-feature3</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/tb3/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/tb3/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/feature3</outputDirectory>
+                            <finalName>tb3</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <!-- New pom for hello + related tests, part 1 -->
+
+                    <execution>
+                        <id>hello-impl</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/helloImpl/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/hello/impl/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/hello</outputDirectory>
+                            <finalName>helloImpl</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <execution>
+                        <id>dynamic-import-impl</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/dynamicImport/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/dynamicImport/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/dynamicImport</outputDirectory>
+                            <finalName>dynamicImport</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <!-- End of new pom for hello tests, part 1 -->
+
+                    <execution>
+                        <id>basic-blueprint-application</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/blueprint/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/blueprint/**</include>
+                                <include>OSGI-INF/blueprint/blueprint.xml</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/blueprint</outputDirectory>
+                            <finalName>blueprint</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>core-fragment</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/core.fragment</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-source-tb1</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/tb1</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-source-tb2</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/tb2</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-source-tb3</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/tb3</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
+                    <!-- New pom for hello tests, part 2 -->
+
+                    <execution>
+                        <id>add-source-helloImpl</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/helloImpl</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>add-source-dynamicImport</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/dynamicImport</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
+                    <!-- End of new pom for hello tests, part 2 -->
+
+                    <execution>
+                        <id>add-source-blueprint</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/blueprint</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>add-source-classes</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/classes</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
@@ -637,7 +647,7 @@
                     <forkMode>pertest</forkMode>
                 </configuration>
             </plugin>
-         </plugins>
+        </plugins>
     </build>
 
     <profiles>

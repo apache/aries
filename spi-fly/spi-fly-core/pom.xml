@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <!--
+<!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -16,13 +16,16 @@
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
  under the License.
-    -->
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java6-parent</artifactId>
-        <version>1.0.0</version>
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
@@ -31,11 +34,11 @@
     <packaging>jar</packaging>
     <name>Apache Aries SPI Fly Core (internal module)</name>
     <description>
-This bundle contains an extender that facilitates the use
-of JRE SPI providers (components typically plugged in to the 
-JRE through META-INF/services resources).
+        This bundle contains an extender that facilitates the use
+        of JRE SPI providers (components typically plugged in to the
+        JRE through META-INF/services resources).
     </description>
-    
+
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-core</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-core</developerConnection>
@@ -53,7 +56,7 @@ JRE through META-INF/services resources).
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
-        </dependency>        
+        </dependency>
 
         <dependency>
             <groupId>org.apache.aries</groupId>
@@ -74,4 +77,5 @@ JRE through META-INF/services resources).
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>
