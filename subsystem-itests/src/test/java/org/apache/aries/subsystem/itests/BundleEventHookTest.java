@@ -31,10 +31,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceEvent;
@@ -42,7 +39,6 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.subsystem.Subsystem;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class BundleEventHookTest extends SubsystemTest {
     /*
 	 * Bundle-SymbolicName: bundle.a.jar
@@ -53,22 +49,18 @@ public class BundleEventHookTest extends SubsystemTest {
 	 */
 	private static final String BUNDLE_B = "bundle.b.jar";
 	
-	@Before
-	public static void createApplications() throws Exception {
-		if (createdApplications) {
-			return;
-		}
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createBundleB();
-		createdApplications = true;
 	}
 	
-	private static void createBundleA() throws IOException {
-		createBundle(BUNDLE_A);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A));
 	}
 	
-	private static void createBundleB() throws IOException {
-		createBundle(BUNDLE_B);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B));
 	}
     
     /*
@@ -151,6 +143,7 @@ public class BundleEventHookTest extends SubsystemTest {
     	final AtomicReference<Bundle> a = new AtomicReference<Bundle>();
     	bundleContext.addServiceListener(
     			new ServiceListener() {
+					@SuppressWarnings("unchecked")
 					@Override
 					public void serviceChanged(ServiceEvent event) {
 						if ((event.getType() & (ServiceEvent.REGISTERED | ServiceEvent.MODIFIED)) == 0)
@@ -159,7 +152,7 @@ public class BundleEventHookTest extends SubsystemTest {
 							// We've been here before and already done what needs doing.
 							return;
 						ServiceReference<Subsystem> sr = (ServiceReference<Subsystem>)event.getServiceReference();
-						Subsystem s = bundleContext.getService(sr);
+						bundleContext.getService(sr);
 						try {
 							// Queue up the installed event.
 							a.set(core.getBundleContext().installBundle(BUNDLE_A, new FileInputStream(BUNDLE_A)));
@@ -204,6 +197,7 @@ public class BundleEventHookTest extends SubsystemTest {
     	final AtomicReference<Bundle> a = new AtomicReference<Bundle>();
     	bundleContext.addServiceListener(
     			new ServiceListener() {
+					@SuppressWarnings("unchecked")
 					@Override
 					public void serviceChanged(ServiceEvent event) {
 						if ((event.getType() & (ServiceEvent.REGISTERED | ServiceEvent.MODIFIED)) == 0)
@@ -212,7 +206,7 @@ public class BundleEventHookTest extends SubsystemTest {
 							// We've been here before and already done what needs doing.
 							return;
 						ServiceReference<Subsystem> sr = (ServiceReference<Subsystem>)event.getServiceReference();
-						Subsystem s = bundleContext.getService(sr);
+						bundleContext.getService(sr);
 						try {
 							// Queue up the installed event for bundle A using B's context.
 							a.set(b.getBundleContext().installBundle(BUNDLE_A, new FileInputStream(BUNDLE_A)));

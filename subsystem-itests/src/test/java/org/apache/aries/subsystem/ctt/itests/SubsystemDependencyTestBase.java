@@ -7,16 +7,14 @@ import static org.junit.Assert.fail;
 import static org.osgi.framework.namespace.BundleNamespace.BUNDLE_NAMESPACE;
 import static org.osgi.framework.namespace.PackageNamespace.PACKAGE_NAMESPACE;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.subsystem.itests.Header;
 import org.apache.aries.subsystem.itests.SubsystemTest;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -54,7 +52,7 @@ import org.osgi.service.subsystem.Subsystem;
 	  - Bundle E
  */
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
+@ExamReactorStrategy(PerMethod.class)
 public abstract class SubsystemDependencyTestBase extends SubsystemTest 
 {
 	protected static String BUNDLE_A = "sdt_bundle.a.jar";
@@ -65,95 +63,69 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	protected static String BUNDLE_F = "sdt_bundle.f.jar";
 	protected static String BUNDLE_G = "sdt_bundle.g.jar";
 
-	private static boolean _staticResourcesCreated = false;
-	@Before
-	public void setUp() throws Exception
-	{
-		super.setUp();
-		
+	@Override
+	protected void createApplications() throws Exception {
 		// We'd like to do this in an @BeforeClass method, but files written in @BeforeClass
 		// go into the project's target/ directory whereas those written in @Before go into 
 		// paxexam's temp directory, which is where they're needed. 
-		if (!_staticResourcesCreated) { 
-			createBundleA();
-			createBundleB();
-			createBundleC();
-			createBundleD();
-			createBundleE();
-			createBundleF();
-			createBundleG();
-			_staticResourcesCreated = true;
-		}
+		createBundleA();
+		createBundleB();
+		createBundleC();
+		createBundleD();
+		createBundleE();
+		createBundleF();
+		createBundleG();
 	}
 	
-	private static void createBundleA() throws Exception
+	private void createBundleA() throws Exception
 	{ 
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.EXPORT_PACKAGE, "x");
-		createBundle(BUNDLE_A, headers);
+		createBundle(name(BUNDLE_A), version("1.0.0"), exportPackage("x"));
 	}
 	
-	private static void createBundleB() throws Exception
+	private void createBundleB() throws Exception
 	{
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.PROVIDE_CAPABILITY, "y;y=randomNamespace"); // TODO: see comment below about bug=true
-		createBundle(BUNDLE_B, headers);
+		// TODO: see comment below about bug=true
+		createBundle(name(BUNDLE_B), version("1.0.0"), new Header(Constants.PROVIDE_CAPABILITY, "y;y=randomNamespace"));
 	}
 	
-	private static void createBundleC() throws Exception
+	private void createBundleC() throws Exception
 	{
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.IMPORT_PACKAGE, "x");
-		createBundle(BUNDLE_C, headers);
+		createBundle(name(BUNDLE_C), version("1.0.0"), importPackage("x"));
 	}
 	
-	private static void createBundleD() throws Exception
+	private void createBundleD() throws Exception
 	{
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.REQUIRE_BUNDLE, BUNDLE_A);
-		createBundle(BUNDLE_D, headers);
-	}
-	
-	private static void createBundleE() throws Exception 
-	{
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.REQUIRE_CAPABILITY, "y");
-		// TODO:
-		/*
-		 * According to the OSGi Core Release 5 spec section 3.3.6 page 35, 
-		 *   "A filter is optional, if no filter directive is specified the requirement always matches."
-		 *  
-		 * If omitted, we first get an NPE in DependencyCalculator.MissingCapability.initializeAttributes(). 
-		 * If that's fixed, we get exceptions of the form, 
-		 * 
-		 *  Caused by: java.lang.IllegalArgumentException: The filter must not be null.
-		 *    at org.eclipse.equinox.internal.region.StandardRegionFilterBuilder.allow(StandardRegionFilterBuilder.java:49)
-		 *    at org.apache.aries.subsystem.core.internal.SubsystemResource.setImportIsolationPolicy(SubsystemResource.java:655)
-	     * 
-	     * This looks to be an Equinox defect - at least in the level of 3.8.0 currently being used by these tests. 
-		 */
-		createBundle(BUNDLE_E, headers);
+		createBundle(name(BUNDLE_D), version("1.0.0"), requireBundle(BUNDLE_A));
 	}
 
-	private static void createBundleF() throws Exception 
+	// TODO:
+	/*
+	 * According to the OSGi Core Release 5 spec section 3.3.6 page 35, 
+	 *   "A filter is optional, if no filter directive is specified the requirement always matches."
+	 *  
+	 * If omitted, we first get an NPE in DependencyCalculator.MissingCapability.initializeAttributes(). 
+	 * If that's fixed, we get exceptions of the form, 
+	 * 
+	 *  Caused by: java.lang.IllegalArgumentException: The filter must not be null.
+	 *    at org.eclipse.equinox.internal.region.StandardRegionFilterBuilder.allow(StandardRegionFilterBuilder.java:49)
+	 *    at org.apache.aries.subsystem.core.internal.SubsystemResource.setImportIsolationPolicy(SubsystemResource.java:655)
+     * 
+     * This looks to be an Equinox defect - at least in the level of 3.8.0 currently being used by these tests. 
+	 */
+	private void createBundleE() throws Exception 
 	{
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.EXPORT_PACKAGE, "x");
-		createBundle(BUNDLE_F, headers);
+		createBundle(name(BUNDLE_E), version("1.0.0"), new Header(Constants.REQUIRE_CAPABILITY, "y"));
+	}
+
+	private void createBundleF() throws Exception 
+	{
+		createBundle(name(BUNDLE_F), version("1.0.0"), exportPackage("x"));
 	}
 	
-	private static void createBundleG() throws Exception 
+	// TODO: see comment above about bug=true
+	private void createBundleG() throws Exception 
 	{
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_VERSION, "1.0.0");
-		headers.put(Constants.PROVIDE_CAPABILITY, "y;y=randomNamespace");      // TODO: see comment above about bug=true
-		createBundle(BUNDLE_G, headers);
+		createBundle(name(BUNDLE_G), version("1.0.0"), new Header(Constants.PROVIDE_CAPABILITY, "y;y=randomNamespace"));
 	}
 	
 	protected void registerRepositoryR1() throws Exception
@@ -188,7 +160,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	 */
 	protected void verifySinglePackageWiring (Subsystem s, String wiredBundleName, String expectedPackage, String expectedProvidingBundle)
 	{
-		Bundle wiredBundle = getBundle(s, wiredBundleName);
+		Bundle wiredBundle = context(s).getBundleByName(wiredBundleName);
 		assertNotNull ("Bundle not found", wiredBundleName);
 
 		BundleWiring wiring = wiredBundle.adapt(BundleWiring.class);
@@ -212,7 +184,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	 */
 	protected void verifyRequireBundleWiring (Subsystem s, String wiredBundleName, String expectedProvidingBundleName)
 	{
-		Bundle wiredBundle = getBundle(s, BUNDLE_D);
+		Bundle wiredBundle = context(s).getBundleByName(BUNDLE_D);
 		assertNotNull ("Target bundle " + wiredBundleName + " not found", wiredBundle);
 	
 		BundleWiring wiring = wiredBundle.adapt(BundleWiring.class);
@@ -238,7 +210,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	protected void verifyCapabilityWiring (Subsystem s, String wiredBundleName, 
 			String namespace, String expectedProvidingBundleName)
 	{
-		Bundle wiredBundle = getBundle(s, wiredBundleName);
+		Bundle wiredBundle = context(s).getBundleByName(wiredBundleName);
 		assertNotNull ("Targt bundle " + wiredBundleName + " not found", wiredBundleName);
 		
 		BundleWiring wiring = wiredBundle.adapt(BundleWiring.class);

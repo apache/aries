@@ -24,28 +24,23 @@ import junit.framework.AssertionFailedError;
 
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.Subsystem;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
+@ExamReactorStrategy(PerMethod.class)
 public class FeatureTest extends SubsystemTest {
 	
-	@Before
-	public static void createApplications() throws Exception {
-		if (createdApplications) {
-			return;
-		}
+	@Override
+	public void createApplications() throws Exception {
 		createApplication("feature2", new String[]{"tb2.jar", "tb3.jar"});
 		createApplication("feature1", new String[]{"tb1.jar", "feature2.esa", "tb3.jar"});
 		createApplication("feature3", new String[]{"tb3.jar"});
-		createdApplications = true;
 	}
 
 	@Test

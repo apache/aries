@@ -23,8 +23,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,57 +36,50 @@ import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.io.IOUtils;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
+@ExamReactorStrategy(PerMethod.class)
 public class InstallTest extends SubsystemTest {
-	@Before
-	public static void createApplications() throws Exception {
-		if (createdApplications) {
-			return;
-		}
+	public InputStream getResourceAsStream(String path) {
+		return SubsystemTest.class.getClassLoader().getResourceAsStream(path);
+	}
+	
+	@Override
+	public void createApplications() throws Exception {
+		createCompositeDirEsa();
+		createApplication("feature3", "tb3.jar");
+		createApplication("feature2", "tb3.jar", "tb2.jar");
+		createBundleA();
+		createBundleB();
+		createApplicationA();
+		createCompositeA();
+		createFeatureA();
+	}
+
+	private void createCompositeDirEsa() throws IOException,
+			FileNotFoundException {
 		ZipFixture feature = ArchiveFixture
 				.newZip()
-				.binary("OSGI-INF/SUBSYSTEM.MF",
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/OSGI-INF/SUBSYSTEM.MF"))
-				.binary("a.jar/META-INF/MANIFEST.MF", 
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/a.jar/META-INF/MANIFEST.MF"))
-				.binary("a.jar/a/A.class", 
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"a/A.class"))
-				.binary("applicationDir.esa/OSGI-INF/SUBSYSTEM.MF",
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/applicationDir/OSGI-INF/SUBSYSTEM.MF"))
-				.binary("applicationDir.esa/b.jar/META-INF/MANIFEST.MF", 
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"compositeDir" + "/applicationDir/b.jar/META-INF/MANIFEST.MF"))
-				.binary("applicationDir.esa/b.jar/b/B.class", 
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"b/B.class"))
-				.binary("applicationDir.esa/featureDir.esa/OSGI-INF/SUBSYSTEM.MF",
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
+				.binary("OSGI-INF/SUBSYSTEM.MF", getResourceAsStream("compositeDir" + "/OSGI-INF/SUBSYSTEM.MF"))
+				.binary("a.jar/META-INF/MANIFEST.MF", getResourceAsStream("compositeDir" + "/a.jar/META-INF/MANIFEST.MF"))
+				.binary("a.jar/a/A.class", getResourceAsStream("a/A.class"))
+				.binary("applicationDir.esa/OSGI-INF/SUBSYSTEM.MF", getResourceAsStream("compositeDir" + "/applicationDir/OSGI-INF/SUBSYSTEM.MF"))
+				.binary("applicationDir.esa/b.jar/META-INF/MANIFEST.MF", getResourceAsStream("compositeDir" + "/applicationDir/b.jar/META-INF/MANIFEST.MF"))
+				.binary("applicationDir.esa/b.jar/b/B.class", getResourceAsStream("b/B.class"))
+				.binary("applicationDir.esa/featureDir.esa/OSGI-INF/SUBSYSTEM.MF", getResourceAsStream(
 								"compositeDir" + "/applicationDir/featureDir/OSGI-INF/SUBSYSTEM.MF"))
-				.binary("applicationDir.esa/featureDir.esa/a.jar/META-INF/MANIFEST.MF", 
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
+				.binary("applicationDir.esa/featureDir.esa/a.jar/META-INF/MANIFEST.MF", getResourceAsStream(
 								"compositeDir" + "/applicationDir/featureDir/a.jar/META-INF/MANIFEST.MF"))
-				.binary("applicationDir.esa/featureDir.esa/a.jar/a/A.class", 
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"a/A.class"))
-				.binary("applicationDir.esa/featureDir.esa/b.jar/META-INF/MANIFEST.MF", 
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
+				.binary("applicationDir.esa/featureDir.esa/a.jar/a/A.class", getResourceAsStream("a/A.class"))
+				.binary("applicationDir.esa/featureDir.esa/b.jar/META-INF/MANIFEST.MF", getResourceAsStream(
 								"compositeDir" + "/applicationDir/featureDir/b.jar/META-INF/MANIFEST.MF"))
-				.binary("applicationDir.esa/featureDir.esa/b.jar/b/B.class", 
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								"b/B.class"));
+				.binary("applicationDir.esa/featureDir.esa/b.jar/b/B.class", getResourceAsStream("b/B.class"));
 		feature.end();
 		FileOutputStream fos = new FileOutputStream("compositeDir" + ".esa");
 		try {
@@ -92,25 +87,14 @@ public class InstallTest extends SubsystemTest {
 		} finally {
 			Utils.closeQuietly(fos);
 		}
-		createApplication("feature3", new String[]{"tb3.jar"});
-		createApplication("feature2", new String[]{"tb3.jar", "tb2.jar"});
-		createBundleA();
-		createBundleB();
-		createApplicationA();
-		createCompositeA();
-		createFeatureA();
-		createdApplications = true;
-	}
-	
-	public void setUp() throws Exception {
-		super.setUp();
+
 		File userDir = new File(System.getProperty("user.dir"));
     	IDirectory idir = FileSystem.getFSRoot(userDir);
     	File compositeDir = new File(userDir, "compositeDir");
     	compositeDir.mkdir();
     	IOUtils.unpackZip(idir.getFile("compositeDir.esa"), compositeDir);
 	}
-
+	
 	@Test
 	public void testReturnExistingSubsystemWithSameLocation() throws Exception {
 		Subsystem subsystem1 = installSubsystemFromFile("feature3.esa");
@@ -191,8 +175,8 @@ public class InstallTest extends SubsystemTest {
 	 */
 	private static final String BUNDLE_A = "bundle.a.jar";
 	
-	private static void createBundleA() throws IOException {
-		createBundle(BUNDLE_A);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A));
 	}
     
     /*
@@ -200,12 +184,12 @@ public class InstallTest extends SubsystemTest {
 	 */
 	private static final String APPLICATION_A = "application.a.esa";
 	
-	private static void createApplicationA() throws IOException {
+	private void createApplicationA() throws IOException {
 		createApplicationAManifest();
 		createSubsystem(APPLICATION_A, BUNDLE_A);
 	}
 	
-	private static void createApplicationAManifest() throws IOException {
+	private void createApplicationAManifest() throws IOException {
 		File manifest = new File(APPLICATION_A + ".mf");
 		if (manifest.exists())
 			assertTrue("Could not delete manifest", manifest.delete());
@@ -260,8 +244,8 @@ public class InstallTest extends SubsystemTest {
 	 */
 	private static final String BUNDLE_B = "bundle.b.war";
 	
-	private static void createBundleB() throws IOException {
-		createBundle(BUNDLE_B);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B));
 	}
 	
 	/*
