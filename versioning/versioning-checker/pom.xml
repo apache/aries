@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -17,19 +18,20 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
+
     <groupId>org.apache.aries.versioning</groupId>
     <artifactId>org.apache.aries.versioning.checker</artifactId>
     <version>0.2.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-
     <name>org.apache.aries.versioning.checker</name>
     <url>http://maven.apache.org</url>
 
@@ -58,7 +60,6 @@
     </properties>
 
     <dependencies>
-
         <!-- Dependency on other Aries module bundles -->
         <dependency>
             <groupId>org.apache.aries</groupId>
@@ -71,7 +72,6 @@
             <scope>test</scope>
             <version>0.3</version>
         </dependency>
-
 
         <!--External dependencies. Versions may be specified in default parent -->
         <dependency>
@@ -101,4 +101,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>
