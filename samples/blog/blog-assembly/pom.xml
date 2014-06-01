@@ -39,11 +39,13 @@
 		<dependency>
 			<groupId>org.eclipse.equinox</groupId>
 			<artifactId>cm</artifactId>
+                        <version>3.2.0-v20070116</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.osgi</groupId>
 			<artifactId>services</artifactId>
+                        <version>3.1.200-v20070605</version>
 		</dependency>
 
 		<dependency>
