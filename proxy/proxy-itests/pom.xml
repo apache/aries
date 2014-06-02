@@ -155,6 +155,16 @@
             <version>1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-service</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
