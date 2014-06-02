@@ -31,9 +31,12 @@ import org.apache.aries.proxy.weaving.WovenProxy;
 import org.apache.aries.proxy.weavinghook.ProxyWeavingController;
 import org.apache.aries.proxy.weavinghook.WeavingHelper;
 import org.junit.Test;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
+@ExamReactorStrategy(PerMethod.class)
 public abstract class AbstractWeavingProxyTest extends AbstractProxyTest
 {
 
