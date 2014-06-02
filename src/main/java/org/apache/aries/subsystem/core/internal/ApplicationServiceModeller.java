@@ -51,26 +51,39 @@ public class ApplicationServiceModeller implements ServiceModeller {
                         .build());
             }
             for (ImportedService service : elements.getReferences()) {
-                StringBuilder builder = new StringBuilder("(&(")
+                StringBuilder builder = new StringBuilder();
+                String serviceInterface = service.getInterface();
+                String filter = service.getFilter();
+
+                if (serviceInterface != null && filter != null) {
+                	builder.append("(&");
+                }
+                if (serviceInterface != null) {
+                	builder.append('(')
                         .append(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE)
                         .append('=')
-                        .append(service.getInterface())
+                        .append(serviceInterface)
                         .append(')');
-                String filter = service.getFilter();
+                }
+
                 if (filter != null)
                     builder.append(filter);
-                builder.append(')');
-                model.requirements.add(new BasicRequirement.Builder()
-                        .namespace(ServiceNamespace.SERVICE_NAMESPACE)
-                        .directive(Namespace.REQUIREMENT_FILTER_DIRECTIVE, builder.toString())
-                        .directive(
-                                Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE,
-                                service.isOptional() ? Namespace.RESOLUTION_OPTIONAL : Namespace.RESOLUTION_MANDATORY)
-                        .directive(
-                                Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE,
-                                service.isMultiple() ? Namespace.CARDINALITY_MULTIPLE : Namespace.CARDINALITY_SINGLE)
-                        .resource(resource)
-                        .build());
+                if (serviceInterface != null && filter != null) {
+                	builder.append(')');
+                }
+                if (builder.length() > 0) {
+	                model.requirements.add(new BasicRequirement.Builder()
+	                        .namespace(ServiceNamespace.SERVICE_NAMESPACE)
+	                        .directive(Namespace.REQUIREMENT_FILTER_DIRECTIVE, builder.toString())
+	                        .directive(
+	                                Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE,
+	                                service.isOptional() ? Namespace.RESOLUTION_OPTIONAL : Namespace.RESOLUTION_MANDATORY)
+	                        .directive(
+	                                Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE,
+	                                service.isMultiple() ? Namespace.CARDINALITY_MULTIPLE : Namespace.CARDINALITY_SINGLE)
+	                        .resource(resource)
+	                        .build());
+                }
             }
             return model;
         } catch (ModellerException e) {
