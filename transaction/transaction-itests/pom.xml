@@ -52,15 +52,15 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint</artifactId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy</artifactId>
+            <artifactId>org.apache.aries.proxy.impl</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
@@ -108,6 +108,16 @@
             <artifactId>asm-all</artifactId>
             <scope>test</scope>
             <version>4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-service</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- pax exam -->
