@@ -199,8 +199,8 @@ public class ASMMultiBundleTest extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart()
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").versionAsInProject().noStart(),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").versionAsInProject().noStart()
         };
     } 
 }

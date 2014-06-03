@@ -77,8 +77,8 @@ public class MultiInterfacesTest extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb")
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").versionAsInProject(),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").versionAsInProject()
         };
     } 
 }
