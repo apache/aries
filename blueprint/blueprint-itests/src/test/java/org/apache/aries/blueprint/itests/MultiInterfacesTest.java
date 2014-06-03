@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import org.apache.aries.blueprint.testbundlea.multi.InterfaceA;
 import org.apache.aries.blueprint.testbundlea.multi.InterfaceB;
@@ -77,8 +77,8 @@ public class MultiInterfacesTest extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").versionAsInProject(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").versionAsInProject()
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea"),
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb")
         };
     } 
 }

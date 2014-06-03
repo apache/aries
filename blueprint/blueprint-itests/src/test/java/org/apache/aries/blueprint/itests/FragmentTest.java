@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.ops4j.pax.exam.CoreOptions.streamBundle;
 
 import java.io.InputStream;
@@ -64,7 +64,7 @@ public class FragmentTest extends AbstractBlueprintIntegrationTest
           Helper.blueprintBundles(),
           streamBundle(fragmentJar).noStart(),
           streamBundle(hostJar),
-          mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart()
+          mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample", false)
       };
   }
 

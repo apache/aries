@@ -63,7 +63,7 @@ public abstract class BaseBlueprintContainerBTCustomizerTest extends AbstractBlu
         tracker.close();
         
         if (cfgAdminService == null) {
-            MavenArtifactProvisionOption cfgAdminOption = CoreOptions.mavenBundle("org.apache.felix", "org.apache.felix.configadmin");
+            MavenArtifactProvisionOption cfgAdminOption = CoreOptions.mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject();
             InputStream cfgAdminStream = new URL(cfgAdminOption.getURL()).openStream();
             
             configAdminBundle = ctx.installBundle(cfgAdminOption.getURL(), cfgAdminStream);            
@@ -82,7 +82,7 @@ public abstract class BaseBlueprintContainerBTCustomizerTest extends AbstractBlu
     
     protected Bundle installTestBundle(BundleContext compositeBundleContext) throws IOException, MalformedURLException, BundleException {
         // install the blueprint sample onto the framework associated with the composite bundle
-        MavenArtifactProvisionOption mapo = CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample");
+        MavenArtifactProvisionOption mapo = CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").versionAsInProject();
         // let's use input stream to avoid invoking mvn url handler which isn't avail in the child framework.
         InputStream is = new URL(mapo.getURL()).openStream();
         return compositeBundleContext.installBundle(mapo.getURL(), is);
