@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -72,7 +73,7 @@ public class TestRegistrationListener extends AbstractBlueprintIntegrationTest {
         return new Option[] {
                 baseOptions(),
                 Helper.blueprintBundles(),
-                CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample")
+                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample")
         };
     }
 

@@ -34,10 +34,10 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
@@ -184,7 +184,7 @@ public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             junitBundles(),
             Helper.blueprintBundles(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart()
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample", false)
         };
     }
 

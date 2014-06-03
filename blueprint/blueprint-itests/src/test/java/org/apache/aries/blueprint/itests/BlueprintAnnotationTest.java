@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import java.text.SimpleDateFormat;
 import java.util.Currency;
@@ -83,8 +83,8 @@ public class BlueprintAnnotationTest extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-annotation").versionAsInProject(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-fragment").versionAsInProject().noStart(),
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-annotation"),
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-fragment", false),
         };
     }
 

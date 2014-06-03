@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -199,8 +199,8 @@ public class ASMMultiBundleTest extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").versionAsInProject().noStart(),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").versionAsInProject().noStart()
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea", false),
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb", false)
         };
     } 
 }

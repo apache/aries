@@ -57,23 +57,23 @@ public class Helper {
     }
     
     public static Option debug(int port) {
-      return CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + port);
+      return CoreOptions.vmOption("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + port);
     }
     
     public static Option blueprintBundles(boolean startBlueprint) {
         return composite(
-                mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
-                mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
-                mavenBundle("org.ops4j.pax.url", "pax-url-aether").versionAsInProject(),
-                mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
-                mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl").versionAsInProject(),
-                mavenBundle("org.apache.commons", "commons-jexl").versionAsInProject(),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator").versionAsInProject(),
-                mavenBundle("org.apache.xbean", "xbean-asm4-shaded").versionAsInProject(),
-                mavenBundle("org.apache.xbean", "xbean-bundleutils").versionAsInProject(),
-                mavenBundle("org.apache.xbean", "xbean-finder-shaded").versionAsInProject(),
+                mvnBundle("org.ow2.asm", "asm-all"),
+                mvnBundle("org.apache.felix", "org.apache.felix.configadmin"),
+                mvnBundle("org.ops4j.pax.url", "pax-url-aether"),
+                mvnBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
+                mvnBundle("org.apache.aries", "org.apache.aries.util"),
+                mvnBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
+                mvnBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
+                mvnBundle("org.apache.commons", "commons-jexl"),
+                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator"),
+                mvnBundle("org.apache.xbean", "xbean-asm4-shaded"),
+                mvnBundle("org.apache.xbean", "xbean-bundleutils"),
+                mvnBundle("org.apache.xbean", "xbean-finder-shaded"),
                 mvnBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api", startBlueprint),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api", startBlueprint),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core", startBlueprint),
@@ -82,11 +82,15 @@ public class Helper {
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.impl", startBlueprint)
         );
     }
-    
-    public static Option mvnBundle(String groupId, String artifactId, boolean start) {
-    	return mavenBundle(groupId, artifactId).versionAsInProject().start(start);
+
+    public static Option mvnBundle(String groupId, String artifactId) {
+        return mavenBundle(groupId, artifactId).versionAsInProject();
     }
-    
+
+    public static Option mvnBundle(String groupId, String artifactId, boolean start) {
+        return mavenBundle(groupId, artifactId).versionAsInProject().start(start);
+    }
+
     public static void testBlueprintContainer(RichBundleContext context, Bundle bundle) throws Exception {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(context, SAMPLE_SYM_NAME);
         assertNotNull(blueprintContainer);

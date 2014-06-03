@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 
 import java.util.Hashtable;
 
@@ -65,7 +65,7 @@ public class BlueprintContainer2Test extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(false),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart()
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample", false)
         };
     }
 
