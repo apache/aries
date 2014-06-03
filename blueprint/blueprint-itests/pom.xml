@@ -52,8 +52,12 @@
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.8.0.v20120529-1548</version>
+            <version>3.8.2.v20130124-134944</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
@@ -63,7 +67,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-parser</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>1.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
@@ -80,7 +84,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-SNAPSHOT</version>
             <type>bundle</type>
             <scope>compile</scope>
             <exclusions>
@@ -94,7 +98,7 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.jexl.evaluator</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.aries.blueprint</groupId>
@@ -268,6 +272,16 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-fragment</artifactId>
             <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-service</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
