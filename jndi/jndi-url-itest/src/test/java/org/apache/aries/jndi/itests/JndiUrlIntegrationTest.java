@@ -173,7 +173,10 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.web").versionAsInProject(),
         mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url.itest.biz").versionAsInProject(),
         mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
-        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject()
+        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+
+        mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+        mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
         );
 
         // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
