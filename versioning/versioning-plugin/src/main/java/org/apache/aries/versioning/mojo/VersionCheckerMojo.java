@@ -54,6 +54,9 @@ public class VersionCheckerMojo extends AbstractMojo {
      */
     @Parameter(property="aries.oldArtifact")
     private String oldArtifact;
+    
+    @Parameter(property="aries.skip.version.check", defaultValue = "false")
+    private boolean skip;
 
     /**
      * Location of the file.
@@ -83,6 +86,12 @@ public class VersionCheckerMojo extends AbstractMojo {
     private MavenSession session;
     
     public void execute() throws MojoExecutionException {
+        if (skip) {
+            return;
+        }
+        if ("pom".equals(project.getPackaging())) {
+            return;
+        }
         if (oldArtifact != null) {
             try {
                 BundleInfo oldBundle = getBundleInfo(resolve(oldArtifact));
