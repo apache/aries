@@ -65,6 +65,7 @@
             org.apache.aries.proxy.impl*,
             org.apache.aries.proxy.nls
         </aries.osgi.private.pkg>
+        <lastReleaseVersion>1.0.1</lastReleaseVersion>
     </properties>
 
     <dependencies>
@@ -108,7 +109,6 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
@@ -116,9 +116,6 @@
                         <goals>
                             <goal>version-check</goal>
                         </goals>
-                        <configuration>
-                            <oldArtifact>org.apache.aries.proxy:org.apache.aries.proxy:1.0.1</oldArtifact>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
