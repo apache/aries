@@ -456,6 +456,14 @@
                         <showWarnings>true</showWarnings>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.aries.versioning</groupId>
+                    <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                    <version>0.2.0</version>
+                    <configuration>
+                        <oldArtifact>${project.groupId}:${project.artifactId}:${lastReleaseVersion}</oldArtifact>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
