@@ -52,7 +52,7 @@ public class VersionCheckerMojo extends AbstractMojo {
      * name of old artifact in
      * groupId:artifactId[:extension[:classifier]]:version notation
      */
-    @Parameter(defaultValue="${oldArtifact")
+    @Parameter(property="aries.oldArtifact")
     private String oldArtifact;
 
     /**
