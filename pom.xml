@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>6</version>
+        <version>14</version>
     </parent>
 
     <!-- This pom is for convenience in building several aries subprojects at once.
@@ -58,6 +58,7 @@
     </modules>
 
     <build>
+        <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
