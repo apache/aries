@@ -155,7 +155,6 @@ public class XADatasourceEnlistingWrapper implements DataSource, Serializable {
       return wrappedDS.getLoginTimeout();
     }
 
-    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return null;
     }
