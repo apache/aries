@@ -454,6 +454,8 @@
                         <debug>true</debug>
                         <showDeprecation>true</showDeprecation>
                         <showWarnings>true</showWarnings>
+                        <source>1.6</source>
+                        <target>1.6</target>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -462,14 +464,6 @@
                     <version>0.2.0</version>
                     <configuration>
                         <oldArtifact>${project.groupId}:${project.artifactId}:${lastReleaseVersion}</oldArtifact>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
                     </configuration>
                 </plugin>
             </plugins>
