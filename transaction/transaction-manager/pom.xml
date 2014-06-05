@@ -21,9 +21,9 @@
 
     <parent>
         <groupId>org.apache.aries</groupId>
-        <artifactId>java5-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath/>
+        <artifactId>parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -73,6 +73,7 @@
             {maven-resources},
             javax/resource/spi/XATerminator.class=target/classes/javax/resource/spi/XATerminator.class
         </aries.osgi.include.resource>
+        <lastReleaseVersion>1.1.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
@@ -248,14 +249,9 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
-              - Disable plugin because it barfs that the org.apache.geronimo.transaction
-              - package version should be 2.2.1 because there has been no change
-              -
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
@@ -263,13 +259,9 @@
                         <goals>
                             <goal>version-check</goal>
                         </goals>
-                        <configuration>
-                            <oldArtifact>org.apache.aries.transaction:org.apache.aries.transaction.manager:1.0.0</oldArtifact>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-            -->
         </plugins>
     </build>
 
