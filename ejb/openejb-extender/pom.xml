@@ -56,6 +56,7 @@
 		<aries.osgi.activator>
             org.apache.aries.ejb.openejb.extender.EJBExtender
         </aries.osgi.activator>
+        <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
@@ -152,7 +153,6 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
@@ -160,9 +160,6 @@
                         <goals>
                             <goal>version-check</goal>
                         </goals>
-                        <configuration>
-                            <oldArtifact>org.apache.aries.ejb:org.apache.aries.ejb.openejb.extender:1.0.0</oldArtifact>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
