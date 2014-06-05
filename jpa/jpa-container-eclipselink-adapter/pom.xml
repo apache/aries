@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.eclipselink.adapter</artifactId>
     <packaging>bundle</packaging>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>Aries JPA Container adapter for use with EclipseLink</name>
 
     <scm>
@@ -50,6 +50,7 @@
         </aries.osgi.import.pkg>
         <aries.osgi.failok>true</aries.osgi.failok>
         <aries.osgi.activator>org.apache.aries.jpa.eclipselink.adapter.Activator</aries.osgi.activator>
+        <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
@@ -98,7 +99,6 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
@@ -106,10 +106,6 @@
                         <goals>
                             <goal>version-check</goal>
                         </goals>
-                        <configuration>
-                            <oldArtifact>org.apache.aries.jpa:org.apache.aries.jpa.eclipselink.adapter:1.0.0
-                            </oldArtifact>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

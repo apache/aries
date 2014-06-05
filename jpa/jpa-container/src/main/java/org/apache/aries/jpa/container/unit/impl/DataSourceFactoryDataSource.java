@@ -128,7 +128,6 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
     ds.set(null);
   }
 
-  @Override
   public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
     return null;
   }
