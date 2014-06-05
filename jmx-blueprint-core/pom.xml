@@ -57,6 +57,7 @@
         <aries.osgi.import.service>
             javax.management.MBeanServer
         </aries.osgi.import.service>
+        <lastReleaseVersion>1.1.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
@@ -114,7 +115,6 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
@@ -122,9 +122,6 @@
                         <goals>
                             <goal>version-check</goal>
                         </goals>
-                        <configuration>
-                            <oldArtifact>org.apache.aries.jmx:org.apache.aries.jmx.blueprint.core:1.1.0</oldArtifact>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
