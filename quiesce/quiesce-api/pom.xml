@@ -49,6 +49,7 @@
             org.apache.aries.quiesce.manager;
             org.apache.aries.quiesce.participant;
         </aries.osgi.export.pkg>
+        <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
@@ -64,7 +65,6 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <id>default-verify</id>
@@ -72,9 +72,6 @@
                         <goals>
                             <goal>version-check</goal>
                         </goals>
-                        <configuration>
-                            <oldArtifact>org.apache.aries.quiesce:org.apache.aries.quiesce.api:1.0.0</oldArtifact>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
