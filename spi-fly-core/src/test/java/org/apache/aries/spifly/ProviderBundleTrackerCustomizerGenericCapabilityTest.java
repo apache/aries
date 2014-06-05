@@ -43,7 +43,10 @@ import org.apache.aries.spifly.impl4.MySPIImpl4b;
 import org.apache.aries.spifly.impl4.MySPIImpl4c;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.easymock.IExpectationSetters;
+
 import org.junit.Test;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -441,18 +444,21 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     private BundleContext mockSPIBundleContext4() {
         BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
 
-        EasyMock.expect(implBC.registerService((String) EasyMock.anyObject(), EasyMock.anyObject(), (Dictionary<String,?>)EasyMock.anyObject())).
-            andAnswer(new IAnswer<ServiceRegistration<?>>() {
-                @Override
-                public ServiceRegistration<?> answer() throws Throwable {
-                    final String className = (String) EasyMock.getCurrentArguments()[0];
-                    final Object serviceObject = EasyMock.getCurrentArguments()[1];
-                    final Dictionary<String, Object> registrationProps =
-                        (Dictionary<String, Object>) EasyMock.getCurrentArguments()[2];
-                    return new ServiceRegistrationImpl(className, serviceObject, registrationProps);
-                }
-            }).anyTimes();
-        EasyMock.expect(implBC.getService(EasyMock.anyObject(ServiceReference.class))).
+        implBC.registerService(EasyMock.anyString(),
+                               EasyMock.anyObject(), 
+                               (Dictionary<String,?>)EasyMock.anyObject());
+        EasyMock.expectLastCall().andAnswer(new IAnswer<ServiceRegistration<Object>>() {
+            @Override
+            public ServiceRegistration<Object> answer() throws Throwable {
+                final String className = (String) EasyMock.getCurrentArguments()[0];
+                final Object serviceObject = EasyMock.getCurrentArguments()[1];
+                final Dictionary<String, Object> registrationProps =
+                    (Dictionary<String, Object>) EasyMock.getCurrentArguments()[2];
+                return new ServiceRegistrationImpl(className, serviceObject, registrationProps);
+            }
+        }).anyTimes();
+        implBC.getService(EasyMock.anyObject(ServiceReference.class));
+        EasyMock.expectLastCall().
             andAnswer(new IAnswer<Object>() {
                 @Override
                 public Object answer() throws Throwable {
