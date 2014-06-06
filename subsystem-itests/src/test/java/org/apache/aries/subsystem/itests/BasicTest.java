@@ -51,9 +51,9 @@ public class BasicTest extends SubsystemTest {
     		}
     	}
     	assertTrue("Subsystems implementation bundle not found", found);
-    	ServiceReference<Subsystem> serviceReference = bundleContext.getServiceReference(Subsystem.class);
+    	ServiceReference serviceReference = bundleContext.getServiceReference(Subsystem.class);
     	assertNotNull("Reference to subsystem service not found", serviceReference);
-    	Subsystem subsystem = bundleContext.getService(serviceReference);
+    	Subsystem subsystem = (Subsystem) bundleContext.getService(serviceReference);
     	assertNotNull("Subsystem service not found", subsystem);
     }
     

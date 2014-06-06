@@ -129,7 +129,7 @@ public class RepositoryGenerator {
 
 	private void registerOBR() {
         // set repositoryAdmin
-        ServiceReference<RepositoryAdmin> ref = context.getServiceReference(RepositoryAdmin.class);
+        ServiceReference ref = context.getServiceReference(RepositoryAdmin.class);
         
         if (ref != null) {
             this.repositoryAdmin = (RepositoryAdmin) context.getService(ref);

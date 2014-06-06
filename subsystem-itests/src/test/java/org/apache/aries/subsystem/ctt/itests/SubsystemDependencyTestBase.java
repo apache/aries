@@ -163,7 +163,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 		Bundle wiredBundle = context(s).getBundleByName(wiredBundleName);
 		assertNotNull ("Bundle not found", wiredBundleName);
 
-		BundleWiring wiring = wiredBundle.adapt(BundleWiring.class);
+		BundleWiring wiring = (BundleWiring) wiredBundle.adapt(BundleWiring.class);
 		List<BundleWire> wiredPackages = wiring.getRequiredWires(PACKAGE_NAMESPACE);
 		assertEquals ("Only one package expected", 1, wiredPackages.size());
 		
@@ -187,7 +187,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 		Bundle wiredBundle = context(s).getBundleByName(BUNDLE_D);
 		assertNotNull ("Target bundle " + wiredBundleName + " not found", wiredBundle);
 	
-		BundleWiring wiring = wiredBundle.adapt(BundleWiring.class);
+		BundleWiring wiring = (BundleWiring) wiredBundle.adapt(BundleWiring.class);
 		List<BundleWire> wiredBundles = wiring.getRequiredWires(BUNDLE_NAMESPACE);
 		assertEquals ("Only one bundle expected", 1, wiredBundles.size());
 	
@@ -213,7 +213,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 		Bundle wiredBundle = context(s).getBundleByName(wiredBundleName);
 		assertNotNull ("Targt bundle " + wiredBundleName + " not found", wiredBundleName);
 		
-		BundleWiring wiring = wiredBundle.adapt(BundleWiring.class);
+		BundleWiring wiring = (BundleWiring) wiredBundle.adapt(BundleWiring.class);
 		List<BundleWire> wiredProviders = wiring.getRequiredWires(namespace);
 		assertEquals("Only one wire for capability namespace " + namespace +" expected", 
 				1, wiredProviders.size());
