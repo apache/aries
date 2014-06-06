@@ -115,7 +115,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         //find the Blueprint Sample bundle's container service id
         String filter = "(&(osgi.blueprint.container.symbolicname=" // no similar one in interfaces
                 + sample.getSymbolicName() + ")(osgi.blueprint.container.version=" + sample.getVersion() + "))";
-        ServiceReference<?>[] serviceReferences = null;
+        ServiceReference[] serviceReferences = null;
         try {
             serviceReferences = bundleContext.getServiceReferences(BlueprintContainer.class.getName(), filter);
         } catch (InvalidSyntaxException e) {
