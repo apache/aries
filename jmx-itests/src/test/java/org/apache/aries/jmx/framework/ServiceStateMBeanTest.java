@@ -111,20 +111,20 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 
         // get services
 
-        ServiceReference<?> refA = bundleContext.getServiceReference(InterfaceA.class.getName());
+        ServiceReference refA = bundleContext.getServiceReference(InterfaceA.class.getName());
         assertNotNull(refA);
         long serviceAId = (Long) refA.getProperty(Constants.SERVICE_ID);
         assertTrue(serviceAId > -1);
 
-        ServiceReference<?> refB = bundleContext.getServiceReference(InterfaceB.class.getName());
+        ServiceReference refB = bundleContext.getServiceReference(InterfaceB.class.getName());
         assertNotNull(refB);
         long serviceBId = (Long) refB.getProperty(Constants.SERVICE_ID);
         assertTrue(serviceBId > -1);
 
-        ServiceReference<?>[] refs = bundleContext.getServiceReferences(ManagedServiceFactory.class.getName(), "(" + Constants.SERVICE_PID + "=jmx.test.B.factory)");
+        ServiceReference[] refs = bundleContext.getServiceReferences(ManagedServiceFactory.class.getName(), "(" + Constants.SERVICE_PID + "=jmx.test.B.factory)");
         assertNotNull(refs);
         assertEquals(1, refs.length);
-        ServiceReference<?> msf = refs[0];
+        ServiceReference msf = refs[0];
 
 
         // getBundleIdentifier
@@ -156,7 +156,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 
         // listServices
 
-        ServiceReference<?>[] allSvsRefs = bundleContext.getAllServiceReferences(null, null);
+        ServiceReference[] allSvsRefs = bundleContext.getAllServiceReferences(null, null);
         TabularData allServices = mbean.listServices();
         assertNotNull(allServices);
         assertEquals(allSvsRefs.length, allServices.values().size());
@@ -218,7 +218,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         long[] idsWithout = mbean.getServiceIds();
 
         String svc = "A String Service";
-        ServiceRegistration<?> reg = bundleContext.registerService(String.class.getName(), svc, null);
+        ServiceRegistration reg = bundleContext.registerService(String.class.getName(), svc, null);
         long id = (Long) reg.getReference().getProperty(Constants.SERVICE_ID);
 
         long[] idsWith = new long[idsWithout.length + 1];
@@ -254,7 +254,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetServiceIds() throws Exception {
-        ServiceReference<?>[] allSvsRefs = bundleContext.getAllServiceReferences(null, null);
+        ServiceReference[] allSvsRefs = bundleContext.getAllServiceReferences(null, null);
         long[] expectedServiceIds = new long[allSvsRefs.length];
         for (int i=0; i < allSvsRefs.length; i++) {
             expectedServiceIds[i] = (Long) allSvsRefs[i].getProperty(Constants.SERVICE_ID);
@@ -268,7 +268,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     @Test
     public void testGetServiceAndGetProperty() throws Exception {
     	
-        ServiceReference<InterfaceA> sref = bundleContext.getServiceReference(InterfaceA.class);
+        ServiceReference sref = bundleContext.getServiceReference(InterfaceA.class);
         // Get service to increase service references
         context().getService(sref);
         Long serviceID = (Long) sref.getProperty(Constants.SERVICE_ID);
@@ -305,9 +305,9 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testServicePropertiesInListServices() throws Exception {
-        ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(InterfaceA.class.getName(), null);
+        ServiceReference[] refs = bundleContext.getAllServiceReferences(InterfaceA.class.getName(), null);
         assertEquals("Precondition", 1, refs.length);
-        ServiceReference<?> ref = refs[0];
+        ServiceReference ref = refs[0];
 
         TabularData svcTab = mbean.listServices();
         CompositeData svcData = svcTab.get(new Object [] {ref.getProperty(Constants.SERVICE_ID)});
@@ -344,11 +344,11 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     @Test
     public void testListServices() throws Exception {
         String filter = "(" + Constants.SERVICE_PID + "=*)";
-        ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(null, filter);
+        ServiceReference[] refs = bundleContext.getAllServiceReferences(null, filter);
         TabularData svcData = mbean.listServices(null, filter);
         assertEquals(refs.length, svcData.size());
 
-        ServiceReference<InterfaceA> sref = bundleContext.getServiceReference(InterfaceA.class);
+        ServiceReference sref = bundleContext.getServiceReference(InterfaceA.class);
         TabularData svcTab = mbean.listServices(InterfaceA.class.getName(), null);
         assertEquals(1, svcTab.size());
         CompositeData actualSvc = (CompositeData) svcTab.values().iterator().next();
@@ -360,12 +360,12 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 	@Test
     public void testListServicesSelectiveItems() throws Exception {
         String filter = "(|(service.pid=org.apache.aries.jmx.test.ServiceB)(service.pid=jmx.test.B.factory))";
-        ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(null, filter);
+        ServiceReference[] refs = bundleContext.getAllServiceReferences(null, filter);
         TabularData svcData = mbean.listServices(null, filter, ServiceStateMBean.BUNDLE_IDENTIFIER);
         assertEquals(refs.length, svcData.size());
 
         long id = refs[0].getBundle().getBundleId();
-        for (ServiceReference<?> ref : refs) {
+        for (ServiceReference ref : refs) {
             assertEquals("Precondition", id, ref.getBundle().getBundleId());
         }
 

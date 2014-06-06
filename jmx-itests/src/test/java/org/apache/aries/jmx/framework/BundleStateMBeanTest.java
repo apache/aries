@@ -320,7 +320,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
 
     private Version getPackageVersion(String packageName) {
         Bundle systemBundle = context().getBundle(0);
-        BundleWiring wiring = systemBundle.adapt(BundleWiring.class);
+        BundleWiring wiring = (BundleWiring) systemBundle.adapt(BundleWiring.class);
         List<BundleCapability> packages = wiring.getCapabilities(BundleRevision.PACKAGE_NAMESPACE);
         for (BundleCapability pkg : packages) {
             Map<String, Object> attrs = pkg.getAttributes();
