@@ -78,6 +78,7 @@ public class UtilTest {
 
         Bundle providerBundle = EasyMock.createMock(Bundle.class);
         final ClassLoader providerCL = new TestBundleClassLoader(new URL [] {url}, getClass().getClassLoader(), providerBundle);
+        EasyMock.expect(providerBundle.getBundleContext()).andThrow(new IllegalStateException("Disable getBundleClassLoaderViaAdapt"));
         EasyMock.expect(providerBundle.getBundleId()).andReturn(42L).anyTimes();
         EasyMock.expect(providerBundle.getEntryPaths((String) EasyMock.anyObject())).andReturn(null).anyTimes();
         Dictionary<String, String> providerHeaders = new Hashtable<String, String>();
