@@ -89,7 +89,7 @@ public class HelloWorldTest extends SubsystemTest
     // IDirectoryFinder services, so it will be notified on service registration. 
     Dictionary<String, String> properties = new Hashtable<String, String>();
     properties.put(IDirectoryFinder.IDIR_FINDERID_KEY, TestIDirectoryFinder.IDIR_FINDERID_VALUE);
-    ServiceRegistration<IDirectoryFinder> serviceRegistration = 
+    ServiceRegistration serviceRegistration =
      bundleContext.registerService(IDirectoryFinder.class, new TestIDirectoryFinder(), properties);
     
     // Call the SubsystemTest.installSubsystem method that does not create a URL

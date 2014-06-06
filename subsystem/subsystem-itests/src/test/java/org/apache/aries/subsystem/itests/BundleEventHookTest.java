@@ -151,7 +151,7 @@ public class BundleEventHookTest extends SubsystemTest {
 						if (a.get() != null)
 							// We've been here before and already done what needs doing.
 							return;
-						ServiceReference<Subsystem> sr = (ServiceReference<Subsystem>)event.getServiceReference();
+						ServiceReference sr = (ServiceReference)event.getServiceReference();
 						bundleContext.getService(sr);
 						try {
 							// Queue up the installed event.
@@ -205,7 +205,7 @@ public class BundleEventHookTest extends SubsystemTest {
 						if (a.get() != null)
 							// We've been here before and already done what needs doing.
 							return;
-						ServiceReference<Subsystem> sr = (ServiceReference<Subsystem>)event.getServiceReference();
+						ServiceReference sr = (ServiceReference)event.getServiceReference();
 						bundleContext.getService(sr);
 						try {
 							// Queue up the installed event for bundle A using B's context.

@@ -245,7 +245,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	
 	protected final SubsystemEventHandler subsystemEvents = new SubsystemEventHandler();
 	
-	protected Collection<ServiceRegistration<?>> serviceRegistrations = new ArrayList<ServiceRegistration<?>>();
+	protected Collection<ServiceRegistration> serviceRegistrations = new ArrayList<ServiceRegistration>();
 	
 	@Before
 	public void setUp() throws Exception {
@@ -268,7 +268,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	public void tearDown() throws Exception 
 	{
 		bundleContext.removeServiceListener(subsystemEvents);
-		for (ServiceRegistration<?> registration : serviceRegistrations)
+		for (ServiceRegistration registration : serviceRegistrations)
 			Utils.unregisterQuietly(registration);
 		serviceRegistrations.clear();
 	}
@@ -463,7 +463,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	protected void assertRefresh(Collection<Bundle> bundles) throws InterruptedException {
 		FrameworkWiring wiring = getSystemBundleAsFrameworkWiring();
 		final AtomicBoolean refreshed = new AtomicBoolean(false);
-		wiring.refreshBundles(bundles, new FrameworkListener() {
+		wiring.refreshBundles(bundles, new FrameworkListener[]{ new FrameworkListener() {
 			@Override
 			public void frameworkEvent(FrameworkEvent event) {
 				if (FrameworkEvent.PACKAGES_REFRESHED == event.getType()) {
@@ -473,7 +473,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 					}
 				}
 			}
-		});
+		}});
 		synchronized (refreshed) {
 			refreshed.wait(5000);
 		}
@@ -527,7 +527,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	
 	protected void assertStartLevel(Bundle bundle, int expected) {
 		assertNotNull("Bundle is null", bundle);
-		assertEquals("Wrong start level", expected, bundle.adapt(BundleStartLevel.class).getStartLevel());
+		assertEquals("Wrong start level", expected, ((BundleStartLevel) bundle.adapt(BundleStartLevel.class)).getStartLevel());
 	}
 	
 	protected void assertState(State expected, State actual) {
@@ -796,11 +796,11 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 	
 	protected FrameworkStartLevel getSystemBundleAsFrameworkStartLevel() {
-		return getSystemBundle().adapt(FrameworkStartLevel.class);
+		return (FrameworkStartLevel) getSystemBundle().adapt(FrameworkStartLevel.class);
 	}
 	
 	protected FrameworkWiring getSystemBundleAsFrameworkWiring() {
-		return getSystemBundle().adapt(FrameworkWiring.class);
+		return (FrameworkWiring) getSystemBundle().adapt(FrameworkWiring.class);
 	}
 	
 	protected Bundle getSubsystemCoreBundle() {
