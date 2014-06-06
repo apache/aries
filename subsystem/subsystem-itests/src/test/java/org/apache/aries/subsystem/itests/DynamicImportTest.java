@@ -82,7 +82,7 @@ public class DynamicImportTest extends SubsystemTest
 	{
 		Dictionary<String, String> props = new Hashtable<String, String>();
 		props.put("osgi.woven.packages", "some.woven.package, org.apache.aries.subsystem.itests.hello.api");
-		ServiceRegistration<?> sr = bundleContext.registerService(WeavingHook.class, new TokenWeaver(), props);
+		ServiceRegistration sr = bundleContext.registerService(WeavingHook.class, new TokenWeaver(), props);
 		try { 
 			Subsystem subsystem = installSubsystemFromFile ("dynamicImport.esa");
 			startSubsystem(subsystem);
@@ -138,7 +138,7 @@ public class DynamicImportTest extends SubsystemTest
 		final AtomicBoolean weavingHookCalled = new AtomicBoolean(false);
 		Dictionary<String, Object> props = new Hashtable<String, Object>();
 		props.put("osgi.woven.packages", "org.osgi.framework");
-		ServiceRegistration<WeavingHook> reg = bundleContext.registerService(
+		ServiceRegistration reg = bundleContext.registerService(
 				WeavingHook.class, 
 				new WeavingHook() {
 					@Override
