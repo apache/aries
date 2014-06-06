@@ -57,7 +57,7 @@ import org.osgi.framework.ServiceReference;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractIntegrationTest extends org.apache.aries.itest.AbstractIntegrationTest {
-    protected ServiceReference<MBeanServer> reference;
+    protected ServiceReference reference;
     
     @Inject
     protected MBeanServer mbeanServer;
