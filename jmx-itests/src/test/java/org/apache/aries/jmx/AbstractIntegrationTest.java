@@ -75,33 +75,22 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
                 when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
          );
     }
-    
+
 	protected Option jmxRuntime() {
 		return composite(
 				baseOptions(),
 				mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
 				mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
-				jmxBundle(),
+                mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx").version("1.1.2-SNAPSHOT"),
+                mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.core.whiteboard").version("1.1.2-SNAPSHOT"),
 				mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api").versionAsInProject(),
 				mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.whiteboard").versionAsInProject(),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				mbeanServerBundle()
 				);
 	}
-    
-	/**
-	 * jmx bundle to provision. Override this with jmxWhiteBoardBundle for the whiteboard tests
-	 * @return
-	 */
-	protected MavenArtifactProvisionOption jmxBundle() {
-		return mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx").version("1.1.2-SNAPSHOT");
-	}
-	
-	protected MavenArtifactProvisionOption jmxWhiteBoardBundle() {
-		return mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.core.whiteboard").version("1.1.2-SNAPSHOT");
-	}
-	
+
 	protected Option mbeanServerBundle() {
 		return provision(bundle()
 		        .add(MbeanServerActivator.class)
@@ -180,7 +169,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
     }
 	
     protected ObjectName waitForMBean(String name) {
-        return waitForMBean(name, 10);
+        return waitForMBean(name, 20);
     }
 
     protected ObjectName waitForMBean(String name, int timeoutInSeconds) {
