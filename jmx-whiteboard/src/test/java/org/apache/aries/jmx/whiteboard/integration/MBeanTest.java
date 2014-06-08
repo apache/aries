@@ -31,13 +31,16 @@ import org.apache.aries.jmx.whiteboard.integration.helper.TestStandardMBean;
 import org.apache.aries.jmx.whiteboard.integration.helper2.TestClass2;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.ServiceRegistration;
 
 /**
  * The <code>MBeanTest</code> tests MBean registration with MBean Servers
  */
-@RunWith(JUnit4TestRunner.class)
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class MBeanTest extends IntegrationTestBase {
 
     @Test
