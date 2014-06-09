@@ -99,6 +99,11 @@ public class VersionCheckerMojo extends AbstractMojo {
         if (oldArtifact != null) {
             try {
                 BundleInfo newBundle = getBundleInfo(newFile);
+                if (newBundle == null || newBundle.getBundleManifest() == null) {
+                    //not a bundle type, just return
+                    getLog().info(newFile + " is not an OSGi bundle, skipping.");
+                    return;
+                }
                 if (null == newBundle.getBundleManifest().getManifestVersion()
                     && null == newBundle.getBundleManifest().getSymbolicName()
                     && Version.emptyVersion.equals(newBundle.getBundleManifest().getVersion())) {
