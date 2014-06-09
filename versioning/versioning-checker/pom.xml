@@ -57,6 +57,7 @@
         <aries.osgi.private.pkg>
             org.apache.aries.versioning.utils;
         </aries.osgi.private.pkg>
+        <lastReleaseVersion>0.2.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
