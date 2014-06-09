@@ -64,6 +64,9 @@
     <properties>
         <aries.osgi.export.pkg />
         <aries.osgi.private.pkg />
+        
+        <!-- this bundle has never been released, we should skip -->
+        <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
 
     <build>

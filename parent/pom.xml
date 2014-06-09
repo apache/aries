@@ -233,6 +233,7 @@
         <aries.osgi.remove.headers>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</aries.osgi.remove.headers>
         <aries.osgi.include.resource>{maven-resources}</aries.osgi.include.resource>
         <aries.javadoc.exclude.packages>${aries.osgi.private.pkg}</aries.javadoc.exclude.packages>
+        <lastReleaseVersion>RELEASE</lastReleaseVersion>
     </properties>
 
     <build>
@@ -461,7 +462,7 @@
                 <plugin>
                     <groupId>org.apache.aries.versioning</groupId>
                     <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                    <version>0.2.0</version>
+                    <version>0.3.0-SNAPSHOT</version>
                     <configuration>
                         <oldArtifact>${project.groupId}:${project.artifactId}:${lastReleaseVersion}</oldArtifact>
                     </configuration>
@@ -469,6 +470,20 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.3.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>default-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>version-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
