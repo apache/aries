@@ -57,9 +57,10 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.sample.twitter.TwitterQuery</Bundle-Activator>
-                        <Private-Package>org.apache.aries.sample.twitter</Private-Package>
+                                             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                                             <Bundle-Activator>org.apache.aries.sample.twitter.TwitterQuery</Bundle-Activator>
+                                             <Private-Package>org.apache.aries.sample.twitter</Private-Package>
+                                             <Import-Package>org.osgi.framework;version="[1.5,2)",*</Import-Package>
 					</instructions>
 				</configuration> 
 			</plugin>
