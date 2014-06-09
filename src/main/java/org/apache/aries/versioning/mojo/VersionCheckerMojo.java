@@ -39,6 +39,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
+import org.osgi.framework.Version;
 
 /**
  * Check semantic version changes between an explicitly named old artifact and
@@ -59,9 +60,9 @@ public class VersionCheckerMojo extends AbstractMojo {
     private boolean skip;
 
     /**
-     * Location of the file.
+     * Location of the file (defaults to main project artifact).
      */
-    @Parameter(required = true, defaultValue = "${project.build.directory}/${project.build.finalName}.jar")
+    @Parameter
     private File newFile;
 
     /**
@@ -92,10 +93,21 @@ public class VersionCheckerMojo extends AbstractMojo {
         if ("pom".equals(project.getPackaging())) {
             return;
         }
+        if (newFile == null) {
+            newFile = project.getArtifact().getFile();
+        }
         if (oldArtifact != null) {
             try {
-                BundleInfo oldBundle = getBundleInfo(resolve(oldArtifact));
                 BundleInfo newBundle = getBundleInfo(newFile);
+                if (null == newBundle.getBundleManifest().getManifestVersion()
+                    && null == newBundle.getBundleManifest().getSymbolicName()
+                    && Version.emptyVersion.equals(newBundle.getBundleManifest().getVersion())) {
+                    //not a bundle type, just return
+                    getLog().info(newFile + " is not an OSGi bundle, skipping.");
+                    return;
+                }
+
+                BundleInfo oldBundle = getBundleInfo(resolve(oldArtifact));
                 String bundleSymbolicName = newBundle.getBundleManifest().getSymbolicName();
                 URLClassLoader oldClassLoader = new URLClassLoader(new URL[] {oldBundle.getBundle().toURI()
                     .toURL()});
