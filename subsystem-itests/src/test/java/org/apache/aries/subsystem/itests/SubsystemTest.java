@@ -237,8 +237,10 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.coordinator").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").versionAsInProject(),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
-				mavenBundle("org.osgi",                     "org.osgi.enterprise").version("5.0.0"),
+				mavenBundle("org.osgi",                     "org.osgi.enterprise").versionAsInProject(),
 				mavenBundle("org.easymock",					"easymock").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging",        "pax-logging-api").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging",        "pax-logging-service").versionAsInProject(),
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 		};
 	}
