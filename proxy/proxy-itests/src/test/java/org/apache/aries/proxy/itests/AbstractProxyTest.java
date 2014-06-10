@@ -297,7 +297,7 @@ public abstract class AbstractProxyTest extends AbstractIntegrationTest {
               systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
               when(localRepo != null).useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
 	          mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
-	          mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+	          mavenBundle("org.ow2.asm", "asm-debug-all").versionAsInProject(),
 	          mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
               mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
               mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
