@@ -145,10 +145,10 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
+            <artifactId>asm-debug-all</artifactId>
             <scope>test</scope>
             <optional>true</optional>
-            <version>4.0</version>
+            <version>5.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
