@@ -112,6 +112,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <failOnError>false</failOnError>
                             <excludePackageNames>*.impl:*.internal</excludePackageNames>
                             <!-- switch on dependency-driven aggregation -->
                             <includeDependencySources>true</includeDependencySources>
