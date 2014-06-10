@@ -310,7 +310,9 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
     EntityManagerFactoryManager mgr = (EntityManagerFactoryManager) object;   
     mgr.destroy();
-    persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
+    if (!managersAwaitingProviders.contains(mgr)) {
+    	persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
+    }
     //Remember to tidy up the map
     synchronized (this) {
       bundleToManagerMap.remove(bundle);
