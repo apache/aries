@@ -48,4 +48,13 @@ public class GenericMetadataWrapper {
 		result = 31 * result + metadata.getDirectives().hashCode();
 		return result;
 	}
+
+    @Override
+    public String toString() {
+        return "GenericMetadata[" +
+                "namespace=" + metadata.getNamespace() + ", " +
+                "directives=" + metadata.getDirectives() + "," +
+                "attributes=" + metadata.getAttributes() + "," +
+                "]";
+    }
 }

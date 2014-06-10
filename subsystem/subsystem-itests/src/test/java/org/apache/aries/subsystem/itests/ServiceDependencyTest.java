@@ -263,7 +263,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 			try {
 				Subsystem child = installSubsystemFromFile(parent, APPLICATION_A);
 				try {
-					assertSubsystemImportServiceHeader(child, "osgi.service;filter:=\"(&(objectClass=bundle.b))\";resolution:=mandatory;cardinality:=single");
+					assertSubsystemImportServiceHeader(child, "osgi.service;filter:=\"(objectClass=bundle.b)\";resolution:=mandatory;cardinality:=single");
 				}
 				finally {
 					uninstallSubsystemSilently(child);
@@ -300,7 +300,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 		try {
 			Subsystem subsystem = installSubsystemFromFile(APPLICATION_B);
 			try {
-				assertSubsystemImportServiceHeader(subsystem, "osgi.service;filter:=\"(&(objectClass=bundle.a))\";resolution:=optional;cardinality:=single");
+				assertSubsystemImportServiceHeader(subsystem, "osgi.service;filter:=\"(objectClass=bundle.a)\";resolution:=optional;cardinality:=single");
 			}
 			finally {
 				uninstallSubsystemSilently(subsystem);
