@@ -62,7 +62,7 @@ public class Helper {
     
     public static Option blueprintBundles(boolean startBlueprint) {
         return composite(
-                mvnBundle("org.ow2.asm", "asm-all"),
+                mvnBundle("org.ow2.asm", "asm-debug-all"),
                 mvnBundle("org.apache.felix", "org.apache.felix.configadmin"),
                 mvnBundle("org.ops4j.pax.url", "pax-url-aether"),
                 mvnBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),

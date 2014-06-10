@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
@@ -197,9 +197,9 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
+            <artifactId>asm-debug-all</artifactId>
             <scope>test</scope>
-            <version>4.0</version>
+            <version>5.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xbean</groupId>
