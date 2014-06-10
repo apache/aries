@@ -16,39 +16,76 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.compendium.cm;
-
-import java.util.Hashtable;
-
-import org.junit.Test;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
+package org.apache.aries.blueprint.itests.cm;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class ManagedServiceFactoryTest extends BaseTest {
+import java.io.InputStream;
+import java.util.Hashtable;
 
-    @Override
-    protected String getBlueprintDescriptor() {
-        return "org/apache/aries/blueprint/compendium/cm/ManagedServiceFactoryTest.xml";
+import javax.inject.Inject;
+
+import org.apache.aries.blueprint.itests.AbstractBlueprintIntegrationTest;
+import org.apache.aries.blueprint.itests.Helper;
+import org.apache.aries.blueprint.itests.cm.service.Foo;
+import org.apache.aries.blueprint.itests.cm.service.FooFactory;
+import org.apache.aries.blueprint.itests.cm.service.FooInterface;
+import org.junit.Test;
+import org.ops4j.pax.exam.CoreOptions;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.ProbeBuilder;
+import org.ops4j.pax.exam.TestProbeBuilder;
+import org.ops4j.pax.tinybundles.core.TinyBundles;
+import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+
+public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest {
+	@Inject
+	ConfigurationAdmin ca;
+	
+	@ProbeBuilder
+	public TestProbeBuilder probeConfiguration(TestProbeBuilder probe) {
+		probe.setHeader(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName());
+    	probe.setHeader(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName());
+		return probe;
+	}
+
+    @org.ops4j.pax.exam.Configuration
+    public Option[] config() {
+    	InputStream testBundle = TinyBundles.bundle()
+    		.add(FooInterface.class)
+    		.add(Foo.class)
+    		.add(FooFactory.class)
+    		.add("OSGI-INF/blueprint/context.xml", 
+    				getResource("ManagedServiceFactoryTest.xml"))
+    		.set(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName())
+    		.set(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName())
+    		.build(TinyBundles.withBnd());
+    	return new Option[] {
+    			baseOptions(),
+    			Helper.blueprintBundles(),
+    			CoreOptions.keepCaches(),
+    			CoreOptions.streamBundle(testBundle)
+    	};
     }
+    
+
 
     @Test
     public void test1() throws Exception {
-        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory", null);
         Hashtable<String,String> props = new Hashtable<String,String>();
         props.put("a", "5");
         cf.update(props);
-
-        BundleContext context = getBundleContext();
-        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(key=foo1)", Helper.DEFAULT_TIMEOUT);
-        assertNotNull(sr);
-        Foo foo = (Foo) context.getService(sr);
+        
+		@SuppressWarnings("rawtypes")
+		ServiceReference sr = getServiceRef(Foo.class, "(key=foo1)");
+        Foo foo = (Foo)context().getService(sr);
         assertNotNull(foo);
         assertEquals(5, foo.getA());
         assertEquals("default", foo.getB());
@@ -72,17 +109,14 @@ public class ManagedServiceFactoryTest extends BaseTest {
 
     @Test
     public void test2() throws Exception {
-        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory2", null);
         Hashtable<String,String> props = new Hashtable<String,String>();
         props.put("a", "5");
         cf.update(props);
 
-        BundleContext context = getBundleContext();
-        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(key=foo2)", Helper.DEFAULT_TIMEOUT);
-        assertNotNull(sr);
-
-        Foo foo = (Foo) context.getService(sr);
+        @SuppressWarnings("rawtypes")
+		ServiceReference sr = getServiceRef(Foo.class, "(key=foo2)");
+		Foo foo = (Foo)context().getService(sr);
         assertNotNull(foo);
         assertEquals(5, foo.getA());
         assertEquals("default", foo.getB());
@@ -104,19 +138,19 @@ public class ManagedServiceFactoryTest extends BaseTest {
         assertNull(sr.getProperty("b"));
     }
 
+
+
     @Test
     public void test3() throws Exception {
-        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
         Hashtable<String,String> props = new Hashtable<String,String>();
         props.put("a", "5");
         cf.update(props);
 
-        BundleContext context = getBundleContext();
-        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=5))", Helper.DEFAULT_TIMEOUT);
+        @SuppressWarnings("rawtypes")
+		ServiceReference sr = getServiceRef(Foo.class, "(&(key=foo3)(a=5))");
         assertNotNull(sr);
-
-        Foo foo = (Foo) context.getService(sr);
+        Foo foo = (Foo) context().getService(sr);
         assertNotNull(foo);
         assertEquals(5, foo.getA());
         assertEquals("default", foo.getB());
@@ -136,47 +170,12 @@ public class ManagedServiceFactoryTest extends BaseTest {
         // Update of service properties
         assertEquals("5", sr.getProperty("a"));
         assertEquals("foo", sr.getProperty("b"));
+        cf.delete();
     }
 
-    @Test
-    public void testCreateServices() throws Exception {
-        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
-        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
-        Hashtable<String,String> props = new Hashtable<String,String>();
-        props.put("a", "5");
-        cf.update(props);
-
-        Configuration cf2 = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
-        Hashtable<String,String> props2 = new Hashtable<String,String>();
-        props2.put("a", "7");
-        cf2.update(props2);
-
-        BundleContext context = getBundleContext();
-        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=5))", Helper.DEFAULT_TIMEOUT);
-        assertNotNull(sr);
-
-        ServiceReference sr2 = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=7))", Helper.DEFAULT_TIMEOUT);
-        assertNotNull(sr2);
-
-        Foo foo = (Foo) context.getService(sr);
-        assertNotNull(foo);
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-        assertEquals("5", sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-
-        Foo foo2 = (Foo) context.getService(sr2);
-        assertNotNull(foo2);
-        assertEquals(7, foo2.getA());
-        assertEquals("default", foo2.getB());
-        assertEquals("7", sr2.getProperty("a"));
-        assertNull(sr2.getProperty("b"));
-    }
-
-    @Test
+    @SuppressWarnings("rawtypes")
+	@Test
     public void testCreateAndUpdate() throws Exception {
-        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
-
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
         Hashtable<String,String> props = new Hashtable<String,String>();
         props.put("a", "5");
@@ -187,21 +186,17 @@ public class ManagedServiceFactoryTest extends BaseTest {
         props2.put("a", "7");
         cf2.update(props2);
 
-        BundleContext context = getBundleContext();
-        ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=5))", Helper.DEFAULT_TIMEOUT);
-        assertNotNull(sr);
+        ServiceReference sr = getServiceRef(Foo.class, "(&(key=foo3)(a=5))");
+        ServiceReference sr2 = getServiceRef(Foo.class, "(&(key=foo3)(a=7))");
 
-        ServiceReference sr2 = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo3)(a=7))", Helper.DEFAULT_TIMEOUT);
-        assertNotNull(sr2);
-
-        Foo foo = (Foo) context.getService(sr);
+        Foo foo = (Foo) context().getService(sr);
         assertNotNull(foo);
         assertEquals(5, foo.getA());
         assertEquals("default", foo.getB());
         assertEquals("5", sr.getProperty("a"));
         assertNull(sr.getProperty("b"));
 
-        Foo foo2 = (Foo) context.getService(sr2);
+        Foo foo2 = (Foo) context().getService(sr2);
         assertNotNull(foo2);
         assertEquals(7, foo2.getA());
         assertEquals("default", foo2.getB());
@@ -234,12 +229,13 @@ public class ManagedServiceFactoryTest extends BaseTest {
         // 2b Update of service properties
         assertEquals("7", sr2.getProperty("a"));
         assertEquals("foo2", sr2.getProperty("b"));
+        cf.delete();
+        cf2.delete();
     }
 
-  @Test
+  @SuppressWarnings("rawtypes")
+@Test
   public void testCreateAndUpdateUsingUpdateMethod() throws Exception {
-    ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
-
     Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory4", null);
     Hashtable<String, String> props = new Hashtable<String, String>();
     props.put("a", "5");
@@ -250,21 +246,17 @@ public class ManagedServiceFactoryTest extends BaseTest {
     props2.put("a", "7");
     cf2.update(props2);
 
-    BundleContext context = getBundleContext();
-    ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo4)(a=5))", Helper.DEFAULT_TIMEOUT);
-    assertNotNull(sr);
+    ServiceReference sr = getServiceRef(Foo.class, "(&(key=foo4)(a=5))");
+    ServiceReference sr2 = getServiceRef(Foo.class, "(&(key=foo4)(a=7))");
 
-    ServiceReference sr2 = Helper.getOsgiServiceReference(context, Foo.class, "(&(key=foo4)(a=7))", Helper.DEFAULT_TIMEOUT);
-    assertNotNull(sr2);
-
-    Foo foo = (Foo) context.getService(sr);
+    Foo foo = (Foo) context().getService(sr);
     assertNotNull(foo);
     assertEquals(5, foo.getA());
     assertEquals("default", foo.getB());
     assertEquals("5", sr.getProperty("a"));
     assertNull(sr.getProperty("b"));
 
-    Foo foo2 = (Foo) context.getService(sr2);
+    Foo foo2 = (Foo) context().getService(sr2);
     assertNotNull(foo2);
     assertEquals(7, foo2.getA());
     assertEquals("default", foo2.getB());
@@ -301,16 +293,14 @@ public class ManagedServiceFactoryTest extends BaseTest {
   
   @Test
   public void testFactoryCreation() throws Exception {
-    ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
     Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory5", null);
     Hashtable<String, String> props = new Hashtable<String, String>();
     props.put("a", "5");
     cf.update(props);
 
-    BundleContext context = getBundleContext();
-    ServiceReference sr = Helper.getOsgiServiceReference(context, Foo.class, "(key=foo5)", Helper.DEFAULT_TIMEOUT);
-    assertNotNull(sr);
-    Foo foo = (Foo) context.getService(sr);
+    @SuppressWarnings("rawtypes")
+	ServiceReference sr = getServiceRef(Foo.class, "(key=foo5)");
+    Foo foo = (Foo) context().getService(sr);
     assertNotNull(foo);
     assertEquals(5, foo.getA());
     assertEquals("default", foo.getB());
@@ -331,4 +321,22 @@ public class ManagedServiceFactoryTest extends BaseTest {
     assertEquals("5", sr.getProperty("a"));
     assertNull(sr.getProperty("b"));
   }
+  
+	@SuppressWarnings("rawtypes")
+	private ServiceReference getServiceRef(Class serviceInterface, String filter) throws InvalidSyntaxException {
+		int tries = 0;
+		do {
+			 ServiceReference[] srAr = bundleContext.getServiceReferences(serviceInterface.getName(), filter);
+			 if (srAr != null && srAr.length > 0) {
+				 return (ServiceReference) srAr[0];
+			 }
+			 tries ++;
+			 try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// Ignore
+			}
+		}  while (tries < 100);
+      throw new RuntimeException("Could not find service " + serviceInterface.getName() + ", " + filter);
+	}
 }

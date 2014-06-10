@@ -26,6 +26,8 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
+import java.io.InputStream;
+
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -64,9 +66,16 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
                 junitBundles(),
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
                 when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
                 mvnBundle("org.ops4j.pax.logging", "pax-logging-api"),
                 mvnBundle("org.ops4j.pax.logging", "pax-logging-service")
          );
+    }
+    
+    public InputStream getResource(String path) {
+    	InputStream is = this.getClass().getClassLoader().getResourceAsStream(path);
+    	if (is == null) {
+    		throw new IllegalArgumentException("Resource not found " + path);
+    	}
+    	return is;
     }
 }

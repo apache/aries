@@ -20,12 +20,12 @@
 
     <cm:managed-service-factory id="managed-service-factory"
                                 factory-pid="blueprint-sample-managed-service-factory"
-                                interface="org.apache.aries.blueprint.compendium.cm.Foo">
+                                interface="org.apache.aries.blueprint.itests.cm.service.Foo">
         <service-properties>
             <entry key="key" value="foo1" />
             <cm:cm-properties persistent-id="" />
         </service-properties>
-        <cm:managed-component class="org.apache.aries.blueprint.compendium.cm.Foo">
+        <cm:managed-component class="org.apache.aries.blueprint.itests.cm.service.Foo">
             <cm:managed-properties persistent-id="" />
             <property name="a" value="1" />
             <property name="b" value="default" />
@@ -34,11 +34,11 @@
 
     <cm:managed-service-factory id="managed-service-factory2"
                                 factory-pid="blueprint-sample-managed-service-factory2"
-                                interface="org.apache.aries.blueprint.compendium.cm.Foo">
+                                interface="org.apache.aries.blueprint.itests.cm.service.Foo">
         <service-properties>
             <entry key="key" value="foo2" />
         </service-properties>
-        <cm:managed-component class="org.apache.aries.blueprint.compendium.cm.Foo">
+        <cm:managed-component class="org.apache.aries.blueprint.itests.cm.service.Foo">
             <cm:managed-properties persistent-id="" update-strategy="container-managed" />
             <property name="a" value="1" />
             <property name="b" value="default" />
@@ -47,12 +47,12 @@
 
     <cm:managed-service-factory id="managed-service-factory3"
                                 factory-pid="blueprint-sample-managed-service-factory3"
-                                interface="org.apache.aries.blueprint.compendium.cm.Foo">
+                                interface="org.apache.aries.blueprint.itests.cm.service.Foo">
         <service-properties>
             <entry key="key" value="foo3" />
             <cm:cm-properties persistent-id="" update="true"/>
         </service-properties>
-        <cm:managed-component class="org.apache.aries.blueprint.compendium.cm.Foo">
+        <cm:managed-component class="org.apache.aries.blueprint.itests.cm.service.Foo">
             <cm:managed-properties persistent-id="" update-strategy="container-managed" />
             <property name="a" value="1" />
             <property name="b" value="default" />
@@ -61,23 +61,23 @@
 
     <cm:managed-service-factory id="managed-service-factory4"
                                 factory-pid="blueprint-sample-managed-service-factory4"
-                                interface="org.apache.aries.blueprint.compendium.cm.Foo">
+                                interface="org.apache.aries.blueprint.itests.cm.service.Foo">
         <service-properties>
             <entry key="key" value="foo4" />
             <cm:cm-properties persistent-id="" update="true"/>
         </service-properties>
-        <cm:managed-component class="org.apache.aries.blueprint.compendium.cm.Foo">
+        <cm:managed-component class="org.apache.aries.blueprint.itests.cm.service.Foo">
             <cm:managed-properties persistent-id="" update-strategy="component-managed" update-method="update" />
             <property name="a" value="1" />
             <property name="b" value="default" />
         </cm:managed-component>
     </cm:managed-service-factory>
     
-    <bean id="fooFactory" class="org.apache.aries.blueprint.compendium.cm.FooFactory" />
+    <bean id="fooFactory" class="org.apache.aries.blueprint.itests.cm.service.FooFactory" />
 
     <cm1_3:managed-service-factory id="managed-service-factory5"
                                 factory-pid="blueprint-sample-managed-service-factory5"
-                                interface="org.apache.aries.blueprint.compendium.cm.Foo">
+                                interface="org.apache.aries.blueprint.itests.cm.service.Foo">
         <service-properties>
             <entry key="key" value="foo5" />
             <cm:cm-properties persistent-id="" />

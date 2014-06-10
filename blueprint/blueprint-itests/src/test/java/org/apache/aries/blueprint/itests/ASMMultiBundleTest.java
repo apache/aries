@@ -34,6 +34,7 @@ import org.apache.aries.blueprint.testbundlea.ProcessableBean;
 import org.apache.aries.blueprint.testbundlea.ProcessableBean.Phase;
 import org.apache.aries.blueprint.testbundleb.OtherBean;
 import org.apache.aries.blueprint.testbundleb.TestBean;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -80,7 +81,9 @@ public class ASMMultiBundleTest extends AbstractBlueprintIntegrationTest {
         }
     }
 
+    // TODO This test seems to fail on some runs. Need to stabilize and reenable
     @Test
+    @Ignore
     public void multiBundleTest() throws Exception {
         
         //bundlea provides the ns handlers, bean processors, interceptors etc for this test.
