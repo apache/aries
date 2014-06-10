@@ -44,12 +44,12 @@
         <dependency>
             <groupId>org.apache.aries.versioning</groupId>
             <artifactId>org.apache.aries.versioning.checker</artifactId>
-            <version>0.2.0</version>
+            <version>0.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>4.0</version>
+            <artifactId>asm-debug-all</artifactId>
+            <version>5.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
