@@ -67,6 +67,7 @@
         
         <!-- this bundle has never been released, we should skip -->
         <aries.skip.version.check>true</aries.skip.version.check>
+        <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <build>

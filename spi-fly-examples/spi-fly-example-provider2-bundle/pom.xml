@@ -45,6 +45,7 @@
 
     <properties>
         <aries.osgi.export.pkg />
+        <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <build>
