@@ -248,12 +248,6 @@
             <scope>test</scope>
             <version>1.2.200.v20120522-2049</version>
         </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
-            <scope>test</scope>
-            <version>5.0.0</version>
-        </dependency>
 
         <dependency>
             <groupId>org.ow2.asm</groupId>
