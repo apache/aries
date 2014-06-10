@@ -15,10 +15,6 @@
  */
 package org.apache.aries.quiesce.manager.itest;
 
-import static org.junit.Assert.*;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,11 +29,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 
-@RunWith(JUnit4TestRunner.class)
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.vmOption;
+import static org.ops4j.pax.exam.CoreOptions.when;
+
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerMethod.class)
 public class QuiesceManagerTest extends AbstractIntegrationTest {
     private QuiesceManager manager;
     private Bundle b1;
@@ -266,24 +277,35 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         assertTrue("Bundle "+b3.getSymbolicName()+" should not be in active state", b3.getState() != Bundle.ACTIVE);
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        return testOptions(
-                paxLogging("DEBUG"),
+    public Option baseOptions() {
+        String localRepo = getLocalRepo();
+        return composite(
+                junitBundles(),
+                // this is how you set the default log level when using pax
+                // logging (logProfile)
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
+        );
+    }
 
+    @Configuration
+    public Option[] configuration() {
+        return new Option[]{
+                baseOptions(),
                 // Bundles
-                mavenBundle("org.osgi", "org.osgi.compendium"),
-                mavenBundle("org.apache.aries", "org.apache.aries.util"),
-                mavenBundle("commons-lang", "commons-lang"),
-                mavenBundle("commons-collections", "commons-collections"),
-                mavenBundle("commons-pool", "commons-pool"),
-                mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
-                mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api"),
-                mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.manager"),
-                
+                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+                mavenBundle("commons-lang", "commons-lang").versionAsInProject(),
+                mavenBundle("commons-collections", "commons-collections").versionAsInProject(),
+                mavenBundle("commons-pool", "commons-pool").versionAsInProject(),
+                mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp").versionAsInProject(),
+                mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api").versionAsInProject(),
+                mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.manager").versionAsInProject(),
+                mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+
                 //new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
                 //new TimeoutOption( 0 ),
 
-                equinox().version("3.5.0"));
+        };
     }
 }
