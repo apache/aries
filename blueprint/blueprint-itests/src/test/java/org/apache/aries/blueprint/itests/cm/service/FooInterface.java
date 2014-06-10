@@ -16,14 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.compendium.cm;
+package org.apache.aries.blueprint.itests.cm.service;
 
+import java.util.Properties;
 
-public class FooFactory {
-  
-  
-  public FooInterface create(){
-   return new Foo();
-  }
+public interface FooInterface {
+
+    Properties getProps();
+
 }
-
