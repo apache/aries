@@ -48,8 +48,8 @@
     <dependencies>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>4.0</version>
+            <artifactId>asm-debug-all</artifactId>
+            <version>5.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
@@ -177,7 +177,7 @@
             <groupId>org.apache.aries.web</groupId>
             <artifactId>org.apache.aries.web.urlhandler</artifactId>
             <scope>provided</scope>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
