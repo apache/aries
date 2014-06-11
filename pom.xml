@@ -65,13 +65,13 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>0.4</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
             <scope>test</scope>
-            <version>0.3</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!--External dependencies. Versions may be specified in default parent -->
