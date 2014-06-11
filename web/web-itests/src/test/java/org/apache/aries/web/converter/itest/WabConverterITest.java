@@ -126,7 +126,7 @@ public class WabConverterITest extends AbstractIntegrationTest {
 				// Bundles
 				mavenBundle("org.apache.aries.web", "org.apache.aries.web.urlhandler"),
 				mavenBundle("org.apache.aries", "org.apache.aries.util"),
-				mavenBundle("org.ow2.asm", "asm-all"),
+				mavenBundle("org.ow2.asm", "asm-debug-all"),
 				mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
 				mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
 				mavenBundle("org.apache.aries.testsupport",	"org.apache.aries.testsupport.unit"));
