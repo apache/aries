@@ -80,7 +80,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
 
 	protected Option blueprint() {
 		return composite(
-				mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+				mavenBundle("org.ow2.asm", "asm-debug-all").versionAsInProject(),
 				mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
 				mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
 				mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator").versionAsInProject(),
