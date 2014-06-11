@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.versioning</groupId>
     <artifactId>org.apache.aries.versioning.checker</artifactId>
-    <version>0.2.1-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>org.apache.aries.versioning.checker</name>
     <url>http://maven.apache.org</url>
