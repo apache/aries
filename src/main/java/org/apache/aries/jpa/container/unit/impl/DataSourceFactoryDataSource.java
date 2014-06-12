@@ -49,18 +49,10 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
   private final AtomicReference<SingleServiceTracker<DataSourceFactory>> trackerRef =
     new AtomicReference<SingleServiceTracker<DataSourceFactory>>();
   
-  public DataSourceFactoryDataSource(Bundle bundle, String driverName, String dbURL, 
-      String dbUserName, String dbPassword, boolean jta) {
+  public DataSourceFactoryDataSource(Bundle bundle, String driverName, Properties props, boolean jta) {
     this.persistenceBundle = bundle;
     this.driverName = driverName;
-    props = new Properties();
-    if(dbURL != null)
-      props.setProperty(DataSourceFactory.JDBC_URL, dbURL);
-    if(dbUserName != null)
-      props.setProperty(DataSourceFactory.JDBC_USER, dbUserName);
-    if(dbPassword != null)
-      props.setProperty(DataSourceFactory.JDBC_PASSWORD, dbPassword);
-    
+    this.props = props;
     this.jta = jta;
   }
 
