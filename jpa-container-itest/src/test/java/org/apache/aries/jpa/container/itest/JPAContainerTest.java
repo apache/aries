@@ -15,84 +15,46 @@
  */
 package org.apache.aries.jpa.container.itest;
 
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import static org.apache.aries.itest.ExtraOptions.*;
+import static org.ops4j.pax.exam.CoreOptions.options;
 
-import javax.persistence.EntityManagerFactory;
-
-import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.jpa.container.PersistenceUnitConstants;
+import org.apache.aries.jpa.itest.AbstractJPAItest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 
-@RunWith(JUnit4TestRunner.class)
-public class JPAContainerTest extends AbstractIntegrationTest {
+public class JPAContainerTest extends AbstractJPAItest {
 
-  @Test
-  public void findEntityManagerFactory() throws Exception {
-    context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-  }
-  
-  @Test
-  public void findEntityManagerFactory2() throws Exception {
-    context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=bp-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-  }
-  
-  @Test
-  public void findEntityManager() throws Exception {
-    EntityManagerFactory emf = context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    emf.createEntityManager();
-  }
-  
-  @Test
-  public void findEntityManager2() throws Exception {
-    EntityManagerFactory emf = context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=bp-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    emf.createEntityManager();
-  }
+	@Test
+	public void findEntityManagerFactory() throws Exception {
+		getEMF(TEST_UNIT);
+	}
 
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
-    return testOptions(
-        transactionBootDelegation(),
-        paxLogging("DEBUG"),
+	@Test
+	public void findEntityManagerFactory2() throws Exception {
+		getEMF(BP_TEST_UNIT);
+	}
 
-        // Bundles
-        mavenBundle("commons-lang", "commons-lang"),
-        mavenBundle("commons-collections", "commons-collections"),
-        mavenBundle("commons-pool", "commons-pool"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
-        mavenBundle("org.ow2.asm", "asm-all"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.api"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.core"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
-        mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager" ),
-        mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers" ),
-        mavenBundle("org.apache.derby", "derby"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
-        mavenBundle("org.apache.openjpa", "openjpa"),
-        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
-        mavenBundle("org.osgi", "org.osgi.compendium"),
+	@Test
+	public void findEntityManager() throws Exception {
+		getEMF(TEST_UNIT).createEntityManager();
+	}
 
-        //vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
-        //waitForFrameworkStartup(),
-        
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle"),
+	@Test
+	public void findEntityManager2() throws Exception {
+		getEMF(BP_TEST_UNIT).createEntityManager();
+	}
 
-        // Add in a workaround to get OSGi 4.3 support with the current version of pax-exam
-        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-        equinox().version("3.7.0.v20110613")
-    );
- 
-  }
+	@Configuration
+	public Option[] configuration() {
+		return options(
+				baseOptions(),
+				ariesJpa(),
+				// Needed for the BP_TEST_UNIT
+				transactionWrapper(),
+				openJpa(),
+				testDs(),
+				testBundle());
+
+	}
 
 }

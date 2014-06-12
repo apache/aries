@@ -15,25 +15,21 @@
  */
 package org.apache.aries.jpa.context.itest;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
-import static org.ops4j.pax.exam.CoreOptions.felix;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
+import org.apache.aries.jpa.itest.AbstractJPAItest;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 
 @Ignore
-@RunWith(JUnit4TestRunner.class)
-public class EclipseLinkStartupTest extends AbstractIntegrationTest {
+public class EclipseLinkStartupTest extends AbstractJPAItest {
     
     @Test
     public void testContextCreationWithStartingBundle() throws Exception {
@@ -49,43 +45,12 @@ public class EclipseLinkStartupTest extends AbstractIntegrationTest {
         context().getService(EntityManagerFactory.class);
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        return testOptions(
-                felix().version("3.2.1"),
-                paxLogging("INFO"),
-
-                // Bundles
-                mavenBundle("org.osgi", "org.osgi.compendium"),
-                mavenBundle("org.apache.aries", "org.apache.aries.util"),
-                // Adding blueprint to the runtime is a hack to placate the
-                // maven bundle plugin.
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
-                mavenBundle("org.ow2.asm", "asm-all"),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
-                mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
-                mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.api"),
-                mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.core"),
-                mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
-                mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
-                mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
-                mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.context"),
-                mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
-                mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers"),
-                mavenBundle("org.apache.derby", "derby"),
-                mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
-                mavenBundle("commons-lang", "commons-lang"),
-                mavenBundle("commons-collections", "commons-collections"),
-                mavenBundle("commons-pool", "commons-pool"),
-
-                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa"),
-                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core"),
-                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm"),
-                mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.antlr"),
-                
-                mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.eclipselink.adapter"),
+    @Configuration
+    public Option[] configuration() {
+        return CoreOptions.options(
+        		baseOptions(),
+        		ariesJpa(),
+        		eclipseLink(),
                 mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle.eclipselink").noStart()
             );
     }
