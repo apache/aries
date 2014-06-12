@@ -29,6 +29,7 @@ import org.tranql.connector.jdbc.KnownSQLStateExceptionSorter;
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.resource.spi.ResourceAdapterInternalException;
+import javax.resource.spi.TransactionSupport;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
@@ -47,7 +48,7 @@ public class XADataSourceMCFFactory extends AbstractMCFFactory {
         }
     }
 
-    public class XADataSourceMCF extends AbstractXADataSourceMCF<XADataSource> {
+    public class XADataSourceMCF extends AbstractXADataSourceMCF<XADataSource> implements TransactionSupport {
 
         public XADataSourceMCF() {
             super((XADataSource) XADataSourceMCFFactory.this.getDataSource(), XADataSourceMCFFactory.this.getExceptionSorter());
@@ -77,6 +78,10 @@ public class XADataSourceMCFFactory extends AbstractMCFFactory {
             }
         }
 
+        @Override
+        public TransactionSupportLevel getTransactionSupport() {
+            return TransactionSupportLevel.XATransaction;
+        }
     }
 
 }
