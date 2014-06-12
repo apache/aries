@@ -16,6 +16,7 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.XAConnection;
 import javax.jms.XASession;
@@ -29,8 +30,8 @@ public class RecoverableConnectionPool extends XaConnectionPool {
 
     private String name;
 
-    public RecoverableConnectionPool(XAConnection connection, ObjectPoolFactory poolFactory, TransactionManager transactionManager, String name) throws JMSException {
-        super(connection, poolFactory, transactionManager);
+    public RecoverableConnectionPool(Connection connection, TransactionManager transactionManager, String name) {
+        super(connection, transactionManager);
         this.name = name;
     }
 
