@@ -47,20 +47,15 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.osgi.enterprise</artifactId>
             <version>4.2.0</version>
-            <scope>provided</scope>
         </dependency>
+
+        <!-- framework -->
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.tycho</groupId>
+            <groupId>org.eclipse</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.7.0.v20110613</version>
+            <version>3.8.0.v20120529-1548</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -68,35 +63,53 @@
             <artifactId>junit</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- logging -->
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
+            <version>1.7.2</version>
             <scope>test</scope>
-            <version>1.6.3</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-service</artifactId>
+            <version>1.7.2</version>
             <scope>test</scope>
-            <version>1.6.3</version>
         </dependency>
-        <dependency>
-          <groupId>org.ops4j.pax.runner</groupId>
-          <artifactId>pax-runner-no-jcl</artifactId>
-          <version>1.7.3</version>
-        </dependency>
+
+        <!-- pax-exam -->
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-default</artifactId>
-            <version>1.2.4</version>
+            <artifactId>pax-exam</artifactId>
+            <version>3.4.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit</artifactId>
-            <version>1.2.4</version>
+            <artifactId>pax-exam-container-forked</artifactId>
+            <version>3.4.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit4</artifactId>
+            <version>3.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <version>3.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+            <version>1.6.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
@@ -127,18 +140,13 @@
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.ops4j.pax.url</groupId>
-            <artifactId>pax-url-mvn</artifactId>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-        
-        <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>1.0.0</version>
-          <scope>test</scope>
-        </dependency>        
         <dependency>
         	<groupId>org.apache.aries.ejb</groupId>
         	<artifactId>org.apache.aries.ejb.openejb.extender</artifactId>
@@ -469,7 +477,7 @@
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>10.5.3.0_1</version>
+            <version>10.10.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

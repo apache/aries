@@ -17,379 +17,364 @@ package org.apache.aries.ejb.openejb.extender.itest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Method;
 import java.util.zip.ZipOutputStream;
-
-import javax.transaction.TransactionSynchronizationRegistry;
-import javax.transaction.UserTransaction;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
 import beans.StatelessSessionBean;
-import beans.integration.Tx;
 import beans.xml.LocalIface;
 import beans.xml.RemoteIface;
 
-@RunWith(JUnit4TestRunner.class)
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class EJBBundleTest extends AbstractOpenEJBTest {
 
-  private void assertXML(Bundle test, boolean exists) throws Exception {
-    ServiceReference[] local = context().getAllServiceReferences(LocalIface.class.getName(), 
-        "(&(ejb.name=XML)(ejb.type=Singleton))");
-    if(exists) {
-      assertNotNull(local);
-      assertEquals(1, local.length);
-      Object svc = context().getService(local[0]);
-      assertNotNull(svc);
-      assertEquals("A Local Call", svc.getClass().getMethod("getLocalString").invoke(svc));
-    } else {
-      assertNull(local);
+    private void assertXML(Bundle test, boolean exists) throws Exception {
+        ServiceReference[] local = context().getAllServiceReferences(LocalIface.class.getName(),
+                "(&(ejb.name=XML)(ejb.type=Singleton))");
+        if (exists) {
+            assertNotNull(local);
+            assertEquals(1, local.length);
+            Object svc = context().getService(local[0]);
+            assertNotNull(svc);
+            assertEquals("A Local Call", svc.getClass().getMethod("getLocalString").invoke(svc));
+        } else {
+            assertNull(local);
+        }
+
+        ServiceReference[] remote = context().getAllServiceReferences(RemoteIface.class.getName(),
+                "(&(ejb.name=XML)(ejb.type=Singleton))");
+        if (exists) {
+            assertNotNull(remote);
+            assertEquals(1, remote.length);
+            Object svc = context().getService(remote[0]);
+            assertNotNull(svc);
+            assertEquals("A Remote Call", svc.getClass().getMethod("getRemoteString").invoke(svc));
+        } else {
+            assertNull(remote);
+        }
     }
-    
-    ServiceReference[] remote = context().getAllServiceReferences(RemoteIface.class.getName(), 
-    "(&(ejb.name=XML)(ejb.type=Singleton))");
-    if(exists) {
-      assertNotNull(remote);
-      assertEquals(1, remote.length);
-      Object svc = context().getService(remote[0]);
-      assertNotNull(svc);
-      assertEquals("A Remote Call", svc.getClass().getMethod("getRemoteString").invoke(svc));
-    } else {
-      assertNull(remote);
+
+    private void assertAnnotations(Bundle test, boolean exists) throws Exception {
+        ServiceReference[] stateless = context().getAllServiceReferences(StatelessSessionBean.class.getName(),
+                "(&(ejb.name=Annotated)(ejb.type=Stateless))");
+        if (exists) {
+            assertNotNull(stateless);
+            assertEquals(1, stateless.length);
+            Object svc = context().getService(stateless[0]);
+            assertNotNull(svc);
+            assertEquals("A Stateless Call", svc.getClass().getMethod("getStatelessString").invoke(svc));
+        } else {
+            assertNull(stateless);
+        }
     }
-  }
-  
-  private void assertAnnotations(Bundle test, boolean exists) throws Exception {
-    ServiceReference[] stateless = context().getAllServiceReferences(StatelessSessionBean.class.getName(), 
-        "(&(ejb.name=Annotated)(ejb.type=Stateless))");
-    if(exists) {
-      assertNotNull(stateless);
-      assertEquals(1, stateless.length);
-      Object svc = context().getService(stateless[0]);
-      assertNotNull(svc);
-      assertEquals("A Stateless Call", svc.getClass().getMethod("getStatelessString").invoke(svc));
-    } else {
-      assertNull(stateless);
+
+    @Test
+    public void testEJBJARInZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class");
+        zos.close();
+
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, true);
+            test.stop();
+            assertXML(test, false);
+
+        } finally {
+            test.uninstall();
+        }
     }
-  }
-  
-  @Test
-  public void testEJBJARInZip() throws Exception {
-    
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    try {
-      test.start();
-      assertXML(test, true);
-      test.stop();
-      assertXML(test, false);
-      
-    } finally {
-      test.uninstall();
+    @Test
+    public void testEJBJARAndAnnotatedInZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class");
+        addToZip(zos, "beans/StatelessSessionBean.class");
+        addToZip(zos, "beans/StatefulSessionBean.class");
+        zos.close();
+
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, true);
+            assertAnnotations(test, true);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
     }
-  }
-  
-  @Test
-  public void testEJBJARAndAnnotatedInZip() throws Exception {
-    
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class");
-    addToZip(zos, "beans/StatelessSessionBean.class");
-    addToZip(zos, "beans/StatefulSessionBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    try {
-      test.start();
-      assertXML(test, true);
-      assertAnnotations(test, true);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
+    @Test
+    public void testAnnotatedOnlyInZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class");
+        addToZip(zos, "beans/StatelessSessionBean.class");
+        addToZip(zos, "beans/StatefulSessionBean.class");
+        zos.close();
+
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, false);
+            assertAnnotations(test, true);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
     }
-  }
-  
-  @Test
-  public void testAnnotatedOnlyInZip() throws Exception {
-    
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_1.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class");
-    addToZip(zos, "beans/StatelessSessionBean.class");
-    addToZip(zos, "beans/StatefulSessionBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    try {
-      test.start();
-      assertXML(test, false);
-      assertAnnotations(test, true);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
+    @Test
+    public void testEJBJARAndAnnotatedNotOnClasspathInZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_2.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
+        addToZip(zos, "beans/StatelessSessionBean.class", "no/beans/StatelessSessionBean.class");
+        addToZip(zos, "beans/StatefulSessionBean.class", "no/beans/StatefulSessionBean.class");
+        zos.close();
+
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, true);
+            assertAnnotations(test, false);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
     }
-  }
-  
-  @Test
-  public void testEJBJARAndAnnotatedNotOnClasspathInZip() throws Exception {
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_2.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
-    addToZip(zos, "beans/StatelessSessionBean.class", "no/beans/StatelessSessionBean.class");
-    addToZip(zos, "beans/StatefulSessionBean.class", "no/beans/StatefulSessionBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+    @Test
+    public void testEJBJARAndAnnotatedOnClasspathInZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_2.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
+        addToZip(zos, "beans/StatelessSessionBean.class", "yes/beans/StatelessSessionBean.class");
+        addToZip(zos, "beans/StatefulSessionBean.class", "yes/beans/StatefulSessionBean.class");
+        zos.close();
 
-    try {
-      test.start();
-      assertXML(test, true);
-      assertAnnotations(test, false);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, true);
+            assertAnnotations(test, true);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
     }
-  }
 
-  @Test
-  public void testEJBJARAndAnnotatedOnClasspathInZip() throws Exception {
+    @Test
+    public void testEJBJARInWebZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class");
+        zos.close();
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_2.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
-    addToZip(zos, "beans/StatelessSessionBean.class", "yes/beans/StatelessSessionBean.class");
-    addToZip(zos, "beans/StatefulSessionBean.class", "yes/beans/StatefulSessionBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    try {
-      test.start();
-      assertXML(test, true);
-      assertAnnotations(test, true);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
+        try {
+            test.start();
+            assertXML(test, true);
+            assertAnnotations(test, false);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
     }
-  }
-  
-  @Test
-  public void testEJBJARInWebZip() throws Exception {
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+    @Test
+    public void testEJBJARInWrongPlaceWebZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class");
+        zos.close();
 
-    try {
-      test.start();
-      assertXML(test, true);
-      assertAnnotations(test, false);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
     }
-  }
 
-  @Test
-  public void testEJBJARInWrongPlaceWebZip() throws Exception {
+    @Test
+    public void testEJBJARAndAnnotatedInWebZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class");
+        addToZip(zos, "beans/StatelessSessionBean.class");
+        addToZip(zos, "beans/StatefulSessionBean.class");
+        zos.close();
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
-    
-    try {
-      test.start();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, true);
+            assertAnnotations(test, true);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
     }
-  }
-  
-  @Test
-  public void testEJBJARAndAnnotatedInWebZip() throws Exception {
 
-    
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class");
-    addToZip(zos, "beans/StatelessSessionBean.class");
-    addToZip(zos, "beans/StatefulSessionBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
-    
-    try {
-      test.start();
-      assertXML(test, true);
-      assertAnnotations(test, true);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
-    }
-  }
-  
-  @Test
-  public void testAnnotatedOnlyInWebZip() throws Exception {
+    @Test
+    public void testAnnotatedOnlyInWebZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class");
+        addToZip(zos, "beans/StatelessSessionBean.class");
+        addToZip(zos, "beans/StatefulSessionBean.class");
+        zos.close();
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_3.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class");
-    addToZip(zos, "beans/StatelessSessionBean.class");
-    addToZip(zos, "beans/StatefulSessionBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
-    
-    try {
-      test.start();
-      assertXML(test, false);
-      assertAnnotations(test, true);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
-    }
-  }
-  
-  @Test
-  public void testEJBJARAndAnnotatedNotOnClasspathInWebZip() throws Exception {
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_4.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
-    addToZip(zos, "beans/StatelessSessionBean.class", "no/beans/StatelessSessionBean.class");
-    addToZip(zos, "beans/StatefulSessionBean.class", "no/beans/StatefulSessionBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
-    
-    try {
-      test.start();
-      assertXML(test, true);
-      assertAnnotations(test, false);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
-    }
-  }
-  
-  @Test
-  public void testEJBJARAndAnnotatedOnClasspathInWebZip() throws Exception {
+        try {
+            test.start();
+            assertXML(test, false);
+            assertAnnotations(test, true);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(baos);
-    addToZip(zos, "MANIFEST_4.MF", "META-INF/MANIFEST.MF");
-    addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
-    addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
-    addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
-    addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
-    addToZip(zos, "beans/StatelessSessionBean.class", "yes/beans/StatelessSessionBean.class");
-    addToZip(zos, "beans/StatefulSessionBean.class", "yes/beans/StatefulSessionBean.class");
-    zos.close();
-    
-    Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
-    
-    try {
-      test.start();
-      assertXML(test, true);
-      assertAnnotations(test, true);
-      test.stop();
-      assertXML(test, false);
-      assertAnnotations(test, false);
-      
-    } finally {
-      test.uninstall();
+        } finally {
+            test.uninstall();
+        }
     }
-  }
+
+    @Test
+    public void testEJBJARAndAnnotatedNotOnClasspathInWebZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_4.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
+        addToZip(zos, "beans/StatelessSessionBean.class", "no/beans/StatelessSessionBean.class");
+        addToZip(zos, "beans/StatefulSessionBean.class", "no/beans/StatefulSessionBean.class");
+        zos.close();
+
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, true);
+            assertAnnotations(test, false);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
+    }
+
+    @Test
+    public void testEJBJARAndAnnotatedOnClasspathInWebZip() throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        addToZip(zos, "MANIFEST_4.MF", "META-INF/MANIFEST.MF");
+        addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
+        addToZip(zos, "beans/xml/LocalIface.class", "yes/beans/xml/LocalIface.class");
+        addToZip(zos, "beans/xml/RemoteIface.class", "yes/beans/xml/RemoteIface.class");
+        addToZip(zos, "beans/xml/XMLBean.class", "yes/beans/xml/XMLBean.class");
+        addToZip(zos, "beans/StatelessSessionBean.class", "yes/beans/StatelessSessionBean.class");
+        addToZip(zos, "beans/StatefulSessionBean.class", "yes/beans/StatefulSessionBean.class");
+        zos.close();
+
+        Bundle test = context().installBundle("", new ByteArrayInputStream(baos.toByteArray()));
+
+        try {
+            test.start();
+            assertXML(test, true);
+            assertAnnotations(test, true);
+            test.stop();
+            assertXML(test, false);
+            assertAnnotations(test, false);
+
+        } finally {
+            test.uninstall();
+        }
+    }
+
 }
