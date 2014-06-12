@@ -252,6 +252,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+    		<groupId>org.ops4j.pax.jdbc</groupId>
+    		<artifactId>pax-jdbc-derby</artifactId>
+		    <version>0.3.0</version>
+		</dependency>
+        <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
             <version>2.1_3_4</version>
