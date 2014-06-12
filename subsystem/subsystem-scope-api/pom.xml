@@ -45,6 +45,7 @@
          <aries.osgi.import>
              *
          </aries.osgi.import>
+         <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
 
     <dependencies>
