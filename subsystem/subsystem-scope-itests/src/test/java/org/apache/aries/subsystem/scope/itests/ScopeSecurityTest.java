@@ -23,7 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
@@ -34,17 +34,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.subsystem.example.helloIsolation.HelloIsolation;
 import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.scope.SharePolicy;
 import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.Ignore;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
@@ -59,9 +59,8 @@ import org.osgi.service.condpermadmin.ConditionalPermissionUpdate;
 import org.osgi.service.permissionadmin.PermissionInfo;
 import org.osgi.util.tracker.BundleTracker;
 
-
-@RunWith(JUnit4TestRunner.class)
-public class ScopeSecurityTest extends AbstractIntegrationTest {
+@Ignore
+public class ScopeSecurityTest extends AbstractTest {
 
     /* Use @Before not @BeforeClass so as to ensure that these resources
      * are created in the paxweb temp directory, and not in the svn tree 
@@ -91,12 +90,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
     
     //@Test
     public void testScopeSecurityWithServiceIsolation() throws Exception {
-        // make sure we are using a framework that provides composite admin service
-        Scope scopeAdmin = getOsgiService(Scope.class);
-        assertNotNull("scope admin should not be null", scopeAdmin);
-        System.out.println("able to get scope admin service");
-       
-        ScopeUpdate su = scopeAdmin.newScopeUpdate();
+        ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         
@@ -139,7 +133,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         // test bundle service find hook
         //ServiceReference sr = bundleContext.getServiceReference(HelloIsolation.class.getName());
         //assertNull("sr should be null", sr);
-        Collection<Scope> children = scopeAdmin.getChildren();
+        Collection<Scope> children = scope.getChildren();
         assertEquals(1, children.size());
         
         for (Scope child : children) {
@@ -171,18 +165,18 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         bundleContext.installBundle("org.apache.felix.fileinstall-rootScope", url.openStream());
         
         // remove child scope
-        su = scopeAdmin.newScopeUpdate();
+        su = scope.newScopeUpdate();
         Collection<ScopeUpdate> scopes = su.getChildren();
         
         // obtain child scope admin from service registry
 //        String filter = "ScopeName=scope_test1";
         Scope childScopeAdmin = childScopeUpdate.getScope();
-        assertEquals(scopeAdmin, childScopeAdmin.getParent());
+        assertEquals(scope, childScopeAdmin.getParent());
         scopes.remove(childScopeUpdate);
         su.commit();
         
-        assertFalse(scopeAdmin.getChildren().contains(childScopeAdmin));
-        su = scopeAdmin.newScopeUpdate();
+        assertFalse(scope.getChildren().contains(childScopeAdmin));
+        su = scope.newScopeUpdate();
         assertFalse(su.getChildren().contains(childScopeUpdate));
         
 //        childScopeAdmin = null;
@@ -204,7 +198,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         Bundle[] bundles = bundleContext.getBundles();
         
         for (Bundle b : bundles) {
-            // set up condition permission for scopeAdmin
+            // set up condition permission for scope
             if (b.getSymbolicName().indexOf("subsystem.scope.impl") > -1) {
                 ServiceReference permRef = bundleContext.getServiceReference(ConditionalPermissionAdmin.class.getName());
 
@@ -223,12 +217,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
             
         }
         
-        // make sure we are using a framework that provides composite admin service
-        Scope scopeAdmin = getOsgiService(Scope.class);
-        assertNotNull("scope admin should not be null", scopeAdmin);
-        System.out.println("able to get scope admin service");
-        
-        ScopeUpdate su = scopeAdmin.newScopeUpdate();
+        ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         
@@ -293,7 +282,7 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         // test bundle service find hook
         //ServiceReference sr = bundleContext.getServiceReference(HelloIsolation.class.getName());
         //assertNull("sr should be null", sr);
-        Collection<Scope> children = scopeAdmin.getChildren();
+        Collection<Scope> children = scope.getChildren();
         assertEquals(1, children.size());
         
         for (Scope child : children) {
@@ -327,18 +316,18 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
         bundleContext.installBundle("org.apache.felix.fileinstall-rootScope", url.openStream());
         
         // remove child scope
-        su = scopeAdmin.newScopeUpdate();
+        su = scope.newScopeUpdate();
         Collection<ScopeUpdate> scopes = su.getChildren();
         
         // obtain child scope admin from service registry
 //        String filter = "ScopeName=scope_test1";
         Scope childScopeAdmin = childScopeUpdate.getScope();
-        assertEquals(scopeAdmin, childScopeAdmin.getParent());
+        assertEquals(scope, childScopeAdmin.getParent());
         scopes.remove(childScopeUpdate);
         su.commit();
         
-        assertFalse(scopeAdmin.getChildren().contains(childScopeAdmin));
-        su = scopeAdmin.newScopeUpdate();
+        assertFalse(scope.getChildren().contains(childScopeAdmin));
+        su = scope.newScopeUpdate();
         assertFalse(su.getChildren().contains(childScopeUpdate));
         
 //        childScopeAdmin = null;
@@ -352,20 +341,10 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
     }
     
    
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        Option[] options = options(
-            // Log
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-            // Felix Config Admin
-            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-            // Felix mvn url handler
-            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-
-            // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+    @Configuration
+    public Option[] configuration() {
+        return options(
+        	baseOptions(),
 
             // Bundles
             mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
@@ -375,19 +354,12 @@ public class ScopeSecurityTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl"),
+            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl")
 
             // uncomment the following line if you want to turn on security.  the policy file can be found in src/test/resources dir and you want to update the value of -Djava.security.policy to 
             // the exact location of the policy file.
             //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Declipse.security=osgi -Djava.security.policy=/policy"),
-            //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -Declipse.security=osgi -Djava.security.policy=/policy"),
-
-            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-
-            equinox().version("3.7.0.v20110221")
         );
-        options = updateOptions(options);
-        return options;
     }
 
    

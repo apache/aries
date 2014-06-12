@@ -14,8 +14,6 @@ import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
@@ -23,7 +21,6 @@ import org.osgi.framework.ServiceReference;
  * Bundles may only see other bundles within the same scope. The one exception
  * is the system bundle, which may be seen by all bundles regardless of scope.
  */
-@RunWith(JUnit4TestRunner.class)
 public class BundleVisibilityTest extends AbstractTest {
 	/**
 	 * Install a bundle into the same scope as this one. Both bundles should be

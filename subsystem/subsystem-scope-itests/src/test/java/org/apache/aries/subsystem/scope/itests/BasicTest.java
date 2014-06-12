@@ -14,12 +14,9 @@ import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.scope.SharePolicy;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
-@RunWith(JUnit4TestRunner.class)
 public class BasicTest extends AbstractTest {
 	/**
 	 * Basic test of the initial state of the root scope.

@@ -50,6 +50,7 @@
         <aries.osgi.private.pkg>
             org.apache.aries.subsystem.example.helloIsolationRef
         </aries.osgi.private.pkg>
+        <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
 
     <dependencies>
