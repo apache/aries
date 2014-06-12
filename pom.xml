@@ -41,7 +41,7 @@
         <module>eba-maven-plugin</module>
         <module>testsupport</module>
         <module>util</module>
-        <module>versioning</module>
+        <!--module>versioning</module-->
         <module>proxy</module>
         <module>quiesce</module>
         <module>blueprint</module>
