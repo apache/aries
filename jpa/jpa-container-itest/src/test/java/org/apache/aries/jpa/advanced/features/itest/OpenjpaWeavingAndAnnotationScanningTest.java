@@ -22,22 +22,21 @@ import java.util.Arrays;
 
 import org.apache.aries.jpa.container.advanced.itest.bundle.entities.Car;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
 // TODO The Test persistence unit does not seem to be created. Reenable when this works 
-@Ignore
 public class OpenjpaWeavingAndAnnotationScanningTest extends JPAWeavingAndAnnotationScanningTest {
 
 	@Configuration
 	public Option[] openjpaConfig() {
 		return options(
-				baseOptions(), 
+				baseOptions(),
+				openJpa(),
+				derbyDataSourceFactory(),
 				ariesJpa(),
 				transactionWrapper(),
-				openJpa(),
 
 				testBundleAdvanced()
 				);
@@ -45,6 +44,7 @@ public class OpenjpaWeavingAndAnnotationScanningTest extends JPAWeavingAndAnnota
 
 	@Test
 	public void testClassIsWoven() throws Exception {
+		showBundles();
 		getEMF(TEST_UNIT);
 		assertTrue("Not PersistenceCapable", Arrays.asList(Car.class.getInterfaces())
 				.contains(PersistenceCapable.class));

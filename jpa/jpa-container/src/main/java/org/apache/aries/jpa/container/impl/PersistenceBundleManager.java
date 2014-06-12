@@ -65,6 +65,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class locates, parses and manages persistence units defined in OSGi bundles.
+ * It also keeps track of PersistenceProvider services and delegates the EMF creation to the 
+ * matching PersistenceProvider
  */
 public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator
 {
