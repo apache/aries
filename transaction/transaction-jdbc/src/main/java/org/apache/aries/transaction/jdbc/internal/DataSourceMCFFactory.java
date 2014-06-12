@@ -18,6 +18,7 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
+import javax.resource.spi.TransactionSupport;
 import javax.sql.DataSource;
 
 import org.tranql.connector.jdbc.AbstractLocalDataSourceMCF;
@@ -34,7 +35,7 @@ public class DataSourceMCFFactory extends AbstractMCFFactory {
         }
     }
 
-    public class DataSourceMCF extends AbstractLocalDataSourceMCF<DataSource> {
+    public class DataSourceMCF extends AbstractLocalDataSourceMCF<DataSource> implements TransactionSupport {
         public DataSourceMCF() {
             super((DataSource) DataSourceMCFFactory.this.getDataSource(), DataSourceMCFFactory.this.getExceptionSorter(), true);
         }
@@ -45,6 +46,11 @@ public class DataSourceMCFFactory extends AbstractMCFFactory {
 
         public String getPassword() {
             return DataSourceMCFFactory.this.getPassword();
+        }
+
+        @Override
+        public TransactionSupportLevel getTransactionSupport() {
+            return TransactionSupportLevel.LocalTransaction;
         }
     }
 }
