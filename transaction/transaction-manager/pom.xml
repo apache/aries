@@ -67,7 +67,8 @@
             javax.transaction.TransactionManager,
             javax.transaction.TransactionSynchronizationRegistry,
             javax.transaction.UserTransaction,
-            org.apache.geronimo.transaction.manager.RecoverableTransactionManager
+            org.apache.geronimo.transaction.manager.RecoverableTransactionManager,
+            org.springframework.transaction.PlatformTransactionManager
         </aries.osgi.export.service>
         <aries.osgi.include.resource>
             {maven-resources},
