@@ -25,7 +25,7 @@ interface PooledSessionEventListener {
      * Called on successful creation of a new TemporaryQueue.
      *
      * @param tempQueue
-     *            The TemporaryQueue just created.
+     *      The TemporaryQueue just created.
      */
     void onTemporaryQueueCreate(TemporaryQueue tempQueue);
 
@@ -33,8 +33,16 @@ interface PooledSessionEventListener {
      * Called on successful creation of a new TemporaryTopic.
      *
      * @param tempTopic
-     *            The TemporaryTopic just created.
+     *      The TemporaryTopic just created.
      */
     void onTemporaryTopicCreate(TemporaryTopic tempTopic);
+
+    /**
+     * Called when the PooledSession is closed.
+     *
+     * @param session
+     *      The PooledSession that has been closed.
+     */
+    void onSessionClosed(PooledSession session);
 
 }

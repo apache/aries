@@ -16,8 +16,11 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Session;
+import javax.jms.TemporaryQueue;
+import javax.jms.TemporaryTopic;
 import javax.jms.XAConnection;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
@@ -35,28 +38,58 @@ import org.apache.commons.pool.ObjectPoolFactory;
  */
 public class XaConnectionPool extends ConnectionPool {
 
-    private TransactionManager transactionManager;
+    private final TransactionManager transactionManager;
 
-    public XaConnectionPool(XAConnection connection, ObjectPoolFactory poolFactory, TransactionManager transactionManager) throws JMSException {
-        super(connection, poolFactory);
+    public XaConnectionPool(Connection connection, TransactionManager transactionManager) {
+        super(connection);
         this.transactionManager = transactionManager;
     }
 
+    @Override
+    protected Session makeSession(SessionKey key) throws JMSException {
+        return ((XAConnection) connection).createXASession();
+    }
+
+    @Override
     public Session createSession(boolean transacted, int ackMode) throws JMSException {
-    	PooledSession session = null;
         try {
             boolean isXa = (transactionManager != null && transactionManager.getStatus() != Status.STATUS_NO_TRANSACTION);
             if (isXa) {
-                transacted = true;
-                ackMode = Session.SESSION_TRANSACTED;
-                session = (PooledSession) super.createXaSession(transacted, ackMode);
+                // if the xa tx aborts inflight we don't want to auto create a
+                // local transaction or auto ack
+                transacted = false;
+                ackMode = Session.CLIENT_ACKNOWLEDGE;
+            } else if (transactionManager != null) {
+                // cmt or transactionManager managed
+                transacted = false;
+                if (ackMode == Session.SESSION_TRANSACTED) {
+                    ackMode = Session.AUTO_ACKNOWLEDGE;
+                }
+            }
+            PooledSession session = (PooledSession) super.createSession(transacted, ackMode);
+            if (isXa) {
+                session.addSessionEventListener(new PooledSessionEventListener() {
+
+                    @Override
+                    public void onTemporaryQueueCreate(TemporaryQueue tempQueue) {
+                    }
+
+                    @Override
+                    public void onTemporaryTopicCreate(TemporaryTopic tempTopic) {
+                    }
+
+                    @Override
+                    public void onSessionClosed(PooledSession session) {
+                        session.setIgnoreClose(true);
+                        session.setIsXa(false);
+                    }
+                });
                 session.setIgnoreClose(true);
                 session.setIsXa(true);
                 transactionManager.getTransaction().registerSynchronization(new Synchronization(session));
                 incrementReferenceCount();
                 transactionManager.getTransaction().enlistResource(createXaResource(session));
             } else {
-            	session = (PooledSession) super.createSession(transacted, ackMode);
                 session.setIgnoreClose(false);
             }
             return session;
@@ -74,8 +107,7 @@ public class XaConnectionPool extends ConnectionPool {
     protected XAResource createXaResource(PooledSession session) throws JMSException {
         return session.getXAResource();
     }
-    
-    
+
     protected class Synchronization implements javax.transaction.Synchronization {
         private final PooledSession session;
 
@@ -83,21 +115,20 @@ public class XaConnectionPool extends ConnectionPool {
             this.session = session;
         }
 
+        @Override
         public void beforeCompletion() {
         }
-        
+
+        @Override
         public void afterCompletion(int status) {
             try {
                 // This will return session to the pool.
                 session.setIgnoreClose(false);
                 session.close();
-                session.setIgnoreClose(true);
-                session.setIsXa(false);
                 decrementReferenceCount();
             } catch (JMSException e) {
                 throw new RuntimeException(e);
             }
         }
     }
-    
 }

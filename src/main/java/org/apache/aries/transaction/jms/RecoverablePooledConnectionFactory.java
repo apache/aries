@@ -54,11 +54,8 @@ public class RecoverablePooledConnectionFactory extends XaPooledConnectionFactor
         this.name = name;
     }
 
-    protected ConnectionPool createConnectionPool(Connection connection) throws JMSException {
-    	if (!(connection instanceof XAConnection)) {
-    		throw new JMSException("Require an instance of javax.jms.XAConnection for creating the ConnectionPool");
-    	}
-        return new RecoverableConnectionPool((XAConnection)connection, getPoolFactory(), getTransactionManager(), getName());
+    protected ConnectionPool createConnectionPool(Connection connection) {
+        return new RecoverableConnectionPool(connection, getTransactionManager(), getName());
     }
 
     /**
@@ -67,7 +64,7 @@ public class RecoverablePooledConnectionFactory extends XaPooledConnectionFactor
     @Override
     public void start() {
         if (getConnectionFactory() == null) {
-            throw new IllegalArgumentException("connectionFactory or xaConnectionFactory must be set");
+            throw new IllegalArgumentException("connectionFactory must be set");
         }
         if (getTransactionManager() == null) {
             throw new IllegalArgumentException("transactionManager must be set");
