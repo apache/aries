@@ -168,6 +168,10 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
 		return mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.testds").versionAsInProject();
 	}
 	
+	protected MavenArtifactProvisionOption derbyDataSourceFactory() {
+		return mavenBundle("org.ops4j.pax.jdbc", "pax-jdbc-derby").versionAsInProject();
+	}
+	
 	protected MavenArtifactProvisionOption testBundle() {
 		return mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle").versionAsInProject();
 	}
