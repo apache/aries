@@ -46,6 +46,7 @@
             org.apache.aries.subsystem.scope.internal,
             org.apache.aries.subsystem.scope.impl
         </aries.osgi.private.pkg>
+        <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
 
     <dependencies>
@@ -106,9 +107,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>3.7.0.v20110221</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

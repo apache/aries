@@ -23,9 +23,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -41,12 +38,8 @@ import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.scope.SharePolicy;
 import org.junit.After;
-import org.junit.Test;
 import org.junit.Ignore;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
@@ -59,7 +52,6 @@ import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 
-@RunWith(JUnit4TestRunner.class)
 public class ScopeAdminTest extends AbstractTest {
 
     /* Use @Before not @BeforeClass so as to ensure that these resources
@@ -81,8 +73,7 @@ public class ScopeAdminTest extends AbstractTest {
     @Test
     public void testBundleServiceIsolation() throws Exception {
         // make sure we are using a framework that provides composite admin service
-        Scope scopeAdmin = getOsgiService(Scope.class);
-        assertNotNull("scope admin should not be null", scopeAdmin);
+        assertNotNull("scope admin should not be null", scope);
         System.out.println("able to get scope admin service");
 
         bt = new BundleTracker(bundleContext, Bundle.INSTALLED | Bundle.UNINSTALLED | Bundle.ACTIVE, new BundleTrackerCustomizer() {
@@ -122,7 +113,7 @@ public class ScopeAdminTest extends AbstractTest {
         });
         bt.open();
         
-        ScopeUpdate su = scopeAdmin.newScopeUpdate();
+        ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         su.getChildren().add(childScopeUpdate);
@@ -175,7 +166,7 @@ public class ScopeAdminTest extends AbstractTest {
         // test bundle service find hook
         //ServiceReference sr = bundleContext.getServiceReference(HelloIsolation.class.getName());
         //assertNull("sr should be null", sr);
-        Collection<Scope> children = scopeAdmin.getChildren();
+        Collection<Scope> children = scope.getChildren();
         assertEquals(1, children.size());
         
         for (Scope child : children) {
@@ -199,22 +190,22 @@ public class ScopeAdminTest extends AbstractTest {
         
         
         // remove child scope
-        su = scopeAdmin.newScopeUpdate();
+        su = scope.newScopeUpdate();
 //        Collection<Scope> scopes = su.getToBeRemovedChildren();
         Collection<ScopeUpdate> scopes = su.getChildren();
         childScopeUpdate = scopes.iterator().next();
         
         // obtain child scope admin from service registry
 //        String filter = "ScopeName=scope_test1";
-//        Scope childScopeAdmin = getOsgiService(Scope.class, filter, DEFAULT_TIMEOUT);
+//        Scope childscope = getOsgiService(Scope.class, filter, DEFAULT_TIMEOUT);
         Scope childScopeAdmin = childScopeUpdate.getScope();
-        assertEquals(scopeAdmin, childScopeAdmin.getParent());
+        assertEquals(scope, childScopeAdmin.getParent());
 //        scopes.add(childScopeAdmin);
         scopes.remove(childScopeUpdate);
         su.commit();
         
-        assertFalse(scopeAdmin.getChildren().contains(childScopeAdmin));
-        su = scopeAdmin.newScopeUpdate();
+        assertFalse(scope.getChildren().contains(childScopeAdmin));
+        su = scope.newScopeUpdate();
         assertFalse(su.getChildren().contains(childScopeUpdate));
         
 //        childScopeAdmin = null;
@@ -231,11 +222,10 @@ public class ScopeAdminTest extends AbstractTest {
     @Ignore
     public void testPackageIsolation() throws Exception {
         // make sure we are using a framework that provides composite admin service
-        Scope scopeAdmin = getOsgiService(Scope.class);
-        assertNotNull("scope admin should not be null", scopeAdmin);
+        assertNotNull("scope admin should not be null", scope);
         System.out.println("able to get scope admin service");
 
-        ScopeUpdate su = scopeAdmin.newScopeUpdate();
+        ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         su.getChildren().add(childScopeUpdate);
@@ -283,7 +273,7 @@ public class ScopeAdminTest extends AbstractTest {
         helloIsolation.uninstall();
         
         // remove child scope
-        su = scopeAdmin.newScopeUpdate();
+        su = scope.newScopeUpdate();
 //        Collection<Scope> scopes = su.getToBeRemovedChildren();
         Collection<ScopeUpdate> scopes = su.getChildren();
         childScopeUpdate = scopes.iterator().next();
@@ -291,13 +281,13 @@ public class ScopeAdminTest extends AbstractTest {
 //        String filter = "ScopeName=scope_test1";
 //        Scope childScopeAdmin = getOsgiService(Scope.class, filter, DEFAULT_TIMEOUT);
         Scope childScopeAdmin = childScopeUpdate.getScope();
-        assertEquals(scopeAdmin, childScopeAdmin.getParent());
+        assertEquals(scope, childScopeAdmin.getParent());
 //        scopes.add(childScopeAdmin);
         scopes.remove(childScopeUpdate);
         su.commit();
         
-        assertFalse(scopeAdmin.getChildren().contains(childScopeAdmin));
-        su = scopeAdmin.newScopeUpdate();
+        assertFalse(scope.getChildren().contains(childScopeAdmin));
+        su = scope.newScopeUpdate();
         assertFalse(su.getChildren().contains(childScopeUpdate));
         
 //        childScopeAdmin = null;
@@ -315,11 +305,10 @@ public class ScopeAdminTest extends AbstractTest {
     @Ignore
     public void testPackageSharingFromTestScope() throws Exception {
         // make sure we are using a framework that provides composite admin service
-        Scope scopeAdmin = getOsgiService(Scope.class);
-        assertNotNull("scope admin should not be null", scopeAdmin);
+        assertNotNull("scope admin should not be null", scope);
         System.out.println("able to get scope admin service");
 
-        ScopeUpdate su = scopeAdmin.newScopeUpdate();
+        ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         su.getChildren().add(childScopeUpdate);
@@ -379,18 +368,18 @@ public class ScopeAdminTest extends AbstractTest {
         // remove helloIsolationRef
         helloIsolationRef.uninstall();
         // remove child scope
-        su = scopeAdmin.newScopeUpdate();
+        su = scope.newScopeUpdate();
         Collection<ScopeUpdate> scopes = su.getChildren();
         childScopeUpdate = scopes.iterator().next();
         // obtain child scope admin from service registry
 //        String filter = "ScopeName=scope_test1";
         Scope childScopeAdmin = childScopeUpdate.getScope();
-        assertEquals(scopeAdmin, childScopeAdmin.getParent());
+        assertEquals(scope, childScopeAdmin.getParent());
         scopes.remove(childScopeUpdate);
         su.commit();
         
-        assertFalse(scopeAdmin.getChildren().contains(childScopeAdmin));
-        su = scopeAdmin.newScopeUpdate();
+        assertFalse(scope.getChildren().contains(childScopeAdmin));
+        su = scope.newScopeUpdate();
         assertFalse(su.getChildren().contains(childScopeUpdate));
         
 //        childScopeAdmin = null;
@@ -417,11 +406,7 @@ public class ScopeAdminTest extends AbstractTest {
         }
         
         // make sure we are using a framework that provides composite admin service
-        Scope scopeAdmin = getOsgiService(Scope.class);
-        assertNotNull("scope admin should not be null", scopeAdmin);
-        System.out.println("able to get scope admin service");
-
-        ScopeUpdate su = scopeAdmin.newScopeUpdate();
+        ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
         su.getChildren().add(childScopeUpdate);
@@ -474,18 +459,18 @@ public class ScopeAdminTest extends AbstractTest {
         helloIsolation.uninstall();
         
         // remove child scope
-        su = scopeAdmin.newScopeUpdate();
+        su = scope.newScopeUpdate();
         Collection<ScopeUpdate> scopes = su.getChildren();
         childScopeUpdate = scopes.iterator().next();
         // obtain child scope admin from service registry
 //        String filter = "ScopeName=scope_test1";
         Scope childScopeAdmin = childScopeUpdate.getScope();
-        assertEquals(scopeAdmin, childScopeAdmin.getParent());
+        assertEquals(scope, childScopeAdmin.getParent());
         scopes.remove(childScopeUpdate);
         su.commit();
         
-        assertFalse(scopeAdmin.getChildren().contains(childScopeAdmin));
-        su = scopeAdmin.newScopeUpdate();
+        assertFalse(scope.getChildren().contains(childScopeAdmin));
+        su = scope.newScopeUpdate();
         assertFalse(su.getChildren().contains(childScopeUpdate));
         
 //        childScopeAdmin = null;
@@ -502,23 +487,18 @@ public class ScopeAdminTest extends AbstractTest {
     @Test
     @Ignore
     public void testScopeAffinity() throws Exception {
-        // make sure we are using a framework that provides composite admin service
-        Scope scopeAdmin = getOsgiService(Scope.class);
-        assertNotNull("scope admin should not be null", scopeAdmin);
-        System.out.println("able to get scope admin service");
-
         // install helloIsolation 0.3 in scope_test1
-        Scope scope1 = createScope(scopeAdmin, "scope_test1", 
+        Scope scope1 = createScope(scope, "scope_test1", 
                 "mvn:org.apache.aries.subsystem/org.apache.aries.subsystem.example.helloIsolation/0.1-SNAPSHOT",
                 "0.3");
         
         // install helloIsolation 2.0 in scope_test2
-        Scope scope2 = createScope(scopeAdmin, "scope_test2", 
+        Scope scope2 = createScope(scope, "scope_test2", 
                 "mvn:org.apache.aries.subsystem/org.apache.aries.subsystem.example.helloIsolation/0.1-SNAPSHOT",
                 "2.0");
         
         // install helloIsolationRef 2.0 in scope_test3
-        ScopeUpdate su = scopeAdmin.newScopeUpdate();
+        ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test3");
         su.getChildren().add(childScopeUpdate);
@@ -587,15 +567,15 @@ public class ScopeAdminTest extends AbstractTest {
         }*/
         
         // remove child scope - cleanup
-        su = scopeAdmin.newScopeUpdate();
+        su = scope.newScopeUpdate();
         Collection<ScopeUpdate> scopes = su.getChildren();
         scopes.clear();
 //        scopes.add(scope1);
 //        scopes.add(scope2);
 //        scopes.add(scope3);
         su.commit();
-        assertTrue(scopeAdmin.getChildren().isEmpty());
-        assertTrue(scopeAdmin.newScopeUpdate().getChildren().isEmpty());
+        assertTrue(scope.getChildren().isEmpty());
+        assertTrue(scope.newScopeUpdate().getChildren().isEmpty());
     }
     
 //    @org.ops4j.pax.exam.junit.Configuration
@@ -633,8 +613,8 @@ public class ScopeAdminTest extends AbstractTest {
 //        return options;
 //    }
 
-    private Scope createScope(Scope scopeAdmin, String scopeName, String loc, String version) throws MalformedURLException, InvalidSyntaxException, BundleException, IOException {
-        ScopeUpdate su = scopeAdmin.newScopeUpdate();
+    private Scope createScope(Scope scope, String scopeName, String loc, String version) throws MalformedURLException, InvalidSyntaxException, BundleException, IOException {
+        ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild(scopeName);
         su.getChildren().add(childScopeUpdate);
