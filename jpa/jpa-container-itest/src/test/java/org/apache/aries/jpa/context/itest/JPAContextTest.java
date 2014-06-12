@@ -17,10 +17,6 @@ package org.apache.aries.jpa.context.itest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-
-import static org.apache.aries.itest.ExtraOptions.*;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -31,11 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
-import javax.persistence.PersistenceContextType;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
@@ -47,48 +43,43 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.jpa.container.PersistenceUnitConstants;
-import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.itest.entities.Car;
+import org.apache.aries.jpa.itest.AbstractJPAItest;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 
-public abstract class JPAContextTest extends AbstractIntegrationTest {
+public abstract class JPAContextTest extends AbstractJPAItest {
+  
+  @Inject
+  UserTransaction ut;
  
   @Test
   public void findEntityManagerFactory() throws Exception {
-    context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    getEMF(TEST_UNIT);
   }
   
   @Test
   public void findManagedContextFactory() throws Exception {
     try{
-      context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
-          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
-        "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))");
+      getProxyEMF(TEST_UNIT);
       fail("No context should exist");
     } catch (RuntimeException re) {
       //Expected
     }
     
-    registerClient("test-unit");
-    
-    getProxyEMF("test-unit");    
-  }
-
-  private EntityManagerFactory getProxyEMF(String name) {
-    
-    return context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=" + name + ")(" 
-          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
-        "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))");
+    registerClient(TEST_UNIT);
+    getProxyEMF(TEST_UNIT);    
   }
   
+  @SuppressWarnings("rawtypes")
   @Test
   public void testTranRequired() throws Exception {
-    registerClient("bp-test-unit");
+    registerClient(BP_TEST_UNIT);
     
-    EntityManagerFactory emf = getProxyEMF("bp-test-unit");
+    EntityManagerFactory emf = getProxyEMF(BP_TEST_UNIT);
     
     final EntityManager managedEm = emf.createEntityManager();
     
@@ -139,9 +130,6 @@ public abstract class JPAContextTest extends AbstractIntegrationTest {
     ensureTREBehaviour(false, managedEm, "unwrap", Object.class);
 
     // now test that with a transaction actually active we don't get *any* TransactionRequiredExceptions
-
-    UserTransaction ut = context().getService(UserTransaction.class);
-    
     ut.begin();
     try{
       ensureTREBehaviour(false, managedEm, "contains", new Object());
@@ -196,21 +184,15 @@ public abstract class JPAContextTest extends AbstractIntegrationTest {
   
   @Test
   public void testNonTxEmIsCleared() throws Exception {
-    
-    registerClient("bp-test-unit");
-    
-    EntityManagerFactory emf = getProxyEMF("bp-test-unit");
-    
+    registerClient(BP_TEST_UNIT);
+    EntityManagerFactory emf = getProxyEMF(BP_TEST_UNIT);
     doNonTxEmIsCleared(emf);
-    
   }
 
   private void doNonTxEmIsCleared(EntityManagerFactory emf)
       throws NotSupportedException, SystemException, HeuristicMixedException,
       HeuristicRollbackException, RollbackException {
     final EntityManager managedEm = emf.createEntityManager();
-    
-    UserTransaction ut = context().getService(UserTransaction.class);
     
     ut.begin();
     try {
@@ -258,26 +240,16 @@ public abstract class JPAContextTest extends AbstractIntegrationTest {
   
   @Test
   public void testNonTxEmIsClearedUsingXADataSourceWrapper() throws Exception {
-    
-    registerClient("bp-xa-test-unit");
-    
-    EntityManagerFactory emf = getProxyEMF("bp-xa-test-unit");
-    
+    registerClient(BP_XA_TEST_UNIT);
+    EntityManagerFactory emf = getProxyEMF(BP_XA_TEST_UNIT);
     doNonTxEmIsCleared(emf);
-    
   }
 
   @Test
   public void testNonTxQueries() throws Exception {
-    
-    registerClient("bp-test-unit");
-    
-    EntityManagerFactory emf = getProxyEMF("bp-test-unit");
-    
+    registerClient(BP_TEST_UNIT);
+    EntityManagerFactory emf = getProxyEMF(BP_TEST_UNIT);
     final EntityManager managedEm = emf.createEntityManager();
-    
-    UserTransaction ut = context().getService(UserTransaction.class);
-    
     ut.begin();
     try {
       
@@ -366,18 +338,9 @@ public abstract class JPAContextTest extends AbstractIntegrationTest {
     assertEquals("blue", list.get(1).getColour());
     assertEquals("A1AAA", list.get(1).getNumberPlate());
   }
-  
-  private void registerClient(String name) {
-    PersistenceContextProvider provider = context().getService(PersistenceContextProvider.class);
-    
-    HashMap<String, Object> props = new HashMap<String, Object>();
-    props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
-    provider.registerContext(name, bundleContext.getBundle(), props);
-  }
 
   private void ensureTREBehaviour(boolean expectedToFail, EntityManager em, String methodName, Object... args) throws Exception {
-    
-    List<Class> argTypes = new ArrayList<Class>();
+    List<Class<?>> argTypes = new ArrayList<Class<?>>();
     for(Object o : args) {
       if(o instanceof Map)
         argTypes.add(Map.class);
@@ -406,43 +369,5 @@ public abstract class JPAContextTest extends AbstractIntegrationTest {
     }
   }
   
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
-    return testOptions(
-        paxLogging("DEBUG"),
-        transactionBootDelegation(),
-        
-        // Bundles
-        mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        // Adding blueprint to the runtime is a hack to placate the maven bundle plugin. 
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
-        mavenBundle("org.ow2.asm", "asm-all"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.api"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.core"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.context"),
-        mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager" ),
-        mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers" ),
-        mavenBundle("org.apache.derby", "derby"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
-        mavenBundle("commons-lang", "commons-lang"),
-        mavenBundle("commons-collections", "commons-collections"),
-        mavenBundle("commons-pool", "commons-pool"),
-        
-//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
-//        waitForFrameworkStartup(),
 
-        // Add in a workaround to get OSGi 4.3 support with the current version of pax-exam
-        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-        equinox().version("3.7.0.v20110613")
-    );
-      
-  }
 }
