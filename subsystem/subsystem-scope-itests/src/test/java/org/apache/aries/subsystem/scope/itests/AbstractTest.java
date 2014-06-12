@@ -3,11 +3,13 @@ package org.apache.aries.subsystem.scope.itests;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.vmOption;
+import static org.ops4j.pax.exam.CoreOptions.when;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,25 +19,35 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.scope.SharePolicy;
-import org.junit.After;
-import org.junit.Before;
-import org.ops4j.pax.exam.Customizer;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.swissbox.tinybundles.core.TinyBundles;
+import org.ops4j.pax.exam.ProbeBuilder;
+import org.ops4j.pax.exam.TestProbeBuilder;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
+import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.util.tracker.ServiceTracker;
 
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerMethod.class)
 public abstract class AbstractTest extends AbstractIntegrationTest {
-	protected ServiceTracker scopeTracker;
+	@Inject
+	Scope scope;
 	
 	protected void addPackageExportPolicy(String packageName, ScopeUpdate scopeUpdate) throws InvalidSyntaxException {
 		Filter filter = bundleContext.createFilter("(osgi.wiring.package=" + packageName + ')');
@@ -149,7 +161,7 @@ public abstract class AbstractTest extends AbstractIntegrationTest {
 	}
 	
 	protected Scope getScope() {
-		return (Scope)scopeTracker.getService();
+		return scope;
 	}
 	
 	protected Bundle installBundle(String name) throws BundleException {
@@ -171,68 +183,49 @@ public abstract class AbstractTest extends AbstractIntegrationTest {
 		scopeUpdate.commit();
 	}
 	
-	@Before
-	public void before() throws Exception {
-		assertNotNull(bundleContext);
-		scopeTracker = new ServiceTracker(
-				bundleContext, 
-				Scope.class.getName(), 
-				null);
-		scopeTracker.open();
-	}
-
-	@After
-	public void after() throws Exception {
-		scopeTracker.close();
-	}
-	
 	protected void uninstallQuietly(Bundle bundle) {
 		Utils.uninstallQuietly(bundle);
 	}
 	
-	@org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        Option[] options = options(
-            // Log
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-            // Felix Config Admin
-            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
-            // Felix mvn url handler
-            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
-
-
-            // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-
-            // Bundles
-            mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
-            mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-            mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
-            mavenBundle("org.eclipse.equinox", "coordinator"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
-            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl"),
-
-            // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-
-            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-
-            equinox().version("3.7.0.v20110221"),
-            
-            new Customizer() {
-            	@Override
-                public InputStream customizeTestProbe(InputStream testProbe) throws IOException {
-                    return TinyBundles.modifyBundle(testProbe).
-                                      removeHeader(Constants.EXPORT_PACKAGE)
-                                      .set(Constants.EXPORT_PACKAGE, "org.apache.aries.subsystem.scope.itests")
-                                      .build();
-                }
-            }
+	protected Option baseOptions() {
+        String localRepo = System.getProperty("maven.repo.local");
+     
+        if (localRepo == null) {
+            localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+        }
+        return composite(
+                junitBundles(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-service", "1.7.2"),
+                mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+                // this is how you set the default log level when using pax
+                // logging (logProfile)
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
+         );
+    }
+	
+	@ProbeBuilder
+	public TestProbeBuilder probeConfiguration(TestProbeBuilder probe) {
+		probe.setHeader(Constants.EXPORT_PACKAGE, this.getClass().getPackage().getName());
+		return probe;
+	}
+	
+	@Configuration
+    public Option[] subsystemScope() {
+        //InputStream itestBundle = TinyBundles.bundle().add();
+		return CoreOptions.options(
+        		baseOptions(),
+            mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+            mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
+            mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+            mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
+            mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository").versionAsInProject(),
+            mavenBundle("org.eclipse.equinox", "org.eclipse.equinox.coordinator").versionAsInProject(),
+            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api").versionAsInProject(),
+            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api").versionAsInProject(),
+            mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl").versionAsInProject()
+            //CoreOptions.streamBundle(itestBundle )
         );
-        options = updateOptions(options);
-        return options;
     }
 }

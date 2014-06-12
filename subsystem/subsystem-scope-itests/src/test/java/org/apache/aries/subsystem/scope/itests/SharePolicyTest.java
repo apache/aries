@@ -10,12 +10,9 @@ import java.util.Arrays;
 import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.FrameworkWiring;
 
-@RunWith(JUnit4TestRunner.class)
 public class SharePolicyTest extends AbstractTest {
 	/**
 	 * Bundle tb5
