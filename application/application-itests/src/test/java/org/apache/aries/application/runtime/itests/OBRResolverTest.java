@@ -18,9 +18,6 @@
  */
 package org.apache.aries.application.runtime.itests;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
@@ -28,6 +25,7 @@ import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 import static org.osgi.framework.Constants.EXPORT_PACKAGE;
 import static org.osgi.framework.Constants.IMPORT_PACKAGE;
+import static org.ops4j.pax.exam.CoreOptions.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,297 +61,289 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
-public class OBRResolverTest extends AbstractIntegrationTest 
-{
-  public static final String CORE_BUNDLE_BY_VALUE = "core.bundle.by.value";
-  public static final String CORE_BUNDLE_BY_REFERENCE = "core.bundle.by.reference";
-  public static final String TRANSITIVE_BUNDLE_BY_VALUE = "transitive.bundle.by.value";
-  public static final String TRANSITIVE_BUNDLE_BY_REFERENCE = "transitive.bundle.by.reference";
-  public static final String BUNDLE_IN_FRAMEWORK = "org.apache.aries.util";
-  
-  
-  /* Use @Before not @BeforeClass so as to ensure that these resources
-   * are created in the paxweb temp directory, and not in the svn tree
-   */
-  @Before
-  public static void createApplications() throws Exception 
-  {
-    ZipFixture bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
-                            .attribute(BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(IMPORT_PACKAGE, "p.q.r, x.y.z, javax.naming, " + BUNDLE_IN_FRAMEWORK)
-                            .attribute(BUNDLE_VERSION, "1.0.0").end();
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class OBRResolverTest extends AbstractIntegrationTest {
 
-    
-    FileOutputStream fout = new FileOutputStream(CORE_BUNDLE_BY_VALUE + ".jar");
-    bundle.writeOut(fout);
-    fout.close();
+    public static final String CORE_BUNDLE_BY_VALUE = "core.bundle.by.value";
+    public static final String CORE_BUNDLE_BY_REFERENCE = "core.bundle.by.reference";
+    public static final String TRANSITIVE_BUNDLE_BY_VALUE = "transitive.bundle.by.value";
+    public static final String TRANSITIVE_BUNDLE_BY_REFERENCE = "transitive.bundle.by.reference";
+    public static final String BUNDLE_IN_FRAMEWORK = "org.apache.aries.util";
 
-    bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_VALUE)
-                            .attribute(BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(EXPORT_PACKAGE, "p.q.r")
-                            .attribute(BUNDLE_VERSION, "1.0.0").end();
 
-    fout = new FileOutputStream(TRANSITIVE_BUNDLE_BY_VALUE + ".jar");
-    bundle.writeOut(fout);
-    fout.close();
+    /* Use @Before not @BeforeClass so as to ensure that these resources
+     * are created in the paxweb temp directory, and not in the svn tree
+     */
+    @Before
+    public void createApplications() throws Exception {
+        ZipFixture bundle = ArchiveFixture.newJar().manifest()
+                .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
+                .attribute(BUNDLE_MANIFESTVERSION, "2")
+                .attribute(IMPORT_PACKAGE, "p.q.r, x.y.z, javax.naming, " + BUNDLE_IN_FRAMEWORK)
+                .attribute(BUNDLE_VERSION, "1.0.0").end();
 
-    bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_REFERENCE)
-                            .attribute(BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(EXPORT_PACKAGE, "x.y.z")
-                            .attribute(BUNDLE_VERSION, "1.0.0").end();
-    
-    fout = new FileOutputStream(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar");
-    bundle.writeOut(fout);
-    fout.close();
 
-    bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
-                            .attribute(BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(EXPORT_PACKAGE, "d.e.f")
-                            .attribute(BUNDLE_VERSION, "1.0.0").end();
-    
-    fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + ".jar");
-    bundle.writeOut(fout);
-    fout.close();
+        FileOutputStream fout = new FileOutputStream(CORE_BUNDLE_BY_VALUE + ".jar");
+        bundle.writeOut(fout);
+        fout.close();
 
-    bundle = ArchiveFixture.newJar().manifest()
-                            .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
-                            .attribute(BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(EXPORT_PACKAGE, "d.e.f").end();
+        bundle = ArchiveFixture.newJar().manifest()
+                .attribute(BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_VALUE)
+                .attribute(BUNDLE_MANIFESTVERSION, "2")
+                .attribute(EXPORT_PACKAGE, "p.q.r")
+                .attribute(BUNDLE_VERSION, "1.0.0").end();
 
-    fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
-    bundle.writeOut(fout);
-    fout.close();
-    
-    ZipFixture testEba = ArchiveFixture.newZip()
-     .binary("META-INF/APPLICATION.MF",
-        OBRResolverTest.class.getClassLoader().getResourceAsStream("obr/APPLICATION.MF"))
-        .end()
-      .binary(CORE_BUNDLE_BY_VALUE + ".jar", new FileInputStream(CORE_BUNDLE_BY_VALUE + ".jar")).end()
-      .binary(TRANSITIVE_BUNDLE_BY_VALUE + ".jar", new FileInputStream(TRANSITIVE_BUNDLE_BY_VALUE + ".jar")).end();
+        fout = new FileOutputStream(TRANSITIVE_BUNDLE_BY_VALUE + ".jar");
+        bundle.writeOut(fout);
+        fout.close();
 
-    fout = new FileOutputStream("blog.eba");
-    testEba.writeOut(fout);
-    fout.close();
-  }
+        bundle = ArchiveFixture.newJar().manifest()
+                .attribute(BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_REFERENCE)
+                .attribute(BUNDLE_MANIFESTVERSION, "2")
+                .attribute(EXPORT_PACKAGE, "x.y.z")
+                .attribute(BUNDLE_VERSION, "1.0.0").end();
 
-  @After
-  public void clearRepository() {
-	  RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
-	  Repository[] repos = repositoryAdmin.listRepositories();
-	  if ((repos != null) && (repos.length >0)) {
-		  for (Repository repo : repos) {
-			  repositoryAdmin.removeRepository(repo.getURI());
-		  }
-	  }
-  }
-  @Test(expected=ResolverException.class)
-  public void testBlogAppResolveFail() throws ResolverException, Exception
-  {
-    //  provision against the local runtime
-    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
-    generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
-    
-    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
-    
-    Repository[] repos = repositoryAdmin.listRepositories();
-    for (Repository repo : repos) {
-      repositoryAdmin.removeRepository(repo.getURI());
+        fout = new FileOutputStream(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar");
+        bundle.writeOut(fout);
+        fout.close();
+
+        bundle = ArchiveFixture.newJar().manifest()
+                .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
+                .attribute(BUNDLE_MANIFESTVERSION, "2")
+                .attribute(EXPORT_PACKAGE, "d.e.f")
+                .attribute(BUNDLE_VERSION, "1.0.0").end();
+
+        fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + ".jar");
+        bundle.writeOut(fout);
+        fout.close();
+
+        bundle = ArchiveFixture.newJar().manifest()
+                .attribute(BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
+                .attribute(BUNDLE_MANIFESTVERSION, "2")
+                .attribute(EXPORT_PACKAGE, "d.e.f").end();
+
+        fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
+        bundle.writeOut(fout);
+        fout.close();
+
+        ZipFixture testEba = ArchiveFixture.newZip()
+                .binary("META-INF/APPLICATION.MF",
+                        OBRResolverTest.class.getClassLoader().getResourceAsStream("obr/APPLICATION.MF"))
+                .end()
+                .binary(CORE_BUNDLE_BY_VALUE + ".jar", new FileInputStream(CORE_BUNDLE_BY_VALUE + ".jar")).end()
+                .binary(TRANSITIVE_BUNDLE_BY_VALUE + ".jar", new FileInputStream(TRANSITIVE_BUNDLE_BY_VALUE + ".jar")).end();
+
+        fout = new FileOutputStream("blog.eba");
+        testEba.writeOut(fout);
+        fout.close();
     }
-    
-    repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
-    //installing requires a valid url for the bundle in repository.xml.
-    
-    app = manager.resolve(app);
-  }
-  /**
-   * Test the resolution should fail because the required package org.apache.aries.util is provided by the local runtime, 
-   * which is not included when provisioning.
-   *  
-   * @throws Exception
-   */
-  @Test(expected=ResolverException.class)
-  public void testProvisionExcludeLocalRepo() throws Exception {
-    // do not provision against the local runtime
-    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
-    generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
-    
-    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
-    
-    Repository[] repos = repositoryAdmin.listRepositories();
-    for (Repository repo : repos) {
-      repositoryAdmin.removeRepository(repo.getURI());
+    @After
+    public void clearRepository() {
+        RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
+        Repository[] repos = repositoryAdmin.listRepositories();
+        if ((repos != null) && (repos.length > 0)) {
+            for (Repository repo : repos) {
+                repositoryAdmin.removeRepository(repo.getURI());
+            }
+        }
     }
-    
-    repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
-    //installing requires a valid url for the bundle in repository.xml.
-    
-    app = manager.resolve(app);
-  }
-  
-  @Test
-  public void test_resolve_self_contained_app_in_isolation() throws Exception {
-      assertEquals(2, createAndResolveSelfContainedApp("org.osgi.framework").size());
-  }
-  
-  @Test(expected=ResolverException.class)
-  public void test_resolve_non_self_contained_app_in_isolation() throws Exception {
-      createAndResolveSelfContainedApp("org.osgi.service.blueprint");
-  }
-  
-  private Collection<ModelledResource> createAndResolveSelfContainedApp(String extraImport) throws Exception {
-      FileOutputStream fout = new FileOutputStream(new File("a.bundle.jar"));
-      ArchiveFixture.newJar()
-              .manifest()
-                  .attribute(BUNDLE_SYMBOLICNAME, "a.bundle")
-                  .attribute(BUNDLE_VERSION, "1.0.0")
-                  .attribute(BUNDLE_MANIFESTVERSION, "2")
-                  .attribute(IMPORT_PACKAGE, "a.pack.age")
-              .end().writeOut(fout);
-      fout.close();
-          
-      fout = new FileOutputStream(new File("b.bundle.jar"));
-      ArchiveFixture.newJar()
-              .manifest()
-                  .attribute(BUNDLE_SYMBOLICNAME, "b.bundle")
-                  .attribute(BUNDLE_VERSION, "1.0.0")
-                  .attribute(BUNDLE_MANIFESTVERSION, "2")
-                  .attribute(IMPORT_PACKAGE, extraImport)
-                  .attribute(EXPORT_PACKAGE, "a.pack.age")
-              .end().writeOut(fout);
-      fout.close();      
-      
-      ModelledResourceManager mrm = context().getService(ModelledResourceManager.class);
-      ModelledResource aBundle = mrm.getModelledResource(FileSystem.getFSRoot(new File("a.bundle.jar")));
-      ModelledResource bBundle = mrm.getModelledResource(FileSystem.getFSRoot(new File("b.bundle.jar")));
-      
-      AriesApplicationResolver resolver = context().getService(AriesApplicationResolver.class);
-      return resolver.resolveInIsolation("test.app", "1.0.0", 
-              Arrays.asList(aBundle, bBundle), 
-              Arrays.<Content>asList(ContentFactory.parseContent("a.bundle", "1.0.0"), ContentFactory.parseContent("b.bundle", "1.0.0")));
-  }
-  
-  @Test
-  public void testBlogApp() throws Exception 
-  {
-    //  provision against the local runtime
-    System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
-    generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
-    
-    RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
-    
-    Repository[] repos = repositoryAdmin.listRepositories();
-    for (Repository repo : repos) {
-      repositoryAdmin.removeRepository(repo.getURI());
+    @Test(expected = ResolverException.class)
+    public void testBlogAppResolveFail() throws ResolverException, Exception {
+        //  provision against the local runtime
+        System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
+        generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
+
+        RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
+
+        Repository[] repos = repositoryAdmin.listRepositories();
+        for (Repository repo : repos) {
+            repositoryAdmin.removeRepository(repo.getURI());
+        }
+
+        repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
+
+        AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
+        AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
+        //installing requires a valid url for the bundle in repository.xml.
+
+        app = manager.resolve(app);
     }
-    
-    repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
-    //installing requires a valid url for the bundle in repository.xml.
-    
-    app = manager.resolve(app);
-    
-    DeploymentMetadata depMeta = app.getDeploymentMetadata();
-    
-    List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
-    
-    assertEquals(provision.toString(), 3, provision.size());
-    
-    List<String> bundleSymbolicNames = new ArrayList<String>();
-    
-    for (DeploymentContent dep : provision) {
-      bundleSymbolicNames.add(dep.getContentName());
+    /**
+     * Test the resolution should fail because the required package org.apache.aries.util is provided by the local runtime,
+     * which is not included when provisioning.
+     *
+     * @throws Exception
+     */
+    @Test(expected = ResolverException.class)
+    public void testProvisionExcludeLocalRepo() throws Exception {
+        // do not provision against the local runtime
+        System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
+        generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
+
+        RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
+
+        Repository[] repos = repositoryAdmin.listRepositories();
+        for (Repository repo : repos) {
+            repositoryAdmin.removeRepository(repo.getURI());
+        }
+
+        repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
+
+        AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
+        AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
+        //installing requires a valid url for the bundle in repository.xml.
+
+        app = manager.resolve(app);
     }
-    
-    assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_REFERENCE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_REFERENCE));
-    assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_VALUE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_VALUE));
-    assertTrue("Bundle " + BUNDLE_IN_FRAMEWORK + " not found.", bundleSymbolicNames.contains(BUNDLE_IN_FRAMEWORK));
-    
-    AriesApplicationContext ctx = manager.install(app);
-    ctx.start();
 
-    Set<Bundle> bundles = ctx.getApplicationContent();
-    
-    assertEquals("Number of bundles provisioned in the app", 4, bundles.size());
-    
-    ctx.stop();
-    manager.uninstall(ctx);
-  }
-
-
-  private void generateOBRRepoXML(String ... bundleFiles) throws Exception
-  {
-    Set<ModelledResource> mrs = new HashSet<ModelledResource>();
-    FileOutputStream fout = new FileOutputStream("repository.xml");
-    RepositoryGenerator repositoryGenerator = context().getService(RepositoryGenerator.class);
-    ModelledResourceManager modelledResourceManager = context().getService(ModelledResourceManager.class);
-    for (String fileName : bundleFiles) {
-      File bundleFile = new File(fileName);
-      IDirectory jarDir = FileSystem.getFSRoot(bundleFile);
-      mrs.add(modelledResourceManager.getModelledResource(bundleFile.toURI().toString(), jarDir));
+    @Test
+    public void test_resolve_self_contained_app_in_isolation() throws Exception {
+        assertEquals(2, createAndResolveSelfContainedApp("org.osgi.framework").size());
     }
-    repositoryGenerator.generateRepository("Test repo description", mrs, fout);
-    fout.close();
+
+    @Test(expected = ResolverException.class)
+    public void test_resolve_non_self_contained_app_in_isolation() throws Exception {
+        createAndResolveSelfContainedApp("org.osgi.service.blueprint");
+    }
+
+    private Collection<ModelledResource> createAndResolveSelfContainedApp(String extraImport) throws Exception {
+        FileOutputStream fout = new FileOutputStream(new File("a.bundle.jar"));
+        ArchiveFixture.newJar()
+                .manifest()
+                .attribute(BUNDLE_SYMBOLICNAME, "a.bundle")
+                .attribute(BUNDLE_VERSION, "1.0.0")
+                .attribute(BUNDLE_MANIFESTVERSION, "2")
+                .attribute(IMPORT_PACKAGE, "a.pack.age")
+                .end().writeOut(fout);
+        fout.close();
+
+        fout = new FileOutputStream(new File("b.bundle.jar"));
+        ArchiveFixture.newJar()
+                .manifest()
+                .attribute(BUNDLE_SYMBOLICNAME, "b.bundle")
+                .attribute(BUNDLE_VERSION, "1.0.0")
+                .attribute(BUNDLE_MANIFESTVERSION, "2")
+                .attribute(IMPORT_PACKAGE, extraImport)
+                .attribute(EXPORT_PACKAGE, "a.pack.age")
+                .end().writeOut(fout);
+        fout.close();
+
+        ModelledResourceManager mrm = context().getService(ModelledResourceManager.class);
+        ModelledResource aBundle = mrm.getModelledResource(FileSystem.getFSRoot(new File("a.bundle.jar")));
+        ModelledResource bBundle = mrm.getModelledResource(FileSystem.getFSRoot(new File("b.bundle.jar")));
+
+        AriesApplicationResolver resolver = context().getService(AriesApplicationResolver.class);
+        return resolver.resolveInIsolation("test.app", "1.0.0",
+                Arrays.asList(aBundle, bBundle),
+                Arrays.<Content>asList(ContentFactory.parseContent("a.bundle", "1.0.0"), ContentFactory.parseContent("b.bundle", "1.0.0")));
+    }
+
+    @Test
+    public void testBlogApp() throws Exception {
+        //  provision against the local runtime
+        System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
+        generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
+
+        RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
+
+        Repository[] repos = repositoryAdmin.listRepositories();
+        for (Repository repo : repos) {
+            repositoryAdmin.removeRepository(repo.getURI());
+        }
+
+        repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
+
+        AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
+        AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
+        //installing requires a valid url for the bundle in repository.xml.
+
+        app = manager.resolve(app);
+
+        DeploymentMetadata depMeta = app.getDeploymentMetadata();
+
+        List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
+
+        assertEquals(provision.toString(), 3, provision.size());
+
+        List<String> bundleSymbolicNames = new ArrayList<String>();
+
+        for (DeploymentContent dep : provision) {
+            bundleSymbolicNames.add(dep.getContentName());
+        }
+
+        assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_REFERENCE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_REFERENCE));
+        assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_VALUE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_VALUE));
+        assertTrue("Bundle " + BUNDLE_IN_FRAMEWORK + " not found.", bundleSymbolicNames.contains(BUNDLE_IN_FRAMEWORK));
+
+        AriesApplicationContext ctx = manager.install(app);
+        ctx.start();
+
+        Set<Bundle> bundles = ctx.getApplicationContent();
+
+        assertEquals("Number of bundles provisioned in the app", 4, bundles.size());
+
+        ctx.stop();
+        manager.uninstall(ctx);
     }
 
 
-  private static Option[] generalConfiguration() {
-    return testOptions(
-        paxLogging("DEBUG"),
-        
-        // Bundles
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
-        mavenBundle("org.ow2.asm", "asm-all"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.default.local.platform"),
-        mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
-        mavenBundle("org.osgi", "org.osgi.compendium")
+    private void generateOBRRepoXML(String... bundleFiles) throws Exception {
+        Set<ModelledResource> mrs = new HashSet<ModelledResource>();
+        FileOutputStream fout = new FileOutputStream("repository.xml");
+        RepositoryGenerator repositoryGenerator = context().getService(RepositoryGenerator.class);
+        ModelledResourceManager modelledResourceManager = context().getService(ModelledResourceManager.class);
+        for (String fileName : bundleFiles) {
+            File bundleFile = new File(fileName);
+            IDirectory jarDir = FileSystem.getFSRoot(bundleFile);
+            mrs.add(modelledResourceManager.getModelledResource(bundleFile.toURI().toString(), jarDir));
+        }
+        repositoryGenerator.generateRepository("Test repo description", mrs, fout);
+        fout.close();
+    }
 
-        /* For debugging, uncomment the next two lines */
-        // vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-        // waitForFrameworkStartup(),
+    @Configuration
+    public static Option[] configuration() {
+        return options(
 
-        /* For debugging, uncomment the next two lines and add these imports:
-        import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-        import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
-        */
+                // framework / core bundles
+                mavenBundle("org.osgi", "org.osgi.core").versionAsInProject(),
+                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
 
-        );
-  }
-  
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration()
-  {
-	  return testOptions(
-			  generalConfiguration(),
-			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties")        
-	          );
-  }
+                // Logging
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+
+                // Bundles
+                junitBundles(),
+                mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+
+                // Bundles
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
+                mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.default.local.platform").versionAsInProject(),
+                mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.management").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces").versionAsInProject());
+    }
 
 }

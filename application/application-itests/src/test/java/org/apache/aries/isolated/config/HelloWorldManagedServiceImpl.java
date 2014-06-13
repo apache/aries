@@ -46,7 +46,7 @@ public class HelloWorldManagedServiceImpl implements BundleActivator, ManagedSer
 		Properties props = new Properties();
 		props.put(Constants.SERVICE_PID, "helloworld-mn");
 		this.context = context;
-		this.msRegistration = context.registerService(ManagedService.class.getName(), this, props);
+		this.msRegistration = context.registerService(ManagedService.class.getName(), this, (Dictionary) props);
 		this.hwRegistration = null;
 		
 		//manually call our update to make sure the HW service is exposed out
