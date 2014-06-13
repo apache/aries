@@ -93,7 +93,7 @@
         <blueprint.api.version>1.0.0</blueprint.api.version>
         <blueprint.parser.version>1.2.1-SNAPSHOT</blueprint.parser.version>
         <proxy.api.version>1.0.0</proxy.api.version>
-        <proxy.impl.version>1.0.0</proxy.impl.version>
+        <proxy.impl.version>1.0.3-SNAPSHOT</proxy.impl.version>
         <quiesce.api.version>1.0.0</quiesce.api.version>
         <util.version>1.0.0</util.version>
         <lastReleaseVersion>1.4.0</lastReleaseVersion>
