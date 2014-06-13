@@ -65,22 +65,7 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
 		return bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=" + name + ")" 
 			+ FILTER_CONTAINER_MANAGED + FILTER_PROXY + ")");
 	}
-	
-	/**
-	 * Help to diagnose bundles that did not start
-	 * 
-	 * @throws BundleException
-	 */
-	protected void showBundles() throws BundleException {
-		Bundle[] bundles = bundleContext.getBundles();
-		for (Bundle bundle : bundles) {
-			System.out.println(bundle.getBundleId() + ":" + bundle.getSymbolicName() + ":" + bundle.getVersion() + ":" + bundle.getState());
-			if (bundle.getState() != 32) {
-				System.out.println(bundle.getBundleId() + ":" + bundle.getSymbolicName() + ":" + bundle.getState());
-				bundle.start();
-			}
-		}
-	}
+
 
 	protected Option baseOptions() {
         String localRepo = System.getProperty("maven.repo.local");
