@@ -160,7 +160,7 @@
         <serpVersion>1.13.1</serpVersion>
         <javaxServletVersion>1.2</javaxServletVersion>
 
-        <twitter4jVersion>2.0.8</twitter4jVersion>
+        <twitter4jVersion>2.0.10</twitter4jVersion>
 
         <aries.javadoc.exclude.packages>*</aries.javadoc.exclude.packages>
     </properties>
