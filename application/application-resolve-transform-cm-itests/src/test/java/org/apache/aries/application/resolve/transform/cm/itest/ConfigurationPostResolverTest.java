@@ -127,6 +127,11 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() throws Exception {
         return options(
+                mavenBundle("org.osgi", "org.osgi.core").versionAsInProject(),
+                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
+
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
                 junitBundles(),
                 mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
