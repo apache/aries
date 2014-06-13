@@ -16,14 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.resolve.transform.cm.itest;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.repository;
+import static org.ops4j.pax.exam.CoreOptions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,25 +44,26 @@ import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
 
-@RunWith(JUnit4TestRunner.class)
-public class ConfigurationPostResolverTest extends AbstractIntegrationTest
-{
+@RunWith(PaxExam.class)
+public class ConfigurationPostResolverTest extends AbstractIntegrationTest {
+
     /**
      * This test validates that the transformer is correctly detecting the config admin package. Checks
      * are performed to validate that an existing import package is still honored etc.
-     * 
+     *
      * @throws Exception
      */
     @Test
     public void validatePostResolveTransform() throws Exception {
-        
+
         RichBundleContext ctx = new RichBundleContext(bundleContext);
         PostResolveTransformer transformer = ctx.getService(PostResolveTransformer.class);
         Assert.assertNotNull("Unable to locate transformer", transformer);
-        
+
         /**
          * Try processing deployed content that doesn't have any import for the
          * org.osgi.service.cm package, the resultant imports should be unaffected.
@@ -78,7 +74,7 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         DeployedBundles transformedDeployedBundles = transformer.postResolveProcess(mockApplicationMetadata, originalDeployedBundles);
         Assert.assertNotNull("An instance should have been returned", transformedDeployedBundles);
         Assert.assertEquals(originalDeployedBundles.getImportPackage(), transformedDeployedBundles.getImportPackage());
-        
+
         /**
          * Now try processing a deployed bundles instances that has an import for the org.osgi.service.cm package in multiple
          * modelled resources with an empty import package set in the mock deployed bundles instance.
@@ -89,7 +85,7 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         Assert.assertNotNull("An instance should have been returned", transformedDeployedBundles);
         Assert.assertNotSame("Missing config package", originalDeployedBundles.getImportPackage(), transformedDeployedBundles.getImportPackage());
         Assert.assertEquals("Missing config package", "org.osgi.service.cm;version=\"1.2.0\"", transformedDeployedBundles.getImportPackage());
-        
+
         /**
          * Now try processing a deployed bundles instances that has an import for the org.osgi.service.cm package in multiple
          * modelled resources with a populated import package set in the mock deployed bundles instance.
@@ -102,15 +98,15 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         Assert.assertNotSame("Missing config package", originalDeployedBundles.getImportPackage(), transformedDeployedBundles.getImportPackage());
         Assert.assertEquals("Missing config package", "org.foo.bar;version=\1.0.0\",org.bar.foo;version=\"1.0.0\",org.osgi.service.cm;version=\"1.2.0\"", transformedDeployedBundles.getImportPackage());
     }
-    
+
     private static Collection<ModelledResource> getNonConfigModelledResources() {
         Collection<ModelledResource> modelledResources = new ArrayList<ModelledResource>();
         MockModelledResource ms1 = new MockModelledResource();
         ms1.setImportedPackages(Arrays.asList(new MockImportedPackage("org.foo.bar", "1.0.0"), new MockImportedPackage("org.bar.foo", "1.0.0")));
-        
+
         return modelledResources;
     }
-    
+
     private static Collection<ModelledResource> getConfigModelledResources() {
         Collection<ModelledResource> resources = getNonConfigModelledResources();
         MockModelledResource mmr1 = new MockModelledResource();
@@ -118,36 +114,36 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         resources.add(mmr1);
         MockModelledResource mmr2 = new MockModelledResource();
         mmr2.setImportedPackages(Arrays.asList(new MockImportedPackage("org.osgi.service.cm", "1.2.0")));
-        resources.add(mmr2);        
+        resources.add(mmr2);
         return resources;
     }
+
     /**
      * Create the configuration for the PAX container
-     * 
+     *
      * @return the various required options
      * @throws Exception
      */
-    @org.ops4j.pax.exam.junit.Configuration
+    @Configuration
     public static Option[] configuration() throws Exception {
-        return testOptions(
-                repository("http://repository.ops4j.org/maven2"),
-                paxLogging("DEBUG"),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
-                mavenBundle("org.ow2.asm", "asm-all"),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-                mavenBundle("org.apache.aries", "org.apache.aries.util"),
-                mavenBundle("org.osgi", "org.osgi.compendium"),
-                mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-                mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolve.transform.cm"),
-                //vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"), 
-                equinox().version("3.5.0"));
+        return options(
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                junitBundles(),
+                mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
+                mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolve.transform.cm").versionAsInProject()
+        );
     }
-    
-    private static class MockDeployedBundles implements DeployedBundles 
-    {
+
+    private static class MockDeployedBundles implements DeployedBundles {
         private Collection<ModelledResource> deployedContent;
         private String importPackage;
-        
+
         public void addBundle(ModelledResource arg0) {
         }
 
@@ -158,7 +154,7 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         public Collection<ModelledResource> getDeployedContent() {
             return deployedContent;
         }
-        
+
         public void setDeployedContent(Collection<ModelledResource> deployedContent) {
             this.deployedContent = deployedContent;
         }
@@ -178,7 +174,7 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         public void setImportPackage(String importPackage) {
             this.importPackage = importPackage;
         }
-        
+
         /**
          * Used to reflect external packages required
          */
@@ -197,13 +193,13 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         public String getUseBundle() {
             return null;
         }
-        
+
     }
-    
+
     private static class MockModelledResource implements ModelledResource {
 
         private Collection<? extends ImportedPackage> importedPackages;
-        
+
         public String toDeploymentString() {
             return null;
         }
@@ -211,7 +207,7 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         public ExportedBundle getExportedBundle() {
             return null;
         }
-        
+
         public Collection<? extends ExportedPackage> getExportedPackages() {
             return null;
         }
@@ -227,7 +223,7 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         public Collection<? extends ImportedPackage> getImportedPackages() {
             return importedPackages;
         }
-        
+
         public void setImportedPackages(Collection<? extends ImportedPackage> importedPackages) {
             this.importedPackages = importedPackages;
         }
@@ -259,19 +255,19 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         public boolean isFragment() {
             return false;
         }
-        
+
     }
-    
+
     private static class MockImportedPackage implements ImportedPackage {
 
         private String packageName;
         private String versionRange;
-        
+
         public MockImportedPackage(String packageName, String versionRange) {
             this.packageName = packageName;
             this.versionRange = versionRange;
         }
-        
+
         public String getAttributeFilter() {
             return null;
         }
@@ -307,6 +303,6 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest
         public String getVersionRange() {
             return versionRange;
         }
-        
+
     }
 }
