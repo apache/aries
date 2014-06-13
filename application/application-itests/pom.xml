@@ -44,12 +44,70 @@
     </scm>
 
     <dependencies>
+        <!-- framework -->
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
+            <artifactId>org.osgi.compendium</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>3.8.0.v20120529-1548</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- logging -->
+		<dependency>
+			<groupId>org.ops4j.pax.logging</groupId>
+			<artifactId>pax-logging-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ops4j.pax.logging</groupId>
+			<artifactId>pax-logging-service</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+        <!-- pax exam -->
+		<dependency>
+			<groupId>org.ops4j.pax.exam</groupId>
+			<artifactId>pax-exam</artifactId>
+            <version>3.4.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ops4j.pax.exam</groupId>
+			<artifactId>pax-exam-junit4</artifactId>
+            <version>3.4.0</version>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-native</artifactId>
+            <version>3.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <version>3.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+            <version>1.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- bundles -->
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
@@ -66,137 +124,89 @@
             </exclusions>
         </dependency>
         <dependency>
-			<groupId>org.apache.aries</groupId>
-			<artifactId>org.apache.aries.util</artifactId>
-            <version>1.0.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint</artifactId>
-            <version>1.0.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.proxy</groupId>
-			<artifactId>org.apache.aries.proxy</artifactId>
-            <version>1.0.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>5.0.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.logging</groupId>
-			<artifactId>pax-logging-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.logging</groupId>
-			<artifactId>pax-logging-service</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.exam</groupId>
-			<artifactId>pax-exam</artifactId>
-            <version>1.2.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.exam</groupId>
-			<artifactId>pax-exam-junit</artifactId>
-            <version>1.2.4</version>
-			<scope>test</scope>
-		</dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-default</artifactId>
-            <version>1.2.4</version>
-            <scope>test</scope>
-        </dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.url</groupId>
-			<artifactId>pax-url-mvn</artifactId>
-            <scope>test</scope>
-		</dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <version>1.6.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <version>1.0.0</version>
             <scope>test</scope>
-        </dependency>       
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>5.0.2</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
-        
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.framework</artifactId>
             <version>1.0.0</version>
         	<scope>test</scope>
         </dependency>
-        
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
             <version>1.0.0</version>
         	<scope>test</scope>
         </dependency>
-        
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.repository</artifactId>
             <version>1.0.0</version>
         	<scope>test</scope>
         </dependency>
-        
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime.isolated</artifactId>
             <version>1.0.0</version>
         	<scope>test</scope>
         </dependency>
-        
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.runtime</artifactId>
             <version>1.0.0</version>
         	<scope>test</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
-       
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.noop</artifactId>
@@ -221,22 +231,9 @@
         	<scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>1.0.0</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
         	<groupId>org.apache.geronimo.specs</groupId>
         	<artifactId>geronimo-jta_1.1_spec</artifactId>
         	<version>1.1.1</version>
-        	<scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.eclipse</groupId>
-        	<artifactId>osgi</artifactId>
-        	<version>3.5.0.v20090520</version>
-        	<type>jar</type>
         	<scope>test</scope>
         </dependency>
     </dependencies>
@@ -274,26 +271,6 @@
                     </includes>
                 </configuration>
             </plugin>
-            <plugin>
-		    	<groupId>org.ops4j.pax.exam</groupId>
-		        <artifactId>maven-paxexam-plugin</artifactId>
-		        <version>1.2.3</version>
-		        <executions>
-		        	<execution>
-		            	<id>generate-config</id>
-		            	<phase>process-test-resources</phase>
-		            	<goals>
-		              		<goal>generate-config</goal>
-		            	</goals>
-		          	</execution>
-		        </executions>
-		        <configuration>
-		        	<options>
-		            	<platform>equinox</platform>
-		            	<version>3.8.0.V20120529-1548</version>
-		          	</options>
-		        </configuration>
-			</plugin>
         </plugins>
     </build>
 
@@ -320,66 +297,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>equinox35</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-            	<plugins>
-		            <plugin>
-		        		<groupId>org.ops4j.pax.exam</groupId>
-		        		<artifactId>maven-paxexam-plugin</artifactId>
-		        		<version>1.2.3</version>
-		        		<executions>
-		         	 		<execution>
-		            			<id>generate-config</id>
-		            			<phase>process-test-resources</phase>
-		            			<goals>
-		              				<goal>generate-config</goal>
-		            			</goals>
-		          			</execution>
-		        		</executions>
-		        		<configuration>
-		          			<options>
-		            			<platform>equinox</platform>
-		            			<version>3.5.0</version>
-		          			</options>
-		        		</configuration>
-		      		</plugin>
-	      		</plugins>
-      		</build>
-        </profile>
-        <profile>
-            <id>equinox37</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-            	<plugins>
-		            <plugin>
-		        		<groupId>org.ops4j.pax.exam</groupId>
-		        		<artifactId>maven-paxexam-plugin</artifactId>
-		        		<version>1.2.3</version>
-		        		<executions>
-		         	 		<execution>
-		            			<id>generate-config</id>
-		            			<phase>process-test-resources</phase>
-		            			<goals>
-		              				<goal>generate-config</goal>
-		            			</goals>
-		          			</execution>
-		        		</executions>
-		        		<configuration>
-		          			<options>
-		            			<platform>equinox</platform>
-		            			<version>3.7.0.v20110613</version>
-		          			</options>
-		        		</configuration>
-		      		</plugin>
-	      		</plugins>
-      		</build>
         </profile>
     </profiles>
 

@@ -18,10 +18,8 @@
  */
 package org.apache.aries.application.runtime.itests;
 
-import static org.apache.aries.itest.ExtraOptions.mavenBundle;
-import static org.apache.aries.itest.ExtraOptions.paxLogging;
-import static org.apache.aries.itest.ExtraOptions.testOptions;
 import static org.junit.Assert.assertEquals;
+import static org.ops4j.pax.exam.CoreOptions.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,150 +35,144 @@ import org.apache.aries.util.filesystem.FileSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class BasicAppManagerTest extends AbstractIntegrationTest {
-  
-  /* Use @Before not @BeforeClass so as to ensure that these resources
-   * are created in the paxweb temp directory, and not in the svn tree 
-   */
-  static boolean createdApplications = false;
-  @Before
-  public static void createApplications() throws Exception {
-    if (createdApplications) { 
-      return;
+
+    /* Use @Before not @BeforeClass so as to ensure that these resources
+     * are created in the paxweb temp directory, and not in the svn tree
+     */
+    static boolean createdApplications = false;
+
+    @Before
+    public void createApplications() throws Exception {
+        if (createdApplications) {
+            return;
+        }
+        ZipFixture testEba = ArchiveFixture.newZip()
+                .jar("sample.jar")
+                .manifest().symbolicName("org.apache.aries.sample")
+                .attribute("Bundle-Version", "1.0.0")
+                .attribute("Import-Package", "org.apache.aries.sample")
+                .end()
+                .binary("org/apache/aries/sample/impl/HelloWorldImpl.class",
+                        BasicAppManagerTest.class.getClassLoader().getResourceAsStream("org/apache/aries/sample/impl/HelloWorldImpl.class"))
+                .binary("OSGI-INF/blueprint/sample-blueprint.xml",
+                        BasicAppManagerTest.class.getClassLoader().getResourceAsStream("basic/sample-blueprint.xml"))
+                .end();
+
+        FileOutputStream fout = new FileOutputStream("test.eba");
+        testEba.writeOut(fout);
+        fout.close();
+
+        ZipFixture testEba2 = testEba.binary("META-INF/APPLICATION.MF",
+                BasicAppManagerTest.class.getClassLoader().getResourceAsStream("basic/APPLICATION.MF"))
+                .end();
+        fout = new FileOutputStream("test2.eba");
+        testEba2.writeOut(fout);
+        fout.close();
+        createdApplications = true;
     }
-    ZipFixture testEba = ArchiveFixture.newZip()
-      .jar("sample.jar")
-        .manifest().symbolicName("org.apache.aries.sample")
-          .attribute("Bundle-Version", "1.0.0")
-          .attribute("Import-Package", "org.apache.aries.sample")
-          .end()
-        .binary("org/apache/aries/sample/impl/HelloWorldImpl.class", 
-            BasicAppManagerTest.class.getClassLoader().getResourceAsStream("org/apache/aries/sample/impl/HelloWorldImpl.class"))
-        .binary("OSGI-INF/blueprint/sample-blueprint.xml", 
-            BasicAppManagerTest.class.getClassLoader().getResourceAsStream("basic/sample-blueprint.xml"))
-        .end();
-      
-    FileOutputStream fout = new FileOutputStream("test.eba");
-    testEba.writeOut(fout);
-    fout.close();
-    
-    ZipFixture testEba2 = testEba.binary("META-INF/APPLICATION.MF", 
-        BasicAppManagerTest.class.getClassLoader().getResourceAsStream("basic/APPLICATION.MF"))
-        .end();
-    fout = new FileOutputStream("test2.eba");
-    testEba2.writeOut(fout);
-    fout.close();
-    createdApplications = true;
-  }
-  
-  @Test
-  public void testAppWithoutApplicationManifest() throws Exception {
-    
-    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
-    
-    // application name should be equal to eba name since application.mf is not provided
-    assertEquals("test.eba", app.getApplicationMetadata().getApplicationName());
-    AriesApplicationContext ctx = manager.install(app);
-    ctx.start();
-    
-    HelloWorld hw = context().getService(HelloWorld.class);
-    String result = hw.getMessage();
-    assertEquals (result, "hello world");
-    
-    ctx.stop();
-    manager.uninstall(ctx);
-  }
 
-  @Test
-  public void testAppWithApplicationManifest() throws Exception {
-    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
-    
-    // application name should equal to whatever Application name provided in the application.mf
-    assertEquals("test application 2", app.getApplicationMetadata().getApplicationName());
-    
-    AriesApplicationContext ctx = manager.install(app);
-    ctx.start();
-    
-    HelloWorld hw = context().getService(HelloWorld.class);
-    String result = hw.getMessage();
-    assertEquals (result, "hello world");
-    
-    ctx.stop();
-    manager.uninstall(ctx);
-  }
+    @Test
+    public void testAppWithoutApplicationManifest() throws Exception {
 
-  @Test
-  public void testAppStore() throws Exception {
-    AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
-    app = manager.resolve(app);
+        AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
+        AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
 
-    app.store(new FileOutputStream("test2-resolved.eba"));
+        // application name should be equal to eba name since application.mf is not provided
+        assertEquals("test.eba", app.getApplicationMetadata().getApplicationName());
+        AriesApplicationContext ctx = manager.install(app);
+        ctx.start();
 
-    app = manager.createApplication(FileSystem.getFSRoot(new File("test2-resolved.eba")));
+        HelloWorld hw = context().getService(HelloWorld.class);
+        String result = hw.getMessage();
+        assertEquals(result, "hello world");
 
-    // application name should equal to whatever Application name provided in the application.mf
-    assertEquals("test application 2", app.getApplicationMetadata().getApplicationName());
+        ctx.stop();
+        manager.uninstall(ctx);
+    }
 
-    AriesApplicationContext ctx = manager.install(app);
-    ctx.start();
+    @Test
+    public void testAppWithApplicationManifest() throws Exception {
+        AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
+        AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
 
-    HelloWorld hw = context().getService(HelloWorld.class);
-    String result = hw.getMessage();
-    assertEquals (result, "hello world");
+        // application name should equal to whatever Application name provided in the application.mf
+        assertEquals("test application 2", app.getApplicationMetadata().getApplicationName());
 
-    ctx.stop();
-    manager.uninstall(ctx);
-  }
+        AriesApplicationContext ctx = manager.install(app);
+        ctx.start();
 
-  
-  private static Option[] generalConfiguration() {
-    return testOptions(
-        paxLogging("DEBUG"),
+        HelloWorld hw = context().getService(HelloWorld.class);
+        String result = hw.getMessage();
+        assertEquals(result, "hello world");
 
-        // Bundles
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.default.local.platform"),
-        mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
-        mavenBundle("org.ow2.asm", "asm-all"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-        mavenBundle("org.osgi", "org.osgi.compendium"));
-        
-        
-        /* For debugging, uncomment the next two lines
-        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
-        waitForFrameworkStartup(),
-        
-        and add these imports:
-        import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-        import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
-        */
+        ctx.stop();
+        manager.uninstall(ctx);
+    }
 
-  }
-  
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration()
-  {
-	  return testOptions(
-			  generalConfiguration(),
-			  PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties")        
-	          );
-  }
+    @Test
+    public void testAppStore() throws Exception {
+        AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
+        AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
+        app = manager.resolve(app);
+
+        app.store(new FileOutputStream("test2-resolved.eba"));
+
+        app = manager.createApplication(FileSystem.getFSRoot(new File("test2-resolved.eba")));
+
+        // application name should equal to whatever Application name provided in the application.mf
+        assertEquals("test application 2", app.getApplicationMetadata().getApplicationName());
+
+        AriesApplicationContext ctx = manager.install(app);
+        ctx.start();
+
+        HelloWorld hw = context().getService(HelloWorld.class);
+        String result = hw.getMessage();
+        assertEquals(result, "hello world");
+
+        ctx.stop();
+        manager.uninstall(ctx);
+    }
+
+    @Configuration
+    public static Option[] configuration() {
+        return options(
+
+                // framework / core bundles
+                mavenBundle("org.osgi", "org.osgi.core").versionAsInProject(),
+                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
+
+                // Logging
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+
+                // Bundles
+                junitBundles(),
+                mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.management").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.default.local.platform").versionAsInProject(),
+                mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr").versionAsInProject(),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces").versionAsInProject(),
+                mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()
+        );
+    }
 
 }
