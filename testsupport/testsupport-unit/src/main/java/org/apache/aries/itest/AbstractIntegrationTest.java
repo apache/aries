@@ -20,7 +20,9 @@ package org.apache.aries.itest;
 
 import javax.inject.Inject;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 /**
  * Base class for Pax Exam 1.2.x based unit tests
@@ -47,4 +49,32 @@ public abstract class AbstractIntegrationTest {
     	}
     	return localRepo;
     }
+    
+	
+	/**
+	 * Help to diagnose bundles that did not start
+	 * 
+	 * @throws BundleException
+	 */
+	protected void showBundles() throws BundleException {
+		Bundle[] bundles = bundleContext.getBundles();
+		for (Bundle bundle : bundles) {
+			System.out.println(bundle.getBundleId() + ":" + bundle.getSymbolicName() + ":" + bundle.getVersion() + ":" + bundle.getState());
+		}
+	}
+	
+	/**
+	 * Helps to diagnose bundles that are not resolved as it will throw a detailed exception
+	 * 
+	 * @throws BundleException
+	 */
+	protected void resolveBundles() throws BundleException {
+		Bundle[] bundles = bundleContext.getBundles();
+		for (Bundle bundle : bundles) {
+			if (bundle.getState() == Bundle.INSTALLED) {
+				System.out.println("Found non resolved bundle " + bundle.getBundleId() + ":" + bundle.getSymbolicName() + ":" + bundle.getVersion());
+				bundle.start();
+			}
+		}
+	}
 }
