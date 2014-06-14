@@ -56,7 +56,7 @@ public abstract class AbstractIntegrationTest {
 	 * 
 	 * @throws BundleException
 	 */
-	protected void showBundles() throws BundleException {
+	public void showBundles() throws BundleException {
 		Bundle[] bundles = bundleContext.getBundles();
 		for (Bundle bundle : bundles) {
 			System.out.println(bundle.getBundleId() + ":" + bundle.getSymbolicName() + ":" + bundle.getVersion() + ":" + bundle.getState());
@@ -68,7 +68,7 @@ public abstract class AbstractIntegrationTest {
 	 * 
 	 * @throws BundleException
 	 */
-	protected void resolveBundles() throws BundleException {
+	public void resolveBundles() throws BundleException {
 		Bundle[] bundles = bundleContext.getBundles();
 		for (Bundle bundle : bundles) {
 			if (bundle.getState() == Bundle.INSTALLED) {
