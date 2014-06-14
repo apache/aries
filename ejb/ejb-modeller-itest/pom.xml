@@ -41,53 +41,25 @@
 
     <properties>
       <openWebBeansVersion>1.1.1</openWebBeansVersion>
-      <xbeansVersion>3.8</xbeansVersion>
+      <xbeansVersion>3.16</xbeansVersion>
+      <exam.version>3.4.0</exam.version>
+      <url.version>1.6.0</url.version>
+      
+      <!-- Have to use beta as release has broken Manifest regarding commons lang -->
+      <openejb.version>4.0.0-beta-1</openejb.version>
+      <geronimo.version>3.0</geronimo.version>
     </properties>
    
     <dependencies>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
+  		<dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>3.8.0.v20120529-1548</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
-            <scope>test</scope>
-            <version>1.6.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
-            <scope>test</scope>
-            <version>1.6.3</version>
-        </dependency>
-        <dependency>
-          <groupId>org.ops4j.pax.runner</groupId>
-          <artifactId>pax-runner-no-jcl</artifactId>
-          <version>1.7.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-default</artifactId>
-            <version>1.2.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit</artifactId>
-            <version>1.2.4</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
@@ -110,19 +82,14 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.url</groupId>
-            <artifactId>pax-url-mvn</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         
         <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
           <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>1.0.0</version>
+          <version>2.0.0-SNAPSHOT</version>
           <scope>test</scope>
         </dependency>        
         <dependency>
@@ -135,7 +102,7 @@
         <dependency>
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.modeller</artifactId>
-        	<version>1.0.0</version>
+        	<version>1.0.1-SNAPSHOT</version>
         	<type>bundle</type>
         	<scope>test</scope>
         </dependency>
@@ -150,50 +117,48 @@
         	<groupId>org.apache.aries.application</groupId>
         	<artifactId>org.apache.aries.application.utils</artifactId>
         	<version>1.0.0</version>
-        	<type>bundle</type>
-        	<scope>test</scope>
         </dependency>
         <dependency>
         	<groupId>org.apache.aries.ejb</groupId>
         	<artifactId>org.apache.aries.ejb.modeller</artifactId>
         	<version>1.0.0</version>
-        	<type>bundle</type>
-        	<scope>test</scope>
         </dependency>
         <dependency>
     		<groupId>org.apache.openejb</groupId>
     		<artifactId>openejb-core</artifactId>
-    		<version>4.0.0-beta-1</version>
-    		<type>jar</type>
-    		<scope>test</scope>
+    		<version>${openejb.version}</version>
+    		<exclusions>
+                <exclusion>
+                    <groupId>org.apache.openejb</groupId>
+                    <artifactId>javaee-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
     	</dependency>
     	<dependency>
     		<groupId>org.apache.openejb</groupId>
     		<artifactId>openejb-api</artifactId>
-    		<version>4.0.0-beta-1</version>
-    		<type>jar</type>
-    		<scope>test</scope>
+    		<version>${openejb.version}</version>
     	</dependency>
     	<dependency>
     		<groupId>org.apache.openejb</groupId>
     		<artifactId>openejb-javaagent</artifactId>
-    		<version>4.0.0-beta-1</version>
-    		<type>jar</type>
-    		<scope>test</scope>
+    		<version>${openejb.version}</version>
     	</dependency>
     	<dependency>
 			<groupId>org.apache.openejb</groupId>
 			<artifactId>openejb-jee</artifactId>
-			<version>4.0.0-beta-1</version>
+			<version>${openejb.version}</version>
 			<type>pom</type>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.openejb</groupId>
 			<artifactId>openejb-loader</artifactId>
-			<version>4.0.0-beta-1</version>
+			<version>${openejb.version}</version>
 			<type>pom</type>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
     		<groupId>org.apache.servicemix.bundles</groupId>
@@ -229,11 +194,6 @@
     		<groupId>org.apache.geronimo.specs</groupId>
     		<artifactId>geronimo-jaxrpc_1.1_spec</artifactId>
     		<version>2.1</version>
-		</dependency>
-		<dependency>
-    		<groupId>org.apache.geronimo.specs</groupId>
-    		<artifactId>geronimo-atinject_1.0_spec</artifactId>
-    		<version>1.0</version>
 		</dependency>
 		<dependency>
     		<groupId>org.apache.geronimo.specs</groupId>
@@ -333,21 +293,26 @@
     		<version>1.2</version>
 		</dependency>
 		<dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+  			<groupId>commons-lang</groupId>
+  			<artifactId>commons-lang</artifactId>
+  			<version>2.6</version>
+        </dependency>
+		<dependency>
+  			<groupId>org.apache.commons</groupId>
+  			<artifactId>commons-lang3</artifactId>
+  			<version>3.3.2</version>
         </dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.components</groupId>
 			<artifactId>geronimo-connector</artifactId>
-			<version>3.0</version>
+			<version>${geronimo.version}</version>
 			<type>bundle</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.components</groupId>
 			<artifactId>geronimo-transaction</artifactId>
-			<version>3.0</version>
+			<version>${geronimo.version}</version>
 			<type>bundle</type>
 			<scope>compile</scope>
 		</dependency>
@@ -429,22 +394,85 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.1</version>
-			<type>jar</type>
-			<scope>test</scope>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.commons-collections</artifactId>
+			<version>3.2.1_3</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>2.2.4</version>
 		</dependency>
+
+        <!-- pax exam -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-forked</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit4</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+            <version>${url.version}</version>
+            <scope>test</scope>
+        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>ch.qos.logback</groupId> -->
+<!--             <artifactId>logback-core</artifactId> -->
+<!--             <version>0.9.29</version> -->
+<!--             <scope>test</scope> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>ch.qos.logback</groupId> -->
+<!--             <artifactId>logback-classic</artifactId> -->
+<!--             <version>0.9.29</version> -->
+<!--             <scope>test</scope> -->
+<!--         </dependency> -->
+        <dependency>
+            <groupId>org.ops4j.pax.tinybundles</groupId>
+            <artifactId>tinybundles</artifactId>
+            <version>2.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org.osgi.core</artifactId>
+                    <groupId>org.osgi</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
+			<plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
                 <version>1.2</version>
@@ -456,6 +484,13 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>pertest</forkMode>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -474,12 +509,12 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
+                            <forkMode>pertest</forkMode>
                             <!--
-                              when the local repo location has been specified, we need
-                              to pass on this information to PAX mvn url
+                                when the local repo location has been specified, we need to pass
+                                on this information to PAX mvn url
                             -->
-                            <argLine>-Dorg.ops4j.pax.url.mvn.localRepository=${maven.repo.local}
-                            </argLine>
+                            <argLine>-Dorg.ops4j.pax.url.mvn.localRepository=${maven.repo.local}</argLine>
                         </configuration>
                     </plugin>
                 </plugins>
