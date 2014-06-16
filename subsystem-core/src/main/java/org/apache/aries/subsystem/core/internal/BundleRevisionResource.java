@@ -25,7 +25,7 @@ import org.osgi.resource.Resource;
 
 public class BundleRevisionResource implements Resource {
 	private final BundleRevision revision;
-	
+
 	public BundleRevisionResource(BundleRevision revision) {
 		if (revision == null)
 			throw new NullPointerException();
@@ -61,17 +61,17 @@ public class BundleRevisionResource implements Resource {
 			return Collections.unmodifiableList(computeServiceRequirements());
 		return revision.getRequirements(namespace);
 	}
-	
+
 	private List<Capability> computeServiceCapabilities() {
         Activator activator = Activator.getInstance();
         ServiceModeller modeller = activator.getServiceModeller();
         if (modeller == null)
-            return null;
+            return Collections.emptyList();
         ServiceModeller.ServiceModel model =
                 modeller.computeRequirementsAndCapabilities(this, new BundleDirectory(revision.getBundle()));
         return model.getServiceCapabilities();
 	}
-	
+
 	private List<Requirement> computeServiceRequirements() {
         Activator activator = Activator.getInstance();
         ServiceModeller modeller = activator.getServiceModeller();
