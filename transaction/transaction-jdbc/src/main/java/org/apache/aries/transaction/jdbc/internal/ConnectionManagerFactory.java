@@ -32,6 +32,7 @@ import org.apache.geronimo.connector.outbound.connectionmanagerconfig.XATransact
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
 import org.apache.geronimo.connector.outbound.connectiontracking.GeronimoTransactionListener;
 import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
+import org.tranql.connector.UserPasswordManagedConnectionFactory;
 
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
@@ -52,6 +53,10 @@ public class ConnectionManagerFactory {
     private boolean allConnectionsEqual = true;
     private int connectionMaxWaitMilliseconds = 5000;
     private int connectionMaxIdleMinutes = 15;
+
+    private boolean validateOnMatch = true;
+    private boolean backgroundValidation = false;
+    private int backgroundValidationMilliseconds = 600000;
 
     private SubjectSource subjectSource;
 
@@ -136,16 +141,34 @@ public class ConnectionManagerFactory {
             transactionManager.addTransactionAssociationListener(transactionManagerMonitor);
         }
         if (connectionManager == null) {
-            // Instantiate the Geronimo Connection Manager
-            connectionManager = new GenericConnectionManager(
-                    transactionSupport,
-                    poolingSupport,
-                    subjectSource,
-                    connectionTracker,
-                    transactionManager,
-                    managedConnectionFactory,
-                    getClass().getName(),
-                    getClass().getClassLoader());
+            if (validateOnMatch || backgroundValidation) {
+                // Wrap the original ManagedConnectionFactory to add validation capability
+                managedConnectionFactory = new ValidatingDelegatingManagedConnectionFactory((UserPasswordManagedConnectionFactory) managedConnectionFactory);
+            }
+            if (backgroundValidation) {
+                // Instantiate the Validating Connection Manager
+                connectionManager = new ValidatingGenericConnectionManager(
+                        transactionSupport,
+                        poolingSupport,
+                        subjectSource,
+                        connectionTracker,
+                        transactionManager,
+                        managedConnectionFactory,
+                        getClass().getName(),
+                        getClass().getClassLoader(),
+                        backgroundValidationMilliseconds);
+            } else {
+                // Instantiate the Geronimo Connection Manager
+                connectionManager = new GenericConnectionManager(
+                        transactionSupport,
+                        poolingSupport,
+                        subjectSource,
+                        connectionTracker,
+                        transactionManager,
+                        managedConnectionFactory,
+                        getClass().getName(),
+                        getClass().getClassLoader());
+            }
 
             connectionManager.doStart();
         }
@@ -255,6 +278,30 @@ public class ConnectionManagerFactory {
 
     public void setConnectionMaxIdleMinutes(int connectionMaxIdleMinutes) {
         this.connectionMaxIdleMinutes = connectionMaxIdleMinutes;
+    }
+
+    public boolean isValidateOnMatch() {
+        return validateOnMatch;
+    }
+
+    public void setValidateOnMatch(boolean validateOnMatch) {
+        this.validateOnMatch = validateOnMatch;
+    }
+
+    public boolean isBackgroundValidation() {
+        return backgroundValidation;
+    }
+
+    public void setBackgroundValidation(boolean backgroundValidation) {
+        this.backgroundValidation = backgroundValidation;
+    }
+
+    public int getBackgroundValidationMilliseconds() {
+        return backgroundValidationMilliseconds;
+    }
+
+    public void setBackgroundValidationMilliseconds(int backgroundValidationMilliseconds) {
+        this.backgroundValidationMilliseconds = backgroundValidationMilliseconds;
     }
 
     public SubjectSource getSubjectSource() {
