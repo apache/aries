@@ -85,7 +85,7 @@
                             org.apache.aries.spifly.staticbundle
                         </Private-Package>
                         <Bundle-Activator>org.apache.aries.spifly.staticbundle.StaticWeavingActivator</Bundle-Activator>
-                        <Provide-Capability>osgi.extender;osgi.extender=osgi.serviceloader.registrar
+                        <Provide-Capability>osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0
                         </Provide-Capability>
                     </instructions>
                 </configuration>
