@@ -59,6 +59,9 @@ public class RecoverableDataSource implements DataSource {
     private int poolMaxSize = 10;
     private int poolMinSize = 0;
     private String transaction;
+    private boolean validateOnMatch = true;
+    private boolean backgroundValidation = false;
+    private int backgroundValidationMilliseconds = 600000;
 
     private DataSource delegate;
 
@@ -152,6 +155,30 @@ public class RecoverableDataSource implements DataSource {
         this.poolMinSize = poolMinSize;
     }
 
+     /**
+     * If validation on connection matching is enabled (defaults to true).
+     * @param validateOnMatch
+     */
+    public void setValidateOnMatch(boolean validateOnMatch) {
+        this.validateOnMatch = validateOnMatch;
+    }
+
+    /**
+     * If periodically background validation is enabled (defaults to false).
+     * @param backgroundValidation
+     */
+    public void setBackgroundValidation(boolean backgroundValidation) {
+        this.backgroundValidation = backgroundValidation;
+    }
+
+    /**
+     * Background validation period (defaults to 600000)
+     * @param backgroundValidationMilliseconds
+     */
+    public void setBackgroundValidationMilliseconds(int backgroundValidationMilliseconds) {
+        this.backgroundValidationMilliseconds = backgroundValidationMilliseconds;
+    }
+
     /**
      * Transaction support.
      * Can be none, local or xa (defaults to xa).
@@ -194,6 +221,9 @@ public class RecoverableDataSource implements DataSource {
         cm.setPooling(pooling);
         cm.setPoolMaxSize(poolMaxSize);
         cm.setPoolMinSize(poolMinSize);
+        cm.setValidateOnMatch(validateOnMatch);
+        cm.setBackgroundValidation(backgroundValidation);
+        cm.setBackgroundValidationMilliseconds(backgroundValidationMilliseconds);
         cm.setTransaction(transaction);
         cm.init();
 
