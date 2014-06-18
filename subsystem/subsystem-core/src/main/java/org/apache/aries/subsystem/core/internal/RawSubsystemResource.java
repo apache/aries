@@ -13,8 +13,11 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -396,36 +399,29 @@ public class RawSubsystemResource implements Resource {
 		for (IFile file : directory.listFiles()) {
 			String name = file.getName();
 			if (file.isFile()) {
-				// Subsystem resources must end with ".esa".
-				if (name.endsWith(".esa"))
-					result.add(new RawSubsystemResource(convertFileToLocation(file), file.convertNested()));
-				else {
-					// Assume all other resources are bundles.
-					try {
-						result.add(new BundleResource(file));
-					}
-					catch (Exception e) {
-						// Ignore if the resource is an invalid bundle or not a bundle at all.
-						if (logger.isDebugEnabled()) {
-							logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource", e);
+				if (isZipArchive(file)) {
+					// Subsystem resources must end with ".esa".
+					if (name.endsWith(".esa"))
+						result.add(new RawSubsystemResource(convertFileToLocation(file), file.convertNested()));
+					else {
+						// Assume all other resources are bundles.
+						try {
+							result.add(new BundleResource(file));
+						}
+						catch (Exception e) {
+							// Ignore if the resource is an invalid bundle or not a bundle at all.
+							if (logger.isDebugEnabled()) {
+								logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource", e);
+							}
 						}
 					}
+				}
+				else {
+					logger.warn("Ignoring file {}.", name);
 				}
 			}
 			else {
-				if (name.endsWith(".esa"))
-					result.add(new RawSubsystemResource(convertFileToLocation(file), file.convert()));
-				else {
-					try {
-						result.add(new BundleResource(file));
-					}
-					catch (Exception e) {
-						// Ignore
-						if (logger.isDebugEnabled()) {
-							logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource", e);
-						}
-					}
-				}
+				logger.warn("Ignoring directory {}.", name);
 			}
 		}
 		result.trimToSize();
@@ -525,5 +521,29 @@ public class RawSubsystemResource implements Resource {
 	
 	private boolean isComposite(SubsystemManifest manifest) {
 		return SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(manifest.getSubsystemTypeHeader().getType());
+	}
+	
+	private boolean isZipArchive(IFile file) throws IOException {
+		InputStream io = null;
+		if (file.isDirectory()) {
+			return false;
+		}
+		if (file.getSize() < 4) {
+			return false;
+		}
+		try {
+			io = new BufferedInputStream(file.open());
+			DataInputStream in = new DataInputStream(io);
+			in.mark(4);
+			int test = in.readInt();
+			if (test == 0x504b0304) {
+				io.reset();
+				return true;
+			} else {
+				return false;
+			}
+		} finally {
+			io.close();
+		}
 	}
 }
