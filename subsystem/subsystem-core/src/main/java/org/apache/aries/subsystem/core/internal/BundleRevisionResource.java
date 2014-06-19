@@ -76,7 +76,7 @@ public class BundleRevisionResource implements Resource {
         Activator activator = Activator.getInstance();
         ServiceModeller modeller = activator.getServiceModeller();
         if (modeller == null)
-            return null;
+            return Collections.emptyList();
         ServiceModeller.ServiceModel model =
                 modeller.computeRequirementsAndCapabilities(this, new BundleDirectory(revision.getBundle()));
         return model.getServiceRequirements();
