@@ -23,12 +23,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.FinalModifierException;
@@ -40,6 +46,7 @@ import org.apache.aries.proxy.impl.ProxyHandler;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
+import org.apache.aries.util.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -236,6 +243,86 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
     ((FakeInvocationHandler)ih).setDelegate(GENERIC_CLASS.newInstance());
     super.testGenerics();
   }
+
+  @Test
+  public void testClassLoaders() throws Exception {
+    ClassLoader clA = new LimitedClassLoader("org.apache.aries.proxy.test.a", null, null);
+    ClassLoader clB = new LimitedClassLoader("org.apache.aries.proxy.test.b", "org.apache.aries.proxy.test.a", clA);
+    ClassLoader clC = new LimitedClassLoader("org.apache.aries.proxy.test.c", "org.apache.aries.proxy.test.b", clB);
+
+    Class<?> clazzA = clA.loadClass("org.apache.aries.proxy.test.a.ProxyTestClassA");
+    Class<?> clazzB = clB.loadClass("org.apache.aries.proxy.test.b.ProxyTestClassB");
+    Class<?> clazzC = clC.loadClass("org.apache.aries.proxy.test.c.ProxyTestClassC");
+
+    final Object object = clazzC.getConstructor(String.class).newInstance("hello");
+
+    o = new AsmProxyManager().createNewProxy(null, Arrays.asList(clazzA, clazzB, clazzC), constantly(object), null);
+    generatedProxySubclass = o.getClass();
+    Method m = generatedProxySubclass.getDeclaredMethod("hello", new Class[] {});
+    Object returned = m.invoke(o);
+    assertEquals("hello", returned);
+  }
+
+  private static class LimitedClassLoader extends ClassLoader {
+    Set<String> providedPackages;
+    Set<String> importedPackages;
+    List<ClassLoader> parents;
+
+    public LimitedClassLoader(String provided, String imported, ClassLoader parent) {
+      providedPackages = Collections.singleton(provided);
+      importedPackages = imported != null ? Collections.singleton(imported) : Collections.<String>emptySet();
+      parents = parent != null ? Collections.singletonList(parent) : Collections.<ClassLoader>emptyList();
+    }
+
+    @Override
+    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+      synchronized (getClassLoadingLock(name)) {
+        // First, check if the class has already been loaded
+        Class<?> c = findLoadedClass(name);
+        if (c == null) {
+          String pkg = name.substring(0, name.lastIndexOf('.'));
+          if (pkg.startsWith("java.") || pkg.startsWith("sun.reflect")) {
+            return getClass().getClassLoader().loadClass(name);
+          } else if (providedPackages.contains(pkg)) {
+            c = findClass(name);
+          } else if (importedPackages.contains(pkg)) {
+            for (ClassLoader cl : parents) {
+              try {
+                c = cl.loadClass(name);
+              } catch (ClassNotFoundException e) {
+                // Ignore
+              }
+            }
+          }
+        }
+        if (c == null) {
+          throw new ClassNotFoundException(name);
+        }
+        if (resolve) {
+          resolveClass(c);
+        }
+        return c;
+      }
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+      String pkg = name.substring(0, name.lastIndexOf('.'));
+      if (getPackage(pkg) == null) {
+        definePackage(pkg, null, null, null, null, null, null, null);
+      }
+      String path = name.replace('.', '/').concat(".class");
+      InputStream is = LimitedClassLoader.class.getClassLoader().getResourceAsStream(path);
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      try {
+        IOUtils.copy(is, baos);
+      } catch (IOException e) {
+        throw new ClassNotFoundException(name, e);
+      }
+      byte[] buf = baos.toByteArray();
+      return defineClass(name, buf, 0, buf.length);
+    }
+  }
   
   private Class<?> getGeneratedSubclass() throws Exception
   {
@@ -316,5 +403,13 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   @Override
   protected Object getP3() {
     return new ProxyTestClassGeneral();
+  }
+
+  private Callable<Object> constantly(final Object result) {
+    return new Callable<Object>() {
+      public Object call() throws Exception {
+        return result;
+      }
+    };
   }
 }
