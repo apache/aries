@@ -43,9 +43,16 @@ public class BundleRevisionResourceTest {
     }
 
     @Test
-    public void testNoServiceCapabilities() {
+    public void testNoModellerServiceCapabilities() {
         BundleRevision br = EasyMock.createNiceMock(BundleRevision.class);
         BundleRevisionResource brr = new BundleRevisionResource(br);
         assertEquals(0, brr.getCapabilities("osgi.service").size());
+    }
+
+    @Test
+    public void testNoModellerServiceRequirements() {
+        BundleRevision br = EasyMock.createNiceMock(BundleRevision.class);
+        BundleRevisionResource brr = new BundleRevisionResource(br);
+        assertEquals(0, brr.getRequirements("osgi.service").size());
     }
 }
