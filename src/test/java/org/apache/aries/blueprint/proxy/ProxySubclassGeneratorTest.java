@@ -33,7 +33,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -272,6 +274,14 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
       providedPackages = Collections.singleton(provided);
       importedPackages = imported != null ? Collections.singleton(imported) : Collections.<String>emptySet();
       parents = parent != null ? Collections.singletonList(parent) : Collections.<ClassLoader>emptyList();
+    }
+    
+    final Map<String, Object> clLocks = new HashMap<String, Object>();
+    private synchronized Object getClassLoadingLock (String name) {
+    	if (!clLocks.containsKey(name)) { 
+    		clLocks.put(name, new Object());
+    	}
+    	return clLocks.get(name);
     }
 
     @Override
