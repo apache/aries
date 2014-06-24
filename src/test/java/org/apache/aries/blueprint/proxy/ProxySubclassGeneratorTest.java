@@ -277,7 +277,7 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
     }
     
     final Map<String, Object> clLocks = new HashMap<String, Object>();
-    private synchronized Object getClassLoadingLock (String name) {
+    protected synchronized Object getClassLoadingLock (String name) {
     	if (!clLocks.containsKey(name)) { 
     		clLocks.put(name, new Object());
     	}
