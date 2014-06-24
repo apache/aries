@@ -155,6 +155,7 @@
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-mvn</artifactId>
+            <version>1.3.5</version>
             <scope>test</scope>
         </dependency>
 
