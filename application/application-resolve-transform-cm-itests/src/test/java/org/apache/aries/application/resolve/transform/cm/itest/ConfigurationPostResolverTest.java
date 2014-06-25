@@ -18,7 +18,13 @@
  */
 package org.apache.aries.application.resolve.transform.cm.itest;
 
-import static org.ops4j.pax.exam.CoreOptions.*;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.vmOption;
+import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,6 +123,20 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest {
         resources.add(mmr2);
         return resources;
     }
+    
+    public Option baseOptions() {
+        String localRepo = System.getProperty("maven.repo.local");
+        if (localRepo == null) {
+            localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+        }
+        return composite(
+                junitBundles(),
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+         );
+    }
 
     /**
      * Create the configuration for the PAX container
@@ -125,15 +145,10 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest {
      * @throws Exception
      */
     @Configuration
-    public static Option[] configuration() throws Exception {
+    public Option[] configuration() throws Exception {
         return options(
-                mavenBundle("org.osgi", "org.osgi.core").versionAsInProject(),
+        		baseOptions(),
                 mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
-
-                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
-                junitBundles(),
                 mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
                 mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
