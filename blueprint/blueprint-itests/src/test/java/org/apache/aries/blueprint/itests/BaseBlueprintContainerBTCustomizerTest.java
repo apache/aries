@@ -26,7 +26,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.aries.itest.RichBundleContext;
+import org.junit.Assert;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.Bundle;
@@ -35,10 +38,15 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.service.framework.CompositeBundle;
+import org.osgi.service.framework.CompositeBundleFactory;
 
+@SuppressWarnings("deprecation")
 public abstract class BaseBlueprintContainerBTCustomizerTest extends AbstractBlueprintIntegrationTest 
 {
+	@Inject
+	CompositeBundleFactory cbf;
+
     protected Map<String, String> getCompositeManifest() {
         Map<String, String> compositeManifest = new HashMap<String, String>();
         compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, "test-composite");
@@ -52,25 +60,9 @@ public abstract class BaseBlueprintContainerBTCustomizerTest extends AbstractBlu
         return compositeManifest;
     }
     
-    protected Bundle installConfigurationAdmin(BundleContext ctx) throws Exception {
-        
-        Bundle configAdminBundle = null;
-        // make sure we don't have a config admin already present
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        ServiceTracker tracker = new ServiceTracker(ctx, ctx.createFilter("(" + Constants.OBJECTCLASS + "=" + ConfigurationAdmin.class.getName() + ")"), null);
-        tracker.open();
-            Object cfgAdminService = tracker.waitForService(5000);
-        tracker.close();
-        
-        if (cfgAdminService == null) {
-            MavenArtifactProvisionOption cfgAdminOption = CoreOptions.mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject();
-            InputStream cfgAdminStream = new URL(cfgAdminOption.getURL()).openStream();
-            
-            configAdminBundle = ctx.installBundle(cfgAdminOption.getURL(), cfgAdminStream);            
-        }
-
-        return configAdminBundle;
-    }
+    protected MavenArtifactProvisionOption configAdminOption() {
+		return CoreOptions.mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject();
+	}
     
     protected void applyCommonConfiguration(BundleContext ctx) throws Exception {
         ConfigurationAdmin ca = (new RichBundleContext(ctx)).getService(ConfigurationAdmin.class);        
@@ -80,11 +72,22 @@ public abstract class BaseBlueprintContainerBTCustomizerTest extends AbstractBlu
         cf.update(props);
     }
     
-    protected Bundle installTestBundle(BundleContext compositeBundleContext) throws IOException, MalformedURLException, BundleException {
-        // install the blueprint sample onto the framework associated with the composite bundle
-        MavenArtifactProvisionOption mapo = CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").versionAsInProject();
+    protected Bundle installBundle(BundleContext bundleContext, String url) throws IOException, MalformedURLException, BundleException {
         // let's use input stream to avoid invoking mvn url handler which isn't avail in the child framework.
-        InputStream is = new URL(mapo.getURL()).openStream();
-        return compositeBundleContext.installBundle(mapo.getURL(), is);
+        InputStream is = new URL(url).openStream();
+        Bundle bundle = bundleContext.installBundle(url, is);
+        Assert.assertNotNull(bundle);
+        return bundle;
     }
+
+	protected MavenArtifactProvisionOption testBundleOption() {
+		return CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").versionAsInProject();
+	}
+
+	protected CompositeBundle createCompositeBundle() throws BundleException {
+		Map<String, String> frameworkConfig = new HashMap<String, String>();
+	    Map<String, String> compositeManifest = getCompositeManifest();
+	    CompositeBundle cb = cbf.installCompositeBundle(frameworkConfig, "test-composite", compositeManifest);
+		return cb;
+	}
 }
