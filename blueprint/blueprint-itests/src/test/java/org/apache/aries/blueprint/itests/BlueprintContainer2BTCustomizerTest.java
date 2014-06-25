@@ -18,11 +18,6 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.aries.itest.RichBundleContext;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,9 +28,7 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.framework.CompositeBundle;
-import org.osgi.service.framework.CompositeBundleFactory;
 
 /**
  * This test is based on the BlueprintContainerBTCustomizerTest.  but this test starts the
@@ -47,34 +40,13 @@ import org.osgi.service.framework.CompositeBundleFactory;
 @RunWith(PaxExam.class)
 public class BlueprintContainer2BTCustomizerTest extends BaseBlueprintContainerBTCustomizerTest {
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Test
+	@Test
     @Ignore // This test crashes the vm when run from maven. It works fine when run from eclipse
     public void test() throws Exception {
-        
-        ServiceReference sr = bundleContext.getServiceReference("org.osgi.service.framework.CompositeBundleFactory");
-        if (sr == null) {
-            return;
-        }
-
-        // install blueprint.sample into the composite context
-        CompositeBundleFactory cbf = (CompositeBundleFactory)bundleContext.getService(sr);
-        
-        Map<String, String> frameworkConfig = new HashMap<String, String>();
-        // turn on the line below to enable telnet localhost 10000 to the child framework osgi console
-        // frameworkConfig.put("osgi.console", "10000");
-        
-        // construct composite bundle information
-        Map<String, String> compositeManifest = getCompositeManifest();
-        
-        CompositeBundle cb = cbf.installCompositeBundle(frameworkConfig, "test-composite", compositeManifest);
-
+        CompositeBundle cb = createCompositeBundle();
         BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
-        Bundle bundle = installTestBundle(compositeBundleContext);
-        assertNotNull(bundle);
-        // install and start the cfg admin bundle in the isolated framework
-        Bundle configAdminBundle = installConfigurationAdmin(compositeBundleContext);
-        assertNotNull(configAdminBundle);
+        Bundle bundle = installBundle(compositeBundleContext, testBundleOption().getURL());
+        Bundle configAdminBundle = installBundle(compositeBundleContext, configAdminOption().getURL());
         
         // start the composite bundle, config admin then the blueprint sample
         cb.start();
@@ -87,9 +59,6 @@ public class BlueprintContainer2BTCustomizerTest extends BaseBlueprintContainerB
 
         // do the test
         Helper.testBlueprintContainer(new RichBundleContext(compositeBundleContext), bundle);
-        
-        // unget the service
-        bundleContext.ungetService(sr);
     }
 
     // start the blueprint bundle and it should detect the previously started blueprint sample
