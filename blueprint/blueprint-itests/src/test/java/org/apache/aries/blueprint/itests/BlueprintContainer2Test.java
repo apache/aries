@@ -20,15 +20,11 @@ package org.apache.aries.blueprint.itests;
 
 import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 
-import java.util.Hashtable;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * this test is based on blueprint container test, but this test starts the
@@ -41,20 +37,11 @@ public class BlueprintContainer2Test extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void test() throws Exception {
-        // Create a config to check the property placeholder
-        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);
-        Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("key.b", "10");
-        cf.update(props);
+    	applyCommonConfiguration(context());
 
-        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-        Bundle blueprintBundle = context().getBundleByName("org.apache.aries.blueprint.core");
-        Bundle blueprintCMBundle = context().getBundleByName("org.apache.aries.blueprint.cm");
-
+        Bundle bundle = getSampleBundle();
         bundle.start();
-        blueprintBundle.start();
-        blueprintCMBundle.start();
+        startBlueprintBundles();
         
         // do the test
         Helper.testBlueprintContainer(context(), bundle);

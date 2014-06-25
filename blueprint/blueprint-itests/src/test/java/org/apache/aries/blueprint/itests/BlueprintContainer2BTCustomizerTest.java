@@ -27,7 +27,6 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.service.framework.CompositeBundle;
 
 /**
@@ -45,7 +44,7 @@ public class BlueprintContainer2BTCustomizerTest extends BaseBlueprintContainerB
     public void test() throws Exception {
         CompositeBundle cb = createCompositeBundle();
         BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
-        Bundle bundle = installBundle(compositeBundleContext, testBundleOption().getURL());
+        Bundle testBundle = installBundle(compositeBundleContext, sampleBundleOption().getURL());
         Bundle configAdminBundle = installBundle(compositeBundleContext, configAdminOption().getURL());
         
         // start the composite bundle, config admin then the blueprint sample
@@ -53,19 +52,12 @@ public class BlueprintContainer2BTCustomizerTest extends BaseBlueprintContainerB
         configAdminBundle.start();
         // create a config to check the property placeholder
         applyCommonConfiguration(compositeBundleContext);
-        bundle.start();
+        testBundle.start();
 
         startBlueprintBundles();
 
         // do the test
-        Helper.testBlueprintContainer(new RichBundleContext(compositeBundleContext), bundle);
-    }
-
-    // start the blueprint bundle and it should detect the previously started blueprint sample
-    private void startBlueprintBundles() throws BundleException, InterruptedException {
-        context().getBundleByName("org.apache.aries.blueprint.core").start();
-        context().getBundleByName("org.apache.aries.blueprint.cm").start();
-        Thread.sleep(2000);
+        Helper.testBlueprintContainer(new RichBundleContext(compositeBundleContext), testBundle);
     }
 
     @Configuration
