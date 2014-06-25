@@ -19,36 +19,49 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.ops4j.pax.exam.CoreOptions.options;
 
+import java.sql.Driver;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Properties;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.sql.ConnectionPoolDataSource;
+import javax.sql.DataSource;
+import javax.sql.XADataSource;
 import javax.transaction.UserTransaction;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.itest.AbstractJPAItest;
+import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.apache.derby.jdbc.EmbeddedXADataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.jdbc.DataSourceFactory;
 
 public class JPAContainerDataSourceFactoryTest extends AbstractJPAItest {
 	private static final String DSF_TEST_UNIT = "dsf-test-unit";
 	private static final String DSF_XA_TEST_UNIT = "dsf-xa-test-unit";
-	private static final String DERBY_DS_FACTORY_SYMBOLIC_NAME = "org.ops4j.pax.jdbc.derby";
 	
+	@SuppressWarnings("rawtypes")
+	private ServiceRegistration reg;
+
 	@Before
-	public void waitStartup() throws InvalidSyntaxException, BundleException {
+	public void waitStartup() throws InvalidSyntaxException {
 		getEMF(TEST_UNIT);
 		assertNull(getEMFRefs(DSF_TEST_UNIT));
 		assertNull(getEMFRefs(DSF_XA_TEST_UNIT));
-		context().getBundleByName(DERBY_DS_FACTORY_SYMBOLIC_NAME).start();
+		reg = registerDataSourceFactory();
 	}
 	
 	@After
-	public void shutDown() throws InvalidSyntaxException, BundleException {
-		context().getBundleByName(DERBY_DS_FACTORY_SYMBOLIC_NAME).stop();
+	public void shutDown() throws InvalidSyntaxException {
+		reg.unregister();
 		assertNull(getEMFRefs(DSF_TEST_UNIT));
 		assertNull(getEMFRefs(DSF_XA_TEST_UNIT));
 	}
@@ -97,6 +110,44 @@ public class JPAContainerDataSourceFactoryTest extends AbstractJPAItest {
 		em.close();
 	}
 
+	private static class DerbyDataSourceFactory implements DataSourceFactory {
+
+		public DataSource createDataSource(Properties props)
+				throws SQLException {
+			EmbeddedDataSource ds = new EmbeddedDataSource();
+			ds.setDatabaseName("memory:TEST");
+			ds.setCreateDatabase("create");
+			return ds;
+		}
+
+		public ConnectionPoolDataSource createConnectionPoolDataSource(
+				Properties props) throws SQLException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XADataSource createXADataSource(Properties props)
+				throws SQLException {
+			EmbeddedXADataSource ds = new EmbeddedXADataSource();
+			ds.setDatabaseName("memory:TEST");
+			ds.setCreateDatabase("create");
+			return ds;
+		}
+
+		public Driver createDriver(Properties props) throws SQLException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private ServiceRegistration registerDataSourceFactory() {
+		Hashtable<String, Object> props = new Hashtable();
+		props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,	"org.apache.derby.jdbc.EmbeddedDriver");
+		return context().registerService(DataSourceFactory.class.getName(), new DerbyDataSourceFactory(), props);
+	}
+
 	private Car createCar() {
 		Car c = new Car();
 		c.setNumberPlate("123456");
@@ -123,7 +174,6 @@ public class JPAContainerDataSourceFactoryTest extends AbstractJPAItest {
 				ariesJpa(),
 				transactionWrapper(),
 				openJpa(),
-				derbyDataSourceFactory().noStart(),
 				testBundle()
 				);
 	}
