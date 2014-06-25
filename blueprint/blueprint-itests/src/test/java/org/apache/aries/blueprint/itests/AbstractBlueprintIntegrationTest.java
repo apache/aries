@@ -27,16 +27,23 @@ import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.io.InputStream;
+import java.util.Hashtable;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
+import org.apache.aries.itest.RichBundleContext;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * Base class for Pax Exam 1.2.x based unit tests
@@ -78,4 +85,29 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
     	}
     	return is;
     }
+
+	protected void applyCommonConfiguration(BundleContext ctx) throws Exception {
+	    ConfigurationAdmin ca = (new RichBundleContext(ctx)).getService(ConfigurationAdmin.class);        
+	    Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
+	    Hashtable<String, String> props = new Hashtable<String, String>();
+	    props.put("key.b", "10");
+	    cf.update(props);
+	}
+
+	protected Bundle getSampleBundle() {
+		Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
+		assertNotNull(bundle);
+		return bundle;
+	}
+
+	protected MavenArtifactProvisionOption sampleBundleOption() {
+		return CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").version("1.0.1-SNAPSHOT");
+	}
+
+	protected void startBlueprintBundles() throws BundleException,
+			InterruptedException {
+			    context().getBundleByName("org.apache.aries.blueprint.core").start();
+			    context().getBundleByName("org.apache.aries.blueprint.cm").start();
+			    Thread.sleep(2000);
+			}
 }

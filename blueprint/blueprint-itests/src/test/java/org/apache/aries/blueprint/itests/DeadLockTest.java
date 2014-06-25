@@ -103,17 +103,15 @@ public class DeadLockTest extends AbstractBlueprintIntegrationTest {
     public void testDeadlock() throws Exception {
       bundleContext.registerService("java.util.Set",new HashSet<Object>(), null);
       
-      Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-      assertNotNull(bundle);
-
+      Bundle bundle = getSampleBundle();
       bundle.start();
       
       Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
       
       // no actual assertions, we just don't want to deadlock
     }
-    
-    @org.ops4j.pax.exam.Configuration
+
+	@org.ops4j.pax.exam.Configuration
     public Option[] configuration() {
         return new Option[] {
             baseOptions(),

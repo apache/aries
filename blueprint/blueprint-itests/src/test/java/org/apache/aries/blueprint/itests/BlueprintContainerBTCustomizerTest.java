@@ -44,7 +44,7 @@ public class BlueprintContainerBTCustomizerTest extends BaseBlueprintContainerBT
         CompositeBundle cb = createCompositeBundle();
 
         BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
-        Bundle testBundle = installBundle(compositeBundleContext, testBundleOption().getURL());
+        Bundle testBundle = installBundle(compositeBundleContext, sampleBundleOption().getURL());
         Bundle configAdminBundle = installBundle(compositeBundleContext, configAdminOption().getURL());
         // start the composite bundle, config admin then the blueprint sample
         cb.start();

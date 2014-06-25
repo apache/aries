@@ -23,12 +23,10 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.aries.itest.RichBundleContext;
 import org.junit.Assert;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
@@ -36,8 +34,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.framework.CompositeBundle;
 import org.osgi.service.framework.CompositeBundleFactory;
 
@@ -47,15 +43,24 @@ public abstract class BaseBlueprintContainerBTCustomizerTest extends AbstractBlu
 	@Inject
 	CompositeBundleFactory cbf;
 
+	/**
+	 * Make sure to adapt the imports and exports to the imports and exports needed by the sample
+	 * bundle. If they are wrong then there might be an error like:
+	 * composite bundle could not be resolved: bundle was disabled:null
+	 * @return
+	 */
     protected Map<String, String> getCompositeManifest() {
         Map<String, String> compositeManifest = new HashMap<String, String>();
         compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, "test-composite");
         compositeManifest.put(Constants.BUNDLE_VERSION, "1.0.0");
         // this import-package is used by the blueprint.sample
-        compositeManifest.put(Constants.IMPORT_PACKAGE, "org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\", org.osgi.service.blueprint.container;version=1.0, org.osgi.service.cm");
+        compositeManifest.put(Constants.IMPORT_PACKAGE, "org.osgi.framework;version=\"[1.6,2)\","
+        		+ "org.osgi.service.cm,"
+        		+ "org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\","
+        		+ "org.osgi.service.blueprint.container;version=\"[1.0,2)\"");
         // this export-package is used by pax junit runner as it needs to see the blueprint sample package 
         // for the test after the blueprint sample is started.
-        compositeManifest.put(Constants.EXPORT_PACKAGE, "org.apache.aries.blueprint.sample");
+        compositeManifest.put(Constants.EXPORT_PACKAGE, "org.apache.aries.blueprint.sample;version=\"1.0.1\"");
         
         return compositeManifest;
     }
@@ -64,14 +69,6 @@ public abstract class BaseBlueprintContainerBTCustomizerTest extends AbstractBlu
 		return CoreOptions.mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject();
 	}
     
-    protected void applyCommonConfiguration(BundleContext ctx) throws Exception {
-        ConfigurationAdmin ca = (new RichBundleContext(ctx)).getService(ConfigurationAdmin.class);        
-        Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("key.b", "10");
-        cf.update(props);
-    }
-    
     protected Bundle installBundle(BundleContext bundleContext, String url) throws IOException, MalformedURLException, BundleException {
         // let's use input stream to avoid invoking mvn url handler which isn't avail in the child framework.
         InputStream is = new URL(url).openStream();
@@ -79,10 +76,6 @@ public abstract class BaseBlueprintContainerBTCustomizerTest extends AbstractBlu
         Assert.assertNotNull(bundle);
         return bundle;
     }
-
-	protected MavenArtifactProvisionOption testBundleOption() {
-		return CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").versionAsInProject();
-	}
 
 	protected CompositeBundle createCompositeBundle() throws BundleException {
 		Map<String, String> frameworkConfig = new HashMap<String, String>();
