@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jpa.container.unit.impl;
 
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -87,6 +88,10 @@ public class JndiDataSource extends DelayedLookupDataSource {
       }
     }
     return ds.get();
+  }
+
+  public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+      return null;
   }
 
 }

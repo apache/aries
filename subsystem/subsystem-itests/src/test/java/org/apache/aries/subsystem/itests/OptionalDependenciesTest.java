@@ -19,15 +19,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Constants;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class OptionalDependenciesTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -54,22 +50,16 @@ public class OptionalDependenciesTest extends SubsystemTest {
 		createManifest(APPLICATION_A + ".mf", attributes);
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, "x;resolution:=optional");
-		headers.put(Constants.REQUIRE_BUNDLE, "x;resolution:=optional");
-		headers.put(Constants.REQUIRE_CAPABILITY, "x;resolution:=optional");
-		createBundle(BUNDLE_A, headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), importPackage("x;resolution:=optional"), 
+				requireBundle("x;resolution:=optional"),
+				new Header(Constants.REQUIRE_CAPABILITY, "x;resolution:=optional"));
 	}
 	
-	private static boolean createdTestFiles;
-	@Before
-	public static void createTestFiles() throws Exception {
-		if (createdTestFiles)
-			return;
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createApplicationA();
-		createdTestFiles = true;
 	}
 	
 	@Test

@@ -16,24 +16,10 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionConsumer;
-import javax.jms.ConnectionMetaData;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueSession;
-import javax.jms.ServerSessionPool;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
-import javax.jms.TemporaryTopic;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicSession;
+import javax.jms.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,17 +35,25 @@ import org.slf4j.LoggerFactory;
  * href="http://jencks.org/Message+Driven+POJOs">this example</a>
  *
  */
-public class PooledConnection implements TopicConnection, QueueConnection {
+public class PooledConnection implements TopicConnection, QueueConnection, PooledSessionEventListener {
     private static final transient Logger LOG = LoggerFactory.getLogger(PooledConnection.class);
 
-    private ConnectionPool pool;
-    private boolean stopped;
-    private final CopyOnWriteArrayList<TemporaryQueue> connTempQueues = new CopyOnWriteArrayList<TemporaryQueue>();
-    private final CopyOnWriteArrayList<TemporaryTopic> connTempTopics = new CopyOnWriteArrayList<TemporaryTopic>();
+    protected ConnectionPool pool;
+    private volatile boolean stopped;
+    private final List<TemporaryQueue> connTempQueues = new CopyOnWriteArrayList<TemporaryQueue>();
+    private final List<TemporaryTopic> connTempTopics = new CopyOnWriteArrayList<TemporaryTopic>();
+    private final List<PooledSession> loanedSessions = new CopyOnWriteArrayList<PooledSession>();
 
+    /**
+     * Creates a new PooledConnection instance that uses the given ConnectionPool to create
+     * and manage its resources.  The ConnectionPool instance can be shared amongst many
+     * PooledConnection instances.
+     *
+     * @param pool
+     *      The connection and pool manager backing this proxy connection object.
+     */
     public PooledConnection(ConnectionPool pool) {
         this.pool = pool;
-        this.pool.incrementReferenceCount();
     }
 
     /**
@@ -69,55 +63,64 @@ public class PooledConnection implements TopicConnection, QueueConnection {
         return new PooledConnection(pool);
     }
 
+    @Override
     public void close() throws JMSException {
         this.cleanupConnectionTemporaryDestinations();
+        this.cleanupAllLoanedSessions();
         if (this.pool != null) {
             this.pool.decrementReferenceCount();
             this.pool = null;
         }
     }
 
+    @Override
     public void start() throws JMSException {
         assertNotClosed();
         pool.start();
     }
 
+    @Override
     public void stop() throws JMSException {
         stopped = true;
     }
 
-    public ConnectionConsumer createConnectionConsumer(Destination destination, String selector, ServerSessionPool serverSessionPool, int maxMessages)
-            throws JMSException {
+    @Override
+    public ConnectionConsumer createConnectionConsumer(Destination destination, String selector, ServerSessionPool serverSessionPool, int maxMessages) throws JMSException {
         return getConnection().createConnectionConsumer(destination, selector, serverSessionPool, maxMessages);
     }
 
+    @Override
     public ConnectionConsumer createConnectionConsumer(Topic topic, String s, ServerSessionPool serverSessionPool, int maxMessages) throws JMSException {
         return getConnection().createConnectionConsumer(topic, s, serverSessionPool, maxMessages);
     }
 
-    public ConnectionConsumer createDurableConnectionConsumer(Topic topic, String selector, String s1, ServerSessionPool serverSessionPool, int i)
-            throws JMSException {
+    @Override
+    public ConnectionConsumer createDurableConnectionConsumer(Topic topic, String selector, String s1, ServerSessionPool serverSessionPool, int i) throws JMSException {
         return getConnection().createDurableConnectionConsumer(topic, selector, s1, serverSessionPool, i);
     }
 
+    @Override
     public String getClientID() throws JMSException {
         return getConnection().getClientID();
     }
 
+    @Override
     public ExceptionListener getExceptionListener() throws JMSException {
         return getConnection().getExceptionListener();
     }
 
+    @Override
     public ConnectionMetaData getMetaData() throws JMSException {
         return getConnection().getMetaData();
     }
 
+    @Override
     public void setExceptionListener(ExceptionListener exceptionListener) throws JMSException {
         getConnection().setExceptionListener(exceptionListener);
     }
 
+    @Override
     public void setClientID(String clientID) throws JMSException {
-
         // ignore repeated calls to setClientID() with the same client id
         // this could happen when a JMS component such as Spring that uses a
         // PooledConnectionFactory shuts down and reinitializes.
@@ -126,51 +129,66 @@ public class PooledConnection implements TopicConnection, QueueConnection {
         }
     }
 
+    @Override
     public ConnectionConsumer createConnectionConsumer(Queue queue, String selector, ServerSessionPool serverSessionPool, int maxMessages) throws JMSException {
         return getConnection().createConnectionConsumer(queue, selector, serverSessionPool, maxMessages);
     }
 
     // Session factory methods
     // -------------------------------------------------------------------------
+    @Override
     public QueueSession createQueueSession(boolean transacted, int ackMode) throws JMSException {
         return (QueueSession) createSession(transacted, ackMode);
     }
 
+    @Override
     public TopicSession createTopicSession(boolean transacted, int ackMode) throws JMSException {
         return (TopicSession) createSession(transacted, ackMode);
     }
 
+    @Override
     public Session createSession(boolean transacted, int ackMode) throws JMSException {
         PooledSession result;
         result = (PooledSession) pool.createSession(transacted, ackMode);
 
-        // Add a temporary destination event listener to the session that notifies us when
-        // the session creates temporary destinations.
-        result.addTempDestEventListener(new PooledSessionEventListener() {
+        // Store the session so we can close the sessions that this PooledConnection
+        // created in order to ensure that consumers etc are closed per the JMS contract.
+        loanedSessions.add(result);
 
-            public void onTemporaryQueueCreate(TemporaryQueue tempQueue) {
-                connTempQueues.add(tempQueue);
-            }
-
-            public void onTemporaryTopicCreate(TemporaryTopic tempTopic) {
-                connTempTopics.add(tempTopic);
-            }
-        });
-
-        return (Session) result;
+        // Add a event listener to the session that notifies us when the session
+        // creates / destroys temporary destinations and closes etc.
+        result.addSessionEventListener(this);
+        return result;
     }
 
     // Implementation methods
     // -------------------------------------------------------------------------
+
+    @Override
+    public void onTemporaryQueueCreate(TemporaryQueue tempQueue) {
+        connTempQueues.add(tempQueue);
+    }
+
+    @Override
+    public void onTemporaryTopicCreate(TemporaryTopic tempTopic) {
+        connTempTopics.add(tempTopic);
+    }
+
+    @Override
+    public void onSessionClosed(PooledSession session) {
+        if (session != null) {
+            this.loanedSessions.remove(session);
+        }
+    }
 
     public Connection getConnection() throws JMSException {
         assertNotClosed();
         return pool.getConnection();
     }
 
-    protected void assertNotClosed() throws JMSException {
+    protected void assertNotClosed() throws javax.jms.IllegalStateException {
         if (stopped || pool == null) {
-            throw new JMSException("Already closed");
+            throw new javax.jms.IllegalStateException("Connection closed");
         }
     }
 
@@ -178,6 +196,7 @@ public class PooledConnection implements TopicConnection, QueueConnection {
         return getConnection().createSession(key.isTransacted(), key.getAckMode());
     }
 
+    @Override
     public String toString() {
         return "PooledConnection { " + pool + " }";
     }
@@ -209,5 +228,44 @@ public class PooledConnection implements TopicConnection, QueueConnection {
             }
         }
         connTempTopics.clear();
+    }
+
+    /**
+     * The PooledSession tracks all Sessions that it created and now we close them.  Closing the
+     * PooledSession will return the internal Session to the Pool of Session after cleaning up
+     * all the resources that the Session had allocated for this PooledConnection.
+     */
+    protected void cleanupAllLoanedSessions() {
+
+        for (PooledSession session : loanedSessions) {
+            try {
+                session.close();
+            } catch (JMSException ex) {
+                LOG.info("failed to close laoned Session \"" + session + "\" on closing pooled connection: " + ex.getMessage());
+            }
+        }
+        loanedSessions.clear();
+    }
+
+    /**
+     * @return the total number of Pooled session including idle sessions that are not
+     *          currently loaned out to any client.
+     */
+    public int getNumSessions() {
+        return this.pool.getNumSessions();
+    }
+
+    /**
+     * @return the number of Sessions that are currently checked out of this Connection's session pool.
+     */
+    public int getNumActiveSessions() {
+        return this.pool.getNumActiveSessions();
+    }
+
+    /**
+     * @return the number of Sessions that are idle in this Connection's sessions pool.
+     */
+    public int getNumtIdleSessions() {
+        return this.pool.getNumIdleSessions();
     }
 }

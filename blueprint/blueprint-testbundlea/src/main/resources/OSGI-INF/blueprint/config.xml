@@ -84,5 +84,15 @@
         </service-properties>
     </service>
     
+    <bean id="MultiService" class="org.apache.aries.blueprint.testbundlea.multi.MultiService"/>
+    <service ref="MultiService">
+    	<interfaces>
+    		<value>org.apache.aries.blueprint.testbundlea.multi.InterfaceA</value>
+    		<value>org.apache.aries.blueprint.testbundlea.multi.InterfaceB</value>
+    		<value>org.apache.aries.blueprint.testbundlea.multi.InterfaceC</value>
+    	</interfaces>
+    </service>
+    
+    
 </blueprint>
 

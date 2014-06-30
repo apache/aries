@@ -97,11 +97,14 @@ public final class Helper {
         // get the bundles
         List<BundleDescriptor> bundles = getBundleDescriptors(bundleFilter);
 
+        // Add the test bundles at the beginning of the list so that they get started first.
+        // The reason is that the bundle tracker used by blueprint does not work well
+        // with pojosr because it does not support bundle hooks, so events are lost.
         if (testBundles != null) {
             for (TinyBundle bundle : testBundles) {
                 File tmp = File.createTempFile("test-", ".jar", new File("target/bundles/"));
                 tmp.delete();
-                bundles.add(getBundleDescriptor(tmp.getPath(), bundle));
+                bundles.add(0, getBundleDescriptor(tmp.getPath(), bundle));
             }
         }
 

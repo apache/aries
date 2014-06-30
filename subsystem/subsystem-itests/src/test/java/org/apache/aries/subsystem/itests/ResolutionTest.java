@@ -30,8 +30,6 @@ import org.apache.aries.subsystem.core.archive.Clause;
 import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.resolver.ResolutionException;
@@ -42,7 +40,6 @@ import org.osgi.service.subsystem.SubsystemException;
 /*
  * Contains a series of tests related to resolution.
  */
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class ResolutionTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -87,7 +84,7 @@ public class ResolutionTest extends SubsystemTest {
 	private static final String BUNDLE_E = "bundle.e.jar";
 	
 	@Before
-	public static void createApplications() throws Exception {
+	public void createApplications() throws Exception {
 		if (createdApplications) {
 			return;
 		};
@@ -135,37 +132,28 @@ public class ResolutionTest extends SubsystemTest {
 		createManifest(APPLICATION_C + ".mf", attributes);
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.REQUIRE_CAPABILITY, "a");
-		createBundle(BUNDLE_A, headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), new Header(Constants.REQUIRE_CAPABILITY, "a"));
 	}
 	
-	private static void createBundleB() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.PROVIDE_CAPABILITY, "a");
-		headers.put(Constants.REQUIRE_CAPABILITY, "b");
-		createBundle(BUNDLE_B, headers);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B), 
+				provideCapability("a"),
+				requireCapability("b"));
 	}
 	
-	private static void createBundleC() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.PROVIDE_CAPABILITY, "b");
-		createBundle(BUNDLE_C, headers);
+	private void createBundleC() throws IOException {
+		createBundle(name(BUNDLE_C), provideCapability("b"));
 	}
 	
 	@SuppressWarnings("deprecation")
-	private static void createBundleD() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, "JavaSE-100.100");
-		createBundle(BUNDLE_D, headers);
+	private void createBundleD() throws IOException {
+		createBundle(name(BUNDLE_D), new Header(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, "JavaSE-100.100"));
 	}
 	
 	@SuppressWarnings("deprecation")
-	private static void createBundleE() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, "J2SE-1.4, J2SE-1.5,		J2SE-1.6,JavaSE-1.7");
-		createBundle(BUNDLE_E, headers);
+	private void createBundleE() throws IOException {
+		createBundle(name(BUNDLE_E), new Header(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, "J2SE-1.4, J2SE-1.5,		J2SE-1.6,JavaSE-1.7"));
 	}
 	
 	/*
@@ -214,7 +202,7 @@ public class ResolutionTest extends SubsystemTest {
 			}
 		}
 		catch (SubsystemException e) {
-			fail("Application A should have installed");
+			fail("Application A should have installed." + e.getMessage());
 		}
 		finally {
 			uninstallSilently(bundleC);

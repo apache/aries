@@ -81,6 +81,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String BLUEPRINT_CM_NAMESPACE_1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0";
     public static final String BLUEPRINT_CM_NAMESPACE_1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0";
     public static final String BLUEPRINT_CM_NAMESPACE_1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0";
+    public static final String BLUEPRINT_CM_NAMESPACE_1_3 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0";
@@ -148,7 +149,9 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public URL getSchemaLocation(String namespace) {
-        if (BLUEPRINT_CM_NAMESPACE_1_2.equals(namespace)) {
+        if (BLUEPRINT_CM_NAMESPACE_1_3.equals(namespace)) {
+            return getClass().getResource("blueprint-cm-1.3.0.xsd");
+        } else if (BLUEPRINT_CM_NAMESPACE_1_2.equals(namespace)) {
             return getClass().getResource("blueprint-cm-1.2.0.xsd");
         } else if (BLUEPRINT_CM_NAMESPACE_1_1.equals(namespace)) {
             return getClass().getResource("blueprint-cm-1.1.0.xsd");
@@ -591,7 +594,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static boolean isCmNamespace(String uri) {
         return BLUEPRINT_CM_NAMESPACE_1_0.equals(uri)
                 || BLUEPRINT_CM_NAMESPACE_1_1.equals(uri)
-                || BLUEPRINT_CM_NAMESPACE_1_2.equals(uri);
+                || BLUEPRINT_CM_NAMESPACE_1_2.equals(uri)
+                || BLUEPRINT_CM_NAMESPACE_1_3.equals(uri);
     }
 
     public static boolean isExtNamespace(String uri) {

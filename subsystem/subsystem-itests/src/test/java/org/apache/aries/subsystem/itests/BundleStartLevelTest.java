@@ -22,17 +22,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-import aQute.lib.osgi.Constants;
-
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class BundleStartLevelTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -54,51 +48,39 @@ public class BundleStartLevelTest extends SubsystemTest {
 	 */
 	private static final String BUNDLE_C = "bundle.c.jar";
 	
-	@Before
-	public static void createApplications() throws Exception {
-		if (createdApplications) {
-			return;
-		}
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createBundleB();
 		createBundleC();
 		createApplicationA();
-		createdApplications = true;
+		registerRepositoryService(BUNDLE_A, BUNDLE_B);
 	}
 	
-	private static void createApplicationA() throws IOException {
+	private void createApplicationA() throws IOException {
 		createApplicationAManifest();
 		createSubsystem(APPLICATION_A);
 	}
 	
-	private static void createApplicationAManifest() throws IOException {
+	private void createApplicationAManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_A);
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_B);
 		createManifest(APPLICATION_A + ".mf", attributes);
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.EXPORT_PACKAGE, "x");
-		createBundle(BUNDLE_A, headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), exportPackage("x"));
 	}
 	
-	private static void createBundleB() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, "x");
-		createBundle(BUNDLE_B, headers);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B), importPackage("x"));
 	}
 	
-	private static void createBundleC() throws IOException {
-		createBundle(BUNDLE_C);
+	private void createBundleC() throws IOException {
+		createBundle(name(BUNDLE_C));
 	}
-	
-	public void setUp() throws Exception {
-		super.setUp();
-		registerRepositoryService(BUNDLE_A, BUNDLE_B);
-	}
-    
+
     /*
      * Tests the start level of bundle constituents.
      * 
@@ -125,9 +107,9 @@ public class BundleStartLevelTest extends SubsystemTest {
     		startSubsystem(a);
     		try {
     			// Test managed bundles.
-    			assertStartLevel(getBundle(a, BUNDLE_B), 1);
+    			assertStartLevel(context(a).getBundleByName(BUNDLE_B), 1);
     			assertStartLevel(getRegionContextBundle(a), 1);
-    			assertStartLevel(getBundle(getRootSubsystem(), BUNDLE_A), 1);
+    			assertStartLevel(context(getRootSubsystem()).getBundleByName(BUNDLE_A), 1);
     			// Test unmanaged bundle.
     			Bundle c = installBundleFromFile(BUNDLE_C, a);
     			try {

@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.subsystem.Subsystem;
@@ -32,7 +29,6 @@ import org.osgi.service.subsystem.SubsystemConstants;
  * 
  * Generic capabilities are not required to use the namespace as an attribute.
  */
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class NoRequirementFilterTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -62,27 +58,19 @@ public class NoRequirementFilterTest extends SubsystemTest {
 		createManifest(APPLICATION_A + ".mf", attributes);
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.REQUIRE_CAPABILITY, "y");
-		createBundle(BUNDLE_A, headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), new Header(Constants.REQUIRE_CAPABILITY, "y"));
 	}
 	
-	private static void createBundleB() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.PROVIDE_CAPABILITY, "y");
-		createBundle(BUNDLE_B, headers);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B), new Header(Constants.PROVIDE_CAPABILITY, "y"));
 	}
 	
-	private static boolean createdTestFiles;
-	@Before
-	public static void createTestFiles() throws Exception {
-		if (createdTestFiles)
-			return;
+	@Override
+	protected void createApplications() throws Exception {
 		createBundleA();
 		createBundleB();
 		createApplicationA();
-		createdTestFiles = true;
 	}
 	
 	public void setUp() throws Exception {

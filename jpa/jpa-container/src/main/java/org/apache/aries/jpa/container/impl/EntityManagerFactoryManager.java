@@ -309,32 +309,34 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    *  valid and should be destroyed
    */
   private void createEntityManagerFactories() throws InvalidPersistenceUnitException {
+    if (emfs == null) {  
+      emfs = new HashMap<String, CountingEntityManagerFactory>();
+    }
     //Only try if we have a provider and EMFs
-    if(provider != null) {
-      if(emfs == null && !quiesce) {
+    if(provider == null || !emfs.isEmpty() || quiesce) {
+        return;
+    }
+    try {
+      //Get hold of the provider
+      PersistenceProvider providerService = (PersistenceProvider) containerContext.getService(provider);
+
+      if(providerService == null) {
+        _logger.warn(NLS.MESSAGES.getMessage("persistence.provider.gone.awol", bundle.getSymbolicName() + '/' + bundle.getVersion()));
+        throw new InvalidPersistenceUnitException();
+      }
+
+      for(String unitName : persistenceUnits.keySet()){
+        ManagedPersistenceUnitInfo mpui = persistenceUnits.get(unitName);
         try {
-          emfs = new HashMap<String, CountingEntityManagerFactory>();
-        
-          //Get hold of the provider
-          PersistenceProvider providerService = (PersistenceProvider) containerContext.getService(provider);
-
-          if(providerService == null) {
-            _logger.warn(NLS.MESSAGES.getMessage("persistence.provider.gone.awol", bundle.getSymbolicName() + '/' + bundle.getVersion()));
-            throw new InvalidPersistenceUnitException();
-          }
-
-          for(Entry<String, ? extends ManagedPersistenceUnitInfo> entry : 
-               persistenceUnits.entrySet()){
-            ManagedPersistenceUnitInfo mpui = entry.getValue();
-            emfs.put(entry.getKey(), new CountingEntityManagerFactory(
-                providerService.createContainerEntityManagerFactory(
-                    mpui.getPersistenceUnitInfo(), mpui.getContainerProperties()), entry.getKey()));
-          }
-        } finally {
-          //Remember to unget the provider
-          containerContext.ungetService(provider);
+          EntityManagerFactory emf = providerService.createContainerEntityManagerFactory(mpui.getPersistenceUnitInfo(), mpui.getContainerProperties());
+          emfs.put(unitName, new CountingEntityManagerFactory(emf, unitName));
+        } catch (Exception e) {
+          _logger.warn("Error creating EntityManagerFactory", e);
         }
       }
+    } finally {
+      //Remember to unget the provider
+      containerContext.ungetService(provider);
     }
   }
 

@@ -31,7 +31,6 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.application.modelling.ModellerException;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.Header;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
@@ -62,8 +61,12 @@ import org.osgi.resource.Resource;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RawSubsystemResource implements Resource {
+	private static final Logger logger = LoggerFactory.getLogger(RawSubsystemResource.class);
+	
 	private static final Pattern PATTERN = Pattern.compile("([^@/\\\\]+)(?:@(.+))?.esa");
 	private static final String APPLICATION_IMPORT_SERVICE_HEADER = "Application-ImportService";
 	
@@ -112,7 +115,7 @@ public class RawSubsystemResource implements Resource {
 	private final SubsystemManifest subsystemManifest;
 	private final Collection<TranslationFile> translations;
 	
-	public RawSubsystemResource(String location, IDirectory content) throws URISyntaxException, IOException, ResolutionException, ModellerException {
+	public RawSubsystemResource(String location, IDirectory content) throws URISyntaxException, IOException, ResolutionException {
 		id = SubsystemIdentifier.getNextId();
 		this.location = new Location(location);
 		if (content == null)
@@ -401,7 +404,7 @@ public class RawSubsystemResource implements Resource {
 		return new DependencyCalculator(resources).calculateDependencies();
 	}
 	
-	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, ResolutionException, ModellerException {
+	private Collection<Resource> computeResources(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
 		List<IFile> files = directory.listFiles();
 		if (files.isEmpty())
 			return Collections.emptyList();
@@ -419,6 +422,9 @@ public class RawSubsystemResource implements Resource {
 					}
 					catch (Exception e) {
 						// Ignore if the resource is an invalid bundle or not a bundle at all.
+						if (logger.isDebugEnabled()) {
+							logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource", e);
+						}
 					}
 				}
 			}
@@ -431,6 +437,9 @@ public class RawSubsystemResource implements Resource {
 					}
 					catch (Exception e) {
 						// Ignore
+						if (logger.isDebugEnabled()) {
+							logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource", e);
+						}
 					}
 				}
 			}

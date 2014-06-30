@@ -11,15 +11,12 @@ import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 
 /**
  * Tests whether or not a bundle can be successfully uninstalled from a scope.
  * The root scope is used for this test.
  */
-@RunWith(JUnit4TestRunner.class)
 public class UninstallBundleTest extends AbstractTest {
 	private Bundle bundle;
 	private String location;
@@ -37,7 +34,6 @@ public class UninstallBundleTest extends AbstractTest {
 	
 	@Before
 	public void before0() throws Exception {
-		super.before();
 		location = getBundleLocation("tb-2.jar");
 		bundle = bundleContext.getBundle(location);
 		assertNull("The bundle should not exist", bundle);
@@ -50,6 +46,5 @@ public class UninstallBundleTest extends AbstractTest {
 	@After
 	public void after0() throws Exception {
 		uninstallQuietly(bundle);
-		super.after();
 	}
 }

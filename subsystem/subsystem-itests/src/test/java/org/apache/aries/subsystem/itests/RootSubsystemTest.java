@@ -24,19 +24,14 @@ import java.util.Map;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.eclipse.equinox.region.RegionFilter;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class RootSubsystemTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -49,14 +44,10 @@ public class RootSubsystemTest extends SubsystemTest {
 	 */
 	private static final String BUNDLE_A = "bundle.a.jar";
 	
-	private static boolean createdTestFiles;
-	@Before
-	public static void createTestFiles() throws Exception {
-		if (createdTestFiles)
-			return;
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createApplicationA();
-		createdTestFiles = true;
 	}
 	
 	private static void createApplicationA() throws IOException {
@@ -70,10 +61,8 @@ public class RootSubsystemTest extends SubsystemTest {
 		createManifest(APPLICATION_A + ".mf", attributes);
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, "org.osgi.framework");
-		createBundle(BUNDLE_A, headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), importPackage("org.osgi.framework"));
 	}
 	
 	// TODO Test root subsystem headers.
@@ -83,7 +72,7 @@ public class RootSubsystemTest extends SubsystemTest {
 		bundleContext.installBundle(new File(BUNDLE_A).toURI().toURL().toString());
 		getSubsystemCoreBundle().stop();
 		getSubsystemCoreBundle().start();
-		Bundle bundleA = findBundleBySymbolicName(BUNDLE_A);
+		Bundle bundleA = context().getBundleByName(BUNDLE_A);
 		assertEquals("Extraneous root region bundle should not be started", Bundle.INSTALLED, bundleA.getState());
 	}
 	
@@ -177,7 +166,7 @@ public class RootSubsystemTest extends SubsystemTest {
 	 */
 	@Test
 	public void testRegion() throws Exception {
-		RegionDigraph digraph = getOsgiService(RegionDigraph.class);
+		RegionDigraph digraph = context().getService(RegionDigraph.class);
 		Bundle core = getSubsystemCoreBundle();
 		Region kernel = digraph.getRegion(core);
 		Subsystem root = getRootSubsystem();

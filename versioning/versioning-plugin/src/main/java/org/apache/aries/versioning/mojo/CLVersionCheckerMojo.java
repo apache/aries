@@ -20,15 +20,13 @@
 
 package org.apache.aries.versioning.mojo;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+
 /**
  * Check semantic version changes between an explicitly named old artifact and the project output artifact.
  * Optionally write packageinfo files for wrong package versions.
- *
- * @goal check
- *
- * @requiresDirectInvocation true
- *
- * @execute phase=package
  */
+@Mojo(name = "check", defaultPhase = LifecyclePhase.PACKAGE, requiresDirectInvocation = true)
 public class CLVersionCheckerMojo extends VersionCheckerMojo {
 }

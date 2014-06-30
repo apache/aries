@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -86,7 +87,7 @@ public class InitialContextTest
   public void testLookupWithICF() throws NamingException
   {
     InitialContextFactory icf = Skeleton.newMock(InitialContextFactory.class);
-    bc.registerService(new String[] {InitialContextFactory.class.getName(), icf.getClass().getName()}, icf, new Properties());
+    bc.registerService(new String[] {InitialContextFactory.class.getName(), icf.getClass().getName()}, icf, (Dictionary) new Properties());
     Skeleton.getSkeleton(icf).setReturnValue(new MethodCall(Context.class, "lookup", "/"), Skeleton.newMock(Context.class));
     
     Properties props = new Properties();
@@ -119,7 +120,7 @@ public class InitialContextTest
     
     Properties props = new Properties();
     props.put(JNDIConstants.JNDI_URLSCHEME, "testURL");
-    bc.registerService(ObjectFactory.class.getName(), factory, props);
+    bc.registerService(ObjectFactory.class.getName(), factory, (Dictionary) props);
     
     
     props = new Properties();
@@ -134,7 +135,7 @@ public class InitialContextTest
   public void testLookFromLdapICF() throws Exception
   {
     InitialContextFactoryBuilder icf = Skeleton.newMock(InitialContextFactoryBuilder.class);
-    bc.registerService(new String[] {InitialContextFactoryBuilder.class.getName(), icf.getClass().getName()}, icf, new Properties());
+    bc.registerService(new String[] {InitialContextFactoryBuilder.class.getName(), icf.getClass().getName()}, icf, (Dictionary) new Properties());
     
     LdapContext backCtx = Skeleton.newMock(LdapContext.class);
     InitialContextFactory fac = Skeleton.newMock(InitialContextFactory.class);
@@ -233,7 +234,7 @@ public class InitialContextTest
   private void registerURLObjectFactory(ObjectFactory of, String scheme) {
       Properties props = new Properties();
       props.setProperty(JNDIConstants.JNDI_URLSCHEME, "test");
-      bc.registerService(ObjectFactory.class.getName(), of, props);      
+      bc.registerService(ObjectFactory.class.getName(), of, (Dictionary) props);
   }
   
   /**

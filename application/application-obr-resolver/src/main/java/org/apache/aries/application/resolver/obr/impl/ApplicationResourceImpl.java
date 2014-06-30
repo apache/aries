@@ -66,6 +66,10 @@ public class ApplicationResourceImpl implements Resource
     {
       return delgate.matchCase(dictionary);
     }
+
+    public boolean matches(Map<java.lang.String,?> map) {
+        return delgate.matches(map);
+    }
     
     public String toString()
     {

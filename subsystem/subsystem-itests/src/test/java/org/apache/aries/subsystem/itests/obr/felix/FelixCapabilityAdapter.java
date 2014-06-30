@@ -31,6 +31,7 @@ public class FelixCapabilityAdapter extends AbstractCapability {
 		this.resource = resource;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> getAttributes() {
 		Map<String, Object> result = capability.getPropertiesAsMap();
 		result.put(getNamespace(), result.get(capability.getName()));

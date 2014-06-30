@@ -29,6 +29,10 @@
     <artifactId>twitter</artifactId>
     <packaging>pom</packaging>
     
+    <properties>
+    	<aries.skip.version.check>true</aries.skip.version.check>
+    </properties>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>

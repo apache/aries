@@ -98,6 +98,10 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             Set<Class<?>> interfaces = new HashSet<Class<?>>();
             Class<?> clz = getInterfaceClass();
             if (clz != null) interfaces.add(clz);
+            
+            if (metadata instanceof ExtendedReferenceMetadata) {
+                interfaces.addAll(loadAllClasses(((ExtendedReferenceMetadata)metadata).getExtraInterfaces()));
+            }
 
             proxy = createProxy(new ServiceDispatcher(), interfaces);
 

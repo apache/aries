@@ -14,14 +14,18 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.InputStream;
+import java.io.IOException;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.subsystem.SubsystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 	private final IDirectory content;
@@ -29,6 +33,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 	private final InputStream deploymentManifest;
 	private final String location;
 	private final BasicSubsystem parent;
+	private static final Logger logger = LoggerFactory.getLogger(InstallAction.class);
 	
 	public InstallAction(String location, IDirectory content, BasicSubsystem parent, AccessControlContext context, InputStream deploymentManifest) {
 		this.location = location;
@@ -86,10 +91,26 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 					throw (SecurityException)t;
 				throw new SubsystemException(t);
 			}
+			finally {
+				closeContentIfIClosable();
+			}
 		}
 		return result;
 	}
 
+	private void closeContentIfIClosable() {
+		//clean up temp file
+		if (content instanceof ICloseableDirectory) {
+			try{
+				((ICloseableDirectory) content).close();
+			}
+			catch (IOException ioex) {
+				logger.info("Exception calling close for content {}. Exception {}", 
+						content, ioex);					
+			}
+		} 
+	}
+	
 	private void checkLifecyclePermission(final BasicSubsystem subsystem) {
 		AccessController.doPrivileged(new PrivilegedAction<Object>() {
 			@Override

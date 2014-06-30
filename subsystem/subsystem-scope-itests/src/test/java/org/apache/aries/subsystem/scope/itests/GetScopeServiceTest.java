@@ -9,8 +9,6 @@ import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
@@ -19,7 +17,6 @@ import org.osgi.framework.ServiceReference;
  * Bundles should receive the Scope within which they exist. Requesting bundles 
  * are in the root scope by default.
  */
-@RunWith(JUnit4TestRunner.class)
 public class GetScopeServiceTest extends AbstractTest {
 	/**
 	 * The test bundle should be in and receive the root scope by default. The

@@ -23,6 +23,11 @@ import java.util.Map;
 
 public class Foo implements Serializable {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5557730221435945564L;
+
     private int a;
     private int b;
     private Bar bar;

@@ -23,13 +23,13 @@ import java.util.Dictionary;
  *
  * @version $Rev$ $Date$
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public interface InterfaceB {
 
     boolean invoke();
     
     void configure(Dictionary<String, Object> props);
     
-    Dictionary getConfig();
+	Dictionary getConfig();
     
 }

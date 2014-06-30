@@ -47,17 +47,21 @@ final class InterfaceUsingWovenProxyAdapter extends AbstractWovenProxyAdapter {
       String methodStaticFieldName, Type currentMethodDeclaringType,
       boolean currentMethodDeclaringTypeIsInterface) {
     
-    if ((access & ACC_ABSTRACT) != 0) {
+    boolean isDefaultMethod = currentMethodDeclaringTypeIsInterface && 
+        ((access & (ACC_ABSTRACT | ACC_PUBLIC | ACC_STATIC)) == ACC_PUBLIC);
+      
+      
+    if ((access & ACC_ABSTRACT) != 0 || isDefaultMethod) {
       access &= ~ACC_ABSTRACT;
       return new WovenProxyAbstractMethodAdapter(cv.visitMethod(
           access, name, desc, signature, exceptions), access, name, desc,
           methodStaticFieldName, currentMethod, typeBeingWoven, 
-          currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
+          currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface, isDefaultMethod);
     } else {
       return new WovenProxyConcreteMethodAdapter(cv.visitMethod(
           access, name, desc, signature, exceptions), access, name, desc, exceptions, 
           methodStaticFieldName, currentMethod, typeBeingWoven, 
-          currentMethodDeclaringType);
+          currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
     }
   }
 }

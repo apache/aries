@@ -19,11 +19,14 @@
 package org.apache.aries.transaction.jdbc;
 
 import org.apache.aries.transaction.AriesTransactionManager;
+import org.apache.aries.transaction.jdbc.internal.AbstractMCFFactory;
 import org.apache.aries.transaction.jdbc.internal.ConnectionManagerFactory;
+import org.apache.aries.transaction.jdbc.internal.DataSourceMCFFactory;
 import org.apache.aries.transaction.jdbc.internal.Recovery;
 import org.apache.aries.transaction.jdbc.internal.XADataSourceMCFFactory;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
+import javax.sql.CommonDataSource;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.io.PrintWriter;
@@ -42,7 +45,7 @@ import java.sql.SQLFeatureNotSupportedException;
  */
 public class RecoverableDataSource implements DataSource {
 
-    private XADataSource dataSource;
+    private CommonDataSource dataSource;
     private AriesTransactionManager transactionManager;
     private String name;
     private String exceptionSorter = "all";
@@ -55,7 +58,10 @@ public class RecoverableDataSource implements DataSource {
     private boolean pooling = true;
     private int poolMaxSize = 10;
     private int poolMinSize = 0;
-    private String transaction = "xa";
+    private String transaction;
+    private boolean validateOnMatch = true;
+    private boolean backgroundValidation = false;
+    private int backgroundValidationMilliseconds = 600000;
 
     private DataSource delegate;
 
@@ -68,11 +74,11 @@ public class RecoverableDataSource implements DataSource {
     }
 
     /**
-     * The XADataSource to wrap.
+     * The CommonDataSource to wrap.
      *
      * @org.apache.xbean.Property required=true
      */
-    public void setDataSource(XADataSource dataSource) {
+    public void setDataSource(CommonDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -149,6 +155,30 @@ public class RecoverableDataSource implements DataSource {
         this.poolMinSize = poolMinSize;
     }
 
+     /**
+     * If validation on connection matching is enabled (defaults to true).
+     * @param validateOnMatch
+     */
+    public void setValidateOnMatch(boolean validateOnMatch) {
+        this.validateOnMatch = validateOnMatch;
+    }
+
+    /**
+     * If periodically background validation is enabled (defaults to false).
+     * @param backgroundValidation
+     */
+    public void setBackgroundValidation(boolean backgroundValidation) {
+        this.backgroundValidation = backgroundValidation;
+    }
+
+    /**
+     * Background validation period (defaults to 600000)
+     * @param backgroundValidationMilliseconds
+     */
+    public void setBackgroundValidationMilliseconds(int backgroundValidationMilliseconds) {
+        this.backgroundValidationMilliseconds = backgroundValidationMilliseconds;
+    }
+
     /**
      * Transaction support.
      * Can be none, local or xa (defaults to xa).
@@ -161,7 +191,20 @@ public class RecoverableDataSource implements DataSource {
      * @org.apache.xbean.InitMethod
      */
     public void start() throws Exception {
-        XADataSourceMCFFactory mcf = new XADataSourceMCFFactory();
+        AbstractMCFFactory mcf;
+        if (dataSource instanceof XADataSource) {
+            mcf = new XADataSourceMCFFactory();
+            if (transaction == null) {
+                transaction = "xa";
+            }
+        } else if (dataSource instanceof DataSource) {
+            mcf = new DataSourceMCFFactory();
+            if (transaction == null) {
+                transaction = "local";
+            }
+        } else {
+            throw new IllegalArgumentException("dataSource must be of type javax.sql.DataSource/XADataSource");
+        }
         mcf.setDataSource(dataSource);
         mcf.setExceptionSorterAsString(exceptionSorter);
         mcf.setUserName(username);
@@ -178,12 +221,17 @@ public class RecoverableDataSource implements DataSource {
         cm.setPooling(pooling);
         cm.setPoolMaxSize(poolMaxSize);
         cm.setPoolMinSize(poolMinSize);
+        cm.setValidateOnMatch(validateOnMatch);
+        cm.setBackgroundValidation(backgroundValidation);
+        cm.setBackgroundValidationMilliseconds(backgroundValidationMilliseconds);
         cm.setTransaction(transaction);
         cm.init();
 
         delegate = (DataSource) mcf.getConnectionFactory().createConnectionFactory(cm.getConnectionManager());
 
-        Recovery.recover(name, dataSource, transactionManager);
+        if (dataSource instanceof XADataSource) {
+            Recovery.recover(name, (XADataSource) dataSource, transactionManager);
+        }
     }
 
     //---------------------------

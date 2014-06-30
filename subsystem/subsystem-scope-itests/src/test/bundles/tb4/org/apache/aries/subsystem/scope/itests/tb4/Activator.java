@@ -11,10 +11,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 public class Activator implements BundleActivator {
-	private ServiceRegistration<BundleProvider> bundleProviderReg;
-
 	public void start(final BundleContext bundleContext) throws Exception {
-		bundleProviderReg = bundleContext.registerService(
+		bundleContext.registerService(
 				BundleProvider.class, 
 				new BundleProvider() {
 					public Bundle getBundle(long id) {
@@ -29,6 +27,5 @@ public class Activator implements BundleActivator {
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		Utils.unregisterQuietly(bundleProviderReg);
 	}
 }

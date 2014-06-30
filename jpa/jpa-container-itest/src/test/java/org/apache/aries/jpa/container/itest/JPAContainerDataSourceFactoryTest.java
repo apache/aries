@@ -17,9 +17,7 @@ package org.apache.aries.jpa.container.itest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.apache.aries.itest.ExtraOptions.*;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+import static org.ops4j.pax.exam.CoreOptions.options;
 
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -33,189 +31,151 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.UserTransaction;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.itest.entities.Car;
+import org.apache.aries.jpa.itest.AbstractJPAItest;
 import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.apache.derby.jdbc.EmbeddedXADataSource;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jdbc.DataSourceFactory;
 
-@RunWith(JUnit4TestRunner.class)
-public class JPAContainerDataSourceFactoryTest extends AbstractIntegrationTest {
+public class JPAContainerDataSourceFactoryTest extends AbstractJPAItest {
+	private static final String DSF_TEST_UNIT = "dsf-test-unit";
+	private static final String DSF_XA_TEST_UNIT = "dsf-xa-test-unit";
+	
+	@SuppressWarnings("rawtypes")
+	private ServiceRegistration reg;
 
-  @Test
-  public void testDataSourceFactoryLifecycle() throws Exception {
-    //Wait for startup
-    context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    
-    //Now go
-    ServiceReference[] refs = context().getServiceReferences(
-        EntityManagerFactory.class.getName(), "(&(osgi.unit.name=dsf-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    
-    assertNull(refs);
-    
-    Hashtable<String, Object> props = new Hashtable();
-    props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.apache.derby.jdbc.EmbeddedDriver");
-    
-    ServiceRegistration reg = context().registerService(DataSourceFactory.class.getName(), 
-        new DerbyDataSourceFactory(), props);
-    
-    
-    EntityManagerFactory emf = context().getService(EntityManagerFactory.class, 
-        "(&(osgi.unit.name=dsf-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    
-    
-    EntityManager em = emf.createEntityManager();
-    
-    em.getTransaction().begin();
-    
-    Car c = new Car();
-    c.setNumberPlate("123456");
-    c.setColour("blue");
-    em.persist(c);
-    
-    em.getTransaction().commit();
-    
-    em.close();
-    
-    em = emf.createEntityManager();
-    
-    assertEquals("blue", em.find(Car.class, "123456").getColour());
-    
-    reg.unregister();
-    
-    refs = context().getServiceReferences(
-        EntityManagerFactory.class.getName(), "(&(osgi.unit.name=dsf-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    
-    assertNull(refs);
-  }
-  
-  @Test
-  public void testDataSourceFactoryXALifecycle() throws Exception {
-    //Wait for startup
-    context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    
-    //Now go
-    ServiceReference[] refs = context().getServiceReferences(
-        EntityManagerFactory.class.getName(), "(&(osgi.unit.name=dsf-xa-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    
-    assertNull(refs);
-    
-    Hashtable<String, Object> props = new Hashtable();
-    props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.apache.derby.jdbc.EmbeddedDriver");
-    
-    ServiceRegistration reg = context().registerService(DataSourceFactory.class.getName(), 
-        new DerbyDataSourceFactory(), props);
-    
-    
-    EntityManagerFactory emf = context().getService(EntityManagerFactory.class, 
-        "(&(osgi.unit.name=dsf-xa-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    
-    
-    EntityManager em = emf.createEntityManager();
-    
-    //Use a JTA tran to show integration
-    UserTransaction ut = context().getService(UserTransaction.class);
-    
-    ut.begin();
-    em.joinTransaction();
-    Car c = new Car();
-    c.setNumberPlate("123456");
-    c.setColour("blue");
-    em.persist(c);
-    
-    ut.commit();
-      
-    em.close();
-    
-    em = emf.createEntityManager();
-    
-    assertEquals("blue", em.find(Car.class, "123456").getColour());
-    
-    reg.unregister();
-    
-    refs = context().getServiceReferences(
-        EntityManagerFactory.class.getName(), "(&(osgi.unit.name=dsf-xa-test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
-    
-    assertNull(refs);
-  }
-  
-  
-  
-  private static class DerbyDataSourceFactory implements DataSourceFactory {
+	@Before
+	public void waitStartup() throws InvalidSyntaxException {
+		getEMF(TEST_UNIT);
+		assertNull(getEMFRefs(DSF_TEST_UNIT));
+		assertNull(getEMFRefs(DSF_XA_TEST_UNIT));
+		reg = registerDataSourceFactory();
+	}
+	
+	@After
+	public void shutDown() throws InvalidSyntaxException {
+		reg.unregister();
+		assertNull(getEMFRefs(DSF_TEST_UNIT));
+		assertNull(getEMFRefs(DSF_XA_TEST_UNIT));
+	}
 
-    public DataSource createDataSource(Properties props) throws SQLException {
-      EmbeddedDataSource ds = new EmbeddedDataSource();
-      ds.setDatabaseName("memory:TEST");
-      ds.setCreateDatabase("create");
-      return ds;
-    }
+	@Test
+	public void testDataSourceFactoryLifecycle() throws Exception {
+		EntityManagerFactory emf = getEMF(DSF_TEST_UNIT);
 
-    public ConnectionPoolDataSource createConnectionPoolDataSource(
-        Properties props) throws SQLException {
-      // TODO Auto-generated method stub
-      return null;
-    }
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		Car c = createCar();
+		em.persist(c);
+		em.getTransaction().commit();
+		em.close();
+		
+		assertCarFound(emf);
 
-    public XADataSource createXADataSource(Properties props)
-        throws SQLException {
-      EmbeddedXADataSource ds = new EmbeddedXADataSource();
-      ds.setDatabaseName("memory:TEST");
-      ds.setCreateDatabase("create");
-      return ds;
-    }
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		deleteCar(em, c);
+		em.getTransaction().commit();
+		em.close();
+	}
 
-    public Driver createDriver(Properties props) throws SQLException {
-      // TODO Auto-generated method stub
-      return null;
-    }
-    
-  }
-  
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
-    return testOptions(
-        transactionBootDelegation(),
-        paxLogging("DEBUG"),
+	@Test
+	public void testDataSourceFactoryXALifecycle() throws Exception {
+		EntityManagerFactory emf = getEMF(DSF_XA_TEST_UNIT);
+		EntityManager em = emf.createEntityManager();
 
-        // Bundles
-        mavenBundle("commons-lang", "commons-lang"),
-        mavenBundle("commons-collections", "commons-collections"),
-        mavenBundle("commons-pool", "commons-pool"),
-        mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
-        mavenBundle("org.ow2.asm", "asm-all"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.api"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.core"),
-        mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi.url"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
-        mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager" ),
-        mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers" ),
-        mavenBundle("org.apache.derby", "derby"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
-        mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
-        mavenBundle("org.apache.openjpa", "openjpa"),
-        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
-        mavenBundle("org.osgi", "org.osgi.compendium"),
-        mavenBundle("org.osgi", "org.osgi.enterprise"),
-//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
-        //waitForFrameworkStartup(),
-        
-        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle"),
-        
-        PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
-        equinox().version("3.7.0.v20110613"));
-  }
+		// Use a JTA transaction to show integration
+		UserTransaction ut = context().getService(UserTransaction.class);
+		ut.begin();
+		em.joinTransaction();
+		Car c = createCar();
+		em.persist(c);
+		ut.commit();
+		em.close();
+
+		assertCarFound(emf);
+		
+		em = emf.createEntityManager();
+		ut.begin();
+		em.joinTransaction();
+		deleteCar(em, c);
+		ut.commit();
+		em.close();
+	}
+
+	private static class DerbyDataSourceFactory implements DataSourceFactory {
+
+		public DataSource createDataSource(Properties props)
+				throws SQLException {
+			EmbeddedDataSource ds = new EmbeddedDataSource();
+			ds.setDatabaseName("memory:TEST");
+			ds.setCreateDatabase("create");
+			return ds;
+		}
+
+		public ConnectionPoolDataSource createConnectionPoolDataSource(
+				Properties props) throws SQLException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XADataSource createXADataSource(Properties props)
+				throws SQLException {
+			EmbeddedXADataSource ds = new EmbeddedXADataSource();
+			ds.setDatabaseName("memory:TEST");
+			ds.setCreateDatabase("create");
+			return ds;
+		}
+
+		public Driver createDriver(Properties props) throws SQLException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private ServiceRegistration registerDataSourceFactory() {
+		Hashtable<String, Object> props = new Hashtable();
+		props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,	"org.apache.derby.jdbc.EmbeddedDriver");
+		return context().registerService(DataSourceFactory.class.getName(), new DerbyDataSourceFactory(), props);
+	}
+
+	private Car createCar() {
+		Car c = new Car();
+		c.setNumberPlate("123456");
+		c.setColour("blue");
+		return c;
+	}
+	
+
+	private void deleteCar(EntityManager em, Car c) {
+		c = em.merge(c);
+		em.remove(c);
+	}
+
+	private void assertCarFound(EntityManagerFactory emf) {
+		EntityManager em;
+		em = emf.createEntityManager();
+		assertEquals("blue", em.find(Car.class, "123456").getColour());
+	}
+
+	@Configuration
+	public Option[] configuration() {
+		return options(
+				baseOptions(),
+				ariesJpa(),
+				transactionWrapper(),
+				openJpa(),
+				testBundle()
+				);
+	}
 
 }

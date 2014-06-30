@@ -29,6 +29,7 @@ import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.THROW
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.WOVEN_PROXY_IFACE_TYPE;
 import static org.objectweb.asm.Opcodes.ACONST_NULL;
 import static org.objectweb.asm.Opcodes.IFNE;
+import static org.objectweb.asm.Opcodes.ASM4;
 
 import java.util.Arrays;
 
@@ -161,6 +162,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
   private final Type methodDeclaringType;
   
   private final boolean isMethodDeclaringTypeInterface;
+  private boolean isDefaultMethod;
   
   /**
    * Construct a new method adapter
@@ -176,9 +178,9 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
    */
   public AbstractWovenProxyMethodAdapter(MethodVisitor mv, int access, String name, String desc,
       String methodStaticFieldName, Method currentTransformMethod, Type typeBeingWoven,
-      Type methodDeclaringType, boolean isMethodDeclaringTypeInterface)
+      Type methodDeclaringType, boolean isMethodDeclaringTypeInterface, boolean isDefaultMethod)
   {
-    super(mv, access, name, desc);
+    super(ASM4, mv, access, name, desc);
     this.methodStaticFieldName = methodStaticFieldName;
     this.currentTransformMethod = currentTransformMethod;
     returnType = currentTransformMethod.getReturnType();
@@ -186,6 +188,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     this.typeBeingWoven = typeBeingWoven;
     this.methodDeclaringType = methodDeclaringType;
     this.isMethodDeclaringTypeInterface = isMethodDeclaringTypeInterface;
+    this.isDefaultMethod = isDefaultMethod;
   }
 
   @Override
@@ -223,7 +226,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     loadLocal(dispatchTarget);
     checkCast(methodDeclaringType);
     loadArgs();
-    if(isMethodDeclaringTypeInterface) {
+    if(isMethodDeclaringTypeInterface && !isDefaultMethod) {
       invokeInterface(methodDeclaringType, currentTransformMethod);
     } else {
       invokeVirtual(methodDeclaringType, currentTransformMethod);

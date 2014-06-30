@@ -395,7 +395,7 @@ public class BundleMock
   {
     ServiceReference[] result = null;
     try { 
-      result = bc.getServiceReferences(null, null);
+      result = bc.getServiceReferences((String) null, null);
     } catch (InvalidSyntaxException isx) { 
       // no-op: Swallow exception
     }

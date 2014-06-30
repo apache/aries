@@ -25,7 +25,7 @@ import org.apache.aries.jmx.test.bundleb.api.InterfaceB;
  *
  * @version $Rev$ $Date$
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class B implements InterfaceB {
 
     private Dictionary<String, Object> conf;

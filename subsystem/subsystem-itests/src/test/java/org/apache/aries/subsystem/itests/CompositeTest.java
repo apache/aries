@@ -17,16 +17,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class CompositeTest extends SubsystemTest {
 	private static final String BUNDLE_A = "bundle.a";
 	private static final String BUNDLE_B = "bundle.b";
@@ -39,12 +35,8 @@ public class CompositeTest extends SubsystemTest {
 	private static final String COMPOSITE_D = "composite.d";
 	private static final String PACKAGE_X = "x";
 	
-	private static boolean createdTestFiles;
-	
-	@Before
-	public static void createTestFiles() throws Exception {
-		if (createdTestFiles)
-			return;
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createBundleB();
 		createBundleC();
@@ -54,37 +46,27 @@ public class CompositeTest extends SubsystemTest {
 		createCompositeB();
 		createCompositeC();
 		createCompositeD();
-		createdTestFiles = true;
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.EXPORT_PACKAGE, PACKAGE_X + ";version=1.0");
-		createBundle(BUNDLE_A, "1.0.0", headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), version("1.0.0"), exportPackage(PACKAGE_X + ";version=1.0"));
 	}
 	
-	private static void createBundleB() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.PROVIDE_CAPABILITY, "y; y=test; version:Version=1.0");
-		createBundle(BUNDLE_B, "1.0.0", headers);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B), version("1.0.0"), 
+				new Header(Constants.PROVIDE_CAPABILITY, "y; y=test; version:Version=1.0"));
 	}
 	
-	private static void createBundleC() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, PACKAGE_X + ";version=\"[1.0,2.0)\"");
-		createBundle(BUNDLE_C, "1.0.0", headers);
+	private void createBundleC() throws IOException {
+		createBundle(name(BUNDLE_C), version("1.0.0"), importPackage(PACKAGE_X + ";version=\"[1.0,2.0)\""));
 	}
 	
-	private static void createBundleD() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.REQUIRE_BUNDLE, BUNDLE_A);
-		createBundle(BUNDLE_D, headers);
+	private void createBundleD() throws IOException {
+		createBundle(name(BUNDLE_D), requireBundle(BUNDLE_A));
 	}
 	
-	private static void createBundleE() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.REQUIRE_CAPABILITY, "y; filter:=(y=test)");
-		createBundle(BUNDLE_E, headers);
+	private void createBundleE() throws IOException {
+		createBundle(name(BUNDLE_E), new Header(Constants.REQUIRE_CAPABILITY, "y; filter:=(y=test)"));
 	}
 	
 	private static void createCompositeA() throws IOException {

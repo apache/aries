@@ -44,7 +44,7 @@ public final class OsgiName extends AbstractName
   
   public OsgiName(String name) throws InvalidNameException
   {
-    super(split(name));
+    super(name);
   }
 
   public OsgiName(Name name) throws InvalidNameException

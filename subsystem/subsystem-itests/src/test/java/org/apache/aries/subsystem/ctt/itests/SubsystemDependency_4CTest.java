@@ -3,8 +3,9 @@ package org.apache.aries.subsystem.ctt.itests;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.subsystem.Subsystem;
@@ -21,25 +22,20 @@ C) Test with pre-installed transitive resources
 - Verify no new bundles are installed into the Root or S1 subsystems
 */
 
+@ExamReactorStrategy(PerMethod.class)
 public class SubsystemDependency_4CTest extends SubsystemDependencyTestBase 
 {
 	private static final String SUBSYSTEM_S1 = "sdt_composite.s1.esa";
 	private static final String SUBSYSTEM_S2 = "sdt_composite.s2.esa";
-	private static boolean _testSubsystemCreated = false;
 	private Subsystem s1;
 	private Subsystem s2;
 	
-	@Before
-	public void setUp() throws Exception
-	{ 
-		super.setUp();
-		if (!_testSubsystemCreated) { 
-			createSubsystemS1();
-			createSubsystemS2();
-			_testSubsystemCreated = true;
-		}
+	@Override
+	protected void createApplications() throws Exception {
+		super.createApplications();
+		createSubsystemS1();
+		createSubsystemS2();
 		registerRepositoryR1();
-		
 	}
 	
 	// doing this within @Before doesn't work :(
@@ -55,8 +51,8 @@ public class SubsystemDependency_4CTest extends SubsystemDependencyTestBase
 	{
 		stopSubsystem(s2);
 		stopSubsystem(s1);
-		uninstallSubsystem(s2);
-		uninstallSubsystem(s1);
+		//uninstallSubsystem(s2);
+		//uninstallSubsystem(s1);
 	}
 	
 	// Using the subsystem S1, install a composite S2 that 
@@ -66,29 +62,15 @@ public class SubsystemDependency_4CTest extends SubsystemDependencyTestBase
     // - Verify the wiring of C, D and E wire to A->x, A, B->y respectively 
 
 	@Test
-	public void verifyCinS1WiresToAxInS2() throws Exception
+	public void verify() throws Exception
 	{
 		startSubsystems();
 		verifySinglePackageWiring (s2, BUNDLE_C, "x", BUNDLE_A);
-		stopSubsystems();
-	}
-	
-	@Test
-	public void verifyBundleDWiredToBundleA() throws Exception
-	{
-		startSubsystems();
 		verifyRequireBundleWiring (s2, BUNDLE_D, BUNDLE_A);
-		stopSubsystems();
-	}
-	
-	@Test
-	public void verifyBundleEWiredToCapability_yFromBundleB() throws Exception
-	{
-		startSubsystems();
 		verifyCapabilityWiring (s2, BUNDLE_E, "y", BUNDLE_B);
 		stopSubsystems();
 	}
-
+	
 	@Test
 	public void verifyNoUnexpectedBundlesProvisioned() throws Exception 
 	{ 

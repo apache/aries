@@ -29,7 +29,7 @@ import org.osgi.service.cm.ManagedServiceFactory;
  *
  * @version $Rev$ $Date$
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class MSF implements ManagedServiceFactory {
 
     Map<String, InterfaceB> configured = new HashMap<String, InterfaceB>();
@@ -42,7 +42,8 @@ public class MSF implements ManagedServiceFactory {
         return "jmx.test.B.factory";
     }
 
-    public void updated(String pid, Dictionary dictionary) throws ConfigurationException {
+    
+	public void updated(String pid, Dictionary dictionary) throws ConfigurationException {
         if (configured.containsKey(pid)) {
             configured.get(pid).configure(dictionary);
         } else {

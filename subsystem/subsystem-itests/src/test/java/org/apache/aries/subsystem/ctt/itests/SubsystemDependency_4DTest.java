@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.service.subsystem.Subsystem;
@@ -28,16 +27,12 @@ import org.osgi.service.subsystem.SubsystemConstants;
 public class SubsystemDependency_4DTest extends SubsystemDependencyTestBase 
 {
 	private static final String SUBSYSTEM_4D = "sdt_application4d.esa";
-	private static boolean _testSubsystemCreated = false;
 	private Subsystem subsystem;
 	
-	@Before
-	public void setUp() throws Exception
-	{
-		super.setUp();
-		if (!_testSubsystemCreated) { 
-			createApplication4d();
-		}
+	@Override
+	public void createApplications() throws Exception {
+		super.createApplications();
+		createApplication4d();
 		registerRepositoryR2();
 	}
 	

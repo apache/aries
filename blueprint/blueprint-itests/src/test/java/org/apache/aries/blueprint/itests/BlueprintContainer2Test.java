@@ -18,20 +18,13 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import java.util.Hashtable;
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
-
-import static org.apache.aries.itest.ExtraOptions.*;
 
 /**
  * this test is based on blueprint container test, but this test starts the
@@ -39,39 +32,28 @@ import static org.apache.aries.itest.ExtraOptions.*;
  * different code path
  *
  */
-@RunWith(JUnit4TestRunner.class)
-public class BlueprintContainer2Test extends AbstractIntegrationTest {
+@RunWith(PaxExam.class)
+public class BlueprintContainer2Test extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void test() throws Exception {
-        // Create a config to check the property placeholder
-        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);
-        Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
-        Hashtable props = new Hashtable();
-        props.put("key.b", "10");
-        cf.update(props);
+    	applyCommonConfiguration(context());
 
-        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-        Bundle blueprintBundle = context().getBundleByName("org.apache.aries.blueprint");
-        assertNotNull(bundle);
-
+        Bundle bundle = getSampleBundle();
         bundle.start();
-        blueprintBundle.start();
+        startBlueprintBundles();
         
         // do the test
         Helper.testBlueprintContainer(context(), bundle);
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
-    public static Option[] configuration() {
-        return testOptions(
-            paxLogging("DEBUG"),
+    @org.ops4j.pax.exam.Configuration
+    public Option[] configuration() {
+        return new Option[] {
+            baseOptions(),
             Helper.blueprintBundles(false),
-            
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-
-            equinox().version("3.5.0")
-        );
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample", false)
+        };
     }
 
 }

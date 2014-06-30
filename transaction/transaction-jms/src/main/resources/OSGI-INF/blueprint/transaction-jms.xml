@@ -21,13 +21,13 @@ limitations under the License.
 
     <service interface="org.apache.aries.blueprint.NamespaceHandler">
         <service-properties>
-            <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/xmlns/transaction-jms/1.0"/>
+            <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/xmlns/transaction-jms/2.0"/>
         </service-properties>
         <bean class="org.apache.xbean.blueprint.context.impl.XBeanNamespaceHandler">
-            <argument value="http://aries.apache.org/xmlns/transaction-jms/1.0"/>
+            <argument value="http://aries.apache.org/xmlns/transaction-jms/2.0"/>
             <argument value="org.apache.aries.transaction.jms.xsd"/>
             <argument ref="blueprintBundle"/>
-            <argument value="META-INF/services/org/apache/xbean/spring/http/aries.apache.org/xmlns/transaction-jms/1.0"/>
+            <argument value="META-INF/services/org/apache/xbean/spring/http/aries.apache.org/xmlns/transaction-jms/2.0"/>
         </bean>
     </service>
 
