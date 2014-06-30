@@ -27,4 +27,6 @@ public interface ExtendedReferenceMetadata extends ReferenceMetadata
     public String getDefaultBean();
     
     public Collection<Class<?>> getProxyChildBeanClasses();
+    
+    public Collection<String> getExtraInterfaces();
 }

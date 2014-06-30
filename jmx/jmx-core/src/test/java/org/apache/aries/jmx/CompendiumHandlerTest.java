@@ -55,6 +55,9 @@ public class CompendiumHandlerTest {
         Object service = new Object();
 
         ServiceReference reference = mock(ServiceReference.class);
+        when(reference.getProperty(Constants.SERVICE_ID)).thenReturn(1L);
+        when(reference.getProperty(Constants.OBJECTCLASS)).thenReturn("the class");
+
         BundleContext bundleContext = mock(BundleContext.class);
         when(bundleContext.getProperty(Constants.FRAMEWORK_UUID)).thenReturn("some-uuid");
         when(bundleContext.getService(reference)).thenReturn(service);
@@ -64,16 +67,11 @@ public class CompendiumHandlerTest {
         JMXAgentContext agentContext = mock(JMXAgentContext.class);
         when(agentContext.getBundleContext()).thenReturn(bundleContext);
         when(agentContext.getLogger()).thenReturn(agentLogger);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        when(agentContext.getRegistrationExecutor()).thenReturn(executor);
 
         AbstractCompendiumHandler concreteHandler = new CompendiumHandler(agentContext, "org.osgi.service.Xxx");
         target = spy(concreteHandler);
 
         target.addingService(reference);
-
-        executor.shutdown();
-        executor.awaitTermination(2, TimeUnit.SECONDS);
 
         //service only got once
         verify(bundleContext).getService(reference);
@@ -89,25 +87,23 @@ public class CompendiumHandlerTest {
 
         Object service = new Object();
         ServiceReference reference = mock(ServiceReference.class);
+        when(reference.getProperty(Constants.SERVICE_ID)).thenReturn(1L);
+        when(reference.getProperty(Constants.OBJECTCLASS)).thenReturn("the class");
 
         BundleContext bundleContext = mock(BundleContext.class);
         Logger agentLogger = mock(Logger.class);
         JMXAgentContext agentContext = mock(JMXAgentContext.class);
         when(agentContext.getBundleContext()).thenReturn(bundleContext);
         when(agentContext.getLogger()).thenReturn(agentLogger);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        when(agentContext.getRegistrationExecutor()).thenReturn(executor);
 
         AbstractCompendiumHandler concreteHandler = new CompendiumHandler(agentContext, "org.osgi.service.Xxx");
         target = spy(concreteHandler);
+        target.trackedId.set(1);
 
         String name = "osgi.compendium:service=xxx,version=1.0";
         doReturn(name).when(target).getName();
 
         target.removedService(reference, service);
-
-        executor.shutdown();
-        executor.awaitTermination(2, TimeUnit.SECONDS);
 
         //service unget
         verify(bundleContext).ungetService(reference);

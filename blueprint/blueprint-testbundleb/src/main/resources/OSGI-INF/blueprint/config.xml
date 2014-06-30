@@ -17,7 +17,7 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0"
            xmlns:one="http://ns.handler.one"
            xmlns:two="http://ns.handler.two"
            xmlns:three="http://ns.handler.three"
@@ -121,5 +121,28 @@
           <mytest:foo xmlns:mytest="http://ns.handler.mytest">blah</mytest:foo>
       </seven:stuff>
   </seven:nshandlerseven> 
+  
+  
+  <reference id="OnlyA" interface="org.apache.aries.blueprint.testbundlea.multi.InterfaceA"/>
+  <reference id="AandB" interface="org.apache.aries.blueprint.testbundlea.multi.InterfaceA">
+  	<ext:additional-interfaces>
+  	    <value>org.apache.aries.blueprint.testbundlea.multi.InterfaceB</value>
+  	</ext:additional-interfaces>
+  </reference>
+  <reference id="AandBandC" interface="org.apache.aries.blueprint.testbundlea.multi.InterfaceA">
+  	<ext:additional-interfaces>
+  	    <value>org.apache.aries.blueprint.testbundlea.multi.InterfaceB</value>
+  	    <value>org.apache.aries.blueprint.testbundlea.multi.InterfaceC</value>
+  	</ext:additional-interfaces>
+  </reference>
+  <!--  this shouldn't ever resolve as D isn't bound -->
+  <reference id="AandBandCandD" interface="org.apache.aries.blueprint.testbundlea.multi.InterfaceA" timeout="100">
+  	<ext:additional-interfaces>
+  	    <value>org.apache.aries.blueprint.testbundlea.multi.InterfaceB</value>
+  	    <value>org.apache.aries.blueprint.testbundlea.multi.InterfaceC</value>
+  	    <value>org.apache.aries.blueprint.testbundlea.multi.InterfaceD</value>
+  	</ext:additional-interfaces>
+  </reference>
+  
 </blueprint>
 

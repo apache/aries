@@ -68,6 +68,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
+  private static final String JDBC_PREFIX = "javax.persistence.jdbc.";
   
   public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData, 
       final ServiceReference providerRef, Boolean globalUsedatasourcefactory)
@@ -141,17 +142,15 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
             _logger.debug(NLS.MESSAGES.getMessage("using.datasource.factory", getPersistenceUnitName(),
                 bundle.getSymbolicName(), bundle.getVersion()));
           
-          jtaDSFDS.compareAndSet(null, new DataSourceFactoryDataSource(bundle, driverName,
-              props.getProperty("javax.persistence.jdbc.url"), 
-              props.getProperty("javax.persistence.jdbc.user"), 
-              props.getProperty("javax.persistence.jdbc.password"),
-              getTransactionType() == PersistenceUnitTransactionType.JTA));
+          boolean jta = getTransactionType() == PersistenceUnitTransactionType.JTA;
+          jtaDSFDS.compareAndSet(null, new DataSourceFactoryDataSource(bundle, driverName, getDsProps(props), jta)); 
           toReturn = jtaDSFDS.get();
         }
       }
     }
     return toReturn;
   }
+
 
   @SuppressWarnings("unchecked")
   public List<String> getManagedClassNames() {
@@ -197,11 +196,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
             _logger.debug(NLS.MESSAGES.getMessage("using.datasource.factory", getPersistenceUnitName(),
                 bundle.getSymbolicName(), bundle.getVersion()));
           
-          nonJtaDSFDS.compareAndSet(null, new DataSourceFactoryDataSource(bundle, driverName,
-              props.getProperty("javax.persistence.jdbc.url"), 
-              props.getProperty("javax.persistence.jdbc.user"), 
-              props.getProperty("javax.persistence.jdbc.password"),
-              false));
+          nonJtaDSFDS.compareAndSet(null, new DataSourceFactoryDataSource(bundle, driverName, getDsProps(props), false));
           toReturn = nonJtaDSFDS.get();
         }
       }
@@ -290,5 +285,23 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
       dsfds.closeTrackers();
     }
   }
+  
+  /**
+   * Return all properties that start with the prefix JDBC_PREFIX and cut off that prefix.
+   * 
+   * @param props
+   * @return
+   */
+  private Properties getDsProps(Properties props) {
+	  Properties dsProps = new Properties();
+	  for (Object keyO : props.keySet()) {
+		  String key = (String)keyO;
+		  if (key.startsWith(JDBC_PREFIX) && !key.equals(JDBC_PREFIX + "driver")) {
+			  dsProps.put(key.substring(JDBC_PREFIX.length()), props.get(key));
+		  }
+	  }
+	  return dsProps;
+  }
+
   
 }

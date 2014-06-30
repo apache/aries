@@ -56,6 +56,7 @@ public class OsgiResourceAdapter implements Resource {
 		return ResourceHelper.getSymbolicNameAttribute(resource);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Map getProperties() {
 		return Collections.emptyMap();
 	}

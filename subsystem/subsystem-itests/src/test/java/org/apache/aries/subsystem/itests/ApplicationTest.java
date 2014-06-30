@@ -33,8 +33,6 @@ import org.apache.aries.subsystem.itests.util.TestRepository;
 import org.apache.aries.subsystem.itests.util.TestRepositoryContent;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -45,7 +43,6 @@ import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class ApplicationTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -76,7 +73,7 @@ public class ApplicationTest extends SubsystemTest {
 	private static boolean createdTestFiles;
 	
 	@Before
-	public static void createTestFiles() throws Exception {
+	public void createTestFiles() throws Exception {
 		if (createdTestFiles)
 			return;
 		createBundleA();
@@ -87,55 +84,47 @@ public class ApplicationTest extends SubsystemTest {
 		createdTestFiles = true;
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.REQUIRE_CAPABILITY, "foo; filter:=\"(foo=bar)\"");
-		createBundle(BUNDLE_A, "1.0.0", headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), version("1.0.0"),
+				new Header(Constants.REQUIRE_CAPABILITY, "foo; filter:=\"(foo=bar)\""));
 	}
 	
-	private static void createBundleB() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.PROVIDE_CAPABILITY, "foo; foo=bar");
-		createBundle(BUNDLE_B, "1.0.0", headers);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B), version("1.0.0"), 
+				new Header(Constants.PROVIDE_CAPABILITY, "foo; foo=bar"));
 	}
 	
-	private static void createBundleC() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.REQUIRE_BUNDLE, BUNDLE_B);
-		createBundle(BUNDLE_C, "1.0.0", headers);
+	private void createBundleC() throws IOException {
+		createBundle(name(BUNDLE_C), version("1.0.0"), requireBundle(BUNDLE_B));
 	}
 	
-	private static void createApplicationA() throws IOException {
+	private void createApplicationA() throws IOException {
 		createApplicationAManifest();
 		createSubsystem(APPLICATION_A, BUNDLE_A);
 	}
 	
-	private static void createApplicationB() throws IOException {
+	private void createApplicationB() throws IOException {
 		createApplicationBManifest();
 		createSubsystem(APPLICATION_B, BUNDLE_C);
 	}
 	
-	private static void createApplicationAManifest() throws IOException {
+	private void createApplicationAManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_A);
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_A);
 		createManifest(APPLICATION_A + ".mf", attributes);
 	}
 	
-	private static void createApplicationBManifest() throws IOException {
+	private void createApplicationBManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_B);
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_C);
 		createManifest(APPLICATION_B + ".mf", attributes);
 	}
 	
-	@Before
-	public static void createApplications() throws Exception {
-		if (createdApplications) {
-			return;
-		}
-		createApplication("application1", new String[]{"tb1.jar"});
-		createdApplications = true;
+	@Override
+	public void createApplications() throws Exception {
+		createApplication("application1", "tb1.jar");
 	}
 	
 	public void setUp() throws Exception {

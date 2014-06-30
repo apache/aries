@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jndi.rmi;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.naming.spi.ObjectFactory;
@@ -47,7 +48,7 @@ public class Activator implements BundleActivator {
             reg = context.registerService(
                         ObjectFactory.class.getName(),
                         ClassLoader.getSystemClassLoader().loadClass("com.sun.jndi.url.rmi.rmiURLContextFactory").newInstance(),
-                        props);
+                        (Dictionary) props);
         }
         catch (Exception e)
         {

@@ -18,13 +18,19 @@
  */
 package org.apache.aries.proxy.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -100,11 +106,98 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
         }
       } 
       if(proxyObject == null){
-        proxyObject = ProxySubclassGenerator.newProxySubclassInstance(classToProxy, new ProxyHandler(this, dispatcher, listener));
+        // ARIES-1216 : in some cases, some class can not be visible from the root class classloader.
+        // If that's the case, we need to build a custom classloader that has visibility on all those classes
+        // If we could generate a proper constructor this would not be necessary, but since we have to rely
+        // on the generated serialization constructor to bypass the JVM verifier, we don't have much choice
+        ClassLoader classLoader = classToProxy.getClassLoader();
+        boolean allVisible = true;
+        for (Class<?> clazz : classes) {
+          try {
+            if (classLoader.loadClass(clazz.getName()) != clazz) {
+              throw new UnableToProxyException(classToProxy, "The requested class " + clazz + " is different from the one seen by by " + classToProxy);
+            }
+          } catch (ClassNotFoundException e) {
+            allVisible = false;
+            break;
+          }
+        }
+        if (!allVisible) {
+          List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
+          for (Class<?> clazz : classes) {
+            ClassLoader cl = clazz.getClassLoader();
+            if (cl != null && !classLoaders.contains(cl)) {
+              classLoaders.add(cl);
+            }
+          }
+          classLoader = new MultiClassLoader(classLoaders);
+        }
+        proxyObject = ProxySubclassGenerator.newProxySubclassInstance(classToProxy, classLoader, new ProxyHandler(this, dispatcher, listener));
       }
     }
 
     return proxyObject;
+  }
+
+  private static class MultiClassLoader extends ClassLoader {
+    private final List<ClassLoader> parents;
+    private MultiClassLoader(List<ClassLoader> parents) {
+      this.parents = parents;
+    }
+
+    @Override
+    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+      for (ClassLoader cl : parents) {
+         try {
+           return cl.loadClass(name);
+         } catch (ClassNotFoundException e) {
+           // Ignore
+         }
+        }
+        throw new ClassNotFoundException(name);
+    }
+
+    @Override
+    public URL getResource(String name) {
+      for (ClassLoader cl : parents) {
+         URL url = cl.getResource(name);
+         if (url != null) {
+           return url;
+         }
+       }
+       return null;
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+      final List<Enumeration<URL>> tmp = new ArrayList<Enumeration<URL>>();
+      for (ClassLoader cl : parents) {
+        tmp.add(cl.getResources(name));
+      }
+      return new Enumeration<URL>() {
+        int index = 0;
+        @Override
+        public boolean hasMoreElements() {
+          return next();
+        }
+        @Override
+        public URL nextElement() {
+          if (!next()) {
+            throw new NoSuchElementException();
+          }
+          return tmp.get(index).nextElement();
+        }
+        private boolean next() {
+          while (index < tmp.size()) {
+            if (tmp.get(index) != null && tmp.get(index).hasMoreElements()) {
+              return true;
+            }
+            index++;
+          }
+          return false;
+        }
+      };
+    }
   }
 
   private Class<?> getLowestSubclass(Set<Class<?>> notInterfaces) throws

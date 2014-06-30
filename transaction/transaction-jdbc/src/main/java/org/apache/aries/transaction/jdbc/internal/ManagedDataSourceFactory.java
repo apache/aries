@@ -112,6 +112,9 @@ public class ManagedDataSourceFactory {
         cm.setPooling(getBool("aries.xa.pooling", true));
         cm.setPoolMaxSize(getInt("aries.xa.poolMaxSize", 10));
         cm.setPoolMinSize(getInt("aries.xa.poolMinSize", 0));
+        cm.setValidateOnMatch(getBool("aries.xa.validateOnMatch", true));
+        cm.setBackgroundValidation(getBool("aries.xa.backgroundValidation", false));
+        cm.setBackgroundValidationMilliseconds(getInt("aries.xa.backgroundValidationMilliseconds", 600000));
         cm.setTransaction(getString("aries.xa.transaction", "xa"));
         cm.init();
 

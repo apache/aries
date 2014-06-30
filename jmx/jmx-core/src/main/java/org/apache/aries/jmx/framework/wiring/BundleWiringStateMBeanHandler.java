@@ -21,6 +21,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.apache.aries.jmx.util.shared.RegistrableStandardEmitterMBean;
 import org.osgi.framework.BundleContext;
@@ -28,6 +29,8 @@ import org.osgi.jmx.framework.wiring.BundleWiringStateMBean;
 import org.osgi.service.log.LogService;
 
 public class BundleWiringStateMBeanHandler implements MBeanHandler {
+
+    private JMXAgentContext agentContext;
     private final String name;
     private final BundleContext bundleContext;
     private final Logger logger;
@@ -35,9 +38,10 @@ public class BundleWiringStateMBeanHandler implements MBeanHandler {
     private StandardMBean mbean;
     private BundleWiringState revisionsStateMBean;
 
-    public BundleWiringStateMBeanHandler(BundleContext bundleContext, Logger logger) {
-        this.bundleContext = bundleContext;
-        this.logger = logger;
+    public BundleWiringStateMBeanHandler(JMXAgentContext agentContext) {
+        this.agentContext = agentContext;
+        this.bundleContext = agentContext.getBundleContext();
+        this.logger = agentContext.getLogger();
         this.name = ObjectNameUtils.createFullObjectName(bundleContext, BundleWiringStateMBean.OBJECTNAME);
     }
 
@@ -51,6 +55,7 @@ public class BundleWiringStateMBeanHandler implements MBeanHandler {
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + BundleWiringStateMBean.class.getName(), e);
         }
+        agentContext.registerMBean(this);
     }
 
     /* (non-Javadoc)
@@ -65,7 +70,7 @@ public class BundleWiringStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
-        // not used
+        agentContext.unregisterMBean(this);
     }
 
     /* (non-Javadoc)

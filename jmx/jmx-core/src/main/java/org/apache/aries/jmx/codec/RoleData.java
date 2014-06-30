@@ -83,7 +83,8 @@ public class RoleData {
      * @param type role type.
      * @param properties role properties.
      */
-    public RoleData(String name, int type, Dictionary properties) {
+    @SuppressWarnings("rawtypes")
+	public RoleData(String name, int type, Dictionary properties) {
         this.name = name;
         this.type = type;
 

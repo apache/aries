@@ -131,7 +131,15 @@ public class PersistenceBundleHelper
       }     
     }
     
-    if (persistenceXmlFiles.isEmpty()) {
+    // Aries-1173: we always used to warn if persistenceXmlFiles.isEmpty(), but this caused many
+    // 'false positives' in which WABs with no persistence.xml by design generated warnings. 
+    // MN changing this so that the warning is only issued when the Meta-Persistence header is present: 
+    // i.e. there's good reason to believe that something is missing. Developers of WABs with no
+    // Meta-Persistence header, and missing persistence.xml files, will typically receive a resource
+    // injection failure at runtime with enough information to help identify the problem.
+    // (If logging is turned up to INFO, the wab.without.meta.persistence.header message issued 
+    // above should also be of help.)
+    if (persistenceXmlFiles.isEmpty() && metaPersistence != null) {
       _logger.warn(NLS.MESSAGES.getMessage("no.persistence.descriptor", bundleIdentity, locations.toString()));
     }
 

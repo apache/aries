@@ -21,10 +21,7 @@ package org.apache.aries.subsystem.itests;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.service.subsystem.Subsystem;
 
@@ -32,24 +29,19 @@ import org.osgi.service.subsystem.Subsystem;
  * Contains a series of tests for unmanaged bundles. An unmanaged bundle is a
  * bundle that was installed outside of the Subsystems API.
  */
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class UnmanagedBundleTest extends SubsystemTest {
 	/*
 	 * Bundle-SymbolicName: bundle.a.jar
 	 */
 	private static final String BUNDLE_A = "bundle.a.jar";
 	
-	@Before
-	public static void createApplications() throws Exception {
-		if (createdApplications) {
-			return;
-		};
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
-		createdApplications = true;
 	}
 	
-	private static void createBundleA() throws IOException {
-		createBundle(BUNDLE_A);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A));
 	}
 	
 	/*

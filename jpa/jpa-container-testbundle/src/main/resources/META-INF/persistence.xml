@@ -69,7 +69,7 @@
      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
           to create a database  -->
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:TEST;create=true"/>
+      <property name="javax.persistence.jdbc.databaseName" value="memory:TEST;create=true"/>
      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
      <property name="openjpa.jdbc.DBDictionary" value="derby"/>
     </properties>
@@ -83,7 +83,7 @@
      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
           to create a database  -->
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:TEST;create=true"/>
+      <property name="javax.persistence.jdbc.databaseName" value="memory:TEST;create=true"/>
      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
      <property name="openjpa.jdbc.DBDictionary" value="derby"/>
     </properties>

@@ -17,18 +17,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-import aQute.lib.osgi.Constants;
-
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class AutostartTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -95,36 +90,32 @@ public class AutostartTest extends SubsystemTest {
 		createManifest(APPLICATION_A + ".mf", attributes);
 	}
 	
-	private static void createApplicationB() throws IOException {
+	private void createApplicationB() throws IOException {
 		createApplicationBManifest();
 		createSubsystem(APPLICATION_B, BUNDLE_A, APPLICATION_A);
 	}
 	
-	private static void createApplicationBManifest() throws IOException {
+	private void createApplicationBManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_B);
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_A + ',' + APPLICATION_A + ';' + IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE + '=' + SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION);
 		createManifest(APPLICATION_B + ".mf", attributes);
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.EXPORT_PACKAGE, "x");
-		createBundle(BUNDLE_A, headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), exportPackage("x"));
 	}
 	
-	private static void createBundleB() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, "x");
-		createBundle(BUNDLE_B, headers);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B), importPackage("x"));
 	}
 	
-	private static void createCompositeA() throws IOException {
+	private void createCompositeA() throws IOException {
 		createCompositeAManifest();
 		createSubsystem(COMPOSITE_A, BUNDLE_A);
 	}
 	
-	private static void createCompositeAManifest() throws IOException {
+	private void createCompositeAManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, COMPOSITE_A);
 		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
@@ -186,12 +177,9 @@ public class AutostartTest extends SubsystemTest {
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, BUNDLE_A + ',' + FEATURE_A + ';' + IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE + '=' + SubsystemConstants.SUBSYSTEM_TYPE_FEATURE);
 		createManifest(FEATURE_C + ".mf", attributes);
 	}
-	
-	private static boolean createdTestFiles;
-	@Before
-	public static void createTestFiles() throws Exception {
-		if (createdTestFiles)
-			return;
+
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createBundleB();
 		createApplicationA();
@@ -201,11 +189,6 @@ public class AutostartTest extends SubsystemTest {
 		createFeatureA();
 		createFeatureB();
 		createFeatureC();
-		createdTestFiles = true;
-	}
-	
-	public void setUp() throws Exception {
-		super.setUp();
 	}
 	
 	@Test

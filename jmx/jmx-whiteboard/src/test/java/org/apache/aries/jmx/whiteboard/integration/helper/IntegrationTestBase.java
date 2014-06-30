@@ -18,17 +18,14 @@
  */
 package org.apache.aries.jmx.whiteboard.integration.helper;
 
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.provision;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
+import static org.ops4j.pax.exam.CoreOptions.*;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 import java.io.File;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import javax.inject.Inject;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -39,10 +36,9 @@ import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -57,11 +53,6 @@ public class IntegrationTestBase {
 
     // the JVM option to set to enable remote debugging
     protected static final String DEBUG_VM_OPTION = "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=30303";
-
-    // the actual JVM option set, extensions may implement a static
-    // initializer overwriting this value to have the configuration()
-    // method include it when starting the OSGi framework JVM
-    protected static String paxRunnerVmOption = null;
 
     private static MBeanServer staticServer;
 
@@ -81,7 +72,7 @@ public class IntegrationTestBase {
         theConfig.put(PROP_NAME, PROP_NAME);
     }
 
-    @org.ops4j.pax.exam.junit.Configuration
+    @Configuration
     public static Option[] configuration() {
         final String bundleFileName = System.getProperty(BUNDLE_JAR_SYS_PROP,
             BUNDLE_JAR_DEFAULT);
@@ -92,37 +83,19 @@ public class IntegrationTestBase {
                 + " system property");
         }
 
-        final Option[] base = options(
-            provision(
-                CoreOptions.bundle(bundleFile.toURI().toString()),
-                mavenBundle("org.ops4j.pax.swissbox",
-                    "pax-swissbox-tinybundles", "1.0.0"),
-                mavenBundle("org.apache.felix", "org.apache.felix.configadmin",
-                    "1.2.8"), mavenBundle("org.slf4j", "slf4j-api", "1.5.2"),
-                mavenBundle("org.slf4j", "slf4j-simple", "1.5.2")),
-            waitForFrameworkStartup());
-        final Option vmOption = (paxRunnerVmOption != null)
-                ? PaxRunnerOptions.vmOption(paxRunnerVmOption)
-                : null;
-        
-        Option[] options = combine(base, vmOption);
-        return updateOptions (options);
+        final Option[] options = options(
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+
+                junitBundles(),
+
+                bundle(bundleFile.toURI().toString()),
+                mavenBundle("org.ops4j.pax.tinybundles", "tinybundles", "2.0.0"),
+                mavenBundle("org.apache.felix", "org.apache.felix.configadmin", "1.2.8"),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-service", "1.7.2"));
+
+        return options;
     }
-    
-    // This method is copied from AbstractIntegrationTest 
-    // in org.apache.aries.jmx.itests
-    protected static Option[] updateOptions(Option[] options) {
-      // We need to add pax-exam-junit here when running with the ibm
-      // jdk to avoid the following exception during the test run:
-      // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
-      if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
-          Option[] ibmOptions = options(
-              wrappedBundle(mavenBundle("org.ops4j.pax.exam", "pax-exam-junit"))
-          );
-          options = combine(ibmOptions, options);
-      }
-      return options;
-  }
 
     @Before
     public void setUp() {

@@ -38,6 +38,7 @@ import org.osgi.service.packageadmin.ExportedPackage;
  * 
  * @version $Rev$ $Date$
  */
+@SuppressWarnings("deprecation")
 public class PackageData {
 
     /**

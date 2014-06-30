@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>6</version>
+        <version>14</version>
     </parent>
 
     <!-- This pom is for convenience in building several aries subprojects at once.
@@ -41,7 +41,7 @@
         <module>eba-maven-plugin</module>
         <module>testsupport</module>
         <module>util</module>
-        <module>versioning</module>
+        <!--module>versioning</module-->
         <module>proxy</module>
         <module>quiesce</module>
         <module>blueprint</module>
@@ -58,6 +58,7 @@
     </modules>
 
     <build>
+        <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>

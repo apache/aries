@@ -39,6 +39,9 @@ public class GenericResourceManager {
 
     private String resourceName;
 
+    private String userName;
+    private String password;
+
     private TransactionManager transactionManager;
 
     private ConnectionFactory connectionFactory;
@@ -62,6 +65,22 @@ public class GenericResourceManager {
         } catch (Throwable e) {
             LOGGER.warn("Error while recovering resource manager", e);
         }
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getResourceName() {
@@ -113,12 +132,17 @@ public class GenericResourceManager {
 
                     public NamedXAResource getNamedXAResource() throws SystemException {
                         try {
-                            final XAConnection activeConn = (XAConnection)connFactory.createXAConnection();
-                            final XASession session = (XASession)activeConn.createXASession();
-                            activeConn.start();
-                            LOGGER.debug("new namedXAResource's connection: " + activeConn);
+                            final XAConnection xaConnection;
+                            if (rm.getUserName() != null && rm.getPassword() != null) {
+                                xaConnection = connFactory.createXAConnection(rm.getUserName(), rm.getPassword());
+                            } else {
+                                xaConnection = connFactory.createXAConnection();
+                            }
+                            final XASession session = xaConnection.createXASession();
+                            xaConnection.start();
+                            LOGGER.debug("new namedXAResource's connection: " + xaConnection);
 
-                            return new ConnectionAndWrapperNamedXAResource(session.getXAResource(), getName(), activeConn);
+                            return new ConnectionAndWrapperNamedXAResource(session.getXAResource(), getName(), xaConnection);
                         } catch (Exception e) {
                             SystemException se =  new SystemException("Failed to create ConnectionAndWrapperNamedXAResource, " + e.getLocalizedMessage());
                             se.initCause(e);

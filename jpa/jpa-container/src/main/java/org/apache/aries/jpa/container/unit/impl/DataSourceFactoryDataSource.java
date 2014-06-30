@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.container.unit.impl;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataSourceFactoryDataSource extends DelayedLookupDataSource implements SingleServiceListener {
+
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
@@ -47,18 +49,10 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
   private final AtomicReference<SingleServiceTracker<DataSourceFactory>> trackerRef =
     new AtomicReference<SingleServiceTracker<DataSourceFactory>>();
   
-  public DataSourceFactoryDataSource(Bundle bundle, String driverName, String dbURL, 
-      String dbUserName, String dbPassword, boolean jta) {
+  public DataSourceFactoryDataSource(Bundle bundle, String driverName, Properties props, boolean jta) {
     this.persistenceBundle = bundle;
     this.driverName = driverName;
-    props = new Properties();
-    if(dbURL != null)
-      props.setProperty(DataSourceFactory.JDBC_URL, dbURL);
-    if(dbUserName != null)
-      props.setProperty(DataSourceFactory.JDBC_USER, dbUserName);
-    if(dbPassword != null)
-      props.setProperty(DataSourceFactory.JDBC_PASSWORD, dbPassword);
-    
+    this.props = props;
     this.jta = jta;
   }
 
@@ -125,4 +119,9 @@ public class DataSourceFactoryDataSource extends DelayedLookupDataSource impleme
   public void serviceReplaced() {
     ds.set(null);
   }
+
+  public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    return null;
+  }
+
 }

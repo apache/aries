@@ -18,73 +18,54 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.unittest.fixture.ArchiveFixture;
-import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
+import static org.ops4j.pax.exam.CoreOptions.streamBundle;
+
+import java.io.InputStream;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import static org.apache.aries.itest.ExtraOptions.*;
-
-@RunWith(JUnit4TestRunner.class)
-public class FragmentTest extends AbstractIntegrationTest
+@RunWith(PaxExam.class)
+public class FragmentTest extends AbstractBlueprintIntegrationTest
 {
+    
   @Test
   public void testFragmentProvidesBlueprintFile() throws Exception
   {
-    ZipFixture hostJar = ArchiveFixture.newJar().manifest().attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-    .attribute(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.test.host").end();
-    
-    ZipFixture fragmentJar = ArchiveFixture.newJar().manifest().attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-      .attribute(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.test.fragment")
-      .attribute(Constants.FRAGMENT_HOST, "org.apache.aries.test.host").end()
-      .binary("OSGI-INF/blueprint/bp.xml", this.getClass().getResourceAsStream("/bp.xml")).end();
-    
-    bundleContext.installBundle("fragment", fragmentJar.getInputStream());
-    bundleContext.installBundle("host", hostJar.getInputStream()).start();
-    
     Runnable r = context().getService(Runnable.class);
-    assertNotNull("Could not find blueprint registered service", r);
+    Assert.assertNotNull("Could not find blueprint registered service", r);
     BlueprintContainer bc = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.test.host");
-    assertNotNull("Could not find blueprint container for bundle", bc);
+    Assert.assertNotNull("Could not find blueprint container for bundle", bc);
   }
   
-  @Test
-  public void testFragmentWithOverriddenHeader() throws Exception
-  {
-    ZipFixture hostJar = ArchiveFixture.newJar().manifest().attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-    .attribute(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.test.host")
-    .attribute("Bundle-Blueprint", "META-INF/bp/*.xml").end();
-    
-    ZipFixture fragmentJar = ArchiveFixture.newJar().manifest().attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-      .attribute(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.test.fragment")
-      .attribute(Constants.FRAGMENT_HOST, "org.apache.aries.test.host").end()
-      .binary("META-INF/bp/bp.xml", this.getClass().getResourceAsStream("/bp.xml")).end();
-    
-    bundleContext.installBundle("fragment", fragmentJar.getInputStream());
-    bundleContext.installBundle("host", hostJar.getInputStream()).start();
-    
-    Runnable r = context().getService(Runnable.class);
-    assertNotNull("Could not find blueprint registered service", r);
-    BlueprintContainer bc = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.test.host");
-    assertNotNull("Could not find blueprint container for bundle", bc);
-  }
-  
-  @org.ops4j.pax.exam.junit.Configuration
-  public static Option[] configuration() {
-      return testOptions(
-          paxLogging("DEBUG"),
+  @Configuration
+  public Option[] configuration() {
+      InputStream hostJar = TinyBundles.bundle()
+              .set(Constants.BUNDLE_MANIFESTVERSION, "2")
+              .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.test.host").build();
+      
+      InputStream fragmentJar = TinyBundles.bundle()
+              .set(Constants.BUNDLE_MANIFESTVERSION, "2")
+              .set(Constants.BUNDLE_SYMBOLICNAME, "org.apache.aries.test.fragment")
+              .set(Constants.FRAGMENT_HOST, "org.apache.aries.test.host")
+              .add("OSGI-INF/blueprint/bp.xml", this.getClass().getResourceAsStream("/bp.xml"))
+              .build();
+      
+      return new Option[] {
+          baseOptions(),
           Helper.blueprintBundles(),
-          
-          mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-          equinox().version("3.5.0")
-      );
+          streamBundle(fragmentJar).noStart(),
+          streamBundle(hostJar),
+          mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample", false)
+      };
   }
 
 }

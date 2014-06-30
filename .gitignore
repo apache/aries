@@ -10,3 +10,4 @@ target/
 *.ipr
 .idea
 velocity.log
+derby.log

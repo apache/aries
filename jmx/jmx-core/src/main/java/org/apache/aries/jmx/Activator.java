@@ -18,7 +18,6 @@ package org.apache.aries.jmx;
 
 import org.apache.aries.jmx.agent.JMXAgent;
 import org.apache.aries.jmx.agent.JMXAgentImpl;
-import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -44,9 +43,7 @@ public class Activator implements BundleActivator {
         //starting logger
         logger.open();
         logger.log(LogService.LOG_DEBUG, "Starting JMX OSGi bundle");
-        agent = new JMXAgentImpl(logger);
-        JMXAgentContext agentContext = new JMXAgentContext(context, agent, logger);
-        agent.setAgentContext(agentContext);
+        agent = new JMXAgentImpl(context, logger);
         agent.start();
     }
 

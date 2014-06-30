@@ -65,6 +65,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class locates, parses and manages persistence units defined in OSGi bundles.
+ * It also keeps track of PersistenceProvider services and delegates the EMF creation to the 
+ * matching PersistenceProvider
  */
 public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator
 {
@@ -177,7 +179,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
       while(it.hasNext()) {
         EntityManagerFactoryManager mgr = it.next();
         ServiceReference reference = getProviderServiceReference(mgr.getParsedPersistenceUnits());
-        if(ref != null) {
+        if(reference != null) {
           managersToManage.put(mgr, reference);
           it.remove();
         }
@@ -310,7 +312,9 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
     EntityManagerFactoryManager mgr = (EntityManagerFactoryManager) object;   
     mgr.destroy();
-    persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
+    if (!managersAwaitingProviders.contains(mgr)) {
+    	persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
+    }
     //Remember to tidy up the map
     synchronized (this) {
       bundleToManagerMap.remove(bundle);

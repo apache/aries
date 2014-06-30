@@ -9,8 +9,6 @@ import java.net.URL;
 import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
@@ -19,7 +17,6 @@ import org.osgi.framework.ServiceReference;
  * same scope. The one exception is the system bundle, whose services may be 
  * seen by all bundles regardless of scope.
  */
-@RunWith(JUnit4TestRunner.class)
 public class ServiceVisibilityTest extends AbstractTest {
 	/**
 	 * Install a bundle registering a service into the same scope as this one. 

@@ -18,10 +18,9 @@ import org.apache.aries.util.filesystem.IDirectory;
 import org.easymock.EasyMock;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionFilter;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -33,7 +32,7 @@ import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
+@ExamReactorStrategy(PerMethod.class)
 public class AriesSubsystemTest extends SubsystemTest {
 	/*
 	 * Subsystem-SymbolicName: application.a.esa
@@ -61,46 +60,42 @@ public class AriesSubsystemTest extends SubsystemTest {
 	 */
 	private static final String COMPOSITE_A = "composite.a.esa";
 	
-	private static void createApplicationA() throws IOException {
+	private void createApplicationA() throws IOException {
 		createApplicationAManifest();
 		createSubsystem(APPLICATION_A, BUNDLE_A);
 	}
 	
-	private static void createApplicationB() throws IOException {
+	private void createApplicationB() throws IOException {
 		createApplicationBManifest();
 		createSubsystem(APPLICATION_B, BUNDLE_B);
 	}
 	
-	private static void createApplicationAManifest() throws IOException {
+	private void createApplicationAManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_A);
 		createManifest(APPLICATION_A + ".mf", attributes);
 	}
 	
-	private static void createApplicationBManifest() throws IOException {
+	private void createApplicationBManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_B);
 		createManifest(APPLICATION_B + ".mf", attributes);
 	}
 	
-	private static void createBundleA() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, "org.osgi.framework,org.osgi.resource");
-		createBundle(BUNDLE_A, headers);
+	private void createBundleA() throws IOException {
+		createBundle(name(BUNDLE_A), importPackage("org.osgi.framework,org.osgi.resource"));
 	}
 	
-	private static void createBundleB() throws IOException {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(Constants.IMPORT_PACKAGE, "org.osgi.resource");
-		createBundle(BUNDLE_B, headers);
+	private void createBundleB() throws IOException {
+		createBundle(name(BUNDLE_B), importPackage("org.osgi.resource"));
 	}
 	
-	private static void createCompositeA() throws IOException {
+	private void createCompositeA() throws IOException {
 		createCompositeAManifest();
 		createSubsystem(COMPOSITE_A, BUNDLE_B, APPLICATION_B);
 	}
 	
-	private static void createCompositeAManifest() throws IOException {
+	private void createCompositeAManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, COMPOSITE_A);
 		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
@@ -111,21 +106,13 @@ public class AriesSubsystemTest extends SubsystemTest {
 		createManifest(COMPOSITE_A + ".mf", attributes);
 	}
 	
-	private static boolean createdTestFiles;
-	@Before
-	public static void createTestFiles() throws Exception {
-		if (createdTestFiles)
-			return;
+	@Override
+	public void createApplications() throws Exception {
 		createBundleA();
 		createBundleB();
 		createApplicationA();
 		createApplicationB();
 		createCompositeA();
-		createdTestFiles = true;
-	}
-	
-	public void setUp() throws Exception {
-		super.setUp();
 	}
 	
 	/*

@@ -46,38 +46,36 @@ public class OsgiURLContextFactory implements ObjectFactory {
         if (obj == null) {
             return new ServiceRegistryContext(callerContext, environment);
         } else if (obj instanceof String) {
-            Context ctx = null;
-            try {
-                ctx = new ServiceRegistryContext(callerContext, environment);
-
-                return ctx.lookup((String) obj);
-            } finally {
-                if (ctx != null)
-                    ctx.close();
-            }
+        	return findAny(environment, (String)obj);
         } else if (obj instanceof String[]) {
-            // Try each URL until either lookup succeeds or they all fail
-            String[] urls = (String[]) obj;
-            if (urls.length == 0) {
-                throw new ConfigurationException("0");
-            }
-            Context context = new ServiceRegistryContext(callerContext, environment);
-            try {
-                NamingException ne = null;
-                for (int i = 0; i < urls.length; i++) {
-                    try {
-                        return context.lookup(urls[i]);
-                    } catch (NamingException e) {
-                        ne = e;
-                    }
-                }
-                throw ne;
-            } finally {
-                context.close();
-            }
+            return findAny(environment, (String[]) obj);
+        } else {
+            return null;
         }
-
-        return null;
     }
+
+    /**
+     * Try each URL until either lookup succeeds or they all fail
+     */
+	private Object findAny(Hashtable<?, ?> environment, String ... urls)
+			throws ConfigurationException, NamingException {
+		if (urls.length == 0) {
+		    throw new ConfigurationException("0");
+		}
+		Context context = new ServiceRegistryContext(callerContext, environment);
+		try {
+		    NamingException ne = null;
+		    for (int i = 0; i < urls.length; i++) {
+		        try {
+		            return context.lookup(urls[i]);
+		        } catch (NamingException e) {
+		            ne = e;
+		        }
+		    }
+		    throw ne;
+		} finally {
+		    context.close();
+		}
+	}
 
 }

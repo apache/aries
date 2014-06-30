@@ -22,8 +22,10 @@ package org.apache.aries.transaction.jms.internal;
  * 
  */
 public class SessionKey {
+
     private boolean transacted;
     private int ackMode;
+
     private int hash;
 
     public SessionKey(boolean transacted, int ackMode) {

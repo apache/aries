@@ -25,11 +25,11 @@ import org.osgi.service.cm.ManagedService;
  *
  * @version $Rev$ $Date$
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public interface InterfaceA extends ManagedService {
 
     boolean invoke();
     
-    Dictionary getConfig();
+	Dictionary getConfig();
     
 }

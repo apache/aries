@@ -6,15 +6,13 @@ import static org.junit.Assert.fail;
 
 import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 
 /**
  * Bundles may be moved from one scope to another.
  */
-@RunWith(JUnit4TestRunner.class)
 public class MoveBundleTest extends AbstractTest {
 	/**
 	 * Create two scopes off of the root scope with the following structure.
@@ -27,6 +25,7 @@ public class MoveBundleTest extends AbstractTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void test1() throws Exception {
 		Bundle tb2 = installBundle("tb-2.jar");
 		Scope root = getScope();

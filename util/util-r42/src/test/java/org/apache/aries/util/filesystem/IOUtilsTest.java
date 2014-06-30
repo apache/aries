@@ -79,20 +79,20 @@ public class IOUtilsTest
   @Test
   public void testWriteOut() throws IOException
   {
-    File tmpDir = new File("ioUtilsTest/tmp");
-    tmpDir.mkdir();
+    File tmpDir = new File("target/ioUtilsTest/tmp");
+    tmpDir.mkdirs();
     
     IOUtils.writeOut(tmpDir, "simple.txt", new ByteArrayInputStream( "abc".getBytes()));
     IOUtils.writeOut(tmpDir, "some/relative/directory/complex.txt", new ByteArrayInputStream( "def".getBytes()));
     IOUtils.writeOut(tmpDir, "some/relative/directory/complex2.txt", new ByteArrayInputStream( "ghi".getBytes()));
     
-    File simple = new File("ioUtilsTest/tmp/simple.txt");
+    File simple = new File(tmpDir, "simple.txt");
     assertTrue(simple.exists());
 
-    File complex = new File("ioUtilsTest/tmp/some/relative/directory/complex.txt");
+    File complex = new File(tmpDir, "some/relative/directory/complex.txt");
     assertTrue(complex.exists());
 
-    File complex2 = new File("ioUtilsTest/tmp/some/relative/directory/complex2.txt");
+    File complex2 = new File(tmpDir, "some/relative/directory/complex2.txt");
     assertTrue(complex2.exists());
     
     BufferedReader r = new BufferedReader(new FileReader(simple));

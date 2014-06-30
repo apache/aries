@@ -31,9 +31,9 @@ public final class WovenProxyAbstractMethodAdapter extends AbstractWovenProxyMet
  
   public WovenProxyAbstractMethodAdapter(MethodVisitor mv, int access, String name,
       String desc, String methodStaticFieldName, Method currentTransformMethod,
-      Type typeBeingWoven, Type methodDeclaringType, boolean isMethodDeclaringTypeInterface) {
+      Type typeBeingWoven, Type methodDeclaringType, boolean isMethodDeclaringTypeInterface, boolean isDefaultMethod) {
     super(mv, access, name, desc, methodStaticFieldName, currentTransformMethod,
-        typeBeingWoven, methodDeclaringType, isMethodDeclaringTypeInterface);
+        typeBeingWoven, methodDeclaringType, isMethodDeclaringTypeInterface, isDefaultMethod);
   }
 
   /**

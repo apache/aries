@@ -30,16 +30,14 @@ public class SubsystemDependency_4BTest extends SubsystemDependencyTestBase
 
 	protected static String APPLICATION_B="sdt_application.b.esa";
 	
-	private static boolean appCreated = false;
+	@Override
+	public void createApplications() throws Exception {
+		super.createApplications();
+		createTestApplicationB();
+	}
 	
 	@Before
-	public void setUp() throws Exception
-	{ 
-		super.setUp();
-		if (!appCreated) { 
-			createTestApplicationB();
-			appCreated = true;
-		}
+	public void registerRepo() throws Exception {
 		registerRepositoryR2();
 	}
 	

@@ -26,7 +26,7 @@ public class Utils {
 		catch (Exception e) {}
 	}
 	
-	public static void unregisterQuietly(ServiceRegistration<?> reg) {
+	public static void unregisterQuietly(ServiceRegistration reg) {
 		if (reg == null) return;
 		try {
 			reg.unregister();

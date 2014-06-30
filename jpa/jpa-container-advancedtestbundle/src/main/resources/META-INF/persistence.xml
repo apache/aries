@@ -27,7 +27,7 @@
     <properties>
       <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:TEST;create=true"/>
+      <property name="javax.persistence.jdbc.databaseName" value="memory:TEST;create=true"/>
       <property name="eclipselink.target-database" value="Derby"/>     
       <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
       <property name="eclipselink.ddl-generation.output-mode" value="database" />

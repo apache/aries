@@ -21,6 +21,7 @@ import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
+import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -39,6 +40,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  */
 public class PackageStateMBeanHandler implements MBeanHandler {
 
+    private JMXAgentContext agentContext;
     private String name;
     private StandardMBean mbean;
     private BundleContext context;
@@ -46,14 +48,12 @@ public class PackageStateMBeanHandler implements MBeanHandler {
 
     /**
      * Constructs new PackageStateMBeanHandler.
-S     *
-     * @param context bundle context of JMX bundle.
-     * @param logger @see {@link Logger}.
      */
-    public PackageStateMBeanHandler(BundleContext context, Logger logger) {
-        this.context = context;
+    public PackageStateMBeanHandler(JMXAgentContext agentContext) {
+        this.agentContext = agentContext;
+        this.context = agentContext.getBundleContext();
+        this.logger = agentContext.getLogger();
         this.name = ObjectNameUtils.createFullObjectName(context, PackageStateMBean.OBJECTNAME);
-        this.logger = logger;
     }
 
     /**
@@ -75,13 +75,14 @@ S     *
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Not compliant MBean", e);
         }
+        agentContext.registerMBean(this);
     }
 
     /**
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
-        //not used
+        agentContext.unregisterMBean(this);
     }
 
     /**

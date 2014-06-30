@@ -21,27 +21,19 @@ package org.apache.aries.subsystem.itests;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-@RunWith(MavenConfiguredJUnit4TestRunner.class)
 public class BasicTest extends SubsystemTest {
 	
-	@Before
-	public static void createApplications() throws Exception {
-		if (createdApplications) {
-			return;
-		}
+	@Override
+	public void createApplications() throws Exception {
 		createApplication("emptyFeature", new String[]{});
 		createApplication("emptySubsystem", new String[]{});
-		createdApplications = true;
 	}
 	
 	/*
@@ -59,9 +51,9 @@ public class BasicTest extends SubsystemTest {
     		}
     	}
     	assertTrue("Subsystems implementation bundle not found", found);
-    	ServiceReference<Subsystem> serviceReference = bundleContext.getServiceReference(Subsystem.class);
+    	ServiceReference serviceReference = bundleContext.getServiceReference(Subsystem.class);
     	assertNotNull("Reference to subsystem service not found", serviceReference);
-    	Subsystem subsystem = bundleContext.getService(serviceReference);
+    	Subsystem subsystem = (Subsystem) bundleContext.getService(serviceReference);
     	assertNotNull("Subsystem service not found", subsystem);
     }
     

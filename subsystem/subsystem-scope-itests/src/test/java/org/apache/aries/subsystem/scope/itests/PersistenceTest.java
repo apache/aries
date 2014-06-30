@@ -13,12 +13,10 @@ import org.apache.aries.subsystem.scope.InstallInfo;
 import org.apache.aries.subsystem.scope.Scope;
 import org.apache.aries.subsystem.scope.ScopeUpdate;
 import org.apache.aries.subsystem.scope.SharePolicy;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 
-@RunWith(JUnit4TestRunner.class)
 public class PersistenceTest extends AbstractTest {
 	/**
 	 * When starting from a clean slate (i.e. nothing was persisted), only the 
@@ -72,6 +70,7 @@ public class PersistenceTest extends AbstractTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void test3() throws Exception {
 		Scope scope = getScope();
 		Bundle tb1 = findBundle("org.apache.aries.subsystem.scope.itests.tb1", scope);

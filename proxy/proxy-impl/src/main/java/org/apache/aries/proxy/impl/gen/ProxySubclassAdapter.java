@@ -271,6 +271,10 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
         // read the current class and use a
         // ProxySubclassHierarchyAdapter
         // to process only methods on that class that are in the list
+        ClassLoader loader = currentlyAnalysedClass.getClassLoader();
+        if (loader == null) {
+          loader = this.loader;
+        }
         ClassReader cr = new ClassReader(loader.getResourceAsStream(currentlyAnalysedClass
             .getName().replaceAll("\\.", "/")
             + ".class"));

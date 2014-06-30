@@ -35,6 +35,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import javax.transaction.xa.XAResource;
 
@@ -156,6 +157,51 @@ public class ConnectionWrapper implements Connection {
     public Struct createStruct(String typeName, Object[] attributes)
             throws SQLException {
         return connection.createStruct(typeName, attributes);
+    }
+
+    public void setSchema(String schema) throws SQLException {
+        invokeViaReflection("setSchema", new Class<?>[] {String.class},
+                            new Object[] {schema});
+    }
+
+    public String getSchema() throws SQLException {
+        return invokeViaReflection(String.class, "getSchema", new Class<?>[0],
+                            new Object[0]);
+    }
+
+    public void abort(Executor executor) throws SQLException {
+        invokeViaReflection("abort", new Class<?>[] {Executor.class},
+                            new Object[] {executor});
+    }
+
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+        invokeViaReflection("setNetworkTimeout", new Class<?>[] {Executor.class, Integer.TYPE},
+                            new Object[] {executor, milliseconds});
+    }
+
+    public int getNetworkTimeout() throws SQLException {
+        return invokeViaReflection(Integer.TYPE, "getNetworkTimeout", new Class<?>[0], new Object[0]);
+    }
+    
+    private <T> T invokeViaReflection(Class<T> retType, String name,
+                                      Class<?> argClasses[], Object args[]) throws SQLException {
+        try {
+            return retType.cast(connection.getClass().getMethod(name, argClasses).invoke(args));
+        } catch (RuntimeException re) {
+            throw re;
+        } catch (Throwable t) {
+            throw new SQLException(t);
+        }
+    }
+    private void invokeViaReflection(String name,
+                                    Class<?> argClasses[], Object args[]) throws SQLException {
+        try {
+            connection.getClass().getMethod(name, argClasses).invoke(args);
+        } catch (RuntimeException re) {
+            throw re;
+        } catch (Throwable t) {
+            throw new SQLException(t);
+        }
     }
 
     public boolean getAutoCommit() throws SQLException {

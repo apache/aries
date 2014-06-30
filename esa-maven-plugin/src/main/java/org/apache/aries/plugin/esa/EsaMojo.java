@@ -21,7 +21,6 @@ package org.apache.aries.plugin.esa;
 
 import org.apache.maven.archiver.PomPropertiesUtil;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -29,14 +28,12 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
-import org.apache.maven.shared.osgi.DefaultMaven2OsgiConverter;
-import org.apache.maven.shared.osgi.Maven2OsgiConverter;
-import aQute.lib.osgi.Analyzer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,29 +49,23 @@ public class EsaMojo
     extends AbstractMojo
 {
 
-	public enum EsaContent {none, all, content};
+    public enum EsaContent {none, all, content};
     
-	public static final String SUBSYSTEM_MF_URI = "OSGI-INF/SUBSYSTEM.MF";
+    public static final String SUBSYSTEM_MF_URI = "OSGI-INF/SUBSYSTEM.MF";
 
     private static final String[] DEFAULT_INCLUDES = {"**/**"};
 
-    /*
-     * Subsystem manifest headers
-     */
-    private static final String SUBSYSTEM_MANIFESTVERSION = "Subsystem-ManifestVersion";
-    private static final String SUBSYSTEM_SYMBOLICNAME = "Subsystem-SymbolicName";
-    private static final String SUBSYSTEM_VERSION = "Subsystem-Version";
-    private static final String SUBSYSTEM_NAME = "Subsystem-Name";
-    private static final String SUBSYSTEM_DESCRIPTION = "Subsystem-Description";
-    private static final String SUBSYSTEM_CONTENT = "Subsystem-Content";
-    private static final String SUBSYSTEM_USEBUNDLE = "Use-Bundle";
-    private static final String SUBSYSTEM_TYPE = "Subsystem-Type";
-    
-    /**
-     * Coverter for maven pom values to OSGi manifest values (pulled in from the maven-bundle-plugin)
-     */
-    private Maven2OsgiConverter maven2OsgiConverter = new DefaultMaven2OsgiConverter();
-    
+    private static final Set<String> SKIP_INSTRUCTIONS = new HashSet<String>();
+
+    static {
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_MANIFESTVERSION);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_SYMBOLICNAME);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_VERSION);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_NAME);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_DESCRIPTION);
+        SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_CONTENT);
+    }
+
     /**
      * Single directory for extra files to include in the esa.
      *
@@ -159,7 +150,7 @@ public class EsaMojo
      *
      * @parameter
      */
-    private Map instructions = new LinkedHashMap();;    
+    private Map instructions = new LinkedHashMap();
     
     /**
      * Adding pom.xml and pom.properties to the archive.
@@ -212,7 +203,7 @@ public class EsaMojo
             Set<Artifact> artifacts = null;
             switch (EsaContent.valueOf(archiveContent)) {
             case none:
-                getLog().info("archiveContent=none: subsystem arvhive will not contain any bundles.");                  
+                getLog().info("archiveContent=none: subsystem archive will not contain any bundles.");                  
                 break;
             case content:
                 // only include the direct dependencies in the archive
@@ -227,15 +218,26 @@ public class EsaMojo
             }
               
             if (artifacts != null) {
+                // Explicitly add self to bundle set (used when pom packaging
+                // type != "esa" AND a file is present (no point to add to
+                // zip archive without file)
+                final Artifact selfArtifact = project.getArtifact();
+                if (!"esa".equals(selfArtifact.getType()) && selfArtifact.getFile() != null) {
+                    getLog().info("Explicitly adding artifact[" + selfArtifact.getGroupId() + ", " + selfArtifact.getId() + ", " + selfArtifact.getScope() + "]");
+                    artifacts.add(project.getArtifact());
+                }
+                
                 artifacts = selectArtifacts(artifacts);
-                for (Artifact artifact : artifacts) {
-
+                int cnt = 0;
+                for (Artifact artifact : artifacts) {                    
                     if (!artifact.isOptional() /*&& filter.include(artifact)*/) {
                         getLog().info("Copying artifact[" + artifact.getGroupId() + ", " + artifact.getId() + ", " +
                                 artifact.getScope() + "]");
                         zipArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null ? "jar" : artifact.getType()));
+                        cnt++;
                     }
                 }               
+                getLog().info(String.format("Added %s artifacts to subsystem subsystem archive.", cnt));
             }
         }
         catch ( ArchiverException e )
@@ -391,14 +393,16 @@ public class EsaMojo
         try {
             // TODO: add support for dependency version ranges. Need to pick
             // them up from the pom and convert them to OSGi version ranges.
-            FileUtils.fileAppend(fileName, SUBSYSTEM_MANIFESTVERSION + ": " + "1" + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_SYMBOLICNAME + ": "
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_MANIFESTVERSION + ": " + "1" + "\n");
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_SYMBOLICNAME + ": "
                     + getSubsystemSymbolicName(project.getArtifact()) + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_VERSION + ": "
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_VERSION + ": "
                     + getSubsystemVersion() + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_NAME + ": " + project.getName() + "\n");
-            FileUtils.fileAppend(fileName, SUBSYSTEM_DESCRIPTION + ": "
-                    + project.getDescription() + "\n");
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_NAME + ": " + getSubsystemName() + "\n");
+            String description = getSubsystemDescription();
+            if (description != null) {
+                FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_DESCRIPTION + ": " + description + "\n");
+            }
 
             // Write the SUBSYSTEM-CONTENT
             // TODO: check that the dependencies are bundles (currently, the converter
@@ -410,46 +414,36 @@ public class EsaMojo
             artifacts = selectArtifacts(artifacts);
             Iterator<Artifact> iter = artifacts.iterator();
 
-            FileUtils.fileAppend(fileName, SUBSYSTEM_CONTENT + ": ");
-            int order = 1;
-            if (iter.hasNext()) {
-                Artifact artifact = iter.next(); 
-                String entry = new String(
-                		maven2OsgiConverter.getBundleSymbolicName(artifact)
-                        + ";version=\""
-                        + Analyzer.cleanupVersion(artifact.getVersion())
-                        + "\"");
-                if ("dependencies".equals(startOrder)) {
-                	entry += ";start-order=\"" + order + "\"";                	
-                }
-                FileUtils.fileAppend(fileName, entry);
-            }
+            FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_CONTENT + ": ");
+            int order = 0;
             while (iter.hasNext()) {
                 Artifact artifact = iter.next();
                 order++;
-                String entry = new String(",\n "
-                        + maven2OsgiConverter.getBundleSymbolicName(artifact)
-                        + ";version=\""
-                        + Analyzer.cleanupVersion(artifact.getVersion())
-                        + "\"");
+                ContentInfo info = ContentInfo.create(artifact, getLog());
+                if (info == null) {
+                    continue;
+                }
+                String entry = info.getContentLine();
                 if ("dependencies".equals(startOrder)) {
-                	entry += ";start-order=\"" + order + "\"";                	
+                    entry += ";start-order=\"" + order + "\"";                  
+                }
+                if (iter.hasNext()) {
+                    entry += ",\n ";
                 }
                 FileUtils.fileAppend(fileName, entry);
             }
 
             FileUtils.fileAppend(fileName, "\n");
 
-            // Add any use bundle entry
-            if (instructions.containsKey(SUBSYSTEM_USEBUNDLE)) {
-                FileUtils.fileAppend(fileName, SUBSYSTEM_USEBUNDLE + ": "
-                        + instructions.get(SUBSYSTEM_USEBUNDLE) + "\n");
-            }
-
-            // Add any subsystem type
-            if (instructions.containsKey(SUBSYSTEM_TYPE)) {
-                FileUtils.fileAppend(fileName, SUBSYSTEM_TYPE + ": "
-                        + instructions.get(SUBSYSTEM_TYPE) + "\n");
+            Iterator<Map.Entry<?, ?>> instructionIter = instructions.entrySet().iterator();
+            while(instructionIter.hasNext()) {
+                Map.Entry<?, ?> entry = instructionIter.next();
+                String header = entry.getKey().toString();
+                if (SKIP_INSTRUCTIONS.contains(header)) {
+                    continue;
+                }
+                getLog().debug("Adding header: " + header);
+                FileUtils.fileAppend(fileName, header + ": " + entry.getValue() + "\n");
             }
 
         } catch (Exception e) {
@@ -458,21 +452,35 @@ public class EsaMojo
         }
 
     }
-    
+
     // The maven2OsgiConverter assumes the artifact is a jar so we need our own
     // This uses the same fallback scheme as the converter
     private String getSubsystemSymbolicName(Artifact artifact) {
-        if (instructions.containsKey(SUBSYSTEM_SYMBOLICNAME)) {
-            return instructions.get(SUBSYSTEM_SYMBOLICNAME).toString();
+        if (instructions.containsKey(Constants.SUBSYSTEM_SYMBOLICNAME)) {
+            return instructions.get(Constants.SUBSYSTEM_SYMBOLICNAME).toString();
         }
         return artifact.getGroupId() + "." + artifact.getArtifactId();
     }
     
     private String getSubsystemVersion() {
-        if (instructions.containsKey(SUBSYSTEM_VERSION)) {
-            return instructions.get(SUBSYSTEM_VERSION).toString();
+        if (instructions.containsKey(Constants.SUBSYSTEM_VERSION)) {
+            return instructions.get(Constants.SUBSYSTEM_VERSION).toString();
         }
         return aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion());
+    }
+    
+    private String getSubsystemName() {
+        if (instructions.containsKey(Constants.SUBSYSTEM_NAME)) {
+            return instructions.get(Constants.SUBSYSTEM_NAME).toString();
+        }
+        return project.getName();
+    }
+    
+    private String getSubsystemDescription() {
+        if (instructions.containsKey(Constants.SUBSYSTEM_DESCRIPTION)) {
+            return instructions.get(Constants.SUBSYSTEM_DESCRIPTION).toString();
+        }
+        return project.getDescription();
     }
     
     private File getBuildDir() {
