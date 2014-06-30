@@ -101,7 +101,7 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
 	}
 
 	protected MavenArtifactProvisionOption sampleBundleOption() {
-		return CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").version("1.0.1-SNAPSHOT");
+		return CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").versionAsInProject();
 	}
 
 	protected void startBlueprintBundles() throws BundleException,
