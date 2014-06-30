@@ -32,15 +32,15 @@
     <artifactId>org.apache.aries.proxy.impl</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Service</name>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
     <description>
         This bundle contains the proxy service implementation for Apache Aries
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-impl</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/proxy/proxy-impl</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/proxy/proxy-impl</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy.impl-1.0.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.proxy.impl-1.0.3</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.proxy.impl-1.0.3</url>
     </scm>
 
     <properties>
@@ -138,12 +138,11 @@
                         <configuration>
                             <tasks>
                                 <!-- run the Synthesizer on the WovenProxy class -->
-                                <java classname="org.apache.aries.proxy.synthesizer.Synthesizer"
-                                      classpathref="maven.runtime.classpath" fork="false">
-                                    <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class"/>
+                                <java classname="org.apache.aries.proxy.synthesizer.Synthesizer" classpathref="maven.runtime.classpath" fork="false">
+                                    <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class" />
                                 </java>
 
-                                <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer"/>
+                                <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer" />
 
                             </tasks>
                         </configuration>
@@ -180,8 +179,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <checkSignatureRule
-                                        implementation="org.codehaus.mojo.animal_sniffer.enforcer.CheckSignatureRule">
+                                <checkSignatureRule implementation="org.codehaus.mojo.animal_sniffer.enforcer.CheckSignatureRule">
                                     <ignoreDependencies>true</ignoreDependencies>
                                     <ignores>
                                         <ignore>sun.reflect.*</ignore>
