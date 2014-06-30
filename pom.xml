@@ -68,6 +68,9 @@
         <aries.osgi.private.pkg>
             org.apache.aries.proxy.impl*
         </aries.osgi.private.pkg>
+        <aries.osgi.export.service>
+            org.apache.aries.proxy.ProxyManager
+        </aries.osgi.export.service>
         <lastReleaseVersion>1.0.2</lastReleaseVersion>
     </properties>
 
