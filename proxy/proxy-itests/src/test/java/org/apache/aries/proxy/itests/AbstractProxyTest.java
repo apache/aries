@@ -319,7 +319,7 @@ public abstract class AbstractProxyTest extends AbstractIntegrationTest {
   {
 	  return options(
 			  generalOptions(),
-			  mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").version("1.0.2-SNAPSHOT")
+			  mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()
 	  );
   }
 
