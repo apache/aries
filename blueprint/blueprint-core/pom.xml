@@ -247,6 +247,9 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
+                        <Import-Service>
+                            org.apache.aries.proxy.ProxyManager
+                        </Import-Service>
                         <Provide-Capability>
                             osgi.extender;
                             osgi.extender="osgi.blueprint";

@@ -58,6 +58,9 @@
           org.osgi.service.blueprint.container;resolution:=optional,
           *
         </aries.osgi.import.pkg>
+        <aries.osgi.import.service>
+          org.apache.aries.proxy.ProxyManager
+        </aries.osgi.import.service>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
         
     </properties>
