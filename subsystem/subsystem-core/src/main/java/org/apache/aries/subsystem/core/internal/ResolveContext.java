@@ -15,7 +15,9 @@ import org.apache.aries.subsystem.core.repository.Repository;
 import org.eclipse.equinox.region.Region;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.namespace.ExecutionEnvironmentNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.namespace.NativeNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
@@ -47,12 +49,18 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	public List<Capability> findProviders(Requirement requirement) {
 		ArrayList<Capability> result = new ArrayList<Capability>();
 		try {
-			addDependenciesFromContentRepository(requirement, result);
-			addDependenciesFromPreferredProviderRepository(requirement, result);
-			addDependenciesFromSystemRepository(requirement, result);
-			addDependenciesFromLocalRepository(requirement, result);
-			if (result.isEmpty()) {
-				addDependenciesFromRepositoryServiceRepositories(requirement, result);
+			// Only check the system repository for osgi.ee and osgi.native
+			if (ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE.equals(requirement.getNamespace()) 
+					|| NativeNamespace.NATIVE_NAMESPACE.equals(requirement.getNamespace())) {
+				addDependenciesFromSystemRepository(requirement, result);
+			} else {
+				addDependenciesFromContentRepository(requirement, result);
+				addDependenciesFromPreferredProviderRepository(requirement, result);
+				addDependenciesFromSystemRepository(requirement, result);
+				addDependenciesFromLocalRepository(requirement, result);
+				if (result.isEmpty()) {
+					addDependenciesFromRepositoryServiceRepositories(requirement, result);
+				}
 			}
 			if (result.isEmpty()) {
 				// Is the requirement optional?
