@@ -52,7 +52,9 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.hooks.weaving.WeavingHook;
+import org.osgi.framework.namespace.ExecutionEnvironmentNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.namespace.NativeNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
@@ -615,6 +617,8 @@ public class SubsystemResource implements Resource {
 				}
 			}
 		}
+		// Always add access to osgi.ee and osgi.native namespaces
+		setImplicitAccessToNativeAndEECapabilities(builder);
 		// Now set the sharing policy, if the regions are different.
 		RegionFilter regionFilter = builder.build();
 		from.connectRegion(to, regionFilter);
@@ -644,6 +648,8 @@ public class SubsystemResource implements Resource {
 			setImportIsolationPolicy(builder, (SubsystemImportServiceHeader)header);
 			header = getSubsystemManifest().getRequireBundleHeader();
 			setImportIsolationPolicy(builder, (RequireBundleHeader)header);
+			// Always add access to osgi.ee and osgi.native namespaces
+			setImplicitAccessToNativeAndEECapabilities(builder);
 		}
 		RegionFilter regionFilter = builder.build();
 		from.connectRegion(to, regionFilter);
@@ -687,7 +693,12 @@ public class SubsystemResource implements Resource {
 				builder.allow(policy, filter);
 		}
 	}
-	
+
+	private void setImplicitAccessToNativeAndEECapabilities(RegionFilterBuilder builder) {
+		builder.allowAll(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE);
+		builder.allowAll(NativeNamespace.NATIVE_NAMESPACE);
+	}
+
 	private void setImportIsolationPolicy(RegionFilterBuilder builder, SubsystemImportServiceHeader header) throws InvalidSyntaxException {
 		if (header == null)
 			return;

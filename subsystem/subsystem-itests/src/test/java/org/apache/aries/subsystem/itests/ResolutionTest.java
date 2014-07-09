@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +58,15 @@ public class ResolutionTest extends SubsystemTest {
 	 */
 	private static final String APPLICATION_C = "application.c.esa";
 	/*
+	 * Subsystem-SymbolicName: application.d.esa
+	 * Subsystem-Content: bundle.f.jar
+	 */
+	private static final String APPLICATION_D = "application.d.esa";
+	/* Subsystem-SymbolicName: application.e.esa
+	 * Subsystem-Content: bundle.g.jar
+	 */
+	private static final String APPLICATION_E = "application.e.esa";
+	/*
 	 * Bundle-SymbolicName: bundle.a.jar
 	 * Require-Capability: a
 	 */
@@ -82,6 +92,24 @@ public class ResolutionTest extends SubsystemTest {
 	 * Bundle-RequiredExecutionEnvironment: J2SE-1.4, J2SE-1.5,		J2SE-1.6,JavaSE-1.7
 	 */
 	private static final String BUNDLE_E = "bundle.e.jar";
+
+	/*
+	 * Bundle-SymbolicName: bundle.f.jar
+	 * Bundle-NativeCode: \
+	 *   native.file; osname=Linux; processor=x86, \
+	 *   native.file; osname=Linux; processor=x86-64, \
+	 *   native.file; osname=Win32; processor=x86, \
+	 *   native.file; osname=Win32; processor=x86-64, \
+	 *   native.file; osname="mac os x"; processor=x86-64
+	 */
+	private static final String BUNDLE_F = "bundle.f.jar";
+
+	/*
+	 * Bundle-SymbolicName: bundle.f.jar
+	 * Bundle-NativeCode: \
+	 *   native.file; osname=noMatch; processor=noMatch
+	 */
+	private static final String BUNDLE_G = "bundle.g.jar";
 	
 	@Before
 	public void createApplications() throws Exception {
@@ -93,9 +121,13 @@ public class ResolutionTest extends SubsystemTest {
 		createBundleC();
 		createBundleD();
 		createBundleE();
+		createBundleF();
+		createBundleG();
 		createApplicationA();
 		createApplicationB();
 		createApplicationC();
+		createApplicationD();
+		createApplicationE();
 		createdApplications = true;
 	}
 	
@@ -131,7 +163,29 @@ public class ResolutionTest extends SubsystemTest {
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_C);
 		createManifest(APPLICATION_C + ".mf", attributes);
 	}
-	
+
+	private static void createApplicationD() throws IOException {
+		createApplicationDManifest();
+		createSubsystem(APPLICATION_D, BUNDLE_F);
+	}
+
+	private static void createApplicationDManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_D);
+		createManifest(APPLICATION_D + ".mf", attributes);
+	}
+
+	private static void createApplicationE() throws IOException {
+		createApplicationEManifest();
+		createSubsystem(APPLICATION_E, BUNDLE_G);
+	}
+
+	private static void createApplicationEManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, APPLICATION_E);
+		createManifest(APPLICATION_E + ".mf", attributes);
+	}
+
 	private void createBundleA() throws IOException {
 		createBundle(name(BUNDLE_A), new Header(Constants.REQUIRE_CAPABILITY, "a"));
 	}
@@ -156,6 +210,19 @@ public class ResolutionTest extends SubsystemTest {
 		createBundle(name(BUNDLE_E), new Header(Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, "J2SE-1.4, J2SE-1.5,		J2SE-1.6,JavaSE-1.7"));
 	}
 	
+	private void createBundleF() throws IOException {
+		createBundle(Collections.singletonList("native.file"), name(BUNDLE_F), new Header(Constants.BUNDLE_NATIVECODE,
+				"native.file; osname=Linux; processor=x86,"
+				+ "native.file; osname=Linux; processor=x86-64,"
+				+ "native.file; osname=Win32; processor=x86,"
+				+ "native.file; osname=Win32; processor=x86-64,"
+				+ "native.file; osname=\"MacOSX\"; processor=x86-64"));
+	}
+	private void createBundleG() throws IOException {
+		createBundle(Collections.singletonList("native.file"), name(BUNDLE_G), new Header(Constants.BUNDLE_NATIVECODE,
+				"native.file; osname=noMatch; processor=noMatch"));
+	}
+
 	/*
 	 * Test that the right regions are used when validating capabilities.
 	 * 
@@ -248,6 +315,44 @@ public class ResolutionTest extends SubsystemTest {
 		}
 		finally {
 			uninstallSubsystemSilently(applicationC);
+		}
+	}
+
+	@Test
+	public void testNativeCodeRequirement() throws Exception {
+		Subsystem applicationD = null;
+		try {
+			applicationD = installSubsystemFromFile(APPLICATION_D);
+			applicationD.start();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			fail("Installation should succeed for Bundle-NativeCode");
+		}
+		finally {
+			uninstallSubsystemSilently(applicationD);
+		}
+	}
+
+	@Test
+	public void testMissingNativeCodeRequirement() throws Exception {
+		Subsystem applicationE = null;
+		try {
+			applicationE = installSubsystemFromFile(APPLICATION_E);
+			// TODO this should fail to intsall
+		} catch (SubsystemException e) {
+			e.printStackTrace();
+			fail("Installation should succeed for Bundle-NativeCode");
+		}
+		try {
+			applicationE.start();
+			fail("Expected to fail to install");
+		}
+		catch (Exception e) {
+			// expected 
+		}
+		finally {
+			uninstallSubsystemSilently(applicationE);
 		}
 	}
 }
