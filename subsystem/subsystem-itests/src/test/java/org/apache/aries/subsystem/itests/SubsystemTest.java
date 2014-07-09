@@ -37,6 +37,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -630,22 +631,28 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	protected Header provideCapability(String capability) {
 		return new Header(Constants.PROVIDE_CAPABILITY, capability);
 	}
-	
 	protected static void createBundle(Header...  headers) throws IOException {
+		createBundle(Collections.<String> emptyList(), headers);
+	}
+
+	protected static void createBundle(List<String> emptyFiles, Header...  headers) throws IOException {
 		HashMap<String, String> headerMap = new HashMap<String, String>();
 		for (Header header : headers) {
 			headerMap.put(header.key, header.value);
 		}
-		createBundle(headerMap);
+		createBundle(emptyFiles, headerMap);
 	}
 	
-	private static void createBundle(Map<String, String> headers) throws IOException 
+	private static void createBundle(List<String> emptyFiles, Map<String, String> headers) throws IOException 
 	{
 		String symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
 		JarFixture bundle = ArchiveFixture.newJar();
 		ManifestFixture manifest = bundle.manifest();
 		for (Entry<String, String> header : headers.entrySet()) {
 			manifest.attribute(header.getKey(), header.getValue());
+		}
+		for (String path : emptyFiles) {
+			bundle.file(path).end();
 		}
 		write(symbolicName, bundle);
 	}
