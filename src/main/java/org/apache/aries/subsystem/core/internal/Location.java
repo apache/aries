@@ -43,6 +43,7 @@ public class Location {
   private final URI uri;
   private final URL url;
   private final SubsystemUri subsystemUri;
+  private final IllegalArgumentException subsystemUriException;
 
   /*
    * type, value, uri are always set to some non-null value, url and
@@ -56,13 +57,16 @@ public class Location {
       if (LocationType.SUBSYSTEM.scheme.equals(scheme)) {
         type = LocationType.SUBSYSTEM;
         SubsystemUri ssUri;
+        IllegalArgumentException ssUriException = null;
         try {
           ssUri = new SubsystemUri(location);
-        } catch (Exception ex) {
+        } catch (IllegalArgumentException ex) {
           // In some cases the SubsystemUri can't be parsed by the SubsystemUri parser.
           ssUri = null;
+          ssUriException = ex;
         }
         subsystemUri = ssUri;
+        subsystemUriException = ssUriException;
         if (subsystemUri != null) {
           url = subsystemUri.getURL(); // subsystem uris may contain a nested url.
           uri = (url==null) ? null : url.toURI();
@@ -73,11 +77,13 @@ public class Location {
       } else if (LocationType.IDIRFINDER.scheme.equals(scheme)) {
         type = LocationType.IDIRFINDER;
         subsystemUri = null;
+        subsystemUriException = null;
         url = null;
         uri = locationUri;
       } else {                       // otherwise will only accept a url, (a url
         type = LocationType.URL;     // always has a scheme, so fine to have 
         subsystemUri = null;         // this inside the 'if isAbsolute' block).
+        subsystemUriException = null;
         url = locationUri.toURL();
         uri = locationUri;
       }
@@ -86,6 +92,7 @@ public class Location {
     	url = null;
     	uri = null;
     	subsystemUri = null;
+    	subsystemUriException = null;
     }
   }
     
@@ -94,10 +101,16 @@ public class Location {
   }
     
   public String getSymbolicName() {
+    if (subsystemUriException != null) {
+      throw subsystemUriException;
+    }
     return (subsystemUri!=null) ? subsystemUri.getSymbolicName() : null;
   }
     
   public Version getVersion() {
+    if (subsystemUriException != null) {
+      throw subsystemUriException;
+    }
     return (subsystemUri!=null) ? subsystemUri.getVersion() : null;
   }
 
