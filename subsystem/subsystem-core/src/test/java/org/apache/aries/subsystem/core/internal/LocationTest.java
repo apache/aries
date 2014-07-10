@@ -67,7 +67,17 @@ public class LocationTest {
 
         Location location = new Location(locationString);
         assertEquals(locationString, location.getValue());
-        assertNull(location.getSymbolicName());
-        assertNull(location.getVersion());
+        try {
+        	String sn = location.getSymbolicName();
+        	fail("Expecting an error: " + sn);
+        } catch (IllegalArgumentException e) {
+        	// expected
+        }
+        try {
+        	Version v = location.getVersion();
+        	fail("Expecting an error: " + v);
+        } catch (IllegalArgumentException e) {
+        	// expected 
+        }
     }
 }
