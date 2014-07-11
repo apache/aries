@@ -53,6 +53,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
+import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     private final ConcurrentMap<Bundle, FutureTask> destroying = new ConcurrentHashMap<Bundle, FutureTask>();
     private BlueprintEventDispatcher eventDispatcher;
     private NamespaceHandlerRegistry handlers;
-    private RecursiveBundleTracker bt;
+    private Object bt;
     private ServiceRegistration parserServiceReg;
     private ServiceRegistration blueprintServiceReg;
     private ServiceRegistration quiesceParticipantReg;
@@ -86,7 +87,10 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         LOGGER.debug("Starting blueprint extender...");
 
         this.context = ctx;
-        handlers = new NamespaceHandlerRegistryImpl(ctx);
+        boolean useSystemContext = Boolean.parseBoolean(ctx.getProperty("org.apache.aries.blueprint.use.system.context"));
+        BundleContext trackingContext = useSystemContext ? ctx.getBundle(Constants.SYSTEM_BUNDLE_LOCATION).getBundleContext() : ctx;
+
+        handlers = new NamespaceHandlerRegistryImpl(trackingContext);
         executors = new ScheduledExecutorServiceWrapper(ctx, "Blueprint Extender", new ScheduledExecutorServiceFactory() {
           public ScheduledExecutorService create(String name)
           {
@@ -102,12 +106,16 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         // handled.
         context.addBundleListener(this);
         int mask = Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.STOPPING | Bundle.ACTIVE;
-        bt = new RecursiveBundleTracker(ctx, mask, this);
+        bt = useSystemContext ? new BundleTracker(trackingContext, mask, this) : new  RecursiveBundleTracker(ctx, mask, this);
         
         proxyManager = new SingleServiceTracker<ProxyManager>(ctx, ProxyManager.class, new SingleServiceListener() {
           public void serviceFound() {
             LOGGER.debug("Found ProxyManager service, starting to process blueprint bundles");
-            bt.open();
+            if (bt instanceof BundleTracker) {
+            	((BundleTracker) bt).open();
+            } else if (bt instanceof RecursiveBundleTracker) {
+            	((RecursiveBundleTracker) bt).open();
+            }
           }
           public void serviceLost() {
             while (!containers.isEmpty()) {
@@ -115,7 +123,11 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                 destroyContainer(bundle);
               }
             }
-            bt.close();
+            if (bt instanceof BundleTracker) {
+            	((BundleTracker) bt).close();
+            } else if (bt instanceof RecursiveBundleTracker) {
+            	((RecursiveBundleTracker) bt).close();
+            }
           }
           public void serviceReplaced() {
           }
@@ -165,7 +177,11 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             }
         }
 
-        bt.close();
+        if (bt instanceof BundleTracker) {
+        	((BundleTracker) bt).close();
+        } else if (bt instanceof RecursiveBundleTracker) {
+        	((RecursiveBundleTracker) bt).close();
+        }
         proxyManager.close();
 
         this.eventDispatcher.destroy();
