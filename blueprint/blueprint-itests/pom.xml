@@ -62,17 +62,17 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.4.1-SNAPSHOT</version>
+            <version>1.4.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-parser</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.2.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
+            <version>1.0.5-SNAPSHOT</version>
             <type>bundle</type>
             <scope>compile</scope>
             <exclusions>
@@ -244,14 +244,16 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.2-SNAPSHOT</version>
             <type>bundle</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.annotation.impl</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <!-- TODO using 1.0.1 released or 1.0.2.SNAPSHOT causes failures in
+            org.apache.aries.blueprint.itests.BlueprintAnnotationTest -->
+            <version>1.0.0</version>
             <type>bundle</type>
             <scope>compile</scope>
         </dependency>
