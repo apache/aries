@@ -20,6 +20,8 @@
 package org.apache.aries.jpa.container.impl;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -485,7 +487,26 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     boolean maxExclusive = false;
     
     for(VersionRange range : versionRanges) {
-      int minComparison = minVersion.compareTo(range.getMinimumVersion());
+      int minComparison = 0;
+      try {
+        minComparison = minVersion.compareTo(range.getMinimumVersion());
+      } catch (Exception t) {
+        // this is to catch a NoSuchMethodException that occurs due to a building against a newer version of OSGi than
+        // the one run with, need to call using Object version of method
+        try {
+          Method m = minVersion.getClass().getMethod("compareTo", Object.class);
+          Object ret = m.invoke(minVersion, range.getMinimumVersion());
+          minComparison = ((Integer) ret).intValue();
+        } catch (NoSuchMethodException e) {
+          throw new RuntimeException("PersistenceBundleManager.combineVersionRanges reflection compareTo failed",e);
+        } catch (IllegalAccessException e) {
+          throw new RuntimeException("PersistenceBundleManager.combineVersionRanges reflection compareTo failed",e);
+        } catch (IllegalArgumentException e) {
+          throw new RuntimeException("PersistenceBundleManager.combineVersionRanges reflection compareTo failed",e);
+        } catch (InvocationTargetException e) {
+          throw new RuntimeException("PersistenceBundleManager.combineVersionRanges reflection compareTo failed",e);
+        }
+      }
       //If minVersion is smaller then we have a new, larger, minimum
       if(minComparison < 0) {
         minVersion = range.getMinimumVersion();
