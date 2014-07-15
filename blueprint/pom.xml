@@ -52,6 +52,7 @@
         <module>blueprint-sample</module>
         <module>blueprint-annotation-api</module>
         <module>blueprint-annotation-impl</module>
+        <module>blueprint-authz</module>
         <module>blueprint-sample-annotation</module>
         <module>blueprint-sample-fragment</module>
         <module>blueprint-sample-war</module>
