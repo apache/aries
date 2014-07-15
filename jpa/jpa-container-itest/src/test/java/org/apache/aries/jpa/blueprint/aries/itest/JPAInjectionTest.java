@@ -16,10 +16,12 @@
 package org.apache.aries.jpa.blueprint.aries.itest;
 
 import static org.junit.Assert.assertTrue;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 
 import org.apache.aries.jpa.blueprint.itest.JPATestBean;
 import org.apache.aries.jpa.itest.AbstractJPAItest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -27,6 +29,7 @@ import org.ops4j.pax.exam.Option;
 public class JPAInjectionTest extends AbstractJPAItest {
 
   @Test
+  @Ignore
   public void findResources() throws Exception {
     JPATestBean bean = context().getService(JPATestBean.class, "(version=1.0.0)");
     
@@ -35,6 +38,7 @@ public class JPAInjectionTest extends AbstractJPAItest {
   }
   
   @Test
+  @Ignore
   public void findResources_110() throws Exception {
     JPATestBean bean = context().getService(JPATestBean.class, "(version=1.1.0)");
     
@@ -46,6 +50,7 @@ public class JPAInjectionTest extends AbstractJPAItest {
   }
   
   @Test
+  @Ignore
   public void testLifecycle() throws Exception {
     JPATestBean bean = context().getService(JPATestBean.class, "(lifecycle=true)");
     assertTrue("No persistence context injection", bean.pContextAvailable());
