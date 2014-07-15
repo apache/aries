@@ -18,194 +18,238 @@
  */
 package org.apache.aries.jpa.container.impl;
 
+import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 
 /**
  * Wrapper an EntityManager so that we know when it has been closed
  */
 public class EntityManagerWrapper implements EntityManager {
-  
-  private final EntityManager delegate;
-  /** Call this when the EntityManager is closed */
-  private final DestroyCallback callback;
 
-  public EntityManagerWrapper(EntityManager em, DestroyCallback callback) {
-    delegate = em;
-    this.callback = callback;
-  }
+    private final EntityManager delegate;
+    /**
+     * Call this when the EntityManager is closed
+     */
+    private final DestroyCallback callback;
 
-  public void clear() {
-    delegate.clear();
-  }
+    public EntityManagerWrapper(EntityManager em, DestroyCallback callback) {
+        delegate = em;
+        this.callback = callback;
+    }
 
-  public void close() {
-    delegate.close();
-    //This will only ever be called once, the second time there
-    //will be an IllegalStateException from the line above
-    callback.callback();
-  }
+    public void clear() {
+        delegate.clear();
+    }
 
-  public boolean contains(Object arg0) {
-    return delegate.contains(arg0);
-  }
+    public void close() {
+        delegate.close();
+        //This will only ever be called once, the second time there
+        //will be an IllegalStateException from the line above
+        callback.callback();
+    }
 
-  public <T> TypedQuery<T> createNamedQuery(String arg0, Class<T> arg1) {
-    return delegate.createNamedQuery(arg0, arg1);
-  }
+    public boolean contains(Object arg0) {
+        return delegate.contains(arg0);
+    }
 
-  public Query createNamedQuery(String arg0) {
-    return delegate.createNamedQuery(arg0);
-  }
+    public <T> TypedQuery<T> createNamedQuery(String arg0, Class<T> arg1) {
+        return delegate.createNamedQuery(arg0, arg1);
+    }
 
-  public Query createNativeQuery(String arg0, Class arg1) {
-    return delegate.createNativeQuery(arg0, arg1);
-  }
+    public Query createNamedQuery(String arg0) {
+        return delegate.createNamedQuery(arg0);
+    }
 
-  public Query createNativeQuery(String arg0, String arg1) {
-    return delegate.createNativeQuery(arg0, arg1);
-  }
+    public StoredProcedureQuery createNamedStoredProcedureQuery(String arg0) {
+        return delegate.createNamedStoredProcedureQuery(arg0);
+    }
 
-  public Query createNativeQuery(String arg0) {
-    return delegate.createNativeQuery(arg0);
-  }
+    public StoredProcedureQuery createStoredProcedureQuery(String arg0) {
+        return delegate.createStoredProcedureQuery(arg0);
+    }
 
-  public <T> TypedQuery<T> createQuery(CriteriaQuery<T> arg0) {
-    return delegate.createQuery(arg0);
-  }
+    public StoredProcedureQuery createStoredProcedureQuery(String arg0, Class ... arg1) {
+        return delegate.createStoredProcedureQuery(arg0, arg1);
+    }
 
-  public <T> TypedQuery<T> createQuery(String arg0, Class<T> arg1) {
-    return delegate.createQuery(arg0, arg1);
-  }
+    public StoredProcedureQuery createStoredProcedureQuery(String arg0, String ... arg1) {
+        return delegate.createStoredProcedureQuery(arg0, arg1);
+    }
 
-  public Query createQuery(String arg0) {
-    return delegate.createQuery(arg0);
-  }
+    public Query createNativeQuery(String arg0, Class arg1) {
+        return delegate.createNativeQuery(arg0, arg1);
+    }
 
-  public void detach(Object arg0) {
-    delegate.detach(arg0);
-  }
+    public Query createNativeQuery(String arg0, String arg1) {
+        return delegate.createNativeQuery(arg0, arg1);
+    }
 
-  public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2,
-      Map<String, Object> arg3) {
-    return delegate.find(arg0, arg1, arg2, arg3);
-  }
+    public Query createNativeQuery(String arg0) {
+        return delegate.createNativeQuery(arg0);
+    }
 
-  public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2) {
-    return delegate.find(arg0, arg1, arg2);
-  }
+    public <T> TypedQuery<T> createQuery(CriteriaQuery<T> arg0) {
+        return delegate.createQuery(arg0);
+    }
 
-  public <T> T find(Class<T> arg0, Object arg1, Map<String, Object> arg2) {
-    return delegate.find(arg0, arg1, arg2);
-  }
+    public <T> TypedQuery<T> createQuery(String arg0, Class<T> arg1) {
+        return delegate.createQuery(arg0, arg1);
+    }
 
-  public <T> T find(Class<T> arg0, Object arg1) {
-    return delegate.find(arg0, arg1);
-  }
+    public Query createQuery(String arg0) {
+        return delegate.createQuery(arg0);
+    }
 
-  public void flush() {
-    delegate.flush();
-  }
+    public Query createQuery(CriteriaUpdate arg0) {
+        return delegate.createQuery(arg0);
+    }
 
-  public CriteriaBuilder getCriteriaBuilder() {
-    return delegate.getCriteriaBuilder();
-  }
+    public Query createQuery(CriteriaDelete arg0) {
+        return delegate.createQuery(arg0);
+    }
 
-  public Object getDelegate() {
-    return delegate.getDelegate();
-  }
+    public void detach(Object arg0) {
+        delegate.detach(arg0);
+    }
 
-  public EntityManagerFactory getEntityManagerFactory() {
-    return delegate.getEntityManagerFactory();
-  }
+    public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2,
+                      Map<String, Object> arg3) {
+        return delegate.find(arg0, arg1, arg2, arg3);
+    }
 
-  public FlushModeType getFlushMode() {
-    return delegate.getFlushMode();
-  }
+    public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2) {
+        return delegate.find(arg0, arg1, arg2);
+    }
 
-  public LockModeType getLockMode(Object arg0) {
-    return delegate.getLockMode(arg0);
-  }
+    public <T> T find(Class<T> arg0, Object arg1, Map<String, Object> arg2) {
+        return delegate.find(arg0, arg1, arg2);
+    }
 
-  public Metamodel getMetamodel() {
-    return delegate.getMetamodel();
-  }
+    public <T> T find(Class<T> arg0, Object arg1) {
+        return delegate.find(arg0, arg1);
+    }
 
-  public Map<String, Object> getProperties() {
-    return delegate.getProperties();
-  }
+    public void flush() {
+        delegate.flush();
+    }
 
-  public <T> T getReference(Class<T> arg0, Object arg1) {
-    return delegate.getReference(arg0, arg1);
-  }
+    public CriteriaBuilder getCriteriaBuilder() {
+        return delegate.getCriteriaBuilder();
+    }
 
-  public EntityTransaction getTransaction() {
-    return delegate.getTransaction();
-  }
+    public Object getDelegate() {
+        return delegate.getDelegate();
+    }
 
-  public boolean isOpen() {
-    return delegate.isOpen();
-  }
+    public EntityManagerFactory getEntityManagerFactory() {
+        return delegate.getEntityManagerFactory();
+    }
 
-  public void joinTransaction() {
-    delegate.joinTransaction();
-  }
+    public FlushModeType getFlushMode() {
+        return delegate.getFlushMode();
+    }
 
-  public void lock(Object arg0, LockModeType arg1, Map<String, Object> arg2) {
-    delegate.lock(arg0, arg1, arg2);
-  }
+    public LockModeType getLockMode(Object arg0) {
+        return delegate.getLockMode(arg0);
+    }
 
-  public void lock(Object arg0, LockModeType arg1) {
-    delegate.lock(arg0, arg1);
-  }
+    public Metamodel getMetamodel() {
+        return delegate.getMetamodel();
+    }
 
-  public <T> T merge(T arg0) {
-    return delegate.merge(arg0);
-  }
+    public Map<String, Object> getProperties() {
+        return delegate.getProperties();
+    }
 
-  public void persist(Object arg0) {
-    delegate.persist(arg0);
-  }
+    public <T> T getReference(Class<T> arg0, Object arg1) {
+        return delegate.getReference(arg0, arg1);
+    }
 
-  public void refresh(Object arg0, LockModeType arg1, Map<String, Object> arg2) {
-    delegate.refresh(arg0, arg1, arg2);
-  }
+    public EntityTransaction getTransaction() {
+        return delegate.getTransaction();
+    }
 
-  public void refresh(Object arg0, LockModeType arg1) {
-    delegate.refresh(arg0, arg1);
-  }
+    public boolean isOpen() {
+        return delegate.isOpen();
+    }
 
-  public void refresh(Object arg0, Map<String, Object> arg1) {
-    delegate.refresh(arg0, arg1);
-  }
+    public void joinTransaction() {
+        delegate.joinTransaction();
+    }
 
-  public void refresh(Object arg0) {
-    delegate.refresh(arg0);
-  }
+    public boolean isJoinedToTransaction() {
+        return delegate.isJoinedToTransaction();
+    }
 
-  public void remove(Object arg0) {
-    delegate.remove(arg0);
-  }
+    public void lock(Object arg0, LockModeType arg1, Map<String, Object> arg2) {
+        delegate.lock(arg0, arg1, arg2);
+    }
 
-  public void setFlushMode(FlushModeType arg0) {
-    delegate.setFlushMode(arg0);
-  }
+    public void lock(Object arg0, LockModeType arg1) {
+        delegate.lock(arg0, arg1);
+    }
 
-  public void setProperty(String arg0, Object arg1) {
-    delegate.setProperty(arg0, arg1);
-  }
+    public <T> T merge(T arg0) {
+        return delegate.merge(arg0);
+    }
 
-  public <T> T unwrap(Class<T> arg0) {
-    return delegate.unwrap(arg0);
-  }
+    public void persist(Object arg0) {
+        delegate.persist(arg0);
+    }
+
+    public void refresh(Object arg0, LockModeType arg1, Map<String, Object> arg2) {
+        delegate.refresh(arg0, arg1, arg2);
+    }
+
+    public void refresh(Object arg0, LockModeType arg1) {
+        delegate.refresh(arg0, arg1);
+    }
+
+    public void refresh(Object arg0, Map<String, Object> arg1) {
+        delegate.refresh(arg0, arg1);
+    }
+
+    public void refresh(Object arg0) {
+        delegate.refresh(arg0);
+    }
+
+    public void remove(Object arg0) {
+        delegate.remove(arg0);
+    }
+
+    public void setFlushMode(FlushModeType arg0) {
+        delegate.setFlushMode(arg0);
+    }
+
+    public void setProperty(String arg0, Object arg1) {
+        delegate.setProperty(arg0, arg1);
+    }
+
+    public <T> T unwrap(Class<T> arg0) {
+        return delegate.unwrap(arg0);
+    }
+
+    public <T> EntityGraph<T> createEntityGraph(Class<T> arg0) {
+        return delegate.createEntityGraph(arg0);
+    }
+
+    public EntityGraph<?> createEntityGraph(String arg0) {
+        return delegate.createEntityGraph(arg0);
+    }
+
+    public EntityGraph<?> getEntityGraph(String arg0) {
+        return delegate.getEntityGraph(arg0);
+    }
+
+    public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> arg0) {
+        return delegate.getEntityGraphs(arg0);
+    }
+
 }
