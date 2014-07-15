@@ -3,7 +3,7 @@ Blueprint extension for role based access control based on JAAS and JEE annotati
 
 An aries blueprint extension that supports role based access control based on a JAAS login and the JEE @RolesAllowed annotation.
 
-install -s mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.annotation-authz/1.0.0-SNAPSHOT
+install -s mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.authz/1.0.0-SNAPSHOT
 
 To use it add the authz namespace xmlns:authz="http://aries.apache.org/xmlns/authorization/v1.0.0" to your blueprint file and place a <authz:enable/> element at the start of your context.
 
