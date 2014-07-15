@@ -44,10 +44,10 @@
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg />
         <aries.osgi.import>
-            javax.persistence;version="[1.0.0,2.1.0)",
-            javax.persistence.spi;version="[1.0.0,2.1.0)",
-            javax.persistence.criteria;version="[1.1.0,2.1.0)";resolution:=optional,
-            javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
+            javax.persistence;version="[1.0.0,3.0.0)",
+            javax.persistence.spi;version="[1.0.0,3.0.0)",
+            javax.persistence.criteria;version="[1.1.0,3.0.0)";resolution:=optional,
+            javax.persistence.metamodel;version="[1.1.0,3.0.0)";resolution:=optional,
             !javax.transaction,
             org.apache.aries.jpa.container*;provide:=true,
             org.apache.aries.quiesce.manager;provide:=true;resolution:=optional,
@@ -81,7 +81,7 @@
         <dependency>
             <artifactId>org.apache.aries.jpa.api</artifactId>
             <groupId>org.apache.aries.jpa</groupId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
@@ -94,11 +94,11 @@
             <groupId>org.apache.aries</groupId>
             <version>1.0.0</version>
             <scope>provided</scope>
-            </dependency>
+        </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.0_spec</artifactId>
-            <version>1.1</version>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.0.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
