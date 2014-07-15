@@ -48,8 +48,8 @@
             org.apache.aries.jpa.container.context
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-             javax.persistence;version="[1.0.0,2.1.0)",
-             javax.persistence.spi;version="[1.0.0,2.1.0)",
+             javax.persistence;version="[1.0.0,3.0.0)",
+             javax.persistence.spi;version="[1.0.0,3.0.0)",
              org.osgi.framework;version="[1.5.0,2.0.0)"
         </aries.osgi.import>
         <aries.osgi.private.pkg />
@@ -63,9 +63,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.0_spec</artifactId>
-            <version>1.1</version>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.0.Final</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
