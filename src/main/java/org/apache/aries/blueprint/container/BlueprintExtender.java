@@ -134,9 +134,11 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         });
         proxyManager.open();
         
+        // Determine if the ParserService should ignore unknown namespace handlers
+        boolean ignoreUnknownNamespaceHandlers = Boolean.parseBoolean(ctx.getProperty("org.apache.aries.blueprint.parser.service.ignore.unknown.namespace.handlers"));
         // Create and publish a ParserService
         parserServiceReg = ctx.registerService(ParserService.class.getName(), 
-            new ParserServiceImpl (handlers), 
+            new ParserServiceImpl (handlers, ignoreUnknownNamespaceHandlers), 
             new Hashtable<String, Object>());
 
         // Create and publish a BlueprintContainerService
