@@ -94,7 +94,7 @@
             OSGI-INF*;-split-package:=merge-first
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
-            org.apache.aries.blueprint.ParserService
+            org.apache.aries.blueprint.services.ParserService
         </aries.osgi.export.service>
         <aries.osgi.import.service>
             org.osgi.service.cm.ConfigurationAdmin;availability:=optional
