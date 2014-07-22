@@ -83,7 +83,7 @@
             org.apache.aries.blueprint.utils.*
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
-            org.apache.aries.blueprint.ParserService
+            org.apache.aries.blueprint.services.ParserService
         </aries.osgi.export.service>
         <aries.osgi.include.resource>
             {maven-resources},
