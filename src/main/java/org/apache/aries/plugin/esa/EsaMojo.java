@@ -425,7 +425,7 @@ public class EsaMojo
                 }
                 String entry = info.getContentLine();
                 if ("dependencies".equals(startOrder)) {
-                    entry += ";start-order=\"" + order + "\"";                  
+                    entry += ";start-order:=\"" + order + "\"";                  
                 }
                 if (iter.hasNext()) {
                     entry += ",\n ";
