@@ -18,15 +18,11 @@
  */
 package org.apache.aries.jpa.container.impl;
 
-
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
@@ -39,94 +35,123 @@ import org.osgi.framework.ServiceRegistration;
  * so that it can be quiesced
  */
 public class CountingEntityManagerFactory implements EntityManagerFactory, DestroyCallback {
-  /** Number of open EntityManagers */
-  private final AtomicLong count = new AtomicLong(0);
-  /** The real EMF */
-  private final EntityManagerFactory delegate;
-  /** The name of this unit */
-  private final String name;
-  /** A quiesce callback to call */
-  private final AtomicReference<NamedCallback> callback = new AtomicReference<NamedCallback>();
-  /** The service registration to unregister if we can quiesce */
-  private final AtomicReference<ServiceRegistration> reg = new AtomicReference<ServiceRegistration>();
-  
-  
-  public CountingEntityManagerFactory(
-      EntityManagerFactory containerEntityManagerFactory, String name) {
-    delegate = containerEntityManagerFactory;
-    this.name = name;
-  }
 
-  public void close() {
-    delegate.close();
-  }
+    /**
+     * Number of open EntityManagers
+     */
+    private final AtomicLong count = new AtomicLong(0);
+    /**
+     * The real EMF
+     */
+    private final EntityManagerFactory delegate;
+    /**
+     * The name of this unit
+     */
+    private final String name;
+    /**
+     * A quiesce callback to call
+     */
+    private final AtomicReference<NamedCallback> callback = new AtomicReference<NamedCallback>();
+    /**
+     * The service registration to unregister if we can quiesce
+     */
+    private final AtomicReference<ServiceRegistration> reg = new AtomicReference<ServiceRegistration>();
 
-  public EntityManager createEntityManager() {
-    EntityManager em = delegate.createEntityManager();
-    count.incrementAndGet();
-    return new EntityManagerWrapper(em, this);
-  }
 
-  public EntityManager createEntityManager(Map arg0) {
-    EntityManager em = delegate.createEntityManager(arg0);
-    count.incrementAndGet();
-    return new EntityManagerWrapper(em, this);
-  }
-
-  public Cache getCache() {
-    return delegate.getCache();
-  }
-
-  public CriteriaBuilder getCriteriaBuilder() {
-    return delegate.getCriteriaBuilder();
-  }
-
-  public Metamodel getMetamodel() {
-    return delegate.getMetamodel();
-  }
-
-  public PersistenceUnitUtil getPersistenceUnitUtil() {
-    return delegate.getPersistenceUnitUtil();
-  }
-
-  public Map<String, Object> getProperties() {
-    return delegate.getProperties();
-  }
-
-  public boolean isOpen() {
-    return delegate.isOpen();
-  }
-
-  public void quiesce(NamedCallback callback, ServiceRegistration reg) {
-    this.reg.compareAndSet(null, reg);
-    this.callback.compareAndSet(null, callback);
-    if(count.get() == 0) {
-      AriesFrameworkUtil.safeUnregisterService(this.reg.getAndSet(null));
-      this.callback.set(null);
-      callback.callback(name);
+    public CountingEntityManagerFactory(
+            EntityManagerFactory containerEntityManagerFactory, String name) {
+        delegate = containerEntityManagerFactory;
+        this.name = name;
     }
-  }
 
-  public void callback() {
-    
-    if(count.decrementAndGet() == 0) {
-      NamedCallback c = callback.getAndSet(null);
-      if(c != null) {
-        AriesFrameworkUtil.safeUnregisterService(reg.getAndSet(null));
-        c.callback(name);
-      }
+    public void close() {
+        delegate.close();
     }
-      
-  }
 
-  public void clearQuiesce() {
-    //We will already be unregistered
-    reg.set(null);
-    NamedCallback c = callback.getAndSet(null);
-    //If there was a callback then call it in case time hasn't run out.
-    if(c != null) {
-      c.callback(name);
+    public EntityManager createEntityManager() {
+        EntityManager em = delegate.createEntityManager();
+        count.incrementAndGet();
+        return new EntityManagerWrapper(em, this);
     }
-  }
+
+    public EntityManager createEntityManager(Map arg0) {
+        EntityManager em = delegate.createEntityManager(arg0);
+        count.incrementAndGet();
+        return new EntityManagerWrapper(em, this);
+    }
+
+    public Cache getCache() {
+        return delegate.getCache();
+    }
+
+    public CriteriaBuilder getCriteriaBuilder() {
+        return delegate.getCriteriaBuilder();
+    }
+
+    public Metamodel getMetamodel() {
+        return delegate.getMetamodel();
+    }
+
+    public PersistenceUnitUtil getPersistenceUnitUtil() {
+        return delegate.getPersistenceUnitUtil();
+    }
+
+    public Map<String, Object> getProperties() {
+        return delegate.getProperties();
+    }
+
+    public boolean isOpen() {
+        return delegate.isOpen();
+    }
+
+    public void quiesce(NamedCallback callback, ServiceRegistration reg) {
+        this.reg.compareAndSet(null, reg);
+        this.callback.compareAndSet(null, callback);
+        if (count.get() == 0) {
+            AriesFrameworkUtil.safeUnregisterService(this.reg.getAndSet(null));
+            this.callback.set(null);
+            callback.callback(name);
+        }
+    }
+
+    public void callback() {
+        if (count.decrementAndGet() == 0) {
+            NamedCallback c = callback.getAndSet(null);
+            if (c != null) {
+                AriesFrameworkUtil.safeUnregisterService(reg.getAndSet(null));
+                c.callback(name);
+            }
+        }
+    }
+
+    public void clearQuiesce() {
+        //We will already be unregistered
+        reg.set(null);
+        NamedCallback c = callback.getAndSet(null);
+        //If there was a callback then call it in case time hasn't run out.
+        if (c != null) {
+            c.callback(name);
+        }
+    }
+
+    public <T> void addNamedEntityGraph(String arg0, EntityGraph<T> arg1) {
+        delegate.addNamedEntityGraph(arg0, arg1);
+    }
+
+    public void addNamedQuery(String arg0, Query arg1) {
+        delegate.addNamedQuery(arg0, arg1);
+    }
+
+    public EntityManager createEntityManager(SynchronizationType arg0) {
+        return delegate.createEntityManager(arg0);
+    }
+
+    public EntityManager createEntityManager(SynchronizationType arg0, Map arg1) {
+        return delegate.createEntityManager(arg0, arg1);
+    }
+
+    public <T> T unwrap(Class<T> arg0) {
+        return delegate.unwrap(arg0);
+    }
 
 }

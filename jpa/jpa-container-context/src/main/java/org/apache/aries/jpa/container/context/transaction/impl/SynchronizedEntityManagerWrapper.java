@@ -18,23 +18,20 @@
  */
 package org.apache.aries.jpa.container.context.transaction.impl;
 
+import java.util.List;
 import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 
 /**
  * A synchronized wrapper for the EntityManager
  */
 public class SynchronizedEntityManagerWrapper implements EntityManager {
-    
+
     private final EntityManager entityManager;
 
     public SynchronizedEntityManagerWrapper(EntityManager entityManager) {
@@ -145,12 +142,36 @@ public class SynchronizedEntityManagerWrapper implements EntityManager {
         return entityManager.createQuery(qlString, resultClass);
     }
 
+    public synchronized Query createQuery(CriteriaUpdate arg0) {
+        return entityManager.createQuery(arg0);
+    }
+
+    public synchronized Query createQuery(CriteriaDelete arg0) {
+        return entityManager.createQuery(arg0);
+    }
+
     public synchronized Query createNamedQuery(String name) {
         return entityManager.createNamedQuery(name);
     }
 
     public synchronized <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
         return entityManager.createNamedQuery(name, resultClass);
+    }
+
+    public synchronized StoredProcedureQuery createNamedStoredProcedureQuery(String arg0) {
+        return entityManager.createNamedStoredProcedureQuery(arg0);
+    }
+
+    public synchronized StoredProcedureQuery createStoredProcedureQuery(String arg0) {
+        return entityManager.createStoredProcedureQuery(arg0);
+    }
+
+    public synchronized StoredProcedureQuery createStoredProcedureQuery(String arg0, Class ... arg1) {
+        return entityManager.createStoredProcedureQuery(arg0, arg1);
+    }
+
+    public synchronized StoredProcedureQuery createStoredProcedureQuery(String arg0, String ... arg1) {
+        return entityManager.createStoredProcedureQuery(arg0, arg1);
     }
 
     public synchronized Query createNativeQuery(String sqlString) {
@@ -167,6 +188,10 @@ public class SynchronizedEntityManagerWrapper implements EntityManager {
 
     public synchronized void joinTransaction() {
         entityManager.joinTransaction();
+    }
+
+    public synchronized boolean isJoinedToTransaction() {
+        return entityManager.isJoinedToTransaction();
     }
 
     public synchronized <T> T unwrap(Class<T> cls) {
@@ -200,4 +225,21 @@ public class SynchronizedEntityManagerWrapper implements EntityManager {
     public synchronized Metamodel getMetamodel() {
         return entityManager.getMetamodel();
     }
+
+    public synchronized <T> EntityGraph<T> createEntityGraph(Class<T> arg0) {
+        return entityManager.createEntityGraph(arg0);
+    }
+
+    public synchronized EntityGraph<?> createEntityGraph(String arg0) {
+        return entityManager.createEntityGraph(arg0);
+    }
+
+    public synchronized EntityGraph<?> getEntityGraph(String arg0) {
+        return entityManager.getEntityGraph(arg0);
+    }
+
+    public synchronized <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> arg0) {
+        return entityManager.getEntityGraphs(arg0);
+    }
+
 }

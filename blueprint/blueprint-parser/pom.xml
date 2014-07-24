@@ -32,7 +32,7 @@
     <artifactId>blueprint-parser</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Blueprint Parser</name>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <description>
         This bundle contains the blueprint parser in a plain jar.
     </description>

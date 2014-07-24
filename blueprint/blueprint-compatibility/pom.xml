@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>1.3.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

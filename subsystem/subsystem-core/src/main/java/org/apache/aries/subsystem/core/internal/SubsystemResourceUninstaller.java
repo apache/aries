@@ -66,10 +66,16 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	private void removeReferences() {
 		if (!isExplicit()) {
 			removeReference();
-			return;
 		}
-		for (Subsystem subsystem : ((BasicSubsystem)resource).getParents())
-			removeReference((BasicSubsystem)subsystem, (BasicSubsystem)resource);
+		else {
+			for (Subsystem subsystem : ((BasicSubsystem)resource).getParents())
+				removeReference((BasicSubsystem)subsystem, (BasicSubsystem)resource);
+			Subsystems subsystems = Activator.getInstance().getSubsystems();
+			// for explicit uninstall remove all references to subsystem.
+			for (BasicSubsystem s : subsystems.getSubsystemsReferencing(resource)) {
+				removeReference(s, resource);
+			}
+		}
 	}
 	
 	private void removeSubsystem() {
