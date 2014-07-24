@@ -57,7 +57,7 @@ public class ManagedPersistenceUnitInfoFactoryImpl implements
   public void destroyPersistenceBundle(BundleContext containerContext, Bundle bundle) {
     Collection<ManagedPersistenceUnitInfoImpl> mpus = persistenceUnits.remove(bundle);
     if(mpus == null)
-      throw new IllegalStateException(NLS.MESSAGES.getMessage("no.persistence.units.for.bundle", bundle.getSymbolicName(), bundle.getVersion()));
+      return; // already destroyed
     for(ManagedPersistenceUnitInfoImpl impl : mpus) {
       impl.destroy();
     }

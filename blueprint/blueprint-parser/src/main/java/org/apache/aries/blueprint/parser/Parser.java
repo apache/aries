@@ -36,8 +36,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
+
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
+import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.reflect.BeanArgumentImpl;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
 import org.apache.aries.blueprint.reflect.BeanPropertyImpl;
@@ -175,11 +177,31 @@ public class Parser {
     public static final String ACTIVATION_DEFAULT = ACTIVATION_EAGER;
     
     private static DocumentBuilderFactory documentBuilderFactory;
+    private static final NamespaceHandler missingNamespace = new NamespaceHandler() {
+        @Override
+        public Metadata parse(Element element, ParserContext context) {
+            return null;
+        }
+        @Override
+        public URL getSchemaLocation(String namespace) {
+            return null;
+        }
+        @Override
+        public Set<Class> getManagedClasses() {
+            return null;
+        }
+        @Override
+        public ComponentMetadata decorate(Node node, ComponentMetadata component,
+                ParserContext context) {
+            return component;
+        }
+    };
 
     private final List<Document> documents = new ArrayList<Document>();
     private ComponentDefinitionRegistry registry;
     private NamespaceHandlerSet handlers;
-    private String idPrefix = "component-";
+    private final String idPrefix;
+    private final boolean ignoreUnknownNamespaces;
     private final Set<String> ids = new HashSet<String>();
     private int idCounter;
     private String defaultTimeout;
@@ -187,10 +209,17 @@ public class Parser {
     private String defaultActivation;
     private Set<URI> namespaces;
 
-    public Parser() {}
+    public Parser() {
+      this(null);
+    }
 
     public Parser(String idPrefix) {
-        this.idPrefix = idPrefix;
+      this(idPrefix, false);
+    }
+
+    public Parser(String idPrefix, boolean ignoreUnknownNamespaces) {
+      this.idPrefix = idPrefix == null ? "component-" : idPrefix;
+      this.ignoreUnknownNamespaces = ignoreUnknownNamespaces;
     }
 
     /**
@@ -1290,6 +1319,9 @@ public class Parser {
         }
         NamespaceHandler handler = this.handlers.getNamespaceHandler(uri);
         if (handler == null) {
+            if (ignoreUnknownNamespaces) {
+                return missingNamespace;
+            }
             throw new ComponentDefinitionException("Unsupported node namespace: " + uri);
         }
         return handler;

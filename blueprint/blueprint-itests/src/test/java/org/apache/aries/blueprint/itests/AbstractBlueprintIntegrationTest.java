@@ -71,7 +71,7 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
         }
         return composite(
                 junitBundles(),
-                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
                 when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
                 mvnBundle("org.ops4j.pax.logging", "pax-logging-api"),
                 mvnBundle("org.ops4j.pax.logging", "pax-logging-service")

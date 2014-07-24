@@ -34,13 +34,15 @@ import org.xml.sax.SAXException;
 
 public class ParserServiceImpl implements ParserService {
 
-	NamespaceHandlerRegistry _namespaceHandlerRegistry;
-	
-	public ParserServiceImpl (NamespaceHandlerRegistry nhr) { 
-		_namespaceHandlerRegistry = nhr;
-	}
-	
-	public ComponentDefinitionRegistry parse(URL url, Bundle clientBundle) throws Exception {
+	final NamespaceHandlerRegistry _namespaceHandlerRegistry;
+    final boolean _ignoreUnknownNamespaceHandlers;
+
+  public ParserServiceImpl (NamespaceHandlerRegistry nhr, boolean ignoreUnknownNamespaceHandlers) { 
+    _namespaceHandlerRegistry = nhr;
+    _ignoreUnknownNamespaceHandlers = ignoreUnknownNamespaceHandlers;
+  }
+
+  public ComponentDefinitionRegistry parse(URL url, Bundle clientBundle) throws Exception {
     return parse (url, clientBundle, false);
   }
 
@@ -56,7 +58,7 @@ public class ParserServiceImpl implements ParserService {
   }
   
 	public ComponentDefinitionRegistry parse(List<URL> urls, Bundle clientBundle, boolean validate) throws Exception {
-	  Parser parser = new Parser();   
+	  Parser parser = new Parser(null, _ignoreUnknownNamespaceHandlers);   
 	  parser.parse(urls);
 	  return validateAndPopulate (parser, clientBundle, validate);
 	}
@@ -66,7 +68,7 @@ public class ParserServiceImpl implements ParserService {
   }
   
   public ComponentDefinitionRegistry parse(InputStream is, Bundle clientBundle, boolean validate) throws Exception {
-    Parser parser = new Parser();
+    Parser parser = new Parser(null, _ignoreUnknownNamespaceHandlers);
     parser.parse(is);
     return validateAndPopulate (parser, clientBundle, validate);
   }
