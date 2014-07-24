@@ -92,19 +92,19 @@ public abstract class ResourceInstaller {
 		// to track all constituents for persistence purposes, which includes
 		// resources that were provisioned to the subsystem as dependencies of
 		// other resources.
-		if (isReferencedSubsystem())
+		if (isReferencedSubsystem()) {
 			Activator.getInstance().getSubsystems().addReference(subsystem, resource);
-		coordination.addParticipant(new Participant() {
-			@Override
-			public void ended(Coordination arg0) throws Exception {
-				// Nothing
-			}
-
-			@Override
-			public void failed(Coordination arg0) throws Exception {
-				Activator.getInstance().getSubsystems().removeReference(subsystem, resource);
-			}
-		});
+			coordination.addParticipant(new Participant() {
+				@Override
+				public void ended(Coordination arg0) throws Exception {
+					// Nothing
+				}
+				@Override
+				public void failed(Coordination arg0) throws Exception {
+					Activator.getInstance().getSubsystems().removeReference(subsystem, resource);
+				}
+			});
+		}
 	}
 	
 	protected String getLocation() {
