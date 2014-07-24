@@ -357,13 +357,14 @@ public class EsaMojoTest
         attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
         assertNotNull(attributes);
         assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
-        assertEquals("1", attributes.get("start-order"));
+        // start-order is actually a directive, shows up here as the name+":"
+        assertEquals("1", attributes.get("start-order:"));
         assertNull(attributes.get("type"));
         
         attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
         assertNotNull(attributes);
         assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
-        assertEquals("2", attributes.get("start-order"));
+        assertEquals("2", attributes.get("start-order:"));
         assertNull(attributes.get("type"));
     }
 
