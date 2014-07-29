@@ -16,6 +16,8 @@ package org.apache.aries.subsystem.core.internal;
 import java.security.PrivilegedAction;
 import java.util.EnumSet;
 
+import org.eclipse.equinox.region.Region;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.subsystem.Subsystem.State;
 
@@ -32,9 +34,9 @@ public class GetBundleContextAction implements PrivilegedAction<BundleContext> {
 				subsystem.getState()))
 			return null;
 		BasicSubsystem subsystem = Utils.findScopedSubsystemInRegion(this.subsystem);
-		return subsystem.getRegion().getBundle(
-				RegionContextBundleHelper.SYMBOLICNAME_PREFIX
-						+ subsystem.getSubsystemId(),
-				RegionContextBundleHelper.VERSION).getBundleContext();
+		Region region = subsystem.getRegion();
+		String bundleName = RegionContextBundleHelper.SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
+		Bundle bundle = region.getBundle(bundleName, RegionContextBundleHelper.VERSION);
+		return bundle.getBundleContext();
 	}
 }
