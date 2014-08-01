@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.jpa20</groupId>
     <artifactId>jpa</artifactId>
     <packaging>pom</packaging>
-    <name>Aries JPA Component</name>
+    <name>Aries JPA 2.0 Component</name>
     <version>1.0.0-SNAPSHOT</version>
 
     <modules>
