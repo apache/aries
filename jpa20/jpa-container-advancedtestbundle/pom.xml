@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.jpa.container.advanced.itest.bundle</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Test Bundle for Aries JPA Container advanced iTests</name>
+    <name>Test Bundle for Aries JPA 2.0 Container advanced iTests</name>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-advancedtestbundle</connection>

@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.jpa20</groupId>
     <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
     <version>1.0.2-SNAPSHOT</version>
-    <name>Aries JPA Container blueprint integration for Aries blueprint</name>
+    <name>Aries JPA 2.0 Container blueprint integration for Aries blueprint</name>
     <packaging>bundle</packaging>
 
     <scm>

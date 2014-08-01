@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.jpa20</groupId>
     <artifactId>org.apache.aries.jpa.api</artifactId>
     <packaging>bundle</packaging>
-    <name>Aries JPA Container API</name>
+    <name>Aries JPA 2.0 Container API</name>
     <version>1.0.1-SNAPSHOT</version>
 
     <scm>

@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.jpa.blueprint.itest.bundle</artifactId>
     <packaging>bundle</packaging>
     <version>1.0.1-SNAPSHOT</version>
-    <name>Test Bundle for Aries JPA Blueprint iTests</name>
+    <name>Test Bundle for Aries JPA 2.0 Blueprint iTests</name>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-blueprint-testbundle</connection>

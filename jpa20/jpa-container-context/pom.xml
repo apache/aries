@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.jpa20</groupId>
     <artifactId>org.apache.aries.jpa.container.context</artifactId>
     <version>1.0.2-SNAPSHOT</version>
-    <name>Aries JPA Container Managed Contexts</name>
+    <name>Aries JPA 2.0 Container Managed Contexts</name>
     <packaging>bundle</packaging>
 
     <scm>
