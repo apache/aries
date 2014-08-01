@@ -106,10 +106,10 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
 				mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core").versionAsInProject(),
 				
 				mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec").versionAsInProject(),
-				mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api").versionAsInProject(),
-				mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container").versionAsInProject(),
-				mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.context").versionAsInProject(),
-				mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.blueprint.aries").versionAsInProject(),
+				mavenBundle("org.apache.aries.jpa20", "org.apache.aries.jpa.api").versionAsInProject(),
+				mavenBundle("org.apache.aries.jpa20", "org.apache.aries.jpa.container").versionAsInProject(),
+				mavenBundle("org.apache.aries.jpa20", "org.apache.aries.jpa.container.context").versionAsInProject(),
+				mavenBundle("org.apache.aries.jpa20", "org.apache.aries.jpa.blueprint.aries").versionAsInProject(),
 				
 				mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec").versionAsInProject(),
 				mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager").versionAsInProject(),

@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.jpa20</groupId>
     <artifactId>org.apache.aries.jpa.container.itest</artifactId>
     <version>1.0.1-SNAPSHOT</version>
-    <name>Aries JPA iTests</name>
+    <name>Aries JPA 2.0 iTests</name>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-itest</connection>
@@ -105,24 +105,24 @@
         </dependency>
         <dependency>
             <artifactId>org.apache.aries.jpa.api</artifactId>
-            <groupId>org.apache.aries.jpa</groupId>
-            <version>1.0.0</version>
+            <groupId>org.apache.aries.jpa20</groupId>
+            <version>1.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.jpa</groupId>
+            <groupId>org.apache.aries.jpa20</groupId>
             <artifactId>org.apache.aries.jpa.container</artifactId>
             <version>1.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.jpa</groupId>
+            <groupId>org.apache.aries.jpa20</groupId>
             <artifactId>org.apache.aries.jpa.container.context</artifactId>
             <version>1.0.2-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.jpa</groupId>
+            <groupId>org.apache.aries.jpa20</groupId>
             <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
             <version>1.0.2-SNAPSHOT</version>
             <!--<scope>test</scope>-->

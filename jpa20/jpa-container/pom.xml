@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.jpa.container</artifactId>
     <packaging>bundle</packaging>
     <version>1.0.1-SNAPSHOT</version>
-    <name>Aries JPA Container</name>
+    <name>Aries JPA 2.0 Container</name>
     
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container</connection>

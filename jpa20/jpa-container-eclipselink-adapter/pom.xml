@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.jpa.eclipselink.adapter</artifactId>
     <packaging>bundle</packaging>
     <version>1.0.1-SNAPSHOT</version>
-    <name>Aries JPA Container adapter for use with EclipseLink</name>
+    <name>Aries JPA 2.0 Container adapter for use with EclipseLink</name>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-eclipselink-adapter</connection>

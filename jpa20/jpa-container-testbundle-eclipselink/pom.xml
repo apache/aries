@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.jpa.container.itest.bundle.eclipselink</artifactId>
     <version>0.3.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Test Bundle for Aries JPA Container iTests</name>
+    <name>Test Bundle for Aries JPA 2.0 Container iTests</name>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-testbundle-eclipselink</connection>
