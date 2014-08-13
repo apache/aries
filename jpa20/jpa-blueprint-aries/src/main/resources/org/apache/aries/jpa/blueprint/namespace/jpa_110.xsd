@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<xsd:schema xmlns="http://aries.apache.org/xmlns/jpa/v1.1.0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:osgi="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            targetNamespace="http://aries.apache.org/xmlns/jpa/v1.1.0"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            version="1.1.0">
+
+    <xsd:import namespace="http://www.osgi.org/xmlns/blueprint/v1.0.0"/>
+
+  <xsd:element name="context" type="TcontextType" />
+  <xsd:element name="unit" type="TunitType" />
+  
+  <xsd:complexType name="TcontextType">
+    <xsd:sequence>
+      <xsd:element name="map" type="osgi:Tmap" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="property" type="xsd:string" use="optional" />
+    <xsd:attribute name="index" type="xsd:string" use="optional" />
+    <xsd:attribute name="unitname" type="xsd:string" use="optional" />
+    <xsd:attribute name="type" type="TcontextScopeType" use="optional" />
+  </xsd:complexType>
+
+  <xsd:complexType name="TunitType">
+    <xsd:attribute name="property" type="xsd:string" use="optional" />
+    <xsd:attribute name="index" type="xsd:string" use="optional" />
+    <xsd:attribute name="unitname" type="xsd:string" use="optional" />
+  </xsd:complexType>
+
+   <xsd:simpleType name="TcontextScopeType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="TRANSACTION"/>
+            <xsd:enumeration value="EXTENDED"/>
+        </xsd:restriction>
+   </xsd:simpleType>
+
+</xsd:schema>
+  
