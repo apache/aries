@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.IOException;
@@ -142,13 +155,10 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 
 	private void addValidCapabilities(Collection<Capability> from, Collection<Capability> to, Requirement requirement, boolean validate) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		for (Capability c : from) {
-			if (validate && !isValid(c, requirement)) {
-				// Validation was requested and the capability is not valid
-				// because the sharing policy won't allow it.
-				return;
+			if (!validate || isValid(c, requirement)) {
+				// either validation is not requested or the capability is valid.
+				to.add(c);
 			}
-			// Either the capability is valid or validation was not requested.
-			to.add(c);
 		}
 	}
 
