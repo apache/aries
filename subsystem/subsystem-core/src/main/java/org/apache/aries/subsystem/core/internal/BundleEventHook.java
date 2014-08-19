@@ -27,6 +27,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Resource;
 
 public class BundleEventHook implements EventHook {
 	private final Activator activator;
@@ -106,20 +107,28 @@ public class BundleEventHook implements EventHook {
 	 * revision is never null once we get here.
 	 */
 	private void handleExplicitlyInstalledBundleBundleContext(BundleRevision originRevision, BundleRevision bundleRevision) {
-		// The bundle needs to be associated with all subsystems that are 
-		// associated with the bundle whose context was used to install the 
-		// bundle.
+		/* 
+		 * The newly installed bundle must become a constituent of all the Subsystems of which the bundle
+		 * whose context was used to perform the install is a constituent (OSGI.enterprise spec. 134.10.1.1).
+		 */
 		Collection<BasicSubsystem> subsystems = getSubsystems().getSubsystemsReferencing(originRevision);
-		if (subsystems.isEmpty())
-			// If subsystems does not know about the origin bundle for some
-			// reason (e.g., the event is being processed asynchronously
-			// and the origin bundle has been uninstalled), associate the
-			// installed bundle with the root subsystem.
-			subsystems = Collections.singleton(getSubsystems().getRootSubsystem());
-		for (BasicSubsystem s : subsystems)
-			Utils.installResource(bundleRevision, s);
-	}
-	
+		boolean bundleRevisionInstalled=false;
+		for (BasicSubsystem s : subsystems) {
+			for (Resource constituent : s.getConstituents()) {
+				if (constituent instanceof BundleConstituent) {
+					BundleRevision rev = ((BundleConstituent) constituent).getRevision();
+					if (originRevision.equals(rev)) {
+						Utils.installResource(bundleRevision, s);
+						bundleRevisionInstalled=true;
+					}
+				}
+			}
+		}
+		/* if the bundle is not made constituent of any subsystem then make it constituent of root */
+		if (!bundleRevisionInstalled) {
+			Utils.installResource(bundleRevision, getSubsystems().getRootSubsystem());
+		}
+	}	
 	private void handleExplicitlyInstalledBundleRegionDigraph(Bundle origin, BundleRevision bundleRevision) {
 			// The bundle needs to be associated with the scoped subsystem of 
 			// the region used to install the bundle.
