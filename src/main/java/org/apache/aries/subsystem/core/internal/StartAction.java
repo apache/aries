@@ -37,6 +37,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
+import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Resource;
@@ -259,13 +260,22 @@ public class StartAction extends AbstractAction {
 			return;
 		
 		if (logger.isDebugEnabled()) { 
-			int startLevel = bundle.adapt(BundleStartLevel.class).getStartLevel();
+			int bundleStartLevel = bundle.adapt(BundleStartLevel.class).getStartLevel();
+			int fwStartLevel = bundle.adapt(FrameworkStartLevel.class).getStartLevel();
 			logger.debug("StartAction: starting bundle " + bundle.getSymbolicName()
 				+ " " + bundle.getVersion().toString()
-				+ " startLevel=" + startLevel);
+				+ " bundleStartLevel=" + bundleStartLevel
+				+ " frameworkStartLevel=" + fwStartLevel);
 		}
 		
 		bundle.start(Bundle.START_TRANSIENT | Bundle.START_ACTIVATION_POLICY);
+		
+		if (logger.isDebugEnabled()) { 
+			logger.debug("StartAction: bundle " + bundle.getSymbolicName()
+				+ " " + bundle.getVersion().toString()
+				+ " started correctly");
+		}
+		
 		if (coordination == null)
 			return;
 		coordination.addParticipant(new Participant() {
