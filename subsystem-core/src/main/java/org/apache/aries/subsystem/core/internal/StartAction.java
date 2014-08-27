@@ -35,6 +35,7 @@ import org.eclipse.equinox.region.RegionFilterBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.launch.Framework;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
@@ -261,7 +262,8 @@ public class StartAction extends AbstractAction {
 		
 		if (logger.isDebugEnabled()) { 
 			int bundleStartLevel = bundle.adapt(BundleStartLevel.class).getStartLevel();
-			int fwStartLevel = bundle.adapt(FrameworkStartLevel.class).getStartLevel();
+			Bundle systemBundle = bundle.getBundleContext().getBundle(0);
+			int fwStartLevel = systemBundle.adapt(FrameworkStartLevel.class).getStartLevel();
 			logger.debug("StartAction: starting bundle " + bundle.getSymbolicName()
 				+ " " + bundle.getVersion().toString()
 				+ " bundleStartLevel=" + bundleStartLevel
