@@ -36,6 +36,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Resource;
@@ -51,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StartAction extends AbstractAction {
-	private static final Logger logger = LoggerFactory.getLogger(BasicSubsystem.class);
+	private static final Logger logger = LoggerFactory.getLogger(StartAction.class);
 	
 	private final Coordination coordination;
 	private final BasicSubsystem instigator;
@@ -253,8 +254,17 @@ public class StartAction extends AbstractAction {
 			// The region context bundle was persistently started elsewhere.
 			return;
 		final Bundle bundle = ((BundleRevision)resource).getBundle();
+		
 		if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0)
 			return;
+		
+		if (logger.isDebugEnabled()) { 
+			int startLevel = bundle.adapt(BundleStartLevel.class).getStartLevel();
+			logger.debug("StartAction: starting bundle " + bundle.getSymbolicName()
+				+ " " + bundle.getVersion().toString()
+				+ " startLevel=" + startLevel);
+		}
+		
 		bundle.start(Bundle.START_TRANSIENT | Bundle.START_ACTIVATION_POLICY);
 		if (coordination == null)
 			return;
