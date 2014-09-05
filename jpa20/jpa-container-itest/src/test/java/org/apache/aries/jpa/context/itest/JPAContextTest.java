@@ -333,9 +333,9 @@ public abstract class JPAContextTest extends AbstractJPAItest {
     assertEquals("black", list.get(0).getColour());
     assertEquals("C3CCC", list.get(0).getNumberPlate());
     
-    assertEquals(5, list.get(1).getNumberOfSeats());
-    assertEquals(1200, list.get(1).getEngineSize());
-    assertEquals("blue", list.get(1).getColour());
+    assertEquals(2, list.get(1).getNumberOfSeats());
+    assertEquals(2000, list.get(1).getEngineSize());
+    assertEquals("red", list.get(1).getColour());
     assertEquals("A1AAA", list.get(1).getNumberPlate());
   }
 
