@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jpa.blueprint.aries.impl;
 
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.PersistenceUnit;
 
+import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
@@ -42,8 +44,11 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
+import org.apache.aries.jpa.container.sync.Synchronization;
 import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -235,6 +240,41 @@ public class NSHandler implements NamespaceHandler {
                     manager.registerContext(unitName, client, properties);
                 } else {
                     _logger.warn(MESSAGES.getMessage("no.persistence.context.provider", client.getSymbolicName() + '/' + client.getVersion(), unitName, properties));
+                }
+                boolean foundSync = false;
+                try {
+                    Collection<ServiceReference<Synchronization>> refs = client.getBundleContext().getServiceReferences(Synchronization.class, "(" + PersistenceUnitConstants.OSGI_UNIT_NAME + "=" + unitName + ")");
+                    if (refs.size() > 0) {
+                        final Synchronization sync = client.getBundleContext().getService(refs.iterator().next());
+                        context.getComponentDefinitionRegistry().registerInterceptorWithComponent(
+                                component,
+                                new Interceptor() {
+                                    @Override
+                                    public Object preCall(ComponentMetadata componentMetadata, Method method, Object... objects) throws Throwable {
+                                        sync.preCall();
+                                        return null;
+                                    }
+                                    @Override
+                                    public void postCallWithReturn(ComponentMetadata componentMetadata, Method method, Object o, Object o2) throws Throwable {
+                                        sync.postCall();
+                                    }
+                                    @Override
+                                    public void postCallWithException(ComponentMetadata componentMetadata, Method method, Throwable throwable, Object o) throws Throwable {
+                                        sync.postCall();
+                                    }
+                                    @Override
+                                    public int getRank() {
+                                        return 0;
+                                    }
+                                }
+                        );
+                        foundSync = true;
+                    }
+                } catch (InvalidSyntaxException e) {
+                    // Ignore
+                }
+                if (!foundSync) {
+                    _logger.error(MESSAGES.getMessage("no.synchronization.registered", client.getSymbolicName() + '/' + client.getVersion(), unitName, properties));
                 }
             } else {
                 _logger.debug("No bundle: this must be a dry, parse only run.");
