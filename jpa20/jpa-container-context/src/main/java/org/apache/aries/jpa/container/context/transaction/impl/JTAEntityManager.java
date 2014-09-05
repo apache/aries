@@ -19,6 +19,8 @@
 package org.apache.aries.jpa.container.context.transaction.impl;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
@@ -34,13 +36,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.aries.jpa.container.context.impl.NLS;
+import org.apache.aries.jpa.container.sync.Synchronization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A <code>PersistenceContextType.TRANSACTION</code> {@link EntityManager} instance
  */
-public class JTAEntityManager implements EntityManager {
+public class JTAEntityManager implements EntityManager, Synchronization {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
   
@@ -54,14 +57,20 @@ public class JTAEntityManager implements EntityManager {
   private final AtomicLong instanceCount;
   /** A callback for when we're quiescing */
   private final DestroyCallback callback;
-  
-  
-  /** 
-   * The entity manager to use when there is no transaction. Note that there is one of these
-   * per injection site.
-   */
-  private EntityManager detachedManager = null;
-  
+
+
+  private final ThreadLocal<AtomicInteger> activeCalls = new ThreadLocal<AtomicInteger>() {
+    @Override
+    protected AtomicInteger initialValue() {
+      return new AtomicInteger(0);
+    }
+  };
+
+  private final ThreadLocal<EntityManager> activeManager = new ThreadLocal<EntityManager>();
+
+  private final ConcurrentLinkedQueue<EntityManager> pool = new ConcurrentLinkedQueue<EntityManager>();
+
+
   public JTAEntityManager(EntityManagerFactory factory,
       Map<String, Object> properties, JTAPersistenceContextRegistry registry, AtomicLong activeCount,
       DestroyCallback onDestroy) {
@@ -72,7 +81,24 @@ public class JTAEntityManager implements EntityManager {
     callback = onDestroy;
   }
 
-  /**
+    @Override
+    public void preCall() {
+        activeCalls.get().incrementAndGet();
+    }
+
+    @Override
+    public void postCall() {
+        if (activeCalls.get().decrementAndGet() == 0) {
+            EntityManager manager = activeManager.get();
+            if (manager != null) {
+                activeManager.set(null);
+                manager.clear();
+                pool.add(manager);
+            }
+        }
+    }
+
+    /**
    * Get the target persistence context
    * @param forceTransaction Whether the returned entity manager needs to be bound to a transaction
    * @throws TransactionRequiredException if forceTransaction is true and no transaction is available
@@ -81,28 +107,31 @@ public class JTAEntityManager implements EntityManager {
   private EntityManager getPersistenceContext(boolean forceTransaction) 
   {
     if (forceTransaction) {
+      EntityManager manager = activeManager.get();
+      if (manager != null) {
+        manager.clear();
+      }
       return reg.getCurrentPersistenceContext(emf, props, instanceCount, callback);
     } else {
       if (reg.isTransactionActive()) {
+        EntityManager manager = activeManager.get();
+        if (manager != null) {
+          manager.clear();
+        }
         return reg.getCurrentPersistenceContext(emf, props, instanceCount, callback);
       } else {
         if(!!!reg.jtaIntegrationAvailable() && _logger.isDebugEnabled())
           _logger.debug("No integration with JTA transactions is available. No transaction context is active.");
-        
-        if (detachedManager == null) {
-          EntityManager temp = emf.createEntityManager(props);
-          
-          synchronized (this) {
-            if (detachedManager == null) {
-              detachedManager = new SynchronizedEntityManagerWrapper(temp);
-              temp = null;
-            }
+
+        EntityManager manager = activeManager.get();
+        if (manager == null) {
+          manager = pool.poll();
+          if (manager == null) {
+            manager = emf.createEntityManager(props);
           }
-          
-          if (temp != null)
-            temp.close();
+          activeManager.set(manager);
         }
-        return detachedManager;
+        return manager;
       }
     }
   }
@@ -111,15 +140,10 @@ public class JTAEntityManager implements EntityManager {
    * Called reflectively by blueprint
    */
   public void internalClose() {
-    EntityManager temp = null;
-    
-    synchronized (this) {
-      temp = detachedManager;
-      detachedManager = null;
-    }
-    
-    if (temp != null)
+    EntityManager temp;
+    while ((temp = pool.poll()) != null) {
       temp.close();
+    }
   }
   
   public void clear()
@@ -134,80 +158,37 @@ public class JTAEntityManager implements EntityManager {
 
   public boolean contains(Object arg0)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.contains(arg0);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).contains(arg0);
   }
 
   public Query createNamedQuery(String arg0)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.createNamedQuery(arg0);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).createNamedQuery(arg0);
   }
 
   public Query createNativeQuery(String arg0)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.createNativeQuery(arg0);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).createNativeQuery(arg0);
   }
 
-  @SuppressWarnings("unchecked")
   public Query createNativeQuery(String arg0, Class arg1)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.createNativeQuery(arg0, arg1);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).createNativeQuery(arg0, arg1);
   }
 
   public Query createNativeQuery(String arg0, String arg1)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.createNativeQuery(arg0, arg1);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).createNativeQuery(arg0, arg1);
   }
 
   public Query createQuery(String arg0)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.createQuery(arg0);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).createQuery(arg0);
   }
 
   public <T> T find(Class<T> arg0, Object arg1)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.find(arg0, arg1);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).find(arg0, arg1);
   }
 
   /**
@@ -230,13 +211,7 @@ public class JTAEntityManager implements EntityManager {
 
   public <T> T getReference(Class<T> arg0, Object arg1)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.getReference(arg0, arg1);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).getReference(arg0, arg1);
   }
 
   public EntityTransaction getTransaction()
@@ -296,66 +271,32 @@ public class JTAEntityManager implements EntityManager {
 
   public void setFlushMode(FlushModeType arg0)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      em.setFlushMode(arg0);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    getPersistenceContext(false).setFlushMode(arg0);
   }
 
   public <T> TypedQuery<T> createNamedQuery(String arg0, Class<T> arg1)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.createNamedQuery(arg0, arg1);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).createNamedQuery(arg0, arg1);
   }
 
   public <T> TypedQuery<T> createQuery(CriteriaQuery<T> arg0)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.createQuery(arg0);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).createQuery(arg0);
   }
 
   public <T> TypedQuery<T> createQuery(String arg0, Class<T> arg1)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.createQuery(arg0, arg1);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).createQuery(arg0, arg1);
   }
 
   public void detach(Object arg0)
   {
-    EntityManager em = getPersistenceContext(false);
-    //The detatched manager auto-detaches everything, so only
-    //detach from a "real" entity manager
-    if(em != detachedManager)
-      em.detach(arg0);
+    getPersistenceContext(false).detach(arg0);
   }
 
   public <T> T find(Class<T> arg0, Object arg1, Map<String, Object> arg2)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.find(arg0, arg1, arg2);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).find(arg0, arg1, arg2);
   }
 
   /**
@@ -363,13 +304,7 @@ public class JTAEntityManager implements EntityManager {
    */
   public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2)
   {
-    EntityManager em = getPersistenceContext(arg2 != LockModeType.NONE);
-    try {
-      return em.find(arg0, arg1, arg2);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(arg2 != LockModeType.NONE).find(arg0, arg1, arg2);
   }
 
   /**
@@ -377,13 +312,7 @@ public class JTAEntityManager implements EntityManager {
    */
   public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2, Map<String, Object> arg3)
   {
-    EntityManager em = getPersistenceContext(arg2 != LockModeType.NONE);
-    try {
-      return em.find(arg0, arg1, arg2, arg3);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(arg2 != LockModeType.NONE).find(arg0, arg1, arg2, arg3);
   }
 
   public CriteriaBuilder getCriteriaBuilder()
@@ -448,23 +377,11 @@ public class JTAEntityManager implements EntityManager {
 
   public void setProperty(String arg0, Object arg1)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      em.setProperty(arg0, arg1);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    getPersistenceContext(false).setProperty(arg0, arg1);
   }
 
   public <T> T unwrap(Class<T> arg0)
   {
-    EntityManager em = getPersistenceContext(false);
-    try {
-      return em.unwrap(arg0);
-    } finally {
-      if(em == detachedManager)
-        em.clear();
-    }
+    return getPersistenceContext(false).unwrap(arg0);
   }
 }
