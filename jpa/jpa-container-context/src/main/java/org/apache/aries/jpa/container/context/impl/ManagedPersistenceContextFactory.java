@@ -22,7 +22,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,10 +30,12 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
+import org.apache.aries.jpa.container.sync.Synchronization;
 import org.apache.aries.jpa.container.context.impl.PersistenceContextManager.QuiesceTidyUp;
 import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManager;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * <p/>
  * Also this class receives a callback on cleanup
  */
-public class ManagedPersistenceContextFactory implements EntityManagerFactory, DestroyCallback {
+public class ManagedPersistenceContextFactory implements Synchronization, EntityManagerFactory, DestroyCallback {
     /**
      * Logger
      */
@@ -59,6 +60,7 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
     private final PersistenceContextType type;
     private final AtomicLong activeCount = new AtomicLong(0);
     private final String unitName;
+    private final JTAEntityManager em;
 
     private final AtomicReference<QuiesceTidyUp> tidyUp = new AtomicReference<QuiesceTidyUp>();
 
@@ -71,13 +73,6 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
         registry = contextRegistry;
         //Remove our internal property so that it doesn't get passed on the createEntityManager call
         type = (PersistenceContextType) properties.remove(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE);
-    }
-
-    public EntityManager createEntityManager() {
-        if (_logger.isDebugEnabled()) {
-            _logger.debug("Creating a container managed entity manager for the perstence unit {} with the following properties {}",
-                    new Object[]{emf, properties});
-        }
         //Getting the BundleContext is a privileged operation that the
         //client might not be able to do.
         EntityManagerFactory factory = AccessController.doPrivileged(
@@ -86,14 +81,32 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
                         return (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
                     }
                 });
+        em = new JTAEntityManager(factory, properties, registry, activeCount, this);
+    }
 
-        if (type == PersistenceContextType.TRANSACTION || type == null)
-            return new JTAEntityManager(factory, properties, registry, activeCount, this);
-        else {
+    public EntityManager createEntityManager() {
+        if (_logger.isDebugEnabled()) {
+            _logger.debug("Creating a container managed entity manager for the perstence unit {} with the following properties {}",
+                    new Object[]{emf, properties});
+        }
+
+        if (type == PersistenceContextType.TRANSACTION || type == null) {
+            return em;
+        } else {
             _logger.error(NLS.MESSAGES.getMessage("extended.em.not.supported"));
             return null;
         }
 
+    }
+
+    @Override
+    public void preCall() {
+        em.preCall();
+    }
+
+    @Override
+    public void postCall() {
+        em.postCall();
     }
 
     public void close() {
