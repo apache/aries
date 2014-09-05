@@ -44,6 +44,7 @@
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
             org.apache.aries.jpa.container.parsing,
+            org.apache.aries.jpa.container.sync,
             org.apache.aries.jpa.container,
             org.apache.aries.jpa.container.context
         </aries.osgi.export.pkg>
