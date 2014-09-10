@@ -37,11 +37,13 @@ import org.apache.aries.jndi.Utils;
 import org.apache.aries.jndi.spi.EnvironmentAugmentation;
 import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIContextManager;
 import org.osgi.service.jndi.JNDIProviderAdmin;
+import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
@@ -62,13 +64,14 @@ public class Activator implements BundleActivator {
     private static ServiceTracker initialContextFactories;
     private static ServiceTracker objectFactories;
     private static ServiceTracker environmentAugmentors;
+    private BundleTracker bt = null;
 
     public void start(BundleContext context) {
 
         initialContextFactories = initServiceTracker(context, InitialContextFactory.class, ServiceTrackerCustomizers.ICF_CACHE);
         objectFactories = initServiceTracker(context, ObjectFactory.class, ServiceTrackerCustomizers.URL_FACTORY_CACHE);
-        icfBuilders = initServiceTracker(context, InitialContextFactoryBuilder.class, ServiceTrackerCustomizers.LAZY);
-        urlObjectFactoryFinders = initServiceTracker(context, URLObjectFactoryFinder.class, ServiceTrackerCustomizers.LAZY);
+        icfBuilders = initServiceTracker(context, InitialContextFactoryBuilder.class, ServiceTrackerCustomizers.ICFB_CACHE);
+        urlObjectFactoryFinders = initServiceTracker(context, URLObjectFactoryFinder.class, ServiceTrackerCustomizers.URLOBJFACTORYFINDER_CACHE);
         environmentAugmentors = initServiceTracker(context, EnvironmentAugmentation.class, null);
 
         try {
@@ -108,6 +111,9 @@ public class Activator implements BundleActivator {
         context.registerService(JNDIContextManager.class.getName(),
                                 new ContextManagerServiceFactory(),
                                 null);
+        //Start the bundletracker that clears out the cache. (only interested in stopping events)
+        bt = new BundleTracker(context,Bundle.STOPPING,new ServiceTrackerCustomizers.CacheBundleTrackerCustomizer());
+        bt.open();
     }
 
     private String getClassName(Class<?> expectedType)
@@ -151,6 +157,11 @@ public class Activator implements BundleActivator {
         objectFactories.close();
         initialContextFactories.close();
         environmentAugmentors.close();
+                
+        if (bt != null) {
+          bt.close();
+        }
+        
     }
 
     /*

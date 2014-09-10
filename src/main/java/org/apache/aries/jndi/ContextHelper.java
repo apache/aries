@@ -96,7 +96,7 @@ public final class ContextHelper {
         
         if (refs != null) {
           for (final ServiceReference finderRef : refs) {
-            URLObjectFactoryFinder finder = (URLObjectFactoryFinder) Utils.getServicePrivileged(ctx, finderRef);
+            URLObjectFactoryFinder finder = (URLObjectFactoryFinder) ServiceTrackerCustomizers.URLOBJFACTORYFINDER_CACHE.getServiceFromRef(ctx,finderRef);
                 
             if (finder != null) {
               ObjectFactory f = finder.findFactory(urlScheme, environment);
@@ -104,8 +104,6 @@ public final class ContextHelper {
               if (f != null) {
                 result = new ServicePair<ObjectFactory>(ctx, finderRef, f);
                 break;
-              } else {
-                ctx.ungetService(finderRef);
               }
             }
           }
@@ -174,15 +172,11 @@ public final class ContextHelper {
                 if (references != null) {
                     Context initialContext = null;
                     for (ServiceReference reference : references) {
-                        InitialContextFactory factory = (InitialContextFactory) Utils.getServicePrivileged(context, reference);
-                        try {
-                            initialContext = factory.getInitialContext(environment);
-                            if (initialContext != null) {
-                              provider = new SingleContextProvider(context, reference, initialContext);
-                              break;
-                          }
-                        } finally {
-                            if (provider == null) context.ungetService(reference);
+                        InitialContextFactory factory = (InitialContextFactory) ServiceTrackerCustomizers.ICF_CACHE.getServiceFromRef(context, reference);
+                        initialContext = factory.getInitialContext(environment);
+                        if (initialContext != null) {
+                          provider = new SingleContextProvider(context, reference, initialContext);
+                          break;
                         }
                     }
                 }
@@ -192,14 +186,10 @@ public final class ContextHelper {
             
             if (ref != null) {
               Context initialContext = null;
-              InitialContextFactory factory = (InitialContextFactory) Utils.getServicePrivileged(context, ref);
+              InitialContextFactory factory = (InitialContextFactory) ServiceTrackerCustomizers.ICF_CACHE.getServiceFromRef(context, ref);
               if (factory != null) {
-                try {
-                    initialContext = factory.getInitialContext(environment);
-                    provider = new SingleContextProvider(context, ref, initialContext);
-                } finally {
-                    if (provider == null) context.ungetService(ref);
-                }
+                initialContext = factory.getInitialContext(environment);
+                provider = new SingleContextProvider(context, ref, initialContext);
               }
             }
             
@@ -228,7 +218,7 @@ public final class ContextHelper {
         if (refs != null) {
             InitialContextFactory factory = null;
             for (ServiceReference ref : refs) {                    
-                InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) Utils.getServicePrivileged(context, ref);
+                InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) ServiceTrackerCustomizers.ICFB_CACHE.getServiceFromRef(context, ref);
                 try {
                   factory = builder.createInitialContextFactory(environment);
                 } catch (NamingException ne) {
@@ -240,14 +230,8 @@ public final class ContextHelper {
                 }
                 
                 if (factory != null) {
-                  try {
-                    provider = new SingleContextProvider(context, ref, factory.getInitialContext(environment));
-                  } finally {
-                    if (provider == null) context.ungetService(ref); // we didn't get something back, so this was no good.
-                  }
+                  provider = new SingleContextProvider(context, ref, factory.getInitialContext(environment));
                   break;
-                } else {
-                  context.ungetService(ref); // we didn't get something back, so this was no good.
                 }
             }
         }
