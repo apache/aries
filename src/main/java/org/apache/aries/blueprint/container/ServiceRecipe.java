@@ -288,9 +288,19 @@ public class ServiceRecipe extends AbstractRecipe {
                         validateClasses(o);
                     } else if (o instanceof UnwrapperedBeanHolder) {
                         UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) o;
-                        validateClasses(holder.unwrapperedBean);
-                        o = BeanRecipe.wrap(holder, getClassesForProxying(holder.unwrapperedBean));
-                    } else {
+                        if (holder.unwrapperedBean instanceof ServiceFactory) {
+                            //If a service factory is used, make sure the proxy classes implement this
+                            //interface so that later on, internalGetService will create the real
+                            //service from it.
+                            LOGGER.debug("{} implements ServiceFactory, creating proxy that also implements this", holder.unwrapperedBean);
+                            Collection<Class<?>> cls = getClassesForProxying(holder.unwrapperedBean);
+                            cls.add(blueprintContainer.loadClass("org.osgi.framework.ServiceFactory"));
+                            o = BeanRecipe.wrap(holder, cls);
+                        } else {
+                            validateClasses(holder.unwrapperedBean);
+                            o = BeanRecipe.wrap(holder, getClassesForProxying(holder.unwrapperedBean));
+                        }
+                    } else if (!(o instanceof ServiceFactory)) {
                         validateClasses(o);
                     }
                     service = o;
