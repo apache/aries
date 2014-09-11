@@ -11,28 +11,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.obr.internal;
+package org.apache.aries.subsystem.util.felix;
 
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.obr.internal.AbstractCapability;
+import org.osgi.framework.Version;
+import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 
-public class OsgiContentCapability extends AbstractCapability {
+public class OsgiIdentityCapability extends AbstractCapability {
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
 	private final Resource resource;
 	
-	public OsgiContentCapability(Resource resource, String url) {
-		// TOOD Add to constants.
-		attributes.put("osgi.content", url);
-		// TODO Any directives?
-		this.resource = resource;
+	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version) {
+		this(resource, symbolicName, version, IdentityNamespace.TYPE_BUNDLE);
 	}
 	
-	public OsgiContentCapability(Resource resource, URL url) {
-		this(resource, url.toExternalForm());
+	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version, String identityType) {
+		this.resource = resource;
+		attributes.put(
+				IdentityNamespace.IDENTITY_NAMESPACE, 
+				symbolicName);
+		attributes.put(
+				IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE, 
+				version);
+		attributes.put(
+				IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE, 
+				identityType);
+		// TODO Add directives, particularly "effective" and "singleton".
 	}
 
 	public Map<String, Object> getAttributes() {
@@ -44,8 +53,7 @@ public class OsgiContentCapability extends AbstractCapability {
 	}
 
 	public String getNamespace() {
-		// TODO Add to constants.
-		return "osgi.content";
+		return IdentityNamespace.IDENTITY_NAMESPACE;
 	}
 
 	public Resource getResource() {

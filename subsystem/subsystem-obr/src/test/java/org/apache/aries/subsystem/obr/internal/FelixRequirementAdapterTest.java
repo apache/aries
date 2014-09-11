@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.obr.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.aries.subsystem.util.felix.FelixRequirementAdapter;
 import org.apache.felix.bundlerepository.Requirement;
 import org.easymock.EasyMock;
 import org.junit.Test;
