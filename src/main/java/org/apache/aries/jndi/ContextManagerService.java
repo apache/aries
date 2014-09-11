@@ -71,7 +71,6 @@ public class ContextManagerService implements JNDIContextManager {
     
     private Context getInitialContext(Map<?,?> environment) throws NamingException {        
         Hashtable<?,?> env = Utils.toHashtable(environment);
-        Utils.augmentEnvironment(env);
         Context context = ContextHelper.getInitialContext(callerContext, env);
         contexts.add(context);
         return context;
