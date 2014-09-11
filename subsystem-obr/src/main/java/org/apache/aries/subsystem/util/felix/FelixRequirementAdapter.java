@@ -11,12 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.obr.internal;
+package org.apache.aries.subsystem.util.felix;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.obr.internal.AbstractRequirement;
+import org.apache.aries.subsystem.obr.internal.NamespaceTranslator;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Resource;

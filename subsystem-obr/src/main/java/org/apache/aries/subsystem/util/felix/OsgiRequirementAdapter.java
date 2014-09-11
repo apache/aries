@@ -11,11 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.obr.internal;
+package org.apache.aries.subsystem.util.felix;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
+import org.apache.aries.subsystem.obr.internal.NamespaceTranslator;
+import org.apache.aries.subsystem.obr.internal.ResourceHelper;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Requirement;
 import org.osgi.framework.Constants;

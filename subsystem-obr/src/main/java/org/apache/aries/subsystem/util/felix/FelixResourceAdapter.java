@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.obr.internal;
+package org.apache.aries.subsystem.util.felix;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.obr.internal.NamespaceTranslator;
+import org.apache.aries.subsystem.obr.internal.ResourceHelper;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
