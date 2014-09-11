@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.util.felix.FelixCapabilityAdapter;
 import org.apache.felix.bundlerepository.Capability;
 import org.apache.felix.bundlerepository.Resource;
 import org.easymock.EasyMock;

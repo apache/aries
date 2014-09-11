@@ -23,6 +23,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.util.felix.FelixCapabilityAdapter;
+import org.apache.aries.subsystem.util.felix.FelixRepositoryAdapter;
+import org.apache.aries.subsystem.util.felix.FelixResourceAdapter;
+import org.apache.aries.subsystem.util.felix.OsgiRequirementAdapter;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.apache.felix.bundlerepository.Resource;
 import org.osgi.framework.namespace.IdentityNamespace;
