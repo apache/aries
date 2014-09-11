@@ -71,10 +71,12 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
     }
 
     private BundleContext getCallerBundleContext(Hashtable<?, ?> environment) throws NamingException {
+        AugmenterInvokerImpl.getInstance().augmentEnvironment(environment);
         BundleContext context = Utils.getBundleContext(environment, NamingManager.class);        
         if (context == null) {
             context = Utils.getBundleContext(environment, DirectoryManager.class);
         }
+        AugmenterInvokerImpl.getInstance().unaugmentEnvironment(environment);
         return context;
     }
 }

@@ -39,13 +39,15 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
 	public Context getInitialContext(Hashtable<?, ?> environment) 
 	    throws NamingException {
 	    
-	    Utils.augmentEnvironment(environment);
+	    AugmenterInvokerImpl.getInstance().augmentEnvironment(environment);
 	  
 	    BundleContext context = Utils.getBundleContext(environment, InitialContext.class);	    
 	    if (context == null) {
             throw new NoInitialContextException(Utils.MESSAGES.getMessage("cannot.find.callers.bundlecontext"));
 	    }
 	    	    
+      AugmenterInvokerImpl.getInstance().unaugmentEnvironment(environment);
+
 	    return ContextHelper.getInitialContext(context, environment);
 	}
 }
