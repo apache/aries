@@ -45,7 +45,9 @@
         <aries.osgi.activator>
             org.apache.aries.subsystem.obr.internal.Activator
         </aries.osgi.activator>
-        <aries.osgi.export.pkg/>
+        <aries.osgi.export.pkg>
+            org.apache.aries.subsystem.util.felix
+        </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.subsystem.obr.internal
         </aries.osgi.private.pkg>
