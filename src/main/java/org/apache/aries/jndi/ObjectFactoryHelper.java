@@ -84,7 +84,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
             obj = ((Referenceable) obj).getReference();
         }
         
-        logger.log(Level.FINE, "obj = " + obj);
+        if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "obj = " + obj);
 
         Object result = obj;
 
@@ -102,14 +102,14 @@ public class ObjectFactoryHelper implements ObjectFactory {
             }
         }
         
-		logger.log(Level.FINE, "Step 4: result = " + result);
+		if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "Step 4: result = " + result);
 
         // Step 5 - if we still don't have a resolved object goto the object factory builds in the SR.
         if (result == null || result == obj) {
             result = getObjectInstanceUsingObjectFactoryBuilders(obj, name, nameCtx, environment);
         }
 
-		logger.log(Level.FINE, "Step 5: result = " + result);
+		if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "Step 5: result = " + result);
 
         // Step 6 - Attempt to use all the registered ObjectFactories in the SR.
         if (result == null || result == obj) {                
@@ -119,7 +119,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
             }
         }
  
-		logger.log(Level.FINE, "Step 6: result = " + result);
+		if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "Step 6: result = " + result);
 
 		// Extra, non-standard, bonus step 7. If javax.naming.OBJECT_FACTORIES is set as 
 		// a property in the environment, use its value to construct additional object factories. 
@@ -129,7 +129,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
 			result = getObjectInstanceViaContextDotObjectFactories(obj, name, nameCtx, environment);
 		} 
 		
-		logger.log(Level.FINE, "Step 7: result = " + result);
+		if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "Step 7: result = " + result);
 
         return (result == null) ? obj : result;
     }
@@ -170,27 +170,27 @@ public class ObjectFactoryHelper implements ObjectFactory {
 					Class<ObjectFactory> clz = (Class<ObjectFactory>) cl.loadClass(cand);
 					factory = clz.newInstance();
 				} catch (Exception e) {
-					logger.log(Level.FINE, "Exception instantiating factory: " + e);
+					if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "Exception instantiating factory: " + e);
 					continue;
 				}
-				logger.log(Level.FINE, "cand=" + cand + " factory=" + factory);
+				if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "cand=" + cand + " factory=" + factory);
 				if (factory != null) {
 					if(factory instanceof DirObjectFactory)
 					{
-						logger.log(Level.FINE, "its a DirObjectFactory");
+						if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "its a DirObjectFactory");
 						final DirObjectFactory dirFactory = (DirObjectFactory) factory;
 						result = dirFactory.getObjectInstance(obj, name, nameCtx, environment, attrs);
 					}
 					else
 					{
-						logger.log(Level.FINE, "its an ObjectFactory");
+						if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "its an ObjectFactory");
 						result = factory.getObjectInstance(obj, name, nameCtx, environment);
 					}
 				}
 				if (result != null && result != obj) break;
 			}
 		}
-		logger.log(Level.FINE, "result = " + result);
+		if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "result = " + result);
 		return (result == null) ? obj : result;
     }
 
