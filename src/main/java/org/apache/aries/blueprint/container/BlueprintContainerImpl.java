@@ -374,8 +374,9 @@ public class BlueprintContainerImpl
                         break;
                     case Create:
                         cancelFutureIfPresent();
-                        registerServices();
                         instantiateEagerComponents();
+			//Register the services after the eager components are ready, as per 121.6
+			registerServices();
                         // Register the BlueprintContainer in the OSGi registry
                         int bs = bundle.getState();
                         if (registration == null && (bs == Bundle.ACTIVE || bs == Bundle.STARTING)) {
