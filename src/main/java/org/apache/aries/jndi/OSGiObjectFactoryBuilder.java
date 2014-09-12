@@ -49,6 +49,11 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Name name,
                                     Context nameCtx,
                                     Hashtable<?, ?> environment) throws Exception {
+        
+        if (environment == null) {
+            environment = new Hashtable();
+        }
+        
         BundleContext callerContext = getCallerBundleContext(environment);
         if (callerContext == null) {
             return obj;
@@ -62,6 +67,11 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Context nameCtx,
                                     Hashtable<?, ?> environment,
                                     Attributes attrs) throws Exception {
+        
+        if (environment == null) {
+            environment = new Hashtable();
+        }
+        
         BundleContext callerContext = getCallerBundleContext(environment);
         if (callerContext == null) {
             return obj;
