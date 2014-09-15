@@ -32,15 +32,15 @@
     <artifactId>org.apache.aries.jndi.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI Core</name>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <description>
       This bundle contains the core of JNDI support for OSGi.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.core-1.0.1</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jndi.core-1.0.1</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jndi.core-1.0.1</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-core</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jndi/jndi-core</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-core</url>
     </scm>
 
     <properties>
