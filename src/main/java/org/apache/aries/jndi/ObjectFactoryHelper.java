@@ -20,10 +20,7 @@ package org.apache.aries.jndi;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Arrays;
-import java.util.Vector;
-import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.logging.Level;
@@ -42,36 +39,19 @@ import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
 
 import org.apache.aries.util.service.registry.ServicePair;
-import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
-
 
 public class ObjectFactoryHelper implements ObjectFactory {
     
     protected BundleContext defaultContext;
     protected BundleContext callerContext;
-    
-    protected ServiceTrackerCustomizers.ContextServiceTrackerCustomizer objFactoryBuilderStC = null;
-    protected ServiceTrackerCustomizers.ContextServiceTrackerCustomizer objFactoryStC = null;
-    protected ServiceTrackerCustomizers.ContextServiceTrackerCustomizer defaultStC = null;
-    
     private static final Logger logger = Logger.getLogger(ObjectFactoryHelper.class.getName());
 
     public ObjectFactoryHelper(BundleContext defaultContext, BundleContext callerContext) {
         this.defaultContext = defaultContext;
         this.callerContext = callerContext;
-
-        //Create service trackers for the contexts to allow caching of services
-        objFactoryBuilderStC = ServiceTrackerCustomizers.getOrRegisterServiceTracker(callerContext, ObjectFactoryBuilder.class.getName());
-        
-        objFactoryStC = ServiceTrackerCustomizers.getOrRegisterServiceTracker(callerContext, ObjectFactory.class.getName());
-        
-        defaultStC = ServiceTrackerCustomizers.getOrRegisterServiceTracker(defaultContext, ObjectFactory.class.getName());
-      
     }
 
     public Object getObjectInstance(Object obj,
@@ -200,19 +180,21 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                            Hashtable<?, ?> environment) 
         throws Exception {
         Object result = null;
-        ServiceReference[] refs = objFactoryStC.getServiceRefs();
+        ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, ObjectFactory.class);
             
         if (refs != null) {
             Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
             
             for (ServiceReference ref : refs) {
               if (canCallObjectFactory(obj, ref)) {
-                ObjectFactory factory = (ObjectFactory) objFactoryStC.getService(ref);
+                ObjectFactory factory = (ObjectFactory) Utils.getServicePrivileged(callerContext, ref);
 
                 try {
                     result = factory.getObjectInstance(obj, name, nameCtx, environment);
                 } catch (NamingException ne) {
                   // Ignore this since we are doing last ditch finding, another OF might work.
+                } finally {
+                    callerContext.ungetService(ref);
                 }
 
                 // if the result comes back and is not null and not the reference
@@ -287,15 +269,25 @@ public class ObjectFactoryHelper implements ObjectFactory {
         return (result == null) ? obj : result;
     }
 
-    static Tuple<ServiceReference,ObjectFactory> findObjectFactoryByClassName(final ServiceTrackerCustomizers.ContextServiceTrackerCustomizer ctxCache, final String className) {
+    static Tuple<ServiceReference,ObjectFactory> findObjectFactoryByClassName(final BundleContext ctx, final String className) {
         return AccessController.doPrivileged(new PrivilegedAction<Tuple<ServiceReference,ObjectFactory>>() {
             public Tuple<ServiceReference,ObjectFactory> run() {
-                ServiceReference serviceReference = ctxCache.getServiceRef(className);
+                ServiceReference serviceReference = null;
+                
+                try {
+                    ServiceReference[] refs = ctx.getServiceReferences(className, null);
+                    if (refs != null && refs.length > 0) {
+                        serviceReference = refs[0];
+                    }
+                } catch (InvalidSyntaxException e) {
+                    // should not happen
+                    throw new RuntimeException(Utils.MESSAGES.getMessage("null.is.invalid.filter"), e);
+                }
 
                 ObjectFactory factory = null;
                 
                 if (serviceReference != null) {
-                    factory = (ObjectFactory) ctxCache.getService(serviceReference);
+                    factory = (ObjectFactory) ctx.getService(serviceReference);            
                 }
                 
                 return new Tuple<ServiceReference, ObjectFactory>(serviceReference, factory);
@@ -311,11 +303,15 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                    Hashtable<?, ?> environment) 
         throws Exception {
         
-        Tuple<ServiceReference,ObjectFactory> tuple = findObjectFactoryByClassName(defaultStC, className);
+        Tuple<ServiceReference,ObjectFactory> tuple = findObjectFactoryByClassName(defaultContext, className);
         Object result = null;
         
         if (tuple.second != null) {
-            result = tuple.second.getObjectInstance(reference, name, nameCtx, environment);
+            try {
+                result = tuple.second.getObjectInstance(reference, name, nameCtx, environment);
+            } finally {
+                defaultContext.ungetService(tuple.first);
+            }
         }
 
         return (result == null) ? obj : result;
@@ -329,15 +325,17 @@ public class ObjectFactoryHelper implements ObjectFactory {
         
         ObjectFactory factory = null;
         
-        ServiceReference[] refs = objFactoryBuilderStC.getServiceRefs();
+        ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, ObjectFactoryBuilder.class);
         if (refs != null) {
             Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
             for (ServiceReference ref : refs) {
-                ObjectFactoryBuilder builder = (ObjectFactoryBuilder) objFactoryBuilderStC.getService(ref);
+                ObjectFactoryBuilder builder = (ObjectFactoryBuilder) Utils.getServicePrivileged(callerContext, ref);
                 try {
                     factory = builder.createObjectFactory(obj, environment);
                 } catch (NamingException e) {
                     // TODO: log it
+                } finally {
+                    callerContext.ungetService(ref);
                 }
                 if (factory != null) {
                     break;
