@@ -31,18 +31,13 @@ import javax.naming.spi.DirObjectFactory;
 import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
 
-import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirObjectFactory {
 
-    private ServiceTrackerCustomizers.ContextServiceTrackerCustomizer dirObjFactorySTC = null;
-
-  
     public DirObjectFactoryHelper(BundleContext defaultContext, BundleContext callerContext) {
         super(defaultContext, callerContext);
-        dirObjFactorySTC = ServiceTrackerCustomizers.getOrRegisterServiceTracker(callerContext, DirObjectFactory.class.getName());
     }
     
     public Object getObjectInstance(Object obj,
@@ -101,15 +96,20 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
         throws Exception {
         
         Object result = null;
-        ServiceReference[] refs = dirObjFactorySTC.getServiceRefs(); 
+        ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, DirObjectFactory.class);
         if (refs != null) {
             Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
             for (ServiceReference ref : refs) {
               
                 if (canCallObjectFactory(obj, ref)) {
-                    DirObjectFactory factory = (DirObjectFactory) dirObjFactorySTC.getService(ref);
-                    result = factory.getObjectInstance(obj, name, nameCtx, environment, attrs);
-                    
+                    DirObjectFactory factory = (DirObjectFactory) Utils.getServicePrivileged(callerContext, ref);
+    
+                    try {
+                        result = factory.getObjectInstance(obj, name, nameCtx, environment, attrs);
+                    } finally {
+                        callerContext.ungetService(ref);
+                    }
+    
                     // if the result comes back and is not null and not the reference
                     // object then we should return the result, so break out of the
                     // loop we are in.
@@ -149,11 +149,15 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
                                                    Attributes attrs)
         throws Exception {
 
-        Tuple<ServiceReference, ObjectFactory> tuple = ObjectFactoryHelper.findObjectFactoryByClassName(defaultStC, className);
+        Tuple<ServiceReference, ObjectFactory> tuple = ObjectFactoryHelper.findObjectFactoryByClassName(defaultContext, className);
         Object result = null;
         
         if (tuple.second != null) {
-            result = ((DirObjectFactory) tuple.second).getObjectInstance(reference, name, nameCtx, environment, attrs);
+            try {
+                result = ((DirObjectFactory) tuple.second).getObjectInstance(reference, name, nameCtx, environment, attrs);
+            } finally {
+                defaultContext.ungetService(tuple.first);
+            }
         }
 
         return (result == null) ? obj : result;
@@ -166,15 +170,17 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
                                                                Attributes attrs) 
         throws Exception {
         ObjectFactory factory = null;
-        ServiceReference[] refs = objFactoryBuilderStC.getServiceRefs();
+        ServiceReference[] refs = Utils.getReferencesPrivileged(callerContext, ObjectFactoryBuilder.class);
         if (refs != null) {
             Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
             for (ServiceReference ref : refs) {
-                ObjectFactoryBuilder builder = (ObjectFactoryBuilder) objFactoryBuilderStC.getService(ref);
+                ObjectFactoryBuilder builder = (ObjectFactoryBuilder) Utils.getServicePrivileged(callerContext, ref);
                 try {
                     factory = builder.createObjectFactory(obj, environment);
                 } catch (NamingException e) {
                     // TODO: log it
+                } finally {
+                    callerContext.ungetService(ref);
                 }
                 if (factory != null) {
                     break;
