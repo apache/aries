@@ -158,16 +158,26 @@ public class StartAction extends AbstractAction {
 			if (!subsystem.isRoot()) {
 				for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(subsystem))
 					resolve((BasicSubsystem)child);
+				
+				FrameworkWiring frameworkWiring = Activator.getInstance().getBundleContext().getBundle(0)
+						.adapt(FrameworkWiring.class);
+
 				// TODO I think this is insufficient. Do we need both
 				// pre-install and post-install environments for the Resolver?
 				Collection<Bundle> bundles = getBundles(subsystem);
-				if (!Activator.getInstance().getBundleContext().getBundle(0)
-						.adapt(FrameworkWiring.class).resolveBundles(bundles)) {
+				if (!frameworkWiring.resolveBundles(bundles)) {
+					//work out which bundles could not be resolved
+					Collection<Bundle> unresolved = new ArrayList<Bundle>();
+					for(Bundle bundle:bundles){
+						if((bundle.getState() & Bundle.RESOLVED) != Bundle.RESOLVED){
+							unresolved.add(bundle);
+						}
+					}
 					logger.error(
 							"Unable to resolve bundles for subsystem/version/id {}/{}/{}: {}",
 							new Object[] { subsystem.getSymbolicName(), subsystem.getVersion(),
-									subsystem.getSubsystemId(), bundles });
-					throw new SubsystemException("Framework could not resolve the bundles");
+									subsystem.getSubsystemId(), unresolved });
+					throw new SubsystemException("Framework could not resolve the bundles: " + unresolved);
 				}
 				setExportIsolationPolicy(subsystem);
 			}
