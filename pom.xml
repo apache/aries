@@ -46,7 +46,7 @@
         </aries.osgi.export.pkg>
         <aries.osgi.import>
             org.osgi.service.blueprint.*;resolution:=optional,
-            org.apache.aries.transaction;version="[1.1,2)",
+            org.apache.aries.transaction;version="[1.0,2)",
             javax.resource.*;version="[1.6,3)",
             *
         </aries.osgi.import>
