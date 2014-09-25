@@ -225,6 +225,7 @@ public class RecoverableDataSource implements DataSource {
         cm.setBackgroundValidation(backgroundValidation);
         cm.setBackgroundValidationMilliseconds(backgroundValidationMilliseconds);
         cm.setTransaction(transaction);
+        cm.setName(name);
         cm.init();
 
         delegate = (DataSource) mcf.getConnectionFactory().createConnectionFactory(cm.getConnectionManager());

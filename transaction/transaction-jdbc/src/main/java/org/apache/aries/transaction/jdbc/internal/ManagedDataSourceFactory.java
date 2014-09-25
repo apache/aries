@@ -116,6 +116,7 @@ public class ManagedDataSourceFactory {
         cm.setBackgroundValidation(getBool("aries.xa.backgroundValidation", false));
         cm.setBackgroundValidationMilliseconds(getInt("aries.xa.backgroundValidationMilliseconds", 600000));
         cm.setTransaction(getString("aries.xa.transaction", "xa"));
+        cm.setName(getResourceName());
         cm.init();
 
         BundleContext context = reference.getBundle().getBundleContext();

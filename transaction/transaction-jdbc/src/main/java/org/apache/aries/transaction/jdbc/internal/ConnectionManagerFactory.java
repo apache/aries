@@ -42,6 +42,8 @@ public class ConnectionManagerFactory {
     private AriesTransactionManager transactionManager;
     private ManagedConnectionFactory managedConnectionFactory;
 
+    private String name;
+
     private TransactionSupport transactionSupport;
     private String transaction;
 
@@ -154,7 +156,7 @@ public class ConnectionManagerFactory {
                         connectionTracker,
                         transactionManager,
                         managedConnectionFactory,
-                        getClass().getName(),
+                        name != null ? name : getClass().getName(),
                         getClass().getClassLoader(),
                         backgroundValidationMilliseconds);
             } else {
@@ -166,7 +168,7 @@ public class ConnectionManagerFactory {
                         connectionTracker,
                         transactionManager,
                         managedConnectionFactory,
-                        getClass().getName(),
+                        name != null ? name : getClass().getName(),
                         getClass().getClassLoader());
             }
 
@@ -210,6 +212,14 @@ public class ConnectionManagerFactory {
 
     public String getTransaction() {
         return transaction;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setTransaction(String transaction) {
