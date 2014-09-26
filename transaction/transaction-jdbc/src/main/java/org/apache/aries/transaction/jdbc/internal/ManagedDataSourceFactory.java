@@ -24,6 +24,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
+import javax.sql.CommonDataSource;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.util.Hashtable;
@@ -33,8 +34,11 @@ public class ManagedDataSourceFactory {
 
     private final ServiceReference reference;
     private final AriesTransactionManager transactionManager;
-    private final XADataSource dataSource;
+    private final CommonDataSource dataSource;
     private final Map<String, Object> properties;
+
+    private ServiceRegistration<DataSource> registration;
+    private ConnectionManagerFactory cm;
 
     public ManagedDataSourceFactory(ServiceReference reference,
                                     AriesTransactionManager transactionManager) {
@@ -44,14 +48,14 @@ public class ManagedDataSourceFactory {
         for (String key : reference.getPropertyKeys()) {
             this.properties.put(key, reference.getProperty(key));
         }
-        this.dataSource = (XADataSource) reference.getBundle().getBundleContext().getService(reference);
+        this.dataSource = (CommonDataSource) reference.getBundle().getBundleContext().getService(reference);
     }
 
     public AriesTransactionManager getTransactionManager() {
         return transactionManager;
     }
 
-    public XADataSource getDataSource() {
+    public CommonDataSource getDataSource() {
         return dataSource;
     }
 
@@ -90,19 +94,22 @@ public class ManagedDataSourceFactory {
         }
     }
 
-    public ServiceRegistration register() throws Exception {
+    public void register() throws Exception {
         Hashtable<String, Object> props = new Hashtable<String, Object>(this.properties);
+        props.put("aries.managed", "true");
         props.put("aries.xa.aware", "true");
         props.put(Constants.SERVICE_RANKING, getInt(Constants.SERVICE_RANKING, 0) + 1000);
 
-        XADataSourceMCFFactory mcf = new XADataSourceMCFFactory();
+        boolean isXaDataSource = (dataSource instanceof XADataSource);
+
+        AbstractMCFFactory mcf = isXaDataSource ? new XADataSourceMCFFactory() : new DataSourceMCFFactory();
         mcf.setDataSource(dataSource);
         mcf.setExceptionSorterAsString(getString("aries.xa.exceptionSorter", "all"));
         mcf.setUserName(getString("aries.xa.username", null));
         mcf.setPassword(getString("aries.xa.password", null));
         mcf.init();
 
-        ConnectionManagerFactory cm = new ConnectionManagerFactory();
+        cm = new ConnectionManagerFactory();
         cm.setManagedConnectionFactory(mcf.getConnectionFactory());
         cm.setTransactionManager(transactionManager);
         cm.setAllConnectionsEqual(getBool("aries.xa.allConnectionsEquals", true));
@@ -115,16 +122,27 @@ public class ManagedDataSourceFactory {
         cm.setValidateOnMatch(getBool("aries.xa.validateOnMatch", true));
         cm.setBackgroundValidation(getBool("aries.xa.backgroundValidation", false));
         cm.setBackgroundValidationMilliseconds(getInt("aries.xa.backgroundValidationMilliseconds", 600000));
-        cm.setTransaction(getString("aries.xa.transaction", "xa"));
+        cm.setTransaction(getString("aries.xa.transaction", isXaDataSource ? "xa" : "local"));
         cm.setName(getResourceName());
         cm.init();
 
         BundleContext context = reference.getBundle().getBundleContext();
         DataSource ds = (DataSource) mcf.getConnectionFactory().createConnectionFactory(cm.getConnectionManager());
-        ServiceRegistration registration = context.registerService(DataSource.class.getName(), ds, props);
-        Recovery.recover(getResourceName(), dataSource, transactionManager);
-        return registration;
+        registration = context.registerService(DataSource.class, ds, props);
 
+        if (isXaDataSource) {
+            Recovery.recover(getResourceName(), (XADataSource) dataSource, transactionManager);
+        }
+    }
+
+    public void unregister() throws Exception {
+        if (registration != null) {
+            registration.unregister();
+            registration = null;
+        }
+        if (cm != null) {
+            cm.destroy();
+        }
     }
 
 }
