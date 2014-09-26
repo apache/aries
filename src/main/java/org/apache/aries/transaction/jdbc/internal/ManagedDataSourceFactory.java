@@ -95,12 +95,14 @@ public class ManagedDataSourceFactory {
     }
 
     public void register() throws Exception {
+        boolean isXaDataSource = (dataSource instanceof XADataSource);
+
         Hashtable<String, Object> props = new Hashtable<String, Object>(this.properties);
         props.put("aries.managed", "true");
-        props.put("aries.xa.aware", "true");
+        if (isXaDataSource) {
+            props.put("aries.xa.aware", "true");
+        }
         props.put(Constants.SERVICE_RANKING, getInt(Constants.SERVICE_RANKING, 0) + 1000);
-
-        boolean isXaDataSource = (dataSource instanceof XADataSource);
 
         AbstractMCFFactory mcf = isXaDataSource ? new XADataSourceMCFFactory() : new DataSourceMCFFactory();
         mcf.setDataSource(dataSource);
