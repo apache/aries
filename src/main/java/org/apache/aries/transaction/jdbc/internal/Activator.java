@@ -23,6 +23,7 @@ import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.xbean.blueprint.context.impl.XBeanNamespaceHandler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -33,10 +34,13 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.CommonDataSource;
 import javax.transaction.TransactionManager;
 import java.util.Hashtable;
 
-public class Activator implements BundleActivator, ServiceTrackerCustomizer, ServiceListener {
+public class Activator implements BundleActivator,
+                                  ServiceTrackerCustomizer<CommonDataSource, ManagedDataSourceFactory>,
+                                  ServiceListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
@@ -58,7 +62,14 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
             LOGGER.error("Unable to register JDBC blueprint namespace handler", e);
         }
 
-        t = new ServiceTracker(ctx, javax.sql.XADataSource.class.getName(), this);
+        Filter filter;
+        String flt = "(&(|(objectClass=javax.sql.XADataSource)(objectClass=javax.sql.DataSource))(!(aries.managed=true)))";
+        try {
+            filter = context.createFilter(flt);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalStateException(e);
+        }
+        t = new ServiceTracker<CommonDataSource, ManagedDataSourceFactory>(ctx, filter, this);
 
         try {
             ctx.addServiceListener(this, "(objectClass=" + AriesTransactionManager.class.getName() + ")");
@@ -88,31 +99,37 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
         }
     }
 
-    public Object addingService(ServiceReference ref) {
+    public ManagedDataSourceFactory addingService(ServiceReference<CommonDataSource> ref) {
         try {
-            LOGGER.info("Wrapping XADataSource " + ref);
+            LOGGER.info("Wrapping DataSource " + ref);
             ManagedDataSourceFactory mdsf = new ManagedDataSourceFactory(ref, tm);
-            return mdsf.register();
+            mdsf.register();
+            return mdsf;
         } catch (Exception e) {
-            LOGGER.warn("Error wrapping XADataSource " + ref, e);
+            LOGGER.warn("Error wrapping DataSource " + ref, e);
             return null;
         }
     }
 
-    public void modifiedService(ServiceReference ref, Object service) {
-        ServiceRegistration reg = (ServiceRegistration) service;
-
-        Hashtable<String, Object> map = new Hashtable<String, Object>();
-        for (String key : ref.getPropertyKeys()) {
-            map.put(key, ref.getProperty(key));
+    public void modifiedService(ServiceReference<CommonDataSource> ref, ManagedDataSourceFactory service) {
+        try {
+            service.unregister();
+        } catch (Exception e) {
+            LOGGER.warn("Error closing DataSource " + ref, e);
         }
-        map.put("aries.xa.aware", "true");
-
-        reg.setProperties(map);
+        try {
+            service.register();
+        } catch (Exception e) {
+            LOGGER.warn("Error wrapping DataSource " + ref, e);
+        }
     }
 
-    public void removedService(ServiceReference ref, Object service) {
-        safeUnregisterService((ServiceRegistration) service);
+    public void removedService(ServiceReference<CommonDataSource> ref, ManagedDataSourceFactory service) {
+        try {
+            service.unregister();
+        } catch (Exception e) {
+            LOGGER.warn("Error closing DataSource " + ref, e);
+        }
     }
 
     public void serviceChanged(ServiceEvent event) {
