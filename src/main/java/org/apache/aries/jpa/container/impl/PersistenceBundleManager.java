@@ -380,11 +380,11 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
           infos = persistenceUnitFactory.
               createManagedPersistenceUnitMetadata(ctx, bundle, ref, pUnits);
         }
-        //Either update the existing manager or create a new one
-        if(mgr != null)
-          mgr.manage(pUnits, ref, infos);
-        else 
-          mgr = new EntityManagerFactoryManager(ctx, bundle, pUnits, ref, infos);
+
+        if(mgr == null) {
+            mgr = new EntityManagerFactoryManager(ctx, bundle);
+        }
+        mgr.manage(pUnits, ref, infos);
           
         //Register the manager (this may re-add, but who cares)
         synchronized (this) {
