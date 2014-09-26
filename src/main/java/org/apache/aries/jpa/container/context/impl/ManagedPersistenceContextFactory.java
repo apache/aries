@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jpa.container.context.impl;
 
+import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
@@ -25,17 +26,21 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.persistence.*;
+import javax.persistence.Cache;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContextType;
+import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
-import org.apache.aries.jpa.container.sync.Synchronization;
 import org.apache.aries.jpa.container.context.impl.PersistenceContextManager.QuiesceTidyUp;
 import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
-import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManager;
+import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManagerHandler;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
-import org.osgi.framework.Bundle;
+import org.apache.aries.jpa.container.sync.Synchronization;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * <p/>
  * Also this class receives a callback on cleanup
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ManagedPersistenceContextFactory implements Synchronization, EntityManagerFactory, DestroyCallback {
     /**
      * Logger
@@ -60,7 +66,7 @@ public class ManagedPersistenceContextFactory implements Synchronization, Entity
     private final PersistenceContextType type;
     private final AtomicLong activeCount = new AtomicLong(0);
     private final String unitName;
-    private final JTAEntityManager em;
+    private final EntityManager em;
 
     private final AtomicReference<QuiesceTidyUp> tidyUp = new AtomicReference<QuiesceTidyUp>();
 
@@ -81,9 +87,12 @@ public class ManagedPersistenceContextFactory implements Synchronization, Entity
                         return (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
                     }
                 });
-        em = new JTAEntityManager(factory, properties, registry, activeCount, this);
+        JTAEntityManagerHandler invocationHandler = new JTAEntityManagerHandler(factory, properties, registry, activeCount, this);
+        ClassLoader cl = this.getClass().getClassLoader();
+        Class<?>[] ifAr = new Class[] { Synchronization.class, EntityManager.class }; 
+        em = (EntityManager)Proxy.newProxyInstance(cl, ifAr, invocationHandler);
     }
-
+    
     public EntityManager createEntityManager() {
         if (_logger.isDebugEnabled()) {
             _logger.debug("Creating a container managed entity manager for the perstence unit {} with the following properties {}",
@@ -101,12 +110,12 @@ public class ManagedPersistenceContextFactory implements Synchronization, Entity
 
     @Override
     public void preCall() {
-        em.preCall();
+        ((Synchronization)em).preCall();
     }
 
     @Override
     public void postCall() {
-        em.postCall();
+        ((Synchronization)em).postCall();
     }
 
     public void close() {
@@ -162,19 +171,7 @@ public class ManagedPersistenceContextFactory implements Synchronization, Entity
         }
     }
 
-    public <T> void addNamedEntityGraph(String arg0, EntityGraph<T> arg1) {
-        throw new UnsupportedOperationException();
-    }
-
     public void addNamedQuery(String arg0, Query arg1) {
-        throw new UnsupportedOperationException();
-    }
-
-    public EntityManager createEntityManager(SynchronizationType arg0) {
-        throw new UnsupportedOperationException();
-    }
-
-    public EntityManager createEntityManager(SynchronizationType arg0, Map arg1) {
         throw new UnsupportedOperationException();
     }
 
