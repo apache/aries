@@ -38,6 +38,7 @@ import javax.persistence.metamodel.Metamodel;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.impl.PersistenceContextManager.QuiesceTidyUp;
 import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
+import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManagerClose;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManagerHandler;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.apache.aries.jpa.container.sync.Synchronization;
@@ -89,7 +90,7 @@ public class ManagedPersistenceContextFactory implements Synchronization, Entity
                 });
         JTAEntityManagerHandler invocationHandler = new JTAEntityManagerHandler(factory, properties, registry, activeCount, this);
         ClassLoader cl = this.getClass().getClassLoader();
-        Class<?>[] ifAr = new Class[] { Synchronization.class, EntityManager.class }; 
+        Class<?>[] ifAr = new Class[] { Synchronization.class, EntityManager.class, JTAEntityManagerClose.class }; 
         em = (EntityManager)Proxy.newProxyInstance(cl, ifAr, invocationHandler);
     }
     
