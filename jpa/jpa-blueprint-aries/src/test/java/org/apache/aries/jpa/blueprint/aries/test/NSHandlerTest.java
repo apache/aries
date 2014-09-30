@@ -261,10 +261,7 @@ public class NSHandlerTest {
     Element e = getTestElement("context", root);
     BeanMetadata bean = 
       (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
-    BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
-
-    assertEquals("createEntityManager", innerBean.getFactoryMethod());
-    assertEquals("internalClose", innerBean.getDestroyMethod());
+    assertInnerBeanCorrect(bean);
 
     assertEquals(1, registeredComponents.size());
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
@@ -277,16 +274,20 @@ public class NSHandlerTest {
     Skeleton.getSkeleton(manager).assertCalled(
         new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, props));
   }
+
+private void assertInnerBeanCorrect(BeanMetadata bean) {
+    BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
+
+    assertEquals("createEntityManager", innerBean.getFactoryMethod());
+    assertEquals("internalClose", innerBean.getDestroyMethod());
+}
   
   @Test
   public void testDefaultContext_110() {
     Element e = getTestElement("context", root_110);
     BeanMetadata bean = 
       (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
-    BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
-
-    assertEquals("createEntityManager", innerBean.getFactoryMethod());
-    assertEquals("internalClose", innerBean.getDestroyMethod());
+    assertInnerBeanCorrect(bean);
 
     assertEquals(1, registeredComponents.size());
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
@@ -307,10 +308,7 @@ public class NSHandlerTest {
     Element e = getTestElement("context", root);
     BeanMetadata bean = 
       (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
-    BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
-
-    assertEquals("createEntityManager", innerBean.getFactoryMethod());
-    assertEquals("internalClose", innerBean.getDestroyMethod());
+    assertInnerBeanCorrect(bean);
 
     assertEquals(1, registeredComponents.size());
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
@@ -331,10 +329,7 @@ public class NSHandlerTest {
     Element e = getTestElement("context", root_110);
     BeanMetadata bean = 
       (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
-    BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
-
-    assertEquals("createEntityManager", innerBean.getFactoryMethod());
-    assertEquals("internalClose", innerBean.getDestroyMethod());
+    assertInnerBeanCorrect(bean);
 
     assertEquals(1, registeredComponents.size());
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
@@ -442,10 +437,7 @@ public class NSHandlerTest {
       assertEquals("Wrong index", -1,
           ((BeanArgument)input.getArguments().get(0)).getIndex());
       
-      BeanMetadata innerBean = (BeanMetadata) ((BeanArgument)input.getArguments().get(0)).getValue();
-
-      assertEquals("createEntityManager", innerBean.getFactoryMethod());
-      assertEquals("internalClose", innerBean.getDestroyMethod());
+      assertConstructorInnerBean(input);
 
       assertEquals(1, registeredComponents.size());
       reference = (ReferenceMetadata) registeredComponents.get(0);
@@ -458,6 +450,13 @@ public class NSHandlerTest {
       Skeleton.getSkeleton(manager).assertCalled(
           new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, Map.class));
   }
+
+private void assertConstructorInnerBean(BeanMetadata input) {
+    BeanMetadata innerBean = (BeanMetadata) ((BeanArgument)input.getArguments().get(0)).getValue();
+
+      assertEquals("createEntityManager", innerBean.getFactoryMethod());
+      assertEquals("internalClose", innerBean.getDestroyMethod());
+}
   
   @Test
   public void testIndexedArgs_110() {
@@ -489,10 +488,7 @@ public class NSHandlerTest {
       assertEquals("Wrong index", 1,
           ((BeanArgument)input.getArguments().get(0)).getIndex());
       
-      BeanMetadata innerBean = (BeanMetadata) ((BeanArgument)input.getArguments().get(0)).getValue();
-
-      assertEquals("createEntityManager", innerBean.getFactoryMethod());
-      assertEquals("internalClose", innerBean.getDestroyMethod());
+      assertConstructorInnerBean(input);
 
       assertEquals(1, registeredComponents.size());
       reference = (ReferenceMetadata) registeredComponents.get(0);
