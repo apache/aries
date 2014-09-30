@@ -135,7 +135,6 @@ public class JTAEntityManagerHandler implements InvocationHandler {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if ("close".equals(method.getName())) {
@@ -152,8 +151,24 @@ public class JTAEntityManagerHandler implements InvocationHandler {
             return null;
         }
         
+        if ("postCall".equals(method.getName())) {
+            postCall();
+            return null;
+        }
+        
+        if ("preCall".equals(method.getName())) {
+            preCall();
+            return null;
+        }
+        
+        if ("internalClose".equals(method.getName())) {
+            internalClose();
+            return null;
+        }
+        
         boolean forceTransaction = transactedMethods.contains(method.getName());
         
+        // TODO Check if this can be reached
         if ("joinTransaction".equals(method.getName())) {
             forceTransaction = args[2] != LockModeType.NONE;
         }
