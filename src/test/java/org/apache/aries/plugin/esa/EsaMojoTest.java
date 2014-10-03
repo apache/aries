@@ -567,7 +567,7 @@ public class EsaMojoTest
 
         attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
         assertNotNull(attributes);
-        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
+        assertEquals("[1.3,2.5)", attributes.get("version"));
         assertNull(attributes.get("type"));
 
         attributes = header.get("maven-artifact03");

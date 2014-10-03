@@ -30,6 +30,7 @@ import java.util.zip.ZipFile;
 import aQute.lib.osgi.Analyzer;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.shared.osgi.DefaultMaven2OsgiConverter;
 import org.apache.maven.shared.osgi.Maven2OsgiConverter;
@@ -44,6 +45,7 @@ public class ContentInfo {
     private String symbolicName;
     private String type;
     private String version;
+    private VersionRange mavenVersionRange;
 
     public String getSymbolicName() {
         return symbolicName;
@@ -62,8 +64,12 @@ public class ContentInfo {
         if (type != null) {
             line += ";type=\"" + type + "\"";
         }
-        if (version != null) {
-            line += ";version=\"[" + version + "," + version + "]\"";
+        if (mavenVersionRange != null && mavenVersionRange.hasRestrictions()) {
+            line += ";version=\"" + mavenVersionRange + '"';
+        } else {
+            if (version != null) {
+                line += ";version=\"[" + version + "," + version + "]\"";
+            }
         }
         return line;
     }
@@ -101,6 +107,7 @@ public class ContentInfo {
         ContentInfo info = new ContentInfo();
         info.symbolicName = maven2OsgiConverter.getBundleSymbolicName(artifact);
         info.version = Analyzer.cleanupVersion(artifact.getVersion());
+        info.mavenVersionRange = artifact.getVersionRange();
         return info;
     }
 
@@ -128,6 +135,7 @@ public class ContentInfo {
             info.type = header.keySet().iterator().next();
         }
 
+        info.mavenVersionRange = artifact.getVersionRange();
         return info;
     }
 
@@ -153,6 +161,7 @@ public class ContentInfo {
                 info.type = Constants.FRAGMENT_TYPE;
             }
 
+            info.mavenVersionRange = artifact.getVersionRange();
             return info;
         }
     }
