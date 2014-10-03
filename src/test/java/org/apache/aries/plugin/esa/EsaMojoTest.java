@@ -26,17 +26,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import aQute.lib.osgi.Analyzer;
+
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.archiver.zip.ZipEntry;
 import org.codehaus.plexus.archiver.zip.ZipFile;
-import org.codehaus.plexus.util.FileUtils;
-
-import aQute.lib.osgi.Analyzer;
 
 /**
  * @author <a href="mailto:aramirez@apache.org">Allan Ramirez</a>
@@ -60,13 +58,13 @@ public class EsaMojoTest
     {
         testBasicEsa( "target/test-classes/unit/basic-esa-test/plugin-config.xml", null );
     }
-    
+
     public void testBasicEsaPgkType()
         throws Exception
     {
         testBasicEsa( "target/test-classes/unit/basic-esa-test-with-pgk-type/plugin-config.xml", "maven-esa-test-1.0-SNAPSHOT.jar" );
     }
-      
+
     private void testBasicEsa(String path, String extraExpectedFiles)
         throws Exception
     {
@@ -221,19 +219,19 @@ public class EsaMojoTest
 
         InputStream in = esa.getInputStream(entry);
         Manifest mf = new Manifest(in);
-        
+
         return mf;
     }
-          
+
     private Map<String, Map<String, String>> getHeader(Manifest mf, String header) {
         Attributes attributes = mf.getMainAttributes();
         String value = attributes.getValue(header);
         assertNotNull("Header " + header + " not found", value);
         return Analyzer.parseHeader(value, null);
     }
-    
+
     private void testForHeader(ZipFile esa, String header, String exactEntry) throws Exception {
-        
+
         Enumeration entries = esa.getEntries();
 
 
@@ -242,7 +240,7 @@ public class EsaMojoTest
         BufferedReader br = new BufferedReader(new InputStreamReader(esa.getInputStream(entry)));
 
         Boolean foundHeader=false;
-        
+
         String line;
         while ((line = br.readLine()) != null) {
             if (line.contains(header)) {
@@ -251,7 +249,7 @@ public class EsaMojoTest
             }
         }
         assertTrue("Found " + header + ":", foundHeader);
-        
+
     }
 
     public void testSubsystemManifestGeneration()
@@ -293,7 +291,7 @@ public class EsaMojoTest
         expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
 
         ZipFile esa = new ZipFile( esaFile );
-        
+
         Enumeration entries = esa.getEntries();
 
         assertTrue( entries.hasMoreElements() );
@@ -341,7 +339,7 @@ public class EsaMojoTest
         expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
 
         ZipFile esa = new ZipFile( esaFile );
-        
+
         Enumeration entries = esa.getEntries();
 
         assertTrue( entries.hasMoreElements() );
@@ -351,19 +349,19 @@ public class EsaMojoTest
 
         Manifest mf = getSubsystemManifest(esa);
         Map<String, Map<String, String>> header = getHeader(mf, "Subsystem-Content");
-        
+
         Map<String, String> attributes = null;
-        
+
         attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
         assertNotNull(attributes);
-        assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
+        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
         // start-order is actually a directive, shows up here as the name+":"
         assertEquals("1", attributes.get("start-order:"));
         assertNull(attributes.get("type"));
-        
+
         attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
         assertNotNull(attributes);
-        assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
+        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
         assertEquals("2", attributes.get("start-order:"));
         assertNull(attributes.get("type"));
     }
@@ -498,7 +496,7 @@ public class EsaMojoTest
         expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
 
         ZipFile esa = new ZipFile( esaFile );
-        
+
         Enumeration entries = esa.getEntries();
 
         assertTrue( entries.hasMoreElements() );
@@ -511,7 +509,7 @@ public class EsaMojoTest
 
         // Test for the MyHeader header
         testForHeader(esa, "MyHeader", "MyHeader: myValue");
-        
+
         // Test for the Subsystem-Name header
         testForHeader(esa, "Subsystem-Name", "Subsystem-Name: myName");
     }
@@ -559,30 +557,30 @@ public class EsaMojoTest
 
         Manifest mf = getSubsystemManifest(esa);
         Map<String, Map<String, String>> header = getHeader(mf, "Subsystem-Content");
-        
+
         Map<String, String> attributes = null;
-        
+
         attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
         assertNotNull(attributes);
-        assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
+        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
         assertNull(attributes.get("type"));
-        
+
         attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
         assertNotNull(attributes);
-        assertEquals("1.0.0.SNAPSHOT", attributes.get("version"));
+        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
         assertNull(attributes.get("type"));
-        
+
         attributes = header.get("maven-artifact03");
         assertNotNull(attributes);
-        assertEquals("1.1.0.SNAPSHOT.NNN", attributes.get("version"));
+        assertEquals("[1.1.0.SNAPSHOT.NNN,1.1.0.SNAPSHOT.NNN]", attributes.get("version"));
         assertEquals("osgi.fragment", attributes.get("type"));
-        
+
         attributes = header.get("maven-artifact04");
         assertNotNull(attributes);
-        assertEquals("1.2.0.SNAPSHOT", attributes.get("version"));
+        assertEquals("[1.2.0.SNAPSHOT,1.2.0.SNAPSHOT]", attributes.get("version"));
         assertEquals("feature", attributes.get("type"));
     }
-    
+
     private int getSizeOfExpectedFiles( Enumeration entries, List expectedFiles )
     {
         while( entries.hasMoreElements() )
