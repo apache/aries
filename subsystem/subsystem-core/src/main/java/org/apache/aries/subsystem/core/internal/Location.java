@@ -35,9 +35,10 @@ public class Location {
     final String toString;
     final String scheme;
     LocationType(String toString, String scheme) {this.toString = toString; this.scheme = scheme;}
+    @Override
     public String toString() {return toString;}
   };
-    
+
   private final LocationType type;
   private final String value;
   private final URI uri;
@@ -51,8 +52,20 @@ public class Location {
    */
   public Location(String location) throws MalformedURLException, URISyntaxException {
     value = location;
-    URI locationUri = new URI(location);
-    if (locationUri.isAbsolute()) {  // i.e. looks like scheme:something
+    URI locationUri = null;
+    try {
+        locationUri = new URI(location);
+    } catch ( URISyntaxException urise ) {
+        // ignore
+    }
+    if (locationUri == null) {
+        type = LocationType.UNKNOWN;
+        url = null;
+        uri = null;
+        subsystemUri = null;
+        subsystemUriException = null;
+
+    } else if (locationUri.isAbsolute()) {  // i.e. looks like scheme:something
       String scheme = locationUri.getScheme();
       if (LocationType.SUBSYSTEM.scheme.equals(scheme)) {
         type = LocationType.SUBSYSTEM;
@@ -81,10 +94,16 @@ public class Location {
         url = null;
         uri = locationUri;
       } else {                       // otherwise will only accept a url, (a url
-        type = LocationType.URL;     // always has a scheme, so fine to have 
+        type = LocationType.URL;     // always has a scheme, so fine to have
         subsystemUri = null;         // this inside the 'if isAbsolute' block).
         subsystemUriException = null;
-        url = locationUri.toURL();
+        URL localUrl = null;
+        try {
+            localUrl = locationUri.toURL();
+        } catch ( final MalformedURLException mue) {
+            // ignore
+        }
+        url = localUrl;
         uri = locationUri;
       }
     } else {
@@ -95,18 +114,18 @@ public class Location {
     	subsystemUriException = null;
     }
   }
-    
+
   public String getValue() {
     return value;
   }
-    
+
   public String getSymbolicName() {
     if (subsystemUriException != null) {
       throw subsystemUriException;
     }
     return (subsystemUri!=null) ? subsystemUri.getSymbolicName() : null;
   }
-    
+
   public Version getVersion() {
     if (subsystemUriException != null) {
       throw subsystemUriException;
@@ -130,14 +149,14 @@ public class Location {
     	  // method will never be called.
     	  return FileSystem.getFSRoot(new URL(value).openStream());
       default : // should never get here as switch should cover all types
-        throw new UnsupportedOperationException("cannot open location of type " + type); 
+        throw new UnsupportedOperationException("cannot open location of type " + type);
     }
   }
-  
+
   /*
-   * Although the uri should contain information about the directory finder 
+   * Although the uri should contain information about the directory finder
    * service to use to retrieve the directory, there are not expected to be
-   * many such services in use (typically one), so a simple list of all 
+   * many such services in use (typically one), so a simple list of all
    * directory finders is maintained by the activator and we loop over them in
    * turn until the desired directory is retrieved or there are no more finders
    * left to call.
@@ -151,7 +170,7 @@ public class Location {
     }
     throw new IOException("cannot find IDirectory corresponding to id " + uri);
   }
-  
+
   @Override
   public String toString() {
 	  return value;
