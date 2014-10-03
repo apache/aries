@@ -21,6 +21,7 @@ package org.apache.aries.plugin.esa.stubs;
 
 import java.io.File;
 
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 
 /**
@@ -30,16 +31,18 @@ public class EsaArtifactStub
     extends ArtifactStub
 {
     private String groupId;
-    
+
     private String artifactId;
-    
+
     private String version;
-    
+
     private String scope;
-    
+
     private boolean optional;
-    
+
     private File file;
+
+    private VersionRange versionRange;
 
     public String getArtifactId()
     {
@@ -105,9 +108,19 @@ public class EsaArtifactStub
     {
         return getGroupId() + ":" + getArtifactId() + ":" + getVersion();
     }
-    
+
     public String getBaseVersion()
     {
         return getVersion();
+    }
+
+    @Override
+    public VersionRange getVersionRange() {
+        return versionRange;
+    }
+
+    @Override
+    public void setVersionRange(VersionRange versionRange) {
+        this.versionRange = versionRange;
     }
 }
